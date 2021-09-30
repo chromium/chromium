@@ -20,6 +20,10 @@ class ModelTypeStoreServiceFactory : public BrowserContextKeyedServiceFactory {
   static syncer::ModelTypeStoreService* GetForProfile(Profile* profile);
   static ModelTypeStoreServiceFactory* GetInstance();
 
+  ModelTypeStoreServiceFactory(const ModelTypeStoreServiceFactory&) = delete;
+  ModelTypeStoreServiceFactory& operator=(const ModelTypeStoreServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ModelTypeStoreServiceFactory>;
 
@@ -31,8 +35,6 @@ class ModelTypeStoreServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeStoreServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_MODEL_TYPE_STORE_SERVICE_FACTORY_H_

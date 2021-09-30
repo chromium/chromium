@@ -16,6 +16,11 @@ class FileBrowserHandlerCustomBindings : public ObjectBackedNativeHandler {
  public:
   explicit FileBrowserHandlerCustomBindings(ScriptContext* context);
 
+  FileBrowserHandlerCustomBindings(const FileBrowserHandlerCustomBindings&) =
+      delete;
+  FileBrowserHandlerCustomBindings& operator=(
+      const FileBrowserHandlerCustomBindings&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -28,8 +33,6 @@ class FileBrowserHandlerCustomBindings : public ObjectBackedNativeHandler {
  private:
   void GetExternalFileEntryCallback(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(FileBrowserHandlerCustomBindings);
 };
 
 }  // namespace extensions

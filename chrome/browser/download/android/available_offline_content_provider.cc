@@ -108,6 +108,9 @@ class ThumbnailFetch {
     GURL favicon;
   };
 
+  ThumbnailFetch(const ThumbnailFetch&) = delete;
+  ThumbnailFetch& operator=(const ThumbnailFetch&) = delete;
+
   // Gets visuals for a list of visuals. Calls |complete_callback| with
   // a list of VisualsDataUris structs containing data URIs for thumbnails and
   // favicons for |content_ids|, in the same order. If no thumbnail or favicon
@@ -199,8 +202,6 @@ class ThumbnailFetch {
   std::vector<VisualsDataUris> visuals_;
   base::OnceCallback<void(std::vector<VisualsDataUris>)> complete_callback_;
   size_t callback_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailFetch);
 };
 
 chrome::mojom::AvailableOfflineContentPtr CreateAvailableOfflineContent(

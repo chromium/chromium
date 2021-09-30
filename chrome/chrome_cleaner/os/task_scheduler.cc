@@ -126,6 +126,9 @@ void PinModule(const wchar_t* module_name) {
 // scheduler for Vista+.
 class TaskSchedulerV2 : public TaskScheduler {
  public:
+  TaskSchedulerV2(const TaskSchedulerV2&) = delete;
+  TaskSchedulerV2& operator=(const TaskSchedulerV2&) = delete;
+
   static bool Initialize() {
     DCHECK(!task_service_);
     DCHECK(!root_task_folder_);
@@ -944,8 +947,6 @@ class TaskSchedulerV2 : public TaskScheduler {
 
   static Microsoft::WRL::ComPtr<ITaskService> task_service_;
   static Microsoft::WRL::ComPtr<ITaskFolder> root_task_folder_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSchedulerV2);
 };
 
 Microsoft::WRL::ComPtr<ITaskService> TaskSchedulerV2::task_service_;

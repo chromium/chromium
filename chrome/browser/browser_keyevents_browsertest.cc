@@ -102,6 +102,9 @@ class TestFinishObserver : public content::NotificationObserver {
                    content::Source<content::WebContents>(web_contents));
   }
 
+  TestFinishObserver(const TestFinishObserver&) = delete;
+  TestFinishObserver& operator=(const TestFinishObserver&) = delete;
+
   bool WaitForFinish() {
     if (!finished_) {
       waiting_ = true;
@@ -129,8 +132,6 @@ class TestFinishObserver : public content::NotificationObserver {
   bool finished_;
   bool waiting_;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFinishObserver);
 };
 
 class BrowserKeyEventsTest : public InProcessBrowserTest {

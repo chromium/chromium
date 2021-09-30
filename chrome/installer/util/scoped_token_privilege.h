@@ -20,7 +20,13 @@ namespace installer {
 // to know whether |privilege_name| was successfully enabled).
 class ScopedTokenPrivilege {
  public:
+  ScopedTokenPrivilege() = delete;
+
   explicit ScopedTokenPrivilege(const wchar_t* privilege_name);
+
+  ScopedTokenPrivilege(const ScopedTokenPrivilege&) = delete;
+  ScopedTokenPrivilege& operator=(const ScopedTokenPrivilege&) = delete;
+
   ~ScopedTokenPrivilege();
 
   // Always returns true unless the privilege could not be enabled.
@@ -37,8 +43,6 @@ class ScopedTokenPrivilege {
   // The previous state of the privilege this object is responsible for. As set
   // by AdjustTokenPrivileges() upon construction.
   TOKEN_PRIVILEGES previous_privileges_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScopedTokenPrivilege);
 };
 
 }  // namespace installer

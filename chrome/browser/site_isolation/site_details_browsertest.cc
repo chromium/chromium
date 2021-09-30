@@ -57,6 +57,9 @@ class TestMemoryDetails : public MetricsMemoryDetails {
  public:
   TestMemoryDetails() : MetricsMemoryDetails(base::DoNothing()) {}
 
+  TestMemoryDetails(const TestMemoryDetails&) = delete;
+  TestMemoryDetails& operator=(const TestMemoryDetails&) = delete;
+
   void StartFetchAndWait() {
     uma_ = std::make_unique<base::HistogramTester>();
     StartFetch();
@@ -94,8 +97,6 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   }
 
   std::unique_ptr<base::HistogramTester> uma_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMemoryDetails);
 };
 
 // This matcher takes three other matchers as arguments, and applies one of them

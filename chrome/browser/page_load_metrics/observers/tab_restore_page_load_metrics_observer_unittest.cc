@@ -54,6 +54,11 @@ class TabRestorePageLoadMetricsObserverTest
  public:
   TabRestorePageLoadMetricsObserverTest() {}
 
+  TabRestorePageLoadMetricsObserverTest(
+      const TabRestorePageLoadMetricsObserverTest&) = delete;
+  TabRestorePageLoadMetricsObserverTest& operator=(
+      const TabRestorePageLoadMetricsObserverTest&) = delete;
+
   void ResetTest() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     // Reset to the default testing state. Does not reset histogram state.
@@ -108,8 +113,6 @@ class TabRestorePageLoadMetricsObserverTest
  private:
   absl::optional<bool> is_restore_;
   page_load_metrics::mojom::PageLoadTiming timing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestorePageLoadMetricsObserverTest);
 };
 
 TEST_F(TabRestorePageLoadMetricsObserverTest, NotRestored) {

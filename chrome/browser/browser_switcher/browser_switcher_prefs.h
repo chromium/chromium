@@ -116,7 +116,13 @@ class BrowserSwitcherPrefs : public KeyedService,
  public:
   using PrefsChangedCallback = base::RepeatingCallback<PrefsChangedSignature>;
 
+  BrowserSwitcherPrefs() = delete;
+
   explicit BrowserSwitcherPrefs(Profile* profile);
+
+  BrowserSwitcherPrefs(const BrowserSwitcherPrefs&) = delete;
+  BrowserSwitcherPrefs& operator=(const BrowserSwitcherPrefs&) = delete;
+
   ~BrowserSwitcherPrefs() override;
 
   // KeyedService:
@@ -245,8 +251,6 @@ class BrowserSwitcherPrefs : public KeyedService,
   base::RepeatingCallbackList<PrefsChangedSignature> callback_list_;
 
   base::WeakPtrFactory<BrowserSwitcherPrefs> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherPrefs);
 };
 
 namespace prefs {

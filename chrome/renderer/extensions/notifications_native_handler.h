@@ -19,6 +19,10 @@ class NotificationsNativeHandler : public ObjectBackedNativeHandler {
  public:
   explicit NotificationsNativeHandler(ScriptContext* context);
 
+  NotificationsNativeHandler(const NotificationsNativeHandler&) = delete;
+  NotificationsNativeHandler& operator=(const NotificationsNativeHandler&) =
+      delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -37,8 +41,6 @@ class NotificationsNativeHandler : public ObjectBackedNativeHandler {
   //         buttonIcon - a dictionary of the same format as |icon|
   void GetNotificationImageSizes(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationsNativeHandler);
 };
 
 }  // namespace extensions

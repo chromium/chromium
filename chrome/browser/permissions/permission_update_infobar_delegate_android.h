@@ -53,6 +53,11 @@ class PermissionUpdateInfoBarDelegate : public ConfirmInfoBarDelegate {
       int permission_msg_id,
       PermissionUpdatedCallback callback);
 
+  PermissionUpdateInfoBarDelegate(const PermissionUpdateInfoBarDelegate&) =
+      delete;
+  PermissionUpdateInfoBarDelegate& operator=(
+      const PermissionUpdateInfoBarDelegate&) = delete;
+
   void OnPermissionResult(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,
                           jboolean all_permissions_granted);
@@ -95,8 +100,6 @@ class PermissionUpdateInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::vector<ContentSettingsType> content_settings_types_;
   int permission_msg_id_;
   PermissionUpdatedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionUpdateInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_UPDATE_INFOBAR_DELEGATE_ANDROID_H_

@@ -54,6 +54,9 @@ class SqliteIntegrityTest : public DiagnosticsTest {
                       const base::FilePath& db_path)
       : DiagnosticsTest(id), flags_(flags), db_path_(db_path) {}
 
+  SqliteIntegrityTest(const SqliteIntegrityTest&) = delete;
+  SqliteIntegrityTest& operator=(const SqliteIntegrityTest&) = delete;
+
   bool RecoveryImpl(DiagnosticsModel::Observer* observer) override {
     int outcome_code = GetOutcomeCode();
     if (flags_ & REMOVE_IF_CORRUPT) {
@@ -172,6 +175,9 @@ class SqliteIntegrityTest : public DiagnosticsTest {
    public:
     ErrorRecorder() : has_error_(false), sqlite_error_(0), last_errno_(0) {}
 
+    ErrorRecorder(const ErrorRecorder&) = delete;
+    ErrorRecorder& operator=(const ErrorRecorder&) = delete;
+
     void RecordSqliteError(sql::Database* connection,
                            int sqlite_error,
                            sql::Statement* statement) {
@@ -198,13 +204,10 @@ class SqliteIntegrityTest : public DiagnosticsTest {
     int sqlite_error_;
     int last_errno_;
     std::string message_;
-
-    DISALLOW_COPY_AND_ASSIGN(ErrorRecorder);
   };
 
   uint32_t flags_;
   base::FilePath db_path_;
-  DISALLOW_COPY_AND_ASSIGN(SqliteIntegrityTest);
 };
 
 }  // namespace

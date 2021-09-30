@@ -26,6 +26,10 @@ class UnifiedConsentServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the factory singleton.
   static UnifiedConsentServiceFactory* GetInstance();
 
+  UnifiedConsentServiceFactory(const UnifiedConsentServiceFactory&) = delete;
+  UnifiedConsentServiceFactory& operator=(const UnifiedConsentServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UnifiedConsentServiceFactory>;
 
@@ -37,8 +41,6 @@ class UnifiedConsentServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_UNIFIED_CONSENT_UNIFIED_CONSENT_SERVICE_FACTORY_H_

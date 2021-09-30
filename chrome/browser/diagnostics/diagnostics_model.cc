@@ -171,8 +171,8 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelWin);
+  DiagnosticsModelWin(const DiagnosticsModelWin&) = delete;
+  DiagnosticsModelWin& operator=(const DiagnosticsModelWin&) = delete;
 };
 
 #elif defined(OS_MAC)
@@ -195,8 +195,8 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelMac);
+  DiagnosticsModelMac(const DiagnosticsModelMac&) = delete;
+  DiagnosticsModelMac& operator=(const DiagnosticsModelMac&) = delete;
 };
 
 #elif defined(OS_POSIX)
@@ -225,8 +225,8 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
 #endif
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelPosix);
+  DiagnosticsModelPosix(const DiagnosticsModelPosix&) = delete;
+  DiagnosticsModelPosix& operator=(const DiagnosticsModelPosix&) = delete;
 };
 
 #elif defined(OS_FUCHSIA)

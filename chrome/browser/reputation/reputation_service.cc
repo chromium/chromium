@@ -46,6 +46,9 @@ class ReputationServiceFactory : public BrowserContextKeyedServiceFactory {
     return base::Singleton<ReputationServiceFactory>::get();
   }
 
+  ReputationServiceFactory(const ReputationServiceFactory&) = delete;
+  ReputationServiceFactory& operator=(const ReputationServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ReputationServiceFactory>;
 
@@ -66,8 +69,6 @@ class ReputationServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override {
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReputationServiceFactory);
 };
 
 // Returns whether or not the Safety Tip should be suppressed for the given URL.

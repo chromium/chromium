@@ -247,6 +247,10 @@ class ThemeProperties {
   // than this).
   static constexpr int kFrameHeightAboveTabs = 16;
 
+  ThemeProperties() = delete;
+  ThemeProperties(const ThemeProperties&) = delete;
+  ThemeProperties& operator=(const ThemeProperties&) = delete;
+
   // Used by the browser theme pack to parse alignments from something like
   // "top left" into a bitmask of Alignment.
   static int StringToAlignment(const std::string& alignment);
@@ -274,9 +278,6 @@ class ThemeProperties {
   static SkColor GetDefaultColor(int id,
                                  bool incognito,
                                  bool dark_mode = false);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ThemeProperties);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_PROPERTIES_H_

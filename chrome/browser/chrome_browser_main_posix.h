@@ -13,15 +13,16 @@ class ChromeBrowserMainPartsPosix : public ChromeBrowserMainParts {
   ChromeBrowserMainPartsPosix(const content::MainFunctionParams& parameters,
                               StartupData* startup_data);
 
+  ChromeBrowserMainPartsPosix(const ChromeBrowserMainPartsPosix&) = delete;
+  ChromeBrowserMainPartsPosix& operator=(const ChromeBrowserMainPartsPosix&) =
+      delete;
+
   // content::BrowserMainParts overrides.
   int PreEarlyInitialization() override;
   void PostCreateMainMessageLoop() override;
 
   // ChromeBrowserMainParts overrides.
   void ShowMissingLocaleMessageBox() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsPosix);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_POSIX_H_

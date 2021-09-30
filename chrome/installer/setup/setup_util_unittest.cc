@@ -376,6 +376,10 @@ namespace {
 // A test fixture that configures an InstallationState and an InstallerState
 // with a product being updated.
 class FindArchiveToPatchTest : public testing::Test {
+ public:
+  FindArchiveToPatchTest(const FindArchiveToPatchTest&) = delete;
+  FindArchiveToPatchTest& operator=(const FindArchiveToPatchTest&) = delete;
+
  protected:
   class FakeInstallationState : public installer::InstallationState {};
 
@@ -472,8 +476,6 @@ class FindArchiveToPatchTest : public testing::Test {
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindArchiveToPatchTest);
 };
 
 const bool FindArchiveToPatchTest::kSystemInstall_ = false;
@@ -799,6 +801,10 @@ TEST_F(DeleteRegistryKeyPartialTest, NonEmptyKeyWithPreserve) {
 }
 
 class LegacyCleanupsTest : public ::testing::Test {
+ public:
+  LegacyCleanupsTest(const LegacyCleanupsTest&) = delete;
+  LegacyCleanupsTest& operator=(const LegacyCleanupsTest&) = delete;
+
  protected:
   LegacyCleanupsTest() = default;
   void SetUp() override {
@@ -887,7 +893,6 @@ class LegacyCleanupsTest : public ::testing::Test {
   base::ScopedTempDir temp_dir_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   std::unique_ptr<FakeInstallerState> installer_state_;
-  DISALLOW_COPY_AND_ASSIGN(LegacyCleanupsTest);
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

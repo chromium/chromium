@@ -21,6 +21,9 @@ class ExperimentLabels {
  public:
   explicit ExperimentLabels(const std::wstring& value);
 
+  ExperimentLabels(const ExperimentLabels&) = delete;
+  ExperimentLabels& operator=(const ExperimentLabels&) = delete;
+
   // Returns the experiment_labels string containing the individual labels.
   const std::wstring& value() const { return value_; }
 
@@ -52,8 +55,6 @@ class ExperimentLabels {
 
   // The raw experiment_labels string.
   std::wstring value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExperimentLabels);
 };
 
 }  // namespace installer

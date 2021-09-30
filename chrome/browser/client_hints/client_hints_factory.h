@@ -21,6 +21,9 @@ class ClientHintsFactory : public BrowserContextKeyedServiceFactory {
 
   static ClientHintsFactory* GetInstance();
 
+  ClientHintsFactory(const ClientHintsFactory&) = delete;
+  ClientHintsFactory& operator=(const ClientHintsFactory&) = delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<ClientHintsFactory>;
 
@@ -33,8 +36,6 @@ class ClientHintsFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientHintsFactory);
 };
 
 #endif  // CHROME_BROWSER_CLIENT_HINTS_CLIENT_HINTS_FACTORY_H_

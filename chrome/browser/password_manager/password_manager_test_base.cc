@@ -58,6 +58,11 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   explicit CustomManagePasswordsUIController(
       content::WebContents* web_contents);
 
+  CustomManagePasswordsUIController(const CustomManagePasswordsUIController&) =
+      delete;
+  CustomManagePasswordsUIController& operator=(
+      const CustomManagePasswordsUIController&) = delete;
+
   void WaitForState(password_manager::ui::State target_state);
 
   void WaitForFallbackForSaving();
@@ -121,8 +126,6 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
 
   // True iff a prompt was automatically shown.
   bool was_prompt_automatically_shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomManagePasswordsUIController);
 };
 
 CustomManagePasswordsUIController::CustomManagePasswordsUIController(

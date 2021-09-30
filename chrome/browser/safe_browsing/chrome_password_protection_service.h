@@ -100,6 +100,12 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
 
   ChromePasswordProtectionService(SafeBrowsingService* sb_service,
                                   Profile* profile);
+
+  ChromePasswordProtectionService(const ChromePasswordProtectionService&) =
+      delete;
+  ChromePasswordProtectionService& operator=(
+      const ChromePasswordProtectionService&) = delete;
+
   ~ChromePasswordProtectionService() override;
 
   static ChromePasswordProtectionService* GetPasswordProtectionService(
@@ -577,8 +583,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // member callback rather than a virtual function because it's needed in the
   // constructor.
   StringProvider sync_password_hash_provider_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionService);
 };
 
 }  // namespace safe_browsing

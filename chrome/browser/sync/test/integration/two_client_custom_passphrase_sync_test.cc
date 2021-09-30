@@ -70,13 +70,15 @@ class TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest
     }
   }
 
+  TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest(
+      const TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest&) = delete;
+  TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest& operator=(
+      const TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest&) = delete;
+
   ~TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest() override = default;
 
  private:
   base::test::ScopedFeatureList override_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
@@ -163,12 +165,18 @@ class TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled
   TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled()
       : toggler_(/*force_disabled=*/false,
                  /*use_for_new_passphrases=*/false) {}
+
+  TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled(
+      const TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled&) =
+      delete;
+  TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled& operator=(
+      const TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled&) =
+      delete;
+
   ~TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled() override {}
 
  private:
   ScopedScryptFeatureToggler toggler_;
-  DISALLOW_COPY_AND_ASSIGN(
-      TwoClientCustomPassphraseSyncTestWithScryptEncryptionNotEnabled);
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -201,12 +209,18 @@ class TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled
   TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled()
       : toggler_(/*force_disabled=*/false,
                  /*use_for_new_passphrases=*/true) {}
+
+  TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled(
+      const TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled&) =
+      delete;
+  TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled& operator=(
+      const TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled&) =
+      delete;
+
   ~TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled() override {}
 
  private:
   ScopedScryptFeatureToggler toggler_;
-  DISALLOW_COPY_AND_ASSIGN(
-      TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled);
 };
 
 IN_PROC_BROWSER_TEST_F(

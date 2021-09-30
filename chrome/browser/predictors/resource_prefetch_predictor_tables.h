@@ -29,6 +29,11 @@ namespace predictors {
 //  - OriginTable - key: host, value: OriginData
 class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
  public:
+  ResourcePrefetchPredictorTables(const ResourcePrefetchPredictorTables&) =
+      delete;
+  ResourcePrefetchPredictorTables& operator=(
+      const ResourcePrefetchPredictorTables&) = delete;
+
   virtual sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table();
   virtual sqlite_proto::KeyValueTable<OriginData>* origin_table();
 
@@ -80,8 +85,6 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
   std::unique_ptr<sqlite_proto::KeyValueTable<RedirectData>>
       host_redirect_table_;
   std::unique_ptr<sqlite_proto::KeyValueTable<OriginData>> origin_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourcePrefetchPredictorTables);
 };
 
 }  // namespace predictors

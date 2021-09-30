@@ -36,6 +36,10 @@ class ThirdPartyMetricsObserverTest
  protected:
   ThirdPartyMetricsObserverTest() {}
 
+  ThirdPartyMetricsObserverTest(const ThirdPartyMetricsObserverTest&) = delete;
+  ThirdPartyMetricsObserverTest& operator=(
+      const ThirdPartyMetricsObserverTest&) = delete;
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(base::WrapUnique(new ThirdPartyMetricsObserver()));
   }
@@ -65,9 +69,6 @@ class ThirdPartyMetricsObserverTest
 
     return navigation_simulator->GetFinalRenderFrameHost();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsObserverTest);
 };
 
 TEST_F(ThirdPartyMetricsObserverTest, NoThirdPartyFrame_NoneRecorded) {

@@ -110,6 +110,11 @@ class ShutdownPolicyBaseTest
 
 class ShutdownPolicyInSessionTest
     : public ShutdownPolicyBaseTest {
+ public:
+  ShutdownPolicyInSessionTest(const ShutdownPolicyInSessionTest&) = delete;
+  ShutdownPolicyInSessionTest& operator=(const ShutdownPolicyInSessionTest&) =
+      delete;
+
  protected:
   ShutdownPolicyInSessionTest() {}
   ~ShutdownPolicyInSessionTest() override {}
@@ -126,9 +131,6 @@ class ShutdownPolicyInSessionTest
         tray_test_api_->GetBubbleViewTooltip(ash::VIEW_ID_POWER_BUTTON);
     return base::UTF8ToUTF16(tooltip) == actual_tooltip;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyInSessionTest);
 };
 
 // Tests that by default the shutdown button tooltip is "Shut down".
@@ -165,6 +167,10 @@ IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, DISABLED_PolicyChange) {
 }
 
 class ShutdownPolicyLockerTest : public ShutdownPolicyBaseTest {
+ public:
+  ShutdownPolicyLockerTest(const ShutdownPolicyLockerTest&) = delete;
+  ShutdownPolicyLockerTest& operator=(const ShutdownPolicyLockerTest&) = delete;
+
  protected:
   ShutdownPolicyLockerTest() = default;
   ~ShutdownPolicyLockerTest() override = default;
@@ -190,8 +196,6 @@ class ShutdownPolicyLockerTest : public ShutdownPolicyBaseTest {
 
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyLockerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyLockerTest, TestBasic) {
@@ -214,6 +218,10 @@ IN_PROC_BROWSER_TEST_F(ShutdownPolicyLockerTest, PolicyChange) {
 }
 
 class ShutdownPolicyLoginTest : public ShutdownPolicyBaseTest {
+ public:
+  ShutdownPolicyLoginTest(const ShutdownPolicyLoginTest&) = delete;
+  ShutdownPolicyLoginTest& operator=(const ShutdownPolicyLoginTest&) = delete;
+
  protected:
   ShutdownPolicyLoginTest() = default;
   ~ShutdownPolicyLoginTest() override = default;
@@ -244,9 +252,6 @@ class ShutdownPolicyLoginTest : public ShutdownPolicyBaseTest {
       RunUntilBrowserProcessQuits();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyLoginTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyLoginTest, PolicyNotSet) {

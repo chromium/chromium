@@ -25,6 +25,9 @@ class MockNearOomMonitor : public NearOomMonitor {
     memory_info_.swap_free = kTestSwapTotalKB / 2;
   }
 
+  MockNearOomMonitor(const MockNearOomMonitor&) = delete;
+  MockNearOomMonitor& operator=(const MockNearOomMonitor&) = delete;
+
   void SetSwapFree(int swap_free) { memory_info_.swap_free = swap_free; }
 
   void SimulateNonNearOom() {
@@ -48,8 +51,6 @@ class MockNearOomMonitor : public NearOomMonitor {
 
   base::SystemMemoryInfoKB memory_info_;
   bool is_get_system_memory_info_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNearOomMonitor);
 };
 
 class TestNearOomObserver {
@@ -60,6 +61,9 @@ class TestNearOomObserver {
         &TestNearOomObserver::OnNearOomDetected, base::Unretained(this)));
   }
 
+  TestNearOomObserver(const TestNearOomObserver&) = delete;
+  TestNearOomObserver& operator=(const TestNearOomObserver&) = delete;
+
   void Unsubscribe() { subscription_ = {}; }
 
   bool is_detected() const { return is_detected_; }
@@ -69,8 +73,6 @@ class TestNearOomObserver {
 
   bool is_detected_ = false;
   base::CallbackListSubscription subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNearOomObserver);
 };
 
 class NearOomMonitorTest : public testing::Test {

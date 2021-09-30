@@ -31,6 +31,9 @@ class FaviconServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns the FaviconServiceFactory singleton.
   static FaviconServiceFactory* GetInstance();
 
+  FaviconServiceFactory(const FaviconServiceFactory&) = delete;
+  FaviconServiceFactory& operator=(const FaviconServiceFactory&) = delete;
+
   // Returns the default factory used to build FaviconService. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
   static TestingFactory GetDefaultFactory();
@@ -45,8 +48,6 @@ class FaviconServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_FAVICON_FAVICON_SERVICE_FACTORY_H_

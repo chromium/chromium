@@ -22,6 +22,9 @@ class MediaHistoryOriginTable : public MediaHistoryTableBase {
  public:
   static const char kTableName[];
 
+  MediaHistoryOriginTable(const MediaHistoryOriginTable&) = delete;
+  MediaHistoryOriginTable& operator=(const MediaHistoryOriginTable&) = delete;
+
   // Returns the origin as a string for storage.
   static std::string GetOriginForStorage(const url::Origin& origin);
 
@@ -53,8 +56,6 @@ class MediaHistoryOriginTable : public MediaHistoryTableBase {
   // Gets the origins which have watchtime above the given threshold.
   std::vector<url::Origin> GetHighWatchTimeOrigins(
       const base::TimeDelta& audio_video_watchtime_min);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryOriginTable);
 };
 
 }  // namespace media_history

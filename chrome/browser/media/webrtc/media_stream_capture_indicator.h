@@ -73,6 +73,10 @@ class MediaStreamCaptureIndicator
 
   MediaStreamCaptureIndicator();
 
+  MediaStreamCaptureIndicator(const MediaStreamCaptureIndicator&) = delete;
+  MediaStreamCaptureIndicator& operator=(const MediaStreamCaptureIndicator&) =
+      delete;
+
   // Registers a new media stream for |web_contents| and returns an object used
   // by the content layer to notify about the state of the stream. Optionally,
   // |ui| is used to display custom UI while the stream is captured.
@@ -166,8 +170,6 @@ class MediaStreamCaptureIndicator
   CommandTargets command_targets_;
 
   base::ObserverList<Observer, /* check_empty =*/true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamCaptureIndicator);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_

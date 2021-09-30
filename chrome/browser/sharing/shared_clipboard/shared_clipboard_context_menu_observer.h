@@ -42,6 +42,12 @@ class SharedClipboardContextMenuObserver
 
   explicit SharedClipboardContextMenuObserver(
       RenderViewContextMenuProxy* proxy);
+
+  SharedClipboardContextMenuObserver(
+      const SharedClipboardContextMenuObserver&) = delete;
+  SharedClipboardContextMenuObserver& operator=(
+      const SharedClipboardContextMenuObserver&) = delete;
+
   ~SharedClipboardContextMenuObserver() override;
 
   // RenderViewContextMenuObserver implementation.
@@ -73,8 +79,6 @@ class SharedClipboardContextMenuObserver
   std::u16string text_;
 
   std::unique_ptr<ui::SimpleMenuModel> sub_menu_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardContextMenuObserver);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_CONTEXT_MENU_OBSERVER_H_

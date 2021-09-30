@@ -434,6 +434,12 @@ class EncryptedMediaSupportedTypesClearKeyTest
 // For ExternalClearKey tests, ensure that the ClearKey adapter is loaded.
 class EncryptedMediaSupportedTypesExternalClearKeyTest
     : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesExternalClearKeyTest(
+      const EncryptedMediaSupportedTypesExternalClearKeyTest&) = delete;
+  EncryptedMediaSupportedTypesExternalClearKeyTest& operator=(
+      const EncryptedMediaSupportedTypesExternalClearKeyTest&) = delete;
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
  protected:
   EncryptedMediaSupportedTypesExternalClearKeyTest() {
@@ -447,9 +453,6 @@ class EncryptedMediaSupportedTypesExternalClearKeyTest
     RegisterClearKeyCdm(command_line);
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EncryptedMediaSupportedTypesExternalClearKeyTest);
 };
 
 // By default, the External Clear Key (ECK) key system is not supported even if
@@ -469,6 +472,12 @@ class EncryptedMediaSupportedTypesExternalClearKeyNotEnabledTest
 
 class EncryptedMediaSupportedTypesWidevineTest
     : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesWidevineTest(
+      const EncryptedMediaSupportedTypesWidevineTest&) = delete;
+  EncryptedMediaSupportedTypesWidevineTest& operator=(
+      const EncryptedMediaSupportedTypesWidevineTest&) = delete;
+
  protected:
   EncryptedMediaSupportedTypesWidevineTest() = default;
 
@@ -481,13 +490,16 @@ class EncryptedMediaSupportedTypesWidevineTest
     command_line->AppendSwitchASCII(
         switches::kUnsafelyAllowProtectedMediaIdentifierForDomain, "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EncryptedMediaSupportedTypesWidevineTest);
 };
 
 class EncryptedMediaSupportedTypesWidevineHwSecureTest
     : public EncryptedMediaSupportedTypesWidevineTest {
+ public:
+  EncryptedMediaSupportedTypesWidevineHwSecureTest(
+      const EncryptedMediaSupportedTypesWidevineHwSecureTest&) = delete;
+  EncryptedMediaSupportedTypesWidevineHwSecureTest& operator=(
+      const EncryptedMediaSupportedTypesWidevineHwSecureTest&) = delete;
+
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureTest() {
     enabled_features_.push_back(media::kHardwareSecureDecryption);
@@ -501,15 +513,20 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
     command_line->AppendSwitchASCII(
         switches::kOverrideHardwareSecureCodecsForTesting, "vp8,vp9,vorbis");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EncryptedMediaSupportedTypesWidevineHwSecureTest);
 };
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Registers ClearKey CDM with the wrong path (filename).
 class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
     : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest(
+      const EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest&) =
+      delete;
+  EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest& operator=(
+      const EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest&) =
+      delete;
+
  protected:
   EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest() {
     enabled_features_.push_back(media::kExternalClearKeyForTesting);
@@ -522,10 +539,6 @@ class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
     EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
     RegisterClearKeyCdm(command_line, true /* use_wrong_cdm_path */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest);
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

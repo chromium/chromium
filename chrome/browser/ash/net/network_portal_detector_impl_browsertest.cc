@@ -194,10 +194,13 @@ class NetworkPortalDetectorImplBrowserTestIgnoreProxy
   NetworkPortalDetectorImplBrowserTestIgnoreProxy()
       : NetworkPortalDetectorImplBrowserTest() {}
 
+  NetworkPortalDetectorImplBrowserTestIgnoreProxy(
+      const NetworkPortalDetectorImplBrowserTestIgnoreProxy&) = delete;
+  NetworkPortalDetectorImplBrowserTestIgnoreProxy& operator=(
+      const NetworkPortalDetectorImplBrowserTestIgnoreProxy&) = delete;
+
  protected:
   void TestImpl(const bool preference_value);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorImplBrowserTestIgnoreProxy);
 };
 
 void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(

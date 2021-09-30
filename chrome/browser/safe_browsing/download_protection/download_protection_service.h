@@ -247,12 +247,13 @@ class DownloadProtectionService {
     explicit DownloadPingToken(const std::string& token)
         : token_string_(token) {}
 
+    DownloadPingToken(const DownloadPingToken&) = delete;
+    DownloadPingToken& operator=(const DownloadPingToken&) = delete;
+
     std::string token_string() { return token_string_; }
 
    private:
     std::string token_string_;
-
-    DISALLOW_COPY_AND_ASSIGN(DownloadPingToken);
   };
 
   // Cancels all requests in |download_requests_|, and empties it, releasing

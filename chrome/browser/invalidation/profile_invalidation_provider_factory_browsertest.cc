@@ -22,14 +22,17 @@
 namespace invalidation {
 
 class ProfileInvalidationProviderFactoryTestBase : public InProcessBrowserTest {
+ public:
+  ProfileInvalidationProviderFactoryTestBase(
+      const ProfileInvalidationProviderFactoryTestBase&) = delete;
+  ProfileInvalidationProviderFactoryTestBase& operator=(
+      const ProfileInvalidationProviderFactoryTestBase&) = delete;
+
  protected:
   ProfileInvalidationProviderFactoryTestBase();
   ~ProfileInvalidationProviderFactoryTestBase() override;
 
   bool CanConstructProfileInvalidationProvider(Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileInvalidationProviderFactoryTestBase);
 };
 
 ProfileInvalidationProviderFactoryTestBase::
@@ -46,15 +49,17 @@ bool ProfileInvalidationProviderFactoryTestBase::
 
 class ProfileInvalidationProviderFactoryLoginScreenBrowserTest
     : public ProfileInvalidationProviderFactoryTestBase {
+ public:
+  ProfileInvalidationProviderFactoryLoginScreenBrowserTest(
+      const ProfileInvalidationProviderFactoryLoginScreenBrowserTest&) = delete;
+  ProfileInvalidationProviderFactoryLoginScreenBrowserTest& operator=(
+      const ProfileInvalidationProviderFactoryLoginScreenBrowserTest&) = delete;
+
  protected:
   ProfileInvalidationProviderFactoryLoginScreenBrowserTest();
   ~ProfileInvalidationProviderFactoryLoginScreenBrowserTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      ProfileInvalidationProviderFactoryLoginScreenBrowserTest);
 };
 
 ProfileInvalidationProviderFactoryLoginScreenBrowserTest::
@@ -80,14 +85,17 @@ IN_PROC_BROWSER_TEST_F(ProfileInvalidationProviderFactoryLoginScreenBrowserTest,
 
 class ProfileInvalidationProviderFactoryGuestBrowserTest
     : public ProfileInvalidationProviderFactoryTestBase {
+ public:
+  ProfileInvalidationProviderFactoryGuestBrowserTest(
+      const ProfileInvalidationProviderFactoryGuestBrowserTest&) = delete;
+  ProfileInvalidationProviderFactoryGuestBrowserTest& operator=(
+      const ProfileInvalidationProviderFactoryGuestBrowserTest&) = delete;
+
  protected:
   ProfileInvalidationProviderFactoryGuestBrowserTest();
   ~ProfileInvalidationProviderFactoryGuestBrowserTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileInvalidationProviderFactoryGuestBrowserTest);
 };
 
 ProfileInvalidationProviderFactoryGuestBrowserTest::

@@ -339,6 +339,10 @@ std::unique_ptr<HttpResponse> HandleChromeSigninEmbeddedURL(
 class DiceBrowserTest : public InProcessBrowserTest,
                         public AccountReconcilor::Observer,
                         public signin::IdentityManager::Observer {
+ public:
+  DiceBrowserTest(const DiceBrowserTest&) = delete;
+  DiceBrowserTest& operator=(const DiceBrowserTest&) = delete;
+
  protected:
   ~DiceBrowserTest() override {}
 
@@ -664,8 +668,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
   base::OnceClosure tokens_loaded_quit_closure_;
   base::OnceClosure on_primary_account_set_quit_closure_;
   base::OnceClosure signin_requested_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiceBrowserTest);
 };
 
 // Checks that signin on Gaia triggers the fetch for a refresh token.

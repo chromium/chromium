@@ -36,6 +36,9 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
       const scoped_refptr<SafeBrowsingUIManager>& ui_manager,
       const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager);
 
+  DownloadUrlSBClient(const DownloadUrlSBClient&) = delete;
+  DownloadUrlSBClient& operator=(const DownloadUrlSBClient&) = delete;
+
   // Implements DownloadItem::Observer.
   void OnDownloadDestroyed(download::DownloadItem* download) override;
 
@@ -84,8 +87,6 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
       download_item_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUrlSBClient);
 };
 
 }  // namespace safe_browsing

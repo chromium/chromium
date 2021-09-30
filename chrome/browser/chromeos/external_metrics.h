@@ -32,6 +32,9 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
 
   ExternalMetrics();
 
+  ExternalMetrics(const ExternalMetrics&) = delete;
+  ExternalMetrics& operator=(const ExternalMetrics&) = delete;
+
   // Begins the external data collection.  This service is started and stopped
   // by the chrome metrics service.  Calls to RecordAction originate in the
   // blocking pool but are executed in the UI thread.
@@ -96,8 +99,6 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
 
   // Interval between metrics being read from |uma_events_file_|.
   base::TimeDelta collection_interval_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMetrics);
 };
 
 }  // namespace chromeos

@@ -27,6 +27,9 @@ class PrintPreviewDataService {
  public:
   static PrintPreviewDataService* GetInstance();
 
+  PrintPreviewDataService(const PrintPreviewDataService&) = delete;
+  PrintPreviewDataService& operator=(const PrintPreviewDataService&) = delete;
+
   // Get the data entry from PrintPreviewDataStore. |index| is zero-based or
   // |printing::COMPLETE_PREVIEW_DOCUMENT_INDEX| to represent complete preview
   // data. Use |index| to retrieve a specific preview page data. |data| is set
@@ -60,8 +63,6 @@ class PrintPreviewDataService {
   ~PrintPreviewDataService();
 
   PreviewDataStoreMap data_store_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDataService);
 };
 
 #endif  // CHROME_BROWSER_PRINTING_PRINT_PREVIEW_DATA_SERVICE_H_

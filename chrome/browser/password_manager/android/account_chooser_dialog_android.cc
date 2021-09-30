@@ -57,6 +57,9 @@ class AvatarFetcherAndroid : public AccountAvatarFetcher {
       int index,
       const base::android::ScopedJavaGlobalRef<jobject>& java_dialog);
 
+  AvatarFetcherAndroid(const AvatarFetcherAndroid&) = delete;
+  AvatarFetcherAndroid& operator=(const AvatarFetcherAndroid&) = delete;
+
  private:
   ~AvatarFetcherAndroid() override = default;
 
@@ -65,8 +68,6 @@ class AvatarFetcherAndroid : public AccountAvatarFetcher {
 
   int index_;
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarFetcherAndroid);
 };
 
 AvatarFetcherAndroid::AvatarFetcherAndroid(

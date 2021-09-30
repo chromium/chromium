@@ -35,6 +35,9 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
                           const GURL& scope,
                           const GURL& web_manifest_url);
 
+  WebApkUpdateDataFetcher(const WebApkUpdateDataFetcher&) = delete;
+  WebApkUpdateDataFetcher& operator=(const WebApkUpdateDataFetcher&) = delete;
+
   // Replaces the WebContents that is being observed.
   void ReplaceWebContents(
       JNIEnv* env,
@@ -92,8 +95,6 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   bool is_splash_icon_maskable_;
 
   base::WeakPtrFactory<WebApkUpdateDataFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkUpdateDataFetcher);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_UPDATE_DATA_FETCHER_H_

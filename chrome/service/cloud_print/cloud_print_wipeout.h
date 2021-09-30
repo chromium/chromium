@@ -29,6 +29,10 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
                     const GURL& cloud_print_server_url,
                     const net::PartialNetworkTrafficAnnotationTag&
                         partial_traffic_annotation);
+
+  CloudPrintWipeout(const CloudPrintWipeout&) = delete;
+  CloudPrintWipeout& operator=(const CloudPrintWipeout&) = delete;
+
   ~CloudPrintWipeout() override;
 
   void UnregisterPrinters(const std::string& auth_token,
@@ -59,8 +63,6 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
   std::list<std::string> printer_ids_;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintWipeout);
 };
 
 }  // namespace cloud_print

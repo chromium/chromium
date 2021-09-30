@@ -21,6 +21,11 @@ namespace ash {
 namespace android_sms {
 
 class FcmConnectionEstablisherTest : public testing::Test {
+ public:
+  FcmConnectionEstablisherTest(const FcmConnectionEstablisherTest&) = delete;
+  FcmConnectionEstablisherTest& operator=(const FcmConnectionEstablisherTest&) =
+      delete;
+
  protected:
   FcmConnectionEstablisherTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
@@ -39,7 +44,6 @@ class FcmConnectionEstablisherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(FcmConnectionEstablisherTest);
 };
 
 TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {

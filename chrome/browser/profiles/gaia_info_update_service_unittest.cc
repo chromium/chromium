@@ -70,6 +70,11 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
                            /*pref_service=*/nullptr,
                            account_consistency,
                            /*test_signin_client=*/nullptr) {}
+
+  GAIAInfoUpdateServiceTestBase(const GAIAInfoUpdateServiceTestBase&) = delete;
+  GAIAInfoUpdateServiceTestBase& operator=(
+      const GAIAInfoUpdateServiceTestBase&) = delete;
+
   ~GAIAInfoUpdateServiceTestBase() override = default;
 
   void SetUp() override {
@@ -123,20 +128,19 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
   TestingProfile* profile_ = nullptr;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceTestBase);
 };
 
 class GAIAInfoUpdateServiceTest : public GAIAInfoUpdateServiceTestBase {
+ public:
+  GAIAInfoUpdateServiceTest(const GAIAInfoUpdateServiceTest&) = delete;
+  GAIAInfoUpdateServiceTest& operator=(const GAIAInfoUpdateServiceTest&) =
+      delete;
+
  protected:
   GAIAInfoUpdateServiceTest()
       : GAIAInfoUpdateServiceTestBase(
             signin::AccountConsistencyMethod::kDisabled) {}
   ~GAIAInfoUpdateServiceTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceTest);
 };
 
 }  // namespace
@@ -177,14 +181,16 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace {
 class GAIAInfoUpdateServiceDiceTest : public GAIAInfoUpdateServiceTestBase {
+ public:
+  GAIAInfoUpdateServiceDiceTest(const GAIAInfoUpdateServiceDiceTest&) = delete;
+  GAIAInfoUpdateServiceDiceTest& operator=(
+      const GAIAInfoUpdateServiceDiceTest&) = delete;
+
  protected:
   GAIAInfoUpdateServiceDiceTest()
       : GAIAInfoUpdateServiceTestBase(signin::AccountConsistencyMethod::kDice) {
   }
   ~GAIAInfoUpdateServiceDiceTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceDiceTest);
 };
 }  // namespace
 

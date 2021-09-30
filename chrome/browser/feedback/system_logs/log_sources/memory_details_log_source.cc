@@ -17,6 +17,9 @@ class SystemLogsMemoryHandler : public MemoryDetails {
   explicit SystemLogsMemoryHandler(SysLogsSourceCallback callback)
       : callback_(std::move(callback)) {}
 
+  SystemLogsMemoryHandler(const SystemLogsMemoryHandler&) = delete;
+  SystemLogsMemoryHandler& operator=(const SystemLogsMemoryHandler&) = delete;
+
   // Sends the data to the callback.
   // MemoryDetails override.
   void OnDetailsAvailable() override {
@@ -33,8 +36,6 @@ class SystemLogsMemoryHandler : public MemoryDetails {
  private:
   ~SystemLogsMemoryHandler() override {}
   SysLogsSourceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogsMemoryHandler);
 };
 
 MemoryDetailsLogSource::MemoryDetailsLogSource()

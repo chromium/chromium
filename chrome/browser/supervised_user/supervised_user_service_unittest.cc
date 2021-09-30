@@ -54,6 +54,9 @@ namespace {
 // are balanced with Wait() calls.
 class AsyncTestHelper {
  public:
+  AsyncTestHelper(const AsyncTestHelper&) = delete;
+  AsyncTestHelper& operator=(const AsyncTestHelper&) = delete;
+
   void Wait() {
     run_loop_->Run();
     Reset();
@@ -84,8 +87,6 @@ class AsyncTestHelper {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   bool quit_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncTestHelper);
 };
 
 class SupervisedUserURLFilterObserver

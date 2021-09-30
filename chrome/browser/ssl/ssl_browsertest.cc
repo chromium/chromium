@@ -287,6 +287,12 @@ class ChromeContentBrowserClientForMixedContentTest
     : public ChromeContentBrowserClient {
  public:
   ChromeContentBrowserClientForMixedContentTest() {}
+
+  ChromeContentBrowserClientForMixedContentTest(
+      const ChromeContentBrowserClientForMixedContentTest&) = delete;
+  ChromeContentBrowserClientForMixedContentTest& operator=(
+      const ChromeContentBrowserClientForMixedContentTest&) = delete;
+
   void OverrideWebkitPrefs(
       content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_prefs) override {
@@ -308,8 +314,6 @@ class ChromeContentBrowserClientForMixedContentTest
   bool allow_running_insecure_content_ = false;
   bool strict_mixed_content_checking_ = false;
   bool strictly_block_blockable_mixed_content_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientForMixedContentTest);
 };
 
 // Wrapper around content::SetBrowserClientForTesting() that ensures the
@@ -453,6 +457,9 @@ class SSLUITestBase : public InProcessBrowserTest,
         net::EmbeddedTestServer::CERT_COMMON_NAME_ONLY);
     https_server_common_name_only_.AddDefaultHandlers(GetChromeTestDataDir());
   }
+
+  SSLUITestBase(const SSLUITestBase&) = delete;
+  SSLUITestBase& operator=(const SSLUITestBase&) = delete;
 
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -898,9 +905,6 @@ class SSLUITestBase : public InProcessBrowserTest,
 
   network::mojom::SSLConfig last_ssl_config_;
   mojo::Receiver<network::mojom::SSLConfigClient> receiver_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SSLUITestBase);
 };
 
 class SSLUITest : public SSLUITestBase {
@@ -911,6 +915,9 @@ class SSLUITest : public SSLUITestBase {
         /* disabled_features */ {blink::features::kMixedContentAutoupgrade});
   }
 
+  SSLUITest(const SSLUITest&) = delete;
+  SSLUITest& operator=(const SSLUITest&) = delete;
+
  protected:
   void DontProceedThroughInterstitial(WebContents* tab) override {
     content::TestNavigationObserver nav_observer(tab, 1);
@@ -920,7 +927,6 @@ class SSLUITest : public SSLUITestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(SSLUITest);
 };
 
 class SSLUITestBlock : public SSLUITest {
@@ -7898,10 +7904,12 @@ class LegacyTLSInterstitialTest : public TLSLegacyVersionSSLUITest {
     feature_list_.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
   }
 
+  LegacyTLSInterstitialTest(const LegacyTLSInterstitialTest&) = delete;
+  LegacyTLSInterstitialTest& operator=(const LegacyTLSInterstitialTest&) =
+      delete;
+
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyTLSInterstitialTest);
 };
 
 // When kLegacyTLSEnforcement is enabled, visiting a legacy TLS page should

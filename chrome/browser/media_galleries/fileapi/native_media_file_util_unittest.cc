@@ -125,6 +125,9 @@ class NativeMediaFileUtilTest : public testing::Test {
  public:
   NativeMediaFileUtilTest() = default;
 
+  NativeMediaFileUtilTest(const NativeMediaFileUtilTest&) = delete;
+  NativeMediaFileUtilTest& operator=(const NativeMediaFileUtilTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::CreateDirectory(root_path()));
@@ -196,8 +199,6 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   std::string filesystem_id_;
   storage::IsolatedContext::ScopedFSHandle filesystem_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMediaFileUtilTest);
 };
 
 TEST_F(NativeMediaFileUtilTest, DirectoryExistsAndFileExistsFiltering) {

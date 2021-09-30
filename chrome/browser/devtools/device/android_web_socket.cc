@@ -69,6 +69,9 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
     thread_checker_.DetachFromThread();
   }
 
+  WebSocketImpl(const WebSocketImpl&) = delete;
+  WebSocketImpl& operator=(const WebSocketImpl&) = delete;
+
   void StartListening() {
     DCHECK(thread_checker_.CalledOnValidThread());
     DCHECK(socket_);
@@ -182,7 +185,6 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   std::string response_buffer_;
   std::string request_buffer_;
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(WebSocketImpl);
 
   base::WeakPtrFactory<WebSocketImpl> weak_factory_{this};
 };

@@ -23,6 +23,9 @@ class TestScheduler : public PeriodicSamplingScheduler {
     tick_clock_.SetNowTicks(kStartTime);
   }
 
+  TestScheduler(const TestScheduler&) = delete;
+  TestScheduler& operator=(const TestScheduler&) = delete;
+
   double RandDouble() const override { return rand_double_value_; }
   base::TimeTicks Now() const override { return tick_clock_.NowTicks(); }
 
@@ -33,8 +36,6 @@ class TestScheduler : public PeriodicSamplingScheduler {
   static constexpr base::TimeTicks kStartTime = base::TimeTicks();
   base::SimpleTestTickClock tick_clock_;
   double rand_double_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScheduler);
 };
 
 constexpr base::TimeTicks TestScheduler::kStartTime;

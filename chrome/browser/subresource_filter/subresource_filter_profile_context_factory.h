@@ -27,14 +27,17 @@ class SubresourceFilterProfileContextFactory
 
   SubresourceFilterProfileContextFactory();
 
+  SubresourceFilterProfileContextFactory(
+      const SubresourceFilterProfileContextFactory&) = delete;
+  SubresourceFilterProfileContextFactory& operator=(
+      const SubresourceFilterProfileContextFactory&) = delete;
+
  private:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContextFactory);
 };
 
 #endif  // CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_FACTORY_H_

@@ -52,6 +52,12 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 }
 
 class BackgroundSyncControllerImplTest : public testing::Test {
+ public:
+  BackgroundSyncControllerImplTest(const BackgroundSyncControllerImplTest&) =
+      delete;
+  BackgroundSyncControllerImplTest& operator=(
+      const BackgroundSyncControllerImplTest&) = delete;
+
  protected:
   BackgroundSyncControllerImplTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
@@ -100,8 +106,6 @@ class BackgroundSyncControllerImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BackgroundSyncControllerImpl> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncControllerImplTest);
 };
 
 TEST_F(BackgroundSyncControllerImplTest, NoFieldTrial) {

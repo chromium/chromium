@@ -27,6 +27,9 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
  public:
   ShellLinkItem();
 
+  ShellLinkItem(const ShellLinkItem&) = delete;
+  ShellLinkItem& operator=(const ShellLinkItem&) = delete;
+
   const std::u16string& title() const { return title_; }
   const base::FilePath& icon_path() const { return icon_path_; }
   const std::string& url() const { return url_; }
@@ -72,8 +75,6 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
   // Note that an icon path must be supplied to IShellLink, so users of this
   // class must save icon data to disk.
   gfx::ImageSkia icon_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellLinkItem);
 };
 
 typedef std::vector<scoped_refptr<ShellLinkItem> > ShellLinkItemList;

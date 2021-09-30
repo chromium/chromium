@@ -90,6 +90,11 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         compression_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  SubresourceRedirectBrowserTest(const SubresourceRedirectBrowserTest&) =
+      delete;
+  SubresourceRedirectBrowserTest& operator=(
+      const SubresourceRedirectBrowserTest&) = delete;
+
   void SetUp() override {
     // |http_server| setup.
     http_server_.ServeFilesFromSourceDirectory("chrome/test/data");
@@ -424,8 +429,6 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
   bool https_server_image_fail_ = false;
   CompressionServerFailureMode compression_server_failure_mode_ =
       CompressionServerFailureMode::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceRedirectBrowserTest);
 };
 
 class RedirectDisabledSubresourceRedirectBrowserTest

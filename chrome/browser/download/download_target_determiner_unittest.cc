@@ -293,6 +293,10 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
  public:
   DownloadTargetDeterminerTest() = default;
 
+  DownloadTargetDeterminerTest(const DownloadTargetDeterminerTest&) = delete;
+  DownloadTargetDeterminerTest& operator=(const DownloadTargetDeterminerTest&) =
+      delete;
+
   // ::testing::Test
   void SetUp() override;
   void TearDown() override;
@@ -361,8 +365,6 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
   NullWebContentsDelegate web_contents_delegate_;
   base::FilePath test_virtual_dir_;
   safe_browsing::FileTypePoliciesTestOverlay file_type_configuration_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTargetDeterminerTest);
 };
 
 void DownloadTargetDeterminerTest::SetUp() {

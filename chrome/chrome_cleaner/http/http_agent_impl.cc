@@ -70,14 +70,16 @@ void CALLBACK WinHttpStatusCallback(HINTERNET internet,
 class WinHttpHandleTraits {
  public:
   typedef HINTERNET Handle;
+
+  WinHttpHandleTraits() = delete;
+  WinHttpHandleTraits(const WinHttpHandleTraits&) = delete;
+  WinHttpHandleTraits& operator=(const WinHttpHandleTraits&) = delete;
+
   static bool CloseHandle(HINTERNET handle) {
     return ::WinHttpCloseHandle(handle) == TRUE;
   }
   static bool IsHandleValid(HINTERNET handle) { return handle != nullptr; }
   static HINTERNET NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WinHttpHandleTraits);
 };
 
 typedef base::win::GenericScopedHandle<WinHttpHandleTraits,

@@ -50,6 +50,10 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
     retry_verifier_.Initialize(snap);
   }
 
+  ExponentialBackoffChecker(const ExponentialBackoffChecker&) = delete;
+  ExponentialBackoffChecker& operator=(const ExponentialBackoffChecker&) =
+      delete;
+
   // Checks if backoff is complete. Called repeatedly each time SyncServiceImpl
   // notifies observers of a state change.
   bool IsExitConditionSatisfied(std::ostream* os) override {
@@ -66,8 +70,6 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
   // Keeps track of the number of attempts at exponential backoff and its
   // related bookkeeping information for verification.
   RetryVerifier retry_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExponentialBackoffChecker);
 };
 
 // Flaky on ChromeOS, crbug.com/1170609

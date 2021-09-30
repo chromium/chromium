@@ -17,6 +17,10 @@ class ContentIndexProviderFactory : public BrowserContextKeyedServiceFactory {
   static ContentIndexProviderImpl* GetForProfile(Profile* profile);
   static ContentIndexProviderFactory* GetInstance();
 
+  ContentIndexProviderFactory(const ContentIndexProviderFactory&) = delete;
+  ContentIndexProviderFactory& operator=(const ContentIndexProviderFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ContentIndexProviderFactory>;
 
@@ -28,8 +32,6 @@ class ContentIndexProviderFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexProviderFactory);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_FACTORY_H_

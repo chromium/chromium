@@ -27,6 +27,9 @@ class SyncExtensionHelper {
   // Singleton implementation.
   static SyncExtensionHelper* GetInstance();
 
+  SyncExtensionHelper(const SyncExtensionHelper&) = delete;
+  SyncExtensionHelper& operator=(const SyncExtensionHelper&) = delete;
+
   // Initializes the profiles in |test| and registers them with
   // internal data structures.
   void SetupIfNecessary(SyncTest* test);
@@ -126,8 +129,6 @@ class SyncExtensionHelper {
   StringMap id_to_name_;
   TypeMap id_to_type_;
   bool setup_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncExtensionHelper);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_HELPER_H_

@@ -28,6 +28,9 @@ class HeavyAdServiceFactory : public BrowserContextKeyedServiceFactory {
   // Gets the LazyInstance that owns all HeavyAdServices.
   static HeavyAdServiceFactory* GetInstance();
 
+  HeavyAdServiceFactory(const HeavyAdServiceFactory&) = delete;
+  HeavyAdServiceFactory& operator=(const HeavyAdServiceFactory&) = delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<HeavyAdServiceFactory>;
 
@@ -39,8 +42,6 @@ class HeavyAdServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_SERVICE_FACTORY_H_

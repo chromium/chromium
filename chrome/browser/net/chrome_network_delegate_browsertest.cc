@@ -25,6 +25,12 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ChromeNetworkDelegateBrowserTest : public InProcessBrowserTest {
+ public:
+  ChromeNetworkDelegateBrowserTest(const ChromeNetworkDelegateBrowserTest&) =
+      delete;
+  ChromeNetworkDelegateBrowserTest& operator=(
+      const ChromeNetworkDelegateBrowserTest&) = delete;
+
  protected:
   ChromeNetworkDelegateBrowserTest() {}
 
@@ -41,9 +47,6 @@ class ChromeNetworkDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   base::ScopedTempDir scoped_temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeNetworkDelegateBrowserTest);
 };
 
 // Ensure that access to a test file, that is not in an accessible location,

@@ -74,6 +74,10 @@ class AutofillProfileSyncPerfTest : public SyncTest {
   AutofillProfileSyncPerfTest()
       : SyncTest(TWO_CLIENT), guid_number_(0), name_number_(0) {}
 
+  AutofillProfileSyncPerfTest(const AutofillProfileSyncPerfTest&) = delete;
+  AutofillProfileSyncPerfTest& operator=(const AutofillProfileSyncPerfTest&) =
+      delete;
+
   // Adds |num_profiles| new autofill profiles to the sync profile |profile|.
   void AddProfiles(int profile, int num_profiles);
 
@@ -98,7 +102,6 @@ class AutofillProfileSyncPerfTest : public SyncTest {
 
   int guid_number_;
   int name_number_;
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncPerfTest);
 };
 
 void AutofillProfileSyncPerfTest::AddProfiles(int profile, int num_profiles) {
@@ -176,6 +179,9 @@ class AutocompleteSyncPerfTest : public SyncTest {
  public:
   AutocompleteSyncPerfTest() : SyncTest(TWO_CLIENT), name_number_(0) {}
 
+  AutocompleteSyncPerfTest(const AutocompleteSyncPerfTest&) = delete;
+  AutocompleteSyncPerfTest& operator=(const AutocompleteSyncPerfTest&) = delete;
+
   // Adds |num_keys| new autofill keys to the sync profile |profile|.
   void AddKeys(int profile, int num_keys);
 
@@ -187,7 +193,6 @@ class AutocompleteSyncPerfTest : public SyncTest {
   const std::string NextName();
 
   int name_number_;
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncPerfTest);
 };
 
 void AutocompleteSyncPerfTest::AddKeys(int profile, int num_keys) {

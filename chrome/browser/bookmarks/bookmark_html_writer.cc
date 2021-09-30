@@ -166,6 +166,9 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     DCHECK(bookmarks_.is_dict());
   }
 
+  Writer(const Writer&) = delete;
+  Writer& operator=(const Writer&) = delete;
+
   // Writing bookmarks and favicons data to file.
   void DoWrite() {
     if (!OpenFile()) {
@@ -436,8 +439,6 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // How much we indent when writing a bookmark/folder. This is modified
   // via IncrementIndent and DecrementIndent.
   std::string indent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Writer);
 };
 
 }  // namespace

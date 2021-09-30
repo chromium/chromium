@@ -81,6 +81,9 @@ class TestProfileProvider : public ProfileProvider {
     collectors_.push_back(std::move(metric_provider));
   }
 
+  TestProfileProvider(const TestProfileProvider&) = delete;
+  TestProfileProvider& operator=(const TestProfileProvider&) = delete;
+
   void WaitUntilCollectionDone() {
     // Collection shouldn't be done when this method is called, or the test will
     // waste time in |run_loop_| for the duration of |timeout|.
@@ -121,8 +124,6 @@ class TestProfileProvider : public ProfileProvider {
   base::OneShotTimer timeout_timer_;
   base::RunLoop run_loop_;
   bool collection_done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProfileProvider);
 };
 
 // This test doesn't mock any class used indirectly by ProfileProvider to make
@@ -130,6 +131,11 @@ class TestProfileProvider : public ProfileProvider {
 class ProfileProviderRealCollectionTest : public testing::Test {
  public:
   ProfileProviderRealCollectionTest() {}
+
+  ProfileProviderRealCollectionTest(const ProfileProviderRealCollectionTest&) =
+      delete;
+  ProfileProviderRealCollectionTest& operator=(
+      const ProfileProviderRealCollectionTest&) = delete;
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
@@ -260,8 +266,6 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   base::WaitableEvent spin_cpu_done_;
 
   std::unique_ptr<TestProfileProvider> profile_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderRealCollectionTest);
 };
 
 // Flaky on chromeos: crbug.com/1184119

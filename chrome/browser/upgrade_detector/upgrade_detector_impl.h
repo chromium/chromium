@@ -31,6 +31,9 @@ class UpgradeDetectorImpl : public UpgradeDetector,
   // Returns the global instance.
   static UpgradeDetectorImpl* GetInstance();
 
+  UpgradeDetectorImpl(const UpgradeDetectorImpl&) = delete;
+  UpgradeDetectorImpl& operator=(const UpgradeDetectorImpl&) = delete;
+
   // UpgradeDetector:
   void Init() override;
   void Shutdown() override;
@@ -130,8 +133,6 @@ class UpgradeDetectorImpl : public UpgradeDetector,
   base::Time build_date_;
 
   base::WeakPtrFactory<UpgradeDetectorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorImpl);
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_IMPL_H_

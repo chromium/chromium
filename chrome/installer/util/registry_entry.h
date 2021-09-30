@@ -55,6 +55,9 @@ class RegistryEntry {
                 const std::wstring& name,
                 DWORD value);
 
+  RegistryEntry(const RegistryEntry&) = delete;
+  RegistryEntry& operator=(const RegistryEntry&) = delete;
+
   // Flags this RegistryKey with |removal_flag|, indicating that it should be
   // removed rather than created. Note that this will not result in cleaning up
   // the entire registry hierarchy below RegistryEntry even if it is left empty
@@ -122,8 +125,6 @@ class RegistryEntry {
   // Returns the RegistryStatus of the current registry entry in
   // |root|\|key_path_|\|name_|.
   RegistryStatus StatusInRegistryUnderRoot(HKEY root) const;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryEntry);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_REGISTRY_ENTRY_H_

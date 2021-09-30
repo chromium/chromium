@@ -20,12 +20,13 @@ class KeyPermissionsPolicyHandler
  public:
   explicit KeyPermissionsPolicyHandler(const policy::Schema& chrome_schema);
 
+  KeyPermissionsPolicyHandler(const KeyPermissionsPolicyHandler&) = delete;
+  KeyPermissionsPolicyHandler& operator=(const KeyPermissionsPolicyHandler&) =
+      delete;
+
   // policy::ConfigurationPolicyHandler:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyPermissionsPolicyHandler);
 };
 
 }  // namespace platform_keys

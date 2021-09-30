@@ -68,6 +68,11 @@ class SyncableFileOperationRunnerTest : public testing::Test {
         write_bytes_(0),
         write_complete_(false) {}
 
+  SyncableFileOperationRunnerTest(const SyncableFileOperationRunnerTest&) =
+      delete;
+  SyncableFileOperationRunnerTest& operator=(
+      const SyncableFileOperationRunnerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
@@ -161,8 +166,6 @@ class SyncableFileOperationRunnerTest : public testing::Test {
 
  private:
   base::WeakPtrFactory<SyncableFileOperationRunnerTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileOperationRunnerTest);
 };
 
 TEST_F(SyncableFileOperationRunnerTest, SimpleQueue) {

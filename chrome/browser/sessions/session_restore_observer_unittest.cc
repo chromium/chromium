@@ -81,6 +81,10 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
 
   SessionRestoreObserverTest() {}
 
+  SessionRestoreObserverTest(const SessionRestoreObserverTest&) = delete;
+  SessionRestoreObserverTest& operator=(const SessionRestoreObserverTest&) =
+      delete;
+
   // testing::Test:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -144,8 +148,6 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
  private:
   MockSessionRestoreObserver mock_observer_;
   std::vector<RestoredTab> restored_tabs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreObserverTest);
 };
 
 TEST_F(SessionRestoreObserverTest, SingleSessionRestore) {

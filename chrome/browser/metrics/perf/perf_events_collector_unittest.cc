@@ -153,6 +153,9 @@ class TestIncognitoObserver : public WindowedIncognitoObserver {
     return base::WrapUnique(new TestIncognitoObserver(incognito_launched));
   }
 
+  TestIncognitoObserver(const TestIncognitoObserver&) = delete;
+  TestIncognitoObserver& operator=(const TestIncognitoObserver&) = delete;
+
   bool IncognitoLaunched() const override { return incognito_launched_; }
 
  private:
@@ -161,14 +164,15 @@ class TestIncognitoObserver : public WindowedIncognitoObserver {
         incognito_launched_(incognito_launched) {}
 
   bool incognito_launched_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIncognitoObserver);
 };
 
 // Allows access to some private methods for testing.
 class TestPerfCollector : public PerfCollector {
  public:
   TestPerfCollector() = default;
+
+  TestPerfCollector(const TestPerfCollector&) = delete;
+  TestPerfCollector& operator=(const TestPerfCollector&) = delete;
 
   using MetricCollector::CollectionAttemptStatus;
   using MetricCollector::CollectPerfDataAfterSessionRestore;
@@ -214,8 +218,6 @@ class TestPerfCollector : public PerfCollector {
 
   PerfOutputCall::DoneCallback real_callback_;
   bool collection_stopped_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPerfCollector);
 };
 
 const base::TimeDelta kPeriodicCollectionInterval =
@@ -238,6 +240,9 @@ class PerfCollectorTest : public testing::Test {
  public:
   PerfCollectorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  PerfCollectorTest(const PerfCollectorTest&) = delete;
+  PerfCollectorTest& operator=(const PerfCollectorTest&) = delete;
 
   void SaveProfile(std::unique_ptr<SampledProfile> sampled_profile) {
     cached_profile_data_.resize(cached_profile_data_.size() + 1);
@@ -278,8 +283,6 @@ class PerfCollectorTest : public testing::Test {
   std::unique_ptr<TestPerfCollector> perf_collector_;
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollectorTest);
 };
 
 TEST_F(PerfCollectorTest, CheckSetup) {
@@ -1107,14 +1110,17 @@ class PerfCollectorCollectionParamsTest : public testing::Test {
  public:
   PerfCollectorCollectionParamsTest() {}
 
+  PerfCollectorCollectionParamsTest(const PerfCollectorCollectionParamsTest&) =
+      delete;
+  PerfCollectorCollectionParamsTest& operator=(
+      const PerfCollectorCollectionParamsTest&) = delete;
+
   void TearDown() override {
     variations::testing::ClearAllVariationParams();
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollectorCollectionParamsTest);
 };
 
 TEST_F(PerfCollectorCollectionParamsTest, Commands_InitializedAfterVariations) {

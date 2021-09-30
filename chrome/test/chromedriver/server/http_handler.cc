@@ -86,6 +86,9 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
       : url_loader_factory_(std::move(url_loader_factory)),
         network_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+  WrapperURLLoaderFactory(const WrapperURLLoaderFactory&) = delete;
+  WrapperURLLoaderFactory& operator=(const WrapperURLLoaderFactory&) = delete;
+
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       int32_t request_id,
@@ -117,8 +120,6 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Runner for URLRequestContextGetter network thread.
   scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperURLLoaderFactory);
 };
 
 CommandMapping::CommandMapping(HttpMethod method,

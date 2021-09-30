@@ -79,6 +79,10 @@ class RunLoopUntilLoadedAndPainted : public content::WebContentsObserver {
 };
 
 class NoBestEffortTasksTest : public InProcessBrowserTest {
+ public:
+  NoBestEffortTasksTest(const NoBestEffortTasksTest&) = delete;
+  NoBestEffortTasksTest& operator=(const NoBestEffortTasksTest&) = delete;
+
  protected:
   NoBestEffortTasksTest() = default;
   ~NoBestEffortTasksTest() override = default;
@@ -94,8 +98,6 @@ class NoBestEffortTasksTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(NoBestEffortTasksTest);
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

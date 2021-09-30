@@ -37,6 +37,11 @@ class WiredDisplayPresentationReceiverFactory {
       base::OnceClosure termination_callback,
       base::RepeatingCallback<void(const std::string&)> title_change_callback);
 
+  WiredDisplayPresentationReceiverFactory(
+      const WiredDisplayPresentationReceiverFactory&) = delete;
+  WiredDisplayPresentationReceiverFactory& operator=(
+      const WiredDisplayPresentationReceiverFactory&) = delete;
+
   // Sets the callback used to instantiate a presentation receiver. Used only in
   // tests.
   static void SetCreateReceiverCallbackForTest(CreateReceiverCallback callback);
@@ -52,8 +57,6 @@ class WiredDisplayPresentationReceiverFactory {
 
   // Used in tests. When this is set, it is used for creating a receiver.
   CreateReceiverCallback create_receiver_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(WiredDisplayPresentationReceiverFactory);
 };
 
 }  // namespace media_router

@@ -49,6 +49,10 @@ class StatusIconMenuModel
 
   // The Delegate can be NULL.
   explicit StatusIconMenuModel(Delegate* delegate);
+
+  StatusIconMenuModel(const StatusIconMenuModel&) = delete;
+  StatusIconMenuModel& operator=(const StatusIconMenuModel&) = delete;
+
   ~StatusIconMenuModel() override;
 
   // Methods for seting the state of specific command ids.
@@ -103,8 +107,6 @@ class StatusIconMenuModel
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconMenuModel);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_MENU_MODEL_H_

@@ -19,12 +19,17 @@ namespace chrome_cleaner {
 
 class ScopedRegistryValue {
  public:
+  ScopedRegistryValue() = delete;
+
   ScopedRegistryValue(HKEY rootkey,
                       const wchar_t* subkey,
                       REGSAM access,
                       const wchar_t* value_name,
                       const wchar_t* content,
                       uint32_t value_type);
+
+  ScopedRegistryValue(const ScopedRegistryValue&) = delete;
+  ScopedRegistryValue& operator=(const ScopedRegistryValue&) = delete;
 
   ~ScopedRegistryValue();
 
@@ -35,13 +40,17 @@ class ScopedRegistryValue {
   std::vector<wchar_t> old_value_;
   DWORD old_value_size_ = 0;
   bool has_value_ = false;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScopedRegistryValue);
 };
 
 class ScopedTempRegistryKey {
  public:
+  ScopedTempRegistryKey() = delete;
+
   ScopedTempRegistryKey(HKEY key, const wchar_t* key_path, REGSAM access);
+
+  ScopedTempRegistryKey(const ScopedTempRegistryKey&) = delete;
+  ScopedTempRegistryKey& operator=(const ScopedTempRegistryKey&) = delete;
+
   ~ScopedTempRegistryKey();
 
   bool Valid() const { return key_.Valid(); }
@@ -49,7 +58,6 @@ class ScopedTempRegistryKey {
 
  private:
   base::win::RegKey key_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScopedTempRegistryKey);
 };
 
 // Expect the registry footprint to be found in |pup|.

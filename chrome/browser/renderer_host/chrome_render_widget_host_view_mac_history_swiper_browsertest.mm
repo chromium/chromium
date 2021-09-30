@@ -88,6 +88,11 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
         base_path, base::FilePath(FILE_PATH_LITERAL("iframe.html")));
   }
 
+  ChromeRenderWidgetHostViewMacHistorySwiperTest(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+  ChromeRenderWidgetHostViewMacHistorySwiperTest& operator=(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+
   void SetUpOnMainThread() override {
     event_queue_.reset([[NSMutableArray alloc] init]);
     touch_ = CGPointMake(0.5, 0.5);
@@ -395,9 +400,6 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   base::scoped_nsobject<NSMutableArray> event_queue_;
   // The current location of the user's fingers on the track pad.
   CGPoint touch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderWidgetHostViewMacHistorySwiperTest);
 };
 
 // The ordering, timing, and parameters of the events was determined by

@@ -17,6 +17,9 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
  public:
   BrowserCloseManager();
 
+  BrowserCloseManager(const BrowserCloseManager&) = delete;
+  BrowserCloseManager& operator=(const BrowserCloseManager&) = delete;
+
   // Starts closing all browser windows.
   void StartClosingBrowsers();
 
@@ -57,8 +60,6 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
   // The browser for which we are waiting for a callback to
   // OnBrowserReportCloseable.
   Browser* current_browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserCloseManager);
 };
 
 #endif  // CHROME_BROWSER_LIFETIME_BROWSER_CLOSE_MANAGER_H_

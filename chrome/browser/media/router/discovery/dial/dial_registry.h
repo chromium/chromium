@@ -63,6 +63,9 @@ class DialRegistry
 
   static DialRegistry* GetInstance();
 
+  DialRegistry(const DialRegistry&) = delete;
+  DialRegistry& operator=(const DialRegistry&) = delete;
+
   // Sets the NetLog object used for logging. Should be called right after
   // GetInstance(). If the registry already has a NetLog, does nothing. The
   // NetLog should live at least as long as the IO Thread.
@@ -224,7 +227,6 @@ class DialRegistry
   FRIEND_TEST_ALL_PREFIXES(DialRegistryTest, TestNetworkEventConnectionLost);
   FRIEND_TEST_ALL_PREFIXES(DialRegistryTest,
                            TestNetworkEventConnectionRestored);
-  DISALLOW_COPY_AND_ASSIGN(DialRegistry);
 };
 
 }  // namespace media_router

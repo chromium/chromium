@@ -41,10 +41,14 @@ struct WebApkInfo {
              std::string backing_browser_package_name,
              bool is_backing_browser,
              std::string update_status);
-  ~WebApkInfo();
+
+  WebApkInfo(const WebApkInfo&) = delete;
+  WebApkInfo& operator=(const WebApkInfo&) = delete;
 
   WebApkInfo& operator=(WebApkInfo&& other) noexcept;
   WebApkInfo(WebApkInfo&& other) noexcept;
+
+  ~WebApkInfo();
 
   // Short name of the WebAPK.
   std::string name;
@@ -80,9 +84,6 @@ struct WebApkInfo {
 
   // Update Status of the WebAPK.
   std::string update_status;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebApkInfo);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INFO_H_

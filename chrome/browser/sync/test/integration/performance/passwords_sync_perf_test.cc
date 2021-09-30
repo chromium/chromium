@@ -41,6 +41,9 @@ class PasswordsSyncPerfTest : public SyncTest {
  public:
   PasswordsSyncPerfTest() : SyncTest(TWO_CLIENT), password_number_(0) {}
 
+  PasswordsSyncPerfTest(const PasswordsSyncPerfTest&) = delete;
+  PasswordsSyncPerfTest& operator=(const PasswordsSyncPerfTest&) = delete;
+
   // Adds |num_logins| new unique passwords to |profile|.
   void AddLogins(int profile, int num_logins);
 
@@ -58,7 +61,6 @@ class PasswordsSyncPerfTest : public SyncTest {
   std::string NextPassword();
 
   int password_number_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordsSyncPerfTest);
 };
 
 void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {

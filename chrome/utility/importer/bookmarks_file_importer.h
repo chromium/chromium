@@ -16,14 +16,15 @@ class BookmarksFileImporter : public Importer {
  public:
   BookmarksFileImporter();
 
+  BookmarksFileImporter(const BookmarksFileImporter&) = delete;
+  BookmarksFileImporter& operator=(const BookmarksFileImporter&) = delete;
+
   void StartImport(const importer::SourceProfile& source_profile,
                    uint16_t items,
                    ImporterBridge* bridge) override;
 
  private:
   ~BookmarksFileImporter() override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksFileImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_BOOKMARKS_FILE_IMPORTER_H_

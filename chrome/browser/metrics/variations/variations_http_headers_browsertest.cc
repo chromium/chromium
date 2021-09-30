@@ -335,11 +335,13 @@ class VariationsHttpHeadersBrowserTestWithRestrictedVisibility
     }
   }
 
+  VariationsHttpHeadersBrowserTestWithRestrictedVisibility(
+      const VariationsHttpHeadersBrowserTestWithRestrictedVisibility&) = delete;
+  VariationsHttpHeadersBrowserTestWithRestrictedVisibility& operator=(
+      const VariationsHttpHeadersBrowserTestWithRestrictedVisibility&) = delete;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      VariationsHttpHeadersBrowserTestWithRestrictedVisibility);
 };
 
 std::unique_ptr<net::test_server::HttpResponse>

@@ -32,6 +32,10 @@ class ServiceDiscoveryClientMac : public ServiceDiscoverySharedClient {
  public:
   ServiceDiscoveryClientMac();
 
+  ServiceDiscoveryClientMac(const ServiceDiscoveryClientMac&) = delete;
+  ServiceDiscoveryClientMac& operator=(const ServiceDiscoveryClientMac&) =
+      delete;
+
  private:
   friend class ServiceDiscoveryClientMacTest;
 
@@ -52,8 +56,6 @@ class ServiceDiscoveryClientMac : public ServiceDiscoverySharedClient {
   void StartThreadIfNotStarted();
 
   std::unique_ptr<base::Thread> service_discovery_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDiscoveryClientMac);
 };
 
 class ServiceWatcherImplMac : public ServiceWatcher {

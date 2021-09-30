@@ -60,6 +60,10 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
 
   // The pref service must outlive this class.
   explicit FontPrefChangeNotifier(PrefService* pref_service);
+
+  FontPrefChangeNotifier(const FontPrefChangeNotifier&) = delete;
+  FontPrefChangeNotifier& operator=(const FontPrefChangeNotifier&) = delete;
+
   ~FontPrefChangeNotifier() override;
 
  private:
@@ -77,8 +81,6 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
   // Non-owning pointers to the Registrars that have registered themselves
   // with us. We expect few registrars.
   base::ObserverList<Registrar>::Unchecked registrars_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontPrefChangeNotifier);
 };
 
 #endif  // CHROME_BROWSER_FONT_PREF_CHANGE_NOTIFIER_H_

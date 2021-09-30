@@ -45,6 +45,9 @@ class LoadTestMessageHandler : public StructuredMessageHandler {
  public:
   LoadTestMessageHandler();
 
+  LoadTestMessageHandler(const LoadTestMessageHandler&) = delete;
+  LoadTestMessageHandler& operator=(const LoadTestMessageHandler&) = delete;
+
   void Log(const std::string& type, const std::string& message);
 
   MessageResponse HandleStructuredMessage(const std::string& type,
@@ -56,8 +59,6 @@ class LoadTestMessageHandler : public StructuredMessageHandler {
 
  private:
   bool test_passed_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadTestMessageHandler);
 };
 
 class NaClBrowserTestBase : public InProcessBrowserTest {

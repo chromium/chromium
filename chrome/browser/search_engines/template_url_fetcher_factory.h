@@ -20,6 +20,10 @@ class TemplateURLFetcherFactory : public BrowserContextKeyedServiceFactory {
 
   static TemplateURLFetcherFactory* GetInstance();
 
+  TemplateURLFetcherFactory(const TemplateURLFetcherFactory&) = delete;
+  TemplateURLFetcherFactory& operator=(const TemplateURLFetcherFactory&) =
+      delete;
+
   // In some tests, the template url fetcher needs to be shutdown to
   // remove any dangling url requests before the io_thread is shutdown
   // to prevent leaks.
@@ -36,8 +40,6 @@ class TemplateURLFetcherFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherFactory);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_FETCHER_FACTORY_H_

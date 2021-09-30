@@ -133,6 +133,10 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
  public:
   FileSystemProviderApiTest() {}
 
+  FileSystemProviderApiTest(const FileSystemProviderApiTest&) = delete;
+  FileSystemProviderApiTest& operator=(const FileSystemProviderApiTest&) =
+      delete;
+
   // Loads a helper testing extension.
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -152,7 +156,6 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
 
  private:
   ash::FakeChromeUserManager user_manager_;
-  DISALLOW_COPY_AND_ASSIGN(FileSystemProviderApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {

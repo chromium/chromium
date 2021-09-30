@@ -331,6 +331,10 @@ class PUPData {
   };
 
   PUPData();
+
+  PUPData(const PUPData&) = delete;
+  PUPData& operator=(const PUPData&) = delete;
+
   ~PUPData();
 
   using UwSCatalogs = std::vector<const UwSCatalog*>;
@@ -453,8 +457,6 @@ class PUPData {
   static std::vector<UwSId>* cached_uws_ids_;
 
   static UwSCatalogs* last_uws_catalogs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PUPData);
 };
 
 // This macro makes it easier to create strings with the

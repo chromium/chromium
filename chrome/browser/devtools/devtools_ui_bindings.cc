@@ -199,6 +199,9 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   explicit DefaultBindingsDelegate(content::WebContents* web_contents)
       : web_contents_(web_contents) {}
 
+  DefaultBindingsDelegate(const DefaultBindingsDelegate&) = delete;
+  DefaultBindingsDelegate& operator=(const DefaultBindingsDelegate&) = delete;
+
  private:
   ~DefaultBindingsDelegate() override {}
 
@@ -224,7 +227,6 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   void RenderProcessGone(bool crashed) override {}
   void ShowCertificateViewer(const std::string& cert_chain) override {}
   content::WebContents* web_contents_;
-  DISALLOW_COPY_AND_ASSIGN(DefaultBindingsDelegate);
 };
 
 void DefaultBindingsDelegate::ActivateWindow() {
@@ -500,6 +502,9 @@ class DevToolsUIBindings::NetworkResourceLoader
                                 base::Unretained(this)));
   }
 
+  NetworkResourceLoader(const NetworkResourceLoader&) = delete;
+  NetworkResourceLoader& operator=(const NetworkResourceLoader&) = delete;
+
  private:
   void DownloadAsStream() {
     loader_->DownloadAsStream(url_loader_factory_.get(), this);
@@ -569,8 +574,6 @@ class DevToolsUIBindings::NetworkResourceLoader
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   base::OneShotTimer timer_;
   base::TimeDelta retry_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkResourceLoader);
 };
 
 // DevToolsUIBindings::FrontendWebContentsObserver ----------------------------

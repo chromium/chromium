@@ -25,6 +25,9 @@ class DriveServiceWrapper : public base::SupportsWeakPtr<DriveServiceWrapper> {
  public:
   explicit DriveServiceWrapper(drive::DriveServiceInterface* drive_service);
 
+  DriveServiceWrapper(const DriveServiceWrapper&) = delete;
+  DriveServiceWrapper& operator=(const DriveServiceWrapper&) = delete;
+
   void AddNewDirectory(const std::string& parent_resource_id,
                        const std::string& directory_title,
                        const drive::AddNewDirectoryOptions& options,
@@ -79,8 +82,6 @@ class DriveServiceWrapper : public base::SupportsWeakPtr<DriveServiceWrapper> {
  private:
   drive::DriveServiceInterface* drive_service_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DriveServiceWrapper);
 };
 
 }  // namespace drive_backend

@@ -16,14 +16,16 @@
 #include "testing/platform_test.h"
 
 class GoogleUpdateTest : public PlatformTest {
+ public:
+  GoogleUpdateTest(const GoogleUpdateTest&) = delete;
+  GoogleUpdateTest& operator=(const GoogleUpdateTest&) = delete;
+
  protected:
   GoogleUpdateTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
   ~GoogleUpdateTest() override {}
 
  private:
   base::ScopedPathOverride user_data_dir_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleUpdateTest);
 };
 
 TEST_F(GoogleUpdateTest, StatsConsent) {

@@ -106,13 +106,16 @@ class BudgetDatabase {
   // which have been awarded.
   struct BudgetInfo {
     BudgetInfo();
+
+    BudgetInfo(const BudgetInfo&) = delete;
+    BudgetInfo& operator=(const BudgetInfo&) = delete;
+
     BudgetInfo(const BudgetInfo&& other);
+
     ~BudgetInfo();
 
     base::Time last_engagement_award;
     BudgetChunks chunks;
-
-    DISALLOW_COPY_AND_ASSIGN(BudgetInfo);
   };
 
   // Callback for writing budget values to the database.

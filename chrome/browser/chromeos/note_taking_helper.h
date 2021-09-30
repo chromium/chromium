@@ -161,6 +161,9 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   static void Shutdown();
   static NoteTakingHelper* Get();
 
+  NoteTakingHelper(const NoteTakingHelper&) = delete;
+  NoteTakingHelper& operator=(const NoteTakingHelper&) = delete;
+
   bool play_store_enabled() const { return play_store_enabled_; }
   bool android_apps_received() const { return android_apps_received_; }
 
@@ -328,8 +331,6 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   std::unique_ptr<NoteTakingControllerClient> note_taking_controller_client_;
 
   base::WeakPtrFactory<NoteTakingHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoteTakingHelper);
 };
 
 }  // namespace chromeos

@@ -46,10 +46,11 @@ class BrowserShutdownBrowserTest : public InProcessBrowserTest {
 class BrowserClosingObserver : public BrowserListObserver {
  public:
   BrowserClosingObserver() {}
-  MOCK_METHOD1(OnBrowserClosing, void(Browser* browser));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserClosingObserver);
+  BrowserClosingObserver(const BrowserClosingObserver&) = delete;
+  BrowserClosingObserver& operator=(const BrowserClosingObserver&) = delete;
+
+  MOCK_METHOD1(OnBrowserClosing, void(Browser* browser));
 };
 
 // ChromeOS has the different shutdown flow on user initiated exit process.

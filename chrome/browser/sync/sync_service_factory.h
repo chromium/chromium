@@ -32,6 +32,9 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
   static syncer::SyncServiceImpl* GetAsSyncServiceImplForProfile(
       Profile* profile);
 
+  SyncServiceFactory(const SyncServiceFactory&) = delete;
+  SyncServiceFactory& operator=(const SyncServiceFactory&) = delete;
+
   // Returns whether a SyncService has already been created for the profile.
   // Note that GetForProfile will create the service if it doesn't exist yet.
   static bool HasSyncService(Profile* profile);
@@ -62,8 +65,6 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_

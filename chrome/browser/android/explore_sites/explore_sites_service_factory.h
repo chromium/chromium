@@ -25,6 +25,10 @@ class ExploreSitesServiceFactory : public BrowserContextKeyedServiceFactory {
   static ExploreSitesService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  ExploreSitesServiceFactory(const ExploreSitesServiceFactory&) = delete;
+  ExploreSitesServiceFactory& operator=(const ExploreSitesServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ExploreSitesServiceFactory>;
 
@@ -36,8 +40,6 @@ class ExploreSitesServiceFactory : public BrowserContextKeyedServiceFactory {
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesServiceFactory);
 };
 
 }  // namespace explore_sites

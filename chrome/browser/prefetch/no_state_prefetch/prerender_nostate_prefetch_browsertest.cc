@@ -269,6 +269,10 @@ class NoStatePrefetchBrowserTest
  public:
   NoStatePrefetchBrowserTest() {}
 
+  NoStatePrefetchBrowserTest(const NoStatePrefetchBrowserTest&) = delete;
+  NoStatePrefetchBrowserTest& operator=(const NoStatePrefetchBrowserTest&) =
+      delete;
+
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     test_utils::PrerenderInProcessBrowserTest::SetUpDefaultCommandLine(
         command_line);
@@ -422,8 +426,6 @@ class NoStatePrefetchBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchBrowserTest);
 };
 
 class NoStatePrefetchBrowserTestHttpCache

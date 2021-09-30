@@ -21,6 +21,9 @@ class HistoryDeletionBridge : public history::HistoryServiceObserver {
  public:
   explicit HistoryDeletionBridge(const base::android::JavaRef<jobject>& j_this);
 
+  HistoryDeletionBridge(const HistoryDeletionBridge&) = delete;
+  HistoryDeletionBridge& operator=(const HistoryDeletionBridge&) = delete;
+
   // history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -42,8 +45,6 @@ class HistoryDeletionBridge : public history::HistoryServiceObserver {
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       scoped_history_service_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeletionBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_HISTORY_HISTORY_DELETION_BRIDGE_H_

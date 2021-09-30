@@ -24,6 +24,9 @@ class WebHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
   // Get the WebHistoryService for |profile|, creating one if needed.
   static history::WebHistoryService* GetForProfile(Profile* profile);
 
+  WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;
+  WebHistoryServiceFactory& operator=(const WebHistoryServiceFactory&) = delete;
+
  protected:
   // Overridden from BrowserContextKeyedServiceFactory.
   KeyedService* BuildServiceInstanceFor(
@@ -34,8 +37,6 @@ class WebHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
 
   WebHistoryServiceFactory();
   ~WebHistoryServiceFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebHistoryServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_WEB_HISTORY_SERVICE_FACTORY_H_

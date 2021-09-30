@@ -67,6 +67,9 @@ class TestMetricCollector : public internal::MetricCollector {
   explicit TestMetricCollector(const CollectionParams& collection_params)
       : internal::MetricCollector("UMA.CWP.TestData", collection_params) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "test"; }
   base::WeakPtr<internal::MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -85,8 +88,6 @@ class TestMetricCollector : public internal::MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
 const base::TimeDelta kPeriodicCollectionInterval =
@@ -122,8 +123,8 @@ class TestProfileProvider : public ProfileProvider {
   using ProfileProvider::OnSessionRestoreDone;
   using ProfileProvider::SuspendDone;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestProfileProvider);
+  TestProfileProvider(const TestProfileProvider&) = delete;
+  TestProfileProvider& operator=(const TestProfileProvider&) = delete;
 };
 
 template <SampledProfile_TriggerEvent TRIGGER_TYPE>
@@ -150,6 +151,9 @@ class ProfileProviderTest : public testing::Test {
   ProfileProviderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  ProfileProviderTest(const ProfileProviderTest&) = delete;
+  ProfileProviderTest& operator=(const ProfileProviderTest&) = delete;
+
   void SetUp() override {
     // ProfileProvider requires chromeos::LoginState and
     // chromeos::PowerManagerClient to be initialized.
@@ -173,8 +177,6 @@ class ProfileProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestProfileProvider> profile_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderTest);
 };
 
 TEST_F(ProfileProviderTest, CheckSetup) {
@@ -486,8 +488,8 @@ class TestStockProfileProvider : public ProfileProvider {
 
   using ProfileProvider::collectors_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStockProfileProvider);
+  TestStockProfileProvider(const TestStockProfileProvider&) = delete;
+  TestStockProfileProvider& operator=(const TestStockProfileProvider&) = delete;
 };
 
 }  // namespace
@@ -495,6 +497,9 @@ class TestStockProfileProvider : public ProfileProvider {
 class ProfileProviderStockTest : public testing::Test {
  public:
   ProfileProviderStockTest() = default;
+
+  ProfileProviderStockTest(const ProfileProviderStockTest&) = delete;
+  ProfileProviderStockTest& operator=(const ProfileProviderStockTest&) = delete;
 
   void SetUp() override {
     // ProfileProvider requires chromeos::LoginState and
@@ -510,9 +515,6 @@ class ProfileProviderStockTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderStockTest);
 };
 
 TEST_F(ProfileProviderStockTest, CheckSetup) {

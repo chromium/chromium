@@ -73,6 +73,9 @@ class TemplateURLFetcherTest : public testing::Test {
  public:
   TemplateURLFetcherTest();
 
+  TemplateURLFetcherTest(const TemplateURLFetcherTest&) = delete;
+  TemplateURLFetcherTest& operator=(const TemplateURLFetcherTest&) = delete;
+
   void SetUp() override {
     template_url_fetcher_ = std::make_unique<TestTemplateUrlFetcher>(
         test_util_.model(),
@@ -119,9 +122,6 @@ class TemplateURLFetcherTest : public testing::Test {
   // Is the code in WaitForDownloadToFinish in a message loop waiting for a
   // callback to finish?
   bool waiting_for_download_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherTest);
 };
 
 TemplateURLFetcherTest::TemplateURLFetcherTest()

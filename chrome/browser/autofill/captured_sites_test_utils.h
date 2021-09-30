@@ -149,6 +149,11 @@ class IFrameWaiter : public content::WebContentsObserver {
 // InProcessBrowserTest exposes its feature to captured site automation.
 class TestRecipeReplayChromeFeatureActionExecutor {
  public:
+  TestRecipeReplayChromeFeatureActionExecutor(
+      const TestRecipeReplayChromeFeatureActionExecutor&) = delete;
+  TestRecipeReplayChromeFeatureActionExecutor& operator=(
+      const TestRecipeReplayChromeFeatureActionExecutor&) = delete;
+
   // Chrome Autofill feature methods.
   // Triggers Chrome Autofill in the specified input element on the specified
   // document.
@@ -175,8 +180,6 @@ class TestRecipeReplayChromeFeatureActionExecutor {
  protected:
   TestRecipeReplayChromeFeatureActionExecutor();
   ~TestRecipeReplayChromeFeatureActionExecutor();
-
-  DISALLOW_COPY_AND_ASSIGN(TestRecipeReplayChromeFeatureActionExecutor);
 };
 
 // TestRecipeReplayer

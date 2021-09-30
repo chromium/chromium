@@ -92,6 +92,10 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
         is_platform_app_(extension->is_platform_app()),
         extension_id_(extension->id()) {}
 
+  CrashNotificationDelegate(const CrashNotificationDelegate&) = delete;
+  CrashNotificationDelegate& operator=(const CrashNotificationDelegate&) =
+      delete;
+
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
     // Pass arguments by value as HandleClick() might destroy *this.
@@ -136,8 +140,6 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
   bool is_hosted_app_;
   bool is_platform_app_;
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashNotificationDelegate);
 };
 
 void NotificationImageReady(const std::string extension_name,

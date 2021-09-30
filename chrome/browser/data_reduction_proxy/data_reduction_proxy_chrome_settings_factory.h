@@ -28,6 +28,11 @@ class DataReductionProxyChromeSettingsFactory
   // Returns an instance of this factory.
   static DataReductionProxyChromeSettingsFactory* GetInstance();
 
+  DataReductionProxyChromeSettingsFactory(
+      const DataReductionProxyChromeSettingsFactory&) = delete;
+  DataReductionProxyChromeSettingsFactory& operator=(
+      const DataReductionProxyChromeSettingsFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       DataReductionProxyChromeSettingsFactory>;
@@ -39,8 +44,6 @@ class DataReductionProxyChromeSettingsFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyChromeSettingsFactory);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_CHROME_SETTINGS_FACTORY_H_

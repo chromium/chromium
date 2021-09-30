@@ -77,6 +77,10 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
  public:
   TranslateScriptBrowserTest() {}
 
+  TranslateScriptBrowserTest(const TranslateScriptBrowserTest&) = delete;
+  TranslateScriptBrowserTest& operator=(const TranslateScriptBrowserTest&) =
+      delete;
+
  protected:
   void InjectElementLibrary() {
     std::string script =
@@ -132,8 +136,6 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     }
     return result.As<v8::Boolean>()->Value();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateScriptBrowserTest);
 };
 
 // Test if onTranslateElementLoad() succeeds to initialize the element library.

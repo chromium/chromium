@@ -24,6 +24,10 @@ class BookmarkSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the BookmarkSyncServiceFactory singleton.
   static BookmarkSyncServiceFactory* GetInstance();
 
+  BookmarkSyncServiceFactory(const BookmarkSyncServiceFactory&) = delete;
+  BookmarkSyncServiceFactory& operator=(const BookmarkSyncServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BookmarkSyncServiceFactory>;
 
@@ -35,8 +39,6 @@ class BookmarkSyncServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkSyncServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_BOOKMARK_SYNC_SERVICE_FACTORY_H_

@@ -35,17 +35,21 @@ class TaskLogger : public base::SupportsWeakPtr<TaskLogger> {
 
   class Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual void OnLogRecorded(const TaskLog& task_log) = 0;
 
    protected:
     Observer() {}
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   TaskLogger();
+
+  TaskLogger(const TaskLogger&) = delete;
+  TaskLogger& operator=(const TaskLogger&) = delete;
+
   ~TaskLogger();
 
   void RecordLog(std::unique_ptr<TaskLog> log);
@@ -60,8 +64,6 @@ class TaskLogger : public base::SupportsWeakPtr<TaskLogger> {
   LogList log_history_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskLogger);
 };
 
 }  // namespace sync_file_system

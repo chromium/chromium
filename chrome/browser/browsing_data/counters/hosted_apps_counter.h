@@ -34,6 +34,10 @@ class HostedAppsCounter : public browsing_data::BrowsingDataCounter {
   };
 
   explicit HostedAppsCounter(Profile* profile);
+
+  HostedAppsCounter(const HostedAppsCounter&) = delete;
+  HostedAppsCounter& operator=(const HostedAppsCounter&) = delete;
+
   ~HostedAppsCounter() override;
 
   const char* GetPrefName() const override;
@@ -43,8 +47,6 @@ class HostedAppsCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostedAppsCounter);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_HOSTED_APPS_COUNTER_H_

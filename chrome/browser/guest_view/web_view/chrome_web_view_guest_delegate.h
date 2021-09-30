@@ -22,6 +22,11 @@ namespace extensions {
 class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
  public :
   explicit ChromeWebViewGuestDelegate(WebViewGuest* web_view_guest);
+
+  ChromeWebViewGuestDelegate(const ChromeWebViewGuestDelegate&) = delete;
+  ChromeWebViewGuestDelegate& operator=(const ChromeWebViewGuestDelegate&) =
+      delete;
+
   ~ChromeWebViewGuestDelegate() override;
 
   // WebViewGuestDelegate implementation.
@@ -52,8 +57,6 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<ChromeWebViewGuestDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewGuestDelegate);
 };
 
 }  // namespace extensions

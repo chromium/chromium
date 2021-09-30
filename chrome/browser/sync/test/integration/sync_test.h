@@ -190,6 +190,9 @@ class SyncTest : public IdentityPlatformBrowserTest {
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
 
+  SyncTest(const SyncTest&) = delete;
+  SyncTest& operator=(const SyncTest&) = delete;
+
   ~SyncTest() override;
 
   void SetUp() override;
@@ -556,8 +559,6 @@ class SyncTest : public IdentityPlatformBrowserTest {
   std::vector<syncer::FCMHandler*> sync_invalidations_fcm_handlers_;
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       fake_server_sync_invalidation_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTest);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_H_

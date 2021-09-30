@@ -62,6 +62,10 @@ class ImageDecoderDelegateAdapter : public ImageDecoder::ImageRequest {
     DCHECK(data_);
   }
 
+  ImageDecoderDelegateAdapter(const ImageDecoderDelegateAdapter&) = delete;
+  ImageDecoderDelegateAdapter& operator=(const ImageDecoderDelegateAdapter&) =
+      delete;
+
   const std::string& data() {
     return *data_;
   }
@@ -80,8 +84,6 @@ class ImageDecoderDelegateAdapter : public ImageDecoder::ImageRequest {
  private:
   std::unique_ptr<std::string> data_;
   storage::CopyOrMoveFileValidator::ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoderDelegateAdapter);
 };
 
 }  // namespace

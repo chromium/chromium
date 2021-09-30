@@ -93,6 +93,10 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
  public:
   ChromeRenderProcessHostTest() {}
 
+  ChromeRenderProcessHostTest(const ChromeRenderProcessHostTest&) = delete;
+  ChromeRenderProcessHostTest& operator=(const ChromeRenderProcessHostTest&) =
+      delete;
+
   // Show a tab, activating the current one if there is one, and wait for
   // the renderer process to be created or foregrounded, returning the
   // WebContents associated with the tab.
@@ -244,9 +248,6 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     EXPECT_NE(rph1, rph3);
     EXPECT_NE(rph2, rph3);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderProcessHostTest);
 };
 
 class ChromeRenderProcessHostTestWithCommandLine
@@ -582,6 +583,9 @@ class WindowDestroyer : public content::WebContentsObserver {
   WindowDestroyer(content::WebContents* web_contents, TabStripModel* model)
       : content::WebContentsObserver(web_contents), tab_strip_model_(model) {}
 
+  WindowDestroyer(const WindowDestroyer&) = delete;
+  WindowDestroyer& operator=(const WindowDestroyer&) = delete;
+
   // Wait for the browser window to be destroyed.
   void Wait() { ui_test_utils::WaitForBrowserToClose(); }
 
@@ -591,8 +595,6 @@ class WindowDestroyer : public content::WebContentsObserver {
 
  private:
   TabStripModel* tab_strip_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDestroyer);
 };
 
 // Test to ensure that while iterating through all listeners in
@@ -646,6 +648,11 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
     : public ChromeRenderProcessHostTest {
  public:
   ChromeRenderProcessHostBackgroundingTestWithAudio() {}
+
+  ChromeRenderProcessHostBackgroundingTestWithAudio(
+      const ChromeRenderProcessHostBackgroundingTestWithAudio&) = delete;
+  ChromeRenderProcessHostBackgroundingTestWithAudio& operator=(
+      const ChromeRenderProcessHostBackgroundingTestWithAudio&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeRenderProcessHostTest::SetUpCommandLine(command_line);
@@ -724,8 +731,6 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
 #if defined(OS_MAC)
   base::PortProvider* port_provider_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderProcessHostBackgroundingTestWithAudio);
 };
 
 // Test to make sure that a process is backgrounded when the audio stops playing

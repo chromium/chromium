@@ -80,6 +80,11 @@ class MockPictureInPictureWindowController
  public:
   MockPictureInPictureWindowController() = default;
 
+  MockPictureInPictureWindowController(
+      const MockPictureInPictureWindowController&) = delete;
+  MockPictureInPictureWindowController& operator=(
+      const MockPictureInPictureWindowController&) = delete;
+
   // PictureInPictureWindowController:
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(FocusInitiator, void());
@@ -97,9 +102,6 @@ class MockPictureInPictureWindowController
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPictureInPictureWindowController);
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
@@ -198,6 +200,11 @@ class PictureInPictureWindowControllerBrowserTest
     : public InProcessBrowserTest {
  public:
   PictureInPictureWindowControllerBrowserTest() = default;
+
+  PictureInPictureWindowControllerBrowserTest(
+      const PictureInPictureWindowControllerBrowserTest&) = delete;
+  PictureInPictureWindowControllerBrowserTest& operator=(
+      const PictureInPictureWindowControllerBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -298,8 +305,6 @@ class PictureInPictureWindowControllerBrowserTest
  private:
   content::PictureInPictureWindowController* pip_window_controller_ = nullptr;
   MockPictureInPictureWindowController mock_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureWindowControllerBrowserTest);
 };
 
 // Checks the creation of the window controller, as well as basic window

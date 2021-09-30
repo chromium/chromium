@@ -43,6 +43,9 @@ class TCPServerSocketFactory
   explicit TCPServerSocketFactory(uint16_t port)
       : port_(port), last_tethering_port_(kMinTetheringPort) {}
 
+  TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
+  TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
+
  private:
   std::unique_ptr<net::ServerSocket> CreateLocalHostServerSocket(int port) {
     std::unique_ptr<net::ServerSocket> socket(
@@ -77,8 +80,6 @@ class TCPServerSocketFactory
   std::string address_;
   uint16_t port_;
   uint16_t last_tethering_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocketFactory);
 };
 
 }  // namespace

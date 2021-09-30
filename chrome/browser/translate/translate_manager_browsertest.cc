@@ -1353,6 +1353,12 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
 class TranslateManagerWithSubFrameSupportBrowserTest
     : public TranslateManagerBrowserTest {
+ public:
+  TranslateManagerWithSubFrameSupportBrowserTest(
+      const TranslateManagerWithSubFrameSupportBrowserTest&) = delete;
+  TranslateManagerWithSubFrameSupportBrowserTest& operator=(
+      const TranslateManagerWithSubFrameSupportBrowserTest&) = delete;
+
  protected:
   TranslateManagerWithSubFrameSupportBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
@@ -1360,8 +1366,6 @@ class TranslateManagerWithSubFrameSupportBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManagerWithSubFrameSupportBrowserTest);
 };
 
 // Tests that the CLD (Compact Language Detection) works properly.
@@ -2115,6 +2119,14 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
 class TranslateManagerWithMainFrameLanguageDetectionBrowserTest
     : public TranslateManagerBrowserTest {
+ public:
+  TranslateManagerWithMainFrameLanguageDetectionBrowserTest(
+      const TranslateManagerWithMainFrameLanguageDetectionBrowserTest&) =
+      delete;
+  TranslateManagerWithMainFrameLanguageDetectionBrowserTest& operator=(
+      const TranslateManagerWithMainFrameLanguageDetectionBrowserTest&) =
+      delete;
+
  protected:
   TranslateManagerWithMainFrameLanguageDetectionBrowserTest() {
     // Enable sub frame translation but with sub frame language
@@ -2126,9 +2138,6 @@ class TranslateManagerWithMainFrameLanguageDetectionBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      TranslateManagerWithMainFrameLanguageDetectionBrowserTest);
 };
 
 // Test that iframes can be translated.

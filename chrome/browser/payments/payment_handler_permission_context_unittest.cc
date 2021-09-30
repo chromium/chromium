@@ -56,6 +56,12 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
 
 class PaymentHandlerPermissionContextTests
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PaymentHandlerPermissionContextTests(
+      const PaymentHandlerPermissionContextTests&) = delete;
+  PaymentHandlerPermissionContextTests& operator=(
+      const PaymentHandlerPermissionContextTests&) = delete;
+
  protected:
   PaymentHandlerPermissionContextTests() = default;
 
@@ -69,8 +75,6 @@ class PaymentHandlerPermissionContextTests
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerPermissionContextTests);
 };
 
 // PaymentHandler permission should be denied for insecure origin.

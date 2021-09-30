@@ -48,6 +48,9 @@ class DualMediaSinkService {
   static DualMediaSinkService* GetInstance();
   static void SetInstanceForTest(DualMediaSinkService* instance_for_test);
 
+  DualMediaSinkService(const DualMediaSinkService&) = delete;
+  DualMediaSinkService& operator=(const DualMediaSinkService&) = delete;
+
   // Used by DialMediaRouteProvider only.
   DialMediaSinkServiceImpl* GetDialMediaSinkServiceImpl();
 
@@ -118,7 +121,6 @@ class DualMediaSinkService {
   base::flat_map<std::string, std::vector<MediaSinkInternal>> current_sinks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DualMediaSinkService);
 };
 
 }  // namespace media_router

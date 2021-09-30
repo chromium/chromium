@@ -195,8 +195,8 @@ class TestProcessTypeCollector : public ProcessTypeCollector {
   using ProcessTypeCollector::ParseProcessTypes;
   using ProcessTypeCollector::ParseThreadTypes;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestProcessTypeCollector);
+  TestProcessTypeCollector(const TestProcessTypeCollector&) = delete;
+  TestProcessTypeCollector& operator=(const TestProcessTypeCollector&) = delete;
 };
 
 }  // namespace

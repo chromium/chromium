@@ -88,6 +88,9 @@ class ThrottleServiceTest : public testing::Test {
     service_.SetObserversForTesting(std::move(observers));
   }
 
+  ThrottleServiceTest(const ThrottleServiceTest&) = delete;
+  ThrottleServiceTest& operator=(const ThrottleServiceTest&) = delete;
+
   void set_critical_observer(ThrottleObserver* observer) {
     critical_observer_ = observer;
   }
@@ -135,8 +138,6 @@ class ThrottleServiceTest : public testing::Test {
   TestThrottleService service_;
   ThrottleObserver* critical_observer_{nullptr};
   ThrottleObserver* low_observer_{nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleServiceTest);
 };
 
 TEST_F(ThrottleServiceTest, TestConstructDestruct) {}

@@ -224,6 +224,10 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
     https_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
   }
 
+  ImageAnnotationBrowserTest(const ImageAnnotationBrowserTest&) = delete;
+  ImageAnnotationBrowserTest& operator=(const ImageAnnotationBrowserTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -277,8 +281,6 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageAnnotationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,

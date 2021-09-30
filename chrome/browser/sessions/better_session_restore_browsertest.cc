@@ -154,6 +154,9 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
             }));
   }
 
+  BetterSessionRestoreTest(const BetterSessionRestoreTest&) = delete;
+  BetterSessionRestoreTest& operator=(const BetterSessionRestoreTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     SessionServiceTestHelper helper(browser()->profile());
@@ -344,13 +347,15 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
   const std::u16string title_error_empty_;
 
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BetterSessionRestoreTest);
 };
 
 class ContinueWhereILeftOffTest : public BetterSessionRestoreTest {
  public:
   ContinueWhereILeftOffTest() = default;
+
+  ContinueWhereILeftOffTest(const ContinueWhereILeftOffTest&) = delete;
+  ContinueWhereILeftOffTest& operator=(const ContinueWhereILeftOffTest&) =
+      delete;
 
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
@@ -367,8 +372,6 @@ class ContinueWhereILeftOffTest : public BetterSessionRestoreTest {
     session_restore_observer.Wait();
     return new_browser;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWhereILeftOffTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_SessionCookies) {
@@ -642,14 +645,14 @@ class NoSessionRestoreTest : public BetterSessionRestoreTest {
  public:
   NoSessionRestoreTest() = default;
 
+  NoSessionRestoreTest(const NoSessionRestoreTest&) = delete;
+  NoSessionRestoreTest& operator=(const NoSessionRestoreTest&) = delete;
+
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
     SessionStartupPref::SetStartupPref(
         browser()->profile(), SessionStartupPref(SessionStartupPref::DEFAULT));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoSessionRestoreTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_SessionCookies) {

@@ -126,6 +126,11 @@ class CertificateReportingServiceTestHelper
  public:
   CertificateReportingServiceTestHelper();
 
+  CertificateReportingServiceTestHelper(
+      const CertificateReportingServiceTestHelper&) = delete;
+  CertificateReportingServiceTestHelper& operator=(
+      const CertificateReportingServiceTestHelper&) = delete;
+
   // Changes the behavior of report uploads to fail, succeed or hang.
   void SetFailureMode(ReportSendingResult expected_report_result);
 
@@ -183,8 +188,6 @@ class CertificateReportingServiceTestHelper
 
   uint8_t server_public_key_[32];
   uint8_t server_private_key_[32];
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateReportingServiceTestHelper);
 };
 
 // Class to test reporting events histogram for CertificateReportingService.

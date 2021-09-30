@@ -22,6 +22,9 @@ class NetworkQualityProvider
   NetworkQualityProvider(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
 
+  NetworkQualityProvider(const NetworkQualityProvider&) = delete;
+  NetworkQualityProvider& operator=(const NetworkQualityProvider&) = delete;
+
  private:
   // Note that this destructor is currently dead code. This destructor is never
   // called as this object is owned by a java singleton that never goes away.
@@ -40,8 +43,6 @@ class NetworkQualityProvider
   base::android::ScopedJavaGlobalRef<jobject> j_obj_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityProvider);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NET_NQE_NETWORK_QUALITY_PROVIDER_H_

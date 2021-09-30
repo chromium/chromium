@@ -201,6 +201,10 @@ class TabManagerTestWithTwoTabs : public TabManagerTest {
  public:
   TabManagerTestWithTwoTabs() = default;
 
+  TabManagerTestWithTwoTabs(const TabManagerTestWithTwoTabs&) = delete;
+  TabManagerTestWithTwoTabs& operator=(const TabManagerTestWithTwoTabs&) =
+      delete;
+
   void SetUpOnMainThread() override {
     TabManagerTest::SetUpOnMainThread();
 
@@ -210,9 +214,6 @@ class TabManagerTestWithTwoTabs : public TabManagerTest {
     OpenTwoTabs(embedded_test_server()->GetURL("/title2.html"),
                 embedded_test_server()->GetURL("/title3.html"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabManagerTestWithTwoTabs);
 };
 
 IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {

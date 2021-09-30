@@ -49,6 +49,9 @@ typedef std::map<content::BrowserContext*, SiteData> BrowserContextSiteDataMap;
 
 class SiteDetails {
  public:
+  SiteDetails(const SiteDetails&) = delete;
+  SiteDetails& operator=(const SiteDetails&) = delete;
+
   // Collect information about all committed sites in the given WebContents
   // on the UI thread.
   static void CollectSiteInfo(content::WebContents* contents,
@@ -61,8 +64,6 @@ class SiteDetails {
   // Only static methods - never needs to be constructed.
   SiteDetails() = delete;
   ~SiteDetails() = delete;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDetails);
 };
 
 #endif  // CHROME_BROWSER_SITE_ISOLATION_SITE_DETAILS_H_

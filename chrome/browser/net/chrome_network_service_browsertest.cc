@@ -91,6 +91,11 @@ class ChromeNetworkServiceBrowserTest
           features::kNetworkServiceInProcess);
   }
 
+  ChromeNetworkServiceBrowserTest(const ChromeNetworkServiceBrowserTest&) =
+      delete;
+  ChromeNetworkServiceBrowserTest& operator=(
+      const ChromeNetworkServiceBrowserTest&) = delete;
+
  protected:
   mojo::PendingRemote<network::mojom::NetworkContext> CreateNetworkContext(
       bool enable_encrypted_cookies) {
@@ -112,8 +117,6 @@ class ChromeNetworkServiceBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNetworkServiceBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {

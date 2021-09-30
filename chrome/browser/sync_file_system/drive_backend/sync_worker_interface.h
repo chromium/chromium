@@ -54,6 +54,10 @@ class SyncWorkerInterface {
   };
 
   SyncWorkerInterface() {}
+
+  SyncWorkerInterface(const SyncWorkerInterface&) = delete;
+  SyncWorkerInterface& operator=(const SyncWorkerInterface&) = delete;
+
   virtual ~SyncWorkerInterface() {}
 
   // Initializes SyncWorkerInterface after constructions of some member classes.
@@ -98,8 +102,6 @@ class SyncWorkerInterface {
 
  private:
   friend class SyncEngineTest;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncWorkerInterface);
 };
 
 }  // namespace drive_backend

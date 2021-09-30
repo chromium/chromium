@@ -23,11 +23,13 @@ class BrowsingDataCounterFactory {
   static std::unique_ptr<browsing_data::BrowsingDataCounter>
   GetForProfileAndPref(Profile* profile, const std::string& pref_name);
 
+  BrowsingDataCounterFactory(const BrowsingDataCounterFactory&) = delete;
+  BrowsingDataCounterFactory& operator=(const BrowsingDataCounterFactory&) =
+      delete;
+
  private:
   BrowsingDataCounterFactory();
   ~BrowsingDataCounterFactory();
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataCounterFactory);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_BROWSING_DATA_COUNTER_FACTORY_H_

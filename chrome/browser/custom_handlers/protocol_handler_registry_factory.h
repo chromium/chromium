@@ -30,6 +30,11 @@ class ProtocolHandlerRegistryFactory
   static ProtocolHandlerRegistry* GetForBrowserContext(
       content::BrowserContext* context);
 
+  ProtocolHandlerRegistryFactory(const ProtocolHandlerRegistryFactory&) =
+      delete;
+  ProtocolHandlerRegistryFactory& operator=(
+      const ProtocolHandlerRegistryFactory&) = delete;
+
  protected:
   // BrowserContextKeyedServiceFactory implementation.
   bool ServiceIsCreatedWithBrowserContext() const override;
@@ -46,8 +51,6 @@ class ProtocolHandlerRegistryFactory
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerRegistryFactory);
 };
 
 #endif  // CHROME_BROWSER_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_FACTORY_H_

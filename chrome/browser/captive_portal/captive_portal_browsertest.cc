@@ -397,6 +397,9 @@ class CaptivePortalObserver {
  public:
   explicit CaptivePortalObserver(Profile* profile);
 
+  CaptivePortalObserver(const CaptivePortalObserver&) = delete;
+  CaptivePortalObserver& operator=(const CaptivePortalObserver&) = delete;
+
   // Runs the message loop until exactly |update_count| captive portal
   // results have been received, since the creation of |this|.  Expects no
   // additional captive portal results.
@@ -428,8 +431,6 @@ class CaptivePortalObserver {
 
   // Last result received.
   CaptivePortalResult captive_portal_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalObserver);
 };
 
 CaptivePortalObserver::CaptivePortalObserver(Profile* profile)
@@ -531,6 +532,9 @@ class TabActivationWaiter : public TabStripModelObserver {
     tab_strip_model->AddObserver(this);
   }
 
+  TabActivationWaiter(const TabActivationWaiter&) = delete;
+  TabActivationWaiter& operator=(const TabActivationWaiter&) = delete;
+
   void WaitForActiveTabChange() {
     if (number_of_unconsumed_active_tab_changes_ == 0) {
       // Wait until TabStripModelObserver::ActiveTabChanged will get called.
@@ -560,8 +564,6 @@ class TabActivationWaiter : public TabStripModelObserver {
  private:
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   int number_of_unconsumed_active_tab_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabActivationWaiter);
 };
 
 }  // namespace

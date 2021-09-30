@@ -404,6 +404,10 @@ class ElementEventHandlers {
         &ElementEventHandlers::HandleButtonUp, base::Unretained(this));
     element->set_event_handlers(event_handlers);
   }
+
+  ElementEventHandlers(const ElementEventHandlers&) = delete;
+  ElementEventHandlers& operator=(const ElementEventHandlers&) = delete;
+
   void HandleHoverEnter() { hover_enter_ = true; }
   bool hover_enter_called() { return hover_enter_; }
 
@@ -433,8 +437,6 @@ class ElementEventHandlers {
   bool hover_leave_ = false;
   bool button_up_ = false;
   bool button_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementEventHandlers);
 };
 
 TEST(UiElement, CoordinatedVisibilityTransitions) {

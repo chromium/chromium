@@ -26,6 +26,9 @@ class MTPDeviceMapService {
  public:
   static MTPDeviceMapService* GetInstance();
 
+  MTPDeviceMapService(const MTPDeviceMapService&) = delete;
+  MTPDeviceMapService& operator=(const MTPDeviceMapService&) = delete;
+
   // Gets the media device delegate associated with |url|'s filesystem
   // id.  Return NULL if |url| is no longer valid (e.g. because the
   // corresponding device is detached, etc).
@@ -89,8 +92,6 @@ class MTPDeviceMapService {
   MTPDeviceFileSystemMap mtp_device_map_;
 
   MTPDeviceUsageMap mtp_device_usage_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceMapService);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MTP_DEVICE_MAP_SERVICE_H_

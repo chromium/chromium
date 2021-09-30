@@ -52,10 +52,11 @@ class TemplateURLServiceLoader {
     message_loop_runner->Run();
   }
 
+  TemplateURLServiceLoader(const TemplateURLServiceLoader&) = delete;
+  TemplateURLServiceLoader& operator=(const TemplateURLServiceLoader&) = delete;
+
  private:
   TemplateURLService* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceLoader);
 };
 
 std::unique_ptr<net::test_server::HttpResponse> SendResponse(

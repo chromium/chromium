@@ -41,6 +41,9 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
                    const net::PartialNetworkTrafficAnnotationTag&
                        partial_traffic_annotation);
 
+  JobStatusUpdater(const JobStatusUpdater&) = delete;
+  JobStatusUpdater& operator=(const JobStatusUpdater&) = delete;
+
   // Checks the status of the local print job and sends an update.
   void UpdateStatus();
   void Stop();
@@ -71,8 +74,6 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
   bool stopped_ = false;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobStatusUpdater);
 };
 
 }  // namespace cloud_print

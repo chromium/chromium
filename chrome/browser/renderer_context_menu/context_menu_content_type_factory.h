@@ -22,6 +22,10 @@ class ContextMenuContentTypeFactory {
       content::WebContents* web_contents,
       const content::ContextMenuParams& params);
 
+  ContextMenuContentTypeFactory(const ContextMenuContentTypeFactory&) = delete;
+  ContextMenuContentTypeFactory& operator=(
+      const ContextMenuContentTypeFactory&) = delete;
+
  private:
   ContextMenuContentTypeFactory();
   virtual ~ContextMenuContentTypeFactory();
@@ -29,8 +33,6 @@ class ContextMenuContentTypeFactory {
   static std::unique_ptr<ContextMenuContentType> CreateInternal(
       content::WebContents* web_contents,
       const content::ContextMenuParams& params);
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypeFactory);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_FACTORY_H_

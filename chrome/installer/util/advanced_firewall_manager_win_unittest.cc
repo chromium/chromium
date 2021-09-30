@@ -19,6 +19,10 @@ class AdvancedFirewallManagerTest : public ::testing::Test {
  public:
   AdvancedFirewallManagerTest() : skip_test_(true) {}
 
+  AdvancedFirewallManagerTest(const AdvancedFirewallManagerTest&) = delete;
+  AdvancedFirewallManagerTest& operator=(const AdvancedFirewallManagerTest&) =
+      delete;
+
  protected:
   // Sets up the test fixture.
   void SetUp() override {
@@ -54,9 +58,6 @@ class AdvancedFirewallManagerTest : public ::testing::Test {
 
   bool skip_test_;
   AdvancedFirewallManager manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdvancedFirewallManagerTest);
 };
 
 TEST_F(AdvancedFirewallManagerTest, NoRule) {

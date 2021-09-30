@@ -22,6 +22,11 @@ class AndroidPageLoadMetricsObserver
  public:
   AndroidPageLoadMetricsObserver();
 
+  AndroidPageLoadMetricsObserver(const AndroidPageLoadMetricsObserver&) =
+      delete;
+  AndroidPageLoadMetricsObserver& operator=(
+      const AndroidPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver:
   // PageLoadMetricsObserver lifecycle callbacks
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -86,8 +91,6 @@ class AndroidPageLoadMetricsObserver
   int64_t navigation_id_ = -1;
 
   network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_ANDROID_PAGE_LOAD_METRICS_OBSERVER_H_

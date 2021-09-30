@@ -23,6 +23,10 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   explicit BrowsingHistoryBridge(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
                                  const JavaParamRef<jobject>& j_profile);
+
+  BrowsingHistoryBridge(const BrowsingHistoryBridge&) = delete;
+  BrowsingHistoryBridge& operator=(const BrowsingHistoryBridge&) = delete;
+
   void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
 
   void QueryHistory(JNIEnv* env,
@@ -81,8 +85,6 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   Profile* profile_;
 
   base::OnceClosure query_history_continuation_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_HISTORY_BROWSING_HISTORY_BRIDGE_H_

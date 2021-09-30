@@ -69,6 +69,9 @@ class LoginPromptObserver : public content::NotificationObserver {
  public:
   LoginPromptObserver() : auth_handled_(false) {}
 
+  LoginPromptObserver(const LoginPromptObserver&) = delete;
+  LoginPromptObserver& operator=(const LoginPromptObserver&) = delete;
+
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override {
@@ -86,8 +89,6 @@ class LoginPromptObserver : public content::NotificationObserver {
 
  private:
   bool auth_handled_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPromptObserver);
 };
 
 // Test that the browser can establish a WebSocket connection via a proxy

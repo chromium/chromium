@@ -19,6 +19,11 @@ class RemoteSuggestionsServiceFactory
                                                  bool create_if_necessary);
   static RemoteSuggestionsServiceFactory* GetInstance();
 
+  RemoteSuggestionsServiceFactory(const RemoteSuggestionsServiceFactory&) =
+      delete;
+  RemoteSuggestionsServiceFactory& operator=(
+      const RemoteSuggestionsServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<RemoteSuggestionsServiceFactory>;
 
@@ -28,8 +33,6 @@ class RemoteSuggestionsServiceFactory
   // Overrides from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_REMOTE_SUGGESTIONS_SERVICE_FACTORY_H_

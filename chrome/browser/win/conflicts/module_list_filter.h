@@ -25,6 +25,9 @@ class ModuleListFilter : public base::RefCountedThreadSafe<ModuleListFilter> {
  public:
   ModuleListFilter();
 
+  ModuleListFilter(const ModuleListFilter&) = delete;
+  ModuleListFilter& operator=(const ModuleListFilter&) = delete;
+
   bool Initialize(const base::FilePath& module_list_path);
 
   // Returns true if a module is allowlisted based on the hash of its basename
@@ -67,8 +70,6 @@ class ModuleListFilter : public base::RefCountedThreadSafe<ModuleListFilter> {
 
   // Indicates if Initalize() has been succesfully called.
   bool initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListFilter);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_LIST_FILTER_H_

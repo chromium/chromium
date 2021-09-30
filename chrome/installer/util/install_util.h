@@ -34,6 +34,9 @@ class WorkItemList;
 // independently.
 class InstallUtil {
  public:
+  InstallUtil(const InstallUtil&) = delete;
+  InstallUtil& operator=(const InstallUtil&) = delete;
+
   // Attempts to trigger the command that would be run by Active Setup for a
   // system-level Chrome. For use only when system-level Chrome is installed.
   static void TriggerActiveSetupCommand();
@@ -146,13 +149,14 @@ class InstallUtil {
    public:
     explicit ValueEquals(const std::wstring& value_to_match)
         : value_to_match_(value_to_match) {}
+
+    ValueEquals(const ValueEquals&) = delete;
+    ValueEquals& operator=(const ValueEquals&) = delete;
+
     bool Evaluate(const std::wstring& value) const override;
 
    protected:
     std::wstring value_to_match_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ValueEquals);
   };
 
   // Returns zero on install success, or an InstallStatus value otherwise.
@@ -262,9 +266,6 @@ class InstallUtil {
   // Converts a product GUID into a SQuished gUID that is used for MSI installer
   // registry entries.
   static std::wstring GuidToSquid(base::WStringPiece guid);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallUtil);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_INSTALL_UTIL_H_

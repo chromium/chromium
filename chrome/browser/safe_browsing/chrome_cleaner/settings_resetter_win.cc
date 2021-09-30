@@ -75,6 +75,9 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
       std::unique_ptr<PostCleanupSettingsResetter::Delegate> delegate,
       base::OnceClosure done_callback);
 
+  SettingsResetter(const SettingsResetter&) = delete;
+  SettingsResetter& operator=(const SettingsResetter&) = delete;
+
   // Resets settings for all profiles in |profiles_to_reset_| and invokes
   // |done_callback_| when done.
   void Run();
@@ -114,8 +117,6 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
   base::OnceClosure done_callback_;
 
   std::unique_ptr<PostCleanupSettingsResetter::Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetter);
 };
 
 SettingsResetter::SettingsResetter(

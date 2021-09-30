@@ -158,13 +158,14 @@ class InfoBarUiTest : public TestInfoBar {
  public:
   InfoBarUiTest() = default;
 
+  InfoBarUiTest(const InfoBarUiTest&) = delete;
+  InfoBarUiTest& operator=(const InfoBarUiTest&) = delete;
+
   // TestInfoBar:
   void ShowUi(const std::string& name) override;
 
  private:
   using IBD = infobars::InfoBarDelegate;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarUiTest);
 };
 
 void InfoBarUiTest::ShowUi(const std::string& name) {

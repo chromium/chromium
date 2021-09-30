@@ -115,6 +115,9 @@ class AppDualBadgeMap {
     }
   }
 
+  AppDualBadgeMap(const AppDualBadgeMap&) = delete;
+  AppDualBadgeMap& operator=(const AppDualBadgeMap&) = delete;
+
   std::vector<std::string> GetExtensionIdsForArcPackageName(
       std::string arc_package_name) {
     const auto iter = arc_app_to_extensions_map_.find(arc_package_name);
@@ -133,8 +136,6 @@ class AppDualBadgeMap {
  private:
   ArcAppToExtensionsMap arc_app_to_extensions_map_;
   ExtensionToArcAppMap extension_to_arc_app_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDualBadgeMap);
 };
 
 base::LazyInstance<AppDualBadgeMap>::DestructorAtExit g_dual_badge_map =

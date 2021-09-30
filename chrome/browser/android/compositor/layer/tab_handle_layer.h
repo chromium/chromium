@@ -30,6 +30,9 @@ class TabHandleLayer : public Layer {
   static scoped_refptr<TabHandleLayer> Create(
       LayerTitleCache* layer_title_cache);
 
+  TabHandleLayer(const TabHandleLayer&) = delete;
+  TabHandleLayer& operator=(const TabHandleLayer&) = delete;
+
   void SetProperties(int id,
                      ui::Resource* close_button_resource,
                      ui::NinePatchResource* tab_handle_resource,
@@ -63,8 +66,6 @@ class TabHandleLayer : public Layer {
 
   float brightness_;
   bool foreground_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabHandleLayer);
 };
 
 }  // namespace android

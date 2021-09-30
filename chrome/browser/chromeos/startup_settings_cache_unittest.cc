@@ -13,6 +13,10 @@
 namespace chromeos {
 
 class StartupSettingsCacheTest : public testing::Test {
+ public:
+  StartupSettingsCacheTest(const StartupSettingsCacheTest&) = delete;
+  StartupSettingsCacheTest& operator=(const StartupSettingsCacheTest&) = delete;
+
  protected:
   StartupSettingsCacheTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
   ~StartupSettingsCacheTest() override {}
@@ -20,8 +24,6 @@ class StartupSettingsCacheTest : public testing::Test {
  private:
   // Map DIR_USER_DATA to a temp dir.
   base::ScopedPathOverride user_data_dir_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupSettingsCacheTest);
 };
 
 TEST_F(StartupSettingsCacheTest, RoundTrip) {

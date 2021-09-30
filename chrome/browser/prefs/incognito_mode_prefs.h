@@ -40,6 +40,10 @@ class IncognitoModePrefs {
 
   static constexpr Availability kDefaultAvailability = Availability::kEnabled;
 
+  IncognitoModePrefs() = delete;
+  IncognitoModePrefs(const IncognitoModePrefs&) = delete;
+  IncognitoModePrefs& operator=(const IncognitoModePrefs&) = delete;
+
   // Register incognito related preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -84,8 +88,6 @@ class IncognitoModePrefs {
   // to do - such as when checking for FORCED state).
   static Availability GetAvailabilityInternal(const PrefService* pref_service,
                                               GetAvailabilityMode mode);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(IncognitoModePrefs);
 };
 
 #endif  // CHROME_BROWSER_PREFS_INCOGNITO_MODE_PREFS_H_

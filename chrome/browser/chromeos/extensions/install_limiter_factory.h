@@ -23,6 +23,9 @@ class InstallLimiterFactory : public BrowserContextKeyedServiceFactory {
 
   static InstallLimiterFactory* GetInstance();
 
+  InstallLimiterFactory(const InstallLimiterFactory&) = delete;
+  InstallLimiterFactory& operator=(const InstallLimiterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<InstallLimiterFactory>;
 
@@ -32,8 +35,6 @@ class InstallLimiterFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallLimiterFactory);
 };
 
 }  // namespace extensions

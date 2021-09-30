@@ -43,6 +43,9 @@ class BookmarksSyncPerfTest : public SyncTest {
  public:
   BookmarksSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
+  BookmarksSyncPerfTest(const BookmarksSyncPerfTest&) = delete;
+  BookmarksSyncPerfTest& operator=(const BookmarksSyncPerfTest&) = delete;
+
   // Adds |num_urls| new unique bookmarks to the bookmark bar for |profile|.
   void AddURLs(int profile, size_t num_urls);
 
@@ -64,7 +67,6 @@ class BookmarksSyncPerfTest : public SyncTest {
 
   size_t url_number_ = 0;
   size_t url_title_number_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(BookmarksSyncPerfTest);
 };
 
 void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {

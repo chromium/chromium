@@ -27,6 +27,10 @@ class CaptivePortalServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static CaptivePortalServiceFactory* GetInstance();
 
+  CaptivePortalServiceFactory(const CaptivePortalServiceFactory&) = delete;
+  CaptivePortalServiceFactory& operator=(const CaptivePortalServiceFactory&) =
+      delete;
+
  private:
   friend class CaptivePortalBrowserTest;
   friend class CaptivePortalServiceTest;
@@ -40,8 +44,6 @@ class CaptivePortalServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_CAPTIVE_PORTAL_CAPTIVE_PORTAL_SERVICE_FACTORY_H_

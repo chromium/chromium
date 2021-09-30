@@ -23,6 +23,9 @@ class QRCodeGenerationRequest {
       const base::android::JavaParamRef<jstring>& j_data_string);
   void Destroy(JNIEnv* env);
 
+  QRCodeGenerationRequest(const QRCodeGenerationRequest&) = delete;
+  QRCodeGenerationRequest& operator=(const QRCodeGenerationRequest&) = delete;
+
  private:
   virtual ~QRCodeGenerationRequest();
 
@@ -34,8 +37,6 @@ class QRCodeGenerationRequest {
   base::android::ScopedJavaGlobalRef<jobject> java_qr_code_generation_request_;
 
   mojo::Remote<qrcode_generator::mojom::QRCodeGeneratorService> remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGenerationRequest);
 };
 
 #endif  // CHROME_BROWSER_SHARE_QR_CODE_GENERATION_REQUEST_H_

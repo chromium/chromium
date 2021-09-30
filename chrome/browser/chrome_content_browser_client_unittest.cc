@@ -238,6 +238,11 @@ class DisableWebRtcEncryptionFlagTest : public testing::Test {
       : from_command_line_(base::CommandLine::NO_PROGRAM),
         to_command_line_(base::CommandLine::NO_PROGRAM) {}
 
+  DisableWebRtcEncryptionFlagTest(const DisableWebRtcEncryptionFlagTest&) =
+      delete;
+  DisableWebRtcEncryptionFlagTest& operator=(
+      const DisableWebRtcEncryptionFlagTest&) = delete;
+
  protected:
   void SetUp() override {
     from_command_line_.AppendSwitch(switches::kDisableWebRtcEncryption);
@@ -252,9 +257,6 @@ class DisableWebRtcEncryptionFlagTest : public testing::Test {
 
   base::CommandLine from_command_line_;
   base::CommandLine to_command_line_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisableWebRtcEncryptionFlagTest);
 };
 
 TEST_F(DisableWebRtcEncryptionFlagTest, UnknownChannel) {
@@ -656,6 +658,10 @@ class CaptivePortalCheckProcessHost : public content::MockRenderProcessHost {
       content::BrowserContext* browser_context)
       : MockRenderProcessHost(browser_context) {}
 
+  CaptivePortalCheckProcessHost(const CaptivePortalCheckProcessHost&) = delete;
+  CaptivePortalCheckProcessHost& operator=(
+      const CaptivePortalCheckProcessHost&) = delete;
+
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       network::mojom::URLLoaderFactoryParamsPtr params) override {
@@ -672,14 +678,17 @@ class CaptivePortalCheckProcessHost : public content::MockRenderProcessHost {
  private:
   bool* invoked_url_factory_ = nullptr;
   bool expected_disable_secure_dns_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalCheckProcessHost);
 };
 
 class CaptivePortalCheckRenderProcessHostFactory
     : public content::RenderProcessHostFactory {
  public:
   CaptivePortalCheckRenderProcessHostFactory() = default;
+
+  CaptivePortalCheckRenderProcessHostFactory(
+      const CaptivePortalCheckRenderProcessHostFactory&) = delete;
+  CaptivePortalCheckRenderProcessHostFactory& operator=(
+      const CaptivePortalCheckRenderProcessHostFactory&) = delete;
 
   content::RenderProcessHost* CreateRenderProcessHost(
       content::BrowserContext* browser_context,
@@ -700,8 +709,6 @@ class CaptivePortalCheckRenderProcessHostFactory
 
  private:
   std::list<std::unique_ptr<CaptivePortalCheckProcessHost>> processes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalCheckRenderProcessHostFactory);
 };
 
 class ChromeContentBrowserClientCaptivePortalBrowserTest

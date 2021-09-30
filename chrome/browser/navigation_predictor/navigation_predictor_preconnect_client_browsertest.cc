@@ -48,6 +48,11 @@ class NavigationPredictorPreconnectClientBrowserTest
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
+  NavigationPredictorPreconnectClientBrowserTest(
+      const NavigationPredictorPreconnectClientBrowserTest&) = delete;
+  NavigationPredictorPreconnectClientBrowserTest& operator=(
+      const NavigationPredictorPreconnectClientBrowserTest&) = delete;
+
   void SetUp() override {
     https_server_->ServeFilesFromSourceDirectory(
         "chrome/test/data/navigation_predictor");
@@ -104,8 +109,6 @@ class NavigationPredictorPreconnectClientBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictorPreconnectClientBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
@@ -422,15 +425,17 @@ class NavigationPredictorPreconnectClientLocalURLBrowserTest
  public:
   NavigationPredictorPreconnectClientLocalURLBrowserTest() = default;
 
+  NavigationPredictorPreconnectClientLocalURLBrowserTest(
+      const NavigationPredictorPreconnectClientLocalURLBrowserTest&) = delete;
+  NavigationPredictorPreconnectClientLocalURLBrowserTest& operator=(
+      const NavigationPredictorPreconnectClientLocalURLBrowserTest&) = delete;
+
  private:
   void SetUpOnMainThread() override {
     NavigationPredictorPreconnectClientBrowserTest::SetUpOnMainThread();
     NavigationPredictorPreconnectClient::EnablePreconnectsForLocalIPsForTesting(
         false);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(
-      NavigationPredictorPreconnectClientLocalURLBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientLocalURLBrowserTest,

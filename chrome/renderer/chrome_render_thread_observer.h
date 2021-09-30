@@ -49,6 +49,9 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
         mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
             chromeos_listener_receiver);
 
+    ChromeOSListener(const ChromeOSListener&) = delete;
+    ChromeOSListener& operator=(const ChromeOSListener&) = delete;
+
     // Is the merge session still running?
     bool IsMergeSessionRunning() const;
 
@@ -73,12 +76,15 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
     bool merge_session_running_ GUARDED_BY(lock_);
     mutable base::Lock lock_;
     mojo::Receiver<chrome::mojom::ChromeOSListener> receiver_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(ChromeOSListener);
   };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ChromeRenderThreadObserver();
+
+  ChromeRenderThreadObserver(const ChromeRenderThreadObserver&) = delete;
+  ChromeRenderThreadObserver& operator=(const ChromeRenderThreadObserver&) =
+      delete;
+
   ~ChromeRenderThreadObserver() override;
 
   static bool is_incognito_process() { return is_incognito_process_; }
@@ -145,8 +151,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   // was started.
   scoped_refptr<ChromeOSListener> chromeos_listener_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderThreadObserver);
 };
 
 #endif  // CHROME_RENDERER_CHROME_RENDER_THREAD_OBSERVER_H_

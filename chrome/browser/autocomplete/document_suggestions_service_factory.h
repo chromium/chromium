@@ -19,6 +19,11 @@ class DocumentSuggestionsServiceFactory
                                                    bool create_if_necessary);
   static DocumentSuggestionsServiceFactory* GetInstance();
 
+  DocumentSuggestionsServiceFactory(const DocumentSuggestionsServiceFactory&) =
+      delete;
+  DocumentSuggestionsServiceFactory& operator=(
+      const DocumentSuggestionsServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<DocumentSuggestionsServiceFactory>;
 
@@ -28,8 +33,6 @@ class DocumentSuggestionsServiceFactory
   // Overrides from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentSuggestionsServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_DOCUMENT_SUGGESTIONS_SERVICE_FACTORY_H_

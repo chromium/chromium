@@ -23,6 +23,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  public:
   PersonalDataManagerAndroid(JNIEnv* env, jobject obj);
 
+  PersonalDataManagerAndroid(const PersonalDataManagerAndroid&) = delete;
+  PersonalDataManagerAndroid& operator=(const PersonalDataManagerAndroid&) =
+      delete;
+
   static base::android::ScopedJavaLocalRef<jobject>
   CreateJavaCreditCardFromNative(JNIEnv* env, const CreditCard& card);
   static void PopulateNativeCreditCardFromJava(
@@ -407,8 +411,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Used for subkey request.
   SubKeyRequester subkey_requester_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerAndroid);
 };
 
 }  // namespace autofill

@@ -43,6 +43,11 @@ using WebContents = content::WebContents;
 class SessionRestorePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
+  SessionRestorePageLoadMetricsObserverTest(
+      const SessionRestorePageLoadMetricsObserverTest&) = delete;
+  SessionRestorePageLoadMetricsObserverTest& operator=(
+      const SessionRestorePageLoadMetricsObserverTest&) = delete;
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<SessionRestorePageLoadMetricsObserver>());
@@ -156,8 +161,6 @@ class SessionRestorePageLoadMetricsObserverTest
       WebContents*,
       std::unique_ptr<page_load_metrics::PageLoadMetricsObserverTester>>
       testers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePageLoadMetricsObserverTest);
 };
 
 TEST_F(SessionRestorePageLoadMetricsObserverTest, NoMetrics) {

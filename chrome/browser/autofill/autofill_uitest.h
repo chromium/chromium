@@ -74,6 +74,10 @@ class BrowserAutofillManagerTestDelegateImpl
 
 class AutofillUiTest : public InProcessBrowserTest,
                        public content::WebContentsObserver {
+ public:
+  AutofillUiTest(const AutofillUiTest&) = delete;
+  AutofillUiTest& operator=(const AutofillUiTest&) = delete;
+
  protected:
   AutofillUiTest();
   ~AutofillUiTest() override;
@@ -132,8 +136,6 @@ class AutofillUiTest : public InProcessBrowserTest,
   content::RenderWidgetHost::KeyPressEventCallback key_press_event_sink_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillUiTest);
 };
 
 }  // namespace autofill

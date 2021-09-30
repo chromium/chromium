@@ -63,6 +63,9 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
                   safe_browsing::ArchiveAnalyzerResults* results)
         : next_closure_(std::move(next_closure)), results_(results) {}
 
+    ResultsGetter(const ResultsGetter&) = delete;
+    ResultsGetter& operator=(const ResultsGetter&) = delete;
+
     SandboxedDMGAnalyzer::ResultCallback GetCallback() {
       return base::BindOnce(&ResultsGetter::ResultsCallback,
                             base::Unretained(this));
@@ -76,8 +79,6 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
 
     base::OnceClosure next_closure_;
     safe_browsing::ArchiveAnalyzerResults* results_;
-
-    DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
 
   content::BrowserTaskEnvironment task_environment_;

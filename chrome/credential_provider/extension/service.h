@@ -20,6 +20,9 @@ class Service {
   // Gets the singleton instance of the service.
   static Service* Get();
 
+  Service(const Service&) = delete;
+  Service& operator=(const Service&) = delete;
+
   // Invoke the chosen action routine. By default service runs as a service,
   // but the action routine can support running in console for testing purposes.
   DWORD Run();
@@ -61,8 +64,6 @@ class Service {
 
   // Callback to end running periodic tasks.
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(Service);
 };
 
 }  // namespace extension

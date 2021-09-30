@@ -10,10 +10,10 @@
 
 class DevToolsDockTile {
  public:
-  static void Update(const std::string& label, gfx::Image image);
+  DevToolsDockTile(const DevToolsDockTile&) = delete;
+  DevToolsDockTile& operator=(const DevToolsDockTile&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevToolsDockTile);
+  static void Update(const std::string& label, gfx::Image image);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DOCK_TILE_H_

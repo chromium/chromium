@@ -68,6 +68,9 @@ class FileDestructionWatcher {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
+  FileDestructionWatcher(const FileDestructionWatcher&) = delete;
+  FileDestructionWatcher& operator=(const FileDestructionWatcher&) = delete;
+
   void WaitForDestruction() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK(!watcher_);
@@ -123,8 +126,6 @@ class FileDestructionWatcher {
   // Created and destroyed off of the UI thread, on the sequence used to watch
   // for changes.
   std::unique_ptr<base::FilePathWatcher> watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDestructionWatcher);
 };
 
 }  // namespace

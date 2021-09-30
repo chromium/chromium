@@ -30,6 +30,9 @@ class MouseEventsTest : public InProcessBrowserTest {
  public:
   MouseEventsTest() {}
 
+  MouseEventsTest(const MouseEventsTest&) = delete;
+  MouseEventsTest& operator=(const MouseEventsTest&) = delete;
+
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -77,8 +80,6 @@ class MouseEventsTest : public InProcessBrowserTest {
     ui_controls::SendMouseMove(bounds.CenterPoint().x(), bounds.y() - 10);
     WaitForTitle("onmouseout");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventsTest);
 };
 
 #if defined(OS_MAC)

@@ -22,6 +22,9 @@ class UserEventServiceFactory : public BrowserContextKeyedServiceFactory {
   static syncer::UserEventService* GetForProfile(Profile* profile);
   static UserEventServiceFactory* GetInstance();
 
+  UserEventServiceFactory(const UserEventServiceFactory&) = delete;
+  UserEventServiceFactory& operator=(const UserEventServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UserEventServiceFactory>;
 
@@ -33,8 +36,6 @@ class UserEventServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventServiceFactory);
 };
 
 }  // namespace browser_sync

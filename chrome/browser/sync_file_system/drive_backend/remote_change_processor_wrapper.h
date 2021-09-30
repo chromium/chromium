@@ -23,6 +23,10 @@ class RemoteChangeProcessorWrapper
   explicit RemoteChangeProcessorWrapper(
       RemoteChangeProcessor* remote_change_processor);
 
+  RemoteChangeProcessorWrapper(const RemoteChangeProcessorWrapper&) = delete;
+  RemoteChangeProcessorWrapper& operator=(const RemoteChangeProcessorWrapper&) =
+      delete;
+
   void PrepareForProcessRemoteChange(
       const storage::FileSystemURL& url,
       RemoteChangeProcessor::PrepareChangeCallback callback);
@@ -43,8 +47,6 @@ class RemoteChangeProcessorWrapper
  private:
   RemoteChangeProcessor* remote_change_processor_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessorWrapper);
 };
 
 }  // namespace drive_backend

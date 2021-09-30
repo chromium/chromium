@@ -23,6 +23,12 @@ class ChromeClientSideDetectionHostDelegateTest
     : public BrowserWithTestWindowTest {
  public:
   ChromeClientSideDetectionHostDelegateTest() = default;
+
+  ChromeClientSideDetectionHostDelegateTest(
+      const ChromeClientSideDetectionHostDelegateTest&) = delete;
+  ChromeClientSideDetectionHostDelegateTest& operator=(
+      const ChromeClientSideDetectionHostDelegateTest&) = delete;
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("http://foo/0"));
@@ -52,9 +58,6 @@ class ChromeClientSideDetectionHostDelegateTest
   SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
   SafeBrowsingNavigationObserver* navigation_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeClientSideDetectionHostDelegateTest);
 };
 
 TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {

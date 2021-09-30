@@ -158,6 +158,9 @@ using DefaultWebClientWorkerCallback =
 class DefaultWebClientWorker
     : public base::RefCountedThreadSafe<DefaultWebClientWorker> {
  public:
+  DefaultWebClientWorker(const DefaultWebClientWorker&) = delete;
+  DefaultWebClientWorker& operator=(const DefaultWebClientWorker&) = delete;
+
   // Controls whether the worker can use user interaction to set the default
   // web client. If false, the set-as-default operation will fail on OS where
   // it is required.
@@ -219,14 +222,15 @@ class DefaultWebClientWorker
   // setting the default protocol client. The pointer must be valid for the
   // lifetime of the worker.
   const char* worker_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultWebClientWorker);
 };
 
 // Worker for checking and setting the default browser.
 class DefaultBrowserWorker : public DefaultWebClientWorker {
  public:
   DefaultBrowserWorker();
+
+  DefaultBrowserWorker(const DefaultBrowserWorker&) = delete;
+  DefaultBrowserWorker& operator=(const DefaultBrowserWorker&) = delete;
 
  protected:
   ~DefaultBrowserWorker() override;
@@ -237,8 +241,6 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
 
   // Set Chrome as the default browser.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserWorker);
 };
 
 // Worker for checking and setting the default client application
@@ -248,6 +250,10 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
 class DefaultProtocolClientWorker : public DefaultWebClientWorker {
  public:
   explicit DefaultProtocolClientWorker(const std::string& protocol);
+
+  DefaultProtocolClientWorker(const DefaultProtocolClientWorker&) = delete;
+  DefaultProtocolClientWorker& operator=(const DefaultProtocolClientWorker&) =
+      delete;
 
   const std::string& protocol() const { return protocol_; }
 
@@ -262,8 +268,6 @@ class DefaultProtocolClientWorker : public DefaultWebClientWorker {
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;
 
   std::string protocol_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultProtocolClientWorker);
 };
 
 }  // namespace shell_integration

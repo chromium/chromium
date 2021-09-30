@@ -26,6 +26,10 @@ class CryptAuthDeviceIdProviderImpl
 
   static const CryptAuthDeviceIdProviderImpl* GetInstance();
 
+  CryptAuthDeviceIdProviderImpl(const CryptAuthDeviceIdProviderImpl&) = delete;
+  CryptAuthDeviceIdProviderImpl& operator=(
+      const CryptAuthDeviceIdProviderImpl&) = delete;
+
   // CryptAuthDeviceIdProvider:
   std::string GetDeviceId() const override;
 
@@ -33,8 +37,6 @@ class CryptAuthDeviceIdProviderImpl
   friend class base::NoDestructor<CryptAuthDeviceIdProviderImpl>;
 
   CryptAuthDeviceIdProviderImpl();
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceIdProviderImpl);
 };
 
 }  // namespace cryptauth

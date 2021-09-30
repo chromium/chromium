@@ -15,6 +15,10 @@ class SchemePageLoadMetricsObserver
  public:
   SchemePageLoadMetricsObserver() = default;
 
+  SchemePageLoadMetricsObserver(const SchemePageLoadMetricsObserver&) = delete;
+  SchemePageLoadMetricsObserver& operator=(
+      const SchemePageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
@@ -33,8 +37,6 @@ class SchemePageLoadMetricsObserver
  private:
   // The ui transition for the committed navigation.
   ui::PageTransition transition_ = ui::PAGE_TRANSITION_FIRST;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SCHEME_PAGE_LOAD_METRICS_OBSERVER_H_

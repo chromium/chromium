@@ -66,6 +66,10 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
       Delegate* delegate,
       const content::StoragePartitionId& partition_id,
       content::SessionStorageNamespace* session_storage_namespace);
+
+  BackgroundContents(const BackgroundContents&) = delete;
+  BackgroundContents& operator=(const BackgroundContents&) = delete;
+
   ~BackgroundContents() override;
 
   content::WebContents* web_contents() const { return web_contents_.get(); }
@@ -111,8 +115,6 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
 
   // The initial URL to load.
   GURL initial_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContents);
 };
 
 // This is the data sent out as the details with BACKGROUND_CONTENTS_OPENED.

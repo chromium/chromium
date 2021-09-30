@@ -40,6 +40,11 @@ const std::vector<std::string> kStorageTypes{
     "CacheStorage",   "ServiceWorker", "StorageFoundation"};
 
 class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
+ public:
+  ThirdPartyDataRemoverTest(const ThirdPartyDataRemoverTest&) = delete;
+  ThirdPartyDataRemoverTest& operator=(const ThirdPartyDataRemoverTest&) =
+      delete;
+
  protected:
   ThirdPartyDataRemoverTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -162,8 +167,6 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::test_server::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyDataRemoverTest);
 };
 
 // Test that ClearThirdPartyData clears SameSite=None cookies.
@@ -202,6 +205,12 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyDataRemoverTest,
 }
 
 class ThirdPartyDataRemoverFallbackTest : public ThirdPartyDataRemoverTest {
+ public:
+  ThirdPartyDataRemoverFallbackTest(const ThirdPartyDataRemoverFallbackTest&) =
+      delete;
+  ThirdPartyDataRemoverFallbackTest& operator=(
+      const ThirdPartyDataRemoverFallbackTest&) = delete;
+
  protected:
   ThirdPartyDataRemoverFallbackTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -212,8 +221,6 @@ class ThirdPartyDataRemoverFallbackTest : public ThirdPartyDataRemoverTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::test_server::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyDataRemoverFallbackTest);
 };
 
 // Test the fallback behavior of ClearThirdPartyData when access context

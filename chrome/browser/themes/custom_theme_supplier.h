@@ -37,6 +37,9 @@ class CustomThemeSupplier
 
   explicit CustomThemeSupplier(ThemeType type);
 
+  CustomThemeSupplier(const CustomThemeSupplier&) = delete;
+  CustomThemeSupplier& operator=(const CustomThemeSupplier&) = delete;
+
   ThemeType get_theme_type() const {
     return theme_type_;
   }
@@ -91,8 +94,6 @@ class CustomThemeSupplier
 
   ThemeType theme_type_;
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomThemeSupplier);
 };
 
 #endif  // CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_

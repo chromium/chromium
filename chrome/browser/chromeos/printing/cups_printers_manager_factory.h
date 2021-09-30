@@ -28,6 +28,10 @@ class CupsPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
   static CupsPrintersManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  CupsPrintersManagerFactory(const CupsPrintersManagerFactory&) = delete;
+  CupsPrintersManagerFactory& operator=(const CupsPrintersManagerFactory&) =
+      delete;
+
   // Returns the CupsPrintersManagerProxy object which is always attached to the
   // primary profile.
   CupsPrintersManagerProxy* GetProxy();
@@ -49,8 +53,6 @@ class CupsPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
 
   // Proxy object always attached to the primary profile.
   std::unique_ptr<CupsPrintersManagerProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintersManagerFactory);
 };
 
 }  // namespace chromeos

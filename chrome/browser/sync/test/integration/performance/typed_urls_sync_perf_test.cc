@@ -51,6 +51,9 @@ class TypedUrlsSyncPerfTest : public SyncTest {
  public:
   TypedUrlsSyncPerfTest() : SyncTest(TWO_CLIENT), url_number_(0) {}
 
+  TypedUrlsSyncPerfTest(const TypedUrlsSyncPerfTest&) = delete;
+  TypedUrlsSyncPerfTest& operator=(const TypedUrlsSyncPerfTest&) = delete;
+
   // Adds |num_urls| new unique typed urls to |profile|.
   void AddURLs(int profile, int num_urls);
 
@@ -71,7 +74,6 @@ class TypedUrlsSyncPerfTest : public SyncTest {
   GURL IntToURL(int n);
 
   int url_number_;
-  DISALLOW_COPY_AND_ASSIGN(TypedUrlsSyncPerfTest);
 };
 
 void TypedUrlsSyncPerfTest::AddURLs(int profile, int num_urls) {

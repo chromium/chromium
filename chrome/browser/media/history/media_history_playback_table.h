@@ -36,6 +36,10 @@ class MediaHistoryPlaybackTable : public MediaHistoryTableBase {
 
   using MediaHistoryPlaybacks = std::vector<MediaHistoryPlayback>;
 
+  MediaHistoryPlaybackTable(const MediaHistoryPlaybackTable&) = delete;
+  MediaHistoryPlaybackTable& operator=(const MediaHistoryPlaybackTable&) =
+      delete;
+
   bool DeleteURL(const GURL& url) override;
 
  private:
@@ -53,8 +57,6 @@ class MediaHistoryPlaybackTable : public MediaHistoryTableBase {
 
   // Returns the playback rows in the database.
   std::vector<mojom::MediaHistoryPlaybackRowPtr> GetPlaybackRows();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryPlaybackTable);
 };
 
 }  // namespace media_history

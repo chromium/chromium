@@ -21,6 +21,11 @@ class MockDesktopSessionDurationTracker : public DesktopSessionDurationTracker {
  public:
   MockDesktopSessionDurationTracker() {}
 
+  MockDesktopSessionDurationTracker(const MockDesktopSessionDurationTracker&) =
+      delete;
+  MockDesktopSessionDurationTracker& operator=(
+      const MockDesktopSessionDurationTracker&) = delete;
+
   bool is_timeout() const { return time_out_; }
 
   using DesktopSessionDurationTracker::OnAudioStart;
@@ -34,8 +39,6 @@ class MockDesktopSessionDurationTracker : public DesktopSessionDurationTracker {
 
  private:
   bool time_out_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDesktopSessionDurationTracker);
 };
 
 // Mock class for |DesktopSessionDurationTracker::Observer| for testing.
@@ -43,6 +46,10 @@ class MockDesktopSessionObserver
     : public metrics::DesktopSessionDurationTracker::Observer {
  public:
   MockDesktopSessionObserver() {}
+
+  MockDesktopSessionObserver(const MockDesktopSessionObserver&) = delete;
+  MockDesktopSessionObserver& operator=(const MockDesktopSessionObserver&) =
+      delete;
 
   int session_started_count() const { return session_started_count_; }
   int session_ended_count() const { return session_ended_count_; }
@@ -60,13 +67,16 @@ class MockDesktopSessionObserver
  private:
   int session_started_count_ = false;
   int session_ended_count_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDesktopSessionObserver);
 };
 
 class DesktopSessionDurationTrackerTest : public testing::Test {
  public:
   DesktopSessionDurationTrackerTest() {}
+
+  DesktopSessionDurationTrackerTest(const DesktopSessionDurationTrackerTest&) =
+      delete;
+  DesktopSessionDurationTrackerTest& operator=(
+      const DesktopSessionDurationTrackerTest&) = delete;
 
   void SetUp() override {
     metrics::DesktopSessionDurationTracker::Initialize();
@@ -91,8 +101,6 @@ class DesktopSessionDurationTrackerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionDurationTrackerTest);
 };
 
 }  // namespace

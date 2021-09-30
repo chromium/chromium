@@ -23,6 +23,9 @@ class AndroidSmsServiceFactory : public BrowserContextKeyedServiceFactory {
   static AndroidSmsService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  AndroidSmsServiceFactory(const AndroidSmsServiceFactory&) = delete;
+  AndroidSmsServiceFactory& operator=(const AndroidSmsServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AndroidSmsServiceFactory>;
 
@@ -38,8 +41,6 @@ class AndroidSmsServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsServiceFactory);
 };
 
 }  // namespace android_sms

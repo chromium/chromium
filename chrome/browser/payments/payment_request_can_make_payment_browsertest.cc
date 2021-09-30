@@ -28,6 +28,12 @@ namespace payments {
 
 class PaymentRequestCanMakePaymentTestBase
     : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  PaymentRequestCanMakePaymentTestBase(
+      const PaymentRequestCanMakePaymentTestBase&) = delete;
+  PaymentRequestCanMakePaymentTestBase& operator=(
+      const PaymentRequestCanMakePaymentTestBase&) = delete;
+
  protected:
   PaymentRequestCanMakePaymentTestBase() = default;
 
@@ -46,14 +52,17 @@ class PaymentRequestCanMakePaymentTestBase
 
  private:
   syncer::TestSyncService sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentTestBase);
 };
 
 class PaymentRequestCanMakePaymentQueryTest
     : public PaymentRequestCanMakePaymentTestBase {
  protected:
   PaymentRequestCanMakePaymentQueryTest() = default;
+
+  PaymentRequestCanMakePaymentQueryTest(
+      const PaymentRequestCanMakePaymentQueryTest&) = delete;
+  PaymentRequestCanMakePaymentQueryTest& operator=(
+      const PaymentRequestCanMakePaymentQueryTest&) = delete;
 
   void CallCanMakePayment() {
     ResetEventWaiterForEventSequence(
@@ -70,9 +79,6 @@ class PaymentRequestCanMakePaymentQueryTest
                                        "hasEnrolledInstrument();"));
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentQueryTest);
 };
 
 // Visa is required, and user has a visa instrument.
@@ -204,6 +210,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 
 class PaymentRequestCanMakePaymentQueryCCTest
     : public PaymentRequestCanMakePaymentTestBase {
+ public:
+  PaymentRequestCanMakePaymentQueryCCTest(
+      const PaymentRequestCanMakePaymentQueryCCTest&) = delete;
+  PaymentRequestCanMakePaymentQueryCCTest& operator=(
+      const PaymentRequestCanMakePaymentQueryCCTest&) = delete;
+
  protected:
   PaymentRequestCanMakePaymentQueryCCTest() = default;
 
@@ -231,9 +243,6 @@ class PaymentRequestCanMakePaymentQueryCCTest
                                      : "hasEnrolledInstrument('mastercard');"));
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentQueryCCTest);
 };
 
 // Test that repeated canMakePayment and hasEnrolledInstrument queries are
@@ -366,6 +375,11 @@ class PaymentRequestCanMakePaymentQueryPMITest
     script_[CheckFor::BOB_PAY_AND_VISA] = "[bobPayMethod, basicVisaMethod]";
   }
 
+  PaymentRequestCanMakePaymentQueryPMITest(
+      const PaymentRequestCanMakePaymentQueryPMITest&) = delete;
+  PaymentRequestCanMakePaymentQueryPMITest& operator=(
+      const PaymentRequestCanMakePaymentQueryPMITest&) = delete;
+
   void CallCanMakePayment(CheckFor check_for) {
     ResetEventWaiterForEventSequence(
         {TestEvent::kCanMakePaymentCalled, TestEvent::kCanMakePaymentReturned});
@@ -387,8 +401,6 @@ class PaymentRequestCanMakePaymentQueryPMITest
 
  private:
   base::flat_map<CheckFor, std::string> script_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentQueryPMITest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,

@@ -102,6 +102,11 @@ class TestNetworkBytesChangedObserver
  public:
   TestNetworkBytesChangedObserver() : network_bytes_changed_(false) {}
 
+  TestNetworkBytesChangedObserver(const TestNetworkBytesChangedObserver&) =
+      delete;
+  TestNetworkBytesChangedObserver& operator=(
+      const TestNetworkBytesChangedObserver&) = delete;
+
   // prerender::NoStatePrefetchHandle::Observer
   void OnPrefetchStop(
       NoStatePrefetchHandle* no_state_prefetch_handle) override {}
@@ -114,8 +119,6 @@ class TestNetworkBytesChangedObserver
 
  private:
   bool network_bytes_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkBytesChangedObserver);
 };
 
 int DummyNoStatePrefetchContents::g_next_route_id_ = 0;

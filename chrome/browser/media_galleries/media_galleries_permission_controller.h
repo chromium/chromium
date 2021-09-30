@@ -56,6 +56,11 @@ class MediaGalleriesPermissionController
                                      const extensions::Extension& extension,
                                      base::OnceClosure on_finish);
 
+  MediaGalleriesPermissionController(
+      const MediaGalleriesPermissionController&) = delete;
+  MediaGalleriesPermissionController& operator=(
+      const MediaGalleriesPermissionController&) = delete;
+
   // MediaGalleriesDialogController implementation.
   std::u16string GetHeader() const override;
   std::u16string GetSubtext() const override;
@@ -216,8 +221,6 @@ class MediaGalleriesPermissionController
 
   // Creates the dialog. Only changed for unit tests.
   CreateDialogCallback create_dialog_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPermissionController);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_PERMISSION_CONTROLLER_H_

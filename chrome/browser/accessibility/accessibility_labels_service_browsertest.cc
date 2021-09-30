@@ -25,6 +25,11 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
  public:
   AccessibilityLabelsBrowserTest() {}
 
+  AccessibilityLabelsBrowserTest(const AccessibilityLabelsBrowserTest&) =
+      delete;
+  AccessibilityLabelsBrowserTest& operator=(
+      const AccessibilityLabelsBrowserTest&) = delete;
+
   // InProcessBrowserTest overrides:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -52,7 +57,6 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsBrowserTest);
 };
 
 // Changing the kAccessibilityImageLabelsEnabled pref should affect the

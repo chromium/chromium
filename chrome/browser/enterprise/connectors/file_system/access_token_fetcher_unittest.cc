@@ -51,8 +51,9 @@ class AccessTokenFetcherForTest : public AccessTokenFetcher {
   using AccessTokenFetcher::OnGetTokenFailure;
   using AccessTokenFetcher::OnGetTokenSuccess;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessTokenFetcherForTest);
+  AccessTokenFetcherForTest(const AccessTokenFetcherForTest&) = delete;
+  AccessTokenFetcherForTest& operator=(const AccessTokenFetcherForTest&) =
+      delete;
 };
 
 class AccessTokenFetcherTest : public testing::Test {

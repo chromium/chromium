@@ -335,6 +335,9 @@ class ThreadWatcherList {
   typedef std::map<std::string, UnresponsiveCountThreshold>
       CrashOnHangThreadMap;
 
+  ThreadWatcherList(const ThreadWatcherList&) = delete;
+  ThreadWatcherList& operator=(const ThreadWatcherList&) = delete;
+
   // This method posts a task on WatchDogThread to start watching all browser
   // threads.
   // This method is accessible on UI thread.
@@ -452,8 +455,6 @@ class ThreadWatcherList {
 
   // Map of all registered watched threads, from thread_id to ThreadWatcher.
   RegistrationList registered_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadWatcherList);
 };
 
 // Class for WatchDogThread and in its Init method, we start watching UI, IO,

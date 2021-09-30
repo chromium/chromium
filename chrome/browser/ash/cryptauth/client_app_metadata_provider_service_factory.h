@@ -22,6 +22,11 @@ class ClientAppMetadataProviderServiceFactory
   static ClientAppMetadataProviderService* GetForProfile(Profile* profile);
   static ClientAppMetadataProviderServiceFactory* GetInstance();
 
+  ClientAppMetadataProviderServiceFactory(
+      const ClientAppMetadataProviderServiceFactory&) = delete;
+  ClientAppMetadataProviderServiceFactory& operator=(
+      const ClientAppMetadataProviderServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       ClientAppMetadataProviderServiceFactory>;
@@ -32,8 +37,6 @@ class ClientAppMetadataProviderServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* browser_context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientAppMetadataProviderServiceFactory);
 };
 
 }  // namespace ash

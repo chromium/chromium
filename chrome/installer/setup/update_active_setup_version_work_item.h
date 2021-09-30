@@ -45,6 +45,11 @@ class UpdateActiveSetupVersionWorkItem : public WorkItem {
   UpdateActiveSetupVersionWorkItem(const std::wstring& active_setup_path,
                                    Operation operation);
 
+  UpdateActiveSetupVersionWorkItem(const UpdateActiveSetupVersionWorkItem&) =
+      delete;
+  UpdateActiveSetupVersionWorkItem& operator=(
+      const UpdateActiveSetupVersionWorkItem&) = delete;
+
  private:
   // WorkItem:
   bool DoImpl() override;
@@ -61,8 +66,6 @@ class UpdateActiveSetupVersionWorkItem : public WorkItem {
 
   // The Operation to be performed by this WorkItem when executed.
   const Operation operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateActiveSetupVersionWorkItem);
 };
 
 #endif  // CHROME_INSTALLER_SETUP_UPDATE_ACTIVE_SETUP_VERSION_WORK_ITEM_H_

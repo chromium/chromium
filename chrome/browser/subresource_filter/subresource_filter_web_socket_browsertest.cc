@@ -31,6 +31,11 @@ class SubresourceFilterWebSocketBrowserTest
  public:
   SubresourceFilterWebSocketBrowserTest() {}
 
+  SubresourceFilterWebSocketBrowserTest(
+      const SubresourceFilterWebSocketBrowserTest&) = delete;
+  SubresourceFilterWebSocketBrowserTest& operator=(
+      const SubresourceFilterWebSocketBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
     websocket_test_server_ = std::make_unique<net::SpawnedTestServer>(
@@ -60,8 +65,6 @@ class SubresourceFilterWebSocketBrowserTest
 
  private:
   std::unique_ptr<net::SpawnedTestServer> websocket_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterWebSocketBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {

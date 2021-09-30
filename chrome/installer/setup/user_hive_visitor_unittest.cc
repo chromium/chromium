@@ -21,6 +21,9 @@ class UserHiveVisitor {
  public:
   UserHiveVisitor() = default;
 
+  UserHiveVisitor(const UserHiveVisitor&) = delete;
+  UserHiveVisitor& operator=(const UserHiveVisitor&) = delete;
+
   bool OnUserHive(const wchar_t* sid, base::win::RegKey* key) {
     EXPECT_NE(nullptr, sid);
     EXPECT_STRNE(L"", sid);
@@ -37,8 +40,6 @@ class UserHiveVisitor {
  private:
   std::vector<std::wstring> sids_visited_;
   bool early_exit_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UserHiveVisitor);
 };
 
 }  // namespace

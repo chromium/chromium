@@ -187,6 +187,10 @@ class CrOSComponentInstallerTest : public testing::Test {
   CrOSComponentInstallerTest()
       : user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
+  CrOSComponentInstallerTest(const CrOSComponentInstallerTest&) = delete;
+  CrOSComponentInstallerTest& operator=(const CrOSComponentInstallerTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(base_component_paths_.CreateUniqueTempDir());
 
@@ -361,8 +365,6 @@ class CrOSComponentInstallerTest : public testing::Test {
   base::FilePath user_cros_components_;
 
   base::FilePath tmp_unpack_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstallerTest);
 };
 
 TEST_F(CrOSComponentInstallerTest, CompatibleCrOSComponent) {

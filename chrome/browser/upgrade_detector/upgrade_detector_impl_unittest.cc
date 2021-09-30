@@ -146,6 +146,9 @@ class UpgradeDetectorImplTest : public ::testing::Test {
     UpgradeDetector::GetInstance()->Init();
   }
 
+  UpgradeDetectorImplTest(const UpgradeDetectorImplTest&) = delete;
+  UpgradeDetectorImplTest& operator=(const UpgradeDetectorImplTest&) = delete;
+
   ~UpgradeDetectorImplTest() override {
     UpgradeDetector::GetInstance()->Shutdown();
   }
@@ -208,8 +211,6 @@ class UpgradeDetectorImplTest : public ::testing::Test {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorImplTest);
 };
 
 TEST_F(UpgradeDetectorImplTest, VariationsChanges) {
@@ -476,6 +477,11 @@ ACTION_P2(AppendTicksAndStage, detector, notifications) {
 // RelaunchNotificationPeriod settings.
 class UpgradeDetectorImplTimerTest : public UpgradeDetectorImplTest,
                                      public ::testing::WithParamInterface<int> {
+ public:
+  UpgradeDetectorImplTimerTest(const UpgradeDetectorImplTimerTest&) = delete;
+  UpgradeDetectorImplTimerTest& operator=(const UpgradeDetectorImplTimerTest&) =
+      delete;
+
  protected:
   UpgradeDetectorImplTimerTest() {
     const int period_ms = GetParam();
@@ -487,8 +493,6 @@ class UpgradeDetectorImplTimerTest : public UpgradeDetectorImplTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorImplTimerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

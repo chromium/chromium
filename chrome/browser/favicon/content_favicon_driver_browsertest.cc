@@ -75,6 +75,9 @@ class TestURLLoaderInterceptor {
             base::BindRepeating(&TestURLLoaderInterceptor::InterceptURLRequest,
                                 base::Unretained(this))) {}
 
+  TestURLLoaderInterceptor(const TestURLLoaderInterceptor&) = delete;
+  TestURLLoaderInterceptor& operator=(const TestURLLoaderInterceptor&) = delete;
+
   bool was_loaded(const GURL& url) const {
     return intercepted_urls_.find(url) != intercepted_urls_.end();
   }
@@ -106,8 +109,6 @@ class TestURLLoaderInterceptor {
   std::set<GURL> bypass_cache_urls_;
   content::URLLoaderInterceptor interceptor_;
   std::map<GURL, network::mojom::RequestDestination> destinations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderInterceptor);
 };
 
 // Waits for the following the finish:

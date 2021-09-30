@@ -4658,6 +4658,11 @@ class SpecialAccessFileURLLoaderFactory
     return pending_remote;
   }
 
+  SpecialAccessFileURLLoaderFactory(const SpecialAccessFileURLLoaderFactory&) =
+      delete;
+  SpecialAccessFileURLLoaderFactory& operator=(
+      const SpecialAccessFileURLLoaderFactory&) = delete;
+
  private:
   explicit SpecialAccessFileURLLoaderFactory(
       int child_id,
@@ -4688,7 +4693,6 @@ class SpecialAccessFileURLLoaderFactory
   }
 
   int child_id_;
-  DISALLOW_COPY_AND_ASSIGN(SpecialAccessFileURLLoaderFactory);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

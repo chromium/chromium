@@ -41,9 +41,11 @@ class WasInProgressData : public base::SupportsUserData::Data {
     item->SetUserData(kKey, base::WrapUnique(this));
   }
 
+  WasInProgressData(const WasInProgressData&) = delete;
+  WasInProgressData& operator=(const WasInProgressData&) = delete;
+
  private:
   static const char kKey[];
-  DISALLOW_COPY_AND_ASSIGN(WasInProgressData);
 };
 
 const char WasInProgressData::kKey[] =

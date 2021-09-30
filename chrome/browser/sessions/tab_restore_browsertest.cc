@@ -79,6 +79,9 @@ class TabRestoreTest : public InProcessBrowserTest {
         base::FilePath().AppendASCII("bot2.html"));
   }
 
+  TabRestoreTest(const TabRestoreTest&) = delete;
+  TabRestoreTest& operator=(const TabRestoreTest&) = delete;
+
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   void SetMaxSimultaneousLoadsForTesting(TabLoader* tab_loader) {
     TabLoaderTester tester(tab_loader);
@@ -293,8 +296,6 @@ class TabRestoreTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreTest);
 };
 
 // Close the end tab in the current window, then restore it. The tab should be

@@ -26,6 +26,11 @@ class KidsChromeManagementClientFactory
 
   static KidsChromeManagementClientFactory* GetInstance();
 
+  KidsChromeManagementClientFactory(const KidsChromeManagementClientFactory&) =
+      delete;
+  KidsChromeManagementClientFactory& operator=(
+      const KidsChromeManagementClientFactory&) = delete;
+
  private:
   friend class base::NoDestructor<KidsChromeManagementClientFactory>;
 
@@ -37,8 +42,6 @@ class KidsChromeManagementClientFactory
   // because this method is overriding another one from the parent class.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(KidsChromeManagementClientFactory);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_CHROME_MANAGEMENT_CLIENT_FACTORY_H_

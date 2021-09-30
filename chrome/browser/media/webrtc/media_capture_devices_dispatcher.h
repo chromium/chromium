@@ -66,6 +66,10 @@ class MediaCaptureDevicesDispatcher
 
   static MediaCaptureDevicesDispatcher* GetInstance();
 
+  MediaCaptureDevicesDispatcher(const MediaCaptureDevicesDispatcher&) = delete;
+  MediaCaptureDevicesDispatcher& operator=(
+      const MediaCaptureDevicesDispatcher&) = delete;
+
   // Registers the preferences related to Media Stream default devices.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -191,8 +195,6 @@ class MediaCaptureDevicesDispatcher
 
   // Handlers for processing media access requests.
   std::vector<std::unique_ptr<MediaAccessHandler>> media_access_handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCaptureDevicesDispatcher);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_

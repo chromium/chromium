@@ -27,6 +27,11 @@ class ProfileNetworkContextServiceFactory
   // Returns the NetworkContextServiceFactory singleton.
   static ProfileNetworkContextServiceFactory* GetInstance();
 
+  ProfileNetworkContextServiceFactory(
+      const ProfileNetworkContextServiceFactory&) = delete;
+  ProfileNetworkContextServiceFactory& operator=(
+      const ProfileNetworkContextServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       ProfileNetworkContextServiceFactory>;
@@ -40,8 +45,6 @@ class ProfileNetworkContextServiceFactory
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileNetworkContextServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_FACTORY_H_

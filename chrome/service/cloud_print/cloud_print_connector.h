@@ -45,6 +45,9 @@ class CloudPrintConnector
                       const net::PartialNetworkTrafficAnnotationTag&
                           partial_traffic_annotation);
 
+  CloudPrintConnector(const CloudPrintConnector&) = delete;
+  CloudPrintConnector& operator=(const CloudPrintConnector&) = delete;
+
   bool Start();
   void Stop();
   bool IsRunning();
@@ -203,8 +206,6 @@ class CloudPrintConnector
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
 
   base::WeakPtrFactory<CloudPrintConnector> stats_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintConnector);
 };
 
 }  // namespace cloud_print

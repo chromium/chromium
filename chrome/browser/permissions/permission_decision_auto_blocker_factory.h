@@ -22,6 +22,11 @@ class PermissionDecisionAutoBlockerFactory
       Profile* profile);
   static PermissionDecisionAutoBlockerFactory* GetInstance();
 
+  PermissionDecisionAutoBlockerFactory(
+      const PermissionDecisionAutoBlockerFactory&) = delete;
+  PermissionDecisionAutoBlockerFactory& operator=(
+      const PermissionDecisionAutoBlockerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       PermissionDecisionAutoBlockerFactory>;
@@ -35,8 +40,6 @@ class PermissionDecisionAutoBlockerFactory
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionDecisionAutoBlockerFactory);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_DECISION_AUTO_BLOCKER_FACTORY_H_

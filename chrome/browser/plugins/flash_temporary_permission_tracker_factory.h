@@ -24,6 +24,11 @@ class FlashTemporaryPermissionTrackerFactory
       content::BrowserContext* browser_context);
   static FlashTemporaryPermissionTrackerFactory* GetInstance();
 
+  FlashTemporaryPermissionTrackerFactory(
+      const FlashTemporaryPermissionTrackerFactory&) = delete;
+  FlashTemporaryPermissionTrackerFactory& operator=(
+      const FlashTemporaryPermissionTrackerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       FlashTemporaryPermissionTrackerFactory>;
@@ -36,8 +41,6 @@ class FlashTemporaryPermissionTrackerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashTemporaryPermissionTrackerFactory);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_FLASH_TEMPORARY_PERMISSION_TRACKER_FACTORY_H_

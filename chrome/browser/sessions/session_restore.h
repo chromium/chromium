@@ -59,6 +59,9 @@ class SessionRestore {
   using CallbackList = base::RepeatingCallbackList<void(Profile*, int)>;
   using RestoredCallback = base::RepeatingCallback<void(Profile*, int)>;
 
+  SessionRestore(const SessionRestore&) = delete;
+  SessionRestore& operator=(const SessionRestore&) = delete;
+
   // Restores the last session. |behavior| is a bitmask of Behaviors, see it
   // for details. If |browser| is non-null the tabs for the first window are
   // added to it. Returns the last active browser.
@@ -166,8 +169,6 @@ class SessionRestore {
 
   // Whether session restore started or not.
   static bool session_restore_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestore);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_H_

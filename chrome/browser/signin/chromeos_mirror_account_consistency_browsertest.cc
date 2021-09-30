@@ -66,6 +66,12 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
 // This is a Chrome OS-only test ensuring that mirror account consistency is
 // enabled for child accounts, but not enabled for other account types.
 class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
+ public:
+  ChromeOsMirrorAccountConsistencyTest(
+      const ChromeOsMirrorAccountConsistencyTest&) = delete;
+  ChromeOsMirrorAccountConsistencyTest& operator=(
+      const ChromeOsMirrorAccountConsistencyTest&) = delete;
+
  protected:
   ~ChromeOsMirrorAccountConsistencyTest() override {}
 
@@ -102,9 +108,6 @@ class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeOsMirrorAccountConsistencyTest);
 };
 
 // Mirror is enabled for child accounts.

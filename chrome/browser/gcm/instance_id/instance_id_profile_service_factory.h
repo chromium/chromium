@@ -22,6 +22,11 @@ class InstanceIDProfileServiceFactory :
       content::BrowserContext* profile);
   static InstanceIDProfileServiceFactory* GetInstance();
 
+  InstanceIDProfileServiceFactory(const InstanceIDProfileServiceFactory&) =
+      delete;
+  InstanceIDProfileServiceFactory& operator=(
+      const InstanceIDProfileServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<InstanceIDProfileServiceFactory>;
 
@@ -33,8 +38,6 @@ class InstanceIDProfileServiceFactory :
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDProfileServiceFactory);
 };
 
 }  // namespace instance_id

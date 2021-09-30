@@ -46,6 +46,9 @@ class SessionsSyncPerfTest : public SyncTest {
  public:
   SessionsSyncPerfTest() : SyncTest(TWO_CLIENT), url_number_(0) {}
 
+  SessionsSyncPerfTest(const SessionsSyncPerfTest&) = delete;
+  SessionsSyncPerfTest& operator=(const SessionsSyncPerfTest&) = delete;
+
   // Opens |num_tabs| new tabs on |profile|.
   void AddTabs(int profile, int num_tabs);
 
@@ -67,7 +70,6 @@ class SessionsSyncPerfTest : public SyncTest {
   GURL IntToURL(int n);
 
   int url_number_;
-  DISALLOW_COPY_AND_ASSIGN(SessionsSyncPerfTest);
 };
 
 void SessionsSyncPerfTest::AddTabs(int profile, int num_tabs) {

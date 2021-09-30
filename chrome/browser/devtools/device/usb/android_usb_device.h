@@ -85,6 +85,9 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
                    const AndroidDeviceInfo& android_device_info,
                    mojo::Remote<device::mojom::UsbDevice> device);
 
+  AndroidUsbDevice(const AndroidUsbDevice&) = delete;
+  AndroidUsbDevice& operator=(const AndroidUsbDevice&) = delete;
+
   void InitOnCallerThread();
 
   net::StreamSocket* CreateSocket(const std::string& command);
@@ -156,8 +159,6 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
   PendingMessages pending_messages_;
 
   base::WeakPtrFactory<AndroidUsbDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidUsbDevice);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_USB_ANDROID_USB_DEVICE_H_

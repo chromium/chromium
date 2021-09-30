@@ -53,6 +53,9 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
                          public content::RenderWidgetHostObserver,
                          private net::DirectoryLister::DirectoryListerDelegate {
  public:
+  FileSelectHelper(const FileSelectHelper&) = delete;
+  FileSelectHelper& operator=(const FileSelectHelper&) = delete;
+
   // Show the file chooser dialog.
   static void RunFileChooser(
       content::RenderFrameHost* render_frame_host,
@@ -311,8 +314,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
 
   // Set to false in unit tests since there is no WebContents.
   bool abort_on_missing_web_contents_in_tests_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSelectHelper);
 };
 
 #endif  // CHROME_BROWSER_FILE_SELECT_HELPER_H_

@@ -27,6 +27,9 @@ class PrefetchServiceFactory : public SimpleKeyedServiceFactory {
   static PrefetchServiceFactory* GetInstance();
   static PrefetchService* GetForKey(SimpleFactoryKey* key);
 
+  PrefetchServiceFactory(const PrefetchServiceFactory&) = delete;
+  PrefetchServiceFactory& operator=(const PrefetchServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PrefetchServiceFactory>;
 
@@ -35,8 +38,6 @@ class PrefetchServiceFactory : public SimpleKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchServiceFactory);
 };
 
 }  // namespace offline_pages

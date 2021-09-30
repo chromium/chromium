@@ -48,6 +48,11 @@ class OnDestroyWebContentsObserver : content::WebContentsObserver {
 };
 
 class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
+ public:
+  HistoryClustersTabHelperTest(const HistoryClustersTabHelperTest&) = delete;
+  HistoryClustersTabHelperTest& operator=(const HistoryClustersTabHelperTest&) =
+      delete;
+
  protected:
   HistoryClustersTabHelperTest() = default;
 
@@ -115,8 +120,6 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
   // Used to verify the async callback is invoked.
   base::RunLoop run_loop_;
   base::RepeatingClosure run_loop_quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryClustersTabHelperTest);
 };
 
 // There are multiple events that occur with nondeterministic order:

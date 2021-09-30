@@ -117,6 +117,9 @@ class InstallationState {
  public:
   InstallationState();
 
+  InstallationState(const InstallationState&) = delete;
+  InstallationState& operator=(const InstallationState&) = delete;
+
   // Initializes this object with the machine's current state.
   void Initialize();
 
@@ -136,9 +139,6 @@ class InstallationState {
  protected:
   ProductState user_chrome_;
   ProductState system_chrome_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallationState);
 };  // class InstallationState
 
 }  // namespace installer

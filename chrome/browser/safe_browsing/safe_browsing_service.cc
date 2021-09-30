@@ -529,12 +529,15 @@ class SafeBrowsingServiceFactoryImpl : public SafeBrowsingServiceFactory {
     return new SafeBrowsingService();
   }
 
+  SafeBrowsingServiceFactoryImpl(const SafeBrowsingServiceFactoryImpl&) =
+      delete;
+  SafeBrowsingServiceFactoryImpl& operator=(
+      const SafeBrowsingServiceFactoryImpl&) = delete;
+
  private:
   friend class base::NoDestructor<SafeBrowsingServiceFactoryImpl>;
 
   SafeBrowsingServiceFactoryImpl() {}
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceFactoryImpl);
 };
 
 SafeBrowsingServiceFactory* GetSafeBrowsingServiceFactory() {

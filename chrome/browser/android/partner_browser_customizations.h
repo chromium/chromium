@@ -12,11 +12,13 @@ namespace android {
 
 class PartnerBrowserCustomizations {
  public:
+  PartnerBrowserCustomizations() = delete;
+  PartnerBrowserCustomizations(const PartnerBrowserCustomizations&) = delete;
+  PartnerBrowserCustomizations& operator=(const PartnerBrowserCustomizations&) =
+      delete;
+
   // Whether incognito mode is disabled by the partner.
   static bool IsIncognitoDisabled();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PartnerBrowserCustomizations);
 };
 
 }  // namespace android

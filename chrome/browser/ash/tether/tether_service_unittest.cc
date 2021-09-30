@@ -298,6 +298,10 @@ class FakeMultiDeviceSetupClientImplFactory
 }  // namespace
 
 class TetherServiceTest : public testing::Test {
+ public:
+  TetherServiceTest(const TetherServiceTest&) = delete;
+  TetherServiceTest& operator=(const TetherServiceTest&) = delete;
+
  protected:
   TetherServiceTest() : test_devices_(CreateTestDevices()) {}
   ~TetherServiceTest() override {}
@@ -570,9 +574,6 @@ class TetherServiceTest : public testing::Test {
   std::unique_ptr<TestTetherService> tether_service_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherServiceTest);
 };
 
 TEST_F(TetherServiceTest, TestShutdown) {

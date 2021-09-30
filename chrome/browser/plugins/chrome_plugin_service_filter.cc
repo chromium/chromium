@@ -37,14 +37,15 @@ struct ChromePluginServiceFilter::ContextInfo {
               scoped_refptr<HostContentSettingsMap> hcsm,
               scoped_refptr<FlashTemporaryPermissionTracker> ftpm,
               Profile* profile);
+
+  ContextInfo(const ContextInfo&) = delete;
+  ContextInfo& operator=(const ContextInfo&) = delete;
+
   ~ContextInfo();
 
   scoped_refptr<PluginPrefs> plugin_prefs;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map;
   scoped_refptr<FlashTemporaryPermissionTracker> permission_tracker;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextInfo);
 };
 
 ChromePluginServiceFilter::ContextInfo::ContextInfo(

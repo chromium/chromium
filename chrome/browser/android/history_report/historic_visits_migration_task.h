@@ -17,6 +17,10 @@ class HistoricVisitsMigrationTask : public history::HistoryDBTask {
   HistoricVisitsMigrationTask(base::WaitableEvent* event,
                               UsageReportsBufferService* report_buffer_service);
 
+  HistoricVisitsMigrationTask(const HistoricVisitsMigrationTask&) = delete;
+  HistoricVisitsMigrationTask& operator=(const HistoricVisitsMigrationTask&) =
+      delete;
+
   bool RunOnDBThread(history::HistoryBackend* backend,
                              history::HistoryDatabase* db) override;
   void DoneRunOnMainThread() override {}
@@ -26,8 +30,6 @@ class HistoricVisitsMigrationTask : public history::HistoryDBTask {
 
   base::WaitableEvent* wait_event_;
   UsageReportsBufferService* usage_reports_buffer_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoricVisitsMigrationTask);
 };
 
 }  // namespace history_report

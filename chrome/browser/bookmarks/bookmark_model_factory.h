@@ -28,6 +28,9 @@ class BookmarkModelFactory : public BrowserContextKeyedServiceFactory {
 
   static BookmarkModelFactory* GetInstance();
 
+  BookmarkModelFactory(const BookmarkModelFactory&) = delete;
+  BookmarkModelFactory& operator=(const BookmarkModelFactory&) = delete;
+
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
 
@@ -45,8 +48,6 @@ class BookmarkModelFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelFactory);
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_FACTORY_H_

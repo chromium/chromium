@@ -297,6 +297,9 @@ class SmartSessionRestoreTest : public SessionRestoreTest,
  public:
   SmartSessionRestoreTest() = default;
 
+  SmartSessionRestoreTest(const SmartSessionRestoreTest&) = delete;
+  SmartSessionRestoreTest& operator=(const SmartSessionRestoreTest&) = delete;
+
   void StartObserving(size_t num_tabs) {
     // Start by clearing everything so it can be reused in the same test.
     web_contents_.clear();
@@ -339,8 +342,6 @@ class SmartSessionRestoreTest : public SessionRestoreTest,
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   size_t num_tabs_;
   testing::ScopedAlwaysLoadSessionRestoreTestPolicy test_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmartSessionRestoreTest);
 };
 
 // static
@@ -359,6 +360,11 @@ class SessionRestoreWithURLInCommandLineTest : public SessionRestoreTest {
  public:
   SessionRestoreWithURLInCommandLineTest() = default;
 
+  SessionRestoreWithURLInCommandLineTest(
+      const SessionRestoreWithURLInCommandLineTest&) = delete;
+  SessionRestoreWithURLInCommandLineTest& operator=(
+      const SessionRestoreWithURLInCommandLineTest&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SessionRestoreTest::SetUpCommandLine(command_line);
@@ -369,9 +375,6 @@ class SessionRestoreWithURLInCommandLineTest : public SessionRestoreTest {
   }
 
   GURL command_line_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreWithURLInCommandLineTest);
 };
 
 // Verifies that restored tabs have a root window. This is important
@@ -2307,6 +2310,10 @@ class MultiOriginSessionRestoreTest : public SessionRestoreTest {
   MultiOriginSessionRestoreTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  MultiOriginSessionRestoreTest(const MultiOriginSessionRestoreTest&) = delete;
+  MultiOriginSessionRestoreTest& operator=(
+      const MultiOriginSessionRestoreTest&) = delete;
+
   void SetUpOnMainThread() override {
     SessionRestoreTest::SetUpOnMainThread();
 
@@ -2340,8 +2347,6 @@ class MultiOriginSessionRestoreTest : public SessionRestoreTest {
  private:
   net::EmbeddedTestServer https_test_server_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiOriginSessionRestoreTest);
 };
 
 // Test that Sec-Fetch-Site http request header is correctly replayed during

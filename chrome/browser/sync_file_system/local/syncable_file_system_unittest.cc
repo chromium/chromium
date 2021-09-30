@@ -41,6 +41,9 @@ class SyncableFileSystemTest : public testing::Test {
                      base::ThreadTaskRunnerHandle::Get().get(),
                      base::ThreadTaskRunnerHandle::Get().get()) {}
 
+  SyncableFileSystemTest(const SyncableFileSystemTest&) = delete;
+  SyncableFileSystemTest& operator=(const SyncableFileSystemTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
@@ -105,8 +108,6 @@ class SyncableFileSystemTest : public testing::Test {
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
   base::WeakPtrFactory<SyncableFileSystemTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileSystemTest);
 };
 
 // Brief combined testing. Just see if all the sandbox feature works.

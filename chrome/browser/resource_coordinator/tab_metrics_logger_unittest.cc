@@ -295,6 +295,10 @@ TEST_F(TabMetricsLoggerTest, GetTabFeatures) {
 // Checks that ForegroundedOrClosed event is logged correctly.
 // TODO(charleszhao): add checks for TabMetrics event.
 class TabMetricsLoggerUKMTest : public ::testing::Test {
+ public:
+  TabMetricsLoggerUKMTest(const TabMetricsLoggerUKMTest&) = delete;
+  TabMetricsLoggerUKMTest& operator=(const TabMetricsLoggerUKMTest&) = delete;
+
  protected:
   TabMetricsLoggerUKMTest() = default;
 
@@ -329,8 +333,6 @@ class TabMetricsLoggerUKMTest : public ::testing::Test {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   // The object being tested:
   TabMetricsLogger logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabMetricsLoggerUKMTest);
 };
 
 // Checks TabFeature is logged correctly with TabMetricsLogger::LogTabMetrics.

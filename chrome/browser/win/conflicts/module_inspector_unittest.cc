@@ -85,6 +85,9 @@ class ModuleInspectorTest : public testing::Test {
   ModuleInspectorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  ModuleInspectorTest(const ModuleInspectorTest&) = delete;
+  ModuleInspectorTest& operator=(const ModuleInspectorTest&) = delete;
+
   std::unique_ptr<ModuleInspector> CreateModuleInspector() {
     auto module_inspector =
         std::make_unique<ModuleInspector>(base::BindRepeating(
@@ -152,8 +155,6 @@ class ModuleInspectorTest : public testing::Test {
   }
 
   std::vector<ModuleInspectionResult> inspected_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleInspectorTest);
 };
 
 }  // namespace

@@ -242,6 +242,9 @@ absl::optional<UpdateCheckResult> GetSimulatedErrorForDebugging() {
 // Google Update on another.
 class UpdateCheckDriver {
  public:
+  UpdateCheckDriver(const UpdateCheckDriver&) = delete;
+  UpdateCheckDriver& operator=(const UpdateCheckDriver&) = delete;
+
   // Runs an update check, invoking methods of |delegate| on the caller's thread
   // to report progress and final results.
   static void RunUpdateCheck(
@@ -391,8 +394,6 @@ class UpdateCheckDriver {
   GoogleUpdateUpgradeStatus status_;
   UpdateState update_state_;
   std::u16string html_error_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateCheckDriver);
 };
 
 UpdateCheckDriver* UpdateCheckDriver::driver_ = nullptr;

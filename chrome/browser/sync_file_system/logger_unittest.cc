@@ -30,12 +30,12 @@ class LoggerTest : public testing::Test {
  public:
   LoggerTest() {}
 
+  LoggerTest(const LoggerTest&) = delete;
+  LoggerTest& operator=(const LoggerTest&) = delete;
+
   void SetUp() override {
     util::ClearLog();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoggerTest);
 };
 
 TEST_F(LoggerTest, GetLogHistory) {

@@ -335,6 +335,9 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
       : threat_type_(SB_THREAT_TYPE_SAFE),
         safe_browsing_service_(g_browser_process->safe_browsing_service()) {}
 
+  TestSBClient(const TestSBClient&) = delete;
+  TestSBClient& operator=(const TestSBClient&) = delete;
+
   SBThreatType GetThreatType() const { return threat_type_; }
 
   std::string GetThreatHash() const { return threat_hash_; }
@@ -434,8 +437,6 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   SBThreatType threat_type_;
   std::string threat_hash_;
   SafeBrowsingService* safe_browsing_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSBClient);
 };
 
 }  // namespace
@@ -444,6 +445,10 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  public:
   V4SafeBrowsingServiceTest() {}
+
+  V4SafeBrowsingServiceTest(const V4SafeBrowsingServiceTest&) = delete;
+  V4SafeBrowsingServiceTest& operator=(const V4SafeBrowsingServiceTest&) =
+      delete;
 
   void SetUp() override {
     sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
@@ -596,8 +601,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   // bug is fixed.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(V4SafeBrowsingServiceTest);
 };
 
 // Ensures that if an image is marked as UwS, the main page doesn't show an
@@ -1242,8 +1245,10 @@ class V4SafeBrowsingServiceMetadataTest
  public:
   V4SafeBrowsingServiceMetadataTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4SafeBrowsingServiceMetadataTest);
+  V4SafeBrowsingServiceMetadataTest(const V4SafeBrowsingServiceMetadataTest&) =
+      delete;
+  V4SafeBrowsingServiceMetadataTest& operator=(
+      const V4SafeBrowsingServiceMetadataTest&) = delete;
 };
 
 // Irrespective of the threat_type classification, if the main frame URL is

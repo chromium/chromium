@@ -158,6 +158,9 @@ class LocalSyncRunner : public SyncProcessRunner,
                           nullptr, /* timer_helper */
                           1 /* max_parallel_task */) {}
 
+  LocalSyncRunner(const LocalSyncRunner&) = delete;
+  LocalSyncRunner& operator=(const LocalSyncRunner&) = delete;
+
   void StartSync(SyncStatusCallback callback) override {
     GetSyncService()->local_service_->ProcessLocalChange(
         base::BindOnce(&LocalSyncRunner::DidProcessLocalChange,
@@ -186,7 +189,6 @@ class LocalSyncRunner : public SyncProcessRunner,
   }
 
   base::WeakPtrFactory<LocalSyncRunner> factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LocalSyncRunner);
 };
 
 // SyncProcessRunner implementation for RemoteSync.
@@ -202,6 +204,9 @@ class RemoteSyncRunner : public SyncProcessRunner,
                           1 /* max_parallel_task */),
         remote_service_(remote_service),
         last_state_(REMOTE_SERVICE_OK) {}
+
+  RemoteSyncRunner(const RemoteSyncRunner&) = delete;
+  RemoteSyncRunner& operator=(const RemoteSyncRunner&) = delete;
 
   void StartSync(SyncStatusCallback callback) override {
     remote_service_->ProcessRemoteChange(
@@ -250,7 +255,6 @@ class RemoteSyncRunner : public SyncProcessRunner,
   RemoteFileSyncService* remote_service_;
   RemoteServiceState last_state_;
   base::WeakPtrFactory<RemoteSyncRunner> factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RemoteSyncRunner);
 };
 
 //-----------------------------------------------------------------------------

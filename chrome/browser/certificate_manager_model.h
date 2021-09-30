@@ -135,11 +135,13 @@ class CertificateManagerModel {
 #endif
 
     Params();
-    Params(Params&& other);
-    ~Params();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Params);
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+
+    Params(Params&& other);
+
+    ~Params();
   };
 
   // Map from the subject organization name to the list of certs from that
@@ -174,6 +176,10 @@ class CertificateManagerModel {
   CertificateManagerModel(std::unique_ptr<Params> params,
                           Observer* observer,
                           net::NSSCertDatabase* nss_cert_database);
+
+  CertificateManagerModel(const CertificateManagerModel&) = delete;
+  CertificateManagerModel& operator=(const CertificateManagerModel&) = delete;
+
   ~CertificateManagerModel();
 
   // Accessor for read-only access to the underlying NSSCertDatabase.
@@ -277,8 +283,6 @@ class CertificateManagerModel {
 
   // The observer to notify when certificate list is refreshed.
   Observer* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerModel);
 };
 
 #endif  // CHROME_BROWSER_CERTIFICATE_MANAGER_MODEL_H_

@@ -32,6 +32,10 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
  public:
   explicit ChromeExtensionMessageFilter(Profile* profile);
 
+  ChromeExtensionMessageFilter(const ChromeExtensionMessageFilter&) = delete;
+  ChromeExtensionMessageFilter& operator=(const ChromeExtensionMessageFilter&) =
+      delete;
+
   // content::BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
   void OverrideThreadForMessage(const IPC::Message& message,
@@ -86,8 +90,6 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
   extensions::ActivityLog* activity_log_;
 
   base::ScopedObservation<Profile, ProfileObserver> observed_profile_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionMessageFilter);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_EXTENSION_MESSAGE_FILTER_H_

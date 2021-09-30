@@ -103,6 +103,11 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
  public:
   SubresourceFilterComponentInstallerTest() = default;
 
+  SubresourceFilterComponentInstallerTest(
+      const SubresourceFilterComponentInstallerTest&) = delete;
+  SubresourceFilterComponentInstallerTest& operator=(
+      const SubresourceFilterComponentInstallerTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -181,8 +186,6 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   TestingPrefServiceSimple pref_service_;
 
   TestRulesetService* test_ruleset_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterComponentInstallerTest);
 };
 
 TEST_F(SubresourceFilterComponentInstallerTest,

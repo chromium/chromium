@@ -19,6 +19,9 @@ class PromoServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static PromoServiceFactory* GetInstance();
 
+  PromoServiceFactory(const PromoServiceFactory&) = delete;
+  PromoServiceFactory& operator=(const PromoServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PromoServiceFactory>;
 
@@ -28,8 +31,6 @@ class PromoServiceFactory : public BrowserContextKeyedServiceFactory {
   // Overridden from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PromoServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_SERVICE_FACTORY_H_

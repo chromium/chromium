@@ -29,6 +29,10 @@ const char kPairingLostNotificationId[] = "android_sms.pairing_lost";
 }  // namespace
 
 class PairingLostNotifierTest : public BrowserWithTestWindowTest {
+ public:
+  PairingLostNotifierTest(const PairingLostNotifierTest&) = delete;
+  PairingLostNotifierTest& operator=(const PairingLostNotifierTest&) = delete;
+
  protected:
   PairingLostNotifierTest() = default;
   ~PairingLostNotifierTest() override = default;
@@ -92,8 +96,6 @@ class PairingLostNotifierTest : public BrowserWithTestWindowTest {
       fake_android_sms_app_helper_delegate_;
 
   std::unique_ptr<PairingLostNotifier> pairing_lost_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(PairingLostNotifierTest);
 };
 
 TEST_F(PairingLostNotifierTest, WasNotPreviouslySetUp) {

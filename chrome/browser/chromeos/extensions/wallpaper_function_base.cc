@@ -91,6 +91,9 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
   explicit UnsafeWallpaperDecoder(scoped_refptr<WallpaperFunctionBase> function)
       : function_(function) {}
 
+  UnsafeWallpaperDecoder(const UnsafeWallpaperDecoder&) = delete;
+  UnsafeWallpaperDecoder& operator=(const UnsafeWallpaperDecoder&) = delete;
+
   void Start(const std::vector<uint8_t>& image_data) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -136,8 +139,6 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
  private:
   scoped_refptr<WallpaperFunctionBase> function_;
   base::AtomicFlag cancel_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsafeWallpaperDecoder);
 };
 
 WallpaperFunctionBase::UnsafeWallpaperDecoder*

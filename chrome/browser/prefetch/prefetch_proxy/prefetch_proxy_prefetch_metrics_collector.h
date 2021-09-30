@@ -29,6 +29,11 @@ class PrefetchProxyPrefetchMetricsCollector
   PrefetchProxyPrefetchMetricsCollector(base::TimeTicks navigation_start_time,
                                         ukm::SourceId ukm_source_id);
 
+  PrefetchProxyPrefetchMetricsCollector(
+      const PrefetchProxyPrefetchMetricsCollector&) = delete;
+  PrefetchProxyPrefetchMetricsCollector& operator=(
+      const PrefetchProxyPrefetchMetricsCollector&) = delete;
+
   // Called when a mainframe resource is not eligible for prefetching. Note that
   // if a mainframe is given here, |OnSubresourceNotEligible| is not expected to
   // be called.
@@ -135,8 +140,6 @@ class PrefetchProxyPrefetchMetricsCollector
 
   // Holds all the metrics that will be recorded, indexed by their url.
   std::map<GURL, PrefetchMetric> resources_by_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPrefetchMetricsCollector);
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PREFETCH_METRICS_COLLECTOR_H_

@@ -48,6 +48,9 @@ class ExtensionsSyncPerfTest : public SyncTest {
  public:
   ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT), extension_number_(0) {}
 
+  ExtensionsSyncPerfTest(const ExtensionsSyncPerfTest&) = delete;
+  ExtensionsSyncPerfTest& operator=(const ExtensionsSyncPerfTest&) = delete;
+
   // Adds |num_extensions| new unique extensions to |profile|.
   void AddExtensions(int profile, int num_extensions);
 
@@ -62,7 +65,6 @@ class ExtensionsSyncPerfTest : public SyncTest {
 
  private:
   int extension_number_;
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsSyncPerfTest);
 };
 
 void ExtensionsSyncPerfTest::AddExtensions(int profile, int num_extensions) {

@@ -147,6 +147,10 @@ class FormStructureBrowserTest
     : public InProcessBrowserTest,
       public DataDrivenTest,
       public ::testing::WithParamInterface<base::FilePath> {
+ public:
+  FormStructureBrowserTest(const FormStructureBrowserTest&) = delete;
+  FormStructureBrowserTest& operator=(const FormStructureBrowserTest&) = delete;
+
  protected:
   FormStructureBrowserTest();
   ~FormStructureBrowserTest() override;
@@ -170,7 +174,6 @@ class FormStructureBrowserTest
   // GenerateResults method but it is consumed later in the IO thread by the
   // embedded test server to generate the response.
   std::string html_content_;
-  DISALLOW_COPY_AND_ASSIGN(FormStructureBrowserTest);
 };
 
 FormStructureBrowserTest::FormStructureBrowserTest()

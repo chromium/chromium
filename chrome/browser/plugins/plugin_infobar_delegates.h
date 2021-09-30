@@ -33,6 +33,10 @@ class OutdatedPluginInfoBarDelegate : public ConfirmInfoBarDelegate,
                      PluginInstaller* installer,
                      std::unique_ptr<PluginMetadata> metadata);
 
+  OutdatedPluginInfoBarDelegate(const OutdatedPluginInfoBarDelegate&) = delete;
+  OutdatedPluginInfoBarDelegate& operator=(
+      const OutdatedPluginInfoBarDelegate&) = delete;
+
  private:
   OutdatedPluginInfoBarDelegate(
       PluginInstaller* installer,
@@ -67,8 +71,6 @@ class OutdatedPluginInfoBarDelegate : public ConfirmInfoBarDelegate,
   std::unique_ptr<PluginMetadata> plugin_metadata_;
 
   std::u16string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutdatedPluginInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_INFOBAR_DELEGATES_H_

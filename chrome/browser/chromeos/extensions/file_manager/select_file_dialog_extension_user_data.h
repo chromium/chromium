@@ -17,6 +17,11 @@ class WebContents;
 // Used for attachingSelectFileDialogExtension's routing ID to its WebContents.
 class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
  public:
+  SelectFileDialogExtensionUserData(const SelectFileDialogExtensionUserData&) =
+      delete;
+  SelectFileDialogExtensionUserData& operator=(
+      const SelectFileDialogExtensionUserData&) = delete;
+
   static void SetRoutingIdForWebContents(content::WebContents* web_contents,
                                          const std::string& routing_id);
   static std::string GetRoutingIdForWebContents(
@@ -28,8 +33,6 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
   const std::string& routing_id() const { return routing_id_; }
 
   std::string routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogExtensionUserData);
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_SELECT_FILE_DIALOG_EXTENSION_USER_DATA_H_

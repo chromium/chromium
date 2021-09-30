@@ -55,6 +55,9 @@ class SyncFileSystemService
   using ExtensionStatusMapCallback =
       base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
 
+  SyncFileSystemService(const SyncFileSystemService&) = delete;
+  SyncFileSystemService& operator=(const SyncFileSystemService&) = delete;
+
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -182,8 +185,6 @@ class SyncFileSystemService
 
   bool promoting_demoted_changes_;
   base::OnceClosure idle_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemService);
 };
 
 }  // namespace sync_file_system

@@ -84,6 +84,9 @@ class TestTranslateAgent : public translate::TranslateAgent {
                                   ISOLATED_WORLD_ID_TRANSLATE,
                                   extensions::kExtensionScheme) {}
 
+  TestTranslateAgent(const TestTranslateAgent&) = delete;
+  TestTranslateAgent& operator=(const TestTranslateAgent&) = delete;
+
   base::TimeDelta AdjustDelay(int delayInMs) override {
     // Just returns base::TimeDelta() which has initial value 0.
     // Tasks doesn't need to be delayed in tests.
@@ -151,13 +154,15 @@ class TestTranslateAgent : public translate::TranslateAgent {
   absl::optional<std::string> trans_result_source_lang_;
   absl::optional<std::string> trans_result_translated_lang_;
   translate::TranslateErrors::Type trans_result_error_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTranslateAgent);
 };
 
 class TranslateAgentBrowserTest : public ChromeRenderViewTest {
  public:
   TranslateAgentBrowserTest() : translate_agent_(nullptr) {}
+
+  TranslateAgentBrowserTest(const TranslateAgentBrowserTest&) = delete;
+  TranslateAgentBrowserTest& operator=(const TranslateAgentBrowserTest&) =
+      delete;
 
  protected:
   void SetUp() override {
@@ -180,9 +185,6 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
 
   TestTranslateAgent* translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateAgentBrowserTest);
 };
 
 // Tests that the browser gets notified of the translation failure if the

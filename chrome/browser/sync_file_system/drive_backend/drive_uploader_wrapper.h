@@ -22,6 +22,9 @@ class DriveUploaderWrapper
  public:
   explicit DriveUploaderWrapper(drive::DriveUploaderInterface* drive_uploader);
 
+  DriveUploaderWrapper(const DriveUploaderWrapper&) = delete;
+  DriveUploaderWrapper& operator=(const DriveUploaderWrapper&) = delete;
+
   void UploadExistingFile(const std::string& resource_id,
                           const base::FilePath& local_file_path,
                           const std::string& content_type,
@@ -38,8 +41,6 @@ class DriveUploaderWrapper
  private:
   drive::DriveUploaderInterface* drive_uploader_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveUploaderWrapper);
 };
 
 }  // namespace drive_backend

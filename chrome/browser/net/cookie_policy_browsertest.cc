@@ -50,6 +50,9 @@ enum class TestType { kFrame, kWorker };
 
 class CookiePolicyBrowserTest : public InProcessBrowserTest {
  public:
+  CookiePolicyBrowserTest(const CookiePolicyBrowserTest&) = delete;
+  CookiePolicyBrowserTest& operator=(const CookiePolicyBrowserTest&) = delete;
+
   void SetBlockThirdPartyCookies(bool value) {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
@@ -306,8 +309,6 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
         return;
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CookiePolicyBrowserTest);
 };
 
 // Visits a page that sets a first-party cookie.

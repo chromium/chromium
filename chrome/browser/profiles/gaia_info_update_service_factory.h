@@ -25,6 +25,10 @@ class GAIAInfoUpdateServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the GAIAInfoUpdateServiceFactory singleton.
   static GAIAInfoUpdateServiceFactory* GetInstance();
 
+  GAIAInfoUpdateServiceFactory(const GAIAInfoUpdateServiceFactory&) = delete;
+  GAIAInfoUpdateServiceFactory& operator=(const GAIAInfoUpdateServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<GAIAInfoUpdateServiceFactory>;
 
@@ -36,8 +40,6 @@ class GAIAInfoUpdateServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_GAIA_INFO_UPDATE_SERVICE_FACTORY_H_

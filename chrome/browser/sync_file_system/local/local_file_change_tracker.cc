@@ -45,6 +45,9 @@ class LocalFileChangeTracker::TrackerDB {
   TrackerDB(const base::FilePath& base_path,
             leveldb::Env* env_override);
 
+  TrackerDB(const TrackerDB&) = delete;
+  TrackerDB& operator=(const TrackerDB&) = delete;
+
   SyncStatusCode MarkDirty(const std::string& url);
   SyncStatusCode ClearDirty(const std::string& url);
   SyncStatusCode GetDirtyEntries(base::queue<FileSystemURL>* dirty_files);
@@ -65,8 +68,6 @@ class LocalFileChangeTracker::TrackerDB {
   leveldb::Env* env_override_;
   std::unique_ptr<leveldb::DB> db_;
   SyncStatusCode db_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerDB);
 };
 
 LocalFileChangeTracker::ChangeInfo::ChangeInfo() : change_seq(-1) {}

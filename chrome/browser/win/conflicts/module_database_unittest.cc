@@ -35,6 +35,10 @@ constexpr uint32_t kTime2 = 0xBAADF00D;
 }  // namespace
 
 class ModuleDatabaseTest : public testing::Test {
+ public:
+  ModuleDatabaseTest(const ModuleDatabaseTest&) = delete;
+  ModuleDatabaseTest& operator=(const ModuleDatabaseTest&) = delete;
+
  protected:
   ModuleDatabaseTest()
       : dll1_(kDll1),
@@ -88,8 +92,6 @@ class ModuleDatabaseTest : public testing::Test {
   absl::optional<UtilWinImpl> util_win_impl_;
 
   std::unique_ptr<ModuleDatabase> module_database_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleDatabaseTest);
 };
 
 TEST_F(ModuleDatabaseTest, DatabaseIsConsistent) {

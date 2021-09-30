@@ -14,6 +14,9 @@ namespace chromeos {
 // Set Time dialog for setting the system time, date and time zone.
 class SetTimeDialog : public SystemWebDialogDelegate {
  public:
+  SetTimeDialog(const SetTimeDialog&) = delete;
+  SetTimeDialog& operator=(const SetTimeDialog&) = delete;
+
   // Shows the set time/date dialog. If |parent| is not null, shows the dialog
   // as a child of |parent|, e.g. the Settings window.
   static void ShowDialog(gfx::NativeWindow parent = nullptr);
@@ -27,8 +30,6 @@ class SetTimeDialog : public SystemWebDialogDelegate {
 
   // SystemWebDialogDelegate
   void GetDialogSize(gfx::Size* size) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SetTimeDialog);
 };
 
 }  // namespace chromeos

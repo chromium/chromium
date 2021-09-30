@@ -25,6 +25,10 @@ class AssistRankerServiceFactory : public BrowserContextKeyedServiceFactory {
   static AssistRankerService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  AssistRankerServiceFactory(const AssistRankerServiceFactory&) = delete;
+  AssistRankerServiceFactory& operator=(const AssistRankerServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AssistRankerServiceFactory>;
 
@@ -36,8 +40,6 @@ class AssistRankerServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistRankerServiceFactory);
 };
 
 }  // namespace assist_ranker

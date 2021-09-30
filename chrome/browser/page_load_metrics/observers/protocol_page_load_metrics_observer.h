@@ -16,6 +16,11 @@ class ProtocolPageLoadMetricsObserver
  public:
   ProtocolPageLoadMetricsObserver() = default;
 
+  ProtocolPageLoadMetricsObserver(const ProtocolPageLoadMetricsObserver&) =
+      delete;
+  ProtocolPageLoadMetricsObserver& operator=(
+      const ProtocolPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
@@ -41,8 +46,6 @@ class ProtocolPageLoadMetricsObserver
   // The protocol for the committed navigation.
   page_load_metrics::NetworkProtocol protocol_ =
       page_load_metrics::NetworkProtocol::kOther;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PROTOCOL_PAGE_LOAD_METRICS_OBSERVER_H_

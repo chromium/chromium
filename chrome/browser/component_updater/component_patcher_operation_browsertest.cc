@@ -42,6 +42,9 @@ class PatchTest : public InProcessBrowserTest {
     EXPECT_TRUE(unpack_dir_.CreateUniqueTempDir());
   }
 
+  PatchTest(const PatchTest&) = delete;
+  PatchTest& operator=(const PatchTest&) = delete;
+
   static base::FilePath TestFile(const char* name) {
     base::FilePath path;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
@@ -133,8 +136,6 @@ class PatchTest : public InProcessBrowserTest {
   base::ScopedTempDir unpack_dir_;
   base::OnceClosure quit_closure_;
   bool done_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PatchTest, CheckBsdiffOperation) {

@@ -60,6 +60,11 @@ class MetricsServiceUserDemographicsBrowserTest
     }
   }
 
+  MetricsServiceUserDemographicsBrowserTest(
+      const MetricsServiceUserDemographicsBrowserTest&) = delete;
+  MetricsServiceUserDemographicsBrowserTest& operator=(
+      const MetricsServiceUserDemographicsBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SyncTest::SetUpCommandLine(command_line);
     // Enable the metrics service for testing (in recording-only mode).
@@ -89,8 +94,6 @@ class MetricsServiceUserDemographicsBrowserTest
   bool metrics_consent_ = true;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceUserDemographicsBrowserTest);
 };
 
 // TODO(crbug/1016118): Add the remaining test cases.

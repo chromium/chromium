@@ -398,6 +398,14 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
                               switches::kUseSyncInvalidationsForWalletAndOffer},
         /*disabled_features=*/{});
   }
+
+  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest(
+      const SingleClientWithUseSyncInvalidationsForWalletAndOfferTest&) =
+      delete;
+  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest& operator=(
+      const SingleClientWithUseSyncInvalidationsForWalletAndOfferTest&) =
+      delete;
+
   ~SingleClientWithUseSyncInvalidationsForWalletAndOfferTest() override =
       default;
 
@@ -411,9 +419,6 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
  private:
   base::test::ScopedFeatureList override_features_;
   fake_server::EntityBuilderFactory entity_builder_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SingleClientWithUseSyncInvalidationsForWalletAndOfferTest);
 };
 
 IN_PROC_BROWSER_TEST_F(

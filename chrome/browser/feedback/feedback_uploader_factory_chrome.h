@@ -22,6 +22,10 @@ class FeedbackUploaderFactoryChrome : public FeedbackUploaderFactory {
   static FeedbackUploaderChrome* GetForBrowserContext(
       content::BrowserContext* context);
 
+  FeedbackUploaderFactoryChrome(const FeedbackUploaderFactoryChrome&) = delete;
+  FeedbackUploaderFactoryChrome& operator=(
+      const FeedbackUploaderFactoryChrome&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<FeedbackUploaderFactoryChrome>;
 
@@ -35,8 +39,6 @@ class FeedbackUploaderFactoryChrome : public FeedbackUploaderFactory {
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderFactoryChrome);
 };
 
 }  // namespace feedback

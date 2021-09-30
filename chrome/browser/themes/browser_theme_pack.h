@@ -87,6 +87,9 @@ class BrowserThemePack : public CustomThemeSupplier {
   // Default. Everything is empty.
   explicit BrowserThemePack(ThemeType theme_type);
 
+  BrowserThemePack(const BrowserThemePack&) = delete;
+  BrowserThemePack& operator=(const BrowserThemePack&) = delete;
+
   bool is_valid() const { return is_valid_; }
 
   // Builds a data pack on disk at |path| for future quick loading by
@@ -355,8 +358,6 @@ class BrowserThemePack : public CustomThemeSupplier {
   // Whether the theme pack has been succesfully initialized and is ready to
   // use.
   bool is_valid_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserThemePack);
 };
 
 #endif  // CHROME_BROWSER_THEMES_BROWSER_THEME_PACK_H_

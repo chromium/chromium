@@ -23,6 +23,10 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
  protected:
   FirstRunInternalPosixTest() = default;
 
+  FirstRunInternalPosixTest(const FirstRunInternalPosixTest&) = delete;
+  FirstRunInternalPosixTest& operator=(const FirstRunInternalPosixTest&) =
+      delete;
+
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForceFirstRun);
@@ -95,8 +99,6 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
   }
 
   bool inspected_state_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunInternalPosixTest);
 };
 
 // Test the first run flow for showing the modal dialog that surfaces the first

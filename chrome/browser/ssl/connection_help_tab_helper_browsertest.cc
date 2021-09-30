@@ -25,6 +25,10 @@ class ConnectionHelpTabHelperTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         https_expired_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  ConnectionHelpTabHelperTest(const ConnectionHelpTabHelperTest&) = delete;
+  ConnectionHelpTabHelperTest& operator=(const ConnectionHelpTabHelperTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_expired_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -50,7 +54,6 @@ class ConnectionHelpTabHelperTest : public InProcessBrowserTest {
  private:
   net::EmbeddedTestServer https_server_;
   net::EmbeddedTestServer https_expired_server_;
-  DISALLOW_COPY_AND_ASSIGN(ConnectionHelpTabHelperTest);
 };
 
 // Tests that the chrome://connection-help redirect is not triggered for an

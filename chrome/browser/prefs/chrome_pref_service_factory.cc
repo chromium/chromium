@@ -330,6 +330,9 @@ class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
   explicit ResetOnLoadObserverImpl(const base::FilePath& profile_path)
       : profile_path_(profile_path) {}
 
+  ResetOnLoadObserverImpl(const ResetOnLoadObserverImpl&) = delete;
+  ResetOnLoadObserverImpl& operator=(const ResetOnLoadObserverImpl&) = delete;
+
   void OnResetOnLoad() override {
     // A StartSyncFlare used to kick sync early in case of a reset event. This
     // is done since sync may bring back the user's server value post-reset
@@ -343,8 +346,6 @@ class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
 
  private:
   const base::FilePath profile_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetOnLoadObserverImpl);
 };
 
 }  // namespace

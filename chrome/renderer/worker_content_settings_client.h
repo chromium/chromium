@@ -26,6 +26,10 @@ struct RendererContentSettingRules;
 class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
  public:
   explicit WorkerContentSettingsClient(content::RenderFrame* render_frame);
+
+  WorkerContentSettingsClient& operator=(const WorkerContentSettingsClient&) =
+      delete;
+
   ~WorkerContentSettingsClient() override;
 
   // WebContentSettingsClient overrides.
@@ -62,8 +66,6 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
       pending_content_settings_manager_;
   mutable mojo::Remote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager_;
-
-  DISALLOW_ASSIGN(WorkerContentSettingsClient);
 };
 
 #endif  // CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_

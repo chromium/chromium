@@ -90,6 +90,11 @@ class PerDeviceProvisioningPermissionRequest final
         origin_(origin),
         callback_(std::move(callback)) {}
 
+  PerDeviceProvisioningPermissionRequest(
+      const PerDeviceProvisioningPermissionRequest&) = delete;
+  PerDeviceProvisioningPermissionRequest& operator=(
+      const PerDeviceProvisioningPermissionRequest&) = delete;
+
   void PermissionDecided(ContentSetting result, bool is_one_time) {
     DCHECK(!is_one_time);
     const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;
@@ -117,8 +122,6 @@ class PerDeviceProvisioningPermissionRequest final
 
   const url::Origin origin_;
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerDeviceProvisioningPermissionRequest);
 };
 
 }  // namespace

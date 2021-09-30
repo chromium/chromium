@@ -52,6 +52,9 @@ class URLHelper {
                        std::move(lifetime), profile_id, url));
   }
 
+  URLHelper(const URLHelper&) = delete;
+  URLHelper& operator=(const URLHelper&) = delete;
+
  private:
   void RunOnUIThread(Lifetime lifetime, void* profile_id, const GURL& url) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -119,8 +122,6 @@ class URLHelper {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::util::FileSystemURLAndHandle isolated_file_system_;
   std::string mime_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLHelper);
 };
 
 }  // namespace

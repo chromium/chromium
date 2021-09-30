@@ -106,6 +106,11 @@ std::string HashData(const char* data, size_t len) {
 }
 
 class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
+ public:
+  PdfToEmfConverterBrowserTest(const PdfToEmfConverterBrowserTest&) = delete;
+  PdfToEmfConverterBrowserTest& operator=(const PdfToEmfConverterBrowserTest&) =
+      delete;
+
  protected:
   PdfToEmfConverterBrowserTest() : test_data_dir_(GetTestDataDir()) {}
   ~PdfToEmfConverterBrowserTest() override = default;
@@ -226,8 +231,6 @@ class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<MetafilePlayer> current_emf_file_;
   std::string expected_current_emf_data_;
   std::string actual_current_emf_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfToEmfConverterBrowserTest);
 };
 
 }  // namespace

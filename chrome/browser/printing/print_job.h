@@ -62,6 +62,9 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // component initiated this print job.
   PrintJob();
 
+  PrintJob(const PrintJob&) = delete;
+  PrintJob& operator=(const PrintJob&) = delete;
+
   // Grabs the ownership of the PrintJobWorker from a PrinterQuery along with
   // the print settings. Sets the expected page count of the print job based on
   // the settings.
@@ -233,8 +236,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
 
   // Holds the quit closure while running a nested RunLoop to flush tasks.
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJob);
 };
 
 // Details for a NOTIFY_PRINT_JOB_EVENT notification. The members may be NULL.
@@ -270,6 +271,9 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
 #endif
   JobEventDetails(Type type, int job_id, PrintedDocument* document);
 
+  JobEventDetails(const JobEventDetails&) = delete;
+  JobEventDetails& operator=(const JobEventDetails&) = delete;
+
   // Getters.
   PrintedDocument* document() const;
 #if defined(OS_WIN)
@@ -291,8 +295,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
 #endif
   const Type type_;
   int job_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobEventDetails);
 };
 
 }  // namespace printing

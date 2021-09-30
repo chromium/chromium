@@ -23,6 +23,9 @@ class RecentModelFactory : public BrowserContextKeyedServiceFactory {
   // Returns the singleton RecentModelFactory instance.
   static RecentModelFactory* GetInstance();
 
+  RecentModelFactory(const RecentModelFactory&) = delete;
+  RecentModelFactory& operator=(const RecentModelFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<RecentModelFactory>;
 
@@ -34,8 +37,6 @@ class RecentModelFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentModelFactory);
 };
 
 }  // namespace chromeos

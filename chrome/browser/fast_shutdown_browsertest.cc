@@ -26,6 +26,10 @@
 using content::BrowserThread;
 
 class FastShutdown : public InProcessBrowserTest {
+ public:
+  FastShutdown(const FastShutdown&) = delete;
+  FastShutdown& operator=(const FastShutdown&) = delete;
+
  protected:
   FastShutdown() {
   }
@@ -33,9 +37,6 @@ class FastShutdown : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FastShutdown);
 };
 
 // This tests for a previous error where uninstalling an onbeforeunload handler

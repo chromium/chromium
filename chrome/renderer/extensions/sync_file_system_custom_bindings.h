@@ -16,6 +16,10 @@ class SyncFileSystemCustomBindings : public ObjectBackedNativeHandler {
  public:
   explicit SyncFileSystemCustomBindings(ScriptContext* context);
 
+  SyncFileSystemCustomBindings(const SyncFileSystemCustomBindings&) = delete;
+  SyncFileSystemCustomBindings& operator=(const SyncFileSystemCustomBindings&) =
+      delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -23,8 +27,6 @@ class SyncFileSystemCustomBindings : public ObjectBackedNativeHandler {
   // FileSystemObject GetSyncFileSystemObject(string name, string root_url):
   // construct a file system object from the given name and root_url.
   void GetSyncFileSystemObject(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemCustomBindings);
 };
 
 }  // namespace extensions

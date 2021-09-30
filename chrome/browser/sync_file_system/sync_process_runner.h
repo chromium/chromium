@@ -72,6 +72,10 @@ class SyncProcessRunner {
                     Client* client,
                     std::unique_ptr<TimerHelper> timer_helper,
                     size_t max_parallel_task);
+
+  SyncProcessRunner(const SyncProcessRunner&) = delete;
+  SyncProcessRunner& operator=(const SyncProcessRunner&) = delete;
+
   virtual ~SyncProcessRunner();
 
   // Subclass must implement this.
@@ -119,8 +123,6 @@ class SyncProcessRunner {
 
   int64_t pending_changes_;
   base::WeakPtrFactory<SyncProcessRunner> factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncProcessRunner);
 };
 
 }  // namespace sync_file_system

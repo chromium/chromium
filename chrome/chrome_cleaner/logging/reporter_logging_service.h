@@ -32,6 +32,9 @@ class ReporterLoggingService : public LoggingServiceAPI {
   // Return the singleton instance which will get destroyed by the AtExitMgr.
   static ReporterLoggingService* GetInstance();
 
+  ReporterLoggingService(const ReporterLoggingService&) = delete;
+  ReporterLoggingService& operator=(const ReporterLoggingService&) = delete;
+
   // LoggingServiceAPI.
   void Initialize(RegistryLogger* registry_logger) override;
   void Terminate() override;
@@ -134,8 +137,6 @@ class ReporterLoggingService : public LoggingServiceAPI {
 
   // Sampler to choose which files to log detailed info for.
   DetailedInfoSampler sampler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReporterLoggingService);
 };
 
 }  // namespace chrome_cleaner

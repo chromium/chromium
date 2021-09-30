@@ -40,6 +40,9 @@ void SIGCHLDHandler(int signal) {
 // way through startup which causes all sorts of problems.
 class ExitHandler {
  public:
+  ExitHandler(const ExitHandler&) = delete;
+  ExitHandler& operator=(const ExitHandler&) = delete;
+
   // Invokes exit when appropriate.
   static void ExitWhenPossibleOnUIThread(int signal);
 
@@ -59,8 +62,6 @@ class ExitHandler {
   // SessionRestore, so that the callback list does not contain any obsolete
   // callbacks.
   base::CallbackListSubscription on_session_restored_callback_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitHandler);
 };
 
 // static

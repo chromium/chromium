@@ -77,6 +77,11 @@ class ServiceSandboxedProcessLauncherDelegate
  public:
   ServiceSandboxedProcessLauncherDelegate() {}
 
+  ServiceSandboxedProcessLauncherDelegate(
+      const ServiceSandboxedProcessLauncherDelegate&) = delete;
+  ServiceSandboxedProcessLauncherDelegate& operator=(
+      const ServiceSandboxedProcessLauncherDelegate&) = delete;
+
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
     // Ignore result of SetAlternateDesktop. Service process may run as windows
     // service and it fails to create a window station.
@@ -87,9 +92,6 @@ class ServiceSandboxedProcessLauncherDelegate
   sandbox::policy::SandboxType GetSandboxType() override {
     return sandbox::policy::SandboxType::kPdfConversion;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceSandboxedProcessLauncherDelegate);
 };
 
 // This implementation does not do any font pre-caching.

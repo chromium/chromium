@@ -54,6 +54,9 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   HistoryTabHelperTest() = default;
 
+  HistoryTabHelperTest(const HistoryTabHelperTest&) = delete;
+  HistoryTabHelperTest& operator=(const HistoryTabHelperTest&) = delete;
+
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -133,8 +136,6 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 #if defined(OS_ANDROID)
   TestFeedApi test_feed_api_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryTabHelperTest);
 };
 
 TEST_F(HistoryTabHelperTest, ShouldUpdateTitleInHistory) {

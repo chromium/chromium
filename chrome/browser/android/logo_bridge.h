@@ -20,6 +20,10 @@ class LogoService;
 class LogoBridge {
  public:
   explicit LogoBridge(const base::android::JavaRef<jobject>& j_profile);
+
+  LogoBridge(const LogoBridge&) = delete;
+  LogoBridge& operator=(const LogoBridge&) = delete;
+
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   // TODO(treib): Double-check the observer contract (esp. for
@@ -42,8 +46,6 @@ class LogoBridge {
   search_provider_logos::LogoService* logo_service_;
 
   base::WeakPtrFactory<LogoBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LogoBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_LOGO_BRIDGE_H_

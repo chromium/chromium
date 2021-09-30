@@ -51,6 +51,9 @@ namespace {
 // one instance of this class exists.
 class ThreadWatcherObserver : public content::NotificationObserver {
  public:
+  ThreadWatcherObserver(const ThreadWatcherObserver&) = delete;
+  ThreadWatcherObserver& operator=(const ThreadWatcherObserver&) = delete;
+
   // |wakeup_interval| specifies how often to wake up thread watchers due to
   // new user activity.
   static void Start(const base::TimeDelta& wakeup_interval);
@@ -86,8 +89,6 @@ class ThreadWatcherObserver : public content::NotificationObserver {
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadWatcherObserver);
 };
 
 ThreadWatcherObserver* g_thread_watcher_observer_ = nullptr;
@@ -848,6 +849,9 @@ class StartupWatchDogThread : public base::Watchdog {
       : base::Watchdog(duration, "Startup watchdog thread", true) {
   }
 
+  StartupWatchDogThread(const StartupWatchDogThread&) = delete;
+  StartupWatchDogThread& operator=(const StartupWatchDogThread&) = delete;
+
   // Alarm is called if the time expires after an Arm() without someone calling
   // Disarm(). When Alarm goes off, in release mode we get the crash dump
   // without crashing and in debug mode we break into the debugger.
@@ -858,9 +862,6 @@ class StartupWatchDogThread : public base::Watchdog {
     WatchDogThread::PostTask(FROM_HERE, base::BindOnce(&metrics::StartupHang));
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StartupWatchDogThread);
 };
 
 // ShutdownWatchDogThread methods and members.
@@ -874,12 +875,12 @@ class ShutdownWatchDogThread : public base::Watchdog {
       : base::Watchdog(duration, "Shutdown watchdog thread", true) {
   }
 
+  ShutdownWatchDogThread(const ShutdownWatchDogThread&) = delete;
+  ShutdownWatchDogThread& operator=(const ShutdownWatchDogThread&) = delete;
+
   // Alarm is called if the time expires after an Arm() without someone calling
   // Disarm(). We crash the browser if this method is called.
   void Alarm() override { metrics::ShutdownHang(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShutdownWatchDogThread);
 };
 
 }  // namespace

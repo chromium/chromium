@@ -26,6 +26,11 @@ class OfflinePageAutoFetcherServiceFactory
   static OfflinePageAutoFetcherService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  OfflinePageAutoFetcherServiceFactory(
+      const OfflinePageAutoFetcherServiceFactory&) = delete;
+  OfflinePageAutoFetcherServiceFactory& operator=(
+      const OfflinePageAutoFetcherServiceFactory&) = delete;
+
  private:
   class ServiceDelegate;
   friend struct base::DefaultSingletonTraits<
@@ -38,7 +43,6 @@ class OfflinePageAutoFetcherServiceFactory
       content::BrowserContext* context) const override;
 
   std::unique_ptr<ServiceDelegate> service_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageAutoFetcherServiceFactory);
 };
 
 }  // namespace offline_pages

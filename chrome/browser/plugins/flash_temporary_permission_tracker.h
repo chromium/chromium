@@ -27,6 +27,11 @@ class FlashTemporaryPermissionTracker : public RefcountedKeyedService {
   static scoped_refptr<FlashTemporaryPermissionTracker> Get(
       content::BrowserContext* browser_context);
 
+  FlashTemporaryPermissionTracker(const FlashTemporaryPermissionTracker&) =
+      delete;
+  FlashTemporaryPermissionTracker& operator=(
+      const FlashTemporaryPermissionTracker&) = delete;
+
   // Returns true if Flash is enabled for a given |url|. Can be called from any
   // thread.
   bool IsFlashEnabled(const GURL& url);
@@ -62,8 +67,6 @@ class FlashTemporaryPermissionTracker : public RefcountedKeyedService {
   // Lock to protect |granted_origins_|. This is needed because IsFlashEnabled
   // may be called from any thread via the ChromePluginServiceFilter.
   base::Lock granted_origins_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashTemporaryPermissionTracker);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_FLASH_TEMPORARY_PERMISSION_TRACKER_H_

@@ -21,6 +21,10 @@ class SecureChannelClientProvider {
  public:
   static SecureChannelClientProvider* GetInstance();
 
+  SecureChannelClientProvider(const SecureChannelClientProvider&) = delete;
+  SecureChannelClientProvider& operator=(const SecureChannelClientProvider&) =
+      delete;
+
   SecureChannelClient* GetClient();
 
  private:
@@ -30,8 +34,6 @@ class SecureChannelClientProvider {
   virtual ~SecureChannelClientProvider();
 
   std::unique_ptr<SecureChannelClient> secure_channel_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientProvider);
 };
 
 }  // namespace secure_channel

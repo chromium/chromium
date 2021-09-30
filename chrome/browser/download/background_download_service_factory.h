@@ -31,6 +31,11 @@ class BackgroundDownloadServiceFactory : public SimpleKeyedServiceFactory {
   // Returns the DownloadService associated with |key|.
   static download::BackgroundDownloadService* GetForKey(SimpleFactoryKey* key);
 
+  BackgroundDownloadServiceFactory(const BackgroundDownloadServiceFactory&) =
+      delete;
+  BackgroundDownloadServiceFactory& operator=(
+      const BackgroundDownloadServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BackgroundDownloadServiceFactory>;
 
@@ -41,8 +46,6 @@ class BackgroundDownloadServiceFactory : public SimpleKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_

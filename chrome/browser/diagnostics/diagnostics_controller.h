@@ -23,6 +23,9 @@ class DiagnosticsController {
  public:
   static DiagnosticsController* GetInstance();
 
+  DiagnosticsController(const DiagnosticsController&) = delete;
+  DiagnosticsController& operator=(const DiagnosticsController&) = delete;
+
   // Entry point for the diagnostics mode. Returns zero if able to run
   // diagnostics successfully, regardless of the results of the diagnostics.
   int Run(const base::CommandLine& command_line, DiagnosticsWriter* writer);
@@ -56,8 +59,6 @@ class DiagnosticsController {
 
   std::unique_ptr<DiagnosticsModel> model_;
   DiagnosticsWriter* writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsController);
 };
 
 }  // namespace diagnostics

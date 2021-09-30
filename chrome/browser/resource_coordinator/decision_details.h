@@ -176,6 +176,10 @@ class DecisionDetails {
   };
 
   DecisionDetails();
+
+  DecisionDetails(const DecisionDetails&) = delete;
+  DecisionDetails& operator=(const DecisionDetails&) = delete;
+
   ~DecisionDetails();
 
   // Allow move assignment.
@@ -225,8 +229,6 @@ class DecisionDetails {
   // reasons after this toggle isn't very informative.
   bool toggled_;
   std::vector<Reason> reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecisionDetails);
 };
 
 }  // namespace resource_coordinator

@@ -31,6 +31,9 @@ class ProfilingProcessHost {
   // Returns a pointer to the current global profiling process host.
   static ProfilingProcessHost* GetInstance();
 
+  ProfilingProcessHost(const ProfilingProcessHost&) = delete;
+  ProfilingProcessHost& operator=(const ProfilingProcessHost&) = delete;
+
   // Starts background profiling and metrics, if appropriate.
   void Start();
 
@@ -61,8 +64,6 @@ class ProfilingProcessHost {
 
   // Every 24-hours, reports the profiling mode.
   base::RepeatingTimer metrics_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilingProcessHost);
 };
 
 }  // namespace heap_profiling

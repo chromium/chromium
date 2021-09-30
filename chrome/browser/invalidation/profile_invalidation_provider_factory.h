@@ -34,6 +34,11 @@ class ProfileInvalidationProviderFactory
 
   static ProfileInvalidationProviderFactory* GetInstance();
 
+  ProfileInvalidationProviderFactory(
+      const ProfileInvalidationProviderFactory&) = delete;
+  ProfileInvalidationProviderFactory& operator=(
+      const ProfileInvalidationProviderFactory&) = delete;
+
   // Switches service creation to go through |testing_factory| for all browser
   // contexts.
   void RegisterTestingFactory(TestingFactory testing_factory);
@@ -54,8 +59,6 @@ class ProfileInvalidationProviderFactory
       user_prefs::PrefRegistrySyncable* registry) override;
 
   TestingFactory testing_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileInvalidationProviderFactory);
 };
 
 }  // namespace invalidation

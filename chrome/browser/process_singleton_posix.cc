@@ -533,6 +533,9 @@ class ProcessSingleton::LinuxWatcher
   explicit LinuxWatcher(ProcessSingleton* parent)
       : ui_task_runner_(base::ThreadTaskRunnerHandle::Get()), parent_(parent) {}
 
+  LinuxWatcher(const LinuxWatcher&) = delete;
+  LinuxWatcher& operator=(const LinuxWatcher&) = delete;
+
   // Start listening for connections on the socket.  This method should be
   // called from the IO thread.
   void StartListening(int socket);
@@ -567,8 +570,6 @@ class ProcessSingleton::LinuxWatcher
   ProcessSingleton* const parent_;
 
   std::set<std::unique_ptr<SocketReader>, base::UniquePtrComparator> readers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinuxWatcher);
 };
 
 void ProcessSingleton::LinuxWatcher::OnSocketCanReadWithoutBlocking(

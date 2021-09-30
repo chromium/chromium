@@ -229,6 +229,9 @@ class DownloadRequestLimiter
 
   DownloadRequestLimiter();
 
+  DownloadRequestLimiter(const DownloadRequestLimiter&) = delete;
+  DownloadRequestLimiter& operator=(const DownloadRequestLimiter&) = delete;
+
   // Returns the download status for a page. This does not change the state in
   // anyway.
   DownloadStatus GetDownloadStatus(content::WebContents* web_contents);
@@ -331,8 +334,6 @@ class DownloadRequestLimiter
   // Weak ptr factory used when |CanDownload| asks the delegate asynchronously
   // about the download.
   base::WeakPtrFactory<DownloadRequestLimiter> factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadRequestLimiter);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_REQUEST_LIMITER_H_

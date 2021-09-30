@@ -23,6 +23,9 @@ class ThrottleObserverTest
                             AsWeakPtr()));
   }
 
+  ThrottleObserverTest(const ThrottleObserverTest&) = delete;
+  ThrottleObserverTest& operator=(const ThrottleObserverTest&) = delete;
+
   void OnObserverStateChanged() { notify_count_++; }
 
  protected:
@@ -33,8 +36,6 @@ class ThrottleObserverTest
   ThrottleObserver observer_{ThrottleObserver::PriorityLevel::LOW,
                              "TestObserver"};
   size_t notify_count_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleObserverTest);
 };
 
 // Tests that ThrottleObserver can be constructed and destructed.

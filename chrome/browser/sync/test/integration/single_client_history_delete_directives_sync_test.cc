@@ -43,6 +43,11 @@ class HistoryDeleteDirectivesEqualityChecker
         fake_server_(fake_server),
         num_expected_directives_(num_expected_directives) {}
 
+  HistoryDeleteDirectivesEqualityChecker(
+      const HistoryDeleteDirectivesEqualityChecker&) = delete;
+  HistoryDeleteDirectivesEqualityChecker& operator=(
+      const HistoryDeleteDirectivesEqualityChecker&) = delete;
+
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting server side HISTORY_DELETE_DIRECTIVES to match expected.";
     const std::vector<sync_pb::SyncEntity> entities =
@@ -63,8 +68,6 @@ class HistoryDeleteDirectivesEqualityChecker
  private:
   fake_server::FakeServer* const fake_server_;
   const size_t num_expected_directives_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectivesEqualityChecker);
 };
 
 class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {

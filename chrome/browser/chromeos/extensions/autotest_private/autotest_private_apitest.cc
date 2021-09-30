@@ -245,6 +245,11 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
  public:
   AutotestPrivateWithPolicyApiTest() {}
 
+  AutotestPrivateWithPolicyApiTest(const AutotestPrivateWithPolicyApiTest&) =
+      delete;
+  AutotestPrivateWithPolicyApiTest& operator=(
+      const AutotestPrivateWithPolicyApiTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -266,9 +271,6 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutotestPrivateWithPolicyApiTest);
 };
 
 // GetAllEnterprisePolicies Sanity check.

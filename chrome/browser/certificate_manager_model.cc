@@ -395,6 +395,9 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
         certificate_provider_service_(std::move(certificate_provider_service)) {
   }
 
+  CertsSourceExtensions(const CertsSourceExtensions&) = delete;
+  CertsSourceExtensions& operator=(const CertsSourceExtensions&) = delete;
+
   void Refresh() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     certificate_provider_service_->GetCertificates(base::BindOnce(
@@ -448,8 +451,6 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
   std::unique_ptr<chromeos::CertificateProvider> certificate_provider_service_;
 
   base::WeakPtrFactory<CertsSourceExtensions> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CertsSourceExtensions);
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -24,6 +24,9 @@ class SigninGlobalErrorFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the SigninGlobalErrorFactory singleton.
   static SigninGlobalErrorFactory* GetInstance();
 
+  SigninGlobalErrorFactory(const SigninGlobalErrorFactory&) = delete;
+  SigninGlobalErrorFactory& operator=(const SigninGlobalErrorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SigninGlobalErrorFactory>;
 
@@ -33,8 +36,6 @@ class SigninGlobalErrorFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninGlobalErrorFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_GLOBAL_ERROR_FACTORY_H_

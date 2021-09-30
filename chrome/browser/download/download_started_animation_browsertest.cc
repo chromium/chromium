@@ -15,8 +15,9 @@ class DownloadStartedAnimationTest : public InProcessBrowserTest {
   DownloadStartedAnimationTest() {
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadStartedAnimationTest);
+  DownloadStartedAnimationTest(const DownloadStartedAnimationTest&) = delete;
+  DownloadStartedAnimationTest& operator=(const DownloadStartedAnimationTest&) =
+      delete;
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadStartedAnimationTest,

@@ -36,6 +36,11 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   MetricsWebContentsObserverTest() = default;
 
+  MetricsWebContentsObserverTest(const MetricsWebContentsObserverTest&) =
+      delete;
+  MetricsWebContentsObserverTest& operator=(
+      const MetricsWebContentsObserverTest&) = delete;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     AttachObserver();
@@ -62,8 +67,6 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestMetricsWebContentsObserverEmbedder* embedder_interface_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsWebContentsObserverTest);
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -47,6 +47,9 @@ class MockEnvironment : public base::Environment {
  public:
   MockEnvironment() {}
 
+  MockEnvironment(const MockEnvironment&) = delete;
+  MockEnvironment& operator=(const MockEnvironment&) = delete;
+
   void Set(base::StringPiece name, const std::string& value) {
     variables_[std::string(name)] = value;
   }
@@ -73,8 +76,6 @@ class MockEnvironment : public base::Environment {
 
  private:
   std::map<std::string, std::string> variables_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockEnvironment);
 };
 
 // This helps EXPECT_THAT(..., ElementsAre(...)) print out more meaningful

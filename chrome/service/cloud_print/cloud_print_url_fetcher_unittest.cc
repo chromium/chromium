@@ -100,6 +100,9 @@ class CloudPrintURLFetcherTest : public testing::Test,
         fetcher_(nullptr),
         quit_run_loop_(run_loop_.QuitClosure()) {}
 
+  CloudPrintURLFetcherTest(const CloudPrintURLFetcherTest&) = delete;
+  CloudPrintURLFetcherTest& operator=(const CloudPrintURLFetcherTest&) = delete;
+
   // Creates a URLFetcher, using the program's main thread to do IO.
   virtual void CreateFetcher(const GURL& url, int max_retries);
 
@@ -153,8 +156,6 @@ class CloudPrintURLFetcherTest : public testing::Test,
   scoped_refptr<TestCloudPrintURLFetcher> fetcher_;
   base::RunLoop run_loop_;
   base::OnceClosure quit_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintURLFetcherTest);
 };
 
 class CloudPrintURLFetcherBasicTest : public CloudPrintURLFetcherTest {

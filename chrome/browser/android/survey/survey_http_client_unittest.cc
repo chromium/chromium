@@ -140,6 +140,10 @@ class MockResponseDoneCallback {
 };
 
 class SurveyHttpClientTest : public testing::Test {
+ public:
+  SurveyHttpClientTest(const SurveyHttpClientTest&) = delete;
+  SurveyHttpClientTest& operator=(const SurveyHttpClientTest&) = delete;
+
  protected:
   SurveyHttpClientTest() {}
 
@@ -248,8 +252,6 @@ class SurveyHttpClientTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurveyHttpClientTest);
 };
 
 TEST_F(SurveyHttpClientTest, TestSendEmptyRequest) {

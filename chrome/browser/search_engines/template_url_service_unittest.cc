@@ -133,6 +133,9 @@ class TemplateURLServiceTest : public testing::Test {
  public:
   TemplateURLServiceTest();
 
+  TemplateURLServiceTest(const TemplateURLServiceTest&) = delete;
+  TemplateURLServiceTest& operator=(const TemplateURLServiceTest&) = delete;
+
   // testing::Test:
   void SetUp() override;
   void TearDown() override;
@@ -185,8 +188,6 @@ class TemplateURLServiceTest : public testing::Test {
   content::BrowserTaskEnvironment
       task_environment_;  // To set up BrowserThreads.
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceTest);
 };
 
 class TemplateURLServiceWithoutFallbackTest : public TemplateURLServiceTest {

@@ -40,6 +40,9 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   static GlobalConfirmInfoBar* Show(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
+  GlobalConfirmInfoBar(const GlobalConfirmInfoBar&) = delete;
+  GlobalConfirmInfoBar& operator=(const GlobalConfirmInfoBar&) = delete;
+
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* info_bar, bool animate) override;
   void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
@@ -75,8 +78,6 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   bool is_closing_ = false;
 
   base::WeakPtrFactory<GlobalConfirmInfoBar> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalConfirmInfoBar);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_GLOBAL_CONFIRM_INFO_BAR_H_

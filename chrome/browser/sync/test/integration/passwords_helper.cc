@@ -47,6 +47,10 @@ class PasswordStoreConsumerHelper
  public:
   PasswordStoreConsumerHelper() {}
 
+  PasswordStoreConsumerHelper(const PasswordStoreConsumerHelper&) = delete;
+  PasswordStoreConsumerHelper& operator=(const PasswordStoreConsumerHelper&) =
+      delete;
+
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override {
     result_.swap(results);
@@ -62,8 +66,6 @@ class PasswordStoreConsumerHelper
  private:
   base::RunLoop run_loop_;
   std::vector<std::unique_ptr<PasswordForm>> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
 sync_pb::EntitySpecifics EncryptPasswordSpecifics(

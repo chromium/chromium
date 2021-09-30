@@ -31,6 +31,9 @@ class TrackerFactory : public BrowserContextKeyedServiceFactory {
   static feature_engagement::Tracker* GetForBrowserContext(
       content::BrowserContext* context);
 
+  TrackerFactory(const TrackerFactory&) = delete;
+  TrackerFactory& operator=(const TrackerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TrackerFactory>;
 
@@ -42,8 +45,6 @@ class TrackerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerFactory);
 };
 
 }  // namespace feature_engagement

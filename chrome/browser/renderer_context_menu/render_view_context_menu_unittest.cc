@@ -163,6 +163,10 @@ class RenderViewContextMenuTest : public testing::Test {
     // TODO(mgiuca): Add tests with DesktopPWAs enabled.
   }
 
+  RenderViewContextMenuTest(const RenderViewContextMenuTest&) = delete;
+  RenderViewContextMenuTest& operator=(const RenderViewContextMenuTest&) =
+      delete;
+
   // Proxy defined here to minimize friend classes in RenderViewContextMenu
   static bool ExtensionContextAndPatternMatch(
       const content::ContextMenuParams& params,
@@ -190,8 +194,6 @@ class RenderViewContextMenuTest : public testing::Test {
 
  private:
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuTest);
 };
 
 // Generates a URLPatternSet with a single pattern
@@ -369,6 +371,11 @@ class RenderViewContextMenuExtensionsTest : public RenderViewContextMenuTest {
       : RenderViewContextMenuTest(
             std::make_unique<extensions::TestExtensionEnvironment>()) {}
 
+  RenderViewContextMenuExtensionsTest(
+      const RenderViewContextMenuExtensionsTest&) = delete;
+  RenderViewContextMenuExtensionsTest& operator=(
+      const RenderViewContextMenuExtensionsTest&) = delete;
+
   void SetUp() override {
     RenderViewContextMenuTest::SetUp();
     // TestingProfile does not provide a protocol registry.
@@ -386,8 +393,6 @@ class RenderViewContextMenuExtensionsTest : public RenderViewContextMenuTest {
 
  protected:
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuExtensionsTest);
 };
 
 TEST_F(RenderViewContextMenuExtensionsTest,
@@ -429,6 +434,11 @@ TEST_F(RenderViewContextMenuExtensionsTest,
 class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
  public:
   RenderViewContextMenuPrefsTest() = default;
+
+  RenderViewContextMenuPrefsTest(const RenderViewContextMenuPrefsTest&) =
+      delete;
+  RenderViewContextMenuPrefsTest& operator=(
+      const RenderViewContextMenuPrefsTest&) = delete;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -479,8 +489,6 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
  private:
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
   TemplateURLService* template_url_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuPrefsTest);
 };
 
 // Verifies when Incognito Mode is not available (disabled by policy),

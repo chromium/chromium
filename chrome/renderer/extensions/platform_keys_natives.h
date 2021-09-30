@@ -16,6 +16,9 @@ class PlatformKeysNatives : public ObjectBackedNativeHandler {
  public:
   explicit PlatformKeysNatives(ScriptContext* context);
 
+  PlatformKeysNatives(const PlatformKeysNatives&) = delete;
+  PlatformKeysNatives& operator=(const PlatformKeysNatives&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -30,8 +33,6 @@ class PlatformKeysNatives : public ObjectBackedNativeHandler {
   // parameters are missing or not supported. Note that it returns untyped
   // arrays instead of typed arrays (e.g. for RSA publicExponent).
   void NormalizeAlgorithm(const v8::FunctionCallbackInfo<v8::Value>& call_info);
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeysNatives);
 };
 
 }  // namespace extensions

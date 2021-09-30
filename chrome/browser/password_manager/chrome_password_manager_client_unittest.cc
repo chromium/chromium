@@ -121,6 +121,11 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
 #endif
   }
 
+  MockChromePasswordManagerClient(const MockChromePasswordManagerClient&) =
+      delete;
+  MockChromePasswordManagerClient& operator=(
+      const MockChromePasswordManagerClient&) = delete;
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override {
@@ -137,17 +142,16 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
   std::unique_ptr<safe_browsing::MockPasswordProtectionService>
       password_protection_service_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(MockChromePasswordManagerClient);
 };
 
 class DummyLogReceiver : public autofill::LogReceiver {
  public:
   DummyLogReceiver() = default;
 
-  void LogEntry(const base::Value& entry) override {}
+  DummyLogReceiver(const DummyLogReceiver&) = delete;
+  DummyLogReceiver& operator=(const DummyLogReceiver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyLogReceiver);
+  void LogEntry(const base::Value& entry) override {}
 };
 
 class FakePasswordAutofillAgent

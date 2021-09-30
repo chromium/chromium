@@ -77,6 +77,9 @@ class TestWebApkInstaller : public WebApkInstaller {
                                SpaceStatus status)
       : WebApkInstaller(browser_context), test_space_status_(status) {}
 
+  TestWebApkInstaller(const TestWebApkInstaller&) = delete;
+  TestWebApkInstaller& operator=(const TestWebApkInstaller&) = delete;
+
   void InstallOrUpdateWebApk(const std::string& package_name,
                              const std::string& token) override {
     PostTaskToRunSuccessCallback();
@@ -97,8 +100,6 @@ class TestWebApkInstaller : public WebApkInstaller {
 
   // The space status used in tests.
   SpaceStatus test_space_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebApkInstaller);
 };
 
 // Runs the WebApkInstaller installation process/update and blocks till done.
@@ -162,6 +163,9 @@ class UpdateRequestStorer {
  public:
   UpdateRequestStorer() {}
 
+  UpdateRequestStorer(const UpdateRequestStorer&) = delete;
+  UpdateRequestStorer& operator=(const UpdateRequestStorer&) = delete;
+
   void StoreSync(const base::FilePath& update_request_path) {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -179,8 +183,6 @@ class UpdateRequestStorer {
   void OnComplete(bool success) { std::move(quit_closure_).Run(); }
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequestStorer);
 };
 
 // Builds a webapk::WebApkResponse with |token| as the token from the WebAPK

@@ -21,11 +21,12 @@ namespace printing {
 // This includes the OS-dependent UI to manage the network and local printers.
 class PrinterManagerDialog {
  public:
+  PrinterManagerDialog() = delete;
+  PrinterManagerDialog(const PrinterManagerDialog&) = delete;
+  PrinterManagerDialog& operator=(const PrinterManagerDialog&) = delete;
+
   // Displays the native printer manager dialog.
   static void ShowPrinterManagerDialog(Profile* profile);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PrinterManagerDialog);
 };
 
 }  // namespace printing

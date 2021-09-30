@@ -240,6 +240,10 @@ class DefaultBrowserActionRecorder : public SettingsAppMonitor::Delegate {
   explicit DefaultBrowserActionRecorder(base::OnceClosure continuation)
       : continuation_(std::move(continuation)), settings_app_monitor_(this) {}
 
+  DefaultBrowserActionRecorder(const DefaultBrowserActionRecorder&) = delete;
+  DefaultBrowserActionRecorder& operator=(const DefaultBrowserActionRecorder&) =
+      delete;
+
  private:
   // win::SettingsAppMonitor::Delegate:
   void OnInitialized(HRESULT result) override {
@@ -292,8 +296,6 @@ class DefaultBrowserActionRecorder : public SettingsAppMonitor::Delegate {
   // Monitors user interaction with the Windows Settings app for the sake of
   // reporting user actions.
   SettingsAppMonitor settings_app_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserActionRecorder);
 };
 
 // A function bound up in a callback with a DefaultBrowserActionRecorder and
@@ -317,6 +319,9 @@ void OnSettingsAppFinished(
 // This class also manages its own lifetime.
 class OpenSystemSettingsHelper {
  public:
+  OpenSystemSettingsHelper(const OpenSystemSettingsHelper&) = delete;
+  OpenSystemSettingsHelper& operator=(const OpenSystemSettingsHelper&) = delete;
+
   // Begin the monitoring and will call |on_finished_callback| when done.
   // Takes in a null-terminated array of |protocols| whose registry keys must be
   // watched. The array must contain at least one element.
@@ -435,8 +440,6 @@ class OpenSystemSettingsHelper {
   // registry watcher. This makes it possible to self-delete after one of the
   // callbacks is executed to cancel the remaining ones.
   base::WeakPtrFactory<OpenSystemSettingsHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSystemSettingsHelper);
 };
 
 OpenSystemSettingsHelper* OpenSystemSettingsHelper::instance_ = nullptr;
@@ -448,6 +451,10 @@ class IsPinnedToTaskbarHelper {
  public:
   using ResultCallback = win::IsPinnedToTaskbarCallback;
   using ErrorCallback = win::ConnectionErrorCallback;
+
+  IsPinnedToTaskbarHelper(const IsPinnedToTaskbarHelper&) = delete;
+  IsPinnedToTaskbarHelper& operator=(const IsPinnedToTaskbarHelper&) = delete;
+
   static void GetState(ErrorCallback error_callback,
                        ResultCallback result_callback);
 
@@ -466,8 +473,6 @@ class IsPinnedToTaskbarHelper {
   ResultCallback result_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IsPinnedToTaskbarHelper);
 };
 
 // static

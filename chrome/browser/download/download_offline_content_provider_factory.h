@@ -29,6 +29,11 @@ class DownloadOfflineContentProviderFactory : public SimpleKeyedServiceFactory {
   // and associates one if it doesn't exist.
   static DownloadOfflineContentProvider* GetForKey(SimpleFactoryKey* key);
 
+  DownloadOfflineContentProviderFactory(
+      const DownloadOfflineContentProviderFactory&) = delete;
+  DownloadOfflineContentProviderFactory& operator=(
+      const DownloadOfflineContentProviderFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       DownloadOfflineContentProviderFactory>;
@@ -40,8 +45,6 @@ class DownloadOfflineContentProviderFactory : public SimpleKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOfflineContentProviderFactory);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_OFFLINE_CONTENT_PROVIDER_FACTORY_H_

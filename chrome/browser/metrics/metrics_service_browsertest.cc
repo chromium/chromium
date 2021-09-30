@@ -87,6 +87,10 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
  public:
   MetricsServiceBrowserTest() {}
 
+  MetricsServiceBrowserTest(const MetricsServiceBrowserTest&) = delete;
+  MetricsServiceBrowserTest& operator=(const MetricsServiceBrowserTest&) =
+      delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable the metrics service for testing (in recording-only mode).
     command_line->AppendSwitch(metrics::switches::kMetricsRecordingOnly);
@@ -151,8 +155,6 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
 
  private:
   bool metrics_consent_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
@@ -308,6 +310,11 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
  public:
   MetricsServiceBrowserFilesTest() {}
 
+  MetricsServiceBrowserFilesTest(const MetricsServiceBrowserFilesTest&) =
+      delete;
+  MetricsServiceBrowserFilesTest& operator=(
+      const MetricsServiceBrowserFilesTest&) = delete;
+
   bool SetUpUserDataDirectory() override {
     if (!super::SetUpUserDataDirectory())
       return false;
@@ -379,8 +386,6 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
  private:
   bool metrics_consent_ = true;
   base::FilePath upload_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserFilesTest);
 };
 
 // Specific class for testing when metrics upload is fully enabled.
@@ -388,6 +393,11 @@ class MetricsServiceBrowserDoUploadTest
     : public MetricsServiceBrowserFilesTest {
  public:
   MetricsServiceBrowserDoUploadTest() {}
+
+  MetricsServiceBrowserDoUploadTest(const MetricsServiceBrowserDoUploadTest&) =
+      delete;
+  MetricsServiceBrowserDoUploadTest& operator=(
+      const MetricsServiceBrowserDoUploadTest&) = delete;
 
   void SetUp() override {
     set_metrics_consent(true);
@@ -398,8 +408,6 @@ class MetricsServiceBrowserDoUploadTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserDoUploadTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserDoUploadTest, FilesRemain) {
@@ -413,6 +421,11 @@ class MetricsServiceBrowserNoUploadTest
  public:
   MetricsServiceBrowserNoUploadTest() {}
 
+  MetricsServiceBrowserNoUploadTest(const MetricsServiceBrowserNoUploadTest&) =
+      delete;
+  MetricsServiceBrowserNoUploadTest& operator=(
+      const MetricsServiceBrowserNoUploadTest&) = delete;
+
   void SetUp() override {
     set_metrics_consent(false);
     feature_list_.InitAndEnableFeature(
@@ -422,8 +435,6 @@ class MetricsServiceBrowserNoUploadTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserNoUploadTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
@@ -437,6 +448,11 @@ class MetricsServiceBrowserSampledOutTest
  public:
   MetricsServiceBrowserSampledOutTest() {}
 
+  MetricsServiceBrowserSampledOutTest(
+      const MetricsServiceBrowserSampledOutTest&) = delete;
+  MetricsServiceBrowserSampledOutTest& operator=(
+      const MetricsServiceBrowserSampledOutTest&) = delete;
+
   void SetUp() override {
     set_metrics_consent(true);
     feature_list_.InitAndDisableFeature(
@@ -446,8 +462,6 @@ class MetricsServiceBrowserSampledOutTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserSampledOutTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest, FilesRemoved) {

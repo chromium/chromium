@@ -42,6 +42,9 @@ class DelayedCallbackGroup
       base::TimeDelta expiration_delay,
       scoped_refptr<base::SequencedTaskRunner> expiration_task_runner);
 
+  DelayedCallbackGroup(const DelayedCallbackGroup&) = delete;
+  DelayedCallbackGroup& operator=(const DelayedCallbackGroup&) = delete;
+
   // Add a |callback| to the queue to be called at a later time on the calling
   // sequence task runner. |callback| will either be called when RunAll() is
   // called or if a delay of |expiration_delay| has elapsed after calling
@@ -90,8 +93,6 @@ class DelayedCallbackGroup
 
   scoped_refptr<base::SequencedTaskRunner> expiration_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedCallbackGroup);
 };
 
 #endif  // CHROME_RENDERER_CHROMEOS_DELAYED_CALLBACK_GROUP_H_

@@ -119,6 +119,10 @@ class InstallServiceWorkItemImpl {
    public:
     using Handle = SC_HANDLE;
 
+    ScHandleTraits() = delete;
+    ScHandleTraits(const ScHandleTraits&) = delete;
+    ScHandleTraits& operator=(const ScHandleTraits&) = delete;
+
     static bool CloseHandle(SC_HANDLE handle) {
       return ::CloseServiceHandle(handle) != FALSE;
     }
@@ -126,9 +130,6 @@ class InstallServiceWorkItemImpl {
     static bool IsHandleValid(SC_HANDLE handle) { return handle != nullptr; }
 
     static SC_HANDLE NullHandle() { return nullptr; }
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
   };
 
   using ScopedScHandle =

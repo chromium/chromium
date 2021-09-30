@@ -160,6 +160,9 @@ class TabClosingObserver : public TabStripModelObserver {
     tab_strip_->AddObserver(this);
   }
 
+  TabClosingObserver(const TabClosingObserver&) = delete;
+  TabClosingObserver& operator=(const TabClosingObserver&) = delete;
+
   void WaitForContentsClosing() {
     if (!contents_)
       return;
@@ -194,8 +197,6 @@ class TabClosingObserver : public TabStripModelObserver {
 
   // Contents to wait for.
   content::WebContents* contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabClosingObserver);
 };
 
 // Navigates to a blocked URL.

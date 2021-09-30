@@ -53,18 +53,23 @@ class MockDialogModelObserver
  public:
   MockDialogModelObserver() = default;
 
+  MockDialogModelObserver(const MockDialogModelObserver&) = delete;
+  MockDialogModelObserver& operator=(const MockDialogModelObserver&) = delete;
+
   MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogModel*));
   MOCK_METHOD0(OnStepTransition, void());
   MOCK_METHOD0(OnCancelRequest, void());
   MOCK_METHOD0(OnBluetoothPoweredStateChanged, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDialogModelObserver);
 };
 
 class BluetoothAdapterPowerOnCallbackReceiver {
  public:
   BluetoothAdapterPowerOnCallbackReceiver() = default;
+
+  BluetoothAdapterPowerOnCallbackReceiver(
+      const BluetoothAdapterPowerOnCallbackReceiver&) = delete;
+  BluetoothAdapterPowerOnCallbackReceiver& operator=(
+      const BluetoothAdapterPowerOnCallbackReceiver&) = delete;
 
   base::RepeatingClosure GetCallback() {
     return base::BindRepeating(
@@ -81,8 +86,6 @@ class BluetoothAdapterPowerOnCallbackReceiver {
   }
 
   bool was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterPowerOnCallbackReceiver);
 };
 
 base::StringPiece RequestTypeToString(RequestType req_type) {
@@ -130,12 +133,14 @@ class AuthenticatorRequestDialogModelTest : public ::testing::Test {
 
   AuthenticatorRequestDialogModelTest() = default;
 
+  AuthenticatorRequestDialogModelTest(
+      const AuthenticatorRequestDialogModelTest&) = delete;
+  AuthenticatorRequestDialogModelTest& operator=(
+      const AuthenticatorRequestDialogModelTest&) = delete;
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogModelTest);
 };
 
 TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {

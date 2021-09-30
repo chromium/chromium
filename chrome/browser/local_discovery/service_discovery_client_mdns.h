@@ -27,6 +27,10 @@ class ServiceDiscoveryClientMdns
 
   ServiceDiscoveryClientMdns();
 
+  ServiceDiscoveryClientMdns(const ServiceDiscoveryClientMdns&) = delete;
+  ServiceDiscoveryClientMdns& operator=(const ServiceDiscoveryClientMdns&) =
+      delete;
+
   // ServiceDiscoveryClient:
   std::unique_ptr<ServiceWatcher> CreateServiceWatcher(
       const std::string& service_type,
@@ -70,8 +74,6 @@ class ServiceDiscoveryClientMdns
   bool need_delay_mdns_tasks_ = true;
 
   base::WeakPtrFactory<ServiceDiscoveryClientMdns> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDiscoveryClientMdns);
 };
 
 }  // namespace local_discovery

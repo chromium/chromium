@@ -55,6 +55,10 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // Returns the global controller object.
   static ChromeCleanerControllerImpl* GetInstance();
 
+  ChromeCleanerControllerImpl(const ChromeCleanerControllerImpl&) = delete;
+  ChromeCleanerControllerImpl& operator=(const ChromeCleanerControllerImpl&) =
+      delete;
+
   // ChromeCleanerController overrides.
   State state() const override;
   IdleReason idle_reason() const override;
@@ -155,8 +159,6 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ChromeCleanerControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerControllerImpl);
 };
 
 }  // namespace safe_browsing

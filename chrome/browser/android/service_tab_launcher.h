@@ -28,6 +28,9 @@ class ServiceTabLauncher {
   // Returns the singleton instance of the service tab launcher.
   static ServiceTabLauncher* GetInstance();
 
+  ServiceTabLauncher(const ServiceTabLauncher&) = delete;
+  ServiceTabLauncher& operator=(const ServiceTabLauncher&) = delete;
+
   // Launches a new tab when we're in a Service rather than in an Activity.
   // |callback| will be invoked with the resulting content::WebContents* when
   // the tab is avialable. This method must only be called from the UI thread.
@@ -47,8 +50,6 @@ class ServiceTabLauncher {
   ~ServiceTabLauncher();
 
   base::IDMap<std::unique_ptr<TabLaunchedCallback>> tab_launched_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTabLauncher);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SERVICE_TAB_LAUNCHER_H_

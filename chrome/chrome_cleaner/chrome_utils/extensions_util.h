@@ -38,11 +38,15 @@ struct ExtensionPolicyRegistryEntry {
                                const std::wstring& name,
                                ContentType content_type,
                                scoped_refptr<RefValue>);
+
+  ExtensionPolicyRegistryEntry(const ExtensionPolicyRegistryEntry&) = delete;
+  ExtensionPolicyRegistryEntry& operator=(const ExtensionPolicyRegistryEntry&) =
+      delete;
+
   ExtensionPolicyRegistryEntry(ExtensionPolicyRegistryEntry&&);
-  ~ExtensionPolicyRegistryEntry();
   ExtensionPolicyRegistryEntry& operator=(ExtensionPolicyRegistryEntry&&);
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPolicyRegistryEntry);
+  ~ExtensionPolicyRegistryEntry();
 };
 
 // A file that holds some form of policy for |extension_id|.
@@ -55,10 +59,13 @@ struct ExtensionPolicyFile {
                       const base::FilePath& path,
                       scoped_refptr<RefValue> json);
   ExtensionPolicyFile(ExtensionPolicyFile&&);
-  ~ExtensionPolicyFile();
+
+  ExtensionPolicyFile(const ExtensionPolicyFile&) = delete;
+  ExtensionPolicyFile& operator=(const ExtensionPolicyFile&) = delete;
+
   ExtensionPolicyFile& operator=(ExtensionPolicyFile&&);
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPolicyFile);
+  ~ExtensionPolicyFile();
 };
 
 // Find all extension forcelist registry policies and append to |policies|.

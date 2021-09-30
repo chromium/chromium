@@ -38,6 +38,9 @@ class PluginFinder {
  public:
   static PluginFinder* GetInstance();
 
+  PluginFinder(const PluginFinder&) = delete;
+  PluginFinder& operator=(const PluginFinder&) = delete;
+
   // It should be called on the UI thread.
   void Init();
 
@@ -80,8 +83,6 @@ class PluginFinder {
   // Synchronization for the above member variables is required since multiple
   // threads can be accessing them concurrently.
   base::Lock mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginFinder);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_FINDER_H_

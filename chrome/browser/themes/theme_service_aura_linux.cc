@@ -20,6 +20,9 @@ class SystemThemeX11 : public CustomThemeSupplier {
  public:
   explicit SystemThemeX11(PrefService* pref_service);
 
+  SystemThemeX11(const SystemThemeX11&) = delete;
+  SystemThemeX11& operator=(const SystemThemeX11&) = delete;
+
   // Overridden from CustomThemeSupplier:
   void StartUsingTheme() override;
   void StopUsingTheme() override;
@@ -35,8 +38,6 @@ class SystemThemeX11 : public CustomThemeSupplier {
   // These pointers are not owned by us.
   views::LinuxUI* const linux_ui_;
   PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemThemeX11);
 };
 
 SystemThemeX11::SystemThemeX11(PrefService* pref_service)

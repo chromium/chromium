@@ -22,6 +22,10 @@
 namespace {
 
 class ChromeBlacklistTrialTest : public testing::Test {
+ public:
+  ChromeBlacklistTrialTest(const ChromeBlacklistTrialTest&) = delete;
+  ChromeBlacklistTrialTest& operator=(const ChromeBlacklistTrialTest&) = delete;
+
  protected:
   ChromeBlacklistTrialTest() {}
   ~ChromeBlacklistTrialTest() override {}
@@ -59,9 +63,6 @@ class ChromeBlacklistTrialTest : public testing::Test {
   std::unique_ptr<base::win::RegKey> blacklist_registry_key_;
   registry_util::RegistryOverrideManager override_manager_;
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBlacklistTrialTest);
 };
 
 // Ensure that the default trial sets up the blacklist beacons.

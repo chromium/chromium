@@ -73,6 +73,10 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
     provider_.SetRemoteUtilWinForTesting(std::move(remote));
   }
 
+  AntiVirusMetricsProviderTest(const AntiVirusMetricsProviderTest&) = delete;
+  AntiVirusMetricsProviderTest& operator=(const AntiVirusMetricsProviderTest&) =
+      delete;
+
   void GetMetricsCallback() {
     // Check that the callback runs on the main loop.
     ASSERT_TRUE(thread_checker_.CalledOnValidThread());
@@ -110,9 +114,6 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
   AntiVirusMetricsProvider provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ThreadCheckerImpl thread_checker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AntiVirusMetricsProviderTest);
 };
 
 // TODO(crbug.com/682286): Flaky on Windows 10.

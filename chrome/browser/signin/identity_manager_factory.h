@@ -35,6 +35,9 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
 
+  IdentityManagerFactory(const IdentityManagerFactory&) = delete;
+  IdentityManagerFactory& operator=(const IdentityManagerFactory&) = delete;
+
   // Ensures that IdentityManagerFactory and the factories on which it depends
   // are built.
   static void EnsureFactoryAndDependeeFactoriesBuilt();
@@ -59,8 +62,6 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
   // List of observers. Checks that list is empty on destruction.
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_

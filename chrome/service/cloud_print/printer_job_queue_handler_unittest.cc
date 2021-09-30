@@ -57,13 +57,15 @@ class PrinterJobQueueHandlerWithMockedTime : public PrinterJobQueueHandler {
   PrinterJobQueueHandlerWithMockedTime()
       : PrinterJobQueueHandler(base::WrapUnique(new TimeProviderMock)) {}
 
+  PrinterJobQueueHandlerWithMockedTime(
+      const PrinterJobQueueHandlerWithMockedTime&) = delete;
+  PrinterJobQueueHandlerWithMockedTime& operator=(
+      const PrinterJobQueueHandlerWithMockedTime&) = delete;
+
   TimeProviderMock* GetMock() {
     return static_cast<TimeProviderMock*>(
         PrinterJobQueueHandler::time_provider());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobQueueHandlerWithMockedTime);
 };
 
 class PrinterJobQueueHandlerTest : public ::testing::Test {

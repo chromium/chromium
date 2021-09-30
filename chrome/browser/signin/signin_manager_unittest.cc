@@ -57,6 +57,9 @@ class SigninManagerTest : public testing::Test {
                            /*test_signin_client=*/nullptr),
         observer_(identity_test_env_.identity_manager()) {}
 
+  SigninManagerTest(const SigninManagerTest&) = delete;
+  SigninManagerTest& operator=(const SigninManagerTest&) = delete;
+
   void SetUp() override {
     testing::Test::SetUp();
     RecreateSigninManager();
@@ -155,8 +158,6 @@ class SigninManagerTest : public testing::Test {
   IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<SigninManager> signin_manger_;
   FakeIdentityManagerObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerTest);
 };
 
 TEST_F(

@@ -27,6 +27,10 @@ class RandomSelectorWithCustomRNG : public RandomSelector {
   explicit RandomSelectorWithCustomRNG(unsigned int random_period)
       : random_period_(random_period), current_index_(0) {}
 
+  RandomSelectorWithCustomRNG(const RandomSelectorWithCustomRNG&) = delete;
+  RandomSelectorWithCustomRNG& operator=(const RandomSelectorWithCustomRNG&) =
+      delete;
+
  private:
   // This function returns floats between 0.0 and |max| in an increasing
   // fashion at regular intervals.
@@ -41,8 +45,6 @@ class RandomSelectorWithCustomRNG : public RandomSelector {
   // Stores the current position we are at in the interval between 0.0 and
   // |max|. See the function RandDoubleUpTo for details on how this is used.
   int current_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(RandomSelectorWithCustomRNG);
 };
 
 // Use the random_selector to generate some values. The number of values to

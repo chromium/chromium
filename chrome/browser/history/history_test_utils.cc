@@ -27,6 +27,9 @@ class WaitForHistoryTask : public history::HistoryDBTask {
  public:
   WaitForHistoryTask() {}
 
+  WaitForHistoryTask(const WaitForHistoryTask&) = delete;
+  WaitForHistoryTask& operator=(const WaitForHistoryTask&) = delete;
+
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     return true;
@@ -38,8 +41,6 @@ class WaitForHistoryTask : public history::HistoryDBTask {
 
  private:
   ~WaitForHistoryTask() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForHistoryTask);
 };
 
 }  // namespace

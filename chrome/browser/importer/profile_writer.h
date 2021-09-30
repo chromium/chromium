@@ -33,6 +33,9 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
  public:
   explicit ProfileWriter(Profile* profile);
 
+  ProfileWriter(const ProfileWriter&) = delete;
+  ProfileWriter& operator=(const ProfileWriter&) = delete;
+
   // These functions return true if the corresponding model has been loaded.
   // If the models haven't been loaded, the importer waits to run until they've
   // completed.
@@ -92,8 +95,6 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileWriter);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_

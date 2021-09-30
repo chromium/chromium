@@ -25,6 +25,9 @@ class CameraPresenceNotifier {
 
   static CameraPresenceNotifier* GetInstance();
 
+  CameraPresenceNotifier(const CameraPresenceNotifier&) = delete;
+  CameraPresenceNotifier& operator=(const CameraPresenceNotifier&) = delete;
+
   void AddObserver(CameraPresenceNotifier::Observer* observer);
   void RemoveObserver(CameraPresenceNotifier::Observer* observer);
 
@@ -46,8 +49,6 @@ class CameraPresenceNotifier {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CameraPresenceNotifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CameraPresenceNotifier);
 };
 
 }  // namespace chromeos

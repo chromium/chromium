@@ -141,6 +141,11 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
   SessionRestoreStatsCollectorTest()
       : task_environment_{base::test::TaskEnvironment::TimeSource::MOCK_TIME} {}
 
+  SessionRestoreStatsCollectorTest(const SessionRestoreStatsCollectorTest&) =
+      delete;
+  SessionRestoreStatsCollectorTest& operator=(
+      const SessionRestoreStatsCollectorTest&) = delete;
+
   void SetUp() override {
     test_web_contents_factory_ =
         std::make_unique<content::TestWebContentsFactory>();
@@ -235,9 +240,6 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
   // to observe the behaviour of the SessionRestoreStatsCollector under test.
   PassthroughStatsReportingDelegate* passthrough_reporting_delegate_;
   SessionRestoreStatsCollector* stats_collector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreStatsCollectorTest);
 };
 
 TEST_F(SessionRestoreStatsCollectorTest, MultipleTabsLoadSerially) {

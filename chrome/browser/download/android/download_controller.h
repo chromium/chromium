@@ -34,6 +34,9 @@ class DownloadController : public DownloadControllerBase {
  public:
   static DownloadController* GetInstance();
 
+  DownloadController(const DownloadController&) = delete;
+  DownloadController& operator=(const DownloadController&) = delete;
+
   // DownloadControllerBase implementation.
   void AcquireFileAccessPermission(
       const content::WebContents::Getter& wc_getter,
@@ -107,8 +110,6 @@ class DownloadController : public DownloadControllerBase {
   StrongValidatorsMap strong_validators_map_;
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadController);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

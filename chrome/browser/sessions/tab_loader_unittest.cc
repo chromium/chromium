@@ -36,6 +36,9 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
 
   TabLoaderTest() : max_simultaneous_loads_(1) {}
 
+  TabLoaderTest(const TabLoaderTest&) = delete;
+  TabLoaderTest& operator=(const TabLoaderTest&) = delete;
+
   void OnTabLoaderCreated(TabLoader* tab_loader) {
     tab_loader_.SetTabLoader(tab_loader);
     tab_loader_.SetTickClockForTesting(&clock_);
@@ -195,9 +198,6 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<testing::ScopedAlwaysLoadSessionRestoreTestPolicy>
       test_policy_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderTest);
 };
 
 TEST_F(TabLoaderTest, AllLoadingSlotsUsed) {

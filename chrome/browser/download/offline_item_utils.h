@@ -20,6 +20,9 @@ class OfflineItemUtils {
   using DownloadRenameResult = download::DownloadItem::DownloadRenameResult;
 
  public:
+  OfflineItemUtils(const OfflineItemUtils&) = delete;
+  OfflineItemUtils& operator=(const OfflineItemUtils&) = delete;
+
   static offline_items_collection::OfflineItem CreateOfflineItem(
       const std::string& name_space,
       download::DownloadItem* item);
@@ -56,9 +59,6 @@ class OfflineItemUtils {
   static absl::optional<offline_items_collection::OfflineItemSchedule>
   ToOfflineItemSchedule(
       absl::optional<download::DownloadSchedule> download_schedule);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OfflineItemUtils);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_UTILS_H_

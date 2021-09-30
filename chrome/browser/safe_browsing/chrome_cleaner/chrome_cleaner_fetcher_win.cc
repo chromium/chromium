@@ -110,6 +110,9 @@ class ChromeCleanerFetcher {
   ChromeCleanerFetcher(ChromeCleanerFetchedCallback fetched_callback,
                        network::mojom::URLLoaderFactory* url_loader_factory);
 
+  ChromeCleanerFetcher(const ChromeCleanerFetcher&) = delete;
+  ChromeCleanerFetcher& operator=(const ChromeCleanerFetcher&) = delete;
+
  private:
   // Must be called on a sequence where IO is allowed.
   bool CreateTemporaryDirectory();
@@ -136,8 +139,6 @@ class ChromeCleanerFetcher {
   // allowed.
   std::unique_ptr<base::ScopedTempDir, base::OnTaskRunnerDeleter>
       scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerFetcher);
 };
 
 ChromeCleanerFetcher::ChromeCleanerFetcher(

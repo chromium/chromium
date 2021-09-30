@@ -30,6 +30,11 @@ class OptimizationGuideKeyedServiceFactory
   // Gets the LazyInstance that owns all OptimizationGuideKeyedService(s).
   static OptimizationGuideKeyedServiceFactory* GetInstance();
 
+  OptimizationGuideKeyedServiceFactory(
+      const OptimizationGuideKeyedServiceFactory&) = delete;
+  OptimizationGuideKeyedServiceFactory& operator=(
+      const OptimizationGuideKeyedServiceFactory&) = delete;
+
  private:
   friend base::NoDestructor<OptimizationGuideKeyedServiceFactory>;
 
@@ -43,8 +48,6 @@ class OptimizationGuideKeyedServiceFactory
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideKeyedServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_FACTORY_H_

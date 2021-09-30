@@ -31,6 +31,9 @@ namespace web_app {
 class FileUtilsWrapper {
  public:
   FileUtilsWrapper() = default;
+
+  FileUtilsWrapper& operator=(const FileUtilsWrapper&) = delete;
+
   virtual ~FileUtilsWrapper() = default;
 
   // Create a copy to use in IO task.
@@ -60,8 +63,6 @@ class FileUtilsWrapper {
   bool DeleteFile(const base::FilePath& path, bool recursive);
 
   virtual bool DeleteFileRecursively(const base::FilePath& path);
-
-  DISALLOW_ASSIGN(FileUtilsWrapper);
 };
 
 }  // namespace web_app

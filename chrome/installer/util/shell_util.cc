@@ -138,14 +138,16 @@ class UserSpecificRegistrySuffix {
   // LazyInstance.
   UserSpecificRegistrySuffix();
 
+  UserSpecificRegistrySuffix(const UserSpecificRegistrySuffix&) = delete;
+  UserSpecificRegistrySuffix& operator=(const UserSpecificRegistrySuffix&) =
+      delete;
+
   // Sets |suffix| to the pre-computed suffix cached in this object.
   // Returns true unless the initialization originally failed.
   bool GetSuffix(std::wstring* suffix);
 
  private:
   std::wstring suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSpecificRegistrySuffix);
 };  // class UserSpecificRegistrySuffix
 
 UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {

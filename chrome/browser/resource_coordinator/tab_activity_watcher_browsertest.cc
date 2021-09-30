@@ -68,6 +68,10 @@ const int64_t kIdShift = 1 << 16;
 // that window and browser commands are really triggering the paths that lead
 // to UKM logs.
 class TabActivityWatcherTest : public InProcessBrowserTest {
+ public:
+  TabActivityWatcherTest(const TabActivityWatcherTest&) = delete;
+  TabActivityWatcherTest& operator=(const TabActivityWatcherTest&) = delete;
+
  protected:
   TabActivityWatcherTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -180,8 +184,6 @@ class TabActivityWatcherTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabActivityWatcherTest);
 };
 
 class TabActivityWatcherTestWithBackgroundLogDisabled

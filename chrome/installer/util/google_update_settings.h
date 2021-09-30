@@ -71,6 +71,10 @@ class GoogleUpdateSettings {
     int last_extra_code;
   };
 
+  GoogleUpdateSettings() = delete;
+  GoogleUpdateSettings(const GoogleUpdateSettings&) = delete;
+  GoogleUpdateSettings& operator=(const GoogleUpdateSettings&) = delete;
+
   // Returns true if this install is system-wide, false if it is per-user.
   static bool IsSystemInstall();
 
@@ -280,9 +284,6 @@ class GoogleUpdateSettings {
   // nothing to |experiment_labels|. This will return true if the label did not
   // exist, or was successfully read.
   static bool ReadExperimentLabels(std::wstring* experiment_labels);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GoogleUpdateSettings);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_GOOGLE_UPDATE_SETTINGS_H_

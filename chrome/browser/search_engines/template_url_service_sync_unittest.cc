@@ -170,6 +170,10 @@ class TemplateURLServiceSyncTest : public testing::Test {
 
   TemplateURLServiceSyncTest();
 
+  TemplateURLServiceSyncTest(const TemplateURLServiceSyncTest&) = delete;
+  TemplateURLServiceSyncTest& operator=(const TemplateURLServiceSyncTest&) =
+      delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -238,8 +242,6 @@ class TemplateURLServiceSyncTest : public testing::Test {
   std::unique_ptr<TestChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncChangeProcessorWrapperForTest>
       sync_processor_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceSyncTest);
 };
 
 TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()

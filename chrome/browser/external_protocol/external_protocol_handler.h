@@ -72,6 +72,9 @@ class ExternalProtocolHandler {
   // UMA histogram metric names.
   static const char kHandleStateMetric[];
 
+  ExternalProtocolHandler(const ExternalProtocolHandler&) = delete;
+  ExternalProtocolHandler& operator=(const ExternalProtocolHandler&) = delete;
+
   // Called on the UI thread. Allows switching out the
   // ExternalProtocolHandler::Delegate for testing code.
   static void SetDelegateForTesting(Delegate* delegate);
@@ -163,9 +166,6 @@ class ExternalProtocolHandler {
 
   // Clears the external protocol handling data.
   static void ClearData(Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolHandler);
 };
 
 #endif  // CHROME_BROWSER_EXTERNAL_PROTOCOL_EXTERNAL_PROTOCOL_HANDLER_H_

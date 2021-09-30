@@ -42,6 +42,9 @@ class TaskbarIconFinder {
   // automation task in a multi-threaded COM apartment.
   explicit TaskbarIconFinder(TaskbarIconFinderResultCallback result_callback);
 
+  TaskbarIconFinder(const TaskbarIconFinder&) = delete;
+  TaskbarIconFinder& operator=(const TaskbarIconFinder&) = delete;
+
  private:
   // Receives the result computed on the automation task, passes the results to
   // the caller, then self-destructs.
@@ -75,8 +78,6 @@ class TaskbarIconFinder {
 
   // The caller's callback.
   TaskbarIconFinderResultCallback result_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskbarIconFinder);
 };
 
 TaskbarIconFinder::TaskbarIconFinder(

@@ -33,6 +33,9 @@ class ThemeServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static ThemeServiceFactory* GetInstance();
 
+  ThemeServiceFactory(const ThemeServiceFactory&) = delete;
+  ThemeServiceFactory& operator=(const ThemeServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ThemeServiceFactory>;
 
@@ -47,8 +50,6 @@ class ThemeServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_FACTORY_H_

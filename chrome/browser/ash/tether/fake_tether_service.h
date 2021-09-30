@@ -22,6 +22,9 @@ class FakeTetherService : public TetherService {
       chromeos::NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager);
 
+  FakeTetherService(const FakeTetherService&) = delete;
+  FakeTetherService& operator=(const FakeTetherService&) = delete;
+
   // TetherService:
   void StartTetherIfPossible() override;
   void StopTetherIfNecessary() override;
@@ -36,8 +39,6 @@ class FakeTetherService : public TetherService {
 
  private:
   int num_tether_networks_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherService);
 };
 
 #endif  // CHROME_BROWSER_ASH_TETHER_FAKE_TETHER_SERVICE_H_

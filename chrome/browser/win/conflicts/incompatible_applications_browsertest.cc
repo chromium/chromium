@@ -82,6 +82,12 @@ class IncompatibleApplicationsObserver {
 };
 
 class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
+ public:
+  IncompatibleApplicationsBrowserTest(
+      const IncompatibleApplicationsBrowserTest&) = delete;
+  IncompatibleApplicationsBrowserTest& operator=(
+      const IncompatibleApplicationsBrowserTest&) = delete;
+
  protected:
   // The name of the application deemed incompatible.
   static constexpr wchar_t kApplicationName[] = L"FooBar123";
@@ -186,8 +192,6 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
 
   // Enables the IncompatibleApplicationsWarning feature.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsBrowserTest);
 };
 
 // static

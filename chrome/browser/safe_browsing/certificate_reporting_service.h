@@ -188,6 +188,10 @@ class CertificateReportingService : public KeyedService {
       base::Clock* clock,
       const base::RepeatingClosure& reset_callback);
 
+  CertificateReportingService(const CertificateReportingService&) = delete;
+  CertificateReportingService& operator=(const CertificateReportingService&) =
+      delete;
+
   ~CertificateReportingService() override;
 
   // KeyedService implementation:
@@ -243,8 +247,6 @@ class CertificateReportingService : public KeyedService {
   // Encryption parameters.
   uint8_t* server_public_key_;
   uint32_t server_public_key_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateReportingService);
 };
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_SERVICE_H_

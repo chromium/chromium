@@ -20,13 +20,14 @@ class RefCountedVector
   explicit RefCountedVector(const std::vector<T>& initializer)
       : data(initializer) {}
 
+  RefCountedVector(const RefCountedVector&) = delete;
+  RefCountedVector& operator=(const RefCountedVector&) = delete;
+
   std::vector<T> data;
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedVector<T>>;
   ~RefCountedVector() {}
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedVector<T>);
 };
 
 #endif  // CHROME_COMMON_REF_COUNTED_UTIL_H__

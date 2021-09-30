@@ -45,6 +45,12 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   static AdaptiveQuietNotificationPermissionUiEnabler* GetForProfile(
       Profile* profile);
 
+  AdaptiveQuietNotificationPermissionUiEnabler() = delete;
+  AdaptiveQuietNotificationPermissionUiEnabler(
+      const AdaptiveQuietNotificationPermissionUiEnabler&) = delete;
+  AdaptiveQuietNotificationPermissionUiEnabler& operator=(
+      const AdaptiveQuietNotificationPermissionUiEnabler&) = delete;
+
   // Called after a notification permission prompt was resolved.
   void PermissionPromptResolved();
 
@@ -67,8 +73,6 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   bool is_enabling_adaptively_ = false;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AdaptiveQuietNotificationPermissionUiEnabler);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_ADAPTIVE_QUIET_NOTIFICATION_PERMISSION_UI_ENABLER_H_

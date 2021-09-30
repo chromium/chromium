@@ -20,6 +20,10 @@
 namespace installer {
 
 class UserExperimentTest : public ::testing::TestWithParam<bool> {
+ public:
+  UserExperimentTest(const UserExperimentTest&) = delete;
+  UserExperimentTest& operator=(const UserExperimentTest&) = delete;
+
  protected:
   UserExperimentTest()
       : system_level_(GetParam()),
@@ -58,7 +62,6 @@ class UserExperimentTest : public ::testing::TestWithParam<bool> {
   const HKEY root_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   install_static::ScopedInstallDetails install_details_;
-  DISALLOW_COPY_AND_ASSIGN(UserExperimentTest);
 };
 
 TEST_P(UserExperimentTest, WriteInitialStateNoData) {

@@ -20,6 +20,9 @@ class LoadingPredictorFactory : public BrowserContextKeyedServiceFactory {
   static LoadingPredictor* GetForProfile(Profile* profile);
   static LoadingPredictorFactory* GetInstance();
 
+  LoadingPredictorFactory(const LoadingPredictorFactory&) = delete;
+  LoadingPredictorFactory& operator=(const LoadingPredictorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<LoadingPredictorFactory>;
 
@@ -29,8 +32,6 @@ class LoadingPredictorFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingPredictorFactory);
 };
 
 }  // namespace predictors

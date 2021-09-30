@@ -78,6 +78,11 @@ class UpdateActiveSetupVersionWorkItemTest
  public:
   UpdateActiveSetupVersionWorkItemTest() {}
 
+  UpdateActiveSetupVersionWorkItemTest(
+      const UpdateActiveSetupVersionWorkItemTest&) = delete;
+  UpdateActiveSetupVersionWorkItemTest& operator=(
+      const UpdateActiveSetupVersionWorkItemTest&) = delete;
+
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(kActiveSetupRoot));
@@ -85,8 +90,6 @@ class UpdateActiveSetupVersionWorkItemTest
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateActiveSetupVersionWorkItemTest);
 };
 
 TEST_P(UpdateActiveSetupVersionWorkItemTest, Execute) {

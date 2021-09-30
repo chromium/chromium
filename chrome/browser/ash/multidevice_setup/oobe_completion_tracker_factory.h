@@ -23,6 +23,10 @@ class OobeCompletionTrackerFactory : public BrowserContextKeyedServiceFactory {
 
   static OobeCompletionTrackerFactory* GetInstance();
 
+  OobeCompletionTrackerFactory(const OobeCompletionTrackerFactory&) = delete;
+  OobeCompletionTrackerFactory& operator=(const OobeCompletionTrackerFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OobeCompletionTrackerFactory>;
 
@@ -32,8 +36,6 @@ class OobeCompletionTrackerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeCompletionTrackerFactory);
 };
 
 }  // namespace multidevice_setup

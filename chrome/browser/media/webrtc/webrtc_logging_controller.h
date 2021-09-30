@@ -63,6 +63,9 @@ class WebRtcLoggingController
   static WebRtcLoggingController* FromRenderProcessHost(
       content::RenderProcessHost* host);
 
+  WebRtcLoggingController(const WebRtcLoggingController&) = delete;
+  WebRtcLoggingController& operator=(const WebRtcLoggingController&) = delete;
+
   // Sets meta data that will be uploaded along with the log and also written
   // in the beginning of the log. Must be called on the IO thread before calling
   // StartLogging.
@@ -234,8 +237,6 @@ class WebRtcLoggingController
   // "client" meta data key, if exists. 0 means undefined, and is the hash of
   // the empty string.
   int web_app_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLoggingController);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_LOGGING_CONTROLLER_H_

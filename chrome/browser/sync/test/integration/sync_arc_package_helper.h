@@ -30,6 +30,9 @@ class SyncArcPackageHelper {
  public:
   static SyncArcPackageHelper* GetInstance();
 
+  SyncArcPackageHelper(const SyncArcPackageHelper&) = delete;
+  SyncArcPackageHelper& operator=(const SyncArcPackageHelper&) = delete;
+
   static sync_pb::EntitySpecifics GetTestSpecifics(size_t id);
 
   void SetupTest(SyncTest* test);
@@ -71,8 +74,6 @@ class SyncArcPackageHelper {
   bool setup_completed_;
 
   std::unordered_map<Profile*, std::unique_ptr<FakeAppInstance>> instance_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncArcPackageHelper);
 };
 
 }  // namespace arc

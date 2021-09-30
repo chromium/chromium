@@ -24,6 +24,9 @@ class MediaDeviceIDSalt : public base::RefCountedThreadSafe<MediaDeviceIDSalt> {
  public:
   explicit MediaDeviceIDSalt(PrefService* pref_service);
 
+  MediaDeviceIDSalt(const MediaDeviceIDSalt&) = delete;
+  MediaDeviceIDSalt& operator=(const MediaDeviceIDSalt&) = delete;
+
   std::string GetSalt() const;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -34,8 +37,6 @@ class MediaDeviceIDSalt : public base::RefCountedThreadSafe<MediaDeviceIDSalt> {
   ~MediaDeviceIDSalt();
 
   mutable StringPrefMember media_device_id_salt_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDeviceIDSalt);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_DEVICE_ID_SALT_H_

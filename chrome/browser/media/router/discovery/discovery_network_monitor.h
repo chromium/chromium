@@ -55,6 +55,9 @@ class DiscoveryNetworkMonitor
   static std::unique_ptr<DiscoveryNetworkMonitor> CreateInstanceForTest(
       NetworkInfoFunction strategy);
 
+  DiscoveryNetworkMonitor(const DiscoveryNetworkMonitor&) = delete;
+  DiscoveryNetworkMonitor& operator=(const DiscoveryNetworkMonitor&) = delete;
+
   void AddObserver(Observer* const observer);
   void RemoveObserver(Observer* const observer);
 
@@ -106,8 +109,6 @@ class DiscoveryNetworkMonitor
 
   // SequenceChecker for |task_runner_|.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DiscoveryNetworkMonitor);
 };
 
 }  // namespace media_router

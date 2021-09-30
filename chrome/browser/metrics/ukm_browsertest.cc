@@ -205,6 +205,9 @@ class UkmBrowserTestBase : public SyncTest {
                                           {internal::kMetricsReportingFeature});
   }
 
+  UkmBrowserTestBase(const UkmBrowserTestBase&) = delete;
+  UkmBrowserTestBase& operator=(const UkmBrowserTestBase&) = delete;
+
 #if !defined(OS_ANDROID)
   ukm::UkmSource* NavigateAndGetSource(const GURL& url,
                                        Browser* browser,
@@ -288,13 +291,14 @@ class UkmBrowserTestBase : public SyncTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmBrowserTestBase);
 };
 
 class UkmBrowserTest : public UkmBrowserTestBase {
  public:
   UkmBrowserTest() : UkmBrowserTestBase() {}
+
+  UkmBrowserTest(const UkmBrowserTest&) = delete;
+  UkmBrowserTest& operator=(const UkmBrowserTest&) = delete;
 
 #if defined(OS_ANDROID)
   void PreRunTestOnMainThread() override {
@@ -311,14 +315,16 @@ class UkmBrowserTest : public UkmBrowserTestBase {
     EXPECT_EQ(0U, TabModelList::models().size());
   }
 #endif  // defined(OS_ANDROID)
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmBrowserTest);
 };
 
 class UkmBrowserTestWithSyncTransport : public UkmBrowserTestBase {
  public:
   UkmBrowserTestWithSyncTransport() {}
+
+  UkmBrowserTestWithSyncTransport(const UkmBrowserTestWithSyncTransport&) =
+      delete;
+  UkmBrowserTestWithSyncTransport& operator=(
+      const UkmBrowserTestWithSyncTransport&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     // This is required to support (fake) secondary-account-signin (based on
@@ -338,8 +344,6 @@ class UkmBrowserTestWithSyncTransport : public UkmBrowserTestBase {
 
  private:
   base::CallbackListSubscription test_signin_client_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmBrowserTestWithSyncTransport);
 };
 
 // This tests if UKM service is enabled/disabled appropriately based on an
@@ -350,6 +354,10 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
                                    public testing::WithParamInterface<bool> {
  public:
   UkmConsentParamBrowserTest() : UkmBrowserTestBase() {}
+
+  UkmConsentParamBrowserTest(const UkmConsentParamBrowserTest&) = delete;
+  UkmConsentParamBrowserTest& operator=(const UkmConsentParamBrowserTest&) =
+      delete;
 
   static bool IsMetricsAndCrashReportingEnabled() {
     return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
@@ -377,8 +385,6 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
 
  private:
   base::FilePath local_state_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmConsentParamBrowserTest);
 };
 #endif  // !defined(OS_ANDROID)
 
@@ -406,10 +412,13 @@ class UkmBrowserTestWithDemographics
     }
   }
 
+  UkmBrowserTestWithDemographics(const UkmBrowserTestWithDemographics&) =
+      delete;
+  UkmBrowserTestWithDemographics& operator=(
+      const UkmBrowserTestWithDemographics&) = delete;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmBrowserTestWithDemographics);
 };
 
 // Make sure that UKM is disabled while an incognito window is open.

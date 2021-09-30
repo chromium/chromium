@@ -97,6 +97,10 @@ std::unique_ptr<KeyedService> BuildGCMProfileService(
 }  // namespace
 
 class GCMProfileServiceTest : public testing::Test {
+ public:
+  GCMProfileServiceTest(const GCMProfileServiceTest&) = delete;
+  GCMProfileServiceTest& operator=(const GCMProfileServiceTest&) = delete;
+
  protected:
   GCMProfileServiceTest();
   ~GCMProfileServiceTest() override;
@@ -142,8 +146,6 @@ class GCMProfileServiceTest : public testing::Test {
   GCMClient::Result unregistration_result_;
   std::string send_message_id_;
   GCMClient::Result send_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMProfileServiceTest);
 };
 
 GCMProfileServiceTest::GCMProfileServiceTest()

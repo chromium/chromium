@@ -17,6 +17,10 @@ class DevToolsBrowserContextManager : public BrowserListObserver,
  public:
   static DevToolsBrowserContextManager& GetInstance();
 
+  DevToolsBrowserContextManager(const DevToolsBrowserContextManager&) = delete;
+  DevToolsBrowserContextManager& operator=(
+      const DevToolsBrowserContextManager&) = delete;
+
   Profile* GetProfileById(const std::string& browser_context_id);
   std::vector<content::BrowserContext*> GetBrowserContexts();
   content::BrowserContext* GetDefaultBrowserContext();
@@ -41,7 +45,6 @@ class DevToolsBrowserContextManager : public BrowserListObserver,
       pending_context_disposals_;
 
   base::WeakPtrFactory<DevToolsBrowserContextManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DevToolsBrowserContextManager);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_BROWSER_CONTEXT_MANAGER_H_

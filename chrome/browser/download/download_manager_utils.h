@@ -17,6 +17,9 @@ class InProgressDownloadManager;
 
 class DownloadManagerUtils {
  public:
+  DownloadManagerUtils(const DownloadManagerUtils&) = delete;
+  DownloadManagerUtils& operator=(const DownloadManagerUtils&) = delete;
+
   // Creates an InProgressDownloadManager from a profile.
   static download::InProgressDownloadManager* RetrieveInProgressDownloadManager(
       Profile* profile);
@@ -36,9 +39,6 @@ class DownloadManagerUtils {
   static void SetRetrieveInProgressDownloadManagerCallbackForTesting(
       base::RepeatingCallback<void(download::InProgressDownloadManager*)>
           callback);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerUtils);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_MANAGER_UTILS_H_

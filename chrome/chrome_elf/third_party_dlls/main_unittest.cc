@@ -173,6 +173,10 @@ bool QueryStatusCodes(std::vector<ThirdPartyStatus>* status_array) {
 //------------------------------------------------------------------------------
 
 class ThirdPartyTest : public testing::Test {
+ public:
+  ThirdPartyTest(const ThirdPartyTest&) = delete;
+  ThirdPartyTest& operator=(const ThirdPartyTest&) = delete;
+
  protected:
   ThirdPartyTest() = default;
 
@@ -236,8 +240,6 @@ class ThirdPartyTest : public testing::Test {
   base::File bl_file_;
   std::wstring bl_test_file_path_;
   std::wstring exe_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyTest);
 };
 
 //------------------------------------------------------------------------------

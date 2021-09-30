@@ -39,6 +39,10 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   // Returns the |DesktopSessionDurationTracker| instance.
   static DesktopSessionDurationTracker* Get();
 
+  DesktopSessionDurationTracker(const DesktopSessionDurationTracker&) = delete;
+  DesktopSessionDurationTracker& operator=(
+      const DesktopSessionDurationTracker&) = delete;
+
   // Called when user interaction with the browser is caught.
   void OnUserEvent();
 
@@ -112,8 +116,6 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   AudibleContentsTracker audio_tracker_;
 
   base::WeakPtrFactory<DesktopSessionDurationTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionDurationTracker);
 };
 
 }  // namespace metrics

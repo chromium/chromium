@@ -85,6 +85,10 @@ class StateStore {
   };
 
   explicit StateStore(Profile* profile);
+
+  StateStore(const StateStore&) = delete;
+  StateStore& operator=(const StateStore&) = delete;
+
   ~StateStore();
 
   // Returns true if the described incident has already been reported.
@@ -106,8 +110,6 @@ class StateStore {
   // True when a Transaction instance is outstanding.
   bool has_transaction_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(StateStore);
 };
 
 }  // namespace safe_browsing

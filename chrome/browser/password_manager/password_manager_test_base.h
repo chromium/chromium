@@ -69,6 +69,9 @@ class BubbleObserver {
   // of the prompt one can even construct a temporary BubbleObserver.
   explicit BubbleObserver(content::WebContents* web_contents);
 
+  BubbleObserver(const BubbleObserver&) = delete;
+  BubbleObserver& operator=(const BubbleObserver&) = delete;
+
   // Checks if the save prompt is being currently available due to either manual
   // fallback or successful login.
   bool IsSavePromptAvailable() const;
@@ -136,8 +139,6 @@ class BubbleObserver {
 
  private:
   ManagePasswordsUIController* const passwords_ui_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleObserver);
 };
 
 // A helper class that synchronously waits until the password store handles a

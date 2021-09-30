@@ -40,6 +40,9 @@ class IconLoaderHelper {
                    float scale,
                    gfx::Image default_icon);
 
+  IconLoaderHelper(const IconLoaderHelper&) = delete;
+  IconLoaderHelper& operator=(const IconLoaderHelper&) = delete;
+
  private:
   void StartReadIconRequest();
   void OnConnectionError();
@@ -63,8 +66,6 @@ class IconLoaderHelper {
   gfx::Image default_icon_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IconLoaderHelper);
 };
 
 void IconLoaderHelper::ExecuteLoadIcon(

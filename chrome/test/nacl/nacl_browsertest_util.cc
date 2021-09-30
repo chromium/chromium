@@ -114,6 +114,10 @@ class NaClIntegrationMessageHandler : public StructuredMessageHandler {
  public:
   NaClIntegrationMessageHandler();
 
+  NaClIntegrationMessageHandler(const NaClIntegrationMessageHandler&) = delete;
+  NaClIntegrationMessageHandler& operator=(
+      const NaClIntegrationMessageHandler&) = delete;
+
   void Log(const std::string& message);
 
   MessageResponse HandleStructuredMessage(const std::string& type,
@@ -125,8 +129,6 @@ class NaClIntegrationMessageHandler : public StructuredMessageHandler {
 
  private:
   bool test_passed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClIntegrationMessageHandler);
 };
 
 NaClIntegrationMessageHandler::NaClIntegrationMessageHandler()

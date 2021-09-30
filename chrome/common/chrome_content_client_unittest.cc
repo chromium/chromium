@@ -142,6 +142,11 @@ class OriginTrialInitializationTestThread
       ChromeContentClient* chrome_client)
       : chrome_client_(chrome_client) {}
 
+  OriginTrialInitializationTestThread(
+      const OriginTrialInitializationTestThread&) = delete;
+  OriginTrialInitializationTestThread& operator=(
+      const OriginTrialInitializationTestThread&) = delete;
+
   void ThreadMain() override { AccessPolicy(chrome_client_, &policy_objects_); }
 
   // Static helper which can also be called from the main thread.
@@ -163,8 +168,6 @@ class OriginTrialInitializationTestThread
  private:
   ChromeContentClient* chrome_client_;
   std::vector<blink::OriginTrialPolicy*> policy_objects_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialInitializationTestThread);
 };
 
 // Test that the lazy initialization of Origin Trial policy is resistant to

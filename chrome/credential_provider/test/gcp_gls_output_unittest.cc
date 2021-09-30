@@ -23,6 +23,10 @@
 namespace credential_provider {
 
 class GcpUsingChromeTest : public ::testing::Test {
+ public:
+  GcpUsingChromeTest(const GcpUsingChromeTest&) = delete;
+  GcpUsingChromeTest& operator=(const GcpUsingChromeTest&) = delete;
+
  protected:
   struct TestGoogleApiResponse {
     TestGoogleApiResponse()
@@ -92,9 +96,6 @@ class GcpUsingChromeTest : public ::testing::Test {
   TestGoogleApiResponse user_info_response_;
   TestGoogleApiResponse token_info_response_;
   TestGoogleApiResponse mdm_token_response_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GcpUsingChromeTest);
 };
 
 GcpUsingChromeTest::GcpUsingChromeTest()

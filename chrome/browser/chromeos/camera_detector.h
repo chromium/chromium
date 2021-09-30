@@ -19,6 +19,9 @@ class CameraDetector {
     kCameraPresent
   };
 
+  CameraDetector(const CameraDetector&) = delete;
+  CameraDetector& operator=(const CameraDetector&) = delete;
+
   // Returns result of the last presence check. If no check has been performed
   // yet, returns |kCameraPresenceUnknown|.
   static CameraPresence camera_presence() {
@@ -41,8 +44,6 @@ class CameraDetector {
   static CameraPresence camera_presence_;
 
   static bool presence_check_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraDetector);
 };
 
 }  // namespace chromeos

@@ -23,6 +23,10 @@ class AutocompleteClassifierFactory : public BrowserContextKeyedServiceFactory {
 
   static AutocompleteClassifierFactory* GetInstance();
 
+  AutocompleteClassifierFactory(const AutocompleteClassifierFactory&) = delete;
+  AutocompleteClassifierFactory& operator=(
+      const AutocompleteClassifierFactory&) = delete;
+
   static std::unique_ptr<KeyedService> BuildInstanceFor(
       content::BrowserContext* context);
 
@@ -38,8 +42,6 @@ class AutocompleteClassifierFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteClassifierFactory);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_CLASSIFIER_FACTORY_H_

@@ -33,6 +33,10 @@ class CRLSetComponentInstallerTest : public PlatformTest {
         test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         network_service_(std::make_unique<network::NetworkService>(nullptr)) {}
 
+  CRLSetComponentInstallerTest(const CRLSetComponentInstallerTest&) = delete;
+  CRLSetComponentInstallerTest& operator=(const CRLSetComponentInstallerTest&) =
+      delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -103,9 +107,6 @@ class CRLSetComponentInstallerTest : public PlatformTest {
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoader> loader_;
   base::ScopedTempDir temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CRLSetComponentInstallerTest);
 };
 
 TEST_F(CRLSetComponentInstallerTest, ConfiguresOnInstall) {

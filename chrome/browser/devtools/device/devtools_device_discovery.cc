@@ -60,6 +60,9 @@ class ProtocolCommand
                   const std::string& target_path,
                   const std::string& command);
 
+  ProtocolCommand(const ProtocolCommand&) = delete;
+  ProtocolCommand& operator=(const ProtocolCommand&) = delete;
+
  private:
   void OnSocketOpened() override;
   void OnFrameRead(const std::string& message) override;
@@ -68,8 +71,6 @@ class ProtocolCommand
 
   const std::string command_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolCommand);
 };
 
 ProtocolCommand::ProtocolCommand(
@@ -101,6 +102,9 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
  public:
   explicit WebSocketProxy(content::DevToolsExternalAgentProxy* proxy)
       : socket_opened_(false), proxy_(proxy) {}
+
+  WebSocketProxy(const WebSocketProxy&) = delete;
+  WebSocketProxy& operator=(const WebSocketProxy&) = delete;
 
   void WebSocketCreated(AndroidDeviceManager::AndroidWebSocket* web_socket) {
     web_socket_.reset(web_socket);
@@ -140,7 +144,6 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   std::vector<std::string> pending_messages_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
   content::DevToolsExternalAgentProxy* proxy_;
-  DISALLOW_COPY_AND_ASSIGN(WebSocketProxy);
 };
 
 class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {

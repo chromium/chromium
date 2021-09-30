@@ -134,6 +134,9 @@ class SlowDownloadInterceptor {
         : params_(std::move(params)),
           task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+    PendingRequest(const PendingRequest&) = delete;
+    PendingRequest& operator=(const PendingRequest&) = delete;
+
     void Complete(net::Error error_code) {
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&PendingRequest::CompleteOnOriginalSequence,
@@ -150,8 +153,6 @@ class SlowDownloadInterceptor {
 
     content::URLLoaderInterceptor::RequestParams params_;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingRequest);
   };
 
   // Can be called on the UI or IO thread depending on which factory we hooked.

@@ -62,6 +62,9 @@ class MockUpdateCheckDelegate : public UpdateCheckDelegate {
  public:
   MockUpdateCheckDelegate() : weak_ptr_factory_(this) {}
 
+  MockUpdateCheckDelegate(const MockUpdateCheckDelegate&) = delete;
+  MockUpdateCheckDelegate& operator=(const MockUpdateCheckDelegate&) = delete;
+
   base::WeakPtr<UpdateCheckDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -76,8 +79,6 @@ class MockUpdateCheckDelegate : public UpdateCheckDelegate {
 
  private:
   base::WeakPtrFactory<UpdateCheckDelegate> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUpdateCheckDelegate);
 };
 
 // An interface that exposes a factory method for creating an IGoogleUpdate3Web
@@ -97,6 +98,9 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
   END_COM_MAP()
 
   MockCurrentState() {}
+
+  MockCurrentState(const MockCurrentState&) = delete;
+  MockCurrentState& operator=(const MockCurrentState&) = delete;
 
   // Adds an expectation for get_completionMessage that will return the given
   // message any number of times.
@@ -197,8 +201,6 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
  private:
   std::u16string completion_message_;
   std::u16string available_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCurrentState);
 };
 
 // A mock IAppWeb that can run callers of get_currentState through a sequence of
@@ -214,6 +216,9 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
     ON_CALL(*this, get_currentState(_))
         .WillByDefault(::testing::Invoke(this, &MockApp::GetNextState));
   }
+
+  MockApp(const MockApp&) = delete;
+  MockApp& operator=(const MockApp&) = delete;
 
   // IAppWeb:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
@@ -340,8 +345,6 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   // A gmock sequence under which a series of get_CurrentState expectations are
   // evaluated.
   Sequence state_sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockApp);
 };
 
 // A mock IAppBundleWeb that can handle a single call to createInstalledApp
@@ -354,6 +357,9 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
   END_COM_MAP()
 
   MockAppBundle() {}
+
+  MockAppBundle(const MockAppBundle&) = delete;
+  MockAppBundle& operator=(const MockAppBundle&) = delete;
 
   // IAppBundleWeb:
   MOCK_METHOD4_WITH_CALLTYPE(STDMETHODCALLTYPE,
@@ -445,9 +451,6 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
 
     return mock_app;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAppBundle);
 };
 
 // A mock IGoogleUpdate3Web that can handle a call to initialize and
@@ -460,6 +463,9 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
   END_COM_MAP()
 
   MockGoogleUpdate() {}
+
+  MockGoogleUpdate(const MockGoogleUpdate&) = delete;
+  MockGoogleUpdate& operator=(const MockGoogleUpdate&) = delete;
 
   // IGoogleUpdate3Web:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
@@ -497,15 +503,16 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
         .WillOnce(DoAll(SetArgPointee<0>(mock_app_bundle), Return(S_OK)));
     return mock_app_bundle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGoogleUpdate);
 };
 
 // A mock factory for creating an IGoogleUpdate3Web instance.
 class MockGoogleUpdateFactory : public GoogleUpdateFactory {
  public:
   MockGoogleUpdateFactory() {}
+
+  MockGoogleUpdateFactory(const MockGoogleUpdateFactory&) = delete;
+  MockGoogleUpdateFactory& operator=(const MockGoogleUpdateFactory&) = delete;
+
   MOCK_METHOD1(Create, HRESULT(Microsoft::WRL::ComPtr<IGoogleUpdate3Web>*));
 
   // Returns a mock IGoogleUpdate3Web object that will be returned by the
@@ -524,8 +531,6 @@ class MockGoogleUpdateFactory : public GoogleUpdateFactory {
 
  private:
   Sequence sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockGoogleUpdateFactory);
 };
 
 }  // namespace
@@ -536,6 +541,9 @@ class MockGoogleUpdateFactory : public GoogleUpdateFactory {
 // configure the set of states to be simulated.
 class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
  public:
+  GoogleUpdateWinTest(const GoogleUpdateWinTest&) = delete;
+  GoogleUpdateWinTest& operator=(const GoogleUpdateWinTest&) = delete;
+
   static void SetUpTestCase() {
     ui::win::CreateATLModuleIfNeeded();
     // Configure all mock functions that return HRESULT to return failure.
@@ -662,9 +670,6 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
 
   // The new version that the fixture will pretend is available.
   std::u16string new_version_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GoogleUpdateWinTest);
 };
 
 //  static

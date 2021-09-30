@@ -105,6 +105,9 @@ class TestMetricCollector : public internal::MetricCollector {
       : internal::MetricCollector("UMA.CWP.TestData", collection_params),
         weak_factory_(this) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "Test"; }
   base::WeakPtr<internal::MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -119,8 +122,6 @@ class TestMetricCollector : public internal::MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
 const base::TimeDelta kPeriodicCollectionInterval =
@@ -133,6 +134,9 @@ class MetricProviderTest : public testing::Test {
  public:
   MetricProviderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  MetricProviderTest(const MetricProviderTest&) = delete;
+  MetricProviderTest& operator=(const MetricProviderTest&) = delete;
 
   void SetUp() override {
     CollectionParams test_params;
@@ -160,8 +164,6 @@ class MetricProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestMetricProvider> metric_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProviderTest);
 };
 
 TEST_F(MetricProviderTest, CheckSetup) {
@@ -300,6 +302,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
   MetricProviderSyncSettingsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  MetricProviderSyncSettingsTest(const MetricProviderSyncSettingsTest&) =
+      delete;
+  MetricProviderSyncSettingsTest& operator=(
+      const MetricProviderSyncSettingsTest&) = delete;
+
   void SetUp() override {
     CollectionParams test_params;
     test_params.periodic_interval = kPeriodicCollectionInterval;
@@ -378,8 +385,6 @@ class MetricProviderSyncSettingsTest : public testing::Test {
   PerfDataProto perf_data_unchanged_;
 
   PerfDataProto perf_data_redacted_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProviderSyncSettingsTest);
 };
 
 TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {

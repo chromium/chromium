@@ -18,6 +18,11 @@ class BackgroundFetchDelegateFactory
   static BackgroundFetchDelegateImpl* GetForProfile(Profile* profile);
   static BackgroundFetchDelegateFactory* GetInstance();
 
+  BackgroundFetchDelegateFactory(const BackgroundFetchDelegateFactory&) =
+      delete;
+  BackgroundFetchDelegateFactory& operator=(
+      const BackgroundFetchDelegateFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BackgroundFetchDelegateFactory>;
 
@@ -28,8 +33,6 @@ class BackgroundFetchDelegateFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDelegateFactory);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DELEGATE_FACTORY_H_

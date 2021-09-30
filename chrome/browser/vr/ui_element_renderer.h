@@ -51,6 +51,10 @@ class TransparentQuadRenderer;
 class UiElementRenderer {
  public:
   UiElementRenderer();
+
+  UiElementRenderer(const UiElementRenderer&) = delete;
+  UiElementRenderer& operator=(const UiElementRenderer&) = delete;
+
   VIRTUAL_FOR_MOCKS ~UiElementRenderer();
 
   VIRTUAL_FOR_MOCKS void DrawTexturedQuad(
@@ -146,8 +150,6 @@ class UiElementRenderer {
   std::unique_ptr<Stars::Renderer> stars_renderer_;
   std::unique_ptr<Background::Renderer> background_renderer_;
   std::unique_ptr<Keyboard::Renderer> keyboard_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiElementRenderer);
 };
 
 }  // namespace vr

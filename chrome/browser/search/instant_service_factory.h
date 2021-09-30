@@ -25,6 +25,9 @@ class InstantServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static InstantServiceFactory* GetInstance();
 
+  InstantServiceFactory(const InstantServiceFactory&) = delete;
+  InstantServiceFactory& operator=(const InstantServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<InstantServiceFactory>;
 
@@ -36,8 +39,6 @@ class InstantServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_INSTANT_SERVICE_FACTORY_H_

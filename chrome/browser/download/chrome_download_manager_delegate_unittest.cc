@@ -1711,6 +1711,9 @@ class TestDownloadDialogBridge : public DownloadDialogBridge {
  public:
   TestDownloadDialogBridge() = default;
 
+  TestDownloadDialogBridge(const TestDownloadDialogBridge&) = delete;
+  TestDownloadDialogBridge& operator=(const TestDownloadDialogBridge&) = delete;
+
   // DownloadDialogBridge implementation.
   void ShowDialog(gfx::NativeWindow native_window,
                   int64_t total_bytes,
@@ -1747,8 +1750,6 @@ class TestDownloadDialogBridge : public DownloadDialogBridge {
   DownloadLocationDialogType dialog_type_;
   DownloadTargetDeterminerDelegate::ConfirmationCallback
       dialog_complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadDialogBridge);
 };
 
 }  // namespace

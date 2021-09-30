@@ -76,6 +76,10 @@ class LevelDBWrapper {
   };
 
   explicit LevelDBWrapper(std::unique_ptr<leveldb::DB> db);
+
+  LevelDBWrapper(const LevelDBWrapper&) = delete;
+  LevelDBWrapper& operator=(const LevelDBWrapper&) = delete;
+
   ~LevelDBWrapper();
 
   // Wrapping methods of leveldb::WriteBatch
@@ -110,8 +114,6 @@ class LevelDBWrapper {
   PendingOperationMap pending_;
   int64_t num_puts_;
   int64_t num_deletes_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBWrapper);
 };
 
 }  // namespace drive_backend

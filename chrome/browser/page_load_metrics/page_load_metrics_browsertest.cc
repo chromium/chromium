@@ -1893,6 +1893,11 @@ class SessionRestorePageLoadMetricsBrowserTest
  public:
   SessionRestorePageLoadMetricsBrowserTest() {}
 
+  SessionRestorePageLoadMetricsBrowserTest(
+      const SessionRestorePageLoadMetricsBrowserTest&) = delete;
+  SessionRestorePageLoadMetricsBrowserTest& operator=(
+      const SessionRestorePageLoadMetricsBrowserTest&) = delete;
+
   // PageLoadMetricsBrowserTest:
   void SetUpOnMainThread() override {
     PageLoadMetricsBrowserTest::SetUpOnMainThread();
@@ -1952,9 +1957,6 @@ class SessionRestorePageLoadMetricsBrowserTest
         internal::kHistogramSessionRestoreForegroundTabFirstMeaningfulPaint,
         expected_total_count);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePageLoadMetricsBrowserTest);
 };
 
 class SessionRestorePaintWaiter : public SessionRestoreObserver {

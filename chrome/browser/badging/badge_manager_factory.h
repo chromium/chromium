@@ -29,6 +29,9 @@ class BadgeManagerFactory : public BrowserContextKeyedServiceFactory {
   // Returns the BadgeManagerFactory singleton.
   static BadgeManagerFactory* GetInstance();
 
+  BadgeManagerFactory(const BadgeManagerFactory&) = delete;
+  BadgeManagerFactory& operator=(const BadgeManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BadgeManagerFactory>;
 
@@ -38,8 +41,6 @@ class BadgeManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeManagerFactory);
 };
 
 }  // namespace badging

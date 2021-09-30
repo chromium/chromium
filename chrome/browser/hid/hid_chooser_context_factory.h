@@ -18,6 +18,9 @@ class HidChooserContextFactory : public BrowserContextKeyedServiceFactory {
   static HidChooserContext* GetForProfileIfExists(Profile* profile);
   static HidChooserContextFactory* GetInstance();
 
+  HidChooserContextFactory(const HidChooserContextFactory&) = delete;
+  HidChooserContextFactory& operator=(const HidChooserContextFactory&) = delete;
+
  private:
   friend base::NoDestructor<HidChooserContextFactory>;
 
@@ -30,8 +33,6 @@ class HidChooserContextFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
-
-  DISALLOW_COPY_AND_ASSIGN(HidChooserContextFactory);
 };
 
 #endif  // CHROME_BROWSER_HID_HID_CHOOSER_CONTEXT_FACTORY_H_

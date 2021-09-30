@@ -187,6 +187,10 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
     CertReportHelper::SetFakeOfficialBuildForTesting();
   }
 
+  CaptivePortalBlockingPageTest(const CaptivePortalBlockingPageTest&) = delete;
+  CaptivePortalBlockingPageTest& operator=(
+      const CaptivePortalBlockingPageTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Setting the sending threshold to 1.0 ensures reporting is enabled.
     variations::testing::VariationParamsManager::AppendVariationParams(
@@ -223,7 +227,6 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestingThrottleInstaller> testing_throttle_installer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalBlockingPageTest);
 };
 
 void CaptivePortalBlockingPageTest::TestInterstitial(

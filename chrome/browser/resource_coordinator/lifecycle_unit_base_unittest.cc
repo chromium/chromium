@@ -24,6 +24,10 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
  public:
   MockLifecycleUnitObserver() = default;
 
+  MockLifecycleUnitObserver(const MockLifecycleUnitObserver&) = delete;
+  MockLifecycleUnitObserver& operator=(const MockLifecycleUnitObserver&) =
+      delete;
+
   MOCK_METHOD3(OnLifecycleUnitStateChanged,
                void(LifecycleUnit*,
                     LifecycleUnitState,
@@ -31,12 +35,13 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
   MOCK_METHOD2(OnLifecycleUnitVisibilityChanged,
                void(LifecycleUnit*, content::Visibility));
   MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLifecycleUnitObserver);
 };
 
 class LifecycleUnitBaseTest : public testing::Test {
+ public:
+  LifecycleUnitBaseTest(const LifecycleUnitBaseTest&) = delete;
+  LifecycleUnitBaseTest& operator=(const LifecycleUnitBaseTest&) = delete;
+
  protected:
   LifecycleUnitBaseTest() {
     metrics::DesktopSessionDurationTracker::Initialize();
@@ -52,9 +57,6 @@ class LifecycleUnitBaseTest : public testing::Test {
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_{&test_clock_};
   testing::StrictMock<MockLifecycleUnitObserver> observer_;
   std::unique_ptr<UsageClock> usage_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LifecycleUnitBaseTest);
 };
 
 }  // namespace

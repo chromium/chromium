@@ -72,6 +72,11 @@ void SampleBlocklistedModules(size_t count,
 }  // namespace
 
 class ModuleBlocklistCacheUtilTest : public testing::Test {
+ public:
+  ModuleBlocklistCacheUtilTest(const ModuleBlocklistCacheUtilTest&) = delete;
+  ModuleBlocklistCacheUtilTest& operator=(const ModuleBlocklistCacheUtilTest&) =
+      delete;
+
  protected:
   ModuleBlocklistCacheUtilTest() = default;
   ~ModuleBlocklistCacheUtilTest() override = default;
@@ -93,8 +98,6 @@ class ModuleBlocklistCacheUtilTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
 
   base::FilePath module_blocklist_cache_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleBlocklistCacheUtilTest);
 };
 
 TEST_F(ModuleBlocklistCacheUtilTest, CalculateTimeDateStamp) {
@@ -184,6 +187,9 @@ class FakeModuleListFilter : public ModuleListFilter {
  public:
   FakeModuleListFilter() = default;
 
+  FakeModuleListFilter(const FakeModuleListFilter&) = delete;
+  FakeModuleListFilter& operator=(const FakeModuleListFilter&) = delete;
+
   void AddAllowlistedModule(const third_party_dlls::PackedListModule& module) {
     allowlisted_modules_.emplace(
         base::StringPiece(
@@ -213,8 +219,6 @@ class FakeModuleListFilter : public ModuleListFilter {
 
   std::set<std::pair<base::StringPiece, base::StringPiece>>
       allowlisted_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeModuleListFilter);
 };
 
 TEST_F(ModuleBlocklistCacheUtilTest, RemoveAllowlistedEntries) {

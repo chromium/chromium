@@ -33,6 +33,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
 
   explicit ZipFileCreator(PendingCreator receiver);
 
+  ZipFileCreator(const ZipFileCreator&) = delete;
+  ZipFileCreator& operator=(const ZipFileCreator&) = delete;
+
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
  private:
@@ -77,8 +80,6 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
 
   // Flag used to cancel an ongoing ZIP creation.
   base::AtomicFlag cancelled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipFileCreator);
 };
 
 }  // namespace chrome

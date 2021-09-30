@@ -42,6 +42,9 @@ class SuccessCount : public base::RefCounted<SuccessCount> {
  public:
   SuccessCount() = default;
 
+  SuccessCount(const SuccessCount&) = delete;
+  SuccessCount& operator=(const SuccessCount&) = delete;
+
   void Increment() { count_++; }
   size_t count() const { return count_; }
 
@@ -50,8 +53,6 @@ class SuccessCount : public base::RefCounted<SuccessCount> {
   ~SuccessCount() = default;
 
   size_t count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SuccessCount);
 };
 
 // This is the eligibility callback for

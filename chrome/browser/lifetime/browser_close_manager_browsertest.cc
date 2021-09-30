@@ -164,6 +164,9 @@ class TestBrowserCloseManager : public BrowserCloseManager {
     NO_USER_CHOICE
   };
 
+  TestBrowserCloseManager(const TestBrowserCloseManager&) = delete;
+  TestBrowserCloseManager& operator=(const TestBrowserCloseManager&) = delete;
+
   static void AttemptClose(UserChoice user_choice) {
     scoped_refptr<BrowserCloseManager> browser_close_manager =
         new TestBrowserCloseManager(user_choice);
@@ -196,8 +199,6 @@ class TestBrowserCloseManager : public BrowserCloseManager {
       : user_choice_(user_choice) {}
 
   UserChoice user_choice_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserCloseManager);
 };
 
 class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
@@ -246,6 +247,10 @@ class FakeBackgroundModeManager : public BackgroundModeManager {
                                   ->GetProfileAttributesStorage()),
         suspended_(false) {}
 
+  FakeBackgroundModeManager(const FakeBackgroundModeManager&) = delete;
+  FakeBackgroundModeManager& operator=(const FakeBackgroundModeManager&) =
+      delete;
+
   void SuspendBackgroundMode() override {
     BackgroundModeManager::SuspendBackgroundMode();
     suspended_ = true;
@@ -262,8 +267,6 @@ class FakeBackgroundModeManager : public BackgroundModeManager {
 
  private:
   bool suspended_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBackgroundModeManager);
 };
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
@@ -1156,6 +1159,11 @@ class BrowserCloseManagerWithBackgroundModeBrowserTest
  public:
   BrowserCloseManagerWithBackgroundModeBrowserTest() {}
 
+  BrowserCloseManagerWithBackgroundModeBrowserTest(
+      const BrowserCloseManagerWithBackgroundModeBrowserTest&) = delete;
+  BrowserCloseManagerWithBackgroundModeBrowserTest& operator=(
+      const BrowserCloseManagerWithBackgroundModeBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     BrowserCloseManagerBrowserTest::SetUpOnMainThread();
     g_browser_process->set_background_mode_manager_for_test(
@@ -1167,9 +1175,6 @@ class BrowserCloseManagerWithBackgroundModeBrowserTest
         g_browser_process->background_mode_manager())
         ->IsBackgroundModeSuspended();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserCloseManagerWithBackgroundModeBrowserTest);
 };
 
 // Check that background mode is suspended when closing all browsers unless we

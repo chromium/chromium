@@ -573,13 +573,14 @@ struct SynchronousDACallbackData {
         can_log(true) {
   }
 
+  SynchronousDACallbackData(const SynchronousDACallbackData&) = delete;
+  SynchronousDACallbackData& operator=(const SynchronousDACallbackData&) =
+      delete;
+
   base::ScopedCFTypeRef<DADissenterRef> dissenter;
   bool callback_called;
   bool run_loop_running;
   bool can_log;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SynchronousDACallbackData);
 };
 
 // The callback target for SynchronousDAOperation. Set the fields in

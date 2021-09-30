@@ -27,6 +27,12 @@ using testing::IsNull;
 using testing::NotNull;
 
 class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
+ public:
+  SyncEncryptionKeysTabHelperTest(const SyncEncryptionKeysTabHelperTest&) =
+      delete;
+  SyncEncryptionKeysTabHelperTest& operator=(
+      const SyncEncryptionKeysTabHelperTest&) = delete;
+
  protected:
   SyncEncryptionKeysTabHelperTest() = default;
 
@@ -54,9 +60,6 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
             {ChromeSigninClientFactory::GetInstance(),
              base::BindRepeating(&signin::BuildTestSigninClient)}};
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncEncryptionKeysTabHelperTest);
 };
 
 TEST_F(SyncEncryptionKeysTabHelperTest, ShouldExposeMojoApiToAllowedOrigin) {

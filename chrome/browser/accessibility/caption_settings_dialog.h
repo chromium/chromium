@@ -13,11 +13,12 @@ namespace captions {
 // sub-section of Settings.
 class CaptionSettingsDialog {
  public:
+  CaptionSettingsDialog() = delete;
+  CaptionSettingsDialog(const CaptionSettingsDialog&) = delete;
+  CaptionSettingsDialog& operator=(const CaptionSettingsDialog&) = delete;
+
   // Displays the native captions manager dialog.
   static void ShowCaptionSettingsDialog();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CaptionSettingsDialog);
 };
 
 }  // namespace captions

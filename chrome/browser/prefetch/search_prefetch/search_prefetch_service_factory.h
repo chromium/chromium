@@ -28,6 +28,10 @@ class SearchPrefetchServiceFactory : public BrowserContextKeyedServiceFactory {
   // Gets the LazyInstance that owns all SearchPrefetchService(s).
   static SearchPrefetchServiceFactory* GetInstance();
 
+  SearchPrefetchServiceFactory(const SearchPrefetchServiceFactory&) = delete;
+  SearchPrefetchServiceFactory& operator=(const SearchPrefetchServiceFactory&) =
+      delete;
+
  private:
   friend base::NoDestructor<SearchPrefetchServiceFactory>;
 
@@ -37,8 +41,6 @@ class SearchPrefetchServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchPrefetchServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_FACTORY_H_

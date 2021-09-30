@@ -29,6 +29,10 @@ class FakeSafeBrowsingUIManager
  public:
   FakeSafeBrowsingUIManager() {}
 
+  FakeSafeBrowsingUIManager(const FakeSafeBrowsingUIManager&) = delete;
+  FakeSafeBrowsingUIManager& operator=(const FakeSafeBrowsingUIManager&) =
+      delete;
+
  protected:
   ~FakeSafeBrowsingUIManager() override {}
 
@@ -36,9 +40,6 @@ class FakeSafeBrowsingUIManager
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
                               true /* showed_interstitial */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingUIManager);
 };
 
 }  // namespace

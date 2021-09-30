@@ -71,6 +71,11 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
  public:
   FirstRunMasterPrefsBrowserTestBase() {}
 
+  FirstRunMasterPrefsBrowserTestBase(
+      const FirstRunMasterPrefsBrowserTestBase&) = delete;
+  FirstRunMasterPrefsBrowserTestBase& operator=(
+      const FirstRunMasterPrefsBrowserTestBase&) = delete;
+
  protected:
   void SetUp() override {
     // All users of this test class need to call SetInitialPreferencesForTest()
@@ -112,8 +117,6 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
  private:
   base::FilePath prefs_file_;
   std::unique_ptr<std::string> text_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsBrowserTestBase);
 };
 
 template<const char Text[]>
@@ -122,14 +125,16 @@ class FirstRunMasterPrefsBrowserTestT
  public:
   FirstRunMasterPrefsBrowserTestT() {}
 
+  FirstRunMasterPrefsBrowserTestT(const FirstRunMasterPrefsBrowserTestT&) =
+      delete;
+  FirstRunMasterPrefsBrowserTestT& operator=(
+      const FirstRunMasterPrefsBrowserTestT&) = delete;
+
  protected:
   void SetUp() override {
     SetInitialPreferencesForTest(Text);
     FirstRunMasterPrefsBrowserTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsBrowserTestT);
 };
 
 // Returns the true expected import state, derived from the original
@@ -239,6 +244,11 @@ class FirstRunMasterPrefsWithTrackedPreferences
  public:
   FirstRunMasterPrefsWithTrackedPreferences() {}
 
+  FirstRunMasterPrefsWithTrackedPreferences(
+      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
+  FirstRunMasterPrefsWithTrackedPreferences& operator=(
+      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
@@ -255,9 +265,6 @@ class FirstRunMasterPrefsWithTrackedPreferences
     // order to be able to test all SettingsEnforcement groups.
     chrome_prefs::DisableDomainCheckForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsWithTrackedPreferences);
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,

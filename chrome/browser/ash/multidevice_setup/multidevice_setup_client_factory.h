@@ -24,6 +24,10 @@ class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
 
   static MultiDeviceSetupClientFactory* GetInstance();
 
+  MultiDeviceSetupClientFactory(const MultiDeviceSetupClientFactory&) = delete;
+  MultiDeviceSetupClientFactory& operator=(
+      const MultiDeviceSetupClientFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<MultiDeviceSetupClientFactory>;
   friend class ::ChromeOSMetricsProviderTest;
@@ -41,8 +45,6 @@ class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   bool service_is_null_while_testing_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientFactory);
 };
 
 }  // namespace multidevice_setup

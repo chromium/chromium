@@ -23,6 +23,10 @@ class ProcessIdFeedbackSource
  public:
   ProcessIdFeedbackSource(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
+
+  ProcessIdFeedbackSource(const ProcessIdFeedbackSource&) = delete;
+  ProcessIdFeedbackSource& operator=(const ProcessIdFeedbackSource&) = delete;
+
   base::android::ScopedJavaLocalRef<jlongArray> GetProcessIdsForType(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -35,8 +39,6 @@ class ProcessIdFeedbackSource
 
   std::map<int, std::vector<base::ProcessHandle>> process_ids_;
   JavaObjectWeakGlobalRef java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessIdFeedbackSource);
 };
 
 }  // namespace android

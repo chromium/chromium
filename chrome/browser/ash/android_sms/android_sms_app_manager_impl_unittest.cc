@@ -58,6 +58,11 @@ class TestObserver : public AndroidSmsAppManager::Observer {
 };
 
 class AndroidSmsAppManagerImplTest : public testing::Test {
+ public:
+  AndroidSmsAppManagerImplTest(const AndroidSmsAppManagerImplTest&) = delete;
+  AndroidSmsAppManagerImplTest& operator=(const AndroidSmsAppManagerImplTest&) =
+      delete;
+
  protected:
   class TestPwaDelegate : public AndroidSmsAppManagerImpl::PwaDelegate {
    public:
@@ -166,8 +171,6 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
   std::unique_ptr<TestObserver> test_observer_;
 
   std::unique_ptr<AndroidSmsAppManagerImpl> android_sms_app_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppManagerImplTest);
 };
 
 TEST_F(AndroidSmsAppManagerImplTest, TestSetUpMessages_NoPreviousApp_Fails) {

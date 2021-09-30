@@ -39,6 +39,11 @@ class PepperIsolatedFileSystemMessageFilter
       PP_Instance instance,
       content::BrowserPpapiHost* host);
 
+  PepperIsolatedFileSystemMessageFilter(
+      const PepperIsolatedFileSystemMessageFilter&) = delete;
+  PepperIsolatedFileSystemMessageFilter& operator=(
+      const PepperIsolatedFileSystemMessageFilter&) = delete;
+
   // ppapi::host::ResourceMessageFilter implementation.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& msg) override;
@@ -77,8 +82,6 @@ class PepperIsolatedFileSystemMessageFilter
 
   // Set of origins that can use CrxFs private APIs from NaCl.
   std::set<std::string> allowed_crxfs_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperIsolatedFileSystemMessageFilter);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_PEPPER_PEPPER_ISOLATED_FILE_SYSTEM_MESSAGE_FILTER_H_

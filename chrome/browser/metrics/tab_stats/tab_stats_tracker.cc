@@ -274,6 +274,9 @@ class TabStatsTracker::WebContentsUsageObserver
         tab_stats_tracker_(tab_stats_tracker),
         ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)) {}
 
+  WebContentsUsageObserver(const WebContentsUsageObserver&) = delete;
+  WebContentsUsageObserver& operator=(const WebContentsUsageObserver&) = delete;
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -387,8 +390,6 @@ class TabStatsTracker::WebContentsUsageObserver
   ukm::SourceId ukm_source_id_ = 0;
   // The number of video currently playing in this tab.
   size_t video_playing_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsUsageObserver);
 };
 
 void TabStatsTracker::OnBrowserAdded(Browser* browser) {

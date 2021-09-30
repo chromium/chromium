@@ -37,6 +37,11 @@ class TPMFirmwareUpdateNotificationDelegate
   explicit TPMFirmwareUpdateNotificationDelegate(Profile* profile)
       : profile_(profile) {}
 
+  TPMFirmwareUpdateNotificationDelegate(
+      const TPMFirmwareUpdateNotificationDelegate&) = delete;
+  TPMFirmwareUpdateNotificationDelegate& operator=(
+      const TPMFirmwareUpdateNotificationDelegate&) = delete;
+
  private:
   ~TPMFirmwareUpdateNotificationDelegate() override = default;
 
@@ -61,8 +66,6 @@ class TPMFirmwareUpdateNotificationDelegate
   }
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(TPMFirmwareUpdateNotificationDelegate);
 };
 
 void OnAvailableUpdateModes(Profile* profile,

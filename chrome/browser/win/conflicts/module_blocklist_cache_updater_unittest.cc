@@ -93,6 +93,12 @@ bool RegistryKeyExists() {
 
 class ModuleBlocklistCacheUpdaterTest : public testing::Test,
                                         public ModuleDatabaseEventSource {
+ public:
+  ModuleBlocklistCacheUpdaterTest(const ModuleBlocklistCacheUpdaterTest&) =
+      delete;
+  ModuleBlocklistCacheUpdaterTest& operator=(
+      const ModuleBlocklistCacheUpdaterTest&) = delete;
+
  protected:
   ModuleBlocklistCacheUpdaterTest()
       : dll1_(kDllPath1),
@@ -191,8 +197,6 @@ class ModuleBlocklistCacheUpdaterTest : public testing::Test,
   base::FilePath module_blocklist_cache_path_;
 
   bool on_cache_updated_callback_invoked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleBlocklistCacheUpdaterTest);
 };
 
 TEST_F(ModuleBlocklistCacheUpdaterTest, OneThirdPartyModule) {

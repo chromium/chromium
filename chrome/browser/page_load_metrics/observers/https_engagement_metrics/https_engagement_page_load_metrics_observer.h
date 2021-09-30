@@ -25,14 +25,17 @@ class HttpsEngagementPageLoadMetricsObserver
   explicit HttpsEngagementPageLoadMetricsObserver(
       content::BrowserContext* context);
 
+  HttpsEngagementPageLoadMetricsObserver(
+      const HttpsEngagementPageLoadMetricsObserver&) = delete;
+  HttpsEngagementPageLoadMetricsObserver& operator=(
+      const HttpsEngagementPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver:
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
   HttpsEngagementService* engagement_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpsEngagementPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HTTPS_ENGAGEMENT_METRICS_HTTPS_ENGAGEMENT_PAGE_LOAD_METRICS_OBSERVER_H_

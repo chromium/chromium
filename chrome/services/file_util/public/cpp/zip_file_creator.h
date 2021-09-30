@@ -65,6 +65,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
                  std::vector<base::FilePath> src_relative_paths,
                  base::FilePath dest_file);
 
+  ZipFileCreator(const ZipFileCreator&) = delete;
+  ZipFileCreator& operator=(const ZipFileCreator&) = delete;
+
   // Sets the optional progress callback.
   // This callback will be called the next time a progress event is received.
   // Precondition: the progress callback hasn't been set yet, or the previously
@@ -140,8 +143,6 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
 
   // Listener receiver.
   mojo::Receiver<chrome::mojom::ZipListener> listener_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ZipFileCreator);
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_ZIP_FILE_CREATOR_H_

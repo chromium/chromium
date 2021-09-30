@@ -28,6 +28,11 @@ class HistoryUiFaviconRequestHandlerFactory
 
   static HistoryUiFaviconRequestHandlerFactory* GetInstance();
 
+  HistoryUiFaviconRequestHandlerFactory(
+      const HistoryUiFaviconRequestHandlerFactory&) = delete;
+  HistoryUiFaviconRequestHandlerFactory& operator=(
+      const HistoryUiFaviconRequestHandlerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       HistoryUiFaviconRequestHandlerFactory>;
@@ -41,8 +46,6 @@ class HistoryUiFaviconRequestHandlerFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryUiFaviconRequestHandlerFactory);
 };
 
 #endif  // CHROME_BROWSER_FAVICON_HISTORY_UI_FAVICON_REQUEST_HANDLER_FACTORY_H_

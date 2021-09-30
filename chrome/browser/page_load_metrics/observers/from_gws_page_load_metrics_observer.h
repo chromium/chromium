@@ -144,6 +144,11 @@ class FromGWSPageLoadMetricsObserver
  public:
   FromGWSPageLoadMetricsObserver();
 
+  FromGWSPageLoadMetricsObserver(const FromGWSPageLoadMetricsObserver&) =
+      delete;
+  FromGWSPageLoadMetricsObserver& operator=(
+      const FromGWSPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                          const GURL& currently_committed_url,
@@ -183,8 +188,6 @@ class FromGWSPageLoadMetricsObserver
 
  private:
   FromGWSPageLoadMetricsLogger logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromGWSPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_

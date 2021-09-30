@@ -97,6 +97,9 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
                     PrintSystem* print_system,
                     Delegate* delegate);
 
+  PrinterJobHandler(const PrinterJobHandler&) = delete;
+  PrinterJobHandler& operator=(const PrinterJobHandler&) = delete;
+
   bool Initialize();
 
   const std::string& GetPrinterName() const;
@@ -292,8 +295,6 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
   PrinterJobQueueHandler job_queue_handler_;
 
   base::WeakPtrFactory<PrinterJobHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobHandler);
 };
 
 }  // namespace cloud_print

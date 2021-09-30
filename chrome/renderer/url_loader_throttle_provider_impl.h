@@ -31,6 +31,9 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
       blink::URLLoaderThrottleProviderType type,
       ChromeContentRendererClient* chrome_content_renderer_client);
 
+  URLLoaderThrottleProviderImpl& operator=(
+      const URLLoaderThrottleProviderImpl&) = delete;
+
   ~URLLoaderThrottleProviderImpl() override;
 
   // blink::URLLoaderThrottleProvider implementation.
@@ -57,8 +60,6 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
 #endif
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(URLLoaderThrottleProviderImpl);
 };
 
 #endif  // CHROME_RENDERER_URL_LOADER_THROTTLE_PROVIDER_IMPL_H_

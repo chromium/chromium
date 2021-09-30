@@ -119,7 +119,13 @@ class BrowserSwitcherService : public KeyedService {
       base::RepeatingCallback<AllRulesetsParsedCallbackSignature>;
 
  public:
+  BrowserSwitcherService() = delete;
+
   explicit BrowserSwitcherService(Profile* profile);
+
+  BrowserSwitcherService(const BrowserSwitcherService&) = delete;
+  BrowserSwitcherService& operator=(const BrowserSwitcherService&) = delete;
+
   ~BrowserSwitcherService() override;
 
   virtual void Init();
@@ -204,9 +210,6 @@ class BrowserSwitcherService : public KeyedService {
   std::unique_ptr<BrowserSwitcherSitelist> sitelist_;
 
   base::WeakPtrFactory<BrowserSwitcherService> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherService);
 };
 
 }  // namespace browser_switcher

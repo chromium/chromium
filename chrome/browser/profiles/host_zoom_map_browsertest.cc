@@ -62,6 +62,9 @@ class ZoomLevelChangeObserver {
                             base::Unretained(this)));
   }
 
+  ZoomLevelChangeObserver(const ZoomLevelChangeObserver&) = delete;
+  ZoomLevelChangeObserver& operator=(const ZoomLevelChangeObserver&) = delete;
+
   void BlockUntilZoomLevelForHostHasChanged(const std::string& host) {
     while (!std::count(changed_hosts_.begin(), changed_hosts_.end(), host)) {
       message_loop_runner_->Run();
@@ -79,8 +82,6 @@ class ZoomLevelChangeObserver {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   std::vector<std::string> changed_hosts_;
   base::CallbackListSubscription subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomLevelChangeObserver);
 };
 
 }  // namespace
@@ -88,6 +89,9 @@ class ZoomLevelChangeObserver {
 class HostZoomMapBrowserTest : public InProcessBrowserTest {
  public:
   HostZoomMapBrowserTest() {}
+
+  HostZoomMapBrowserTest(const HostZoomMapBrowserTest&) = delete;
+  HostZoomMapBrowserTest& operator=(const HostZoomMapBrowserTest&) = delete;
 
  protected:
   void SetDefaultZoomLevel(double level) {
@@ -152,8 +156,6 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(HostZoomMapBrowserTest);
 };
 
 #define PARTITION_KEY_PLACEHOLDER "NNN"
@@ -162,6 +164,11 @@ class HostZoomMapBrowserTestWithPrefs : public HostZoomMapBrowserTest {
  public:
   explicit HostZoomMapBrowserTestWithPrefs(const std::string& prefs_data)
       : prefs_data_(prefs_data) {}
+
+  HostZoomMapBrowserTestWithPrefs(const HostZoomMapBrowserTestWithPrefs&) =
+      delete;
+  HostZoomMapBrowserTestWithPrefs& operator=(
+      const HostZoomMapBrowserTestWithPrefs&) = delete;
 
  private:
   // InProcessBrowserTest:
@@ -191,8 +198,6 @@ class HostZoomMapBrowserTestWithPrefs : public HostZoomMapBrowserTest {
   }
 
   std::string prefs_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostZoomMapBrowserTestWithPrefs);
 };
 
 // Zoom-related preferences demonstrating the two problems that
@@ -217,8 +222,10 @@ class HostZoomMapSanitizationBrowserTest
   HostZoomMapSanitizationBrowserTest()
       : HostZoomMapBrowserTestWithPrefs(kSanitizationTestPrefs) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostZoomMapSanitizationBrowserTest);
+  HostZoomMapSanitizationBrowserTest(
+      const HostZoomMapSanitizationBrowserTest&) = delete;
+  HostZoomMapSanitizationBrowserTest& operator=(
+      const HostZoomMapSanitizationBrowserTest&) = delete;
 };
 
 // Regression test for crbug.com/437392

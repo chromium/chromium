@@ -43,6 +43,10 @@ const DisabledItemsTestData kDisabledTokensTests[] = {
 };
 
 class ChromeOriginTrialsTest : public InProcessBrowserTest {
+ public:
+  ChromeOriginTrialsTest(const ChromeOriginTrialsTest&) = delete;
+  ChromeOriginTrialsTest& operator=(const ChromeOriginTrialsTest&) = delete;
+
  protected:
   ChromeOriginTrialsTest() {}
 
@@ -73,9 +77,6 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
   }
 
   PrefService* local_state() { return g_browser_process->local_state(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeOriginTrialsTest);
 };
 
 // Tests to verify that the command line is not set, when no prefs exist for

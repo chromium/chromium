@@ -27,6 +27,9 @@ class AdbClientSocket {
                              const std::string& socket_name,
                              SocketCallback callback);
 
+  AdbClientSocket(const AdbClientSocket&) = delete;
+  AdbClientSocket& operator=(const AdbClientSocket&) = delete;
+
  protected:
   explicit AdbClientSocket(int port);
   ~AdbClientSocket();
@@ -59,8 +62,6 @@ class AdbClientSocket {
 
   std::string host_;
   int port_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdbClientSocket);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_ADB_ADB_CLIENT_SOCKET_H_

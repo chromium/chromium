@@ -33,6 +33,11 @@ class ChromePasswordProtectionServiceFactory
   // Get the singleton instance.
   static ChromePasswordProtectionServiceFactory* GetInstance();
 
+  ChromePasswordProtectionServiceFactory(
+      const ChromePasswordProtectionServiceFactory&) = delete;
+  ChromePasswordProtectionServiceFactory& operator=(
+      const ChromePasswordProtectionServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       ChromePasswordProtectionServiceFactory>;
@@ -45,8 +50,6 @@ class ChromePasswordProtectionServiceFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionServiceFactory);
 };
 
 }  // namespace safe_browsing

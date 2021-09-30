@@ -129,6 +129,9 @@ class TesterForType {
     }
   }
 
+  TesterForType(const TesterForType&) = delete;
+  TesterForType& operator=(const TesterForType&) = delete;
+
   void ClearPolicyDefault() {
     prefs_->RemoveManagedPref(policy_default_setting_);
   }
@@ -163,8 +166,6 @@ class TesterForType {
   HostContentSettingsMap* host_content_settings_map_;
   ContentSettingsType content_type_;
   const char* policy_default_setting_;
-
-  DISALLOW_COPY_AND_ASSIGN(TesterForType);
 };
 
 TEST_F(HostContentSettingsMapTest, DefaultValues) {

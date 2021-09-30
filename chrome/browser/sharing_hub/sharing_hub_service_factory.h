@@ -20,6 +20,9 @@ class SharingHubServiceFactory : public BrowserContextKeyedServiceFactory {
   static SharingHubService* GetForProfile(Profile* profile);
   static SharingHubServiceFactory* GetInstance();
 
+  SharingHubServiceFactory(const SharingHubServiceFactory&) = delete;
+  SharingHubServiceFactory& operator=(const SharingHubServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SharingHubServiceFactory>;
 
@@ -29,8 +32,6 @@ class SharingHubServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubServiceFactory);
 };
 
 }  // namespace sharing_hub

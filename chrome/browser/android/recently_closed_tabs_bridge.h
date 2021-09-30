@@ -18,7 +18,11 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
   RecentlyClosedTabsBridge(base::android::ScopedJavaGlobalRef<jobject> jbridge,
                            Profile* profile);
 
+  RecentlyClosedTabsBridge(const RecentlyClosedTabsBridge&) = delete;
+  RecentlyClosedTabsBridge& operator=(const RecentlyClosedTabsBridge&) = delete;
+
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+
   jboolean GetRecentlyClosedTabs(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -59,8 +63,6 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
 
   // TabRestoreService that we are observing.
   sessions::TabRestoreService* tab_restore_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyClosedTabsBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_RECENTLY_CLOSED_TABS_BRIDGE_H_

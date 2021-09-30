@@ -103,6 +103,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
                                            ukm::TestUkmRecorder* recorder)
       : run_loop_(run_loop), recorder_(recorder) {}
 
+  ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
+      delete;
+  ProcessMemoryMetricsEmitterFake& operator=(
+      const ProcessMemoryMetricsEmitterFake&) = delete;
+
  private:
   ~ProcessMemoryMetricsEmitterFake() override {}
 
@@ -133,8 +138,6 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   bool finished_memory_dump_ = false;
   bool finished_process_info_ = false;
   ukm::TestUkmRecorder* recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };
 
 void CheckMemoryMetric(const std::string& name,

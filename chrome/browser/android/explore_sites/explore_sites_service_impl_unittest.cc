@@ -132,13 +132,17 @@ class ExploreSitesServiceImplTest : public testing::Test {
     explicit TestURLLoaderFactoryGetter(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
         : url_loader_factory_(url_loader_factory) {}
+
+    TestURLLoaderFactoryGetter(const TestURLLoaderFactoryGetter&) = delete;
+    TestURLLoaderFactoryGetter& operator=(const TestURLLoaderFactoryGetter&) =
+        delete;
+
     scoped_refptr<network::SharedURLLoaderFactory> GetFactory() override {
       return url_loader_factory_;
     }
 
    private:
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-    DISALLOW_COPY_AND_ASSIGN(TestURLLoaderFactoryGetter);
   };
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -58,6 +58,10 @@ class ImportantSitesUtil {
     REASON_BOUNDARY
   };
 
+  ImportantSitesUtil() = delete;
+  ImportantSitesUtil(const ImportantSitesUtil&) = delete;
+  ImportantSitesUtil& operator=(const ImportantSitesUtil&) = delete;
+
   static std::string GetRegisterableDomainOrIP(const GURL& url);
 
   static std::string GetRegisterableDomainOrIPFromHost(base::StringPiece host);
@@ -105,9 +109,6 @@ class ImportantSitesUtil {
   // testing.
   static void MarkOriginAsImportantForTesting(Profile* profile,
                                               const GURL& origin);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImportantSitesUtil);
 };
 
 }  // namespace site_engagement

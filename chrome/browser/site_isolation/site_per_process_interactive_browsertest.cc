@@ -1175,6 +1175,11 @@ class NavigationToExtensionSchemeObserver
         extension_loaded_(contents->GetLastCommittedURL().SchemeIs(
             extensions::kExtensionScheme)) {}
 
+  NavigationToExtensionSchemeObserver(
+      const NavigationToExtensionSchemeObserver&) = delete;
+  NavigationToExtensionSchemeObserver& operator=(
+      const NavigationToExtensionSchemeObserver&) = delete;
+
   void Wait() {
     if (extension_loaded_)
       return;
@@ -1193,8 +1198,6 @@ class NavigationToExtensionSchemeObserver
 
   bool extension_loaded_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationToExtensionSchemeObserver);
 };
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu

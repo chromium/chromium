@@ -47,6 +47,11 @@ const int64_t kMaxImageClipboardSize = 20 * 1024 * 1024;  // 20 MB
 
 class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
  public:
+  ImageClipboardCopyManager() = delete;
+  ImageClipboardCopyManager(const ImageClipboardCopyManager&) = delete;
+  ImageClipboardCopyManager& operator=(const ImageClipboardCopyManager&) =
+      delete;
+
   static void Start(const base::FilePath& file_path,
                     base::SequencedTaskRunner* task_runner) {
     new ImageClipboardCopyManager(file_path, task_runner);
@@ -115,8 +120,6 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
   }
 
   const base::FilePath file_path_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImageClipboardCopyManager);
 };
 
 }  // namespace

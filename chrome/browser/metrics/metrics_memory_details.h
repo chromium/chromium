@@ -17,6 +17,9 @@ class MetricsMemoryDetails : public MemoryDetails {
  public:
   explicit MetricsMemoryDetails(base::OnceClosure callback);
 
+  MetricsMemoryDetails(const MetricsMemoryDetails&) = delete;
+  MetricsMemoryDetails& operator=(const MetricsMemoryDetails&) = delete;
+
  protected:
   ~MetricsMemoryDetails() override;
 
@@ -30,8 +33,6 @@ class MetricsMemoryDetails : public MemoryDetails {
   void UpdateSiteIsolationMetrics();
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsMemoryDetails);
 };
 
 #endif  // CHROME_BROWSER_METRICS_METRICS_MEMORY_DETAILS_H_

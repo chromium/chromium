@@ -16,6 +16,10 @@ class ScHandleTraits {
  public:
   typedef SC_HANDLE Handle;
 
+  ScHandleTraits() = delete;
+  ScHandleTraits(const ScHandleTraits&) = delete;
+  ScHandleTraits& operator=(const ScHandleTraits&) = delete;
+
   static bool CloseHandle(SC_HANDLE handle) {
     return ::CloseServiceHandle(handle) != FALSE;
   }
@@ -23,9 +27,6 @@ class ScHandleTraits {
   static bool IsHandleValid(SC_HANDLE handle) { return handle != nullptr; }
 
   static SC_HANDLE NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
 };
 
 typedef base::win::GenericScopedHandle<ScHandleTraits,
@@ -36,6 +37,10 @@ class TimerTraits {
  public:
   using Handle = HANDLE;
 
+  TimerTraits() = delete;
+  TimerTraits(const TimerTraits&) = delete;
+  TimerTraits& operator=(const TimerTraits&) = delete;
+
   static bool CloseHandle(HANDLE handle) {
     return ::DeleteTimerQueue(handle) != FALSE;
   }
@@ -43,9 +48,6 @@ class TimerTraits {
   static bool IsHandleValid(HANDLE handle) { return handle != nullptr; }
 
   static HANDLE NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TimerTraits);
 };
 
 typedef base::win::GenericScopedHandle<TimerTraits,

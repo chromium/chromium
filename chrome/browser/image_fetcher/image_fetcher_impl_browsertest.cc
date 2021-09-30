@@ -43,6 +43,10 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
     test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
+  ImageFetcherImplBrowserTest(const ImageFetcherImplBrowserTest&) = delete;
+  ImageFetcherImplBrowserTest& operator=(const ImageFetcherImplBrowserTest&) =
+      delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(test_server_.Start());
   }
@@ -100,9 +104,6 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
   int num_data_callback_null_called_;
 
   net::EmbeddedTestServer test_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImplBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageFetcherImplBrowserTest, NormalFetch) {

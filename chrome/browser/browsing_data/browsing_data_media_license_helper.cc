@@ -34,6 +34,12 @@ class BrowsingDataMediaLicenseHelperImpl final
   // BrowsingDataMediaLicenseHelper implementation
   explicit BrowsingDataMediaLicenseHelperImpl(
       storage::FileSystemContext* filesystem_context);
+
+  BrowsingDataMediaLicenseHelperImpl(
+      const BrowsingDataMediaLicenseHelperImpl&) = delete;
+  BrowsingDataMediaLicenseHelperImpl& operator=(
+      const BrowsingDataMediaLicenseHelperImpl&) = delete;
+
   void StartFetching(FetchCallback callback) final;
   void DeleteMediaLicenseOrigin(const GURL& origin) final;
 
@@ -57,8 +63,6 @@ class BrowsingDataMediaLicenseHelperImpl final
   // Keep a reference to the FileSystemContext object for the current profile
   // for use on the file task runner.
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataMediaLicenseHelperImpl);
 };
 
 BrowsingDataMediaLicenseHelperImpl::BrowsingDataMediaLicenseHelperImpl(

@@ -23,6 +23,9 @@ class DeviceSyncClientFactory : public BrowserContextKeyedServiceFactory {
 
   static DeviceSyncClientFactory* GetInstance();
 
+  DeviceSyncClientFactory(const DeviceSyncClientFactory&) = delete;
+  DeviceSyncClientFactory& operator=(const DeviceSyncClientFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<DeviceSyncClientFactory>;
 
@@ -33,8 +36,6 @@ class DeviceSyncClientFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncClientFactory);
 };
 
 }  // namespace device_sync

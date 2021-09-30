@@ -23,6 +23,11 @@ class MediaGalleriesPreferencesFactory
 
   static MediaGalleriesPreferencesFactory* GetInstance();
 
+  MediaGalleriesPreferencesFactory(const MediaGalleriesPreferencesFactory&) =
+      delete;
+  MediaGalleriesPreferencesFactory& operator=(
+      const MediaGalleriesPreferencesFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<MediaGalleriesPreferencesFactory>;
 
@@ -36,8 +41,6 @@ class MediaGalleriesPreferencesFactory
       user_prefs::PrefRegistrySyncable* registry) override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPreferencesFactory);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_PREFERENCES_FACTORY_H_

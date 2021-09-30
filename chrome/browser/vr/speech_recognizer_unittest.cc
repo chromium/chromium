@@ -54,6 +54,10 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
   FakeSharedURLLoaderFactory() {}
 
+  FakeSharedURLLoaderFactory(const FakeSharedURLLoaderFactory&) = delete;
+  FakeSharedURLLoaderFactory& operator=(const FakeSharedURLLoaderFactory&) =
+      delete;
+
   // network::mojom::URLLoaderFactory:
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
@@ -86,8 +90,6 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
   ~FakeSharedURLLoaderFactory() override {}
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSharedURLLoaderFactory);
 };
 
 // Returns a SharedURLLoaderFactory that hangs.

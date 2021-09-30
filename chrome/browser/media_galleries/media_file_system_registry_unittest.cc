@@ -221,13 +221,14 @@ class MockProfileSharedRenderProcessHostFactory
         content::BrowserContext* browser_context)
         : content::MockRenderProcessHost(browser_context) {}
 
+    SharedMockRenderProcessHost(const SharedMockRenderProcessHost&) = delete;
+    SharedMockRenderProcessHost& operator=(const SharedMockRenderProcessHost&) =
+        delete;
+
     // This test class lies that the process has not been used to allow
     // testing of process sharing/reuse inherent in the unit tests that depend
     // on the MockProfileSharedRenderProcessHostFactory.
     bool HostHasNotBeenUsed() override { return true; }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SharedMockRenderProcessHost);
   };
 
   mutable std::map<content::BrowserContext*,

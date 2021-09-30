@@ -28,6 +28,10 @@ class SendTabToSelfClientService : public KeyedService,
  public:
   SendTabToSelfClientService(Profile* profile, SendTabToSelfModel* model);
 
+  SendTabToSelfClientService(const SendTabToSelfClientService&) = delete;
+  SendTabToSelfClientService& operator=(const SendTabToSelfClientService&) =
+      delete;
+
   // Keeps track of when the model is loaded so that updates to the
   // model can be pushed afterwards.
   void SendTabToSelfModelLoaded() override;
@@ -56,7 +60,6 @@ class SendTabToSelfClientService : public KeyedService,
   ReceivingUiHandlerRegistry* registry_;
   // Profile for which this service is associated.
   Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfClientService);
 };
 
 }  // namespace send_tab_to_self

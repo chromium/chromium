@@ -55,6 +55,9 @@ class JavaHomepageClient : public MostVisitedSites::HomepageClient {
                      const JavaParamRef<jobject>& obj,
                      Profile* profile);
 
+  JavaHomepageClient(const JavaHomepageClient&) = delete;
+  JavaHomepageClient& operator=(const JavaHomepageClient&) = delete;
+
   bool IsHomepageTileEnabled() const override;
   GURL GetHomepageUrl() const override;
   void QueryHomepageTitle(TitleCallback title_callback) override;
@@ -68,8 +71,6 @@ class JavaHomepageClient : public MostVisitedSites::HomepageClient {
 
   // Used in loading titles.
   base::CancelableTaskTracker task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaHomepageClient);
 };
 
 JavaHomepageClient::JavaHomepageClient(JNIEnv* env,
@@ -132,6 +133,9 @@ class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
  public:
   JavaObserver(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
+  JavaObserver(const JavaObserver&) = delete;
+  JavaObserver& operator=(const JavaObserver&) = delete;
+
   void OnURLsAvailable(
       const std::map<SectionType, NTPTilesVector>& sections) override;
 
@@ -139,8 +143,6 @@ class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
 
  private:
   ScopedJavaGlobalRef<jobject> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaObserver);
 };
 
 MostVisitedSitesBridge::JavaObserver::JavaObserver(

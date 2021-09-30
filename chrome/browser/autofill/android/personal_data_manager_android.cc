@@ -104,6 +104,9 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
  public:
   FullCardRequester() {}
 
+  FullCardRequester(const FullCardRequester&) = delete;
+  FullCardRequester& operator=(const FullCardRequester&) = delete;
+
   // Takes ownership of |card|.
   void GetFullCard(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& jweb_contents,
@@ -172,8 +175,6 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
 
   std::unique_ptr<CreditCard> card_;
   ScopedJavaGlobalRef<jobject> jdelegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequester);
 };
 
 void OnSubKeysReceived(ScopedJavaGlobalRef<jobject> jdelegate,

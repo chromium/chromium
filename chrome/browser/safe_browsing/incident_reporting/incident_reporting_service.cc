@@ -137,6 +137,10 @@ scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
 
 struct IncidentReportingService::ProfileContext {
   ProfileContext();
+
+  ProfileContext(const ProfileContext&) = delete;
+  ProfileContext& operator=(const ProfileContext&) = delete;
+
   ~ProfileContext();
 
   // Returns true if the profile has incidents to be uploaded or cleared.
@@ -154,9 +158,6 @@ struct IncidentReportingService::ProfileContext {
 
   // False until OnProfileAdded is called.
   bool added;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileContext);
 };
 
 class IncidentReportingService::UploadContext {

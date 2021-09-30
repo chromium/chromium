@@ -94,6 +94,11 @@ class DeviceInfoSyncClientImpl;
 // as a 'friend' below.
 class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  public:
+  ChromeMetricsServiceAccessor() = delete;
+  ChromeMetricsServiceAccessor(const ChromeMetricsServiceAccessor&) = delete;
+  ChromeMetricsServiceAccessor& operator=(const ChromeMetricsServiceAccessor&) =
+      delete;
+
   // This test method is public so tests don't need to befriend this class.
 
   // If arg is non-null, the value will be returned from future calls to
@@ -192,8 +197,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   static void BindMetricsServiceReceiver(
       mojo::PendingReceiver<chrome::mojom::MetricsService> receiver);
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ChromeMetricsServiceAccessor);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICE_ACCESSOR_H_

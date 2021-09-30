@@ -15,6 +15,10 @@ class ChromeCommandLinePrefStore : public CommandLinePrefStore {
  public:
   explicit ChromeCommandLinePrefStore(const base::CommandLine* command_line);
 
+  ChromeCommandLinePrefStore(const ChromeCommandLinePrefStore&) = delete;
+  ChromeCommandLinePrefStore& operator=(const ChromeCommandLinePrefStore&) =
+      delete;
+
  protected:
   ~ChromeCommandLinePrefStore() override;
 
@@ -48,8 +52,6 @@ class ChromeCommandLinePrefStore : public CommandLinePrefStore {
   static const SwitchToPreferenceMapEntry string_switch_map_[];
   static const SwitchToPreferenceMapEntry path_switch_map_[];
   static const SwitchToPreferenceMapEntry integer_switch_map_[];
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCommandLinePrefStore);
 };
 
 #endif  // CHROME_BROWSER_PREFS_CHROME_COMMAND_LINE_PREF_STORE_H_

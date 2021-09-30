@@ -131,6 +131,9 @@ class PerfOutputCallTest : public testing::Test {
  public:
   PerfOutputCallTest() = default;
 
+  PerfOutputCallTest(const PerfOutputCallTest&) = delete;
+  PerfOutputCallTest& operator=(const PerfOutputCallTest&) = delete;
+
   void SetUp() override {
     debug_daemon_client_ = std::make_unique<FakeDebugDaemonClient>();
   }
@@ -151,8 +154,6 @@ class PerfOutputCallTest : public testing::Test {
   std::unique_ptr<PerfOutputCall> perf_output_call_;
 
   std::string perf_output_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfOutputCallTest);
 };
 
 // Test getting perf output after profile duration elapses.

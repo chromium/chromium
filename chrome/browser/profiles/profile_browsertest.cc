@@ -132,6 +132,9 @@ class SimpleURLLoaderHelper {
                                 base::Unretained(this)));
   }
 
+  SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
+  SimpleURLLoaderHelper& operator=(const SimpleURLLoaderHelper&) = delete;
+
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
     EXPECT_EQ(expected_error_code_, loader_->NetError());
     is_complete_ = true;
@@ -148,8 +151,6 @@ class SimpleURLLoaderHelper {
 
   bool is_complete_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderHelper);
 };
 
 class MockProfileDelegate : public Profile::Delegate {

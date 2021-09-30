@@ -31,6 +31,10 @@ class SiteEngagementServiceFactory
 
   static SiteEngagementServiceFactory* GetInstance();
 
+  SiteEngagementServiceFactory(const SiteEngagementServiceFactory&) = delete;
+  SiteEngagementServiceFactory& operator=(const SiteEngagementServiceFactory&) =
+      delete;
+
   // SiteEngagementService::ServiceProvider:
   SiteEngagementService* GetSiteEngagementService(
       content::BrowserContext* browser_context) override;
@@ -46,8 +50,6 @@ class SiteEngagementServiceFactory
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementServiceFactory);
 };
 
 }  // namespace site_engagement

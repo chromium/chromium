@@ -51,11 +51,13 @@ class DeadlockCheckerThread : public base::PlatformThread::Delegate {
   explicit DeadlockCheckerThread(const ContentSettingsPref* pref)
       : pref_(pref) {}
 
+  DeadlockCheckerThread(const DeadlockCheckerThread&) = delete;
+  DeadlockCheckerThread& operator=(const DeadlockCheckerThread&) = delete;
+
   void ThreadMain() override { EXPECT_TRUE(pref_->TryLockForTesting()); }
 
  private:
   const ContentSettingsPref* pref_;
-  DISALLOW_COPY_AND_ASSIGN(DeadlockCheckerThread);
 };
 
 // A helper for observing an preference changes and testing whether

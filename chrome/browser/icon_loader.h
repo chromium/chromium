@@ -50,6 +50,9 @@ class IconLoader {
                             float scale,
                             IconLoadedCallback callback);
 
+  IconLoader(const IconLoader&) = delete;
+  IconLoader& operator=(const IconLoader&) = delete;
+
   // Starts the process of reading the icon. When the reading of the icon is
   // complete, the IconLoadedCallback callback will be fulfilled, and the
   // IconLoader will delete itself.
@@ -98,8 +101,6 @@ class IconLoader {
 #endif  // !defined(OS_ANDROID)
   const float scale_;
   IconLoadedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconLoader);
 };
 
 #endif  // CHROME_BROWSER_ICON_LOADER_H_

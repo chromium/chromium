@@ -131,6 +131,12 @@ class FakeCookieManager : public network::TestCookieManager {
 }  // namespace
 
 class AndroidSmsAppSetupControllerImplTest : public testing::Test {
+ public:
+  AndroidSmsAppSetupControllerImplTest(
+      const AndroidSmsAppSetupControllerImplTest&) = delete;
+  AndroidSmsAppSetupControllerImplTest& operator=(
+      const AndroidSmsAppSetupControllerImplTest&) = delete;
+
  protected:
   class TestPwaDelegate : public AndroidSmsAppSetupControllerImpl::PwaDelegate {
    public:
@@ -462,8 +468,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
       fake_externally_managed_app_manager_;
   TestPwaDelegate* test_pwa_delegate_;
   std::unique_ptr<AndroidSmsAppSetupController> setup_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppSetupControllerImplTest);
 };
 
 TEST_F(AndroidSmsAppSetupControllerImplTest, SetUpApp_NoPreviousApp) {

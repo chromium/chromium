@@ -32,6 +32,10 @@ class ExternalFileURLLoaderFactory
       void* profile_id,
       int render_process_host_id);
 
+  ExternalFileURLLoaderFactory(const ExternalFileURLLoaderFactory&) = delete;
+  ExternalFileURLLoaderFactory& operator=(const ExternalFileURLLoaderFactory&) =
+      delete;
+
  private:
   ExternalFileURLLoaderFactory(
       void* profile_id,
@@ -54,8 +58,6 @@ class ExternalFileURLLoaderFactory
 
   void* profile_id_;
   const int render_process_host_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileURLLoaderFactory);
 };
 
 }  // namespace chromeos

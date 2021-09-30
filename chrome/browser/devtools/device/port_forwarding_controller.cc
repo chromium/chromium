@@ -171,6 +171,10 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
                        net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
 
+  PortForwardingHostResolver(const PortForwardingHostResolver&) = delete;
+  PortForwardingHostResolver& operator=(const PortForwardingHostResolver&) =
+      delete;
+
  private:
   ~PortForwardingHostResolver() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -195,8 +199,6 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
 
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback resolve_host_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortForwardingHostResolver);
 };
 
 static void ResolveHost(Profile* profile,

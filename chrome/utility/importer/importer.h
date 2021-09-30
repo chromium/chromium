@@ -19,6 +19,9 @@ struct SourceProfile;
 // The base class of all importers.
 class Importer : public base::RefCountedThreadSafe<Importer> {
  public:
+  Importer(const Importer&) = delete;
+  Importer& operator=(const Importer&) = delete;
+
   // All importers should implement this method by adding their import logic.
   // And it will be run in file thread by ImporterHost. Since we do async
   // import, the importer should invoke ImporterHost::NotifyImportEnded() to
@@ -43,8 +46,6 @@ class Importer : public base::RefCountedThreadSafe<Importer> {
  private:
   // True if the caller cancels the import process.
   bool cancelled_;
-
-  DISALLOW_COPY_AND_ASSIGN(Importer);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_IMPORTER_H_

@@ -26,6 +26,10 @@ class ValidationRulesStorageFactory {
  public:
   static std::unique_ptr<::i18n::addressinput::Storage> CreateStorage();
 
+  ValidationRulesStorageFactory(const ValidationRulesStorageFactory&) = delete;
+  ValidationRulesStorageFactory& operator=(
+      const ValidationRulesStorageFactory&) = delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<ValidationRulesStorageFactory>;
 
@@ -33,8 +37,6 @@ class ValidationRulesStorageFactory {
   ~ValidationRulesStorageFactory();
 
   scoped_refptr<JsonPrefStore> json_pref_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidationRulesStorageFactory);
 };
 
 }  // namespace autofill

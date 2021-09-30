@@ -24,6 +24,9 @@ class ToolbarLayer : public Layer {
   static scoped_refptr<ToolbarLayer> Create(
       ui::ResourceManager* resource_manager);
 
+  ToolbarLayer(const ToolbarLayer&) = delete;
+  ToolbarLayer& operator=(const ToolbarLayer&) = delete;
+
   // Implements Layer
   scoped_refptr<cc::Layer> layer() override;
 
@@ -66,8 +69,6 @@ class ToolbarLayer : public Layer {
   scoped_refptr<cc::SolidColorLayer> progress_bar_layer_;
   scoped_refptr<cc::SolidColorLayer> progress_bar_background_layer_;
   scoped_refptr<cc::SolidColorLayer> debug_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToolbarLayer);
 };
 
 }  //  namespace android

@@ -19,6 +19,11 @@ class MockBrowsingDataMediaLicenseHelper
  public:
   explicit MockBrowsingDataMediaLicenseHelper(Profile* profile);
 
+  MockBrowsingDataMediaLicenseHelper(
+      const MockBrowsingDataMediaLicenseHelper&) = delete;
+  MockBrowsingDataMediaLicenseHelper& operator=(
+      const MockBrowsingDataMediaLicenseHelper&) = delete;
+
   // BrowsingDataMediaLicenseHelper implementation:
   void StartFetching(FetchCallback callback) override;
   void DeleteMediaLicenseOrigin(const GURL& origin) override;
@@ -38,8 +43,6 @@ class MockBrowsingDataMediaLicenseHelper
  private:
   FetchCallback callback_;
   std::list<MediaLicenseInfo> media_licenses_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowsingDataMediaLicenseHelper);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_MEDIA_LICENSE_HELPER_H_

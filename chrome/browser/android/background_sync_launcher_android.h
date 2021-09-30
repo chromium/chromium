@@ -20,6 +20,10 @@ class BackgroundSyncLauncherAndroid {
  public:
   static BackgroundSyncLauncherAndroid* Get();
 
+  BackgroundSyncLauncherAndroid(const BackgroundSyncLauncherAndroid&) = delete;
+  BackgroundSyncLauncherAndroid& operator=(
+      const BackgroundSyncLauncherAndroid&) = delete;
+
   // Schedules a BackgroundTaskScheduler task for |sync_type| with delay |delay|
   // to ensure that the browser is running when the device next goes online
   // after that time has passed. If |delay| is base::TimeDelta::Max(), the
@@ -59,8 +63,6 @@ class BackgroundSyncLauncherAndroid {
 
   base::android::ScopedJavaGlobalRef<jobject>
       java_background_sync_background_task_scheduler_launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncLauncherAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BACKGROUND_SYNC_LAUNCHER_ANDROID_H_

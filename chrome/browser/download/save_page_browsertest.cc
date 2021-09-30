@@ -294,6 +294,9 @@ class SavePageBrowserTest : public InProcessBrowserTest {
  public:
   SavePageBrowserTest() {}
 
+  SavePageBrowserTest(const SavePageBrowserTest&) = delete;
+  SavePageBrowserTest& operator=(const SavePageBrowserTest&) = delete;
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -406,9 +409,6 @@ class SavePageBrowserTest : public InProcessBrowserTest {
 
   // Path to directory containing test data.
   base::FilePath test_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SavePageBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLOnly) {
@@ -1011,6 +1011,11 @@ class SavePageSitePerProcessBrowserTest : public SavePageBrowserTest {
  public:
   SavePageSitePerProcessBrowserTest() {}
 
+  SavePageSitePerProcessBrowserTest(const SavePageSitePerProcessBrowserTest&) =
+      delete;
+  SavePageSitePerProcessBrowserTest& operator=(
+      const SavePageSitePerProcessBrowserTest&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SavePageBrowserTest::SetUpCommandLine(command_line);
@@ -1027,9 +1032,6 @@ class SavePageSitePerProcessBrowserTest : public SavePageBrowserTest {
     host_resolver()->AddRule("no.such.host", "128.0.0.1");
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SavePageSitePerProcessBrowserTest);
 };
 
 // Test for crbug.com/526786.

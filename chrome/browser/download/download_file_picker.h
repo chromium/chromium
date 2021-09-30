@@ -31,6 +31,9 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
       base::OnceCallback<void(DownloadConfirmationResult,
                               const base::FilePath& virtual_path)>;
 
+  DownloadFilePicker(const DownloadFilePicker&) = delete;
+  DownloadFilePicker& operator=(const DownloadFilePicker&) = delete;
+
   // Display a file picker dialog for |item|. The |suggested_path| will be used
   // as the initial path displayed to the user. |callback| will always be
   // invoked even if |item| is destroyed prior to the file picker completing.
@@ -62,8 +65,6 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
 
   // For managing select file dialogs.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFilePicker);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_

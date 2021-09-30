@@ -86,6 +86,9 @@ class CloudPrintProxyBackend::Core
        bool enable_job_poll,
        network::NetworkConnectionTracker* network_connection_tracker);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Note:
   //
   // The Do* methods are the various entry points from CloudPrintProxyBackend
@@ -220,8 +223,6 @@ class CloudPrintProxyBackend::Core
   std::unique_ptr<CloudPrintTokenStore> token_store_;
 
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 CloudPrintProxyBackend::CloudPrintProxyBackend(

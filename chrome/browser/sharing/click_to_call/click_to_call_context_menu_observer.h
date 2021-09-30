@@ -43,6 +43,12 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
   };
 
   explicit ClickToCallContextMenuObserver(RenderViewContextMenuProxy* proxy);
+
+  ClickToCallContextMenuObserver(const ClickToCallContextMenuObserver&) =
+      delete;
+  ClickToCallContextMenuObserver& operator=(
+      const ClickToCallContextMenuObserver&) = delete;
+
   ~ClickToCallContextMenuObserver() override;
 
   // RenderViewContextMenuObserver implementation.
@@ -79,8 +85,6 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
   absl::optional<SharingClickToCallEntryPoint> entry_point_;
 
   std::unique_ptr<ui::SimpleMenuModel> sub_menu_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickToCallContextMenuObserver);
 };
 
 #endif  // CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_CONTEXT_MENU_OBSERVER_H_

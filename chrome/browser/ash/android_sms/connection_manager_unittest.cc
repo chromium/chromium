@@ -77,6 +77,10 @@ class ConnectionManagerTest : public testing::Test {
   enum class PwaState { kEnabledWithNewUrl, kEnabledWithOldUrl, kDisabled };
 
   ConnectionManagerTest() = default;
+
+  ConnectionManagerTest(const ConnectionManagerTest&) = delete;
+  ConnectionManagerTest& operator=(const ConnectionManagerTest&) = delete;
+
   ~ConnectionManagerTest() override = default;
 
   void SetUp() override {
@@ -196,8 +200,6 @@ class ConnectionManagerTest : public testing::Test {
   TestServiceWorkerProvider* test_service_worker_provider_;
 
   std::unique_ptr<ConnectionManager> connection_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionManagerTest);
 };
 
 TEST_F(ConnectionManagerTest, ConnectOnActivate) {

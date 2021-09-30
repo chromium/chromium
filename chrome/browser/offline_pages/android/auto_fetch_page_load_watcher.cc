@@ -88,6 +88,9 @@ class AutoFetchPageLoadWatcher::NavigationObserver
     DCHECK(page_load_watcher_);
   }
 
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -101,8 +104,6 @@ class AutoFetchPageLoadWatcher::NavigationObserver
   friend class content::WebContentsUserData<
       AutoFetchPageLoadWatcher::NavigationObserver>;
   AutoFetchPageLoadWatcher* page_load_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

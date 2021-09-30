@@ -18,6 +18,10 @@ namespace {
 constexpr char kTextContent[] = "delete me";
 
 class DeleteTreeWorkItemTest : public testing::Test {
+ public:
+  DeleteTreeWorkItemTest(const DeleteTreeWorkItemTest&) = delete;
+  DeleteTreeWorkItemTest& operator=(const DeleteTreeWorkItemTest&) = delete;
+
  protected:
   DeleteTreeWorkItemTest() = default;
 
@@ -71,8 +75,6 @@ class DeleteTreeWorkItemTest : public testing::Test {
   base::FilePath dir_name_2_;
   base::FilePath file_name_1_;
   base::FilePath file_name_2_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteTreeWorkItemTest);
 };
 
 }  // namespace

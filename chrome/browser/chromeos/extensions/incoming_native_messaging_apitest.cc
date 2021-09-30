@@ -55,6 +55,12 @@ class MockNativeMessageHost : public extensions::NativeMessageHost {
 // initiated by the native application.
 class ExtensionIncomingNativeMessagingTest
     : public extensions::ExtensionApiTest {
+ public:
+  ExtensionIncomingNativeMessagingTest(
+      const ExtensionIncomingNativeMessagingTest&) = delete;
+  ExtensionIncomingNativeMessagingTest& operator=(
+      const ExtensionIncomingNativeMessagingTest&) = delete;
+
  protected:
   ExtensionIncomingNativeMessagingTest() = default;
   ~ExtensionIncomingNativeMessagingTest() override = default;
@@ -82,8 +88,6 @@ class ExtensionIncomingNativeMessagingTest
 
  private:
   const extensions::Extension* extension_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIncomingNativeMessagingTest);
 };
 
 // Tests that the extension receives the onConnectNative event when the native

@@ -25,6 +25,9 @@ class FlashTemporaryPermissionTracker::GrantObserver
                 const GURL& origin,
                 FlashTemporaryPermissionTracker* owner);
 
+  GrantObserver(const GrantObserver&) = delete;
+  GrantObserver& operator=(const GrantObserver&) = delete;
+
   const GURL& origin() { return origin_; }
 
  private:
@@ -33,8 +36,6 @@ class FlashTemporaryPermissionTracker::GrantObserver
 
   GURL origin_;
   FlashTemporaryPermissionTracker* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(GrantObserver);
 };
 
 // static

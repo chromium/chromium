@@ -203,6 +203,9 @@ class ObservingAutofillClient
     : public autofill::TestAutofillClient,
       public content::WebContentsUserData<ObservingAutofillClient> {
  public:
+  ObservingAutofillClient(const ObservingAutofillClient&) = delete;
+  ObservingAutofillClient& operator=(const ObservingAutofillClient&) = delete;
+
   // Wait until the autofill popup is shown.
   void WaitForAutofillPopup() {
     base::RunLoop run_loop;
@@ -230,8 +233,6 @@ class ObservingAutofillClient
   bool popup_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ObservingAutofillClient);
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ObservingAutofillClient)
@@ -3289,6 +3290,11 @@ class PasswordManagerDialogBrowserTest
  public:
   PasswordManagerDialogBrowserTest() = default;
 
+  PasswordManagerDialogBrowserTest(const PasswordManagerDialogBrowserTest&) =
+      delete;
+  PasswordManagerDialogBrowserTest& operator=(
+      const PasswordManagerDialogBrowserTest&) = delete;
+
   void ShowUi(const std::string& name) override {
     // Note regarding flakiness: LocationBarBubbleDelegateView::ShowForReason()
     // uses ShowInactive() unless the bubble is invoked with reason ==
@@ -3311,9 +3317,6 @@ class PasswordManagerDialogBrowserTest
     ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
     observer.Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerDialogBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerDialogBrowserTest, InvokeUi_normal) {

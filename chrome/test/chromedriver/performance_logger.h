@@ -39,6 +39,9 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
                     const PerfLoggingPrefs& prefs,
                     bool enable_service_worker = false);
 
+  PerformanceLogger(const PerformanceLogger&) = delete;
+  PerformanceLogger& operator=(const PerformanceLogger&) = delete;
+
   // PerformanceLogger subscribes to browser-wide |DevToolsClient| for tracing.
   bool subscribes_to_browser() override;
 
@@ -88,8 +91,6 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   DevToolsClient* browser_client_; // Pointer to browser-wide |DevToolsClient|.
   bool trace_buffering_;  // True unless trace stopped and all events received.
   bool enable_service_worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceLogger);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_PERFORMANCE_LOGGER_H_

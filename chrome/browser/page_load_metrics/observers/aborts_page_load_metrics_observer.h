@@ -31,15 +31,16 @@ class AbortsPageLoadMetricsObserver
  public:
   AbortsPageLoadMetricsObserver();
 
+  AbortsPageLoadMetricsObserver(const AbortsPageLoadMetricsObserver&) = delete;
+  AbortsPageLoadMetricsObserver& operator=(
+      const AbortsPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver:
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFailedProvisionalLoad(
       const page_load_metrics::FailedProvisionalLoadInfo& failed_load_info)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AbortsPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_ABORTS_PAGE_LOAD_METRICS_OBSERVER_H_

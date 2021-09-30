@@ -109,6 +109,9 @@ class ReporterRunnerPolicyTest
                        base::Unretained(this)));
   }
 
+  ReporterRunnerPolicyTest(const ReporterRunnerPolicyTest&) = delete;
+  ReporterRunnerPolicyTest& operator=(const ReporterRunnerPolicyTest&) = delete;
+
   void WaitForComponentRegistration() { waiter_.Wait(); }
 
  protected:
@@ -148,8 +151,6 @@ class ReporterRunnerPolicyTest
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   Waiter waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReporterRunnerPolicyTest);
 };
 
 IN_PROC_BROWSER_TEST_P(ReporterRunnerPolicyTest, CheckComponent) {
@@ -196,6 +197,9 @@ class ReporterRunnerTest
     std::tie(invocation_type_, old_seed_, incoming_seed_, policy_state_) =
         GetParam();
   }
+
+  ReporterRunnerTest(const ReporterRunnerTest&) = delete;
+  ReporterRunnerTest& operator=(const ReporterRunnerTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     internal::SetSwReporterTestingDelegate(this);
@@ -600,9 +604,6 @@ class ReporterRunnerTest
   base::OnceClosure first_launch_callback_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReporterRunnerTest);
 };
 
 }  // namespace

@@ -334,6 +334,12 @@ class DevToolsWindowBeforeUnloadObserver
     : public content::WebContentsObserver {
  public:
   explicit DevToolsWindowBeforeUnloadObserver(DevToolsWindow*);
+
+  DevToolsWindowBeforeUnloadObserver(
+      const DevToolsWindowBeforeUnloadObserver&) = delete;
+  DevToolsWindowBeforeUnloadObserver& operator=(
+      const DevToolsWindowBeforeUnloadObserver&) = delete;
+
   void Wait();
  private:
   // Invoked when the beforeunload handler fires.
@@ -342,7 +348,6 @@ class DevToolsWindowBeforeUnloadObserver
 
   bool m_fired;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-  DISALLOW_COPY_AND_ASSIGN(DevToolsWindowBeforeUnloadObserver);
 };
 
 DevToolsWindowBeforeUnloadObserver::DevToolsWindowBeforeUnloadObserver(

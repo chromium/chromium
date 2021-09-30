@@ -79,6 +79,11 @@ class MockUpgradeObserver : public UpgradeObserver {
 }  // namespace
 
 class UpgradeDetectorChromeosTest : public ::testing::Test {
+ public:
+  UpgradeDetectorChromeosTest(const UpgradeDetectorChromeosTest&) = delete;
+  UpgradeDetectorChromeosTest& operator=(const UpgradeDetectorChromeosTest&) =
+      delete;
+
  protected:
   UpgradeDetectorChromeosTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -205,8 +210,6 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   absl::optional<std::string> original_tz_;
 
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorChromeosTest);
 };
 
 TEST_F(UpgradeDetectorChromeosTest, PolicyNotEnabled) {

@@ -201,6 +201,11 @@ class InternalAuthVerificationService {
         dark_tick_(0) {
   }
 
+  InternalAuthVerificationService(const InternalAuthVerificationService&) =
+      delete;
+  InternalAuthVerificationService& operator=(
+      const InternalAuthVerificationService&) = delete;
+
   bool VerifyPassport(
       const std::string& passport,
       const std::string& domain,
@@ -316,8 +321,6 @@ class InternalAuthVerificationService {
   // Some ticks before |dark_tick_| were purged from |used_ticks_| container.
   // That means that we must not trust any tick less than or equal to dark tick.
   int64_t dark_tick_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalAuthVerificationService);
 };
 
 namespace {
@@ -334,6 +337,10 @@ class InternalAuthGenerationService : public base::ThreadChecker {
   InternalAuthGenerationService() : key_regeneration_tick_(0) {
     GenerateNewKey();
   }
+
+  InternalAuthGenerationService(const InternalAuthGenerationService&) = delete;
+  InternalAuthGenerationService& operator=(
+      const InternalAuthGenerationService&) = delete;
 
   void GenerateNewKey() {
     DCHECK(CalledOnValidThread());
@@ -419,8 +426,6 @@ class InternalAuthGenerationService : public base::ThreadChecker {
   std::unique_ptr<crypto::HMAC> engine_;
   int64_t key_regeneration_tick_;
   base::circular_deque<int64_t> used_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalAuthGenerationService);
 };
 
 namespace {

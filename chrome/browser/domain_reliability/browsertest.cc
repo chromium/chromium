@@ -77,6 +77,12 @@ class DomainReliabilityBrowserTest : public InProcessBrowserTest {
 
 class DomainReliabilityDisabledBrowserTest
     : public DomainReliabilityBrowserTest {
+ public:
+  DomainReliabilityDisabledBrowserTest(
+      const DomainReliabilityDisabledBrowserTest&) = delete;
+  DomainReliabilityDisabledBrowserTest& operator=(
+      const DomainReliabilityDisabledBrowserTest&) = delete;
+
  protected:
   DomainReliabilityDisabledBrowserTest() {}
 
@@ -85,9 +91,6 @@ class DomainReliabilityDisabledBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableDomainReliability);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityDisabledBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DomainReliabilityDisabledBrowserTest,

@@ -86,6 +86,10 @@ class ChromeOSMetricsProviderTest : public testing::Test {
  public:
   ChromeOSMetricsProviderTest() {}
 
+  ChromeOSMetricsProviderTest(const ChromeOSMetricsProviderTest&) = delete;
+  ChromeOSMetricsProviderTest& operator=(const ChromeOSMetricsProviderTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     // Set up a PowerManagerClient instance for PerfProvider.
@@ -137,8 +141,6 @@ class ChromeOSMetricsProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSMetricsProviderTest);
 };
 
 TEST_F(ChromeOSMetricsProviderTest, MultiProfileUserCount) {

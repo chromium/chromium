@@ -38,6 +38,9 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
     ~ScopedTestingFactoryInstaller();
   };
 
+  GCMProfileServiceFactory(const GCMProfileServiceFactory&) = delete;
+  GCMProfileServiceFactory& operator=(const GCMProfileServiceFactory&) = delete;
+
  private:
   friend base::NoDestructor<GCMProfileServiceFactory>;
 
@@ -49,8 +52,6 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMProfileServiceFactory);
 };
 
 }  // namespace gcm

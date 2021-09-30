@@ -50,6 +50,11 @@ class ChromeMetricsServiceClientTest : public testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         enabled_state_provider_(false /* consent */, false /* enabled */) {}
 
+  ChromeMetricsServiceClientTest(const ChromeMetricsServiceClientTest&) =
+      delete;
+  ChromeMetricsServiceClientTest& operator=(
+      const ChromeMetricsServiceClientTest&) = delete;
+
   void SetUp() override {
     testing::Test::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
@@ -85,9 +90,6 @@ class ChromeMetricsServiceClientTest : public testing::Test {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServiceClientTest);
 };
 
 namespace {

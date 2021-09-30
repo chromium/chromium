@@ -36,6 +36,10 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
  public:
   CredentialManagerBrowserTest() = default;
 
+  CredentialManagerBrowserTest(const CredentialManagerBrowserTest&) = delete;
+  CredentialManagerBrowserTest& operator=(const CredentialManagerBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     PasswordManagerBrowserTestBase::SetUpOnMainThread();
     // Redirect all requests to localhost.
@@ -258,8 +262,6 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerBrowserTest);
 };
 
 // Tests.

@@ -29,6 +29,9 @@ class DevToolsFileWatcher {
       WatchCallback callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
+  DevToolsFileWatcher(const DevToolsFileWatcher&) = delete;
+  DevToolsFileWatcher& operator=(const DevToolsFileWatcher&) = delete;
+
   void AddWatch(base::FilePath path);
   void RemoveWatch(base::FilePath path);
 
@@ -45,8 +48,6 @@ class DevToolsFileWatcher {
   scoped_refptr<SharedFileWatcher> shared_watcher_;
   WatchCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsFileWatcher);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_FILE_WATCHER_H_

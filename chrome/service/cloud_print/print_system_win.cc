@@ -145,6 +145,9 @@ class PrintServerWatcherWin
  public:
   PrintServerWatcherWin() {}
 
+  PrintServerWatcherWin(const PrintServerWatcherWin&) = delete;
+  PrintServerWatcherWin& operator=(const PrintServerWatcherWin&) = delete;
+
   // PrintSystem::PrintServerWatcher implementation.
   bool StartWatching(
       PrintSystem::PrintServerWatcher::Delegate* delegate) override {
@@ -172,8 +175,6 @@ class PrintServerWatcherWin
  private:
   PrintSystem::PrintServerWatcher::Delegate* delegate_ = nullptr;
   PrintSystemWatcherWin watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServerWatcherWin);
 };
 
 class PrinterWatcherWin
@@ -182,6 +183,9 @@ class PrinterWatcherWin
  public:
   explicit PrinterWatcherWin(const std::string& printer_name)
       : printer_name_(printer_name) {}
+
+  PrinterWatcherWin(const PrinterWatcherWin&) = delete;
+  PrinterWatcherWin& operator=(const PrinterWatcherWin&) = delete;
 
   // PrintSystem::PrinterWatcher implementation.
   bool StartWatching(PrintSystem::PrinterWatcher::Delegate* delegate) override {
@@ -221,13 +225,14 @@ class PrinterWatcherWin
   const std::string printer_name_;
   PrintSystem::PrinterWatcher::Delegate* delegate_ = nullptr;
   PrintSystemWatcherWin watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterWatcherWin);
 };
 
 class JobSpoolerWin : public PrintSystem::JobSpooler {
  public:
   JobSpoolerWin() : core_(base::MakeRefCounted<Core>()) {}
+
+  JobSpoolerWin(const JobSpoolerWin&) = delete;
+  JobSpoolerWin& operator=(const JobSpoolerWin&) = delete;
 
   // PrintSystem::JobSpooler implementation.
   bool Spool(const std::string& print_ticket,
@@ -258,6 +263,9 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
                public base::win::ObjectWatcher::Delegate {
    public:
     Core() {}
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     bool Spool(const std::string& print_ticket,
                const std::string& print_ticket_mime_type,
@@ -511,12 +519,8 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
     base::win::ScopedHandle job_progress_event_;
     base::win::ObjectWatcher job_progress_watcher_;
     Microsoft::WRL::ComPtr<IXpsPrintJob> xps_print_job_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobSpoolerWin);
 };
 
 // A helper class to handle the response from the utility process to the
@@ -611,6 +615,9 @@ class PrintSystemWin : public PrintSystem {
  public:
   PrintSystemWin();
 
+  PrintSystemWin(const PrintSystemWin&) = delete;
+  PrintSystemWin& operator=(const PrintSystemWin&) = delete;
+
   // PrintSystem implementation.
   PrintSystemResult Init() override;
   PrintSystem::PrintSystemResult EnumeratePrinters(
@@ -639,8 +646,6 @@ class PrintSystemWin : public PrintSystem {
   std::string GetPrinterDriverInfo(const std::string& printer_name) const;
 
   scoped_refptr<printing::PrintBackend> print_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintSystemWin);
 };
 
 PrintSystemWin::PrintSystemWin()

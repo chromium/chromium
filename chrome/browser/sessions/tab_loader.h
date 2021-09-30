@@ -63,6 +63,9 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   using RestoredTab = SessionRestoreDelegate::RestoredTab;
 
+  TabLoader(const TabLoader&) = delete;
+  TabLoader& operator=(const TabLoader&) = delete;
+
   // Called to start restoring tabs.
   static void RestoreTabs(const std::vector<RestoredTab>& tabs,
                           const base::TimeTicks& restore_started);
@@ -308,8 +311,6 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // Callback that is invoked by calls to SetTabLoadingEnabled.
   base::RepeatingCallback<void(bool)>* tab_loading_enabled_callback_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoader);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_H_

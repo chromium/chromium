@@ -18,6 +18,10 @@ namespace installer {
 // Individual tests provide a parameter, which is true if Chrome is installed
 // in system level.
 class ExperimentStorageTest : public ::testing::TestWithParam<bool> {
+ public:
+  ExperimentStorageTest(const ExperimentStorageTest&) = delete;
+  ExperimentStorageTest& operator=(const ExperimentStorageTest&) = delete;
+
  protected:
   ExperimentStorageTest()
       : system_level_install_(GetParam()),
@@ -45,8 +49,6 @@ class ExperimentStorageTest : public ::testing::TestWithParam<bool> {
  private:
   install_static::ScopedInstallDetails scoped_install_details_;
   registry_util::RegistryOverrideManager override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExperimentStorageTest);
 };
 
 TEST_P(ExperimentStorageTest, TestEncodeDecodeMetrics) {

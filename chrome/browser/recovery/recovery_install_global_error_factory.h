@@ -25,6 +25,11 @@ class RecoveryInstallGlobalErrorFactory
   // Returns an instance of the RecoveryInstallGlobalErrorFactory singleton.
   static RecoveryInstallGlobalErrorFactory* GetInstance();
 
+  RecoveryInstallGlobalErrorFactory(const RecoveryInstallGlobalErrorFactory&) =
+      delete;
+  RecoveryInstallGlobalErrorFactory& operator=(
+      const RecoveryInstallGlobalErrorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<RecoveryInstallGlobalErrorFactory>;
 
@@ -34,8 +39,6 @@ class RecoveryInstallGlobalErrorFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RecoveryInstallGlobalErrorFactory);
 };
 
 #endif  // CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_

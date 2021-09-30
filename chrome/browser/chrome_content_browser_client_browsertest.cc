@@ -77,12 +77,14 @@ class ChromeContentBrowserClientBrowserTest : public InProcessBrowserTest {
  public:
   ChromeContentBrowserClientBrowserTest() {}
 
+  ChromeContentBrowserClientBrowserTest(
+      const ChromeContentBrowserClientBrowserTest&) = delete;
+  ChromeContentBrowserClientBrowserTest& operator=(
+      const ChromeContentBrowserClientBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientBrowserTest);
 };
 
 // Test that a basic navigation works in --site-per-process mode.  This prevents
@@ -111,6 +113,10 @@ class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
  public:
   IsolatedOriginNTPBrowserTest() {}
 
+  IsolatedOriginNTPBrowserTest(const IsolatedOriginNTPBrowserTest&) = delete;
+  IsolatedOriginNTPBrowserTest& operator=(const IsolatedOriginNTPBrowserTest&) =
+      delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(https_test_server().InitializeAndListen());
 
@@ -127,9 +133,6 @@ class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server().StartAcceptingConnections();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginNTPBrowserTest);
 };
 
 // Verifies that when the remote NTP URL has an origin which is also marked as
@@ -189,6 +192,10 @@ class OpenWindowFromNTPBrowserTest : public InProcessBrowserTest,
  public:
   OpenWindowFromNTPBrowserTest() {}
 
+  OpenWindowFromNTPBrowserTest(const OpenWindowFromNTPBrowserTest&) = delete;
+  OpenWindowFromNTPBrowserTest& operator=(const OpenWindowFromNTPBrowserTest&) =
+      delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -199,9 +206,6 @@ class OpenWindowFromNTPBrowserTest : public InProcessBrowserTest,
     ASSERT_TRUE(https_test_server().InitializeAndListen());
     https_test_server().StartAcceptingConnections();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OpenWindowFromNTPBrowserTest);
 };
 
 // Test checks that navigations from NTP tab to URLs with same host as NTP but
@@ -442,6 +446,9 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
  public:
   ProtocolHandlerTest() = default;
 
+  ProtocolHandlerTest(const ProtocolHandlerTest&) = delete;
+  ProtocolHandlerTest& operator=(const ProtocolHandlerTest&) = delete;
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -460,9 +467,6 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
     return ProtocolHandlerRegistryFactory::GetInstance()->GetForBrowserContext(
         browser()->profile());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {

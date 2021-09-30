@@ -19,6 +19,10 @@ class ProxyConfigService;
 
 class ProxyServiceFactory {
  public:
+  ProxyServiceFactory() = delete;
+  ProxyServiceFactory(const ProxyServiceFactory&) = delete;
+  ProxyServiceFactory& operator=(const ProxyServiceFactory&) = delete;
+
   // Creates a ProxyConfigService that delivers the system preferences
   // (or the respective Ash-Chrome equivalent).
   static std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
@@ -38,9 +42,6 @@ class ProxyServiceFactory {
   // (ChromeOS only).
   static std::unique_ptr<PrefProxyConfigTracker>
   CreatePrefProxyConfigTrackerOfLocalState(PrefService* local_state_prefs);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProxyServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NET_PROXY_SERVICE_FACTORY_H_

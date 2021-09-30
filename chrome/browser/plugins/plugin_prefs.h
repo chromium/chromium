@@ -43,6 +43,9 @@ class PluginPrefs : public RefcountedKeyedService {
   // created PluginPrefs object.
   static scoped_refptr<PluginPrefs> GetForTestingProfile(Profile* profile);
 
+  PluginPrefs(const PluginPrefs&) = delete;
+  PluginPrefs& operator=(const PluginPrefs&) = delete;
+
   // Creates a new instance. This method should only be used for testing.
   PluginPrefs();
 
@@ -85,8 +88,6 @@ class PluginPrefs : public RefcountedKeyedService {
   PrefService* prefs_ = nullptr;
 
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginPrefs);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_

@@ -24,6 +24,10 @@ class UsersPrivateDelegateFactory : public BrowserContextKeyedServiceFactory {
 
   static UsersPrivateDelegateFactory* GetInstance();
 
+  UsersPrivateDelegateFactory(const UsersPrivateDelegateFactory&) = delete;
+  UsersPrivateDelegateFactory& operator=(const UsersPrivateDelegateFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UsersPrivateDelegateFactory>;
 
@@ -33,8 +37,6 @@ class UsersPrivateDelegateFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateDelegateFactory);
 };
 
 }  // namespace extensions

@@ -67,6 +67,12 @@ class SignedExchangePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   SignedExchangePageLoadMetricsObserver();
+
+  SignedExchangePageLoadMetricsObserver(
+      const SignedExchangePageLoadMetricsObserver&) = delete;
+  SignedExchangePageLoadMetricsObserver& operator=(
+      const SignedExchangePageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
@@ -92,8 +98,6 @@ class SignedExchangePageLoadMetricsObserver
   // True iff prefetched alternative signed exchange was sent to the renderer
   // process.
   bool had_prefetched_alt_sxg_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SIGNED_EXCHANGE_PAGE_LOAD_METRICS_OBSERVER_H_

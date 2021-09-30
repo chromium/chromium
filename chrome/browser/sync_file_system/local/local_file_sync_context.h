@@ -79,6 +79,9 @@ class LocalFileSyncContext
                        base::SingleThreadTaskRunner* ui_task_runner,
                        base::SingleThreadTaskRunner* io_task_runner);
 
+  LocalFileSyncContext(const LocalFileSyncContext&) = delete;
+  LocalFileSyncContext& operator=(const LocalFileSyncContext&) = delete;
+
   // Initializes |file_system_context| for syncable file operations
   // and registers the it into the internal map.
   // Calling this multiple times for the same file_system_context is valid.
@@ -369,8 +372,6 @@ class LocalFileSyncContext
       origin_change_observers_;
 
   int mock_notify_changes_duration_in_sec_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSyncContext);
 };
 
 }  // namespace sync_file_system

@@ -44,6 +44,10 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   BookmarkBridge(JNIEnv* env,
                  const base::android::JavaRef<jobject>& obj,
                  const base::android::JavaRef<jobject>& j_profile);
+
+  BookmarkBridge(const BookmarkBridge&) = delete;
+  BookmarkBridge& operator=(const BookmarkBridge&) = delete;
+
   void Destroy(JNIEnv*, const base::android::JavaParamRef<jobject>&);
 
   jlong GetBookmarkIdForWebContents(
@@ -359,8 +363,6 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   // Observes the profile destruction and creation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BOOKMARKS_BOOKMARK_BRIDGE_H_

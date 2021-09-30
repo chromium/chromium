@@ -117,6 +117,10 @@ class AccountReconcilorLockWrapper
         std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
   }
 
+  AccountReconcilorLockWrapper(const AccountReconcilorLockWrapper&) = delete;
+  AccountReconcilorLockWrapper& operator=(const AccountReconcilorLockWrapper&) =
+      delete;
+
   void DestroyAfterDelay() {
     // TODO(dcheng): Should ReleaseSoon() support this use case?
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -134,8 +138,6 @@ class AccountReconcilorLockWrapper
   }
 
   std::unique_ptr<AccountReconcilor::Lock> account_reconcilor_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorLockWrapper);
 };
 
 // Returns true if the account reconcilor needs be be blocked while a Gaia

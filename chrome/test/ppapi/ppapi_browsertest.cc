@@ -1060,6 +1060,9 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
         base::BindOnce(&WrappedUDPSocket::Close, base::Unretained(this)));
   }
 
+  WrappedUDPSocket(const WrappedUDPSocket&) = delete;
+  WrappedUDPSocket& operator=(const WrappedUDPSocket&) = delete;
+
   // network::mojom::UDPSocket implementation.
   void Connect(const net::IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr options,
@@ -1162,8 +1165,6 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
 
   // Only populated on certain read FailureTypes.
   mojo::Remote<network::mojom::UDPSocketListener> socket_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedUDPSocket);
 };
 
 void TestCreateUDPSocketCallback(

@@ -15,14 +15,16 @@ class MediaGalleriesCustomBindings : public ObjectBackedNativeHandler {
  public:
   explicit MediaGalleriesCustomBindings(ScriptContext* context);
 
+  MediaGalleriesCustomBindings(const MediaGalleriesCustomBindings&) = delete;
+  MediaGalleriesCustomBindings& operator=(const MediaGalleriesCustomBindings&) =
+      delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
  private:
   void GetMediaFileSystemObject(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesCustomBindings);
 };
 
 }  // namespace extensions

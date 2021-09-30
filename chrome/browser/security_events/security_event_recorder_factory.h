@@ -24,6 +24,10 @@ class SecurityEventRecorderFactory : public BrowserContextKeyedServiceFactory {
   // Returns the SecurityEventRecorder associated with |profile|.
   static SecurityEventRecorder* GetForProfile(Profile* profile);
 
+  SecurityEventRecorderFactory(const SecurityEventRecorderFactory&) = delete;
+  SecurityEventRecorderFactory& operator=(const SecurityEventRecorderFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SecurityEventRecorderFactory>;
 
@@ -33,7 +37,5 @@ class SecurityEventRecorderFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityEventRecorderFactory);
 };
 #endif  // CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_RECORDER_FACTORY_H_

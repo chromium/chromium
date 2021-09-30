@@ -32,6 +32,9 @@ namespace media_history {
 class MediaHistoryTableBase
     : public base::RefCountedThreadSafe<MediaHistoryTableBase> {
  public:
+  MediaHistoryTableBase(const MediaHistoryTableBase&) = delete;
+  MediaHistoryTableBase& operator=(const MediaHistoryTableBase&) = delete;
+
   // Deletes any row with the |url| and returns a bool whether it was
   // successful.
   virtual bool DeleteURL(const GURL& url);
@@ -72,8 +75,6 @@ class MediaHistoryTableBase
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
   sql::Database* db_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryTableBase);
 };
 
 }  // namespace media_history

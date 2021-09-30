@@ -25,6 +25,10 @@ class Origin;
 
 class PluginUtils {
  public:
+  PluginUtils() = delete;
+  PluginUtils(const PluginUtils&) = delete;
+  PluginUtils& operator=(const PluginUtils&) = delete;
+
   // |is_default| and |is_managed| may be nullptr. In that case, they aren't
   // set.
   static void GetPluginContentSetting(
@@ -47,9 +51,6 @@ class PluginUtils {
   // keys and the corresponding extensions Ids as values.
   static base::flat_map<std::string, std::string> GetMimeTypeToExtensionIdMap(
       content::BrowserContext* browser_context);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PluginUtils);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_UTILS_H_

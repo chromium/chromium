@@ -162,6 +162,10 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   };
 
   explicit TestURLLoaderClient(Observer* observer) : observer_(observer) {}
+
+  TestURLLoaderClient(const TestURLLoaderClient&) = delete;
+  TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
+
   ~TestURLLoaderClient() override {}
 
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
@@ -218,8 +222,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::URLLoaderCompletionStatus completion_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderClient);
 };
 
 // Helper function to make a character array filled with |size| bytes of

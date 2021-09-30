@@ -496,6 +496,11 @@ class SecurityStateTabHelperIncognitoTest : public SecurityStateTabHelperTest {
  public:
   SecurityStateTabHelperIncognitoTest() : SecurityStateTabHelperTest() {}
 
+  SecurityStateTabHelperIncognitoTest(
+      const SecurityStateTabHelperIncognitoTest&) = delete;
+  SecurityStateTabHelperIncognitoTest& operator=(
+      const SecurityStateTabHelperIncognitoTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SecurityStateTabHelperTest::SetUpCommandLine(command_line);
     // Test should run Incognito.
@@ -506,7 +511,6 @@ class SecurityStateTabHelperIncognitoTest : public SecurityStateTabHelperTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStateTabHelperIncognitoTest);
 };
 
 class DidChangeVisibleSecurityStateTest
@@ -517,6 +521,11 @@ class DidChangeVisibleSecurityStateTest
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
+
+  DidChangeVisibleSecurityStateTest(const DidChangeVisibleSecurityStateTest&) =
+      delete;
+  DidChangeVisibleSecurityStateTest& operator=(
+      const DidChangeVisibleSecurityStateTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Browser will both run and display insecure content.
@@ -529,9 +538,6 @@ class DidChangeVisibleSecurityStateTest
 
  protected:
   net::EmbeddedTestServer https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DidChangeVisibleSecurityStateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, HttpPage) {
@@ -1619,6 +1625,11 @@ class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
  public:
   BrowserTestNonsecureURLRequestWithLegacyTLSWarnings() {}
 
+  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings(
+      const BrowserTestNonsecureURLRequestWithLegacyTLSWarnings&) = delete;
+  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings& operator=(
+      const BrowserTestNonsecureURLRequestWithLegacyTLSWarnings&) = delete;
+
   void SetUpOnMainThread() override {
     net::SSLServerConfig config;
     config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_1;
@@ -1633,8 +1644,6 @@ class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
  private:
   net::EmbeddedTestServer https_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings);
 };
 
 // Tests that a connection with obsolete TLS settings does not get a

@@ -78,6 +78,11 @@ class PluginInfoHostImplShutdownNotifierFactory
     return base::Singleton<PluginInfoHostImplShutdownNotifierFactory>::get();
   }
 
+  PluginInfoHostImplShutdownNotifierFactory(
+      const PluginInfoHostImplShutdownNotifierFactory&) = delete;
+  PluginInfoHostImplShutdownNotifierFactory& operator=(
+      const PluginInfoHostImplShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       PluginInfoHostImplShutdownNotifierFactory>;
@@ -87,8 +92,6 @@ class PluginInfoHostImplShutdownNotifierFactory
             "PluginInfoHostImpl") {}
 
   ~PluginInfoHostImplShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(PluginInfoHostImplShutdownNotifierFactory);
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

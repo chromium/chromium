@@ -141,6 +141,10 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
     registry_observation_.Observe(registry);
   }
 
+  QueryProtocolHandlerOnChange(const QueryProtocolHandlerOnChange&) = delete;
+  QueryProtocolHandlerOnChange& operator=(const QueryProtocolHandlerOnChange&) =
+      delete;
+
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override {
     std::vector<std::string> output;
@@ -157,8 +161,6 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QueryProtocolHandlerOnChange);
 };
 
 }  // namespace

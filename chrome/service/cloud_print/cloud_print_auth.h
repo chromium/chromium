@@ -53,6 +53,9 @@ class CloudPrintAuth : public base::RefCountedThreadSafe<CloudPrintAuth>,
                  const net::PartialNetworkTrafficAnnotationTag&
                      partial_traffic_annotation);
 
+  CloudPrintAuth(const CloudPrintAuth&) = delete;
+  CloudPrintAuth& operator=(const CloudPrintAuth&) = delete;
+
   // Note:
   //
   // The Authenticate* methods are the various entry points from
@@ -112,8 +115,6 @@ class CloudPrintAuth : public base::RefCountedThreadSafe<CloudPrintAuth>,
   std::string client_login_token_;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintAuth);
 };
 
 }  // namespace cloud_print

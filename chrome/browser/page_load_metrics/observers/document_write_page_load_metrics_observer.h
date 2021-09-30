@@ -23,6 +23,11 @@ class DocumentWritePageLoadMetricsObserver
  public:
   DocumentWritePageLoadMetricsObserver() = default;
 
+  DocumentWritePageLoadMetricsObserver(
+      const DocumentWritePageLoadMetricsObserver&) = delete;
+  DocumentWritePageLoadMetricsObserver& operator=(
+      const DocumentWritePageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
@@ -59,8 +64,6 @@ class DocumentWritePageLoadMetricsObserver
   bool doc_write_same_site_diff_scheme_ = false;
   bool doc_write_block_observed_ = false;
   bool doc_write_block_reload_observed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentWritePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_

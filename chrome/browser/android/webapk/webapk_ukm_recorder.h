@@ -19,6 +19,10 @@ class GURL;
 // avoid having to instantiate this class and deal with object lifetimes.
 class WebApkUkmRecorder {
  public:
+  WebApkUkmRecorder() = delete;
+  WebApkUkmRecorder(const WebApkUkmRecorder&) = delete;
+  WebApkUkmRecorder& operator=(const WebApkUkmRecorder&) = delete;
+
   static void RecordInstall(const GURL& manifest_url, int version_code);
 
   static void RecordSessionDuration(const GURL& manifest_url,
@@ -45,9 +49,6 @@ class WebApkUkmRecorder {
   // installed - all that matters is that it is being visited from a
   // "non-installed experience" (ie, as a normal browser tab).
   static void RecordWebApkableVisit(const GURL& manifest_url);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebApkUkmRecorder);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_UKM_RECORDER_H_

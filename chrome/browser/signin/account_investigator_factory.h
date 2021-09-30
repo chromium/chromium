@@ -23,6 +23,10 @@ class AccountInvestigatorFactory : public BrowserContextKeyedServiceFactory {
 
   static AccountInvestigatorFactory* GetInstance();
 
+  AccountInvestigatorFactory(const AccountInvestigatorFactory&) = delete;
+  AccountInvestigatorFactory& operator=(const AccountInvestigatorFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AccountInvestigatorFactory>;
 
@@ -36,8 +40,6 @@ class AccountInvestigatorFactory : public BrowserContextKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountInvestigatorFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ACCOUNT_INVESTIGATOR_FACTORY_H_

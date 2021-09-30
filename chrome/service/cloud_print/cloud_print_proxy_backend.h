@@ -34,6 +34,9 @@ class CloudPrintProxyFrontend {
  public:
   CloudPrintProxyFrontend() {}
 
+  CloudPrintProxyFrontend(const CloudPrintProxyFrontend&) = delete;
+  CloudPrintProxyFrontend& operator=(const CloudPrintProxyFrontend&) = delete;
+
   // We successfully authenticated with the cloud print server. This callback
   // allows the frontend to persist the tokens.
   virtual void OnAuthenticated(const std::string& robot_oauth_refresh_token,
@@ -53,9 +56,6 @@ class CloudPrintProxyFrontend {
  protected:
   // Don't delete through CloudPrintProxyFrontend interface.
   virtual ~CloudPrintProxyFrontend() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintProxyFrontend);
 };
 
 class CloudPrintProxyBackend {

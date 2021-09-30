@@ -20,13 +20,14 @@ class MediaStorageIdSalt {
  public:
   enum { kSaltLength = 32 };
 
+  MediaStorageIdSalt() = delete;
+  MediaStorageIdSalt(const MediaStorageIdSalt&) = delete;
+  MediaStorageIdSalt& operator=(const MediaStorageIdSalt&) = delete;
+
   // Retrieves the current salt. If one does not currently exist it is created.
   static std::vector<uint8_t> GetSalt(PrefService* pref_service);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MediaStorageIdSalt);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_STORAGE_ID_SALT_H_

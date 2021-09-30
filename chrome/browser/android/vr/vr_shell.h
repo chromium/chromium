@@ -80,6 +80,10 @@ class VrShell : VoiceResultDelegate,
           int display_height_pixels,
           bool pause_content,
           bool low_density);
+
+  VrShell(const VrShell&) = delete;
+  VrShell& operator=(const VrShell&) = delete;
+
   bool HasUiFinishedLoading(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
   void SwapContents(JNIEnv* env,
@@ -379,8 +383,6 @@ class VrShell : VoiceResultDelegate,
   std::set<int> incognito_tab_ids_;
 
   base::WeakPtrFactory<VrShell> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VrShell);
 };
 
 }  // namespace vr

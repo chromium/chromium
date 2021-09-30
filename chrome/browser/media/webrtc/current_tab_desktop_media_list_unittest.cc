@@ -64,6 +64,11 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   CurrentTabDesktopMediaListTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  CurrentTabDesktopMediaListTest(const CurrentTabDesktopMediaListTest&) =
+      delete;
+  CurrentTabDesktopMediaListTest& operator=(
+      const CurrentTabDesktopMediaListTest&) = delete;
+
   void SetUp() override {
     rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
 
@@ -173,8 +178,6 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CurrentTabDesktopMediaListTest);
 };
 
 TEST_F(CurrentTabDesktopMediaListTest, UpdateSourcesListCalledWithCurrentTab) {

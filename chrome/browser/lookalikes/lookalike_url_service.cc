@@ -47,6 +47,10 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
     return base::Singleton<LookalikeUrlServiceFactory>::get();
   }
 
+  LookalikeUrlServiceFactory(const LookalikeUrlServiceFactory&) = delete;
+  LookalikeUrlServiceFactory& operator=(const LookalikeUrlServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<LookalikeUrlServiceFactory>;
 
@@ -70,8 +74,6 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override {
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlServiceFactory);
 };
 
 // static

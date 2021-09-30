@@ -19,6 +19,11 @@ class AnnouncementNotificationServiceFactory
   static AnnouncementNotificationServiceFactory* GetInstance();
   static AnnouncementNotificationService* GetForProfile(Profile* profile);
 
+  AnnouncementNotificationServiceFactory(
+      const AnnouncementNotificationServiceFactory&) = delete;
+  AnnouncementNotificationServiceFactory& operator=(
+      const AnnouncementNotificationServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AnnouncementNotificationServiceFactory>;
 
@@ -30,8 +35,6 @@ class AnnouncementNotificationServiceFactory
 
   AnnouncementNotificationServiceFactory();
   ~AnnouncementNotificationServiceFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_SERVICE_FACTORY_H_

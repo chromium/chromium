@@ -55,6 +55,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   using CompletionCallback =
       base::OnceCallback<void(std::unique_ptr<DownloadTargetInfo>)>;
 
+  DownloadTargetDeterminer(const DownloadTargetDeterminer&) = delete;
+  DownloadTargetDeterminer& operator=(const DownloadTargetDeterminer&) = delete;
+
   // Start the process of determing the target of |download|.
   //
   // |initial_virtual_path| if non-empty, defines the initial virtual path for
@@ -365,8 +368,6 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   absl::optional<download::DownloadSchedule> download_schedule_;
 
   base::WeakPtrFactory<DownloadTargetDeterminer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTargetDeterminer);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_DETERMINER_H_

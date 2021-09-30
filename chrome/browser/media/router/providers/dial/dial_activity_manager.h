@@ -173,6 +173,10 @@ class DialActivityManager {
   // Represents the state of a launch activity.
   struct Record {
     explicit Record(const DialActivity& activity);
+
+    Record(const Record&) = delete;
+    Record& operator=(const Record&) = delete;
+
     ~Record();
 
     enum State { kLaunching, kLaunched };
@@ -182,8 +186,6 @@ class DialActivityManager {
     std::unique_ptr<DialLaunchRequest> pending_launch_request;
     std::unique_ptr<DialStopRequest> pending_stop_request;
     State state = kLaunching;
-
-    DISALLOW_COPY_AND_ASSIGN(Record);
   };
 
   // Marked virtual for tests.

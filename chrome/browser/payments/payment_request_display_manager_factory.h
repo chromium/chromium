@@ -20,6 +20,11 @@ class PaymentRequestDisplayManagerFactory
   static PaymentRequestDisplayManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  PaymentRequestDisplayManagerFactory(
+      const PaymentRequestDisplayManagerFactory&) = delete;
+  PaymentRequestDisplayManagerFactory& operator=(
+      const PaymentRequestDisplayManagerFactory&) = delete;
+
  private:
   PaymentRequestDisplayManagerFactory();
   ~PaymentRequestDisplayManagerFactory() override;
@@ -30,7 +35,6 @@ class PaymentRequestDisplayManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestDisplayManagerFactory);
 };
 
 }  // namespace payments

@@ -55,6 +55,9 @@ class ProfileListDesktopTest : public testing::Test {
       : manager_(TestingBrowserProcess::GetGlobal()) {
   }
 
+  ProfileListDesktopTest(const ProfileListDesktopTest&) = delete;
+  ProfileListDesktopTest& operator=(const ProfileListDesktopTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(manager_.SetUp());
   }
@@ -94,8 +97,6 @@ class ProfileListDesktopTest : public testing::Test {
   TestingProfileManager manager_;
   std::unique_ptr<MockObserver> mock_observer_;
   std::unique_ptr<AvatarMenu> avatar_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileListDesktopTest);
 };
 
 TEST_F(ProfileListDesktopTest, InitialCreation) {

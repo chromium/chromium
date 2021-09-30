@@ -84,6 +84,9 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
                             public ProfileManagerObserver,
                             public ProfileObserver {
  public:
+  SafeBrowsingService(const SafeBrowsingService&) = delete;
+  SafeBrowsingService& operator=(const SafeBrowsingService&) = delete;
+
   static base::FilePath GetCookieFilePathForTesting();
 
   static base::FilePath GetBaseFilename();
@@ -322,8 +325,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       observed_profiles_{this};
 
   std::unique_ptr<TriggerManager> trigger_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingService);
 };
 
 SafeBrowsingServiceFactory* GetSafeBrowsingServiceFactory();

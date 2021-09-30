@@ -17,8 +17,13 @@ namespace webstore_widget {
 
 class AppInstaller::WebContentsObserver : public content::WebContentsObserver {
  public:
+  WebContentsObserver() = delete;
+
   WebContentsObserver(content::WebContents* web_contents, AppInstaller* parent)
       : content::WebContentsObserver(web_contents), parent_(parent) {}
+
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
 
  protected:
   // content::WebContentsObserver implementation.
@@ -28,8 +33,6 @@ class AppInstaller::WebContentsObserver : public content::WebContentsObserver {
 
  private:
   AppInstaller* parent_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebContentsObserver);
 };
 
 AppInstaller::AppInstaller(content::WebContents* web_contents,

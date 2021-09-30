@@ -135,6 +135,9 @@ class ObserverTester : public SiteEngagementObserver {
         callback_called_(false),
         run_loop_() {}
 
+  ObserverTester(const ObserverTester&) = delete;
+  ObserverTester& operator=(const ObserverTester&) = delete;
+
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
@@ -161,8 +164,6 @@ class ObserverTester : public SiteEngagementObserver {
   EngagementType type_;
   bool callback_called_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverTester);
 };
 
 class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {

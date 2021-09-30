@@ -67,6 +67,9 @@ class MockRequestPeer : public blink::WebRequestPeer {
       : body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
   }
 
+  MockRequestPeer(const MockRequestPeer&) = delete;
+  MockRequestPeer& operator=(const MockRequestPeer&) = delete;
+
   MOCK_METHOD2(OnUploadProgress, void(uint64_t position, uint64_t size));
   MOCK_METHOD3(OnReceivedRedirect,
                bool(const net::RedirectInfo& redirect_info,
@@ -128,8 +131,6 @@ class MockRequestPeer : public blink::WebRequestPeer {
   mojo::SimpleWatcher body_watcher_;
   mojo::ScopedDataPipeConsumerHandle body_handle_;
   base::OnceClosure wait_for_body_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRequestPeer);
 };
 
 }  // namespace

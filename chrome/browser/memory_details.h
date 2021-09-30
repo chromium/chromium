@@ -115,6 +115,9 @@ class MemoryDetails : public base::RefCountedThreadSafe<MemoryDetails> {
   // Constructor.
   MemoryDetails();
 
+  MemoryDetails(const MemoryDetails&) = delete;
+  MemoryDetails& operator=(const MemoryDetails&) = delete;
+
   // Initiate updating the current memory details.  These are fetched
   // asynchronously because data must be collected from multiple threads.
   // OnDetailsAvailable will be called when this process is complete.
@@ -167,8 +170,6 @@ class MemoryDetails : public base::RefCountedThreadSafe<MemoryDetails> {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::SwapInfo swap_info_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDetails);
 };
 
 #endif  // CHROME_BROWSER_MEMORY_DETAILS_H_

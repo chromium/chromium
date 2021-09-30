@@ -71,6 +71,11 @@ class MediaFileSystemRegistryShutdownNotifierFactory
         MediaFileSystemRegistryShutdownNotifierFactory>::get();
   }
 
+  MediaFileSystemRegistryShutdownNotifierFactory(
+      const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
+  MediaFileSystemRegistryShutdownNotifierFactory& operator=(
+      const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       MediaFileSystemRegistryShutdownNotifierFactory>;
@@ -81,8 +86,6 @@ class MediaFileSystemRegistryShutdownNotifierFactory
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
   }
   ~MediaFileSystemRegistryShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemRegistryShutdownNotifierFactory);
 };
 
 struct InvalidatedGalleriesInfo {
@@ -296,6 +299,9 @@ class ExtensionGalleriesHost
         rph_refs_(base::BindRepeating(&ExtensionGalleriesHost::CleanUp,
                                       base::Unretained(this))) {}
 
+  ExtensionGalleriesHost(const ExtensionGalleriesHost&) = delete;
+  ExtensionGalleriesHost& operator=(const ExtensionGalleriesHost&) = delete;
+
   // For each gallery in the list of permitted |galleries|, checks if the
   // device is attached and if so looks up or creates a file system name and
   // passes the information needed for the renderer to create those file
@@ -507,8 +513,6 @@ class ExtensionGalleriesHost
   // The set of render processes and web contents that may have references to
   // the file system ids this instance manages.
   RPHReferenceManager rph_refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGalleriesHost);
 };
 
 /******************

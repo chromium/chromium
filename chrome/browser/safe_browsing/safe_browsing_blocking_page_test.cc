@@ -257,6 +257,10 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
       : TestSafeBrowsingUIManager(std::move(blocking_page_factory)) {}
 
+  FakeSafeBrowsingUIManager(const FakeSafeBrowsingUIManager&) = delete;
+  FakeSafeBrowsingUIManager& operator=(const FakeSafeBrowsingUIManager&) =
+      delete;
+
   // Overrides SafeBrowsingUIManager
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override {
@@ -307,8 +311,6 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   base::OnceClosure threat_details_done_callback_;
   bool threat_details_done_ = false;
   bool hit_report_sent_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingUIManager);
 };
 
 class TestThreatDetailsFactory : public ThreatDetailsFactory {
@@ -1494,6 +1496,10 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
         latest_security_style_(blink::SecurityStyle::kUnknown),
         latest_security_style_explanations_() {}
 
+  SecurityStyleTestObserver(const SecurityStyleTestObserver&) = delete;
+  SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
+      delete;
+
   blink::SecurityStyle latest_security_style() const {
     return latest_security_style_;
   }
@@ -1512,7 +1518,6 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
  private:
   blink::SecurityStyle latest_security_style_;
   content::SecurityStyleExplanations latest_security_style_explanations_;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStyleTestObserver);
 };
 
 }  // namespace
@@ -1819,6 +1824,11 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
  public:
   SafeBrowsingBlockingPageDelayedWarningBrowserTest() = default;
 
+  SafeBrowsingBlockingPageDelayedWarningBrowserTest(
+      const SafeBrowsingBlockingPageDelayedWarningBrowserTest&) = delete;
+  SafeBrowsingBlockingPageDelayedWarningBrowserTest& operator=(
+      const SafeBrowsingBlockingPageDelayedWarningBrowserTest&) = delete;
+
   void SetUp() override {
     std::vector<FeatureAndParams> enabled_features{
         FeatureAndParams(blink::features::kPortals, {}),
@@ -2018,8 +2028,6 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
  private:
   TestSafeBrowsingServiceFactory factory_;
   TestThreatDetailsFactory details_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPageDelayedWarningBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
@@ -2861,6 +2869,11 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
  public:
   SafeBrowsingBlockingPageEnhancedProtectionMessageTest() = default;
 
+  SafeBrowsingBlockingPageEnhancedProtectionMessageTest(
+      const SafeBrowsingBlockingPageEnhancedProtectionMessageTest&) = delete;
+  SafeBrowsingBlockingPageEnhancedProtectionMessageTest& operator=(
+      const SafeBrowsingBlockingPageEnhancedProtectionMessageTest&) = delete;
+
   void SetUp() override {
     InProcessBrowserTest::SetUp();
   }
@@ -2901,9 +2914,6 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
   TestSafeBrowsingServiceFactory factory_;
   TestThreatDetailsFactory details_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SafeBrowsingBlockingPageEnhancedProtectionMessageTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
@@ -3000,6 +3010,11 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
  public:
   SafeBrowsingBlockingPageRealTimeUrlCheckTest() = default;
 
+  SafeBrowsingBlockingPageRealTimeUrlCheckTest(
+      const SafeBrowsingBlockingPageRealTimeUrlCheckTest&) = delete;
+  SafeBrowsingBlockingPageRealTimeUrlCheckTest& operator=(
+      const SafeBrowsingBlockingPageRealTimeUrlCheckTest&) = delete;
+
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
@@ -3038,8 +3053,6 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
  private:
   TestSafeBrowsingServiceFactory factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPageRealTimeUrlCheckTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,

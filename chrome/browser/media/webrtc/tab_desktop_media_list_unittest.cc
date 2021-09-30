@@ -147,6 +147,10 @@ class TestAppWindow : public content::WebContentsObserver {
 };
 
 class TabDesktopMediaListTest : public testing::Test {
+ public:
+  TabDesktopMediaListTest(const TabDesktopMediaListTest&) = delete;
+  TabDesktopMediaListTest& operator=(const TabDesktopMediaListTest&) = delete;
+
  protected:
   TabDesktopMediaListTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
@@ -329,8 +333,6 @@ class TabDesktopMediaListTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TabDesktopMediaListTest);
 };
 
 TEST_F(TabDesktopMediaListTest, AddTab) {

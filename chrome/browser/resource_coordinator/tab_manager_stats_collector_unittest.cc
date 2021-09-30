@@ -62,6 +62,10 @@ class TabManagerStatsCollectorTest : public ChromeRenderViewHostTestHarness {
     task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(42));
   }
 
+  TabManagerStatsCollectorTest(const TabManagerStatsCollectorTest&) = delete;
+  TabManagerStatsCollectorTest& operator=(const TabManagerStatsCollectorTest&) =
+      delete;
+
   ~TabManagerStatsCollectorTest() override = default;
 
   TabManagerStatsCollector* tab_manager_stats_collector() {
@@ -104,12 +108,16 @@ class TabManagerStatsCollectorTest : public ChromeRenderViewHostTestHarness {
 
  private:
   TabManager* tab_manager() const { return g_browser_process->GetTabManager(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TabManagerStatsCollectorTest);
 };
 
 class TabManagerStatsCollectorTabSwitchTest
     : public TabManagerStatsCollectorTest {
+ public:
+  TabManagerStatsCollectorTabSwitchTest(
+      const TabManagerStatsCollectorTabSwitchTest&) = delete;
+  TabManagerStatsCollectorTabSwitchTest& operator=(
+      const TabManagerStatsCollectorTabSwitchTest&) = delete;
+
  protected:
   TabManagerStatsCollectorTabSwitchTest() = default;
   ~TabManagerStatsCollectorTabSwitchTest() override = default;
@@ -151,8 +159,6 @@ class TabManagerStatsCollectorTabSwitchTest
  private:
   WebContents* foreground_tab_;
   WebContents* background_tab_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabManagerStatsCollectorTabSwitchTest);
 };
 
 TEST_F(TabManagerStatsCollectorTabSwitchTest, HistogramsSwitchToTab) {

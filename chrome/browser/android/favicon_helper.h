@@ -22,6 +22,10 @@ class FaviconHelper {
  public:
   FaviconHelper();
   void Destroy(JNIEnv* env);
+
+  FaviconHelper(const FaviconHelper&) = delete;
+  FaviconHelper& operator=(const FaviconHelper&) = delete;
+
   jboolean GetComposedFaviconImage(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_profile,
@@ -80,8 +84,6 @@ class FaviconHelper {
   int last_used_job_id_;
 
   base::WeakPtrFactory<FaviconHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_FAVICON_HELPER_H_

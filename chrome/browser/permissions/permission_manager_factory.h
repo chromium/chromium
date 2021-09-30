@@ -24,6 +24,9 @@ class PermissionManagerFactory : public BrowserContextKeyedServiceFactory {
   static permissions::PermissionManager* GetForProfile(Profile* profile);
   static PermissionManagerFactory* GetInstance();
 
+  PermissionManagerFactory(const PermissionManagerFactory&) = delete;
+  PermissionManagerFactory& operator=(const PermissionManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PermissionManagerFactory>;
 
@@ -35,8 +38,6 @@ class PermissionManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_MANAGER_FACTORY_H_

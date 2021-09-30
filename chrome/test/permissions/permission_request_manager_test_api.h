@@ -30,6 +30,11 @@ class PermissionRequestManagerTestApi {
   // Wraps the PermissionRequestManager for the active tab in |browser|.
   explicit PermissionRequestManagerTestApi(Browser* browser);
 
+  PermissionRequestManagerTestApi(const PermissionRequestManagerTestApi&) =
+      delete;
+  PermissionRequestManagerTestApi& operator=(
+      const PermissionRequestManagerTestApi&) = delete;
+
   permissions::PermissionRequestManager* manager() { return manager_; }
 
   // Add a "simple" permission request originating from the given frame. One
@@ -46,8 +51,6 @@ class PermissionRequestManagerTestApi {
 
  private:
   permissions::PermissionRequestManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestManagerTestApi);
 };
 
 }  // namespace test

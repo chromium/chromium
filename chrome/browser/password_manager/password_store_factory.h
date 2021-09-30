@@ -32,6 +32,9 @@ class PasswordStoreFactory
 
   static PasswordStoreFactory* GetInstance();
 
+  PasswordStoreFactory(const PasswordStoreFactory&) = delete;
+  PasswordStoreFactory& operator=(const PasswordStoreFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PasswordStoreFactory>;
 
@@ -44,8 +47,6 @@ class PasswordStoreFactory
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreFactory);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_FACTORY_H_

@@ -37,6 +37,9 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   using RefreshTokenAvailableCallback = base::RepeatingClosure;
   using StatusCallback = base::OnceCallback<void(bool)>;
 
+  DeviceOAuth2TokenService(const DeviceOAuth2TokenService&) = delete;
+  DeviceOAuth2TokenService& operator=(const DeviceOAuth2TokenService&) = delete;
+
   // Persist the given refresh token on the device. Overwrites any previous
   // value. Should only be called during initial device setup. Signals
   // completion via the given callback, passing true if the operation succeeded.
@@ -197,8 +200,6 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   std::unique_ptr<DeviceOAuth2TokenStore> store_;
 
   base::WeakPtrFactory<DeviceOAuth2TokenService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOAuth2TokenService);
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_H_

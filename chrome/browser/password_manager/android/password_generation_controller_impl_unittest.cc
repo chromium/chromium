@@ -76,20 +76,25 @@ class MockPasswordManagerDriver
  public:
   MockPasswordManagerDriver() = default;
 
+  MockPasswordManagerDriver(const MockPasswordManagerDriver&) = delete;
+  MockPasswordManagerDriver& operator=(const MockPasswordManagerDriver&) =
+      delete;
+
   MOCK_METHOD1(GeneratedPasswordAccepted, void(const std::u16string&));
   MOCK_METHOD0(GetPasswordGenerationHelper,
                password_manager::PasswordGenerationFrameHelper*());
   MOCK_METHOD0(GetPasswordManager, password_manager::PasswordManager*());
   MOCK_METHOD0(GetPasswordAutofillManager,
                password_manager::PasswordAutofillManager*());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerDriver);
 };
 
 class MockPasswordGenerationHelper
     : public password_manager::PasswordGenerationFrameHelper {
  public:
+  MockPasswordGenerationHelper(const MockPasswordGenerationHelper&) = delete;
+  MockPasswordGenerationHelper& operator=(const MockPasswordGenerationHelper&) =
+      delete;
+
   MockPasswordGenerationHelper(password_manager::PasswordManagerClient* client,
                                password_manager::PasswordManagerDriver* driver)
       : password_manager::PasswordGenerationFrameHelper(client, driver) {}
@@ -99,9 +104,6 @@ class MockPasswordGenerationHelper
                               autofill::FormSignature,
                               autofill::FieldSignature,
                               uint32_t));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordGenerationHelper);
 };
 
 // Mock modal dialog view used to bypass the need of a valid top level window.

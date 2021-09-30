@@ -25,6 +25,10 @@ class RequestCoordinatorFactory : public BrowserContextKeyedServiceFactory {
   static RequestCoordinator* GetForBrowserContext(
       content::BrowserContext* context);
 
+  RequestCoordinatorFactory(const RequestCoordinatorFactory&) = delete;
+  RequestCoordinatorFactory& operator=(const RequestCoordinatorFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<RequestCoordinatorFactory>;
 
@@ -33,8 +37,6 @@ class RequestCoordinatorFactory : public BrowserContextKeyedServiceFactory {
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCoordinatorFactory);
 };
 
 }  // namespace offline_pages

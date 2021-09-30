@@ -19,6 +19,10 @@ class MTPDeviceTaskHelperMapService {
  public:
   static MTPDeviceTaskHelperMapService* GetInstance();
 
+  MTPDeviceTaskHelperMapService(const MTPDeviceTaskHelperMapService&) = delete;
+  MTPDeviceTaskHelperMapService& operator=(
+      const MTPDeviceTaskHelperMapService&) = delete;
+
   // Creates and returns the MTPDeviceTaskHelper object for the storage device
   // specified by the |storage_name|.
   MTPDeviceTaskHelper* CreateDeviceTaskHelper(const std::string& storage_name,
@@ -59,8 +63,6 @@ class MTPDeviceTaskHelperMapService {
   // Mapping of |storage_name| and MTPDeviceTaskHelper*.
   // TaskHelperMap owns MTPDeviceTaskHelper objects.
   TaskHelperMap task_helper_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceTaskHelperMapService);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_TASK_HELPER_MAP_SERVICE_H_

@@ -15,6 +15,10 @@ class PrefRegistrySyncable;
 
 class UnifiedAutoplayConfig {
  public:
+  UnifiedAutoplayConfig() = delete;
+  UnifiedAutoplayConfig(const UnifiedAutoplayConfig&) = delete;
+  UnifiedAutoplayConfig& operator=(const UnifiedAutoplayConfig&) = delete;
+
   // Register profile prefs in the pref registry.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable*);
 
@@ -26,9 +30,6 @@ class UnifiedAutoplayConfig {
   // Checks whether the block autoplay toggle button should be enabled. If it is
   // false it will still be visible but will be disabled.
   static bool IsBlockAutoplayUserModifiable(Profile*);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UnifiedAutoplayConfig);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_UNIFIED_AUTOPLAY_CONFIG_H_

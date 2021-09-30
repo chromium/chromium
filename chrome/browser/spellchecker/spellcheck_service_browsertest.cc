@@ -68,6 +68,10 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
  public:
   SpellcheckServiceBrowserTest() = default;
 
+  SpellcheckServiceBrowserTest(const SpellcheckServiceBrowserTest&) = delete;
+  SpellcheckServiceBrowserTest& operator=(const SpellcheckServiceBrowserTest&) =
+      delete;
+
 #if defined(OS_WIN)
   void SetUp() override {
     // Tests were designed assuming Hunspell dictionary used and many fail when
@@ -276,13 +280,16 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   bool custom_dictionary_changed_called_;
   bool initialize_spellcheck_called_;
   bool spellcheck_enabled_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceBrowserTest);
 };
 
 class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
  public:
   SpellcheckServiceHostBrowserTest() = default;
+
+  SpellcheckServiceHostBrowserTest(const SpellcheckServiceHostBrowserTest&) =
+      delete;
+  SpellcheckServiceHostBrowserTest& operator=(
+      const SpellcheckServiceHostBrowserTest&) = delete;
 
   void RequestDictionary() {
     mojo::Remote<spellcheck::mojom::SpellCheckHost> interface;
@@ -334,8 +341,6 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
 
   bool spelling_service_done_called_ = false;
   std::u16string word_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceHostBrowserTest);
 };
 
 // Disable spell check should disable spelling service

@@ -256,6 +256,9 @@ class DevToolsEventForwarder {
   explicit DevToolsEventForwarder(DevToolsWindow* window)
      : devtools_window_(window) {}
 
+  DevToolsEventForwarder(const DevToolsEventForwarder&) = delete;
+  DevToolsEventForwarder& operator=(const DevToolsEventForwarder&) = delete;
+
   // Registers whitelisted shortcuts with the forwarder.
   // Only registered keys will be forwarded to the DevTools frontend.
   void SetWhitelistedShortcuts(const std::string& message);
@@ -270,8 +273,6 @@ class DevToolsEventForwarder {
 
   DevToolsWindow* devtools_window_;
   std::set<int> whitelisted_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsEventForwarder);
 };
 
 void DevToolsEventForwarder::SetWhitelistedShortcuts(

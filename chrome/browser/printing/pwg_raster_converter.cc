@@ -45,6 +45,9 @@ class PwgRasterConverterHelper
   PwgRasterConverterHelper(const PdfRenderSettings& settings,
                            const PwgRasterSettings& bitmap_settings);
 
+  PwgRasterConverterHelper(const PwgRasterConverterHelper&) = delete;
+  PwgRasterConverterHelper& operator=(const PwgRasterConverterHelper&) = delete;
+
   void Convert(const base::RefCountedMemory* data,
                PwgRasterConverter::ResultCallback callback);
 
@@ -61,8 +64,6 @@ class PwgRasterConverterHelper
   mojo::Remote<printing::mojom::PdfToPwgRasterConverter>
       pdf_to_pwg_raster_converter_remote_;
   PwgRasterConverter::ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterHelper);
 };
 
 PwgRasterConverterHelper::PwgRasterConverterHelper(

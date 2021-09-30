@@ -75,6 +75,11 @@ class PrimaryProfileServicesShutdownNotifierFactory
         PrimaryProfileServicesShutdownNotifierFactory>::get();
   }
 
+  PrimaryProfileServicesShutdownNotifierFactory(
+      const PrimaryProfileServicesShutdownNotifierFactory&) = delete;
+  PrimaryProfileServicesShutdownNotifierFactory& operator=(
+      const PrimaryProfileServicesShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       PrimaryProfileServicesShutdownNotifierFactory>;
@@ -83,8 +88,6 @@ class PrimaryProfileServicesShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PrimaryProfileServices") {}
   ~PrimaryProfileServicesShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(PrimaryProfileServicesShutdownNotifierFactory);
 };
 
 }  // namespace

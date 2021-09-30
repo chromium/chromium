@@ -1917,6 +1917,14 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
   const size_t kTestMaxConnectionsPerProxy = 37;
 
   NetworkContextConfigurationManagedProxySettingsBrowserTest() = default;
+
+  NetworkContextConfigurationManagedProxySettingsBrowserTest(
+      const NetworkContextConfigurationManagedProxySettingsBrowserTest&) =
+      delete;
+  NetworkContextConfigurationManagedProxySettingsBrowserTest& operator=(
+      const NetworkContextConfigurationManagedProxySettingsBrowserTest&) =
+      delete;
+
   ~NetworkContextConfigurationManagedProxySettingsBrowserTest() override =
       default;
 
@@ -1935,10 +1943,6 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
   size_t GetExpectedMaxConnectionsPerProxy() const override {
     return kTestMaxConnectionsPerProxy;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      NetworkContextConfigurationManagedProxySettingsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(

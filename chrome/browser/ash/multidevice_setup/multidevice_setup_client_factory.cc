@@ -54,6 +54,10 @@ class MultiDeviceSetupClientHolder : public KeyedService {
                        weak_factory_.GetWeakPtr(), std::move(receiver)));
   }
 
+  MultiDeviceSetupClientHolder(const MultiDeviceSetupClientHolder&) = delete;
+  MultiDeviceSetupClientHolder& operator=(const MultiDeviceSetupClientHolder&) =
+      delete;
+
   MultiDeviceSetupClient* multidevice_setup_client() {
     return multidevice_setup_client_.get();
   }
@@ -73,8 +77,6 @@ class MultiDeviceSetupClientHolder : public KeyedService {
   Profile* const profile_;
   std::unique_ptr<MultiDeviceSetupClient> multidevice_setup_client_;
   base::WeakPtrFactory<MultiDeviceSetupClientHolder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientHolder);
 };
 
 }  // namespace

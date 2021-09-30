@@ -177,6 +177,11 @@ class MediaGalleriesPreferences
   };
 
   explicit MediaGalleriesPreferences(Profile* profile);
+
+  MediaGalleriesPreferences(const MediaGalleriesPreferences&) = delete;
+  MediaGalleriesPreferences& operator=(const MediaGalleriesPreferences&) =
+      delete;
+
   ~MediaGalleriesPreferences() override;
 
   // Ensures that the preferences is initialized. The provided callback, if
@@ -368,8 +373,6 @@ class MediaGalleriesPreferences
       gallery_change_observers_;
 
   base::WeakPtrFactory<MediaGalleriesPreferences> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPreferences);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_PREFERENCES_H_

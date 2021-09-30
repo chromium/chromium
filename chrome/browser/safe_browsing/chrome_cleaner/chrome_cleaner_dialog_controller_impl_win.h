@@ -36,6 +36,11 @@ class ChromeCleanerDialogControllerImpl
   explicit ChromeCleanerDialogControllerImpl(
       ChromeCleanerController* cleaner_controller);
 
+  ChromeCleanerDialogControllerImpl(const ChromeCleanerDialogControllerImpl&) =
+      delete;
+  ChromeCleanerDialogControllerImpl& operator=(
+      const ChromeCleanerDialogControllerImpl&) = delete;
+
   // ChromeCleanerDialogController overrides.
   void DialogShown() override;
   void Accept(bool logs_enabled) override;
@@ -78,8 +83,6 @@ class ChromeCleanerDialogControllerImpl
   Browser* browser_ = nullptr;
   std::unique_ptr<ChromeCleanerPromptDelegate> prompt_delegate_impl_;
   ChromeCleanerPromptDelegate* prompt_delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerDialogControllerImpl);
 };
 
 }  // namespace safe_browsing

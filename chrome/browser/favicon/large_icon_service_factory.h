@@ -29,6 +29,9 @@ class LargeIconServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static LargeIconServiceFactory* GetInstance();
 
+  LargeIconServiceFactory(const LargeIconServiceFactory&) = delete;
+  LargeIconServiceFactory& operator=(const LargeIconServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<LargeIconServiceFactory>;
 
@@ -41,8 +44,6 @@ class LargeIconServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LargeIconServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_FAVICON_LARGE_ICON_SERVICE_FACTORY_H_

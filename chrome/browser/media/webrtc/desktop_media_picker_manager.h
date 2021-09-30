@@ -25,6 +25,10 @@ class DesktopMediaPickerManager {
 
   static DesktopMediaPickerManager* Get();
 
+  DesktopMediaPickerManager(const DesktopMediaPickerManager&) = delete;
+  DesktopMediaPickerManager& operator=(const DesktopMediaPickerManager&) =
+      delete;
+
   // For the observers
   void AddObserver(DialogObserver* observer);
   void RemoveObserver(DialogObserver* observer);
@@ -40,8 +44,6 @@ class DesktopMediaPickerManager {
   ~DesktopMediaPickerManager();  // Never called.
 
   base::ObserverList<DesktopMediaPickerManager::DialogObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerManager);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_

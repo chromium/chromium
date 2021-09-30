@@ -23,6 +23,10 @@ class AuthTokenValidatorFactory : public BrowserContextKeyedServiceFactory {
 
   static AuthTokenValidatorFactory* GetInstance();
 
+  AuthTokenValidatorFactory(const AuthTokenValidatorFactory&) = delete;
+  AuthTokenValidatorFactory& operator=(const AuthTokenValidatorFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AuthTokenValidatorFactory>;
 
@@ -32,8 +36,6 @@ class AuthTokenValidatorFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthTokenValidatorFactory);
 };
 
 }  // namespace multidevice_setup

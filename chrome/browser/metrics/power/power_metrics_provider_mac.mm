@@ -206,6 +206,9 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
     return impl;
   }
 
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
  private:
   friend class base::RefCountedThreadSafe<Impl>;
   Impl(base::mac::ScopedIOObject<io_object_t> connect)
@@ -289,8 +292,6 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
   SMCKey cpu_package_gpu_power_key_;
   SMCKey gpu_0_power_key_;
   SMCKey gpu_1_power_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 PowerMetricsProvider::PowerMetricsProvider() = default;

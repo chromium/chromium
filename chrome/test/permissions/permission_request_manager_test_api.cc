@@ -32,14 +32,16 @@ class TestPermissionRequestOwner {
                        base::Unretained(this)));
   }
 
+  TestPermissionRequestOwner(const TestPermissionRequestOwner&) = delete;
+  TestPermissionRequestOwner& operator=(const TestPermissionRequestOwner&) =
+      delete;
+
   permissions::PermissionRequest* request() { return request_.get(); }
 
  private:
   void DeleteThis() { delete this; }
 
   std::unique_ptr<permissions::PermissionRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPermissionRequestOwner);
 };
 
 }  // namespace

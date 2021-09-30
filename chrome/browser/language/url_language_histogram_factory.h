@@ -27,6 +27,10 @@ class UrlLanguageHistogramFactory : public BrowserContextKeyedServiceFactory {
   static language::UrlLanguageHistogram* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  UrlLanguageHistogramFactory(const UrlLanguageHistogramFactory&) = delete;
+  UrlLanguageHistogramFactory& operator=(const UrlLanguageHistogramFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UrlLanguageHistogramFactory>;
 
@@ -38,8 +42,6 @@ class UrlLanguageHistogramFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlLanguageHistogramFactory);
 };
 
 #endif  // CHROME_BROWSER_LANGUAGE_URL_LANGUAGE_HISTOGRAM_FACTORY_H_

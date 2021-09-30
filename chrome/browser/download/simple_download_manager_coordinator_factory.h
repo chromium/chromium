@@ -30,6 +30,11 @@ class SimpleDownloadManagerCoordinatorFactory
   static download::SimpleDownloadManagerCoordinator* GetForKey(
       SimpleFactoryKey* key);
 
+  SimpleDownloadManagerCoordinatorFactory(
+      const SimpleDownloadManagerCoordinatorFactory&) = delete;
+  SimpleDownloadManagerCoordinatorFactory& operator=(
+      const SimpleDownloadManagerCoordinatorFactory&) = delete;
+
  private:
   friend class base::NoDestructor<SimpleDownloadManagerCoordinatorFactory>;
 
@@ -40,8 +45,6 @@ class SimpleDownloadManagerCoordinatorFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDownloadManagerCoordinatorFactory);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_SIMPLE_DOWNLOAD_MANAGER_COORDINATOR_FACTORY_H_

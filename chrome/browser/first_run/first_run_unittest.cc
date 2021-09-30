@@ -29,6 +29,10 @@ base::FilePath GetTestDataPath(const std::string& test_name) {
 }  // namespace
 
 class FirstRunTest : public testing::Test {
+ public:
+  FirstRunTest(const FirstRunTest&) = delete;
+  FirstRunTest& operator=(const FirstRunTest&) = delete;
+
  protected:
   FirstRunTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
   ~FirstRunTest() override {}
@@ -40,8 +44,6 @@ class FirstRunTest : public testing::Test {
 
  private:
   base::ScopedPathOverride user_data_dir_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunTest);
 };
 
 TEST_F(FirstRunTest, SetupInitialPrefsFromInstallPrefs_NoVariationsSeed) {

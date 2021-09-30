@@ -21,6 +21,10 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   static void Create();
 
+  ChromeCrashReporterClient(const ChromeCrashReporterClient&) = delete;
+  ChromeCrashReporterClient& operator=(const ChromeCrashReporterClient&) =
+      delete;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If true, processes of this type should pass crash-loop-before down to the
   // crash reporter and to their children (if the children's type is a process
@@ -72,8 +76,6 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   ChromeCrashReporterClient();
   ~ChromeCrashReporterClient() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCrashReporterClient);
 };
 
 #endif  // OS_WIN

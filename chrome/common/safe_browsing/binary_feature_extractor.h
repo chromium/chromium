@@ -38,6 +38,9 @@ class BinaryFeatureExtractor
 
   BinaryFeatureExtractor();
 
+  BinaryFeatureExtractor(const BinaryFeatureExtractor&) = delete;
+  BinaryFeatureExtractor& operator=(const BinaryFeatureExtractor&) = delete;
+
   // Fills in the DownloadRequest_SignatureInfo for the given file path.
   // This method may be called on any thread.
   virtual void CheckSignature(
@@ -78,9 +81,6 @@ class BinaryFeatureExtractor
  protected:
   friend class base::RefCountedThreadSafe<BinaryFeatureExtractor>;
   virtual ~BinaryFeatureExtractor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BinaryFeatureExtractor);
 };
 }  // namespace safe_browsing
 

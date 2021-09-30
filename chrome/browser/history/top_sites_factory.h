@@ -40,6 +40,9 @@ class TopSitesFactory : public RefcountedBrowserContextKeyedServiceFactory {
       content::BrowserContext* context,
       const std::vector<history::PrepopulatedPage>& prepopulated_page_list);
 
+  TopSitesFactory(const TopSitesFactory&) = delete;
+  TopSitesFactory& operator=(const TopSitesFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TopSitesFactory>;
 
@@ -52,8 +55,6 @@ class TopSitesFactory : public RefcountedBrowserContextKeyedServiceFactory {
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesFactory);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_TOP_SITES_FACTORY_H_

@@ -31,6 +31,9 @@ class SandboxStatusExtension
   // Creates a new SandboxStatusExtension for the |frame|.
   static void Create(content::RenderFrame* frame);
 
+  SandboxStatusExtension(const SandboxStatusExtension&) = delete;
+  SandboxStatusExtension& operator=(const SandboxStatusExtension&) = delete;
+
   // content::RenderFrameObserver:
   void OnDestruct() override;
   void DidClearWindowObject() override;
@@ -71,8 +74,6 @@ class SandboxStatusExtension
 
   mojo::AssociatedReceiver<chrome::mojom::SandboxStatusExtension> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxStatusExtension);
 };
 
 #endif  // CHROME_RENDERER_SANDBOX_STATUS_EXTENSION_ANDROID_H_

@@ -38,6 +38,10 @@ class ThirdPartyRegistryKeyObserver {
                       GetRegistryKeyPath().c_str(),
                       KEY_CREATE_SUB_KEY | KEY_READ | KEY_NOTIFY) {}
 
+  ThirdPartyRegistryKeyObserver(const ThirdPartyRegistryKeyObserver&) = delete;
+  ThirdPartyRegistryKeyObserver& operator=(
+      const ThirdPartyRegistryKeyObserver&) = delete;
+
   bool StartWatching() {
     return registry_key_.StartWatching(base::BindOnce(
         &ThirdPartyRegistryKeyObserver::OnChange, base::Unretained(this)));
@@ -75,8 +79,6 @@ class ThirdPartyRegistryKeyObserver {
   bool path_written_ = false;
 
   base::OnceClosure run_loop_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyRegistryKeyObserver);
 };
 
 // Creates an empty serialized ModuleList proto in the module list component
@@ -103,6 +105,11 @@ void CreateModuleList(base::FilePath* module_list_path) {
 }
 
 class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
+ public:
+  ThirdPartyBlockingBrowserTest(const ThirdPartyBlockingBrowserTest&) = delete;
+  ThirdPartyBlockingBrowserTest& operator=(
+      const ThirdPartyBlockingBrowserTest&) = delete;
+
  protected:
   ThirdPartyBlockingBrowserTest() = default;
   ~ThirdPartyBlockingBrowserTest() override = default;
@@ -142,8 +149,6 @@ class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
 
   // Temp directory where the third-party module is located.
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyBlockingBrowserTest);
 };
 
 }  // namespace

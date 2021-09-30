@@ -146,13 +146,14 @@ class TestUmaStatsReportingDelegate
       GetIntervalHistogramName;
   TestUmaStatsReportingDelegate() {}
 
+  TestUmaStatsReportingDelegate(const TestUmaStatsReportingDelegate&) = delete;
+  TestUmaStatsReportingDelegate& operator=(
+      const TestUmaStatsReportingDelegate&) = delete;
+
  protected:
   // Skip the check that ensures that there's at least one visible window as
   // there's no window in the context of these tests.
   bool IsChromeBackgroundedWithoutWindows() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestUmaStatsReportingDelegate);
 };
 
 class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
@@ -167,6 +168,9 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     // using it.
     tab_stats_tracker_ = std::make_unique<TestTabStatsTracker>(&pref_service_);
   }
+
+  TabStatsTrackerTest(const TabStatsTrackerTest&) = delete;
+  TabStatsTrackerTest& operator=(const TabStatsTrackerTest&) = delete;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -197,9 +201,6 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<Browser> browser_;
   TabStripModel* tab_strip_model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabStatsTrackerTest);
 };
 
 TestTabStatsTracker::TestTabStatsTracker(PrefService* pref_service)

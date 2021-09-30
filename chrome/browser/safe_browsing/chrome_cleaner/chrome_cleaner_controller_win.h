@@ -112,6 +112,9 @@ class ChromeCleanerController {
   // Returns the global controller object.
   static ChromeCleanerController* GetInstance();
 
+  ChromeCleanerController(const ChromeCleanerController&) = delete;
+  ChromeCleanerController& operator=(const ChromeCleanerController&) = delete;
+
   virtual State state() const = 0;
   virtual IdleReason idle_reason() const = 0;
 
@@ -211,9 +214,6 @@ class ChromeCleanerController {
  protected:
   ChromeCleanerController();
   virtual ~ChromeCleanerController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerController);
 };
 
 // Registers the reporter scan completion time preference.

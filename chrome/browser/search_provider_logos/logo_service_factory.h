@@ -22,6 +22,9 @@ class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static LogoServiceFactory* GetInstance();
 
+  LogoServiceFactory(const LogoServiceFactory&) = delete;
+  LogoServiceFactory& operator=(const LogoServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<LogoServiceFactory>;
 
@@ -31,8 +34,6 @@ class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_

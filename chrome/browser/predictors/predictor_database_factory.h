@@ -23,6 +23,9 @@ class PredictorDatabaseFactory : public BrowserContextKeyedServiceFactory {
 
   static PredictorDatabaseFactory* GetInstance();
 
+  PredictorDatabaseFactory(const PredictorDatabaseFactory&) = delete;
+  PredictorDatabaseFactory& operator=(const PredictorDatabaseFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PredictorDatabaseFactory>;
 
@@ -32,8 +35,6 @@ class PredictorDatabaseFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PredictorDatabaseFactory);
 };
 
 }  // namespace predictors

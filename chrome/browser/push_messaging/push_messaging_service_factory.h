@@ -18,6 +18,10 @@ class PushMessagingServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile);
   static PushMessagingServiceFactory* GetInstance();
 
+  PushMessagingServiceFactory(const PushMessagingServiceFactory&) = delete;
+  PushMessagingServiceFactory& operator=(const PushMessagingServiceFactory&) =
+      delete;
+
   // Undo a previous call to SetTestingFactory, such that subsequent calls to
   // GetForProfile get a real push service.
   void RestoreFactoryForTests(content::BrowserContext* context);
@@ -33,8 +37,6 @@ class PushMessagingServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_SERVICE_FACTORY_H_

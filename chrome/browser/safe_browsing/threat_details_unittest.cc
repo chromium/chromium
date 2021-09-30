@@ -171,6 +171,10 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
             GURL(chrome::kChromeUINewTabURL)),
         report_sent_(false) {}
 
+  MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
+  MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
+      delete;
+
   // When the serialized report is sent, this is called.
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override {
@@ -186,7 +190,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
   std::string serialized_;
   bool report_sent_;
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingUIManager);
 };
 
 class MockReferrerChainProvider : public ReferrerChainProvider {

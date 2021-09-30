@@ -30,13 +30,14 @@ class MockObject {
     return base::WrapUnique(new MockObject(key));
   }
 
+  MockObject(const MockObject&) = delete;
+  MockObject& operator=(const MockObject&) = delete;
+
   unsigned int value() const { return value_; }
 
  private:
   explicit MockObject(unsigned int key) : value_(GenerateValue(key)) {}
   unsigned int value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockObject);
 };
 
 }  // namespace

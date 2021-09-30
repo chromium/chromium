@@ -71,6 +71,9 @@ class WindowedIncognitoMonitor : public BrowserListObserver {
   // request for monitoring any incognito window launches from now on.
   static std::unique_ptr<WindowedIncognitoObserver> CreateObserver();
 
+  WindowedIncognitoMonitor(const WindowedIncognitoMonitor&) = delete;
+  WindowedIncognitoMonitor& operator=(const WindowedIncognitoMonitor&) = delete;
+
  protected:
   static WindowedIncognitoMonitor* Get();
 
@@ -120,8 +123,6 @@ class WindowedIncognitoMonitor : public BrowserListObserver {
   uint64_t num_incognito_window_opened_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedIncognitoMonitor);
 };
 
 }  // namespace metrics

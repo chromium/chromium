@@ -32,6 +32,10 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
 
   MAYBE_MetricsCollectorTest() : GraphTestHarness() {}
 
+  MAYBE_MetricsCollectorTest(const MAYBE_MetricsCollectorTest&) = delete;
+  MAYBE_MetricsCollectorTest& operator=(const MAYBE_MetricsCollectorTest&) =
+      delete;
+
   void SetUp() override {
     Super::SetUp();
     metrics_collector_ = new MetricsCollector();
@@ -52,8 +56,6 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
 
  private:
   MetricsCollector* metrics_collector_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_MetricsCollectorTest);
 };
 
 TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {

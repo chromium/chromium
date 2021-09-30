@@ -52,6 +52,10 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
       const std::string& mime_type,
       const GURL& request_url);
 
+  ExtensionLocalizationPeer(const ExtensionLocalizationPeer&) = delete;
+  ExtensionLocalizationPeer& operator=(const ExtensionLocalizationPeer&) =
+      delete;
+
   // blink::WebRequestPeer methods.
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
@@ -137,9 +141,6 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
 
   // Original request URL.
   GURL request_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionLocalizationPeer);
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_EXTENSION_LOCALIZATION_PEER_H_

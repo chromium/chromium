@@ -14,12 +14,15 @@ namespace browser_switcher {
 // redirect, may open an alternative browser and close the tab.
 class BrowserSwitcherNavigationThrottle {
  public:
+  BrowserSwitcherNavigationThrottle() = delete;
+  BrowserSwitcherNavigationThrottle(const BrowserSwitcherNavigationThrottle&) =
+      delete;
+  BrowserSwitcherNavigationThrottle& operator=(
+      const BrowserSwitcherNavigationThrottle&) = delete;
+
   // Creates a |NavigationThrottle| if needed for the navigation.
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherNavigationThrottle);
 };
 
 }  // namespace browser_switcher

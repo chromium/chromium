@@ -92,6 +92,10 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   };
 
   PluginInfoHostImpl(int render_process_id, Profile* profile);
+
+  PluginInfoHostImpl(const PluginInfoHostImpl&) = delete;
+  PluginInfoHostImpl& operator=(const PluginInfoHostImpl&) = delete;
+
   ~PluginInfoHostImpl() override;
 
   static void RegisterUserPrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -121,8 +125,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   base::CallbackListSubscription shutdown_subscription_;
 
   base::WeakPtrFactory<PluginInfoHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginInfoHostImpl);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_INFO_HOST_IMPL_H_

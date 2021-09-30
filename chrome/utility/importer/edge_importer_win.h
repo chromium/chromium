@@ -21,6 +21,9 @@ class EdgeImporter : public Importer {
  public:
   EdgeImporter();
 
+  EdgeImporter(const EdgeImporter&) = delete;
+  EdgeImporter& operator=(const EdgeImporter&) = delete;
+
   // Importer:
   void StartImport(const importer::SourceProfile& source_profile,
                    uint16_t items,
@@ -38,8 +41,6 @@ class EdgeImporter : public Importer {
   // Edge does not have source path. It's used in unit tests only for providing
   // a fake source for the spartan database location.
   base::FilePath source_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdgeImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_EDGE_IMPORTER_WIN_H_

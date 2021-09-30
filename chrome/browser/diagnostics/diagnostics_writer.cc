@@ -139,6 +139,9 @@ class PosixConsole : public SimpleConsole {
  public:
   PosixConsole() : use_color_(false) {}
 
+  PosixConsole(const PosixConsole&) = delete;
+  PosixConsole& operator=(const PosixConsole&) = delete;
+
   bool Init() override {
     // Technically, we should also check the terminal capabilities before using
     // color, but in practice this is unlikely to be an issue.
@@ -180,8 +183,6 @@ class PosixConsole : public SimpleConsole {
 
  private:
   bool use_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(PosixConsole);
 };
 
 }  // namespace

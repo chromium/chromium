@@ -45,14 +45,16 @@ class SupportedAudioVideoExtensions {
     }
   }
 
+  SupportedAudioVideoExtensions(const SupportedAudioVideoExtensions&) = delete;
+  SupportedAudioVideoExtensions& operator=(
+      const SupportedAudioVideoExtensions&) = delete;
+
   bool HasSupportedAudioVideoExtension(const base::FilePath& file) {
     return base::Contains(audio_video_extensions_, file.Extension());
   }
 
  private:
   std::set<base::FilePath::StringType> audio_video_extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupportedAudioVideoExtensions);
 };
 
 base::LazyInstance<SupportedAudioVideoExtensions>::DestructorAtExit

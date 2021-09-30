@@ -30,6 +30,12 @@ constexpr char kReloadToCloseTimeHistogram[] =
     "TabManager.Discarding.ReloadToCloseTime";
 
 class DiscardMetricsLifecycleUnitObserverTest : public testing::Test {
+ public:
+  DiscardMetricsLifecycleUnitObserverTest(
+      const DiscardMetricsLifecycleUnitObserverTest&) = delete;
+  DiscardMetricsLifecycleUnitObserverTest& operator=(
+      const DiscardMetricsLifecycleUnitObserverTest&) = delete;
+
  protected:
   DiscardMetricsLifecycleUnitObserverTest()
       : scoped_set_tick_clock_for_testing_(&test_clock_) {
@@ -47,9 +53,6 @@ class DiscardMetricsLifecycleUnitObserverTest : public testing::Test {
   base::HistogramTester histograms_;
   base::SimpleTestTickClock test_clock_;
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiscardMetricsLifecycleUnitObserverTest);
 };
 
 }  // namespace

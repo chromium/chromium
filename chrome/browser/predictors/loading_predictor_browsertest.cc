@@ -115,6 +115,9 @@ class PredictorInitializer : public TestObserver {
   explicit PredictorInitializer(ResourcePrefetchPredictor* predictor)
       : TestObserver(predictor), predictor_(predictor) {}
 
+  PredictorInitializer(const PredictorInitializer&) = delete;
+  PredictorInitializer& operator=(const PredictorInitializer&) = delete;
+
   void EnsurePredictorInitialized() {
     if (predictor_->initialization_state_ ==
         ResourcePrefetchPredictor::INITIALIZED) {
@@ -134,7 +137,6 @@ class PredictorInitializer : public TestObserver {
  private:
   ResourcePrefetchPredictor* predictor_;
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(PredictorInitializer);
 };
 
 class TestPreconnectManagerObserver : public PreconnectManager::Observer {

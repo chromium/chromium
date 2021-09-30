@@ -23,6 +23,9 @@ class IEImporter : public Importer {
  public:
   IEImporter();
 
+  IEImporter(const IEImporter&) = delete;
+  IEImporter& operator=(const IEImporter&) = delete;
+
   // Importer:
   void StartImport(const importer::SourceProfile& source_profile,
                    uint16_t items,
@@ -75,8 +78,6 @@ class IEImporter : public Importer {
   // IE does not have source path. It's used in unit tests only for providing a
   // fake source and it's used if importing old Edge favorites on Windows 10.
   base::FilePath source_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(IEImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_IE_IMPORTER_WIN_H_

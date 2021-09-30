@@ -36,6 +36,9 @@ class FakeInstallDetails : public InstallDetails {
     payload.channel_length = channel.length();
   }
 
+  FakeInstallDetails(const FakeInstallDetails&) = delete;
+  FakeInstallDetails& operator=(const FakeInstallDetails&) = delete;
+
   void set_product_version(const char* version) {
     product_version.assign(version);
     payload.product_version = product_version.c_str();
@@ -49,8 +52,6 @@ class FakeInstallDetails : public InstallDetails {
   std::wstring channel = std::wstring(L"testchannel");
   std::string product_version = std::string(PRODUCT_VERSION);
   Payload payload = Payload();
-
-  DISALLOW_COPY_AND_ASSIGN(FakeInstallDetails);
 };
 
 TEST(InstallDetailsTest, GetClientStateKeyPath) {

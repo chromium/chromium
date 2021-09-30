@@ -243,6 +243,9 @@ class TabManagerDelegate::Candidate {
   // tabs.
   explicit Candidate(const arc::ArcProcess* app) : app_(app) { DCHECK(app_); }
 
+  Candidate(const Candidate&) = delete;
+  Candidate& operator=(const Candidate&) = delete;
+
   // Move-only class.
   Candidate(Candidate&&) = default;
   Candidate& operator=(Candidate&& other);
@@ -266,7 +269,6 @@ class TabManagerDelegate::Candidate {
   LifecycleUnit* lifecycle_unit_ = nullptr;
   const arc::ArcProcess* app_ = nullptr;
   ProcessType process_type_ = GetProcessTypeInternal();
-  DISALLOW_COPY_AND_ASSIGN(Candidate);
 };
 
 // A thin wrapper over library process_metric.h to get memory status so unit

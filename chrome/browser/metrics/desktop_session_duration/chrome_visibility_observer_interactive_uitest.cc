@@ -24,6 +24,11 @@ class ChromeVisibilityObserverInteractiveTest
     SetVisibilityGapTimeoutForTesting(base::TimeDelta());
   }
 
+  ChromeVisibilityObserverInteractiveTest(
+      const ChromeVisibilityObserverInteractiveTest&) = delete;
+  ChromeVisibilityObserverInteractiveTest& operator=(
+      const ChromeVisibilityObserverInteractiveTest&) = delete;
+
   bool is_active() const { return is_active_; }
 
  private:
@@ -34,8 +39,6 @@ class ChromeVisibilityObserverInteractiveTest
   }
 
   bool is_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVisibilityObserverInteractiveTest);
 };
 
 // This test doesn't check whether switching between browser windows results in

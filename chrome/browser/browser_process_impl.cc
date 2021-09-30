@@ -520,6 +520,9 @@ class RundownTaskCounter :
  public:
   RundownTaskCounter();
 
+  RundownTaskCounter(const RundownTaskCounter&) = delete;
+  RundownTaskCounter& operator=(const RundownTaskCounter&) = delete;
+
   // Increments |count_| and returns a closure bound to Decrement(). All
   // closures returned by this RundownTaskCounter's GetRundownClosure() method
   // must be invoked for TimedWait() to complete its wait without timing
@@ -542,8 +545,6 @@ class RundownTaskCounter :
   // until TimedWait is called.
   base::AtomicRefCount count_{1};
   base::WaitableEvent waitable_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(RundownTaskCounter);
 };
 
 RundownTaskCounter::RundownTaskCounter() = default;

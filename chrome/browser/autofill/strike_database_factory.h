@@ -30,6 +30,9 @@ class StrikeDatabaseFactory : public BrowserContextKeyedServiceFactory {
 
   static StrikeDatabaseFactory* GetInstance();
 
+  StrikeDatabaseFactory(const StrikeDatabaseFactory&) = delete;
+  StrikeDatabaseFactory& operator=(const StrikeDatabaseFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<StrikeDatabaseFactory>;
 
@@ -39,8 +42,6 @@ class StrikeDatabaseFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(StrikeDatabaseFactory);
 };
 
 }  // namespace autofill

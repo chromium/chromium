@@ -418,6 +418,9 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
                              configs.video)),
         is_full_performance_run_(is_full_performance_run) {}
 
+  TestPatternReceiver(const TestPatternReceiver&) = delete;
+  TestPatternReceiver& operator=(const TestPatternReceiver&) = delete;
+
   typedef std::map<uint16_t, base::TimeTicks> TimeMap;
 
   // Build a map from frame ID (as encoded in the audio and video data)
@@ -567,8 +570,6 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
 
   // The height (number of lines) of each video frame received.
   std::vector<int> video_frame_lines_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPatternReceiver);
 };
 
 class TestCompleteObserver {

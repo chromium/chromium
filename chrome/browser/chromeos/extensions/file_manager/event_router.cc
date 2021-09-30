@@ -326,6 +326,9 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
                         Profile* profile)
       : DeviceEventRouter(notification_manager), profile_(profile) {}
 
+  DeviceEventRouterImpl(const DeviceEventRouterImpl&) = delete;
+  DeviceEventRouterImpl& operator=(const DeviceEventRouterImpl&) = delete;
+
   // DeviceEventRouter overrides.
   void OnDeviceEvent(file_manager_private::DeviceEventType type,
                      const std::string& device_path,
@@ -353,8 +356,6 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventRouterImpl);
 };
 
 class DriveFsEventRouterImpl : public DriveFsEventRouter {

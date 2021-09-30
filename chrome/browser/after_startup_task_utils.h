@@ -21,6 +21,10 @@ class SequencedTaskRunner;
 
 class AfterStartupTaskUtils {
  public:
+  AfterStartupTaskUtils() = delete;
+  AfterStartupTaskUtils(const AfterStartupTaskUtils&) = delete;
+  AfterStartupTaskUtils& operator=(const AfterStartupTaskUtils&) = delete;
+
   // Observes startup and when complete runs tasks that have accrued.
   static void StartMonitoringStartup();
 
@@ -50,8 +54,6 @@ class AfterStartupTaskUtils {
   friend class android::AfterStartupTaskUtilsJNI;
 
   static void SetBrowserStartupIsComplete();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AfterStartupTaskUtils);
 };
 
 #endif  // CHROME_BROWSER_AFTER_STARTUP_TASK_UTILS_H_

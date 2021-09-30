@@ -55,6 +55,11 @@ class SyncableFileOperationRunner
 
   SyncableFileOperationRunner(int64_t max_inflight_tasks,
                               LocalFileSyncStatus* sync_status);
+
+  SyncableFileOperationRunner(const SyncableFileOperationRunner&) = delete;
+  SyncableFileOperationRunner& operator=(const SyncableFileOperationRunner&) =
+      delete;
+
   ~SyncableFileOperationRunner() override;
 
   // LocalFileSyncStatus::Observer overrides.
@@ -96,8 +101,6 @@ class SyncableFileOperationRunner
 
   const int64_t max_inflight_tasks_;
   int64_t num_inflight_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileOperationRunner);
 };
 
 }  // namespace sync_file_system

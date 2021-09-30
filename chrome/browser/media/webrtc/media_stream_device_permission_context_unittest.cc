@@ -41,6 +41,12 @@ class TestPermissionContext : public MediaStreamDevicePermissionContext {
 // converted to tests in this file.
 class MediaStreamDevicePermissionContextTests
     : public ChromeRenderViewHostTestHarness {
+ public:
+  MediaStreamDevicePermissionContextTests(
+      const MediaStreamDevicePermissionContextTests&) = delete;
+  MediaStreamDevicePermissionContextTests& operator=(
+      const MediaStreamDevicePermissionContextTests&) = delete;
+
  protected:
   MediaStreamDevicePermissionContextTests() = default;
 
@@ -107,8 +113,6 @@ class MediaStreamDevicePermissionContextTests
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDevicePermissionContextTests);
 };
 
 // MEDIASTREAM_MIC permission status should be ask for insecure origin to

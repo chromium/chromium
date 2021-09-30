@@ -42,6 +42,11 @@ class PrefetchProxyPageLoadMetricsObserverTest
  public:
   PrefetchProxyPageLoadMetricsObserverTest() = default;
 
+  PrefetchProxyPageLoadMetricsObserverTest(
+      const PrefetchProxyPageLoadMetricsObserverTest&) = delete;
+  PrefetchProxyPageLoadMetricsObserverTest& operator=(
+      const PrefetchProxyPageLoadMetricsObserverTest&) = delete;
+
   TestPrefetchProxyPageLoadMetricsObserver* plm_observer() {
     return plm_observer_;
   }
@@ -147,8 +152,6 @@ class PrefetchProxyPageLoadMetricsObserverTest
 
   GURL navigation_url_{"https://chromium.org"};
   bool in_main_frame_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPageLoadMetricsObserverTest);
 };
 
 TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_CSS) {

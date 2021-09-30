@@ -191,6 +191,9 @@ class UDIFBlock {
  public:
   UDIFBlock() : block_() {}
 
+  UDIFBlock(const UDIFBlock&) = delete;
+  UDIFBlock& operator=(const UDIFBlock&) = delete;
+
   bool ParseBlockData(const UDIFBlockData* block_data,
                       size_t block_data_size,
                       uint16_t sector_size) {
@@ -265,8 +268,6 @@ class UDIFBlock {
  private:
   UDIFBlockData block_;
   std::vector<UDIFBlockChunk> chunks_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDIFBlock);
 };
 
 #pragma pack(pop)

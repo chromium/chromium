@@ -38,6 +38,11 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
   }
 
+  ProfileActivityMetricsRecorderTest(
+      const ProfileActivityMetricsRecorderTest&) = delete;
+  ProfileActivityMetricsRecorderTest& operator=(
+      const ProfileActivityMetricsRecorderTest&) = delete;
+
   void SetUp() override {
     Test::SetUp();
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -100,8 +105,6 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::vector<std::unique_ptr<Browser>> browsers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileActivityMetricsRecorderTest);
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {

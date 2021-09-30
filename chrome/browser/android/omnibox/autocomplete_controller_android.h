@@ -33,6 +33,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       Profile* profile,
       std::unique_ptr<ChromeAutocompleteProviderClient> client);
 
+  AutocompleteControllerAndroid(const AutocompleteControllerAndroid&) = delete;
+  AutocompleteControllerAndroid& operator=(
+      const AutocompleteControllerAndroid&) = delete;
+
   // Methods that forward to AutocompleteController:
   void Start(JNIEnv* env,
              const base::android::JavaRef<jstring>& j_text,
@@ -169,8 +173,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.
   const base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteControllerAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_AUTOCOMPLETE_CONTROLLER_ANDROID_H_

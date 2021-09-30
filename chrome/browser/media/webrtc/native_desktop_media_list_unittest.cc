@@ -172,6 +172,10 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
  public:
   NativeDesktopMediaListTest() = default;
 
+  NativeDesktopMediaListTest(const NativeDesktopMediaListTest&) = delete;
+  NativeDesktopMediaListTest& operator=(const NativeDesktopMediaListTest&) =
+      delete;
+
   void TearDown() override {
     for (size_t i = 0; i < desktop_widgets_.size(); i++)
       desktop_widgets_[i].reset();
@@ -331,8 +335,6 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   std::vector<std::unique_ptr<views::Widget>> desktop_widgets_;
   std::map<DesktopMediaID::Id, DesktopMediaID::Id> native_aura_id_map_;
   std::unique_ptr<NativeDesktopMediaList> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeDesktopMediaListTest);
 };
 
 TEST_F(NativeDesktopMediaListTest, Windows) {

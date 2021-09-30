@@ -20,6 +20,9 @@ class ProbeMessage {
  public:
   ProbeMessage();
 
+  ProbeMessage(const ProbeMessage&) = delete;
+  ProbeMessage& operator=(const ProbeMessage&) = delete;
+
   // Generate a ProbeRequest packet.
   void GenerateProbeRequest(const ProbePacket_Token& received_token,
                             uint32_t group_id,
@@ -56,8 +59,6 @@ class ProbeMessage {
   static const uint32_t kMaxNumberProbePackets;
   static const uint32_t kMaxPacingIntervalMicros;
   static const char kEncodingString[];
-
-  DISALLOW_COPY_AND_ASSIGN(ProbeMessage);
 };
 }       // namespace chrome_browser_net
 #endif  // CHROME_BROWSER_NET_PROBE_MESSAGE_H_

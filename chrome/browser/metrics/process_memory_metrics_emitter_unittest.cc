@@ -59,6 +59,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
     MarkServiceRequestsInProgress();
   }
 
+  ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
+      delete;
+  ProcessMemoryMetricsEmitterFake& operator=(
+      const ProcessMemoryMetricsEmitterFake&) = delete;
+
   void ReceivedMemoryDump(bool success,
                           std::unique_ptr<GlobalMemoryDump> ptr) override {
     ProcessMemoryMetricsEmitter::ReceivedMemoryDump(success, std::move(ptr));
@@ -94,7 +99,6 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   ~ProcessMemoryMetricsEmitterFake() override {}
 
   ukm::UkmRecorder* ukm_recorder_;
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };
 
 void SetAllocatorDumpMetric(ProcessMemoryDumpPtr& pmd,

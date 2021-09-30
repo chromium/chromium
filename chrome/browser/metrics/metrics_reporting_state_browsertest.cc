@@ -42,14 +42,17 @@ class ChromeBrowserMainExtraPartsChecker : public ChromeBrowserMainExtraParts {
       : expected_metrics_reporting_enabled_(
             expected_metrics_reporting_enabled) {}
 
+  ChromeBrowserMainExtraPartsChecker(
+      const ChromeBrowserMainExtraPartsChecker&) = delete;
+  ChromeBrowserMainExtraPartsChecker& operator=(
+      const ChromeBrowserMainExtraPartsChecker&) = delete;
+
   // ChromeBrowserMainExtraParts:
   void PostEarlyInitialization() override;
 
  private:
   // Expected value of reporting state.
   const bool expected_metrics_reporting_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsChecker);
 };
 
 // This class is used to verify the value for

@@ -101,6 +101,12 @@ std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(
 class KidsManagementURLCheckerClientTest : public testing::Test {
  public:
   KidsManagementURLCheckerClientTest() = default;
+
+  KidsManagementURLCheckerClientTest(
+      const KidsManagementURLCheckerClientTest&) = delete;
+  KidsManagementURLCheckerClientTest& operator=(
+      const KidsManagementURLCheckerClientTest&) = delete;
+
   void SetUp() override {
     test_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -169,8 +175,6 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
         url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
                             base::Unretained(this)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClientTest);
 };
 
 TEST_F(KidsManagementURLCheckerClientTest, Simple) {

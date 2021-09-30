@@ -36,6 +36,11 @@ class DeviceLocalAccountExternalPolicyLoader
   DeviceLocalAccountExternalPolicyLoader(policy::CloudPolicyStore* store,
                                          const base::FilePath& cache_dir);
 
+  DeviceLocalAccountExternalPolicyLoader(
+      const DeviceLocalAccountExternalPolicyLoader&) = delete;
+  DeviceLocalAccountExternalPolicyLoader& operator=(
+      const DeviceLocalAccountExternalPolicyLoader&) = delete;
+
   // While running, the cache requires exclusive write access to the
   // |cache_dir_|.
   bool IsCacheRunning() const;
@@ -74,8 +79,6 @@ class DeviceLocalAccountExternalPolicyLoader
   const base::FilePath cache_dir_;
   std::unique_ptr<ExternalCache> external_cache_;
   std::unique_ptr<base::DictionaryValue> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExternalPolicyLoader);
 };
 
 }  // namespace chromeos

@@ -296,6 +296,11 @@ class DownloadDangerPromptBrowserTest : public DialogBrowserTest {
   enum InvocationType { USER_INITIATED, FROM_DOWNLOAD_API };
   DownloadDangerPromptBrowserTest() : download_url_(kTestDownloadUrl) {}
 
+  DownloadDangerPromptBrowserTest(const DownloadDangerPromptBrowserTest&) =
+      delete;
+  DownloadDangerPromptBrowserTest& operator=(
+      const DownloadDangerPromptBrowserTest&) = delete;
+
   void RunTest(download::DownloadDangerType danger_type,
                InvocationType invocation_type) {
     danger_type_ = danger_type;
@@ -330,8 +335,6 @@ class DownloadDangerPromptBrowserTest : public DialogBrowserTest {
   download::DownloadDangerType danger_type_;
   InvocationType invocation_type_;
   download::MockDownloadItem download_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDangerPromptBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadDangerPromptBrowserTest,

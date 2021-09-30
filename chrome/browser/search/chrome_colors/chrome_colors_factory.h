@@ -24,6 +24,9 @@ class ChromeColorsFactory : public BrowserContextKeyedServiceFactory {
 
   static ChromeColorsFactory* GetInstance();
 
+  ChromeColorsFactory(const ChromeColorsFactory&) = delete;
+  ChromeColorsFactory& operator=(const ChromeColorsFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ChromeColorsFactory>;
 
@@ -33,8 +36,6 @@ class ChromeColorsFactory : public BrowserContextKeyedServiceFactory {
   // Overrides from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeColorsFactory);
 };
 
 }  // namespace chrome_colors

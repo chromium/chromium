@@ -23,6 +23,11 @@ class AutoSigninFirstRunDialogAndroid : public content::WebContentsObserver {
 
   void Destroy(JNIEnv* env, jobject obj);
 
+  AutoSigninFirstRunDialogAndroid(const AutoSigninFirstRunDialogAndroid&) =
+      delete;
+  AutoSigninFirstRunDialogAndroid& operator=(
+      const AutoSigninFirstRunDialogAndroid&) = delete;
+
   void ShowDialog();
 
   // Closes the dialog and propagates that no credentials was chosen.
@@ -47,8 +52,6 @@ class AutoSigninFirstRunDialogAndroid : public content::WebContentsObserver {
   content::WebContents* web_contents_;
 
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoSigninFirstRunDialogAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_AUTO_SIGNIN_FIRST_RUN_DIALOG_ANDROID_H_

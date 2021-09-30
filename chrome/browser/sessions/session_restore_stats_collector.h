@@ -84,6 +84,10 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
       base::TimeTicks restore_started,
       std::unique_ptr<StatsReportingDelegate> reporting_delegate);
 
+  SessionRestoreStatsCollector(const SessionRestoreStatsCollector&) = delete;
+  SessionRestoreStatsCollector& operator=(const SessionRestoreStatsCollector&) =
+      delete;
+
   // Tracks stats for restored tabs. Tabs from overlapping session restores can
   // be tracked by the same SessionRestoreStatsCollector.
   void TrackTabs(const std::vector<SessionRestoreDelegate::RestoredTab>& tabs);
@@ -136,8 +140,6 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   base::ScopedMultiSourceObservation<content::RenderWidgetHost,
                                      content::RenderWidgetHostObserver>
       render_widget_host_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreStatsCollector);
 };
 
 // An abstract reporting delegate is used as a testing seam.

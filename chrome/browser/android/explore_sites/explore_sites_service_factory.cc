@@ -35,14 +35,16 @@ class URLLoaderFactoryGetterImpl
  public:
   explicit URLLoaderFactoryGetterImpl(Profile* profile) : profile_(profile) {}
 
+  URLLoaderFactoryGetterImpl(const URLLoaderFactoryGetterImpl&) = delete;
+  URLLoaderFactoryGetterImpl& operator=(const URLLoaderFactoryGetterImpl&) =
+      delete;
+
   scoped_refptr<network::SharedURLLoaderFactory> GetFactory() override {
     return profile_->GetURLLoaderFactory();
   }
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryGetterImpl);
 };
 
 ExploreSitesServiceFactory::ExploreSitesServiceFactory()

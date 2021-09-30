@@ -34,6 +34,11 @@ class OfflineContentAggregatorFactory : public SimpleKeyedServiceFactory {
   static offline_items_collection::OfflineContentAggregator* GetForKey(
       SimpleFactoryKey* key);
 
+  OfflineContentAggregatorFactory(const OfflineContentAggregatorFactory&) =
+      delete;
+  OfflineContentAggregatorFactory& operator=(
+      const OfflineContentAggregatorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OfflineContentAggregatorFactory>;
 
@@ -44,8 +49,6 @@ class OfflineContentAggregatorFactory : public SimpleKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregatorFactory);
 };
 
 #endif  // CHROME_BROWSER_OFFLINE_ITEMS_COLLECTION_OFFLINE_CONTENT_AGGREGATOR_FACTORY_H_

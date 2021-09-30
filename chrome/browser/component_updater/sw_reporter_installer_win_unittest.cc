@@ -59,6 +59,9 @@ class SwReporterInstallerTest : public ::testing::Test {
         default_version_("1.2.3"),
         default_path_(L"C:\\full\\path\\to\\download") {}
 
+  SwReporterInstallerTest(const SwReporterInstallerTest&) = delete;
+  SwReporterInstallerTest& operator=(const SwReporterInstallerTest&) = delete;
+
  protected:
   void SwReporterComponentReady(SwReporterInvocationSequence&& invocations) {
     ASSERT_TRUE(extracted_invocations_.container().empty());
@@ -211,9 +214,6 @@ class SwReporterInstallerTest : public ::testing::Test {
 
   // Invocations captured by |SwReporterComponentReady|.
   SwReporterInvocationSequence extracted_invocations_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SwReporterInstallerTest);
 };
 
 TEST_F(SwReporterInstallerTest, MissingManifest) {
@@ -643,6 +643,10 @@ class SwReporterOnDemandFetcherTest : public ::testing::Test,
  public:
   SwReporterOnDemandFetcherTest() = default;
 
+  SwReporterOnDemandFetcherTest(const SwReporterOnDemandFetcherTest&) = delete;
+  SwReporterOnDemandFetcherTest& operator=(
+      const SwReporterOnDemandFetcherTest&) = delete;
+
   void SetUp() override {
     EXPECT_CALL(mock_cus_, AddObserver(_)).Times(1);
     EXPECT_CALL(mock_cus_, GetOnDemandUpdater()).WillOnce(ReturnRef(*this));
@@ -710,8 +714,6 @@ class SwReporterOnDemandFetcherTest : public ::testing::Test,
   bool component_can_be_updated_ = false;
   bool error_callback_called_ = false;
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwReporterOnDemandFetcherTest);
 };
 
 TEST_F(SwReporterOnDemandFetcherTest, TestUpdateSuccess) {

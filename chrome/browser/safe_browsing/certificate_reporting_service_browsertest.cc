@@ -71,6 +71,11 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
     CertReportHelper::SetFakeOfficialBuildForTesting();
   }
 
+  CertificateReportingServiceBrowserTest(
+      const CertificateReportingServiceBrowserTest&) = delete;
+  CertificateReportingServiceBrowserTest& operator=(
+      const CertificateReportingServiceBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -233,8 +238,6 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<EventHistogramTester> event_histogram_tester_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateReportingServiceBrowserTest);
 };
 
 // Tests that report send attempt should be cancelled when extended

@@ -73,13 +73,16 @@ class TextInputManagerChangeObserver
         &TextInputManagerChangeObserver::VerifyChange, base::Unretained(this)));
   }
 
+  TextInputManagerChangeObserver(const TextInputManagerChangeObserver&) =
+      delete;
+  TextInputManagerChangeObserver& operator=(
+      const TextInputManagerChangeObserver&) = delete;
+
  private:
   void VerifyChange() {
     if (tester()->IsTextInputStateChanged())
       OnSuccess();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManagerChangeObserver);
 };
 
 // This class observes |TextInputState.type| for a specific RWHV.
@@ -96,6 +99,10 @@ class ViewTextInputTypeObserver : public content::TextInputManagerObserverBase {
         &ViewTextInputTypeObserver::VerifyType, base::Unretained(this)));
   }
 
+  ViewTextInputTypeObserver(const ViewTextInputTypeObserver&) = delete;
+  ViewTextInputTypeObserver& operator=(const ViewTextInputTypeObserver&) =
+      delete;
+
  private:
   void VerifyType() {
     ui::TextInputType type;
@@ -108,8 +115,6 @@ class ViewTextInputTypeObserver : public content::TextInputManagerObserverBase {
   content::WebContents* web_contents_;
   content::RenderWidgetHostView* view_;
   const ui::TextInputType expected_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewTextInputTypeObserver);
 };
 
 // This class observes the |expected_view| for the first change in its
@@ -127,6 +132,11 @@ class ViewSelectionBoundsChangedObserver
                             base::Unretained(this)));
   }
 
+  ViewSelectionBoundsChangedObserver(
+      const ViewSelectionBoundsChangedObserver&) = delete;
+  ViewSelectionBoundsChangedObserver& operator=(
+      const ViewSelectionBoundsChangedObserver&) = delete;
+
  private:
   void VerifyChange() {
     if (expected_view_ == tester()->GetUpdatedView())
@@ -134,8 +144,6 @@ class ViewSelectionBoundsChangedObserver
   }
 
   const content::RenderWidgetHostView* const expected_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewSelectionBoundsChangedObserver);
 };
 
 // This class observes the |expected_view| for the first change in its
@@ -153,6 +161,11 @@ class ViewCompositionRangeChangedObserver
                             base::Unretained(this)));
   }
 
+  ViewCompositionRangeChangedObserver(
+      const ViewCompositionRangeChangedObserver&) = delete;
+  ViewCompositionRangeChangedObserver& operator=(
+      const ViewCompositionRangeChangedObserver&) = delete;
+
  private:
   void VerifyChange() {
     if (expected_view_ == tester()->GetUpdatedView())
@@ -160,8 +173,6 @@ class ViewCompositionRangeChangedObserver
   }
 
   const content::RenderWidgetHostView* const expected_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewCompositionRangeChangedObserver);
 };
 
 // This class observes the |expected_view| for a change in the text selection.
@@ -177,6 +188,10 @@ class ViewTextSelectionObserver : public content::TextInputManagerObserverBase {
         &ViewTextSelectionObserver::VerifyChange, base::Unretained(this)));
   }
 
+  ViewTextSelectionObserver(const ViewTextSelectionObserver&) = delete;
+  ViewTextSelectionObserver& operator=(const ViewTextSelectionObserver&) =
+      delete;
+
  private:
   void VerifyChange() {
     if (expected_view_ == tester()->GetUpdatedView()) {
@@ -189,8 +204,6 @@ class ViewTextSelectionObserver : public content::TextInputManagerObserverBase {
 
   const content::RenderWidgetHostView* const expected_view_;
   const size_t expected_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewTextSelectionObserver);
 };
 
 // This class observes all the text selection updates within a WebContents.
@@ -201,6 +214,9 @@ class TextSelectionObserver : public content::TextInputManagerObserverBase {
     tester()->SetOnTextSelectionChangedCallback(base::BindRepeating(
         &TextSelectionObserver::VerifyChange, base::Unretained(this)));
   }
+
+  TextSelectionObserver(const TextSelectionObserver&) = delete;
+  TextSelectionObserver& operator=(const TextSelectionObserver&) = delete;
 
   void WaitForSelectedText(const std::string& text) {
     selected_text_ = text;
@@ -216,8 +232,6 @@ class TextSelectionObserver : public content::TextInputManagerObserverBase {
   }
 
   std::string selected_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSelectionObserver);
 };
 
 // This class monitors all the changes in TextInputState and keeps a record of
@@ -230,6 +244,10 @@ class RecordActiveViewsObserver {
     tester_->SetUpdateTextInputStateCalledCallback(base::BindRepeating(
         &RecordActiveViewsObserver::RecordActiveView, base::Unretained(this)));
   }
+
+  RecordActiveViewsObserver(const RecordActiveViewsObserver&) = delete;
+  RecordActiveViewsObserver& operator=(const RecordActiveViewsObserver&) =
+      delete;
 
   const std::vector<const content::RenderWidgetHostView*>* active_views()
       const {
@@ -245,8 +263,6 @@ class RecordActiveViewsObserver {
 
   std::unique_ptr<content::TextInputManagerTester> tester_;
   std::vector<const content::RenderWidgetHostView*> active_views_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecordActiveViewsObserver);
 };
 
 }  // namespace
@@ -1006,6 +1022,9 @@ class InputMethodObserverBase {
         test_observer_(content::TestInputMethodObserver::Create(web_contents)) {
   }
 
+  InputMethodObserverBase(const InputMethodObserverBase&) = delete;
+  InputMethodObserverBase& operator=(const InputMethodObserverBase&) = delete;
+
   void Wait() {
     if (success_)
       return;
@@ -1035,8 +1054,6 @@ class InputMethodObserverBase {
   bool success_;
   std::unique_ptr<content::TestInputMethodObserver> test_observer_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodObserverBase);
 };
 
 class InputMethodObserverForShowIme : public InputMethodObserverBase {
@@ -1047,8 +1064,9 @@ class InputMethodObserverForShowIme : public InputMethodObserverBase {
         success_closure());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodObserverForShowIme);
+  InputMethodObserverForShowIme(const InputMethodObserverForShowIme&) = delete;
+  InputMethodObserverForShowIme& operator=(
+      const InputMethodObserverForShowIme&) = delete;
 };
 
 // TODO(ekaramad): This test is actually a unit test and should be moved to

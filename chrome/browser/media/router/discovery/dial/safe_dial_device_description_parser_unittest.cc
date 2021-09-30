@@ -78,6 +78,11 @@ class SafeDialDeviceDescriptionParserTest : public testing::Test {
  public:
   SafeDialDeviceDescriptionParserTest() = default;
 
+  SafeDialDeviceDescriptionParserTest(
+      const SafeDialDeviceDescriptionParserTest&) = delete;
+  SafeDialDeviceDescriptionParserTest& operator=(
+      const SafeDialDeviceDescriptionParserTest&) = delete;
+
   ParsedDialDeviceDescription Parse(
       const std::string& xml,
       const GURL& app_url,
@@ -107,8 +112,6 @@ class SafeDialDeviceDescriptionParserTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeDialDeviceDescriptionParserTest);
 };
 
 TEST_F(SafeDialDeviceDescriptionParserTest, TestInvalidXml) {

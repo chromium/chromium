@@ -77,6 +77,11 @@ class CapturedSitesPasswordManagerBrowserTest
           TestRecipeReplayChromeFeatureActionExecutor,
       public ::testing::WithParamInterface<CapturedSiteParams> {
  public:
+  CapturedSitesPasswordManagerBrowserTest(
+      const CapturedSitesPasswordManagerBrowserTest&) = delete;
+  CapturedSitesPasswordManagerBrowserTest& operator=(
+      const CapturedSitesPasswordManagerBrowserTest&) = delete;
+
   // TestRecipeReplayChromeFeatureActionExecutor:
   bool AddCredential(const std::string& origin,
                      const std::string& username,
@@ -254,8 +259,6 @@ class CapturedSitesPasswordManagerBrowserTest
   std::unique_ptr<ServerUrlLoader> server_url_loader_;
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturedSitesPasswordManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {

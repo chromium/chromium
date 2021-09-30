@@ -30,6 +30,9 @@ class UmaSessionStats {
 
   static UmaSessionStats* GetInstance();
 
+  UmaSessionStats(const UmaSessionStats&) = delete;
+  UmaSessionStats& operator=(const UmaSessionStats&) = delete;
+
   // Returns true if there is a visible activity. Android Chrome only.
   static bool HasVisibleActivity();
 
@@ -83,8 +86,6 @@ class UmaSessionStats {
 
   SessionTimeTracker session_time_tracker_;
   int active_session_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UmaSessionStats);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_METRICS_UMA_SESSION_STATS_H_

@@ -26,6 +26,11 @@ class FlocRemotePermissionServiceFactory
   static federated_learning::FlocRemotePermissionService* GetForProfile(
       Profile* profile);
 
+  FlocRemotePermissionServiceFactory(
+      const FlocRemotePermissionServiceFactory&) = delete;
+  FlocRemotePermissionServiceFactory& operator=(
+      const FlocRemotePermissionServiceFactory&) = delete;
+
  protected:
   // Overridden from BrowserContextKeyedServiceFactory.
   KeyedService* BuildServiceInstanceFor(
@@ -37,8 +42,6 @@ class FlocRemotePermissionServiceFactory
 
   FlocRemotePermissionServiceFactory();
   ~FlocRemotePermissionServiceFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FlocRemotePermissionServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_FEDERATED_LEARNING_FLOC_REMOTE_PERMISSION_SERVICE_FACTORY_H_

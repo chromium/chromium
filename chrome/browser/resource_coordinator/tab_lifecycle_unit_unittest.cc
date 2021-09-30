@@ -64,15 +64,15 @@ class MockTabLifecycleObserver : public TabLifecycleObserver {
  public:
   MockTabLifecycleObserver() = default;
 
+  MockTabLifecycleObserver(const MockTabLifecycleObserver&) = delete;
+  MockTabLifecycleObserver& operator=(const MockTabLifecycleObserver&) = delete;
+
   MOCK_METHOD3(OnDiscardedStateChange,
                void(content::WebContents* contents,
                     LifecycleUnitDiscardReason reason,
                     bool is_discarded));
   MOCK_METHOD2(OnAutoDiscardableStateChange,
                void(content::WebContents* contents, bool is_auto_discardable));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTabLifecycleObserver);
 };
 
 }  // namespace
@@ -81,6 +81,10 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
  public:
   MockLifecycleUnitObserver() = default;
 
+  MockLifecycleUnitObserver(const MockLifecycleUnitObserver&) = delete;
+  MockLifecycleUnitObserver& operator=(const MockLifecycleUnitObserver&) =
+      delete;
+
   MOCK_METHOD3(OnLifecycleUnitStateChanged,
                void(LifecycleUnit*,
                     LifecycleUnitState,
@@ -88,9 +92,6 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
   MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit*));
   MOCK_METHOD2(OnLifecycleUnitVisibilityChanged,
                void(LifecycleUnit*, content::Visibility));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLifecycleUnitObserver);
 };
 
 class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
@@ -106,6 +107,9 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
     test_clock_.Advance(base::TimeDelta::FromSeconds(1));
     observers_.AddObserver(&observer_);
   }
+
+  TabLifecycleUnitTest(const TabLifecycleUnitTest&) = delete;
+  TabLifecycleUnitTest& operator=(const TabLifecycleUnitTest&) = delete;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -174,8 +178,6 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   // So that the main thread looks like the UI thread as expected.
   TestTabStripModelDelegate tab_strip_model_delegate_;
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLifecycleUnitTest);
 };
 
 class TabLifecycleUnitTest::ScopedEnterpriseOptOut {

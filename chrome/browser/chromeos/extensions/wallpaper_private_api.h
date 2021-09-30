@@ -65,6 +65,11 @@ class WallpaperPrivateSetWallpaperIfExistsFunction : public ExtensionFunction {
 
   WallpaperPrivateSetWallpaperIfExistsFunction();
 
+  WallpaperPrivateSetWallpaperIfExistsFunction(
+      const WallpaperPrivateSetWallpaperIfExistsFunction&) = delete;
+  WallpaperPrivateSetWallpaperIfExistsFunction& operator=(
+      const WallpaperPrivateSetWallpaperIfExistsFunction&) = delete;
+
  protected:
   ~WallpaperPrivateSetWallpaperIfExistsFunction() override;
 
@@ -74,8 +79,6 @@ class WallpaperPrivateSetWallpaperIfExistsFunction : public ExtensionFunction {
  private:
   // Responds with the |file_exists| result.
   void OnSetOnlineWallpaperIfExistsCallback(bool file_exists);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateSetWallpaperIfExistsFunction);
 };
 
 class WallpaperPrivateSetWallpaperFunction : public ExtensionFunction {
@@ -84,6 +87,11 @@ class WallpaperPrivateSetWallpaperFunction : public ExtensionFunction {
                              WALLPAPERPRIVATE_SETWALLPAPER)
 
   WallpaperPrivateSetWallpaperFunction();
+
+  WallpaperPrivateSetWallpaperFunction(
+      const WallpaperPrivateSetWallpaperFunction&) = delete;
+  WallpaperPrivateSetWallpaperFunction& operator=(
+      const WallpaperPrivateSetWallpaperFunction&) = delete;
 
  protected:
   ~WallpaperPrivateSetWallpaperFunction() override;
@@ -94,8 +102,6 @@ class WallpaperPrivateSetWallpaperFunction : public ExtensionFunction {
  private:
   // Responds with the |success| status.
   void OnSetWallpaperCallback(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateSetWallpaperFunction);
 };
 
 class WallpaperPrivateResetWallpaperFunction : public ExtensionFunction {
@@ -238,6 +244,11 @@ class WallpaperPrivateGetOfflineWallpaperListFunction
                              WALLPAPERPRIVATE_GETOFFLINEWALLPAPERLIST)
   WallpaperPrivateGetOfflineWallpaperListFunction();
 
+  WallpaperPrivateGetOfflineWallpaperListFunction(
+      const WallpaperPrivateGetOfflineWallpaperListFunction&) = delete;
+  WallpaperPrivateGetOfflineWallpaperListFunction& operator=(
+      const WallpaperPrivateGetOfflineWallpaperListFunction&) = delete;
+
  protected:
   ~WallpaperPrivateGetOfflineWallpaperListFunction() override;
 
@@ -247,8 +258,6 @@ class WallpaperPrivateGetOfflineWallpaperListFunction
  private:
   // Responds with the list of urls.
   void OnOfflineWallpaperListReturned(const std::vector<std::string>& url_list);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetOfflineWallpaperListFunction);
 };
 
 // The wallpaper UMA is recorded when a new wallpaper is set, either by the
@@ -271,6 +280,11 @@ class WallpaperPrivateGetCollectionsInfoFunction : public ExtensionFunction {
                              WALLPAPERPRIVATE_GETCOLLECTIONSINFO)
   WallpaperPrivateGetCollectionsInfoFunction();
 
+  WallpaperPrivateGetCollectionsInfoFunction(
+      const WallpaperPrivateGetCollectionsInfoFunction&) = delete;
+  WallpaperPrivateGetCollectionsInfoFunction& operator=(
+      const WallpaperPrivateGetCollectionsInfoFunction&) = delete;
+
  protected:
   ~WallpaperPrivateGetCollectionsInfoFunction() override;
 
@@ -286,8 +300,6 @@ class WallpaperPrivateGetCollectionsInfoFunction : public ExtensionFunction {
   void OnCollectionsInfoFetched(
       bool success,
       const std::vector<backdrop::Collection>& collections);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetCollectionsInfoFunction);
 };
 
 class WallpaperPrivateGetImagesInfoFunction : public ExtensionFunction {
@@ -295,6 +307,11 @@ class WallpaperPrivateGetImagesInfoFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("wallpaperPrivate.getImagesInfo",
                              WALLPAPERPRIVATE_GETIMAGESINFO)
   WallpaperPrivateGetImagesInfoFunction();
+
+  WallpaperPrivateGetImagesInfoFunction(
+      const WallpaperPrivateGetImagesInfoFunction&) = delete;
+  WallpaperPrivateGetImagesInfoFunction& operator=(
+      const WallpaperPrivateGetImagesInfoFunction&) = delete;
 
  protected:
   ~WallpaperPrivateGetImagesInfoFunction() override;
@@ -312,8 +329,6 @@ class WallpaperPrivateGetImagesInfoFunction : public ExtensionFunction {
   void OnImagesInfoFetched(bool success,
                            const std::string& collection_id,
                            const std::vector<backdrop::Image>& images);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetImagesInfoFunction);
 };
 
 class WallpaperPrivateGetLocalImagePathsFunction : public ExtensionFunction {
@@ -321,6 +336,11 @@ class WallpaperPrivateGetLocalImagePathsFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("wallpaperPrivate.getLocalImagePaths",
                              WALLPAPERPRIVATE_GETLOCALIMAGEPATHS)
   WallpaperPrivateGetLocalImagePathsFunction();
+
+  WallpaperPrivateGetLocalImagePathsFunction(
+      const WallpaperPrivateGetLocalImagePathsFunction&) = delete;
+  WallpaperPrivateGetLocalImagePathsFunction& operator=(
+      const WallpaperPrivateGetLocalImagePathsFunction&) = delete;
 
  protected:
   ~WallpaperPrivateGetLocalImagePathsFunction() override;
@@ -331,8 +351,6 @@ class WallpaperPrivateGetLocalImagePathsFunction : public ExtensionFunction {
  private:
   // Responds with the list of collected image paths.
   void OnGetImagePathsComplete(const std::vector<base::FilePath>& image_paths);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetLocalImagePathsFunction);
 };
 
 class WallpaperPrivateGetLocalImageDataFunction : public ExtensionFunction {
@@ -340,6 +358,11 @@ class WallpaperPrivateGetLocalImageDataFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("wallpaperPrivate.getLocalImageData",
                              WALLPAPERPRIVATE_GETLOCALIMAGEDATA)
   WallpaperPrivateGetLocalImageDataFunction();
+
+  WallpaperPrivateGetLocalImageDataFunction(
+      const WallpaperPrivateGetLocalImageDataFunction&) = delete;
+  WallpaperPrivateGetLocalImageDataFunction& operator=(
+      const WallpaperPrivateGetLocalImageDataFunction&) = delete;
 
  protected:
   ~WallpaperPrivateGetLocalImageDataFunction() override;
@@ -351,8 +374,6 @@ class WallpaperPrivateGetLocalImageDataFunction : public ExtensionFunction {
   // Responds with the image data or an error message.
   void OnReadImageDataComplete(std::unique_ptr<std::string> image_data,
                                bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetLocalImageDataFunction);
 };
 
 class WallpaperPrivateConfirmPreviewWallpaperFunction
@@ -362,14 +383,16 @@ class WallpaperPrivateConfirmPreviewWallpaperFunction
                              WALLPAPERPRIVATE_CONFIRMPREVIEWWALLPAPER)
   WallpaperPrivateConfirmPreviewWallpaperFunction();
 
+  WallpaperPrivateConfirmPreviewWallpaperFunction(
+      const WallpaperPrivateConfirmPreviewWallpaperFunction&) = delete;
+  WallpaperPrivateConfirmPreviewWallpaperFunction& operator=(
+      const WallpaperPrivateConfirmPreviewWallpaperFunction&) = delete;
+
  protected:
   ~WallpaperPrivateConfirmPreviewWallpaperFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateConfirmPreviewWallpaperFunction);
 };
 
 class WallpaperPrivateCancelPreviewWallpaperFunction
@@ -379,14 +402,16 @@ class WallpaperPrivateCancelPreviewWallpaperFunction
                              WALLPAPERPRIVATE_CANCELPREVIEWWALLPAPER)
   WallpaperPrivateCancelPreviewWallpaperFunction();
 
+  WallpaperPrivateCancelPreviewWallpaperFunction(
+      const WallpaperPrivateCancelPreviewWallpaperFunction&) = delete;
+  WallpaperPrivateCancelPreviewWallpaperFunction& operator=(
+      const WallpaperPrivateCancelPreviewWallpaperFunction&) = delete;
+
  protected:
   ~WallpaperPrivateCancelPreviewWallpaperFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateCancelPreviewWallpaperFunction);
 };
 
 class WallpaperPrivateGetCurrentWallpaperThumbnailFunction
@@ -395,6 +420,11 @@ class WallpaperPrivateGetCurrentWallpaperThumbnailFunction
   DECLARE_EXTENSION_FUNCTION("wallpaperPrivate.getCurrentWallpaperThumbnail",
                              WALLPAPERPRIVATE_GETCURRENTWALLPAPERTHUMBNAIL)
   WallpaperPrivateGetCurrentWallpaperThumbnailFunction();
+
+  WallpaperPrivateGetCurrentWallpaperThumbnailFunction(
+      const WallpaperPrivateGetCurrentWallpaperThumbnailFunction&) = delete;
+  WallpaperPrivateGetCurrentWallpaperThumbnailFunction& operator=(
+      const WallpaperPrivateGetCurrentWallpaperThumbnailFunction&) = delete;
 
  protected:
   ~WallpaperPrivateGetCurrentWallpaperThumbnailFunction() override;
@@ -405,9 +435,6 @@ class WallpaperPrivateGetCurrentWallpaperThumbnailFunction
  private:
   // WallpaperFunctionBase:
   void OnWallpaperDecoded(const gfx::ImageSkia& wallpaper) override;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      WallpaperPrivateGetCurrentWallpaperThumbnailFunction);
 };
 
 class WallpaperPrivateGetSurpriseMeImageFunction : public ExtensionFunction {
@@ -415,6 +442,11 @@ class WallpaperPrivateGetSurpriseMeImageFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("wallpaperPrivate.getSurpriseMeImage",
                              WALLPAPERPRIVATE_GETSURPRISEMEIMAGE)
   WallpaperPrivateGetSurpriseMeImageFunction();
+
+  WallpaperPrivateGetSurpriseMeImageFunction(
+      const WallpaperPrivateGetSurpriseMeImageFunction&) = delete;
+  WallpaperPrivateGetSurpriseMeImageFunction& operator=(
+      const WallpaperPrivateGetSurpriseMeImageFunction&) = delete;
 
  protected:
   ~WallpaperPrivateGetSurpriseMeImageFunction() override;
@@ -431,8 +463,6 @@ class WallpaperPrivateGetSurpriseMeImageFunction : public ExtensionFunction {
   // Fetcher for the surprise me image info.
   std::unique_ptr<backdrop_wallpaper_handlers::SurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetSurpriseMeImageFunction);
 };
 
 class WallpaperPrivateIsSwaEnabledFunction : public ExtensionFunction {

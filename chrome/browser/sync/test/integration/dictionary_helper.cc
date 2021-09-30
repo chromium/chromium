@@ -22,6 +22,11 @@
 
 class DictionarySyncIntegrationTestHelper {
  public:
+  DictionarySyncIntegrationTestHelper(
+      const DictionarySyncIntegrationTestHelper&) = delete;
+  DictionarySyncIntegrationTestHelper& operator=(
+      const DictionarySyncIntegrationTestHelper&) = delete;
+
   // Same as SpellcheckCustomDictionary::AddWord/RemoveWord, except does not
   // write to disk.
   static bool ApplyChange(SpellcheckCustomDictionary* dictionary,
@@ -32,9 +37,6 @@ class DictionarySyncIntegrationTestHelper {
     dictionary->Sync(*change);
     return !result;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DictionarySyncIntegrationTestHelper);
 };
 
 namespace dictionary_helper {

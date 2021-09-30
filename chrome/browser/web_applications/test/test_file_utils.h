@@ -25,6 +25,7 @@ class TestFileUtils : public FileUtilsWrapper {
   explicit TestFileUtils(
       std::map<base::FilePath, base::FilePath> read_file_rerouting = {});
   TestFileUtils(const TestFileUtils&);
+  TestFileUtils& operator=(const TestFileUtils&) = delete;
   ~TestFileUtils() override;
 
   // FileUtilsWrapper:
@@ -47,8 +48,6 @@ class TestFileUtils : public FileUtilsWrapper {
   std::map<base::FilePath, base::FilePath> read_file_rerouting_;
   absl::optional<bool> delete_file_recursively_result_;
   int remaining_disk_space_ = kNoLimit;
-
-  DISALLOW_ASSIGN(TestFileUtils);
 };
 
 }  // namespace web_app

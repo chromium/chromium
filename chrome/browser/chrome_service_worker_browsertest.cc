@@ -100,6 +100,10 @@ static void ExpectResultAndRun(T expected,
 }
 
 class ChromeServiceWorkerTest : public InProcessBrowserTest {
+ public:
+  ChromeServiceWorkerTest(const ChromeServiceWorkerTest&) = delete;
+  ChromeServiceWorkerTest& operator=(const ChromeServiceWorkerTest&) = delete;
+
  protected:
   ChromeServiceWorkerTest() {
     EXPECT_TRUE(service_worker_dir_.CreateUniqueTempDir());
@@ -195,9 +199,6 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   }
 
   base::ScopedTempDir service_worker_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerTest);
 };
 
 // http://crbug.com/368570
@@ -306,6 +307,11 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 }
 
 class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
+ public:
+  ChromeServiceWorkerFetchTest(const ChromeServiceWorkerFetchTest&) = delete;
+  ChromeServiceWorkerFetchTest& operator=(const ChromeServiceWorkerFetchTest&) =
+      delete;
+
  protected:
   ChromeServiceWorkerFetchTest() {}
   ~ChromeServiceWorkerFetchTest() override {}
@@ -409,8 +415,6 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
         browser(), embedded_test_server()->GetURL("/test.html")));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerFetchTest);
 };
 
 class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
@@ -453,6 +457,12 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
 };
 
 class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
+ public:
+  ChromeServiceWorkerLinkFetchTest(const ChromeServiceWorkerLinkFetchTest&) =
+      delete;
+  ChromeServiceWorkerLinkFetchTest& operator=(
+      const ChromeServiceWorkerLinkFetchTest&) = delete;
+
  protected:
   ChromeServiceWorkerLinkFetchTest() {}
   ~ChromeServiceWorkerLinkFetchTest() override {}
@@ -538,8 +548,6 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
                                      blink::mojom::ManifestPtr) {
     std::move(continuation).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerLinkFetchTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestSameOrigin) {
@@ -600,6 +608,12 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, FaviconOtherOrigin) {
 // expect that the the service worker only see the navigation request for the
 // iframe.
 class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
+ public:
+  ChromeServiceWorkerFetchPPAPITest(const ChromeServiceWorkerFetchPPAPITest&) =
+      delete;
+  ChromeServiceWorkerFetchPPAPITest& operator=(
+      const ChromeServiceWorkerFetchPPAPITest&) = delete;
+
  protected:
   ChromeServiceWorkerFetchPPAPITest() {}
   ~ChromeServiceWorkerFetchPPAPITest() override {}
@@ -638,8 +652,6 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
 
  private:
   std::string test_page_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerFetchPPAPITest);
 };
 
 // Flaky on Windows and Linux ASan. https://crbug.com/1113802
@@ -902,6 +914,11 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
  public:
   ChromeServiceWorkerNavigationPreloadTest() = default;
 
+  ChromeServiceWorkerNavigationPreloadTest(
+      const ChromeServiceWorkerNavigationPreloadTest&) = delete;
+  ChromeServiceWorkerNavigationPreloadTest& operator=(
+      const ChromeServiceWorkerNavigationPreloadTest&) = delete;
+
   void SetUp() override {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &ChromeServiceWorkerNavigationPreloadTest::HandleRequest,
@@ -967,8 +984,6 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
 
   // The request that hit the "test" endpoint.
   absl::optional<net::test_server::HttpRequest> received_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerNavigationPreloadTest);
 };
 
 // Tests navigation preload during a navigation in the top-level frame

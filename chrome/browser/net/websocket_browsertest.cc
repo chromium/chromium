@@ -73,6 +73,9 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
                     SSLOptions(cert),
                     net::GetWebSocketTestDataDirectory()) {}
 
+  WebSocketBrowserTest(const WebSocketBrowserTest&) = delete;
+  WebSocketBrowserTest& operator=(const WebSocketBrowserTest&) = delete;
+
  protected:
   void NavigateToHTTP(const std::string& path) {
     // Visit a HTTP page for testing.
@@ -153,8 +156,6 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<content::TitleWatcher> watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketBrowserTest);
 };
 
 class WebSocketBrowserTestWithAllowFileAccessFromFiles
@@ -250,6 +251,9 @@ class AutoLogin : public content::NotificationObserver {
         content::Source<content::NavigationController>(navigation_controller));
   }
 
+  AutoLogin(const AutoLogin&) = delete;
+  AutoLogin& operator=(const AutoLogin&) = delete;
+
   // NotificationObserver implementation
   void Observe(int type,
                const content::NotificationSource& source,
@@ -269,8 +273,6 @@ class AutoLogin : public content::NotificationObserver {
   bool logged_in_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLogin);
 };
 
 // Test that the browser can handle a WebSocket frame split into multiple TCP

@@ -22,6 +22,10 @@ class WebSocketHandshakeThrottleProviderImpl final
  public:
   explicit WebSocketHandshakeThrottleProviderImpl(
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker);
+
+  WebSocketHandshakeThrottleProviderImpl& operator=(
+      const WebSocketHandshakeThrottleProviderImpl&) = delete;
+
   ~WebSocketHandshakeThrottleProviderImpl() override;
 
   // Implements blink::WebSocketHandshakeThrottleProvider.
@@ -41,8 +45,6 @@ class WebSocketHandshakeThrottleProviderImpl final
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(WebSocketHandshakeThrottleProviderImpl);
 };
 
 #endif  // CHROME_RENDERER_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_IMPL_H_

@@ -144,6 +144,9 @@ class PdfConverterImpl : public PdfConverter {
                         PdfConverter::GetPageCallback callback)
         : page_number_(page_number), callback_(callback) {}
 
+    GetPageCallbackData(const GetPageCallbackData&) = delete;
+    GetPageCallbackData& operator=(const GetPageCallbackData&) = delete;
+
     GetPageCallbackData(GetPageCallbackData&& other) {
       *this = std::move(other);
     }
@@ -162,8 +165,6 @@ class PdfConverterImpl : public PdfConverter {
     uint32_t page_number_;
 
     PdfConverter::GetPageCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(GetPageCallbackData);
   };
 
   void Initialize(scoped_refptr<base::RefCountedMemory> data);

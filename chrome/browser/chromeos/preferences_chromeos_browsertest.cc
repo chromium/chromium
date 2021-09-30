@@ -42,6 +42,9 @@ class PreferencesTest : public LoginManagerTest {
     feature_list_.InitAndEnableFeature(features::kAllowScrollSettings);
   }
 
+  PreferencesTest(const PreferencesTest&) = delete;
+  PreferencesTest& operator=(const PreferencesTest&) = delete;
+
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
     input_settings_ = system::InputDeviceSettings::Get()->GetFakeInterface();
@@ -151,8 +154,6 @@ class PreferencesTest : public LoginManagerTest {
   base::test::ScopedFeatureList feature_list_;
   system::InputDeviceSettings::FakeInterface* input_settings_;
   input_method::FakeImeKeyboard* keyboard_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreferencesTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {

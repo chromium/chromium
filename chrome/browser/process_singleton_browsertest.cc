@@ -62,6 +62,9 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
         user_data_dir_(user_data_dir),
         initial_command_line_for_relaunch_(initial_command_line_for_relaunch) {}
 
+  ChromeStarter(const ChromeStarter&) = delete;
+  ChromeStarter& operator=(const ChromeStarter&) = delete;
+
   // We must reset some data members since we reuse the same ChromeStarter
   // object and start/stop it a few times. We must start fresh! :-)
   void Reset() {
@@ -127,8 +130,6 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
   base::TimeDelta timeout_;
   base::FilePath user_data_dir_;
   base::CommandLine initial_command_line_for_relaunch_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeStarter);
 };
 
 }  // namespace

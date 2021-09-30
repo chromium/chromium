@@ -38,6 +38,11 @@ content::WebPluginInfo CreateFakePluginInfo(
 }
 
 class PluginMetricsProviderTest : public ::testing::Test {
+ public:
+  PluginMetricsProviderTest(const PluginMetricsProviderTest&) = delete;
+  PluginMetricsProviderTest& operator=(const PluginMetricsProviderTest&) =
+      delete;
+
  protected:
   PluginMetricsProviderTest()
       : prefs_(new TestingPrefServiceSimple) {
@@ -50,8 +55,6 @@ class PluginMetricsProviderTest : public ::testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginMetricsProviderTest);
 };
 
 }  // namespace

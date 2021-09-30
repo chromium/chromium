@@ -30,6 +30,9 @@ class TabGroupTabContentLayer : public Layer {
   static scoped_refptr<TabGroupTabContentLayer> Create(
       TabContentManager* tab_content_manager);
 
+  TabGroupTabContentLayer(const TabGroupTabContentLayer&) = delete;
+  TabGroupTabContentLayer& operator=(const TabGroupTabContentLayer&) = delete;
+
   void SetProperties(int id,
                      bool can_use_live_layer,
                      float static_to_view_blend,
@@ -55,7 +58,6 @@ class TabGroupTabContentLayer : public Layer {
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<ContentLayer> content_;
   scoped_refptr<cc::NinePatchLayer> front_border_inner_shadow_;
-  DISALLOW_COPY_AND_ASSIGN(TabGroupTabContentLayer);
 };
 
 }  //  namespace android

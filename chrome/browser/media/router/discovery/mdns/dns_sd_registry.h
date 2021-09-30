@@ -42,6 +42,9 @@ class DnsSdRegistry : public DnsSdDelegate {
 
   static DnsSdRegistry* GetInstance();
 
+  DnsSdRegistry(const DnsSdRegistry&) = delete;
+  DnsSdRegistry& operator=(const DnsSdRegistry&) = delete;
+
   // Publishes the current device list for |service_type| to event listeners
   // whose event filter matches the service type.
   virtual void Publish(const std::string& service_type);
@@ -127,8 +130,6 @@ class DnsSdRegistry : public DnsSdDelegate {
       service_discovery_client_;
   base::ObserverList<DnsSdObserver>::Unchecked observers_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsSdRegistry);
 };
 
 }  // namespace media_router

@@ -103,6 +103,11 @@ class PopupPageLoadMetricsWaiterInitializer : public TabStripModelObserver {
     tab_strip_model->AddObserver(this);
   }
 
+  PopupPageLoadMetricsWaiterInitializer(
+      const PopupPageLoadMetricsWaiterInitializer&) = delete;
+  PopupPageLoadMetricsWaiterInitializer& operator=(
+      const PopupPageLoadMetricsWaiterInitializer&) = delete;
+
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
@@ -117,8 +122,6 @@ class PopupPageLoadMetricsWaiterInitializer : public TabStripModelObserver {
 
  private:
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>* waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupPageLoadMetricsWaiterInitializer);
 };
 
 }  // namespace

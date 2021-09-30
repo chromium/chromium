@@ -25,6 +25,9 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
   // Interface used to notify creator of user actions invoked on the error page.
   class Delegate {
    public:
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Button press notification from error page.
     virtual void ButtonPressed(NetErrorHelperCore::Button button) = 0;
 
@@ -61,9 +64,10 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
    protected:
     Delegate();
     virtual ~Delegate();
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
+
+  NetErrorPageController(const NetErrorPageController&) = delete;
+  NetErrorPageController& operator=(const NetErrorPageController&) = delete;
 
   // Will invoke methods on |delegate| in response to user actions taken on the
   // error page. May call delegate methods even after the page has been
@@ -109,8 +113,6 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
       v8::Isolate* isolate) override;
 
   base::WeakPtr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorPageController);
 };
 
 #endif  // CHROME_RENDERER_NET_NET_ERROR_PAGE_CONTROLLER_H_

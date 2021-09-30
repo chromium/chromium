@@ -30,6 +30,11 @@ class TriggeredProfileResetterFactory
       content::BrowserContext* context);
   static TriggeredProfileResetterFactory* GetInstance();
 
+  TriggeredProfileResetterFactory(const TriggeredProfileResetterFactory&) =
+      delete;
+  TriggeredProfileResetterFactory& operator=(
+      const TriggeredProfileResetterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TriggeredProfileResetterFactory>;
   friend class TriggeredProfileResetterTest;
@@ -43,8 +48,6 @@ class TriggeredProfileResetterFactory
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TriggeredProfileResetterFactory);
 };
 
 #endif  // CHROME_BROWSER_PROFILE_RESETTER_TRIGGERED_PROFILE_RESETTER_FACTORY_H_

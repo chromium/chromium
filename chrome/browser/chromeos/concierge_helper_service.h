@@ -38,6 +38,10 @@ class ConciergeHelperServiceFactory : public BrowserContextKeyedServiceFactory {
   static ConciergeHelperService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  ConciergeHelperServiceFactory(const ConciergeHelperServiceFactory&) = delete;
+  ConciergeHelperServiceFactory& operator=(
+      const ConciergeHelperServiceFactory&) = delete;
+
  protected:
   friend class base::NoDestructor<ConciergeHelperServiceFactory>;
 
@@ -47,9 +51,6 @@ class ConciergeHelperServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConciergeHelperServiceFactory);
 };
 
 }  // namespace chromeos

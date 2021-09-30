@@ -22,6 +22,11 @@ class TranslateAcceptLanguagesFactory
       content::BrowserContext* browser_context);
   static TranslateAcceptLanguagesFactory* GetInstance();
 
+  TranslateAcceptLanguagesFactory(const TranslateAcceptLanguagesFactory&) =
+      delete;
+  TranslateAcceptLanguagesFactory& operator=(
+      const TranslateAcceptLanguagesFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TranslateAcceptLanguagesFactory>;
 
@@ -33,8 +38,6 @@ class TranslateAcceptLanguagesFactory
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateAcceptLanguagesFactory);
 };
 
 #endif  // CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_

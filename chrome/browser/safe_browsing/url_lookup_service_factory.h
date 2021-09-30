@@ -32,6 +32,11 @@ class RealTimeUrlLookupServiceFactory
   // Get the singleton instance.
   static RealTimeUrlLookupServiceFactory* GetInstance();
 
+  RealTimeUrlLookupServiceFactory(const RealTimeUrlLookupServiceFactory&) =
+      delete;
+  RealTimeUrlLookupServiceFactory& operator=(
+      const RealTimeUrlLookupServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<RealTimeUrlLookupServiceFactory>;
 
@@ -41,8 +46,6 @@ class RealTimeUrlLookupServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RealTimeUrlLookupServiceFactory);
 };
 
 }  // namespace safe_browsing

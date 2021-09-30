@@ -63,6 +63,9 @@ class BrowsingDataQuotaHelper
 
   static scoped_refptr<BrowsingDataQuotaHelper> Create(Profile* profile);
 
+  BrowsingDataQuotaHelper(const BrowsingDataQuotaHelper&) = delete;
+  BrowsingDataQuotaHelper& operator=(const BrowsingDataQuotaHelper&) = delete;
+
   virtual void StartFetching(FetchResultCallback callback) = 0;
 
   virtual void RevokeHostQuota(const std::string& host) = 0;
@@ -74,8 +77,6 @@ class BrowsingDataQuotaHelper
  private:
   friend class base::DeleteHelper<BrowsingDataQuotaHelper>;
   friend struct BrowsingDataQuotaHelperDeleter;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataQuotaHelper);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_H_

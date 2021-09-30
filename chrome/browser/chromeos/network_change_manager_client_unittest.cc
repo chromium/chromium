@@ -137,6 +137,12 @@ TEST(NetworkChangeManagerClientTest,
 }
 
 class NetworkChangeManagerClientUpdateTest : public testing::Test {
+ public:
+  NetworkChangeManagerClientUpdateTest(
+      const NetworkChangeManagerClientUpdateTest&) = delete;
+  NetworkChangeManagerClientUpdateTest& operator=(
+      const NetworkChangeManagerClientUpdateTest&) = delete;
+
  protected:
   NetworkChangeManagerClientUpdateTest() : default_network_("") {}
   ~NetworkChangeManagerClientUpdateTest() override = default;
@@ -212,8 +218,6 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
   NetworkState default_network_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   std::unique_ptr<NetworkChangeManagerClient> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeManagerClientUpdateTest);
 };
 
 NotifierUpdateTestCase test_cases[] = {

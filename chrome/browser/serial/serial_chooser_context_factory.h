@@ -18,6 +18,10 @@ class SerialChooserContextFactory : public BrowserContextKeyedServiceFactory {
   static SerialChooserContext* GetForProfileIfExists(Profile* profile);
   static SerialChooserContextFactory* GetInstance();
 
+  SerialChooserContextFactory(const SerialChooserContextFactory&) = delete;
+  SerialChooserContextFactory& operator=(const SerialChooserContextFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SerialChooserContextFactory>;
 
@@ -30,8 +34,6 @@ class SerialChooserContextFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialChooserContextFactory);
 };
 
 #endif  // CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_

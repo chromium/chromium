@@ -25,6 +25,11 @@ class BackgroundFetchPermissionContextTest
  protected:
   BackgroundFetchPermissionContextTest() = default;
 
+  BackgroundFetchPermissionContextTest(
+      const BackgroundFetchPermissionContextTest&) = delete;
+  BackgroundFetchPermissionContextTest& operator=(
+      const BackgroundFetchPermissionContextTest&) = delete;
+
   ~BackgroundFetchPermissionContextTest() override = default;
 
   ContentSetting GetPermissonStatus(
@@ -53,9 +58,6 @@ class BackgroundFetchPermissionContextTest
     host_content_settings_map->SetContentSettingDefaultScope(
         url /* primary_url*/, url /* secondary_url*/, content_type, setting);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchPermissionContextTest);
 };
 
 // Test that Background Fetch permission is "allow" by default, when queried

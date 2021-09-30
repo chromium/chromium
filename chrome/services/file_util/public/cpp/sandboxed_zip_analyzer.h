@@ -33,6 +33,9 @@ class SandboxedZipAnalyzer
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
+  SandboxedZipAnalyzer(const SandboxedZipAnalyzer&) = delete;
+  SandboxedZipAnalyzer& operator=(const SandboxedZipAnalyzer&) = delete;
+
   // Starts the analysis. Must be called on the UI thread.
   void Start();
 
@@ -63,8 +66,6 @@ class SandboxedZipAnalyzer
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedZipAnalyzer);
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_ZIP_ANALYZER_H_

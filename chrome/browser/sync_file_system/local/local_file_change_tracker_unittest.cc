@@ -47,6 +47,10 @@ class LocalFileChangeTrackerTest : public testing::Test {
                      base::ThreadTaskRunnerHandle::Get().get(),
                      base::ThreadTaskRunnerHandle::Get().get()) {}
 
+  LocalFileChangeTrackerTest(const LocalFileChangeTrackerTest&) = delete;
+  LocalFileChangeTrackerTest& operator=(const LocalFileChangeTrackerTest&) =
+      delete;
+
   void SetUp() override {
     file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
 
@@ -121,8 +125,6 @@ class LocalFileChangeTrackerTest : public testing::Test {
 
  private:
   scoped_refptr<LocalFileSyncContext> sync_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileChangeTrackerTest);
 };
 
 TEST_F(LocalFileChangeTrackerTest, DemoteAndPromote) {

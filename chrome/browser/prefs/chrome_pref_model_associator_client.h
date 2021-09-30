@@ -21,6 +21,11 @@ class ChromePrefModelAssociatorClient
   // Returns the global instance.
   static ChromePrefModelAssociatorClient* GetInstance();
 
+  ChromePrefModelAssociatorClient(const ChromePrefModelAssociatorClient&) =
+      delete;
+  ChromePrefModelAssociatorClient& operator=(
+      const ChromePrefModelAssociatorClient&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ChromePrefModelAssociatorClient>;
 
@@ -35,8 +40,6 @@ class ChromePrefModelAssociatorClient
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePrefModelAssociatorClient);
 };
 
 #endif  // CHROME_BROWSER_PREFS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_

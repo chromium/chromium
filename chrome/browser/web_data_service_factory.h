@@ -38,6 +38,9 @@ class WebDataServiceFactory
       Profile* profile,
       ServiceAccessType access_type);
 
+  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
+  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
+
   // Returns the AutofillWebDataService associated with the |profile|.
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForProfile(Profile* profile, ServiceAccessType access_type);
@@ -71,8 +74,6 @@ class WebDataServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_

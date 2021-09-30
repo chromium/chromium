@@ -36,6 +36,9 @@ class IsPinnedToTaskbarHelper {
  public:
   IsPinnedToTaskbarHelper() = default;
 
+  IsPinnedToTaskbarHelper(const IsPinnedToTaskbarHelper&) = delete;
+  IsPinnedToTaskbarHelper& operator=(const IsPinnedToTaskbarHelper&) = delete;
+
   // Returns true if the current executable is pinned to the taskbar. If
   // [check_verbs] is true we check that the unpin from taskbar verb exists for
   // the shortcut.
@@ -67,8 +70,6 @@ class IsPinnedToTaskbarHelper {
 
   bool error_occured_ = false;
   base::win::ScopedCOMInitializer scoped_com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsPinnedToTaskbarHelper);
 };
 
 std::wstring IsPinnedToTaskbarHelper::LoadShellResourceString(

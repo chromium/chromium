@@ -90,6 +90,9 @@ class JumpList : public sessions::TabRestoreServiceObserver,
                  public history::TopSitesObserver,
                  public KeyedService {
  public:
+  JumpList(const JumpList&) = delete;
+  JumpList& operator=(const JumpList&) = delete;
+
   // Returns true if the custom JumpList is enabled.
   static bool Enabled();
 
@@ -354,8 +357,6 @@ class JumpList : public sessions::TabRestoreServiceObserver,
 
   // For callbacks may run after destruction.
   base::WeakPtrFactory<JumpList> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JumpList);
 };
 
 #endif  // CHROME_BROWSER_WIN_JUMPLIST_H_

@@ -238,6 +238,9 @@ class DeviceMediaAsyncFileUtil::MediaPathFilterWrapper
  public:
   MediaPathFilterWrapper();
 
+  MediaPathFilterWrapper(const MediaPathFilterWrapper&) = delete;
+  MediaPathFilterWrapper& operator=(const MediaPathFilterWrapper&) = delete;
+
   // Check if entries in |file_list| look like media files.
   // Append the ones that look like media files to |results|.
   // Should run on a media task runner.
@@ -253,8 +256,6 @@ class DeviceMediaAsyncFileUtil::MediaPathFilterWrapper
   virtual ~MediaPathFilterWrapper();
 
   std::unique_ptr<MediaPathFilter> media_path_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPathFilterWrapper);
 };
 
 DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::MediaPathFilterWrapper()

@@ -17,6 +17,10 @@ class GcmDeviceInfoProviderImpl : public device_sync::GcmDeviceInfoProvider {
  public:
   static const GcmDeviceInfoProviderImpl* GetInstance();
 
+  GcmDeviceInfoProviderImpl(const GcmDeviceInfoProviderImpl&) = delete;
+  GcmDeviceInfoProviderImpl& operator=(const GcmDeviceInfoProviderImpl&) =
+      delete;
+
   // device_sync::GcmDeviceInfoProvider:
   const cryptauth::GcmDeviceInfo& GetGcmDeviceInfo() const override;
 
@@ -24,8 +28,6 @@ class GcmDeviceInfoProviderImpl : public device_sync::GcmDeviceInfoProvider {
   friend class base::NoDestructor<GcmDeviceInfoProviderImpl>;
 
   GcmDeviceInfoProviderImpl();
-
-  DISALLOW_COPY_AND_ASSIGN(GcmDeviceInfoProviderImpl);
 };
 
 }  // namespace ash

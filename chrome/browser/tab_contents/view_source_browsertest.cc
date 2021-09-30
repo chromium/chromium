@@ -54,19 +54,24 @@ class ViewSourceTest : public InProcessBrowserTest {
  public:
   ViewSourceTest() {}
 
+  ViewSourceTest(const ViewSourceTest&) = delete;
+  ViewSourceTest& operator=(const ViewSourceTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewSourceTest);
 };
 
 class ViewSourcePermissionsPolicyTest : public ViewSourceTest {
  public:
   ViewSourcePermissionsPolicyTest() : ViewSourceTest() {}
+
+  ViewSourcePermissionsPolicyTest(const ViewSourcePermissionsPolicyTest&) =
+      delete;
+  ViewSourcePermissionsPolicyTest& operator=(
+      const ViewSourcePermissionsPolicyTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -78,9 +83,6 @@ class ViewSourcePermissionsPolicyTest : public ViewSourceTest {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewSourcePermissionsPolicyTest);
 };
 
 // This test renders a page in view-source and then checks to see if the title

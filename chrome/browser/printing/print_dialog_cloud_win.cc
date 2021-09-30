@@ -68,6 +68,9 @@ class PrintDataSetter : public content::WebContentsObserver {
     message_data_.append(base::UTF8ToUTF16(json_data));
   }
 
+  PrintDataSetter(const PrintDataSetter&) = delete;
+  PrintDataSetter& operator=(const PrintDataSetter&) = delete;
+
  private:
   // Overridden from content::WebContentsObserver:
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
@@ -82,7 +85,6 @@ class PrintDataSetter : public content::WebContentsObserver {
   void WebContentsDestroyed() override { delete this; }
 
   std::u16string message_data_;
-  DISALLOW_COPY_AND_ASSIGN(PrintDataSetter);
 };
 
 void CreatePrintDialog(content::BrowserContext* browser_context,

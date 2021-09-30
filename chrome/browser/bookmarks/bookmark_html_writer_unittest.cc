@@ -138,6 +138,9 @@ class BookmarksObserver : public BookmarksExportObserver {
     DCHECK(loop);
   }
 
+  BookmarksObserver(const BookmarksObserver&) = delete;
+  BookmarksObserver& operator=(const BookmarksObserver&) = delete;
+
   void OnExportFinished(Result result) override {
     EXPECT_EQ(Result::kSuccess, result);
     loop_->Quit();
@@ -145,8 +148,6 @@ class BookmarksObserver : public BookmarksExportObserver {
 
  private:
   base::RunLoop* loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksObserver);
 };
 
 // Tests bookmark_html_writer by populating a BookmarkModel, writing it out by

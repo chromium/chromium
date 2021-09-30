@@ -29,6 +29,11 @@ class SyncSessionsWebContentsRouterFactory
   // Get the singleton instance of the factory.
   static SyncSessionsWebContentsRouterFactory* GetInstance();
 
+  SyncSessionsWebContentsRouterFactory(
+      const SyncSessionsWebContentsRouterFactory&) = delete;
+  SyncSessionsWebContentsRouterFactory& operator=(
+      const SyncSessionsWebContentsRouterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       SyncSessionsWebContentsRouterFactory>;
@@ -39,8 +44,6 @@ class SyncSessionsWebContentsRouterFactory
   // Overridden from BrowserContextKeyedServiceFactory.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsWebContentsRouterFactory);
 };
 
 }  // namespace sync_sessions

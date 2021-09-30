@@ -148,6 +148,10 @@ MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
 // of rendezvous, specifically the ones where the singleton-owning process
 // is hung.
 class ProcessSingletonTest : public base::MultiProcessTest {
+ public:
+  ProcessSingletonTest(const ProcessSingletonTest&) = delete;
+  ProcessSingletonTest& operator=(const ProcessSingletonTest&) = delete;
+
  protected:
   enum WindowOption { WITH_WINDOW, NO_WINDOW };
 
@@ -262,8 +266,6 @@ class ProcessSingletonTest : public base::MultiProcessTest {
   base::TimeDelta old_notification_timeout_;
   bool should_kill_called_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingletonTest);
 };
 
 }  // namespace

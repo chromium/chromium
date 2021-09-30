@@ -63,6 +63,12 @@ class TestPeriodicBackgroundSyncPermissionContext
 
 class PeriodicBackgroundSyncPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PeriodicBackgroundSyncPermissionContextTest(
+      const PeriodicBackgroundSyncPermissionContextTest&) = delete;
+  PeriodicBackgroundSyncPermissionContextTest& operator=(
+      const PeriodicBackgroundSyncPermissionContextTest&) = delete;
+
  protected:
   PeriodicBackgroundSyncPermissionContextTest() = default;
   ~PeriodicBackgroundSyncPermissionContextTest() override = default;
@@ -121,7 +127,6 @@ class PeriodicBackgroundSyncPermissionContextTest
  private:
   std::unique_ptr<TestPeriodicBackgroundSyncPermissionContext>
       permission_context_;
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncPermissionContextTest);
 };
 
 TEST_F(PeriodicBackgroundSyncPermissionContextTest, DenyWhenFeatureDisabled) {

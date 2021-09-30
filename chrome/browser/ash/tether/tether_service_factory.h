@@ -26,6 +26,9 @@ class TetherServiceFactory : public BrowserContextKeyedServiceFactory {
   static TetherService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  TetherServiceFactory(const TetherServiceFactory&) = delete;
+  TetherServiceFactory& operator=(const TetherServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TetherServiceFactory>;
 
@@ -38,8 +41,6 @@ class TetherServiceFactory : public BrowserContextKeyedServiceFactory {
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_FACTORY_H_

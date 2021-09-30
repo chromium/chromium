@@ -43,6 +43,11 @@ class GalleryWatchManagerShutdownNotifierFactory
     return base::Singleton<GalleryWatchManagerShutdownNotifierFactory>::get();
   }
 
+  GalleryWatchManagerShutdownNotifierFactory(
+      const GalleryWatchManagerShutdownNotifierFactory&) = delete;
+  GalleryWatchManagerShutdownNotifierFactory& operator=(
+      const GalleryWatchManagerShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       GalleryWatchManagerShutdownNotifierFactory>;
@@ -53,8 +58,6 @@ class GalleryWatchManagerShutdownNotifierFactory
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
   }
   ~GalleryWatchManagerShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(GalleryWatchManagerShutdownNotifierFactory);
 };
 
 }  // namespace.

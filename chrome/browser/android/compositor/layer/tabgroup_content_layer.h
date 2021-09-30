@@ -25,6 +25,9 @@ class TabGroupContentLayer : public ContentLayer {
   static scoped_refptr<TabGroupContentLayer> Create(
       TabContentManager* tab_content_manager);
 
+  TabGroupContentLayer(const TabGroupContentLayer&) = delete;
+  TabGroupContentLayer& operator=(const TabGroupContentLayer&) = delete;
+
   void SetProperties(int id,
                      const std::vector<int>& tab_ids,
                      bool can_use_live_layer,
@@ -43,7 +46,6 @@ class TabGroupContentLayer : public ContentLayer {
 
  private:
   std::vector<scoped_refptr<TabGroupTabContentLayer>> group_tab_content_layers_;
-  DISALLOW_COPY_AND_ASSIGN(TabGroupContentLayer);
 };
 
 }  //  namespace android

@@ -22,6 +22,9 @@ class SyncAppListHelper {
   // Singleton implementation.
   static SyncAppListHelper* GetInstance();
 
+  SyncAppListHelper(const SyncAppListHelper&) = delete;
+  SyncAppListHelper& operator=(const SyncAppListHelper&) = delete;
+
   // Initializes the profiles in |test| and registers them with
   // internal data structures.
   void SetupIfNecessary(SyncTest* test);
@@ -63,8 +66,6 @@ class SyncAppListHelper {
 
   SyncTest* test_;
   bool setup_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncAppListHelper);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_APP_LIST_HELPER_H_

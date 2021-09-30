@@ -131,6 +131,9 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   CrOSComponentInstaller(std::unique_ptr<MetadataTable> metadata_table,
                          ComponentUpdateService* component_updater);
 
+  CrOSComponentInstaller(const CrOSComponentInstaller&) = delete;
+  CrOSComponentInstaller& operator=(const CrOSComponentInstaller&) = delete;
+
   // CrOSComponentManager:
   void SetDelegate(Delegate* delegate) override;
   void Load(const std::string& name,
@@ -214,8 +217,6 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   std::unique_ptr<MetadataTable> metadata_table_;
 
   ComponentUpdateService* const component_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstaller);
 };
 
 }  // namespace component_updater

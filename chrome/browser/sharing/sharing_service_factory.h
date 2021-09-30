@@ -27,6 +27,9 @@ class SharingServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns the SharingService associated with |context|.
   static SharingService* GetForBrowserContext(content::BrowserContext* context);
 
+  SharingServiceFactory(const SharingServiceFactory&) = delete;
+  SharingServiceFactory& operator=(const SharingServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SharingServiceFactory>;
 
@@ -39,8 +42,6 @@ class SharingServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SERVICE_FACTORY_H_

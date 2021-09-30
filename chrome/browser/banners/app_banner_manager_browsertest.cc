@@ -168,6 +168,10 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
  public:
   AppBannerManagerBrowserTest() = default;
 
+  AppBannerManagerBrowserTest(const AppBannerManagerBrowserTest&) = delete;
+  AppBannerManagerBrowserTest& operator=(const AppBannerManagerBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
@@ -257,9 +261,6 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     if (expected_state)
       EXPECT_EQ(expected_state, manager->state());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppBannerManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,

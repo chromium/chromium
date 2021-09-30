@@ -54,11 +54,12 @@ class SessionRestoreDelegate {
     absl::optional<tab_groups::TabGroupId> group_;
   };
 
+  SessionRestoreDelegate() = delete;
+  SessionRestoreDelegate(const SessionRestoreDelegate&) = delete;
+  SessionRestoreDelegate& operator=(const SessionRestoreDelegate&) = delete;
+
   static void RestoreTabs(const std::vector<RestoredTab>& tabs,
                           const base::TimeTicks& restore_started);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SessionRestoreDelegate);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_DELEGATE_H_

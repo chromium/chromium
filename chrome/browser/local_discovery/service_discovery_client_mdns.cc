@@ -127,6 +127,9 @@ class SocketFactory : public net::MDnsSocketFactory {
   explicit SocketFactory(const net::InterfaceIndexFamilyList& interfaces)
       : interfaces_(interfaces) {}
 
+  SocketFactory(const SocketFactory&) = delete;
+  SocketFactory& operator=(const SocketFactory&) = delete;
+
   // net::MDnsSocketFactory implementation:
   void CreateSockets(std::vector<std::unique_ptr<net::DatagramServerSocket>>*
                          sockets) override {
@@ -142,8 +145,6 @@ class SocketFactory : public net::MDnsSocketFactory {
 
  private:
   net::InterfaceIndexFamilyList interfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketFactory);
 };
 
 void InitMdns(MdnsInitCallback on_initialized,
@@ -207,6 +208,9 @@ class ServiceWatcherProxy : public ProxyBase<ServiceWatcher> {
                                           GetWeakPtr(), std::move(callback))));
   }
 
+  ServiceWatcherProxy(const ServiceWatcherProxy&) = delete;
+  ServiceWatcherProxy& operator=(const ServiceWatcherProxy&) = delete;
+
   // ServiceWatcher methods.
   void Start() override {
     if (implementation()) {
@@ -249,8 +253,6 @@ class ServiceWatcherProxy : public ProxyBase<ServiceWatcher> {
   }
   std::string service_type_;
   ServiceWatcher::UpdatedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWatcherProxy);
 };
 
 class ServiceResolverProxy : public ProxyBase<ServiceResolver> {
@@ -265,6 +267,9 @@ class ServiceResolverProxy : public ProxyBase<ServiceResolver> {
         service_name, base::BindOnce(&ServiceResolverProxy::OnCallback,
                                      GetWeakPtr(), std::move(callback))));
   }
+
+  ServiceResolverProxy(const ServiceResolverProxy&) = delete;
+  ServiceResolverProxy& operator=(const ServiceResolverProxy&) = delete;
 
   // ServiceResolver methods.
   void StartResolving() override {
@@ -287,8 +292,6 @@ class ServiceResolverProxy : public ProxyBase<ServiceResolver> {
   }
 
   std::string service_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceResolverProxy);
 };
 
 class LocalDomainResolverProxy : public ProxyBase<LocalDomainResolver> {
@@ -305,6 +308,9 @@ class LocalDomainResolverProxy : public ProxyBase<LocalDomainResolver> {
         base::BindOnce(&LocalDomainResolverProxy::OnCallback, GetWeakPtr(),
                        std::move(callback))));
   }
+
+  LocalDomainResolverProxy(const LocalDomainResolverProxy&) = delete;
+  LocalDomainResolverProxy& operator=(const LocalDomainResolverProxy&) = delete;
 
   // LocalDomainResolver methods.
   void Start() override {
@@ -325,8 +331,6 @@ class LocalDomainResolverProxy : public ProxyBase<LocalDomainResolver> {
         base::BindOnce(&Base::RunCallback, proxy,
                        base::BindOnce(std::move(callback), a1, a2, a3)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LocalDomainResolverProxy);
 };
 
 }  // namespace

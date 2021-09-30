@@ -24,6 +24,9 @@ class SpellcheckServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static SpellcheckServiceFactory* GetInstance();
 
+  SpellcheckServiceFactory(const SpellcheckServiceFactory&) = delete;
+  SpellcheckServiceFactory& operator=(const SpellcheckServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SpellcheckServiceFactory>;
 
@@ -46,8 +49,6 @@ class SpellcheckServiceFactory : public BrowserContextKeyedServiceFactory {
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                            WindowsHybridSpellcheckDelayInit);
 #endif  // defined(OS_WIN)
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_FACTORY_H_

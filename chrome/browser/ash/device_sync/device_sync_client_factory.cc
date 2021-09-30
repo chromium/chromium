@@ -63,6 +63,9 @@ class DeviceSyncClientHolder : public KeyedService {
     device_sync_client_->Initialize(base::ThreadTaskRunnerHandle::Get());
   }
 
+  DeviceSyncClientHolder(const DeviceSyncClientHolder&) = delete;
+  DeviceSyncClientHolder& operator=(const DeviceSyncClientHolder&) = delete;
+
   DeviceSyncClient* device_sync_client() { return device_sync_client_.get(); }
 
  private:
@@ -75,8 +78,6 @@ class DeviceSyncClientHolder : public KeyedService {
 
   std::unique_ptr<DeviceSyncBase> device_sync_;
   std::unique_ptr<DeviceSyncClient> device_sync_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncClientHolder);
 };
 
 DeviceSyncClientFactory::DeviceSyncClientFactory()

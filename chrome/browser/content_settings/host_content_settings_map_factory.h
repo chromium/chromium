@@ -19,6 +19,10 @@ class HostContentSettingsMapFactory
       content::BrowserContext* browser_context);
   static HostContentSettingsMapFactory* GetInstance();
 
+  HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;
+  HostContentSettingsMapFactory& operator=(
+      const HostContentSettingsMapFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<HostContentSettingsMapFactory>;
 
@@ -30,8 +34,6 @@ class HostContentSettingsMapFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMapFactory);
 };
 
 #endif // CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_

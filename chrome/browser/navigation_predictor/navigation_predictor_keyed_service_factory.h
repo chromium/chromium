@@ -27,6 +27,11 @@ class NavigationPredictorKeyedServiceFactory
   // Gets the LazyInstance that owns all NavigationPredictorKeyedServices.
   static NavigationPredictorKeyedServiceFactory* GetInstance();
 
+  NavigationPredictorKeyedServiceFactory(
+      const NavigationPredictorKeyedServiceFactory&) = delete;
+  NavigationPredictorKeyedServiceFactory& operator=(
+      const NavigationPredictorKeyedServiceFactory&) = delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<
       NavigationPredictorKeyedServiceFactory>;
@@ -37,8 +42,6 @@ class NavigationPredictorKeyedServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictorKeyedServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_KEYED_SERVICE_FACTORY_H_

@@ -17,12 +17,14 @@ class WebContents;
 // retrieve information about the Instant App banner events.
 class InstantAppsSettings {
  public:
+  InstantAppsSettings() = delete;
+  InstantAppsSettings(const InstantAppsSettings&) = delete;
+  InstantAppsSettings& operator=(const InstantAppsSettings&) = delete;
+
   static void RecordInfoBarShowEvent(content::WebContents* web_contents,
                                      const std::string& url);
   static void RecordInfoBarDismissEvent(content::WebContents* web_contents,
                                         const std::string& url);
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InstantAppsSettings);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_INSTANTAPPS_INSTANT_APPS_SETTINGS_H_

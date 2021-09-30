@@ -81,6 +81,9 @@ class TestMetricCollector : public MetricCollector {
   explicit TestMetricCollector(const CollectionParams& collection_params)
       : MetricCollector("Test", collection_params) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "Test"; }
   base::WeakPtr<MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -109,8 +112,6 @@ class TestMetricCollector : public MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
 const base::TimeDelta kPeriodicCollectionInterval =
@@ -124,6 +125,9 @@ class MetricCollectorTest : public testing::Test {
   MetricCollectorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         perf_data_proto_(GetExamplePerfDataProto()) {}
+
+  MetricCollectorTest(const MetricCollectorTest&) = delete;
+  MetricCollectorTest& operator=(const MetricCollectorTest&) = delete;
 
   void SaveProfile(std::unique_ptr<SampledProfile> sampled_profile) {
     cached_profile_data_.resize(cached_profile_data_.size() + 1);
@@ -166,8 +170,6 @@ class MetricCollectorTest : public testing::Test {
 
   // Store sample perf data protobuf for testing.
   PerfDataProto perf_data_proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricCollectorTest);
 };
 
 TEST_F(MetricCollectorTest, CheckSetup) {

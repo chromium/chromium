@@ -32,6 +32,10 @@ class PrintPreviewDialogController
  public:
   PrintPreviewDialogController();
 
+  PrintPreviewDialogController(const PrintPreviewDialogController&) = delete;
+  PrintPreviewDialogController& operator=(const PrintPreviewDialogController&) =
+      delete;
+
   static PrintPreviewDialogController* GetInstance();
 
   // Initiate print preview for |initiator|.
@@ -124,8 +128,6 @@ class PrintPreviewDialogController
   // Whether the PrintPreviewDialogController is in the middle of creating a
   // print preview dialog.
   bool is_creating_print_preview_dialog_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogController);
 };
 
 }  // namespace printing

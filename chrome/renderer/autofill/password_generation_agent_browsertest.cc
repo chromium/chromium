@@ -171,6 +171,10 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
 
   PasswordGenerationAgentTest() = default;
 
+  PasswordGenerationAgentTest(const PasswordGenerationAgentTest&) = delete;
+  PasswordGenerationAgentTest& operator=(const PasswordGenerationAgentTest&) =
+      delete;
+
   // ChromeRenderViewTest:
   void RegisterMainFrameRemoteInterfaces() override;
   void SetUp() override;
@@ -201,9 +205,6 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
 
   FakeMojoPasswordManagerDriver fake_driver_;
   testing::StrictMock<FakePasswordGenerationDriver> fake_pw_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationAgentTest);
 };
 
 void PasswordGenerationAgentTest::RegisterMainFrameRemoteInterfaces() {
@@ -373,6 +374,11 @@ class PasswordGenerationAgentTestForHtmlAnnotation
  public:
   PasswordGenerationAgentTestForHtmlAnnotation() = default;
 
+  PasswordGenerationAgentTestForHtmlAnnotation(
+      const PasswordGenerationAgentTestForHtmlAnnotation&) = delete;
+  PasswordGenerationAgentTestForHtmlAnnotation& operator=(
+      const PasswordGenerationAgentTestForHtmlAnnotation&) = delete;
+
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kShowAutofillSignatures);
@@ -380,9 +386,6 @@ class PasswordGenerationAgentTestForHtmlAnnotation
   }
 
   void TestAnnotateForm(bool has_form_tag);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationAgentTestForHtmlAnnotation);
 };
 
 void PasswordGenerationAgentTestForHtmlAnnotation::TestAnnotateForm(

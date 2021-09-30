@@ -256,6 +256,10 @@ class OnCanDownloadDecidedObserver {
  public:
   OnCanDownloadDecidedObserver() = default;
 
+  OnCanDownloadDecidedObserver(const OnCanDownloadDecidedObserver&) = delete;
+  OnCanDownloadDecidedObserver& operator=(const OnCanDownloadDecidedObserver&) =
+      delete;
+
   void WaitForNumberOfDecisions(size_t expected_num_of_decisions) {
     if (expected_num_of_decisions <= decisions_.size())
       return;
@@ -286,8 +290,6 @@ class OnCanDownloadDecidedObserver {
   std::vector<bool> decisions_;
   size_t expected_num_of_decisions_ = 0;
   base::OnceClosure completion_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnCanDownloadDecidedObserver);
 };
 
 class PercentWaiter : public download::DownloadItem::Observer {
@@ -392,6 +394,10 @@ class DownloadsHistoryDataCollector {
   explicit DownloadsHistoryDataCollector(Profile* profile)
       : profile_(profile) {}
 
+  DownloadsHistoryDataCollector(const DownloadsHistoryDataCollector&) = delete;
+  DownloadsHistoryDataCollector& operator=(
+      const DownloadsHistoryDataCollector&) = delete;
+
   std::vector<history::DownloadRow> WaitForDownloadInfo() {
     std::vector<history::DownloadRow> results;
     HistoryServiceFactory::GetForProfile(profile_,
@@ -408,8 +414,6 @@ class DownloadsHistoryDataCollector {
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsHistoryDataCollector);
 };
 
 static DownloadManager* DownloadManagerForBrowser(Browser* browser) {
@@ -1340,6 +1344,9 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
  public:
   FakeSafeBrowsingService() : TestSafeBrowsingService() {}
 
+  FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
+  FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
+
  protected:
   ~FakeSafeBrowsingService() override {}
 
@@ -1349,9 +1356,6 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
       override {
     return new FakeDownloadProtectionService();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingService);
 };
 
 // Factory that creates FakeSafeBrowsingService instances.
@@ -1400,6 +1404,9 @@ class DownloadWakeLockTest : public DownloadTest {
  public:
   DownloadWakeLockTest() = default;
 
+  DownloadWakeLockTest(const DownloadWakeLockTest&) = delete;
+  DownloadWakeLockTest& operator=(const DownloadWakeLockTest&) = delete;
+
   void Initialize() {
     content::GetDeviceService().BindWakeLockProvider(
         wake_lock_provider_.BindNewPipeAndPassReceiver());
@@ -1423,7 +1430,6 @@ class DownloadWakeLockTest : public DownloadTest {
 
  protected:
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadWakeLockTest);
 };
 
 }  // namespace

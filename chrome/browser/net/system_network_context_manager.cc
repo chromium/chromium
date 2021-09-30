@@ -221,6 +221,10 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  URLLoaderFactoryForSystem(const URLLoaderFactoryForSystem&) = delete;
+  URLLoaderFactoryForSystem& operator=(const URLLoaderFactoryForSystem&) =
+      delete;
+
   // mojom::URLLoaderFactory implementation:
 
   void CreateLoaderAndStart(
@@ -261,8 +265,6 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
 
   SEQUENCE_CHECKER(sequence_checker_);
   SystemNetworkContextManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForSystem);
 };
 
 network::mojom::NetworkContext* SystemNetworkContextManager::GetContext() {

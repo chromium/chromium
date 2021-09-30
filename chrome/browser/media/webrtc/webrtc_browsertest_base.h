@@ -61,6 +61,9 @@ class WebRtcTestBase : public InProcessBrowserTest {
     INDIVIDUAL_STREAMS
   };
 
+  WebRtcTestBase(const WebRtcTestBase&) = delete;
+  WebRtcTestBase& operator=(const WebRtcTestBase&) = delete;
+
  protected:
   WebRtcTestBase();
   ~WebRtcTestBase() override;
@@ -257,8 +260,6 @@ class WebRtcTestBase : public InProcessBrowserTest {
 
   bool detect_errors_in_javascript_;
   scoped_refptr<const extensions::Extension> desktop_capture_extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcTestBase);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_BROWSERTEST_BASE_H_

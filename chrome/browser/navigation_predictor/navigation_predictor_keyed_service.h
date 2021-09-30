@@ -95,6 +95,12 @@ class NavigationPredictorKeyedService : public KeyedService {
 
   explicit NavigationPredictorKeyedService(
       content::BrowserContext* browser_context);
+
+  NavigationPredictorKeyedService(const NavigationPredictorKeyedService&) =
+      delete;
+  NavigationPredictorKeyedService& operator=(
+      const NavigationPredictorKeyedService&) = delete;
+
   ~NavigationPredictorKeyedService() override;
 
   SearchEnginePreconnector* search_engine_preconnector();
@@ -149,8 +155,6 @@ class NavigationPredictorKeyedService : public KeyedService {
   base::TimeTicks last_web_contents_state_change_time_;
 
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictorKeyedService);
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_KEYED_SERVICE_H_

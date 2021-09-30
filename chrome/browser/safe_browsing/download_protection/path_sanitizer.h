@@ -16,14 +16,15 @@ class PathSanitizer {
  public:
   PathSanitizer();
 
+  PathSanitizer(const PathSanitizer&) = delete;
+  PathSanitizer& operator=(const PathSanitizer&) = delete;
+
   const base::FilePath& GetHomeDirectory() const;
 
   void StripHomeDirectory(base::FilePath* file_path) const;
 
  private:
   base::FilePath home_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(PathSanitizer);
 };
 
 }  // namespace safe_browsing

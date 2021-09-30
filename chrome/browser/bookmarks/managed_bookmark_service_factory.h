@@ -27,6 +27,11 @@ class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static bookmarks::ManagedBookmarkService* GetForProfile(Profile* profile);
   static ManagedBookmarkServiceFactory* GetInstance();
+
+  ManagedBookmarkServiceFactory(const ManagedBookmarkServiceFactory&) = delete;
+  ManagedBookmarkServiceFactory& operator=(
+      const ManagedBookmarkServiceFactory&) = delete;
+
   static TestingFactory GetDefaultFactory();
 
   static std::string GetManagedBookmarksManager(Profile* profile);
@@ -43,8 +48,6 @@ class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_MANAGED_BOOKMARK_SERVICE_FACTORY_H_

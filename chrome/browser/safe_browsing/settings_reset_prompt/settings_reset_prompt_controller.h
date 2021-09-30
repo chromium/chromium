@@ -30,6 +30,10 @@ class SettingsResetPromptController {
       std::unique_ptr<SettingsResetPromptModel> model,
       std::unique_ptr<BrandcodedDefaultSettings> default_settings);
 
+  SettingsResetPromptController(const SettingsResetPromptController&) = delete;
+  SettingsResetPromptController& operator=(
+      const SettingsResetPromptController&) = delete;
+
   std::u16string GetWindowTitle() const;
   std::u16string GetMainText() const;
   // Returns the offset into the main text string where a URL was inserted. To
@@ -65,8 +69,6 @@ class SettingsResetPromptController {
 
   // Used for metrics reporting.
   base::Time time_dialog_shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptController);
 };
 
 }  // namespace safe_browsing

@@ -46,6 +46,9 @@ class ModuleListBuilder {
     module_list_.mutable_allowlist();
   }
 
+  ModuleListBuilder(const ModuleListBuilder&) = delete;
+  ModuleListBuilder& operator=(const ModuleListBuilder&) = delete;
+
   // Adds a module to the allowlist.
   void AddAllowlistedModule(absl::optional<std::u16string> basename,
                             absl::optional<std::string> code_id) {
@@ -112,8 +115,6 @@ class ModuleListBuilder {
   const base::FilePath module_list_path_;
 
   chrome::conflicts::ModuleList module_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListBuilder);
 };
 
 // Creates a pair of ModuleInfoKey and ModuleInfoData with the necessary
@@ -140,6 +141,10 @@ constexpr wchar_t kDllPath2[] = L"c:\\some\\shellextension.dll";
 }  // namespace
 
 class ModuleListFilterTest : public ::testing::Test {
+ public:
+  ModuleListFilterTest(const ModuleListFilterTest&) = delete;
+  ModuleListFilterTest& operator=(const ModuleListFilterTest&) = delete;
+
  protected:
   ModuleListFilterTest()
       : dll1_(kDllPath1),
@@ -165,8 +170,6 @@ class ModuleListFilterTest : public ::testing::Test {
   base::FilePath module_list_path_;
 
   scoped_refptr<ModuleListFilter> module_list_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListFilterTest);
 };
 
 TEST_F(ModuleListFilterTest, IsAllowlistedStringPieceVersion) {

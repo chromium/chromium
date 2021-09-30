@@ -88,6 +88,9 @@ class ImageDecoder {
 
   static ImageDecoder* GetInstance();
 
+  ImageDecoder(const ImageDecoder&) = delete;
+  ImageDecoder& operator=(const ImageDecoder&) = delete;
+
   // Calls StartWithOptions() with ImageCodec::DEFAULT_CODEC and
   // shrink_to_fit = false.
   static void Start(ImageRequest* image_request,
@@ -143,8 +146,6 @@ class ImageDecoder {
 
   // Protects |image_request_id_map_| and |image_request_id_counter_|.
   base::Lock map_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoder);
 };
 
 #endif  // CHROME_BROWSER_IMAGE_DECODER_IMAGE_DECODER_H_

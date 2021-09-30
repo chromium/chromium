@@ -66,6 +66,9 @@ typedef base::OnceCallback<void(void)> CanceledCallback;
 
 class SelectFileDialog : public ui::SelectFileDialog::Listener {
  public:
+  SelectFileDialog(const SelectFileDialog&) = delete;
+  SelectFileDialog& operator=(const SelectFileDialog&) = delete;
+
   static void Show(SelectedCallback selected_callback,
                    CanceledCallback canceled_callback,
                    WebContents* web_contents,
@@ -126,8 +129,6 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   SelectedCallback selected_callback_;
   CanceledCallback canceled_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialog);
 };
 
 void WriteToFile(const base::FilePath& path, const std::string& content) {

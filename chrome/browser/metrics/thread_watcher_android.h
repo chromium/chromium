@@ -16,10 +16,11 @@
 
 class ThreadWatcherAndroid {
  public:
-  static void RegisterApplicationStatusListener();
+  ThreadWatcherAndroid() = delete;
+  ThreadWatcherAndroid(const ThreadWatcherAndroid&) = delete;
+  ThreadWatcherAndroid& operator=(const ThreadWatcherAndroid&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ThreadWatcherAndroid);
+  static void RegisterApplicationStatusListener();
 };
 
 #endif  // CHROME_BROWSER_METRICS_THREAD_WATCHER_ANDROID_H_

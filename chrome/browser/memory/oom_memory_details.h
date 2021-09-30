@@ -18,6 +18,9 @@ namespace memory {
 // memory event in an attempt to identify the culprit.
 class OomMemoryDetails : public MemoryDetails {
  public:
+  OomMemoryDetails(const OomMemoryDetails&) = delete;
+  OomMemoryDetails& operator=(const OomMemoryDetails&) = delete;
+
   // Logs the memory details asynchronously.
   // The |title| is printed at the beginning of the message.
   static void Log(const std::string& title);
@@ -31,8 +34,6 @@ class OomMemoryDetails : public MemoryDetails {
 
   std::string title_;
   base::TimeTicks start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(OomMemoryDetails);
 };
 
 }  // namespace memory

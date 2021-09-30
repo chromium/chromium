@@ -39,6 +39,10 @@ class PlatformStateStoreWinTest : public ::testing::Test {
       : profile_(nullptr),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
+  PlatformStateStoreWinTest(const PlatformStateStoreWinTest&) = delete;
+  PlatformStateStoreWinTest& operator=(const PlatformStateStoreWinTest&) =
+      delete;
+
   void SetUp() override {
     ::testing::Test::SetUp();
     ASSERT_NO_FATAL_FAILURE(
@@ -106,8 +110,6 @@ class PlatformStateStoreWinTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   TestingProfileManager profile_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformStateStoreWinTest);
 };
 
 // static

@@ -58,14 +58,16 @@ struct DialInternalMessage {
                       absl::optional<base::Value> body,
                       const std::string& client_id,
                       int sequence_number);
+
+  DialInternalMessage(const DialInternalMessage&) = delete;
+  DialInternalMessage& operator=(const DialInternalMessage&) = delete;
+
   ~DialInternalMessage();
 
   DialInternalMessageType type;
   absl::optional<base::Value> body;
   std::string client_id;
   int sequence_number;
-
-  DISALLOW_COPY_AND_ASSIGN(DialInternalMessage);
 };
 
 // Parsed CUSTOM_DIAL_LAUNCH response from the Cast SDK client.

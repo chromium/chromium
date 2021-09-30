@@ -62,6 +62,9 @@ class CacheMaxAgeHandler {
   explicit CacheMaxAgeHandler(const std::string& path)
       : path_(path), request_count_(0) { }
 
+  CacheMaxAgeHandler(const CacheMaxAgeHandler&) = delete;
+  CacheMaxAgeHandler& operator=(const CacheMaxAgeHandler&) = delete;
+
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != path_)
@@ -79,8 +82,6 @@ class CacheMaxAgeHandler {
  private:
   std::string path_;
   int request_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheMaxAgeHandler);
 };
 
 class CrashRecoveryBrowserTest : public InProcessBrowserTest {

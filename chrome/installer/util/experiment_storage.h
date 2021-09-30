@@ -91,6 +91,10 @@ class ExperimentStorage {
   };
 
   ExperimentStorage();
+
+  ExperimentStorage(const ExperimentStorage&) = delete;
+  ExperimentStorage& operator=(const ExperimentStorage&) = delete;
+
   ~ExperimentStorage();
 
   // Returns exclusive access to the experiment storage. The underlying
@@ -143,8 +147,6 @@ class ExperimentStorage {
 
   // A global mutex with a distinct name for the current installation.
   base::win::ScopedHandle mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExperimentStorage);
 };
 
 }  // namespace installer

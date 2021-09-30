@@ -27,6 +27,9 @@ class CookieSettingsFactory
 
   static CookieSettingsFactory* GetInstance();
 
+  CookieSettingsFactory(const CookieSettingsFactory&) = delete;
+  CookieSettingsFactory& operator=(const CookieSettingsFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<CookieSettingsFactory>;
 
@@ -40,8 +43,6 @@ class CookieSettingsFactory
       content::BrowserContext* context) const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsFactory);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_COOKIE_SETTINGS_FACTORY_H_

@@ -43,6 +43,10 @@ class PlatformStateStoreTestBase : public ::testing::Test {
  protected:
   PlatformStateStoreTestBase() {}
 
+  PlatformStateStoreTestBase(const PlatformStateStoreTestBase&) = delete;
+  PlatformStateStoreTestBase& operator=(const PlatformStateStoreTestBase&) =
+      delete;
+
   void SetUp() override {
     ::testing::Test::SetUp();
     ASSERT_NO_FATAL_FAILURE(
@@ -51,8 +55,6 @@ class PlatformStateStoreTestBase : public ::testing::Test {
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformStateStoreTestBase);
 };
 
 #else  // OS_WIN
@@ -75,6 +77,9 @@ class StateStoreTest : public PlatformStateStoreTestBase {
       : profile_(nullptr),
         task_runner_(new base::TestSimpleTaskRunner()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  StateStoreTest(const StateStoreTest&) = delete;
+  StateStoreTest& operator=(const StateStoreTest&) = delete;
 
   void SetUp() override {
     PlatformStateStoreTestBase::SetUp();
@@ -140,8 +145,6 @@ class StateStoreTest : public PlatformStateStoreTestBase {
       disable_purge_for_testing_;
   base::ScopedTempDir temp_dir_;
   TestingProfileManager profile_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(StateStoreTest);
 };
 
 // static

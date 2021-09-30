@@ -23,6 +23,11 @@ class WebRtcEventLogManagerKeyedServiceFactory
  public:
   static WebRtcEventLogManagerKeyedServiceFactory* GetInstance();
 
+  WebRtcEventLogManagerKeyedServiceFactory(
+      const WebRtcEventLogManagerKeyedServiceFactory&) = delete;
+  WebRtcEventLogManagerKeyedServiceFactory& operator=(
+      const WebRtcEventLogManagerKeyedServiceFactory&) = delete;
+
  protected:
   bool ServiceIsCreatedWithBrowserContext() const override;
 
@@ -35,8 +40,6 @@ class WebRtcEventLogManagerKeyedServiceFactory
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManagerKeyedServiceFactory);
 };
 
 }  // namespace webrtc_event_logging

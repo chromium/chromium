@@ -44,6 +44,9 @@ class TabLayer : public Layer {
                                         LayerTitleCache* layer_title_cache,
                                         TabContentManager* tab_content_manager);
 
+  TabLayer(const TabLayer&) = delete;
+  TabLayer& operator=(const TabLayer&) = delete;
+
   // TODO(meiliang): This method needs another parameter, a resource that can be
   // used to indicate the currently selected tab for the TabLayer.
   void SetProperties(int id,
@@ -163,8 +166,6 @@ class TabLayer : public Layer {
   scoped_refptr<cc::NinePatchLayer> shadow_;
   scoped_refptr<cc::UIResourceLayer> back_logo_;
   float brightness_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLayer);
 };
 
 }  //  namespace android

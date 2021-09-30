@@ -19,6 +19,10 @@ class ServiceDiscoverySharedClient
  public:
   static scoped_refptr<ServiceDiscoverySharedClient> GetInstance();
 
+  ServiceDiscoverySharedClient(const ServiceDiscoverySharedClient&) = delete;
+  ServiceDiscoverySharedClient& operator=(const ServiceDiscoverySharedClient&) =
+      delete;
+
  protected:
   ServiceDiscoverySharedClient();
   ~ServiceDiscoverySharedClient() override;
@@ -27,8 +31,6 @@ class ServiceDiscoverySharedClient
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<ServiceDiscoverySharedClient>;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDiscoverySharedClient);
 };
 
 }  // namespace local_discovery

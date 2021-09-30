@@ -26,6 +26,9 @@ class TileServiceFactory : public SimpleKeyedServiceFactory {
   static TileServiceFactory* GetInstance();
   static TileService* GetForKey(SimpleFactoryKey* key);
 
+  TileServiceFactory(const TileServiceFactory&) = delete;
+  TileServiceFactory& operator=(const TileServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TileServiceFactory>;
 
@@ -34,8 +37,6 @@ class TileServiceFactory : public SimpleKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TileServiceFactory);
 };
 
 }  // namespace query_tiles

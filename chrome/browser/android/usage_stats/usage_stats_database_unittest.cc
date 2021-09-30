@@ -77,6 +77,9 @@ class UsageStatsDatabaseTest : public testing::Test {
         std::move(fake_token_mapping_db));
   }
 
+  UsageStatsDatabaseTest(const UsageStatsDatabaseTest&) = delete;
+  UsageStatsDatabaseTest& operator=(const UsageStatsDatabaseTest&) = delete;
+
   UsageStatsDatabase* usage_stats_database() {
     return usage_stats_database_.get();
   }
@@ -109,8 +112,6 @@ class UsageStatsDatabaseTest : public testing::Test {
   FakeDB<TokenMapping>* token_mapping_db_unowned_;
 
   std::unique_ptr<UsageStatsDatabase> usage_stats_database_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageStatsDatabaseTest);
 };
 
 TEST_F(UsageStatsDatabaseTest, Initialization) {

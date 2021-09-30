@@ -19,6 +19,10 @@ class NtpBackgroundServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static NtpBackgroundServiceFactory* GetInstance();
 
+  NtpBackgroundServiceFactory(const NtpBackgroundServiceFactory&) = delete;
+  NtpBackgroundServiceFactory& operator=(const NtpBackgroundServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<NtpBackgroundServiceFactory>;
 
@@ -28,8 +32,6 @@ class NtpBackgroundServiceFactory : public BrowserContextKeyedServiceFactory {
   // Overridden from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NtpBackgroundServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_FACTORY_H_

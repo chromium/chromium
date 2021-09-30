@@ -13,12 +13,13 @@ class WebContents;
 
 class DownloadStartedAnimation {
  public:
+  DownloadStartedAnimation(const DownloadStartedAnimation&) = delete;
+  DownloadStartedAnimation& operator=(const DownloadStartedAnimation&) = delete;
+
   static void Show(content::WebContents* web_contents);
 
  private:
   DownloadStartedAnimation() { }
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadStartedAnimation);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_STARTED_ANIMATION_H_

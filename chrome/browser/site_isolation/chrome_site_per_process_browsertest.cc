@@ -78,6 +78,9 @@ class RedirectObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents),
         transition_(ui::PageTransition::PAGE_TRANSITION_LINK) {}
 
+  RedirectObserver(const RedirectObserver&) = delete;
+  RedirectObserver& operator=(const RedirectObserver&) = delete;
+
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (!navigation_handle->HasCommitted())
@@ -98,8 +101,6 @@ class RedirectObserver : public content::WebContentsObserver {
  private:
   ui::PageTransition transition_;
   std::vector<GURL> redirects_;
-
-  DISALLOW_COPY_AND_ASSIGN(RedirectObserver);
 };
 
 }  // namespace

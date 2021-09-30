@@ -36,6 +36,11 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   OriginTrialsComponentInstallerTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  OriginTrialsComponentInstallerTest(
+      const OriginTrialsComponentInstallerTest&) = delete;
+  OriginTrialsComponentInstallerTest& operator=(
+      const OriginTrialsComponentInstallerTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -60,9 +65,6 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<ComponentInstallerPolicy> policy_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialsComponentInstallerTest);
 };
 
 TEST_F(OriginTrialsComponentInstallerTest,

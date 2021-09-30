@@ -78,6 +78,9 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
             extensions::Extension::GetBaseURLFromExtensionId("ext")}));
   }
 
+  TestDriveFsEventRouter(const TestDriveFsEventRouter&) = delete;
+  TestDriveFsEventRouter& operator=(const TestDriveFsEventRouter&) = delete;
+
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
                       std::vector<base::Value> event_args) override {
@@ -100,9 +103,6 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
               GetEventListenerURLs,
               (const std::string& event_name),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDriveFsEventRouter);
 };
 
 class DriveFsEventRouterTest : public testing::Test {

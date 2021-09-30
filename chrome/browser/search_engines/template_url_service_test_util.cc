@@ -35,6 +35,11 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
       : ChromeTemplateURLServiceClient(history_service),
         search_term_(search_term) {}
 
+  TestingTemplateURLServiceClient(const TestingTemplateURLServiceClient&) =
+      delete;
+  TestingTemplateURLServiceClient& operator=(
+      const TestingTemplateURLServiceClient&) = delete;
+
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    TemplateURLID id,
                                    const std::u16string& term) override {
@@ -43,8 +48,6 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
 
  private:
   std::u16string* search_term_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingTemplateURLServiceClient);
 };
 
 }  // namespace

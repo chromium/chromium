@@ -52,6 +52,10 @@ class SessionDataDeleterInternal
                              bool delete_only_by_session_only_policy,
                              base::OnceClosure callback);
 
+  SessionDataDeleterInternal(const SessionDataDeleterInternal&) = delete;
+  SessionDataDeleterInternal& operator=(const SessionDataDeleterInternal&) =
+      delete;
+
   void Run(content::StoragePartition* storage_partition,
            HostContentSettingsMap* host_content_settings_map);
 
@@ -71,8 +75,6 @@ class SessionDataDeleterInternal
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;
   const bool delete_only_by_session_only_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionDataDeleterInternal);
 };
 
 SessionDataDeleterInternal::SessionDataDeleterInternal(

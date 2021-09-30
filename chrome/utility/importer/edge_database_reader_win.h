@@ -20,6 +20,9 @@ class EdgeErrorObject {
  public:
   EdgeErrorObject() : last_error_(JET_errSuccess) {}
 
+  EdgeErrorObject(const EdgeErrorObject&) = delete;
+  EdgeErrorObject& operator=(const EdgeErrorObject&) = delete;
+
   // Get the last error converted to a descriptive string.
   std::wstring GetErrorMessage() const;
   // Get the last error value.
@@ -32,8 +35,6 @@ class EdgeErrorObject {
 
  private:
   JET_ERR last_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdgeErrorObject);
 };
 
 class EdgeDatabaseTableEnumerator : public EdgeErrorObject {

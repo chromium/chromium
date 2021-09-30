@@ -15,6 +15,11 @@ namespace extensions {
 class UsersPrivateGetUsersFunction : public ExtensionFunction {
  public:
   UsersPrivateGetUsersFunction();
+
+  UsersPrivateGetUsersFunction(const UsersPrivateGetUsersFunction&) = delete;
+  UsersPrivateGetUsersFunction& operator=(const UsersPrivateGetUsersFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION("usersPrivate.getUsers", USERSPRIVATE_GETUSERS)
 
  protected:
@@ -22,15 +27,18 @@ class UsersPrivateGetUsersFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateGetUsersFunction);
 };
 
 // Implements the chrome.usersPrivate.isUserInList method.
 class UsersPrivateIsUserInListFunction : public ExtensionFunction {
  public:
   UsersPrivateIsUserInListFunction();
+
+  UsersPrivateIsUserInListFunction(const UsersPrivateIsUserInListFunction&) =
+      delete;
+  UsersPrivateIsUserInListFunction& operator=(
+      const UsersPrivateIsUserInListFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("usersPrivate.isUserInList",
                              USERSPRIVATE_ISUSERINLIST)
 
@@ -39,15 +47,17 @@ class UsersPrivateIsUserInListFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateIsUserInListFunction);
 };
 
 // Implements the chrome.usersPrivate.addUser method.
 class UsersPrivateAddUserFunction : public ExtensionFunction {
  public:
   UsersPrivateAddUserFunction();
+
+  UsersPrivateAddUserFunction(const UsersPrivateAddUserFunction&) = delete;
+  UsersPrivateAddUserFunction& operator=(const UsersPrivateAddUserFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION("usersPrivate.addUser", USERSPRIVATE_ADDUSER)
 
  protected:
@@ -55,15 +65,18 @@ class UsersPrivateAddUserFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateAddUserFunction);
 };
 
 // Implements the chrome.usersPrivate.removeUser method.
 class UsersPrivateRemoveUserFunction : public ExtensionFunction {
  public:
   UsersPrivateRemoveUserFunction();
+
+  UsersPrivateRemoveUserFunction(const UsersPrivateRemoveUserFunction&) =
+      delete;
+  UsersPrivateRemoveUserFunction& operator=(
+      const UsersPrivateRemoveUserFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("usersPrivate.removeUser", USERSPRIVATE_REMOVEUSER)
 
  protected:
@@ -71,15 +84,18 @@ class UsersPrivateRemoveUserFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateRemoveUserFunction);
 };
 
 // Implements the chrome.usersPrivate.isUserListManaged method.
 class UsersPrivateIsUserListManagedFunction : public ExtensionFunction {
  public:
   UsersPrivateIsUserListManagedFunction();
+
+  UsersPrivateIsUserListManagedFunction(
+      const UsersPrivateIsUserListManagedFunction&) = delete;
+  UsersPrivateIsUserListManagedFunction& operator=(
+      const UsersPrivateIsUserListManagedFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("usersPrivate.isUserListManaged",
                              USERSPRIVATE_ISUSERLISTMANAGED)
 
@@ -88,15 +104,18 @@ class UsersPrivateIsUserListManagedFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateIsUserListManagedFunction);
 };
 
 // Implements the chrome.usersPrivate.getCurrentUser method.
 class UsersPrivateGetCurrentUserFunction : public ExtensionFunction {
  public:
   UsersPrivateGetCurrentUserFunction();
+
+  UsersPrivateGetCurrentUserFunction(
+      const UsersPrivateGetCurrentUserFunction&) = delete;
+  UsersPrivateGetCurrentUserFunction& operator=(
+      const UsersPrivateGetCurrentUserFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("usersPrivate.getCurrentUser",
                              USERSPRIVATE_GETCURRENTUSER)
 
@@ -105,9 +124,6 @@ class UsersPrivateGetCurrentUserFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateGetCurrentUserFunction);
 };
 
 class UsersPrivateGetLoginStatusFunction : public ExtensionFunction {
@@ -116,13 +132,16 @@ class UsersPrivateGetLoginStatusFunction : public ExtensionFunction {
                              USERSPRIVATE_GETLOGINSTATUS)
   UsersPrivateGetLoginStatusFunction();
 
+  UsersPrivateGetLoginStatusFunction(
+      const UsersPrivateGetLoginStatusFunction&) = delete;
+  UsersPrivateGetLoginStatusFunction& operator=(
+      const UsersPrivateGetLoginStatusFunction&) = delete;
+
  private:
   ~UsersPrivateGetLoginStatusFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateGetLoginStatusFunction);
 };
 
 }  // namespace extensions

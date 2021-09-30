@@ -14,6 +14,9 @@ namespace ukm {
 // The native part of java UkmUtilsForTest class.
 class UkmUtilsForTest {
  public:
+  UkmUtilsForTest(const UkmUtilsForTest&) = delete;
+  UkmUtilsForTest& operator=(const UkmUtilsForTest&) = delete;
+
   static bool IsEnabled();
   static bool HasSourceWithId(SourceId source_id);
   static void RecordSourceWithId(SourceId source_id);
@@ -24,8 +27,6 @@ class UkmUtilsForTest {
   // access UKM internals for testing.
   UkmUtilsForTest();
   ~UkmUtilsForTest();
-
-  DISALLOW_COPY_AND_ASSIGN(UkmUtilsForTest);
 };
 
 }  // namespace ukm

@@ -18,6 +18,9 @@ class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
   static UsbChooserContext* GetForProfileIfExists(Profile* profile);
   static UsbChooserContextFactory* GetInstance();
 
+  UsbChooserContextFactory(const UsbChooserContextFactory&) = delete;
+  UsbChooserContextFactory& operator=(const UsbChooserContextFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UsbChooserContextFactory>;
 
@@ -30,8 +33,6 @@ class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbChooserContextFactory);
 };
 
 #endif  // CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_FACTORY_H_

@@ -22,11 +22,16 @@ namespace webstore_widget {
 // Chrome Web Store Gallery widget.
 class AppInstaller : public extensions::WebstoreStandaloneInstaller {
  public:
+  AppInstaller() = delete;
+
   AppInstaller(content::WebContents* web_contents,
                const std::string& item_id,
                Profile* profile,
                bool silent_installation,
                Callback callback);
+
+  AppInstaller(const AppInstaller&) = delete;
+  AppInstaller& operator=(const AppInstaller&) = delete;
 
  protected:
   friend class base::RefCountedThreadSafe<AppInstaller>;
@@ -49,8 +54,6 @@ class AppInstaller : public extensions::WebstoreStandaloneInstaller {
   bool silent_installation_;
   content::WebContents* web_contents_;
   std::unique_ptr<WebContentsObserver> web_contents_observer_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AppInstaller);
 };
 
 }  // namespace webstore_widget

@@ -30,6 +30,11 @@ class AMPPageLoadMetricsObserverTest
  public:
   AMPPageLoadMetricsObserverTest() {}
 
+  AMPPageLoadMetricsObserverTest(const AMPPageLoadMetricsObserverTest&) =
+      delete;
+  AMPPageLoadMetricsObserverTest& operator=(
+      const AMPPageLoadMetricsObserverTest&) = delete;
+
   void SetUp() override {
     PageLoadMetricsObserverTestHarness::SetUp();
     ResetTest();
@@ -101,9 +106,6 @@ class AMPPageLoadMetricsObserverTest
   }
 
   page_load_metrics::mojom::PageLoadTiming timing_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AMPPageLoadMetricsObserverTest);
 };
 
 TEST_F(AMPPageLoadMetricsObserverTest, AMPCachePage) {
