@@ -186,7 +186,8 @@ class PersistentTool : public InspectTool {
   bool HideOnMouseMove() override;
   bool HideOnHideHighlight() override;
   String GetOverlayName() override;
-  void Dispatch(const ScriptValue& message) override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
 
   GridConfigs grid_node_highlights_;
   FlexContainerConfigs flex_container_configs_;
@@ -240,7 +241,8 @@ class ScreenshotTool : public InspectTool {
   ScreenshotTool& operator=(const ScreenshotTool&) = delete;
 
  private:
-  void Dispatch(const ScriptValue& message) override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
   String GetOverlayName() override;
 };
 
@@ -260,7 +262,8 @@ class PausedInDebuggerTool : public InspectTool {
 
  private:
   void Draw(float scale) override;
-  void Dispatch(const ScriptValue& message) override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
   String GetOverlayName() override;
   v8_inspector::V8InspectorSession* v8_session_;
   String message_;

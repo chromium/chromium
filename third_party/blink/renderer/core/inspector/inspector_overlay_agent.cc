@@ -1372,8 +1372,9 @@ void InspectorOverlayAgent::OnResizeTimer(TimerBase*) {
   resize_timer_.StartOneShot(base::TimeDelta::FromSeconds(1), FROM_HERE);
 }
 
-void InspectorOverlayAgent::Dispatch(const ScriptValue& message) {
-  inspect_tool_->Dispatch(message);
+void InspectorOverlayAgent::Dispatch(const ScriptValue& message,
+                                     ExceptionState& exception_state) {
+  inspect_tool_->Dispatch(message, exception_state);
 }
 
 void InspectorOverlayAgent::PageLayoutInvalidated(bool resized) {

@@ -42,13 +42,14 @@ class CORE_EXPORT InspectorOverlayHost final : public ScriptWrappable {
   class Delegate : public GarbageCollectedMixin {
    public:
     virtual ~Delegate() = default;
-    virtual void Dispatch(const ScriptValue& message) = 0;
+    virtual void Dispatch(const ScriptValue& message,
+                          ExceptionState& exception_state) = 0;
   };
 
   explicit InspectorOverlayHost(Delegate*);
   void Trace(Visitor*) const override;
 
-  void send(const ScriptValue& message);
+  void send(const ScriptValue& message, ExceptionState& exception_state);
   void ClearDelegate();
 
  private:

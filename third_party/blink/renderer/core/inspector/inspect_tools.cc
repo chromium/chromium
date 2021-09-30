@@ -37,6 +37,8 @@ namespace blink {
 
 namespace {
 
+static const char kInvalidOverlayCommand[] = "Invalid Overlay command";
+
 InspectorHighlightContrastInfo FetchContrast(Node* node) {
   InspectorHighlightContrastInfo result;
   auto* element = DynamicTo<Element>(node);
@@ -525,9 +527,9 @@ void PersistentTool::Draw(float scale) {
 // }
 // If the message is correct, sets the property inline style according to the
 // message.
-void PersistentTool::Dispatch(const ScriptValue& message) {
-  Dictionary dict = Dictionary(message);
-  DummyExceptionStateForTesting exception_state;
+void PersistentTool::Dispatch(const ScriptValue& message,
+                              ExceptionState& exception_state) {
+  Dictionary dict(message);
 
   String highlight_type =
       dict.Get<IDLString>("highlightType", exception_state).value_or("");
@@ -540,8 +542,8 @@ void PersistentTool::Dispatch(const ScriptValue& message) {
   String resizer_type =
       dict.Get<IDLString>("resizerType", exception_state).value_or("");
 
-  DCHECK(!exception_state.HadException())
-      << "Error parsing message sent to PersistentTool::Dispatch";
+  if (exception_state.HadException())
+    return;
 
   Element* element = nullptr;
   if (highlight_type == "isolatedElement") {
@@ -551,8 +553,10 @@ void PersistentTool::Dispatch(const ScriptValue& message) {
     }
   }
 
-  if (!element)
+  if (!element) {
+    exception_state.ThrowRangeError("invalid highlightIndex");
     return;
+  }
 
   if (resizer_type == "width" || resizer_type == "bidirection")
     element->SetInlineStyleProperty(CSSPropertyID::kWidth, new_width, true);
@@ -743,35 +747,61 @@ String ScreenshotTool::GetOverlayName() {
   return OverlayNames::OVERLAY_SCREENSHOT;
 }
 
-void ScreenshotTool::Dispatch(const ScriptValue& message) {
-  if (message.IsEmpty())
-    return;
+void ScreenshotTool::Dispatch(const ScriptValue& message,
+                              ExceptionState& exception_state) {
+  IntPoint p1;
+  IntPoint p2;
 
+  // TODO(caseq): remove support for stringified representation once front-end
+  // is updated to pass an object.
   String message_string;
-  if (!message.ToString(message_string))
-    return;
-
-  std::vector<uint8_t> cbor;
-  if (message_string.Is8Bit()) {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint8_t>(message_string.Characters8(),
-                             message_string.length()),
-        &cbor);
+  if (message.ToString(message_string)) {
+    std::vector<uint8_t> cbor;
+    if (message_string.Is8Bit()) {
+      crdtp::json::ConvertJSONToCBOR(
+          crdtp::span<uint8_t>(message_string.Characters8(),
+                               message_string.length()),
+          &cbor);
+    } else {
+      crdtp::json::ConvertJSONToCBOR(
+          crdtp::span<uint16_t>(
+              reinterpret_cast<const uint16_t*>(message_string.Characters16()),
+              message_string.length()),
+          &cbor);
+    }
+    std::unique_ptr<protocol::DOM::Rect> box =
+        protocol::DOM::Rect::FromBinary(cbor.data(), cbor.size());
+    if (!box)
+      return;
+    p1 = IntPoint(box->getX(), box->getY());
+    p2 =
+        IntPoint(box->getX() + box->getWidth(), box->getY() + box->getHeight());
   } else {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint16_t>(
-            reinterpret_cast<const uint16_t*>(message_string.Characters16()),
-            message_string.length()),
-        &cbor);
+    Dictionary dict(message);
+
+    auto x = dict.Get<IDLLong>("x", exception_state);
+    if (exception_state.HadException())
+      return;
+    auto y = dict.Get<IDLLong>("y", exception_state);
+    if (exception_state.HadException())
+      return;
+    auto width = dict.Get<IDLLong>("width", exception_state);
+    if (exception_state.HadException())
+      return;
+    auto height = dict.Get<IDLLong>("height", exception_state);
+    if (exception_state.HadException())
+      return;
+
+    if (!x || !y || !width || !height) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        kInvalidOverlayCommand);
+      return;
+    }
+    p1 = IntPoint(*x, *y);
+    p2 = IntPoint(*x + *width, *y + *height);
   }
-  std::unique_ptr<protocol::DOM::Rect> box =
-      protocol::DOM::Rect::FromBinary(cbor.data(), cbor.size());
-  if (!box)
-    return;
+
   float scale = 1.0f;
-  // Capture values in the CSS pixels.
-  IntPoint p1(box->getX(), box->getY());
-  IntPoint p2(box->getX() + box->getWidth(), box->getY() + box->getHeight());
 
   if (LocalFrame* frame = overlay_->GetFrame()) {
     float emulation_scale = overlay_->GetFrame()
@@ -831,14 +861,21 @@ void PausedInDebuggerTool::Draw(float scale) {
   overlay_->EvaluateInOverlay("drawPausedInDebuggerMessage", message_);
 }
 
-void PausedInDebuggerTool::Dispatch(const ScriptValue& message) {
+void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
+                                    ExceptionState& exception_state) {
   String message_string;
-  if (!message.ToString(message_string))
-    return;
-  if (message_string == "resume")
-    v8_session_->resume();
-  else if (message_string == "stepOver")
-    v8_session_->stepOver();
+  if (message.ToString(message_string)) {
+    if (message_string == "resume") {
+      v8_session_->resume();
+      return;
+    }
+    if (message_string == "stepOver") {
+      v8_session_->stepOver();
+      return;
+    }
+  }
+  exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                    kInvalidOverlayCommand);
 }
 
 }  // namespace blink

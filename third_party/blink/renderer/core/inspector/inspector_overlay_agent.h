@@ -111,7 +111,8 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
   virtual bool ForwardEventsToOverlay();
   virtual bool SupportsPersistentOverlays();
   virtual void Draw(float scale) {}
-  virtual void Dispatch(const ScriptValue& message) {}
+  virtual void Dispatch(const ScriptValue& message,
+                        ExceptionState& exception_state) {}
   virtual void Trace(Visitor* visitor) const;
   virtual bool HideOnHideHighlight();
   virtual bool HideOnMouseMove();
@@ -285,7 +286,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   class InspectorPageOverlayDelegate;
 
   // InspectorOverlayHost::Delegate implementation.
-  void Dispatch(const ScriptValue& message) override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
 
   bool IsEmpty();
 
