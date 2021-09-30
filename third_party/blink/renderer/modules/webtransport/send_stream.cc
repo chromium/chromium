@@ -24,7 +24,6 @@ class OutgoingStreamClient final
   // OutgoingStream::Client implementation
   void SendFin() override {
     transport_->SendFin(stream_id_);
-    transport_->ForgetOutgoingStream(stream_id_);
   }
 
   void OnOutgoingStreamAbort() override {

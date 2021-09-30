@@ -88,6 +88,10 @@ interface WebTransportClient {
   // Note that OnIncomingStreamClosed and OnOutgoingStreamClosed can both be
   // dispatched to the same stream, if it is a bidirectional stream.
   OnIncomingStreamClosed(uint32 stream_id, bool fin_received);
+
+  // Notifies that all outstanding data has been received by the server on the
+  // Stream for |stream_id| and it is now closed.
+  OnOutgoingStreamClosed(uint32 stream_id);
 };
 
 // Used to create a WebTransport session. This is split from WebTransport

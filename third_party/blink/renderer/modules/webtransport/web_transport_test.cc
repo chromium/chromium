@@ -1334,6 +1334,7 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
   V8TestingScope scope;
 
   WeakPersistent<SendStream> send_stream;
+  WeakPersistent<WebTransport> web_transport;
 
   {
     // The writable stream created when creating a SendStream creates some
@@ -1341,8 +1342,7 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
     // scope. This is not a problem for garbage collection in normal operation.
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    auto* web_transport =
-        CreateAndConnectSuccessfully(scope, "https://example.com");
+    web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
     send_stream = CreateSendStreamSuccessfully(scope, web_transport);
   }
 
@@ -1362,6 +1362,15 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
     v8::HandleScope handle_scope(scope.GetIsolate());
 
     close_promise = send_stream->close(script_state, ASSERT_NO_EXCEPTION);
+
+    // The WebTransport object is kept alive by the OutgoingStreamClient.
+    ASSERT_TRUE(web_transport);
+
+    // The SendStream object has not been collected yet, because it remains
+    // referenced by |web_transport| until OnOutgoingStreamClosed is called.
+    EXPECT_TRUE(send_stream);
+
+    web_transport->OnOutgoingStreamClosed(/*stream_id=*/0);
   }
 
   ScriptPromiseTester tester(script_state, close_promise);

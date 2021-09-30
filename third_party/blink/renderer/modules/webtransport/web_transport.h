@@ -86,6 +86,7 @@ class MODULES_EXPORT WebTransport final
   // WebTransportClient implementation
   void OnDatagramReceived(base::span<const uint8_t> data) override;
   void OnIncomingStreamClosed(uint32_t stream_id, bool fin_received) override;
+  void OnOutgoingStreamClosed(uint32_t stream_id) override;
 
   void OnClosed(const absl::optional<WebTransportCloseInfo>&);
 

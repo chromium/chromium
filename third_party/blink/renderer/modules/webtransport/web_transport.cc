@@ -925,6 +925,27 @@ void WebTransport::OnClosed(
   Cleanup(reason, error, /*abruptly=*/false);
 }
 
+void WebTransport::OnOutgoingStreamClosed(uint32_t stream_id) {
+  DVLOG(1) << "WebTransport::OnOutgoingStreamClosed(" << stream_id
+           << ") this=" << this;
+  auto it = outgoing_stream_map_.find(stream_id);
+
+  // If a close is aborted, we may get the close response on a stream we've
+  // already erased.
+  if (it == outgoing_stream_map_.end())
+    return;
+
+  OutgoingStream* stream = it->value;
+  DCHECK(stream);
+
+  // We do this deletion first because OnOutgoingStreamClosed may run JavaScript
+  // and so modify |outgoing_stream_map_|. |stream| is kept alive by being on
+  // the stack.
+  outgoing_stream_map_.erase(it);
+
+  stream->OnOutgoingStreamClosed();
+}
+
 void WebTransport::ContextDestroyed() {
   DVLOG(1) << "WebTransport::ContextDestroyed() this=" << this;
   // Child streams must be reset first to ensure that garbage collection
@@ -945,18 +966,26 @@ bool WebTransport::HasPendingActivity() const {
 }
 
 void WebTransport::SendFin(uint32_t stream_id) {
+  DVLOG(1) << "WebTransport::SendFin() this=" << this
+           << ", stream_id=" << stream_id;
   transport_remote_->SendFin(stream_id);
 }
 
 void WebTransport::AbortStream(uint32_t stream_id) {
+  DVLOG(1) << "WebTransport::AbortStream() this=" << this
+           << ", stream_id=" << stream_id;
   transport_remote_->AbortStream(stream_id, /*code=*/0);
 }
 
 void WebTransport::ForgetIncomingStream(uint32_t stream_id) {
+  DVLOG(1) << "WebTransport::ForgetIncomingStream() this=" << this
+           << ", stream_id=" << stream_id;
   incoming_stream_map_.erase(stream_id);
 }
 
 void WebTransport::ForgetOutgoingStream(uint32_t stream_id) {
+  DVLOG(1) << "WebTransport::ForgetOutgoingStream() this=" << this
+           << ", stream_id=" << stream_id;
   outgoing_stream_map_.erase(stream_id);
 }
 

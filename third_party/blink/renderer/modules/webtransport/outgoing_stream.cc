@@ -62,9 +62,20 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     DVLOG(1) << "OutgoingStream::UnderlingSink::close() outgoing_stream_="
              << outgoing_stream_;
 
-    // The specification guarantees that this will only be called after all
-    // pending writes have been completed.
+    // The streams specification guarantees that this will only be called after
+    // all pending writes have been completed.
     DCHECK(!outgoing_stream_->write_promise_resolver_);
+
+    DCHECK(!outgoing_stream_->close_promise_resolver_);
+
+    outgoing_stream_->close_promise_resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+    // In some cases (when the stream is aborted by a network error for
+    // example), there may not be a call to OnOutgoingStreamClose. In that case
+    // we will not be able to resolve the promise, but that will be taken care
+    // by streams so we don't care.
+    outgoing_stream_->close_promise_resolver_->SuppressDetachCheck();
 
     if (outgoing_stream_->client_) {
       outgoing_stream_->state_ = State::kSentFin;
@@ -72,12 +83,11 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
       outgoing_stream_->client_ = nullptr;
     }
 
-    outgoing_stream_->AbortAndReset();
+    // Close the data pipe to signal to the network service that no more data
+    // will be sent.
+    outgoing_stream_->ResetPipe();
 
-    // TODO(ricea): close() should wait for data to be flushed before resolving.
-    // Since DataPipeProducerHandle doesn't have an API to observe the remote
-    // side closing, this will have to be done out-of-band.
-    return ScriptPromise::CastUndefined(script_state);
+    return outgoing_stream_->close_promise_resolver_->Promise();
   }
 
   ScriptPromise abort(ScriptState* script_state,
@@ -86,7 +96,9 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     DVLOG(1) << "OutgoingStream::UnderlyingSink::abort() outgoing_stream_="
              << outgoing_stream_;
 
-    return close(script_state, exception_state);
+    outgoing_stream_->AbortAndReset();
+
+    return ScriptPromise::CastUndefined(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -154,6 +166,14 @@ void OutgoingStream::InitWithExistingWritableStream(
       /*optimizer=*/nullptr, exception_state);
 }
 
+void OutgoingStream::OnOutgoingStreamClosed() {
+  DVLOG(1) << "OutgoingStream::OnOutgoingStreamClosed() this=" << this;
+
+  DCHECK(close_promise_resolver_);
+  close_promise_resolver_->Resolve();
+  close_promise_resolver_ = nullptr;
+}
+
 void OutgoingStream::Error(ScriptValue reason) {
   DVLOG(1) << "OutgoingStream::Error() this=" << this;
 
@@ -172,6 +192,7 @@ void OutgoingStream::Trace(Visitor* visitor) const {
   visitor->Trace(writable_);
   visitor->Trace(controller_);
   visitor->Trace(write_promise_resolver_);
+  visitor->Trace(close_promise_resolver_);
 }
 
 void OutgoingStream::OnHandleReady(MojoResult result,

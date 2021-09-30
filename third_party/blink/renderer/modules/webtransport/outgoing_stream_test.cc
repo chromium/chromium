@@ -8,12 +8,14 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -239,7 +241,13 @@ TEST(OutgoingStreamTest, WriteThenClose) {
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
 
-  EXPECT_CALL(stream_creator.GetMockClient(), SendFin());
+  EXPECT_CALL(stream_creator.GetMockClient(), SendFin()).WillOnce([&]() {
+    // This needs to happen asynchronously.
+    scope.GetExecutionContext()
+        ->GetTaskRunner(TaskType::kNetworking)
+        ->PostTask(FROM_HERE, WTF::Bind(&OutgoingStream::OnOutgoingStreamClosed,
+                                        WrapWeakPersistent(outgoing_stream)));
+  });
 
   ScriptPromise close_promise =
       writer->close(script_state, ASSERT_NO_EXCEPTION);

@@ -39,8 +39,7 @@ class MODULES_EXPORT OutgoingStream final
    public:
     virtual ~Client() = default;
 
-    // Request that a Fin message for this stream be sent to the server, and
-    // that the WebTransport object drop its reference to the stream.
+    // Request that a Fin message for this stream be sent to the server.
     virtual void SendFin() = 0;
 
     // Indicates that this stream is aborted. WebTransport should drop its
@@ -73,6 +72,9 @@ class MODULES_EXPORT OutgoingStream final
   }
 
   ScriptState* GetScriptState() { return script_state_; }
+
+  // Called from WebTransport via a WebTransportStream.
+  void OnOutgoingStreamClosed();
 
   // Errors the associated stream with the given reason. Expects a JavaScript
   // scope to be entered.
@@ -178,6 +180,10 @@ class MODULES_EXPORT OutgoingStream final
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
   Member<ScriptPromiseResolver> write_promise_resolver_;
+
+  // If a close() on the underlying sink object is pending, this will be
+  // non-null.
+  Member<ScriptPromiseResolver> close_promise_resolver_;
 
   State state_ = State::kOpen;
 };

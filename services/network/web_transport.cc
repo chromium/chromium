@@ -255,6 +255,10 @@ class WebTransport::Stream final {
       return;
     }
     if (outgoing_->SendFin()) {
+      // TODO(ricea): Wait until DataRecvd state is reached before calling
+      // OnOutgoingStreamClosed, once WebTransportStreamVisitor supports it.
+      transport_->client_->OnOutgoingStreamClosed(id_);
+
       outgoing_ = nullptr;
       readable_watcher_.Cancel();
       readable_.reset();

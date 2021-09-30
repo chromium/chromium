@@ -376,6 +376,10 @@ TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
   auto* script_state = scope.GetScriptState();
   ScriptPromise close_promise = bidirectional_stream->writable()->close(
       script_state, ASSERT_NO_EXCEPTION);
+
+  scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
+      kDefaultStreamId);
+
   ScriptPromiseTester close_tester(script_state, close_promise);
   close_tester.WaitUntilSettled();
   EXPECT_TRUE(close_tester.IsFulfilled());
@@ -467,6 +471,10 @@ TEST(BidirectionalStreamTest, ReadAfterClosingOutgoing) {
   auto* script_state = scope.GetScriptState();
   ScriptPromise close_promise = bidirectional_stream->writable()->close(
       script_state, ASSERT_NO_EXCEPTION);
+
+  scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
+      kDefaultStreamId);
+
   ScriptPromiseTester close_tester(script_state, close_promise);
   close_tester.WaitUntilSettled();
   EXPECT_TRUE(close_tester.IsFulfilled());

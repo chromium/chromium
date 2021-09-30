@@ -188,6 +188,7 @@ class TestClient final : public mojom::WebTransportClient {
       std::move(quit_closure_for_incoming_stream_closure_).Run();
     }
   }
+  void OnOutgoingStreamClosed(uint32_t stream_id) override {}
 
   void WaitUntilMojoConnectionError() {
     base::RunLoop run_loop;
