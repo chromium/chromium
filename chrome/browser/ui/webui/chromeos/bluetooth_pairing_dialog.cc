@@ -33,6 +33,7 @@ namespace chromeos {
 namespace {
 
 constexpr int kBluetoothPairingDialogHeight = 375;
+constexpr int kBluetoothPairingDialogHeightWithFlag = 408;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
@@ -116,6 +117,11 @@ void BluetoothPairingDialog::AdjustWidgetInitParams(
 }
 
 void BluetoothPairingDialog::GetDialogSize(gfx::Size* size) const {
+  if (chromeos::features::IsBluetoothRevampEnabled()) {
+    size->SetSize(SystemWebDialogDelegate::kDialogWidth,
+                  kBluetoothPairingDialogHeightWithFlag);
+    return;
+  }
   size->SetSize(SystemWebDialogDelegate::kDialogWidth,
                 kBluetoothPairingDialogHeight);
 }
