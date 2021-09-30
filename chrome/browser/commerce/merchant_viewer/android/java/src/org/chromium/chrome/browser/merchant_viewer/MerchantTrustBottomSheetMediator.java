@@ -166,6 +166,8 @@ public class MerchantTrustBottomSheetMediator {
         thinWebView.attachWebContents(mWebContents, mWebContentView, mWebContentsDelegate);
     }
 
+    // This method should only be used for the first navigation before showing some content in the
+    // bottom sheet.
     void navigateToUrl(GURL url, String title) {
         assert isValidUrl(url) && mWebContents != null && mToolbarModel != null;
 
@@ -231,6 +233,9 @@ public class MerchantTrustBottomSheetMediator {
         return 0;
     }
 
+    // This method is used to determine whether we want to show content in the bottom sheet and
+    // whether we want to use a Google icon if no favicon found for the url. When the definition of
+    // "valid" url changes, update the favicon rule if needed.
     private boolean isValidUrl(GURL url) {
         return UrlUtilitiesJni.get().isGoogleDomainUrl(url.getSpec(), true);
     }
@@ -248,7 +253,7 @@ public class MerchantTrustBottomSheetMediator {
         Profile profile = mProfileSupplier.get();
         if (profile == null) {
             mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE,
-                    getDefaultFaviconDrawable());
+                    getDefaultFaviconDrawable(url));
             return;
         }
         mFaviconHelper.getLocalFaviconImageForURL(profile, url, mFaviconSize, (bitmap, iconUrl) -> {
@@ -259,15 +264,18 @@ public class MerchantTrustBottomSheetMediator {
                 drawable =
                         FaviconUtils.createRoundedBitmapDrawable(mContext.getResources(), bitmap);
             } else {
-                drawable = getDefaultFaviconDrawable();
+                drawable = getDefaultFaviconDrawable(url);
             }
             mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, drawable);
         });
     }
 
-    private Drawable getDefaultFaviconDrawable() {
-        return UiUtils.getTintedDrawable(
-                mContext, R.drawable.ic_globe_24dp, R.color.default_icon_color_tint_list);
+    // Used when we cannot find a favicon for the url. If url is valid, we use the Google icon.
+    // Otherwise, we use the default icon.
+    private Drawable getDefaultFaviconDrawable(GURL url) {
+        return UiUtils.getTintedDrawable(mContext,
+                isValidUrl(url) ? R.drawable.ic_logo_googleg_24dp : R.drawable.ic_globe_24dp,
+                R.color.default_icon_color_tint_list);
     }
 
     @VisibleForTesting
