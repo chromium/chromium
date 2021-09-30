@@ -1,12 +1,12 @@
 <style include="settings-shared">
   :host([is-low-battery_]) #batteryContainer {
-    --iron-icon-fill-color: var(--google-red-600);
-    color: var(--google-red-600);
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    color: var(--cros-text-color-alert);
   }
 
   :host(:not([is-low-battery_])) #batteryContainer {
-    --iron-icon-fill-color: var(--google-grey-600);
-    color: var(--google-grey-700);
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    color: var(--cros-text-color-secondary);
   }
 
   #batteryIcon {

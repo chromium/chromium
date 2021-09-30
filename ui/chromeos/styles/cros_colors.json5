@@ -87,8 +87,8 @@
       debug: "#ff00ff",
     },
     icon_color_secondary: {
-      light: "$google_grey_500",
-      dark: "$google_grey_500",
+      light: "$google_grey_700",
+      dark: "$google_grey_400",
       debug: "#00ffff",
     },
     icon_color_disabled: {
