@@ -15,6 +15,7 @@ source_set("lib") {
   ]
 
   public_deps = [
+    "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/mojom",
   ]

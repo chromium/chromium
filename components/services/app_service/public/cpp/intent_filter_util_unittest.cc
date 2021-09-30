@@ -21,6 +21,7 @@ const char kUrlGoogleGlob[] = "www.google.com/c/*/d";
 const char kUrlGmailLiteral[] = "www.gmail.com/a";
 const char kUrlGmailPrefix[] = "www.gmail.com/b/*";
 const char kUrlGmailGlob[] = "www.gmail.com/c/*/d";
+const char kAppId[] = "aaa";
 }  // namespace
 
 class IntentFilterUtilTest : public testing::Test {
@@ -227,16 +228,16 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
 TEST_F(IntentFilterUtilTest, IsSupportedLink) {
   auto filter = MakeFilter("https", "www.google.com", "/maps",
                            apps::mojom::PatternMatchType::kLiteral);
-  ASSERT_TRUE(apps_util::IsSupportedLink(filter));
+  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
 
   filter = MakeFilter("https", "www.google.com", ".*",
                       apps::mojom::PatternMatchType::kGlob);
-  ASSERT_TRUE(apps_util::IsSupportedLink(filter));
+  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
 }
 
 TEST_F(IntentFilterUtilTest, NotSupportedLink) {
-  ASSERT_FALSE(apps_util::IsSupportedLink(
-      apps_util::CreateIntentFilterForMimeType("image/png")));
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(
+      kAppId, apps_util::CreateIntentFilterForMimeType("image/png")));
 
   auto browser_filter = apps::mojom::IntentFilter::New();
   apps_util::AddSingleValueCondition(
@@ -245,7 +246,7 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
   apps_util::AddSingleValueCondition(
       apps::mojom::ConditionType::kScheme, "https",
       apps::mojom::PatternMatchType::kNone, browser_filter);
-  ASSERT_FALSE(apps_util::IsSupportedLink(browser_filter));
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
 
   auto host_filter = apps::mojom::IntentFilter::New();
   apps_util::AddSingleValueCondition(
@@ -257,7 +258,7 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
   apps_util::AddSingleValueCondition(
       apps::mojom::ConditionType::kHost, "www.example.com",
       apps::mojom::PatternMatchType::kNone, host_filter);
-  ASSERT_FALSE(apps_util::IsSupportedLink(browser_filter));
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
 }
 
 TEST_F(IntentFilterUtilTest, HostMatchOverlap) {

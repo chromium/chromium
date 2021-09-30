@@ -89,9 +89,10 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 std::set<std::string> AppManagementGetSupportedLinks(
     const apps::mojom::IntentFilterPtr& intent_filter);
 
-// Check if the filter is a supported link, i.e. it has the "view" action, a
-// http or https scheme, and at least one host and pattern.
-bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter);
+// Check if the |intent_filter| is a supported link for |app_id|, i.e. it has
+// the "view" action, a http or https scheme, and at least one host and pattern.
+bool IsSupportedLinkForApp(const std::string& app_id,
+                           const apps::mojom::IntentFilterPtr& intent_filter);
 
 }  // namespace apps_util
 

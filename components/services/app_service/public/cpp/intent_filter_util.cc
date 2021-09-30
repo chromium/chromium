@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 #include "base/strings/string_util.h"
+#include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/url_constants.h"
 
@@ -263,7 +264,15 @@ std::set<std::string> AppManagementGetSupportedLinks(
   return supported_links;
 }
 
-bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
+bool IsSupportedLinkForApp(const std::string& app_id,
+                           const apps::mojom::IntentFilterPtr& intent_filter) {
+  // Filters associated with kUseBrowserForLink are a special case. These
+  // filters do not "belong" to the app and should not be treated as supported
+  // links.
+  if (app_id == apps::kUseBrowserForLink) {
+    return false;
+  }
+
   bool action = false;
   bool scheme = false;
   bool host = false;

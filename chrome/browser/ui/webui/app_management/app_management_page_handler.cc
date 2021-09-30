@@ -91,15 +91,16 @@ std::vector<apps::mojom::IntentFilterPtr> GetSupportedLinkIntentFilters(
   std::vector<apps::mojom::IntentFilterPtr> intent_filters;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .ForOneApp(app_id, [&intent_filters](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady) {
-          for (auto& filter : update.IntentFilters()) {
-            if (apps_util::IsSupportedLink(filter)) {
-              intent_filters.emplace_back(std::move(filter));
-            }
-          }
-        }
-      });
+      .ForOneApp(app_id,
+                 [&app_id, &intent_filters](const apps::AppUpdate& update) {
+                   if (update.Readiness() == apps::mojom::Readiness::kReady) {
+                     for (auto& filter : update.IntentFilters()) {
+                       if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
+                         intent_filters.emplace_back(std::move(filter));
+                       }
+                     }
+                   }
+                 });
   return intent_filters;
 }
 

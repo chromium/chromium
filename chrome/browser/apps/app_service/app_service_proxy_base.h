@@ -366,9 +366,8 @@ class AppServiceProxyBase : public KeyedService,
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
 
-  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyPreferredAppsTest,
-                           UpdatedOnUninstall);
-  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyPreferredAppsTest, SetPreferredApp);
+  // For test access to OnApps.
+  friend class AppServiceProxyPreferredAppsTest;
 };
 
 }  // namespace apps

@@ -4,10 +4,10 @@
 
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -116,7 +116,7 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
       apps::mojom::PreferredApp::New(intent_filter->Clone(), app_id);
   preferred_apps_.push_back(std::move(new_preferred_app));
 
-  if (apps_util::IsSupportedLink(intent_filter)) {
+  if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
     for (auto& obs : observers_) {
       obs.OnPreferredAppChanged(app_id, true);
       for (auto& app : replaced_preference_map) {
@@ -144,7 +144,7 @@ bool PreferredAppsList::DeletePreferredApp(
     }
   }
 
-  if (apps_util::IsSupportedLink(intent_filter)) {
+  if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
     for (auto& obs : observers_) {
       obs.OnPreferredAppChanged(app_id, false);
     }
@@ -182,7 +182,7 @@ PreferredAppsList::DeleteSupportedLinks(const std::string& app_id) {
   auto iter = preferred_apps_.begin();
   while (iter != preferred_apps_.end()) {
     if ((*iter)->app_id == app_id &&
-        apps_util::IsSupportedLink((*iter)->intent_filter)) {
+        apps_util::IsSupportedLinkForApp(app_id, (*iter)->intent_filter)) {
       out.push_back(std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
@@ -222,8 +222,9 @@ void PreferredAppsList::ApplyBulkUpdate(
     }
 
     bool has_supported_link =
-        std::find_if(filters.begin(), filters.end(),
-                     apps_util::IsSupportedLink) != filters.end();
+        base::ranges::any_of(filters, [&app_id](const auto& filter) {
+          return apps_util::IsSupportedLinkForApp(app_id, filter);
+        });
 
     // Notify observers if any of the removed filters were supported links.
     // TODO(crbug.com/1250153): Notify observers about all changes, not just
@@ -240,8 +241,8 @@ void PreferredAppsList::ApplyBulkUpdate(
     const std::string& app_id = added_filters.first;
     bool has_supported_link = false;
     for (auto& filter : added_filters.second) {
-      has_supported_link =
-          has_supported_link || apps_util::IsSupportedLink(filter);
+      has_supported_link = has_supported_link ||
+                           apps_util::IsSupportedLinkForApp(app_id, filter);
       preferred_apps_.emplace_back(base::in_place, std::move(filter), app_id);
     }
 
@@ -263,7 +264,8 @@ void PreferredAppsList::Init(PreferredApps& preferred_apps) {
   Clone(preferred_apps, &preferred_apps_);
   auto iter = preferred_apps_.begin();
   while (iter != preferred_apps_.end()) {
-    if (apps_util::IsSupportedLink((*iter)->intent_filter)) {
+    if (apps_util::IsSupportedLinkForApp((*iter)->app_id,
+                                         (*iter)->intent_filter)) {
       for (auto& obs : observers_) {
         obs.OnPreferredAppChanged((*iter)->app_id, true);
       }
@@ -314,7 +316,8 @@ bool PreferredAppsList::IsPreferredAppForSupportedLinks(
     const std::string& app_id) {
   for (const auto& preferred_app : preferred_apps_) {
     if (preferred_app->app_id == app_id &&
-        apps_util::IsSupportedLink(preferred_app->intent_filter)) {
+        apps_util::IsSupportedLinkForApp(app_id,
+                                         preferred_app->intent_filter)) {
       return true;
     }
   }
