@@ -9,9 +9,9 @@ import './top_visit.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
-import {ClusterAction, MetricsProxy} from './metrics_proxy.js';
+import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a Cluster.
@@ -64,7 +64,7 @@ class HistoryClusterElement extends PolymerElement {
 
   constructor() {
     super();
-    this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
+    this.callbackRouter_ = BrowserProxyImpl.getInstance().callbackRouter;
   }
 
   connectedCallback() {
@@ -86,17 +86,17 @@ class HistoryClusterElement extends PolymerElement {
   //============================================================================
 
   private onRelatedSearchClicked_() {
-    MetricsProxy.getInstance().recordClusterAction(
+    MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.RELATED_SEARCH_CLICKED, this.index);
   }
 
   private onRelatedVisitsVisibilityToggled_() {
-    MetricsProxy.getInstance().recordClusterAction(
+    MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.RELATED_VISITS_VISIBILITY_TOGGLED, this.index);
   }
 
   private onVisitClicked_() {
-    MetricsProxy.getInstance().recordClusterAction(
+    MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.VISIT_CLICKED, this.index);
   }
 

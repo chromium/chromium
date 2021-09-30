@@ -19,9 +19,9 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
-import {ClusterAction, MetricsProxy} from './metrics_proxy.js';
+import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element that requests and shows
@@ -119,8 +119,8 @@ class HistoryClustersElement extends PolymerElement {
 
   constructor() {
     super();
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
-    this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
+    this.pageHandler_ = BrowserProxyImpl.getInstance().handler;
+    this.callbackRouter_ = BrowserProxyImpl.getInstance().callbackRouter;
   }
 
   connectedCallback() {
@@ -178,7 +178,7 @@ class HistoryClustersElement extends PolymerElement {
   private onRemoveCluster_(event: CustomEvent<number>) {
     const index = event.detail;
     this.splice('result_.clusters', index, 1);
-    MetricsProxy.getInstance().recordClusterAction(
+    MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.DELETED, index);
   }
 
