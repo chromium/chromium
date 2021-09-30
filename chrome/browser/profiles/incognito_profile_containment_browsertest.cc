@@ -320,10 +320,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
   EXPECT_FALSE(
       AreFilesModified(before_incognito, after_incognito, allow_list_));
 
-  // TODO(http://crbug.com/1234755): Change to EXPECT_FALSE.
-  if (AreDirectoriesModified(before_incognito, after_incognito, allow_list_)) {
-    LOG(ERROR) << "Empty directories added.";
-  }
+  EXPECT_FALSE(
+      AreDirectoriesModified(before_incognito, after_incognito, allow_list_));
 }
 
 // TODO(http://crbug.com/1234755): Add more complex naviagtions, triggering
