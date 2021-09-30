@@ -87,7 +87,7 @@
 
     <cr-action-menu role-description="$i18n{menu}">
       <button class="dropdown-item" on-click="onDefaultClick_"
-          id="defaultButton" hidden$="[[actionMenuModel_.is_default]]">
+          id="defaultButton" disabled$="[[actionMenuModel_.is_default]]">
         $i18n{handlerSetDefault}
       </button>
       <button class="dropdown-item" on-click="onRemoveClick_"

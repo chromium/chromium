@@ -248,17 +248,22 @@ suite('ProtocolHandlers', function() {
         assertFalse(dialog.open);
         menuButtons[menuIndex].click();
         assertTrue(dialog.open);
-        testElement.$[button].click();
-        assertFalse(dialog.open);
-        return browserProxy.whenCalled(browserProxyHandler).then(args => {
-          const protocol = args[0];
-          const url = args[1];
-          // BrowserProxy's handler is expected to be called with
-          // arguments as [protocol, url].
-          assertEquals(protocols[protocolIndex].protocol, protocol);
-          assertEquals(
-              protocols[protocolIndex].handlers[handlerIndex].spec, url);
-        });
+        if (testElement.$.defaultButton.disabled) {
+          testElement.$$('cr-action-menu').close();
+          assertFalse(dialog.open);
+        } else {
+          testElement.$[button].click();
+          assertFalse(dialog.open);
+          return browserProxy.whenCalled(browserProxyHandler).then(args => {
+            const protocol = args[0];
+            const url = args[1];
+            // BrowserProxy's handler is expected to be called with
+            // arguments as [protocol, url].
+            assertEquals(protocols[protocolIndex].protocol, protocol);
+            assertEquals(
+                protocols[protocolIndex].handlers[handlerIndex].spec, url);
+          });
+        }
       }));
     });
   }
@@ -275,13 +280,16 @@ suite('ProtocolHandlers', function() {
           testElement.root.querySelectorAll('cr-icon-button.icon-more-vert');
       const closeMenu = () => testElement.$$('cr-action-menu').close();
       menuButtons[0].click();
-      assertTrue(testElement.$.defaultButton.hidden);
+      flush();
+      assertTrue(testElement.$.defaultButton.disabled);
       closeMenu();
       menuButtons[1].click();
-      assertTrue(testElement.$.defaultButton.hidden);
+      flush();
+      assertTrue(testElement.$.defaultButton.disabled);
       closeMenu();
       menuButtons[2].click();
-      assertFalse(testElement.$.defaultButton.hidden);
+      flush();
+      assertFalse(testElement.$.defaultButton.disabled);
     });
   });
 
