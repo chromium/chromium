@@ -44,6 +44,9 @@ public interface SurfaceActionsHandler {
      */
     default void downloadLink(String url) {}
 
+    /** Add the url to the reading list and make it available offline. */
+    default void addToReadingList(String title, String url) {}
+
     /**
      * Open a bottom sheet with the view as contents.
      * @param view The bottom sheet contents view.
