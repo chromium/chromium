@@ -23,17 +23,20 @@ void RecordDeviceClicked(ShareEntryPoint entry_point);
 // Records when a tab is sent to a device.
 void RecordNotificationSent();
 
-// Records when a recieved STTS notification is shown.
+// Records when a received STTS notification is shown.
 void RecordNotificationShown();
 
-// Records when a recieved STTS notification is dismissed.
+// Records when a received STTS notification is dismissed.
 void RecordNotificationDismissed();
 
-// Records when a recieved STTS notification is opened.
+// Records when a received STTS notification is opened.
 void RecordNotificationOpened();
 
-// Records when a recieved STTS notification is shown and times out.
+// Records when a received STTS notification is shown and times out.
 void RecordNotificationTimedOut();
+
+// Records when a received STTS notification is dismissed for an unknown reason.
+void RecordNotificationDismissReasonUnknown();
 
 }  // namespace send_tab_to_self
 

@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -47,6 +49,26 @@ content::WebContents* GetWebContentsForProfile(Profile* profile) {
     }
   }
   return nullptr;
+}
+
+void LogDismissReason(messages::DismissReason dismiss_reason) {
+  switch (dismiss_reason) {
+    case messages::DismissReason::PRIMARY_ACTION:
+      send_tab_to_self::RecordNotificationOpened();
+      break;
+    case messages::DismissReason::TIMER:
+      send_tab_to_self::RecordNotificationTimedOut();
+      break;
+    case messages::DismissReason::GESTURE:
+      send_tab_to_self::RecordNotificationDismissed();
+      break;
+    case messages::DismissReason::UNKNOWN:
+      send_tab_to_self::RecordNotificationDismissReasonUnknown();
+      break;
+    default:
+      send_tab_to_self::RecordNotificationDismissed();
+      break;
+  }
 }
 
 }  // namespace
@@ -149,12 +171,17 @@ void AndroidNotificationHandler::OnMessageDismissed(
     messages::MessageWrapper* message,
     std::string guid,
     messages::DismissReason dismiss_reason) {
+  // Any reason other than UNKNOWN indicates the notification was displayed.
+  if (dismiss_reason != messages::DismissReason::UNKNOWN) {
+    send_tab_to_self::RecordNotificationShown();
+  }
   for (unsigned int i = 0; i < queued_messages_.size(); i++) {
     if (queued_messages_.at(i).get() == message) {
       queued_messages_.erase(queued_messages_.begin() + i);
       auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
                         ->GetSendTabToSelfModel();
       model->DismissEntry(guid);
+      LogDismissReason(dismiss_reason);
     }
   }
 }
