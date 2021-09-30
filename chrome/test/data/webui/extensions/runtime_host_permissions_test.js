@@ -4,6 +4,7 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {eventToPromise, isChildVisible} from '../test_util.js';
@@ -20,6 +21,7 @@ suite('RuntimeHostPermissions', function() {
   const ITEM_ID = 'a'.repeat(32);
 
   setup(function() {
+    loadTimeData.overrideValues({extensionsMenuAccessControlEnabled: false});
     document.body.innerHTML = '';
     element = document.createElement('extensions-runtime-host-permissions');
     delegate = new TestService();
@@ -80,6 +82,37 @@ suite('RuntimeHostPermissions', function() {
             .getElementsByTagName('li')
             .length);
     expectTrue(testIsVisible('#add-host'));
+  });
+
+  test('permissions display new site access menu', function() {
+    loadTimeData.overrideValues({extensionsMenuAccessControlEnabled: true});
+    const permissions = {
+      hostAccess: HostAccess.ON_CLICK,
+      hasAllHosts: true,
+      hosts: [{granted: false, host: 'https://*/*'}],
+    };
+
+    element.set('permissions', permissions);
+    flush();
+
+    const testIsVisible = isChildVisible.bind(null, element);
+    expectTrue(testIsVisible('#host-access'));
+
+    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
+    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
+    // For on-click mode, there should be no runtime hosts listed.
+    expectFalse(testIsVisible('#hosts'));
+
+    // Changing the data's access should change the UI appropriately.
+    element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
+    flush();
+    expectEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
+    expectFalse(testIsVisible('#hosts'));
+
+    element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
+    flush();
+    expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+    // TODO(crbug.com/1253673): Test the new "customize for each site" menu.
   });
 
   test('permissions selection', async () => {

@@ -18,7 +18,7 @@
   #section-heading .link-icon-button {
     margin-inline-start: 6px;
   }
-  
+
   #host-access {
     margin-inline-start: 12px;
     width: 100%;
@@ -63,7 +63,9 @@
 <div id="permissions-mode">
   <div id="section-heading">
     <div id="section-heading-heading">
-      <span id="section-heading-text">$i18n{hostPermissionsHeading}</span>
+      <span id="section-heading-text">
+        [[getHostPermissionsHeading_(extensionsMenuAccessControlEnabled_)]]
+      </span>
       <a class="link-icon-button" aria-label="$i18n{learnMore}"
           href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
           on-click="onLearnMoreClick_">
@@ -75,15 +77,28 @@
       <select id="host-access" class="md-select" on-change="onHostAccessChange_"
           value="[[permissions.hostAccess]]"
           aria-labelledby="section-heading-text">
-        <option value="[[HostAccess_.ON_CLICK]]">
-          $i18n{hostAccessOnClick}
-        </option>
-        <option value="[[HostAccess_.ON_SPECIFIC_SITES]]">
-          $i18n{hostAccessOnSpecificSites}
-        </option>
-        <option value="[[HostAccess_.ON_ALL_SITES]]">
-          $i18n{hostAccessOnAllSites}
-        </option>
+        <template is="dom-if" if="[[!extensionsMenuAccessControlEnabled_]]">
+          <option value="[[HostAccess_.ON_CLICK]]">
+            $i18n{hostAccessOnClick}
+          </option>
+          <option value="[[HostAccess_.ON_SPECIFIC_SITES]]">
+            $i18n{hostAccessOnSpecificSites}
+          </option>
+          <option value="[[HostAccess_.ON_ALL_SITES]]">
+            $i18n{hostAccessOnAllSites}
+          </option>
+        </template>
+        <template is="dom-if" if="[[extensionsMenuAccessControlEnabled_]]">
+          <option value="[[HostAccess_.ON_CLICK]]">
+            $i18n{newHostAccessOnClick}
+          </option>
+          <option value="[[HostAccess_.ON_SPECIFIC_SITES]]">
+            $i18n{hostAccessCustomizeForEachSite}
+          </option>
+          <option value="[[HostAccess_.ON_ALL_SITES]]">
+            $i18n{newHostAccessOnAllSites}
+          </option>
+        </template>
       </select>
     </div>
   </div>

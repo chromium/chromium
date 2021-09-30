@@ -115,14 +115,26 @@
   <message name="IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on.">
     Allow this extension to read and change all your data on websites you visit:
   </message>
+  <message name="IDS_EXTENSIONS_NEW_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on, for the new site access settings.">
+    Choose when this extension can read and change your site data
+  </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension.">
     On click
+  </message>
+  <message name="IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_CLICK" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension, for the new site access settings.">
+    When I click the extension
   </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_SPECIFIC_SITES" desc="The text for the option to allow an extension to read and change data on a select set of sites.">
     On specific sites
   </message>
+  <message name="IDS_EXTENSIONS_HOST_CUSTOMIZE_FOR_EACH_SITE" desc="The text for the option to customize which sites an extension is allowed to read and change data, for the new site access settings.">
+    Customize for each site
+  </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_ALL_SITES" desc="The text for the option to allow an extension to read and change data on all websites.">
     On all sites
+  </message>
+  <message name="IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_ALL_SITES" desc="The text for the option to allow an extension to read and change data on all websites, for the new site access settings.">
+    Always on all sites
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ALLOWED_HOSTS" desc="The heading above the section listing any sites the extension is allowed to run on.">
     Allowed sites

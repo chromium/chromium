@@ -21,6 +21,7 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
@@ -125,6 +126,15 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
         type: Object,
         value: chrome.developerPrivate.HostAccess,
       },
+
+      /**
+       * Whether the new site access menu should be shown.
+       */
+      extensionsMenuAccessControlEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('extensionsMenuAccessControlEnabled'),
+      },
     };
   }
 
@@ -138,6 +148,7 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private actionMenuAnchorElement_: HTMLElement|null;
   private oldHostAccess_: string|null;
   private revertingHostAccess_: boolean;
+  private extensionsMenuAccessControlEnabled_: boolean;
 
   private onHostAccessChange_() {
     const selectMenu = this.$['host-access'];
@@ -180,8 +191,17 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     }
   }
 
+  private getHostPermissionsHeading_(): string {
+    return loadTimeData.getString(
+        this.extensionsMenuAccessControlEnabled_ ? 'newHostPermissionsHeading' :
+                                                   'hostPermissionsHeading');
+  }
+
   private showSpecificSites_(): boolean {
-    return this.permissions.hostAccess ===
+    // TODO(crbug.com/1253673): Show a different "customize for each site" menu
+    // for the new site access menu.
+    return !this.extensionsMenuAccessControlEnabled_ &&
+        this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES;
   }
 

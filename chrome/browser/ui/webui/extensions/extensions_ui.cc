@@ -59,6 +59,8 @@ namespace {
 constexpr char kInDevModeKey[] = "inDevMode";
 constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
+constexpr char kExtensionsMenuAccessControlEnabled[] =
+    "extensionsMenuAccessControlEnabled";
 
 std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
@@ -126,9 +128,15 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
     {"hostPermissionsDescription", IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},
     {"hostPermissionsEdit", IDS_EXTENSIONS_HOST_PERMISSIONS_EDIT},
     {"hostPermissionsHeading", IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING},
+    {"newHostPermissionsHeading",
+     IDS_EXTENSIONS_NEW_ITEM_HOST_PERMISSIONS_HEADING},
     {"hostAccessOnClick", IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK},
+    {"newHostAccessOnClick", IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_CLICK},
     {"hostAccessOnSpecificSites", IDS_EXTENSIONS_HOST_ACCESS_ON_SPECIFIC_SITES},
+    {"hostAccessCustomizeForEachSite",
+     IDS_EXTENSIONS_HOST_CUSTOMIZE_FOR_EACH_SITE},
     {"hostAccessOnAllSites", IDS_EXTENSIONS_HOST_ACCESS_ON_ALL_SITES},
+    {"newHostAccessOnAllSites", IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_ALL_SITES},
     {"hostAllowedHosts", IDS_EXTENSIONS_ITEM_ALLOWED_HOSTS},
     {"itemId", IDS_EXTENSIONS_ITEM_ID},
     {"itemInspectViews", IDS_EXTENSIONS_ITEM_INSPECT_VIEWS},
@@ -321,6 +329,10 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
                         : "");
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
+
+  source->AddBoolean(
+      kExtensionsMenuAccessControlEnabled,
+      base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
 
   return source;
 }
