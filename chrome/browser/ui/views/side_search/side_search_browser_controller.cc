@@ -337,6 +337,10 @@ void SideSearchBrowserController::UpdateSidePanel() {
                                 : nullptr);
   side_panel_->SetVisible(will_show_side_panel);
 
+  // Auto focus on the side panel when it is open.
+  if (will_show_side_panel)
+    web_view_->RequestFocus();
+
   // The toolbar button should remain visible in the toolbar as a side panel can
   // be shown for the active tab.
   toolbar_button_->SetVisible(can_show_side_panel_for_page);
