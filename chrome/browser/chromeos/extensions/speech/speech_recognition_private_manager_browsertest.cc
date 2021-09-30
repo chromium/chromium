@@ -7,9 +7,11 @@
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_base_test.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 
 namespace {
 const char kEnglishLocale[] = "en-US";
+const char kExtensionId[] = "egfdjlfmgnehecnclamagfafdccgfndp";
 }  // namespace
 
 namespace extensions {
@@ -68,6 +70,11 @@ class SpeechRecognitionPrivateManagerTest
                              const std::u16string transcript,
                              bool is_final) {
     manager_->DispatchOnResultEvent(key, transcript, is_final);
+  }
+
+  void DispatchOnErrorEvent(const std::string& key,
+                            const std::string& message) {
+    manager_->DispatchOnErrorEvent(key, message);
   }
 
  private:
@@ -152,7 +159,6 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
       RunExtensionTest("speech/speech_recognition_private/onstop_event"))
       << message_;
 
-  const char* kExtensionId = "egfdjlfmgnehecnclamagfafdccgfndp";
   const char* kExtensionIdAndIncorrectClientId =
       "egfdjlfmgnehecnclamagfafdccgfndp.0";
   const char* kCorrectExtensionIdAndClientId =
@@ -212,6 +218,22 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
     ASSERT_TRUE(success_listener.WaitUntilSatisfied());
     ASSERT_TRUE(skip_listener.WaitUntilSatisfied());
   }
+}
+
+// Tests that events can be dispatched from the SpeechRecognitionPrivateManager
+// and received and processed in an extension.
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
+                       DispatchOnErrorEvent) {
+  ResultCatcher result_catcher;
+  ExtensionTestMessageListener listener("Proceed", false);
+
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "speech/speech_recognition_private/onerror_event"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  DispatchOnErrorEvent(kExtensionId, "A fatal error");
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions

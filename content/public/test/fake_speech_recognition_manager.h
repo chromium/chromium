@@ -55,6 +55,8 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
 
   void SetFakeResult(const std::string& result);
 
+  void SendFakeError(base::OnceClosure on_fake_error_sent);
+
   // SpeechRecognitionManager methods.
   int CreateSession(const SpeechRecognitionSessionConfig& config) override;
   void StartSession(int session_id) override;
@@ -92,6 +94,8 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void OnRecognitionEnded();
   void OnFakeResponseSent();
   void SetFakeRecognitionResult(bool end_recognition);
+  void SendFakeSpeechRecognitionError();
+  void OnFakeErrorSent();
 
   int session_id_;
   SpeechRecognitionEventListener* listener_;
@@ -106,6 +110,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   base::OnceClosure recognition_started_closure_;
   base::OnceClosure recognition_ended_closure_;
   base::OnceClosure on_fake_response_sent_closure_;
+  base::OnceClosure on_fake_error_sent_closure_;
   SpeechRecognitionManagerDelegate* delegate_ = nullptr;  // Not owned.
 };
 

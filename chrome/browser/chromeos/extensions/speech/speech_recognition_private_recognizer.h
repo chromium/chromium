@@ -20,6 +20,9 @@ using OnResultCallback =
     base::RepeatingCallback<void(const std::u16string& transcript,
                                  bool isFinal)>;
 
+using OnErrorCallback =
+    base::RepeatingCallback<void(const std::string& message)>;
+
 // This class is a wrapper around SpeechRecognizer and can be used to start and
 // stop speech recognition. It routes speech recognition events to the API
 // manager using callbacks. It is also responsible for deciding whether to
@@ -27,7 +30,8 @@ using OnResultCallback =
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
  public:
   SpeechRecognitionPrivateRecognizer(base::RepeatingClosure on_stop_calback,
-                                     OnResultCallback on_result_callback);
+                                     OnResultCallback on_result_callback,
+                                     OnErrorCallback on_error_callback);
   ~SpeechRecognitionPrivateRecognizer() override;
 
   // SpeechRecognizerDelegate:
@@ -78,6 +82,8 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   // A callback that is run whenever speech recognition results are received
   // from the speech recognition service.
   OnResultCallback on_result_callback_;
+  // A callback that is run whenever a speech recognition error occurs.
+  OnErrorCallback on_error_callback_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
 
   base::WeakPtrFactory<SpeechRecognitionPrivateRecognizer> weak_ptr_factory_{

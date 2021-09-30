@@ -109,4 +109,15 @@ void SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
   }
 }
 
+void SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait() {
+  base::RunLoop loop;
+  if (GetParam() == kNetworkRecognition) {
+    fake_speech_recognition_manager_->SendFakeError(loop.QuitClosure());
+    loop.Run();
+  } else if (GetParam() == kOnDeviceRecognition) {
+    fake_service_->SendSpeechRecognitionError();
+    loop.RunUntilIdle();
+  }
+}
+
 }  // namespace extensions

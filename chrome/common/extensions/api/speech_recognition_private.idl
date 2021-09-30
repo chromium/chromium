@@ -23,6 +23,14 @@ namespace speechRecognitionPrivate {
     boolean isFinal;
   };
 
+  // Interface for a speech recognition error event.
+  dictionary SpeechRecognitionErrorEvent {
+    // Optional client ID.
+    long? clientId;
+    // A message describing the error.
+    DOMString message;
+  };
+
   // Interface for options used when starting speech recognition.
   dictionary StartOptions {
     // An optional ID to specify the client.
@@ -63,5 +71,7 @@ namespace speechRecognitionPrivate {
     static void onStop(SpeechRecognitionStopEvent event);
     // Fired when a speech recognition result is returned.
     static void onResult(SpeechRecognitionResultEvent event);
+    // Fired when a speech recognition error occurs.
+    static void onError(SpeechRecognitionErrorEvent event);
   };
 };

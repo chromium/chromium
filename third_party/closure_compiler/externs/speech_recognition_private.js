@@ -33,6 +33,14 @@ chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent;
 /**
  * @typedef {{
  *   clientId: (number|undefined),
+ *   message: string
+ * }}
+ */
+chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
+
+/**
+ * @typedef {{
+ *   clientId: (number|undefined),
  *   locale: (string|undefined),
  *   interimResults: (boolean|undefined)
  * }}
@@ -76,3 +84,9 @@ chrome.speechRecognitionPrivate.onStop;
  * @type {!ChromeEvent}
  */
 chrome.speechRecognitionPrivate.onResult;
+
+/**
+ * Fired when a speech recognition error occurs.
+ * @type {!ChromeEvent}
+ */
+chrome.speechRecognitionPrivate.onError;

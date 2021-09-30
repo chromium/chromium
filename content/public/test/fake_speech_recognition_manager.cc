@@ -16,6 +16,7 @@
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
 namespace {
@@ -220,6 +221,41 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
     listener_ = nullptr;
   }
   VLOG(1) << "Finished setting fake recognition result.";
+}
+
+void FakeSpeechRecognitionManager::SendFakeError(
+    base::OnceClosure on_fake_error_sent) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  EXPECT_NE(session_id_, 0);
+  EXPECT_TRUE(listener_ != nullptr);
+  on_fake_error_sent_closure_ = std::move(on_fake_error_sent);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FakeSpeechRecognitionManager::SendFakeSpeechRecognitionError,
+          base::Unretained(this)));
+}
+
+void FakeSpeechRecognitionManager::SendFakeSpeechRecognitionError() {
+  if (!session_id_)
+    return;
+
+  VLOG(1) << "Sending fake recognition error.";
+  listener_->OnRecognitionError(
+      session_id_, *blink::mojom::SpeechRecognitionError::New(
+                       blink::mojom::SpeechRecognitionErrorCode::kNetwork,
+                       blink::mojom::SpeechAudioErrorDetails::kNone));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&FakeSpeechRecognitionManager::OnFakeErrorSent,
+                                base::Unretained(this)));
+  VLOG(1) << "Finished sending fake recognition error.";
+}
+
+void FakeSpeechRecognitionManager::OnFakeErrorSent() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (on_fake_error_sent_closure_) {
+    std::move(on_fake_error_sent_closure_).Run();
+  }
 }
 
 }  // namespace content

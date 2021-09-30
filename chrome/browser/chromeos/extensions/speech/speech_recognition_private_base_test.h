@@ -68,6 +68,8 @@ class SpeechRecognitionPrivateBaseTest
   void WaitForRecognitionStopped();
   // Sends a fake final speech result and waits for tasks to finish.
   void SendFinalFakeSpeechResultAndWait(const std::string& transcript);
+  // Sends a fake speech recognition error and waits for tasks to finish.
+  void SendFakeSpeechRecognitionErrorAndWait();
 
  private:
   // Methods for additional setup.

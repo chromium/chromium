@@ -27719,6 +27719,7 @@ Called by update_extension_histograms.py.-->
   <int value="480" label="WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST"/>
   <int value="481" label="SPEECH_RECOGNITION_PRIVATE_ON_STOP"/>
   <int value="482" label="SPEECH_RECOGNITION_PRIVATE_ON_RESULT"/>
+  <int value="483" label="SPEECH_RECOGNITION_PRIVATE_ON_ERROR"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

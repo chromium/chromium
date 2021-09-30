@@ -65,6 +65,8 @@ class SpeechRecognitionPrivateManager : public KeyedService {
   void DispatchOnResultEvent(const std::string& key,
                              const std::u16string& transcript,
                              bool is_final);
+  // Dispatches an event when a speech recognition error occurs.
+  void DispatchOnErrorEvent(const std::string& key, const std::string& message);
 
   // Retrieves the factory instance for SpeechRecognitionPrivateManager.
   static BrowserContextKeyedServiceFactory* GetFactory();

@@ -186,6 +186,27 @@ void SpeechRecognitionPrivateManager::DispatchOnResultEvent(
   event_router->DispatchEventToExtension(extension_id, std::move(event_ptr));
 }
 
+void SpeechRecognitionPrivateManager::DispatchOnErrorEvent(
+    const std::string& key,
+    const std::string& message) {
+  std::string extension_id = GetExtensionIdFromKey(key);
+  absl::optional<int> client_id = GetClientIdFromKey(key);
+  EventRouter* event_router = EventRouter::Get(context_);
+
+  api::speech_recognition_private::SpeechRecognitionErrorEvent event;
+  event.message = message;
+  if (client_id)
+    event.client_id = std::make_unique<int>(*client_id);
+
+  auto event_args = api::speech_recognition_private::OnError::Create(event);
+  std::unique_ptr<Event> event_ptr = std::make_unique<Event>(
+      events::SPEECH_RECOGNITION_PRIVATE_ON_ERROR,
+      api::speech_recognition_private::OnError::kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventToExtension(extension_id, std::move(event_ptr));
+}
+
 std::string SpeechRecognitionPrivateManager::CreateKey(
     const std::string& extension_id,
     absl::optional<int> client_id) {
@@ -205,6 +226,9 @@ SpeechRecognitionPrivateManager::GetSpeechRecognizer(const std::string& key) {
             key),
         base::BindRepeating(
             &SpeechRecognitionPrivateManager::DispatchOnResultEvent,
+            GetWeakPtr(), key),
+        base::BindRepeating(
+            &SpeechRecognitionPrivateManager::DispatchOnErrorEvent,
             GetWeakPtr(), key));
 
   return recognizer.get();

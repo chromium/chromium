@@ -66,4 +66,19 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartResultStop) {
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+// An end-to-end test that starts speech recognition, fires a fake error, then
+// waits for the extension to handle both an onError and an onStop event.
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartErrorStop) {
+  ExtensionTestMessageListener start_listener("Started", false);
+
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "speech/speech_recognition_private/start_error_stop"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(start_listener.WaitUntilSatisfied());
+
+  SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait();
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
 }  // namespace extensions

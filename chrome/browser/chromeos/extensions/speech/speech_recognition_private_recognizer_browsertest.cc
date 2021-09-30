@@ -33,6 +33,9 @@ class SpeechRecognitionPrivateRecognizerTest
             base::Unretained(this)),
         base::BindRepeating(
             &SpeechRecognitionPrivateRecognizerTest::OnResultCallback,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &SpeechRecognitionPrivateRecognizerTest::OnErrorCallback,
             base::Unretained(this)));
     SpeechRecognitionPrivateBaseTest::SetUpOnMainThread();
   }
@@ -88,6 +91,7 @@ class SpeechRecognitionPrivateRecognizerTest
     last_transcript_ = transcript;
     last_is_final_ = is_final;
   }
+  void OnErrorCallback(const std::string& message) { last_error_ = message; }
 
   bool ran_on_start_callback() { return ran_on_start_callback_; }
   void set_ran_on_start_callback(bool value) { ran_on_start_callback_ = value; }
@@ -110,6 +114,7 @@ class SpeechRecognitionPrivateRecognizerTest
   }
   std::u16string last_transcript() { return last_transcript_; }
   bool last_is_final() { return last_is_final_; }
+  std::string last_error() { return last_error_; }
 
   bool ran_on_start_callback_ = false;
   bool ran_on_stop_once_callback_ = false;
@@ -117,6 +122,7 @@ class SpeechRecognitionPrivateRecognizerTest
   bool ran_on_stop_repeating_callback_ = false;
   std::u16string last_transcript_;
   bool last_is_final_ = false;
+  std::string last_error_;
   std::unique_ptr<SpeechRecognitionPrivateRecognizer> recognizer_;
 };
 
@@ -267,14 +273,15 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
 }
 
-// Tests that we run the correct callback when speech recognition encounters
+// Tests that we run the correct callbacks when speech recognition encounters
 // an error.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
   HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
-  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_ERROR);
+  SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait();
   ASSERT_TRUE(ran_on_stop_repeating_callback());
   ASSERT_FALSE(ran_on_stop_once_callback());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
+  ASSERT_EQ("A speech recognition error occurred", last_error());
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {

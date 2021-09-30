@@ -14,15 +14,18 @@
 
 namespace {
 const char kSpeechRecognitionOffError[] = "Speech recognition already stopped";
+const char kSpeechRecognitionError[] = "A speech recognition error occurred";
 }  // namespace
 
 namespace extensions {
 
 SpeechRecognitionPrivateRecognizer::SpeechRecognitionPrivateRecognizer(
     base::RepeatingClosure on_stop_callback,
-    OnResultCallback on_result_callback)
+    OnResultCallback on_result_callback,
+    OnErrorCallback on_error_callback)
     : on_stop_callback_(std::move(on_stop_callback)),
-      on_result_callback_(std::move(on_result_callback)) {}
+      on_result_callback_(std::move(on_result_callback)),
+      on_error_callback_(std::move(on_error_callback)) {}
 
 SpeechRecognitionPrivateRecognizer::~SpeechRecognitionPrivateRecognizer() {}
 
@@ -62,9 +65,12 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     DCHECK(!on_start_callback_.is_null());
     std::move(on_start_callback_).Run();
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
-    // TODO(crbug.com/1246048): Fire an error event when this state is reached.
+    // When a speech recognition error occurs, run callbacks for both error and
+    // stop.
     next_state = SPEECH_RECOGNIZER_OFF;
     RecognizerOff();
+    DCHECK(!on_error_callback_.is_null());
+    on_error_callback_.Run(kSpeechRecognitionError);
     DCHECK(!on_stop_callback_.is_null());
     on_stop_callback_.Run();
   }
