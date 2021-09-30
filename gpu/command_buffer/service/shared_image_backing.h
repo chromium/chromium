@@ -151,7 +151,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Helper to determine if the entire SharedImage is cleared.
   bool IsCleared() const { return ClearedRect() == gfx::Rect(size()); }
 
-  // Helper function which clears the entire image.
+  // Marks the entire image as cleared.
   void SetCleared() { SetClearedRect(gfx::Rect(size())); }
 
  protected:
