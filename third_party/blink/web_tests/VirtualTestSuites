@@ -1023,7 +1023,8 @@
   },
   {
     "prefix": "prerender",
-    "bases": [ "wpt_internal/prerender",
+    "bases": [ "external/wpt/speculation-rules/prerender",
+               "wpt_internal/prerender",
                "http/tests/inspector-protocol/prerender"],
     "args": [ "--enable-features=Prerender2" ]
   },

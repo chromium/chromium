@@ -1,7 +1,13 @@
-// TODO(https://crbug.com/1253158): Remove this file and instead use
-// /speculation-rules/prerender/resources/utils.js.
-
 const STORE_URL = '/speculation-rules/prerender/resources/key-value-store.py';
+
+function assertSpeculationRulesIsSupported() {
+  assert_implements(
+      'supports' in HTMLScriptElement,
+      'HTMLScriptElement.supports is not supported');
+  assert_implements(
+      HTMLScriptElement.supports('speculationrules'),
+      '<script type="speculationrules"> is not supported');
+}
 
 // Starts prerendering for `url`.
 function startPrerendering(url) {
