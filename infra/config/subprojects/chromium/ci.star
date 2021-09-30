@@ -1546,6 +1546,7 @@ ci.chromium_builder(
     tree_closing = False,
     schedule = "triggered",
     triggered_by = [],
+    execution_timeout = 7 * time.hour,
 )
 
 ci.chromium_builder(
@@ -1661,6 +1662,7 @@ ci.chromium_builder(
     tree_closing = False,
     schedule = "triggered",
     triggered_by = [],
+    execution_timeout = 7 * time.hour,
 )
 
 ci.chromium_builder(
@@ -1714,6 +1716,7 @@ ci.chromium_builder(
     tree_closing = False,
     schedule = "triggered",
     triggered_by = [],
+    execution_timeout = 7 * time.hour,
 )
 
 ci.chromium_builder(
