@@ -1001,9 +1001,6 @@ extern const char kOmniboxAssistantVoiceSearchDescription[];
 extern const char kOmniboxClobberTriggersContextualWebZeroSuggestName[];
 extern const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[];
 
-extern const char kOmniboxCompactSuggestionsName[];
-extern const char kOmniboxCompactSuggestionsDescription[];
-
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
 

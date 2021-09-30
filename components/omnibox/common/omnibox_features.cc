@@ -211,11 +211,6 @@ const base::Feature kAdaptiveSuggestionsCount{
 const base::Feature kClipboardSuggestionContentHidden = {
     "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
 
-// If enabled, shows slightly more compact suggestions, allowing the
-// kAdaptiveSuggestionsCount feature to fit more suggestions on screen.
-const base::Feature kCompactSuggestions{"OmniboxCompactSuggestions",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
 extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",

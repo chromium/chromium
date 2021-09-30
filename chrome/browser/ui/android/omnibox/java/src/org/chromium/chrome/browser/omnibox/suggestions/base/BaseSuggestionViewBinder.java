@@ -53,8 +53,6 @@ public final class BaseSuggestionViewBinder<T extends View>
         if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
-        } else if (BaseSuggestionViewProperties.DENSITY == propertyKey) {
-            updateContentViewPadding(model, view.getDecoratedSuggestionView());
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
@@ -195,33 +193,6 @@ public final class BaseSuggestionViewBinder<T extends View>
         final int endSpace = view.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_refine_view_modern_end_padding);
         view.setPaddingRelative(startSpace, 0, endSpace, 0);
-
-        // Compact suggestion handling: apply additional padding to the suggestion content.
-        final @BaseSuggestionViewProperties.Density int density =
-                model.get(BaseSuggestionViewProperties.DENSITY);
-
-        int minimumHeightRes;
-        int verticalPadRes;
-        switch (density) {
-            case BaseSuggestionViewProperties.Density.COMPACT:
-                verticalPadRes = R.dimen.omnibox_suggestion_compact_padding;
-                minimumHeightRes = R.dimen.omnibox_suggestion_compact_height;
-                break;
-            case BaseSuggestionViewProperties.Density.SEMICOMPACT:
-                verticalPadRes = R.dimen.omnibox_suggestion_semicompact_padding;
-                minimumHeightRes = R.dimen.omnibox_suggestion_semicompact_height;
-                break;
-            case BaseSuggestionViewProperties.Density.COMFORTABLE:
-            default:
-                verticalPadRes = R.dimen.omnibox_suggestion_comfortable_padding;
-                minimumHeightRes = R.dimen.omnibox_suggestion_comfortable_height;
-                break;
-        }
-        final int verticalPad = view.getResources().getDimensionPixelSize(verticalPadRes);
-        view.getContentView().setPaddingRelative(0, verticalPad, 0, verticalPad);
-
-        final int minimumHeight = view.getResources().getDimensionPixelSize(minimumHeightRes);
-        view.getContentView().setMinimumHeight(minimumHeight);
     }
 
     /**

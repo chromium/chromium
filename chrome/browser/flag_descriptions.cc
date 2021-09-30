@@ -1744,11 +1744,6 @@ const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[] =
     "Backspace), Chrome will request ZeroSuggest suggestions for the OTHER "
     "page classification (contextual web).";
 
-const char kOmniboxCompactSuggestionsName[] = "Omnibox: Compact suggestions";
-const char kOmniboxCompactSuggestionsDescription[] =
-    "Conserve the space for Omnibox Suggestions by slightly reducing their "
-    "size.";
-
 const char kOmniboxDisableCGIParamMatchingName[] =
     "Disable CGI Param Name Matching";
 const char kOmniboxDisableCGIParamMatchingDescription[] =

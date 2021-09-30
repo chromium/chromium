@@ -777,16 +777,6 @@ const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kCompactSuggestions_SemicompactVariant[] = {
-    {"omnibox_compact_suggestions_variant", "semi-compact"}};
-
-const FeatureEntry::FeatureVariation kCompactSuggestionsVariations[] = {
-    {"- Semi-compact", kCompactSuggestions_SemicompactVariant,
-     base::size(kCompactSuggestions_SemicompactVariant), nullptr},
-};
-#endif  // OS_ANDROID
-
 const FeatureEntry::Choice kEnableUseZoomForDSFChoices[] = {
     {flag_descriptions::kEnableUseZoomForDsfChoiceDefault, "", ""},
     {flag_descriptions::kEnableUseZoomForDsfChoiceEnabled,
@@ -4375,12 +4365,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAssistantVoiceSearch,
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
-    {"omnibox-compact-suggestions",
-     flag_descriptions::kOmniboxCompactSuggestionsName,
-     flag_descriptions::kOmniboxCompactSuggestionsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kCompactSuggestions,
-                                    kCompactSuggestionsVariations,
-                                    "OmniboxCompactSuggestions")},
     {"omnibox-most-visited-tiles",
      flag_descriptions::kOmniboxMostVisitedTilesName,
      flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,

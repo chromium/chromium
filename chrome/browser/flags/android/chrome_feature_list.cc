@@ -321,7 +321,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &offline_pages::kPrefetchingOfflinePagesFeature,
     &omnibox::kAdaptiveSuggestionsCount,
     &omnibox::kClipboardSuggestionContentHidden,
-    &omnibox::kCompactSuggestions,
     &omnibox::kMostVisitedTiles,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxSpareRenderer,

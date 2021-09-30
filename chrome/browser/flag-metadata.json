@@ -4023,11 +4023,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "omnibox-compact-suggestions",
-    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "omnibox-default-typed-navigations-to-https",
     "owners": ["meacer", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 93

@@ -14,7 +14,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -33,15 +32,11 @@ import java.util.List;
  * A class that handles base properties and model for most suggestions.
  */
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
-    private static final String SUGGESTION_DENSITY_PARAM = "omnibox_compact_suggestions_variant";
-    private static final String SUGGESTION_DENSITY_SEMICOMPACT = "semi-compact";
     private final Context mContext;
     private final SuggestionHost mSuggestionHost;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
-    private int mSuggestionSizePx;
-    private @BaseSuggestionViewProperties.Density int mDensity =
-            BaseSuggestionViewProperties.Density.COMFORTABLE;
+    private final int mSuggestionSizePx;
 
     /**
      * @param context Current context.
@@ -55,7 +50,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mDecorationImageSizePx = context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_decoration_image_size);
         mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_comfortable_height);
+                R.dimen.omnibox_suggestion_semicompact_height);
     }
 
     /**
@@ -73,20 +68,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     @Override
-    public void onNativeInitialized() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)) {
-            if (SUGGESTION_DENSITY_SEMICOMPACT.equals(ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS, SUGGESTION_DENSITY_PARAM))) {
-                mDensity = BaseSuggestionViewProperties.Density.SEMICOMPACT;
-                mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_semicompact_height);
-            } else {
-                mDensity = BaseSuggestionViewProperties.Density.COMPACT;
-                mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_compact_height);
-            }
-        }
-    }
+    public void onNativeInitialized() {}
 
     @Override
     public int getMinimumViewHeight() {
@@ -174,7 +156,6 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 () -> onSuggestionLongClicked(suggestion, position));
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
-        model.set(BaseSuggestionViewProperties.DENSITY, mDensity);
         setCustomActions(model, null);
     }
 

@@ -5081,12 +5081,10 @@
                     "params": {
                         "OmniboxMaxURLMatches": "3",
                         "OmniboxMaxZeroSuggestMatches": "15",
-                        "UIMaxAutocompleteMatches": "8",
-                        "omnibox_compact_suggestions_variant": "semi-compact"
+                        "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
                         "OmniboxAdaptiveSuggestionsCount",
-                        "OmniboxCompactSuggestions",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
