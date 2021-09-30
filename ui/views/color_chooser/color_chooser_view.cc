@@ -417,8 +417,8 @@ END_METADATA
 std::unique_ptr<View> ColorChooser::BuildView() {
   auto view = std::make_unique<View>();
   tracker_.SetView(view.get());
-  view->SetBackground(CreateThemedSolidBackground(
-      view.get(), ui::NativeTheme::kColorId_WindowBackground));
+  view->SetBackground(
+      CreateThemedSolidBackground(view.get(), ui::kColorWindowBackground));
   view->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                   gfx::Insets(kMarginWidth), kMarginWidth));

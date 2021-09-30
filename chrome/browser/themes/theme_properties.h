@@ -137,8 +137,7 @@ class ThemeProperties {
 
     // The throbber colors for tabs or anything on a toolbar (currently, only
     // the download shelf). If you're adding a throbber elsewhere, such as in
-    // a dialog or bubble, you likely want
-    // NativeTheme::kColorId_ThrobberSpinningColor.
+    // a dialog or bubble, you likely want ui::kColorThrobber.
     COLOR_TAB_THROBBER_SPINNING,
     COLOR_TAB_THROBBER_WAITING,
 

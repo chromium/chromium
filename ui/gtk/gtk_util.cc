@@ -901,10 +901,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetFgColor("GtkButton#button.text-button GtkLabel#label");
     case ui::kColorButtonForegroundDisabled:
       return GetFgColor("GtkButton#button.text-button:disabled GtkLabel#label");
-    // TODO(thomasanderson): Add this once this CL lands:
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2053144
-    // case ui::kColorId_ButtonHoverColor:
-    //   return GetBgColor("GtkButton#button:hover");
 
     // ProminentButton
     case ui::kColorAccent:
@@ -926,12 +922,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetBgColor("GtkButton#button.text-button:disabled");
     case ui::kColorButtonBorder:
       return GetBorderColor("GtkButton#button.text-button");
-    // TODO(thomasanderson): Add this once this CL lands:
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2053144
-    // case ui::kColorId_ProminentButtonHoverColor:
-    //   return GetBgColor(
-    //       "GtkTreeView#treeview.view "
-    //       "GtkTreeView#treeview.view.cell:selected:focus:hover");
 
     // ToggleButton
     case ui::kColorToggleButtonTrackOff:

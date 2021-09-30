@@ -89,6 +89,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
@@ -1435,9 +1436,8 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
                ? ui::ImageModel::FromImage(favicon::GetDefaultFavicon())
                : ui::ImageModel::FromImage(image);
   } else {
-    icon =
-        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                      ui::NativeTheme::kColorId_MenuIconColor);
+    icon = chrome::GetBookmarkFolderIcon(
+        chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   }
 
   button_drag_utils::SetDragImage(
@@ -1859,8 +1859,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
           button->SetImageModel(
               views::Button::STATE_NORMAL,
               chrome::GetBookmarkFolderIcon(
-                  chrome::BookmarkFolderIconType::kNormal,
-                  ui::NativeTheme::kColorId_DefaultIconColor));
+                  chrome::BookmarkFolderIconType::kNormal, ui::kColorIcon));
         }
       }
     }
@@ -2241,14 +2240,12 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   } else {
     other_bookmarks_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(
-            chrome::BookmarkFolderIconType::kNormal,
-            ui::NativeTheme::kColorId_DefaultIconColor));
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                      ui::kColorIcon));
     managed_bookmarks_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(
-            chrome::BookmarkFolderIconType::kManaged,
-            ui::NativeTheme::kColorId_DefaultIconColor));
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                      ui::kColorIcon));
   }
 
   if (apps_page_shortcut_->GetVisible())

@@ -56,7 +56,7 @@ gfx::ShadowValues GetTextShadowValues(const ui::ColorProvider* color_provider) {
   // order to calculate margins. In that case the color plays no role so set it
   // to gfx::kPlaceholderColor.
   // Currently an elevation of 2 falls back to MakeMdShadowValues so use
-  // kColorId_ShadowBase, which is the base shadow color for MdShadowValues,
+  // ui::kColorShadowBase, which is the base shadow color for MdShadowValues,
   // until MakeMdShadowValues is refactored to take in it’s own
   // |key_shadow_color| and |ambient_shadow_color|.
   // TODO(elainechien): crbug.com/1056950

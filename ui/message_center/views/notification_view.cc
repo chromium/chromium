@@ -207,10 +207,9 @@ void NotificationView::UpdateHeaderViewBackgroundColor() {
 
 SkColor NotificationView::GetNotificationHeaderViewBackgroundColor() const {
   bool inline_settings_visible = inline_settings_row()->GetVisible();
-  return GetNativeTheme()->GetSystemColor(
-      inline_settings_visible
-          ? ui::NativeTheme::kColorId_NotificationBackgroundActive
-          : ui::NativeTheme::kColorId_NotificationBackground);
+  return GetColorProvider()->GetColor(
+      inline_settings_visible ? ui::kColorNotificationBackgroundActive
+                              : ui::kColorNotificationBackgroundInactive);
 }
 
 void NotificationView::UpdateActionButtonsRowBackground() {
@@ -220,8 +219,8 @@ void NotificationView::UpdateActionButtonsRowBackground() {
   action_buttons_row()->SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
           /*top_radius=*/0, bottom_radius(),
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_NotificationActionsRowBackground))));
+          GetColorProvider()->GetColor(
+              ui::kColorNotificationActionsBackground))));
 }
 
 void NotificationView::AddBackgroundAnimation(const ui::Event& event) {

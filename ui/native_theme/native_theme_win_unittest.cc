@@ -109,38 +109,6 @@ TEST(NativeThemeWinTest, GetDefaultSystemColorScheme) {
   EXPECT_EQ(theme.GetDefaultSystemColorScheme(), ColorScheme::kLight);
 }
 
-TEST(NativeThemeWinTest, GetPlatformHighContrastColor) {
-  using ColorId = NativeTheme::ColorId;
-
-  // These specific colors don't matter, but should be unique.
-  constexpr SkColor kWindowTextColor = SK_ColorGREEN;
-  constexpr SkColor kHighlightColor = SK_ColorYELLOW;
-  constexpr SkColor kHighlightTextColor = SK_ColorBLUE;
-
-  TestNativeThemeWin theme;
-  theme.SetSystemColor(SystemThemeColor::kWindowText, kWindowTextColor);
-  theme.SetSystemColor(SystemThemeColor::kHighlight, kHighlightColor);
-  theme.SetSystemColor(SystemThemeColor::kHighlightText, kHighlightTextColor);
-
-  // Test that we get regular colors when HC is off.
-  theme.set_forced_colors(false);
-  EXPECT_NE(theme.GetSystemColor(ColorId::kColorId_LabelEnabledColor),
-            kWindowTextColor);
-  EXPECT_NE(theme.GetSystemColor(ColorId::kColorId_ProminentButtonColor),
-            kHighlightColor);
-  EXPECT_NE(theme.GetSystemColor(ColorId::kColorId_TextOnProminentButtonColor),
-            kHighlightTextColor);
-
-  // Test that we get HC colors when HC is on.
-  theme.set_forced_colors(true);
-  EXPECT_EQ(theme.GetSystemColor(ColorId::kColorId_LabelEnabledColor),
-            kWindowTextColor);
-  EXPECT_EQ(theme.GetSystemColor(ColorId::kColorId_ProminentButtonColor),
-            kHighlightColor);
-  EXPECT_EQ(theme.GetSystemColor(ColorId::kColorId_TextOnProminentButtonColor),
-            kHighlightTextColor);
-}
-
 TEST(NativeThemeWinTest, GetPlatformHighContrastColorScheme) {
   using HCColorScheme = NativeTheme::PlatformHighContrastColorScheme;
 

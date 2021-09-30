@@ -37,6 +37,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_id.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -563,12 +564,12 @@ void BookmarkMenuDelegate::BuildMenusForPermanentNodes(
   BuildMenuForPermanentNode(
       model->other_node(),
       chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::NativeTheme::kColorId_MenuIconColor),
+                                    ui::kColorMenuIcon),
       menu, &added_separator);
   BuildMenuForPermanentNode(
       model->mobile_node(),
       chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::NativeTheme::kColorId_MenuIconColor),
+                                    ui::kColorMenuIcon),
       menu, &added_separator);
 }
 
@@ -596,7 +597,7 @@ void BookmarkMenuDelegate::BuildMenuForManagedNode(MenuItemView* menu) {
   BuildMenuForPermanentNode(
       node,
       chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
-                                    ui::NativeTheme::kColorId_MenuIconColor),
+                                    ui::kColorMenuIcon),
       menu, &added_separator);
 }
 
@@ -605,9 +606,8 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
                                      MenuItemView* menu) {
   DCHECK_LE(start_child_index, parent->children().size());
   ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel folder_icon =
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::NativeTheme::kColorId_MenuIconColor);
+  const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
+      chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   for (auto i = parent->children().cbegin() + start_child_index;
        i != parent->children().cend(); ++i) {
     const BookmarkNode* node = i->get();

@@ -27,6 +27,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
@@ -216,7 +217,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
       icon = ui::ImageModel::FromImage(image);
     } else {
       icon = GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                   ui::NativeTheme::kColorId_MenuIconColor);
+                                   ui::kColorMenuIcon);
     }
 
     OnBookmarkIconLoaded(drag_node, icon);

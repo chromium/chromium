@@ -64,7 +64,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   // It would be neat to also check the text color here, but the label's text
   // ends up drawn on top of the background with antialiasing, which means there
   // aren't any pixels that are actually *exactly*
-  // kColorId_TextOnProminentButtonColor. Bummer.
+  // kColorButtonForegroundProminent. Bummer.
 
   // Activate another widget to cause the original widget to deactivate.
   std::unique_ptr<Widget> other_widget = CreateTestWidget();

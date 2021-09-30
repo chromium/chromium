@@ -264,8 +264,9 @@ bool IsValidBookmarkDropLocation(Profile* profile,
 }
 
 #if defined(TOOLKIT_VIEWS)
-ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
-                                     absl::variant<int, SkColor> color) {
+ui::ImageModel GetBookmarkFolderIcon(
+    BookmarkFolderIconType icon_type,
+    absl::variant<ui::ColorId, SkColor> color) {
   int default_id = IDR_FOLDER_CLOSED;
 #if defined(OS_WIN) || defined(OS_MAC)
   // This block must be #ifdefed because only these platforms actually have this
@@ -274,7 +275,7 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
     default_id = IDR_BOOKMARK_BAR_FOLDER_MANAGED;
 #endif
   const auto generator = [](int default_id, BookmarkFolderIconType icon_type,
-                            absl::variant<int, SkColor> color,
+                            absl::variant<ui::ColorId, SkColor> color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
 #if defined(OS_WIN)

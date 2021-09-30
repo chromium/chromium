@@ -612,102 +612,29 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
 absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
     ColorId color_id) const {
   switch (color_id) {
-    // Window Background
     case kColorId_WindowBackground:
-    case kColorId_DialogBackground:
-    case kColorId_BubbleBackground:
-    case kColorId_BubbleFooterBackground:
-    case kColorId_TreeBackground:
-    case kColorId_TableHeaderBackground:
-    case kColorId_TableBackground:
-    case kColorId_TableBackgroundAlternate:
-    case kColorId_TooltipBackground:
-    case kColorId_ProminentButtonDisabledColor:
-    case kColorId_NotificationBackground:
       return system_colors_[SystemThemeColor::kWindow];
 
-    // Window Text
     case kColorId_MenuIconColor:
-    case kColorId_DialogForeground:
-    case kColorId_LabelEnabledColor:
-    case kColorId_LabelSecondaryColor:
-    case kColorId_TreeText:
-    case kColorId_TableText:
-    case kColorId_TableHeaderText:
-    case kColorId_TableGroupingIndicatorColor:
-    case kColorId_TableHeaderSeparator:
-    case kColorId_TooltipIcon:
-    case kColorId_TooltipText:
     case kColorId_ThrobberSpinningColor:
-    case kColorId_AlertSeverityLow:
-    case kColorId_AlertSeverityMedium:
-    case kColorId_AlertSeverityHigh:
     case kColorId_DefaultIconColor:
       return system_colors_[SystemThemeColor::kWindowText];
 
-    // Hyperlinks
-    case kColorId_LinkEnabled:
-    case kColorId_LinkPressed:
-    case kColorId_HighlightedMenuItemForegroundColor:
-      return system_colors_[SystemThemeColor::kHotlight];
-
-    // Gray/Disabled Text
-    case kColorId_DisabledMenuItemForegroundColor:
-    case kColorId_LinkDisabled:
-    case kColorId_LabelDisabledColor:
-    case kColorId_ButtonDisabledColor:
     case kColorId_ThrobberWaitingColor:
       return system_colors_[SystemThemeColor::kGrayText];
 
-    // Button Background
-    case kColorId_ButtonColor:
     case kColorId_MenuBackgroundColor:
-    case kColorId_HighlightedMenuItemBackgroundColor:
-    case kColorId_TextfieldDefaultBackground:
-    case kColorId_TextfieldReadOnlyBackground:
       return system_colors_[SystemThemeColor::kButtonFace];
 
-    // Button Text Foreground
-    case kColorId_EnabledMenuItemForegroundColor:
-    case kColorId_MenuItemMinorTextColor:
-    case kColorId_MenuBorderColor:
     case kColorId_MenuSeparatorColor:
-    case kColorId_SeparatorColor:
-    case kColorId_TextfieldDefaultColor:
-    case kColorId_ButtonEnabledColor:
-    case kColorId_UnfocusedBorderColor:
-    case kColorId_TextfieldPlaceholderColor:
-    case kColorId_TextfieldReadOnlyColor:
     case kColorId_FocusedBorderColor:
-    case kColorId_TabTitleColorActive:
-    case kColorId_TabTitleColorInactive:
-    case kColorId_TabBottomBorder:
       return system_colors_[SystemThemeColor::kButtonText];
 
-    // Highlight/Selected Background
     case kColorId_ProminentButtonColor:
-    case kColorId_ProminentButtonFocusedColor:
-    case kColorId_ButtonBorderColor:
-    case kColorId_DropdownSelectedBackgroundColor:
     case kColorId_FocusedMenuItemBackgroundColor:
-    case kColorId_LabelTextSelectionBackgroundFocused:
-    case kColorId_TextfieldSelectionBackgroundFocused:
-    case kColorId_TooltipIconHovered:
-    case kColorId_TreeSelectionBackgroundFocused:
-    case kColorId_TreeSelectionBackgroundUnfocused:
-    case kColorId_TableSelectionBackgroundFocused:
-    case kColorId_TableSelectionBackgroundUnfocused:
       return system_colors_[SystemThemeColor::kHighlight];
 
-    // Highlight/Selected Text Foreground
     case kColorId_TextOnProminentButtonColor:
-    case kColorId_SelectedMenuItemForegroundColor:
-    case kColorId_TextfieldSelectionColor:
-    case kColorId_LabelTextSelectionColor:
-    case kColorId_TreeSelectedText:
-    case kColorId_TreeSelectedTextUnfocused:
-    case kColorId_TableSelectedText:
-    case kColorId_TableSelectedTextUnfocused:
       return system_colors_[SystemThemeColor::kHighlightText];
 
     default:

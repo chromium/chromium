@@ -104,7 +104,7 @@ enum class BookmarkFolderIconType {
   kManaged,
 };
 ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
-                                     absl::variant<int, SkColor> color);
+                                     absl::variant<ui::ColorId, SkColor> color);
 #endif
 
 }  // namespace chrome
