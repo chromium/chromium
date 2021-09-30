@@ -543,6 +543,7 @@ if (is_win || is_mac) {
 
     if (is_mac) {
       sources += [
+        "mac/keystone/ksadmin_unittest.cc",
         "mac/net/network_unittest.cc",
         "mac/scoped_xpc_service_mock.h",
         "mac/scoped_xpc_service_mock.mm",
@@ -570,7 +571,10 @@ if (is_win || is_mac) {
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
       ]
 
-      data_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
+      data_deps = [
+        "//chrome/updater/mac:ksadmin",
+        "//chrome/updater/mac:updater_bundle_test",
+      ]
     }
   }
 
