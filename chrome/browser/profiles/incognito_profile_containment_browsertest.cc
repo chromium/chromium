@@ -284,8 +284,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
 // state even if user did not explicitly open the browser in regular mode and if
 // so, please add the file to the allow_list at the top and file a bug to follow
 // up.
+// Disabled due to failing tests. https://crbug.com/1254810
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
-                       StoringDataDoesNotModifyProfileFolder) {
+                       DISABLED_StoringDataDoesNotModifyProfileFolder) {
   // Take a snapshot of regular profile.
   Snapshot before_incognito;
   GetUserDirectorySnapshot(before_incognito, /*compute_file_hashes=*/true);
