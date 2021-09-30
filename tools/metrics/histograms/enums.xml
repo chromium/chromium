@@ -86249,6 +86249,7 @@ Full version information for the fingerprint enum values:
   <int value="6" label="Finishing"/>
   <int value="7" label="No WebContents"/>
   <int value="8" label="(Obsolete) No video"/>
+  <int value="9" label="App tasks"/>
 </enum>
 
 <enum name="VideoPersistenceControlsType">
