@@ -666,11 +666,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "chrome-share-highlights-android",
-    "owners": [ "gayane", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "chrome-share-long-screenshot",
     "owners": [ "skare", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 96
