@@ -85,6 +85,18 @@ class BrowserAppInstanceRegistry
   // instance lives in its own window, this will have no effect.
   void ActivateTabInstance(const base::UnguessableToken& id);
 
+  // Activate an app or a browser window instance (Ash or Lacros). Does nothing
+  // if the instance identified by |id| does not exist.
+  void ActivateInstance(const base::UnguessableToken& id);
+
+  // Minimize the window of an app or a browser window instance (Ash or Lacros).
+  // Does nothing if the instance identified by |id| does not exist.
+  void MinimizeInstance(const base::UnguessableToken& id);
+
+  // Check if an app or a browser window instance is active (Ash or Lacros).
+  // Returns false if the instance identified by |id| does not exist.
+  bool IsInstanceActive(const base::UnguessableToken& id) const;
+
   void AddObserver(BrowserAppInstanceObserver* observer) {
     observers_.AddObserver(observer);
   }

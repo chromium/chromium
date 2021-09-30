@@ -44,11 +44,22 @@ void BrowserAppShelfItemController::ItemSelected(
       ChromeShelfController::instance()->LaunchApp(
           ash::ShelfID(shelf_id()), source, ui::EF_NONE, display_id);
       break;
-    case 1:
+    case 1: {
       // One instance is running, activate it.
-      // TODO(crbug.com/1203992): Implement instance activation.
-      NOTIMPLEMENTED();
-      FALLTHROUGH;  // for now to finish with a callback
+      base::UnguessableToken id = instances[0].second;
+      const bool can_minimize = source != ash::LAUNCH_FROM_APP_LIST &&
+                                source != ash::LAUNCH_FROM_APP_LIST_SEARCH;
+      ash::ShelfAction action;
+      if (registry_.IsInstanceActive(id) && can_minimize) {
+        registry_.MinimizeInstance(id);
+        action = ash::SHELF_ACTION_WINDOW_MINIMIZED;
+      } else {
+        registry_.ActivateInstance(id);
+        action = ash::SHELF_ACTION_WINDOW_ACTIVATED;
+      }
+      std::move(callback).Run(action, {});
+      break;
+    }
     default:
       // Multiple instances activated, show the list of running instances.
       std::move(callback).Run(
@@ -97,8 +108,10 @@ void BrowserAppShelfItemController::ExecuteCommand(bool from_context_menu,
                                                    int32_t event_flags,
                                                    int64_t display_id) {
   // Item selected from menu.
-  // TODO(crbug.com/1203992): Implement instance activation.
-  NOTIMPLEMENTED();
+  auto it = command_to_instance_map_.find(command_id);
+  if (it != command_to_instance_map_.end()) {
+    registry_.ActivateInstance(it->second);
+  }
 }
 
 void BrowserAppShelfItemController::Close() {

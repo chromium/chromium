@@ -13,8 +13,24 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace apps {
+
+namespace {
+
+void ActivateWindow(aura::Window* window) {
+  wm::GetActivationClient(window->GetRootWindow())->ActivateWindow(window);
+}
+
+void MinimizeWindow(aura::Window* window) {
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+  widget->Minimize();
+}
+
+}  // namespace
 
 struct BrowserAppInstanceRegistry::WindowEventList {
   aura::Window* window{nullptr};
@@ -118,6 +134,46 @@ void BrowserAppInstanceRegistry::ActivateTabInstance(
   if (controller_.is_bound()) {
     controller_->ActivateTabInstance(id);
   }
+}
+
+void BrowserAppInstanceRegistry::ActivateInstance(
+    const base::UnguessableToken& id) {
+  if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
+    ActivateWindow(instance->window);
+    ActivateTabInstance(id);
+    return;
+  }
+
+  if (const BrowserWindowInstance* instance =
+          GetBrowserWindowInstanceById(id)) {
+    ActivateWindow(instance->window);
+  }
+}
+
+void BrowserAppInstanceRegistry::MinimizeInstance(
+    const base::UnguessableToken& id) {
+  if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
+    MinimizeWindow(instance->window);
+    return;
+  }
+
+  if (const BrowserWindowInstance* instance =
+          GetBrowserWindowInstanceById(id)) {
+    MinimizeWindow(instance->window);
+  }
+}
+
+bool BrowserAppInstanceRegistry::IsInstanceActive(
+    const base::UnguessableToken& id) const {
+  if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
+    return instance->is_browser_active && instance->is_web_contents_active;
+  }
+
+  if (const BrowserWindowInstance* instance =
+          GetBrowserWindowInstanceById(id)) {
+    return instance->is_active;
+  }
+  return false;
 }
 
 void BrowserAppInstanceRegistry::BindReceiver(
