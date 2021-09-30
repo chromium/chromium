@@ -414,6 +414,9 @@
       status: "experimental",
     },
     {
+      name: "CompositeBoxShadowAnimation",
+    },
+    {
       name: "CompositeClipPathAnimation",
     },
     {
