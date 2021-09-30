@@ -1,6 +1,7 @@
 <style include="scanning-shared scanning-fonts">
   :host {
     --preview-border-width: 2px;
+    --image-focus-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
   }
 
   #helpDiv {
@@ -79,7 +80,11 @@
   }
 
   :host([show-single-image-focus_]) .preview:hover .focused-scanned-image {
-    box-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
+    box-shadow: var(--image-focus-shadow);
+  }
+
+  :host([show-single-image-focus_]) #scannedImages:focus-within .focused-scanned-image {
+    box-shadow: var(--image-focus-shadow);
   }
 
   paper-progress {
