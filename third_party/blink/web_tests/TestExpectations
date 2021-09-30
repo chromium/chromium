@@ -6871,7 +6871,7 @@ crbug.com/1249176 [ Mac11-arm64 ] fast/layers/clip-rects-transformed-2.html [ Fa
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-click.html [ Failure Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-position/fixed-z-index-blend.html [ Failure Pass ]
@@ -6973,8 +6973,8 @@ crbug.com/1249622 external/wpt/largest-contentful-paint/initially-invisible-imag
 # FileSystemHandle::move() is temporarily disabled outside of the Origin Private File System
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-rename-manual.https.html [ Failure ]
-crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]
-crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-rename-manual.https.html [ Failure ]
+crbug.com/1247850 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]
+crbug.com/1247850 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-rename-manual.https.html [ Failure ]
 # FileSystemHandle::move() is temporarily disabled for directory handles
 crbug.com/1250534 external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
 crbug.com/1250534 external/wpt/file-system-access/local_FileSystemDirectoryHandle-rename-manual.https.html [ Failure ]
@@ -6982,12 +6982,12 @@ crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryH
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.html [ Failure ]
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.worker.html [ Failure ]
-crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-rename-manual.https.html [ Failure ]
-crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
-crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.html [ Failure ]
-crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
-crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.worker.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-rename-manual.https.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.worker.html [ Failure ]
 
 # Sheriff 2021-09-23
 crbug.com/1164568 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]

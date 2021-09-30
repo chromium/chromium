@@ -622,7 +622,7 @@
     "args": ["--enable-features=ReduceUserAgent"]
   },
   {
-    "prefix": "file-system-access-access-handle-incognito",
+    "prefix": "fsa-incognito",
     "bases": ["external/wpt/file-system-access"],
     "args": ["--enable-features=IncognitoFileSystemContextForTesting"]
   },
