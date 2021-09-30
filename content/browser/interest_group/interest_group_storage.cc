@@ -1026,7 +1026,7 @@ bool InterestGroupStorage::InitializeSchema() {
   if (meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     // In this case the database version is too new to be used. The DB will
     // never work until Chrome is re-upgraded. Assume the user will continue
-    // using this Chrome version and raze the DB to get conversion measurement
+    // using this Chrome version and raze the DB to get interest group storage
     // working.
     meta_table.Reset();
     db_->Raze();
