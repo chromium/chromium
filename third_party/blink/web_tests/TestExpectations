@@ -1869,6 +1869,7 @@ crbug.com/1024331 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html
 crbug.com/1140728 external/wpt/css/css-text/hyphens/hyphens-span-002.html [ Failure ]
 crbug.com/1139693 virtual/text-antialias/hyphens/midword-break-priority.html [ Failure ]
 
+crbug.com/1250257 external/wpt/css/css-text/tab-size/tab-size-block-ancestor.html [ Failure ]
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-001.html [ Failure ]
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-002.html [ Failure ]
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-003.html [ Failure ]
@@ -2843,7 +2844,6 @@ crbug.com/626703 external/wpt/css/css-ui/input-security-none-sensitive-text-inpu
 crbug.com/626703 [ Linux ] virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-flexbox/dynamic-isize-change-002.html [ Crash ]
-crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-block-ancestor.html [ Failure ]
 crbug.com/626703 [ Linux ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/cookies/attributes/domain.sub.html [ Failure ]
