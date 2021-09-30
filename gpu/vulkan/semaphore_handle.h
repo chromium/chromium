@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_SEMAPHORE_HANDLE_H_
 #define GPU_VULKAN_SEMAPHORE_HANDLE_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <utility>
 
 #include "base/component_export.h"

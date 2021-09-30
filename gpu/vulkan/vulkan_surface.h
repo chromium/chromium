@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_VULKAN_SURFACE_H_
 #define GPU_VULKAN_VULKAN_SURFACE_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/callback.h"
 #include "base/component_export.h"

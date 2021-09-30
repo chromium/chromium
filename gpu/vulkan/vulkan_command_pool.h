@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_VULKAN_COMMAND_POOL_H_
 #define GPU_VULKAN_VULKAN_COMMAND_POOL_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 

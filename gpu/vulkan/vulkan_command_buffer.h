@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_VULKAN_COMMAND_BUFFER_H_
 #define GPU_VULKAN_VULKAN_COMMAND_BUFFER_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/check.h"
 #include "base/component_export.h"
