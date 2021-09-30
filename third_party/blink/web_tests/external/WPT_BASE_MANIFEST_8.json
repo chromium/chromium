@@ -81010,19 +81010,6 @@
        {}
       ]
      ],
-     "predefined-013.html": [
-      "c13a37a6e2b9049099f950561bd2ab60405f7d03",
-      [
-       null,
-       [
-        [
-         "/css/css-color/greensquare-090-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "predefined-016.html": [
       "c8a666164a92a8e5d192da971bf65450fa86b0bc",
       [
@@ -218810,6 +218797,10 @@
       "d3790b6fbe0497143246e96cb15694d2936d000a",
       []
      ],
+     "default-src-unsafe-eval-allows-wasm.any.js.headers": [
+      "1a1d90cf7ca42e39186f71b09b45d465f636686f",
+      []
+     ],
      "default-src-wasm-unsafe-eval-allows-wasm.any-expected.txt": [
       "3e495b5e323bf5c854de44cea5096ac18e60ff1d",
       []
@@ -218832,6 +218823,10 @@
      ],
      "script-src-blocks-wasm.any.js.headers": [
       "de46ceb5a1ad4e0354bca83f43c2fb16211c85c1",
+      []
+     ],
+     "script-src-unsafe-eval-allows-wasm.any.js.headers": [
+      "7b26c292f31e40e8ff113125bb5b36dbfa0be5ec",
       []
      ],
      "script-src-wasm-unsafe-eval-allows-wasm.any-expected.txt": [
@@ -252760,11 +252755,7 @@
        []
       ],
       "text-decoration-line-computed-expected.txt": [
-       "fea7eb0fdc8bf84dc553efe1929750d13e6ef32f",
-       []
-      ],
-      "text-decoration-line-valid-expected.txt": [
-       "fcd3f1b5520f223122518804722a19693dc933a1",
+       "e4a100231ab0a7ebed7bcbbe78cee5749f9155bf",
        []
       ],
       "text-decoration-valid-expected.txt": [
@@ -255071,7 +255062,7 @@
         []
        ],
        "text-decoration-line-expected.txt": [
-        "18db611c91112d8095c66a35747fc6986630fda9",
+        "094ea523e862fb775835b7797e5934c43171eb88",
         []
        ],
        "text-decoration-skip-expected.txt": [
@@ -266145,6 +266136,14 @@
       ],
       "cors-preflight-redirect.any.worker-expected.txt": [
        "1130f249e167d39118bfc9eb330b2690b2fa7cce",
+       []
+      ],
+      "cors-preflight-star.any-expected.txt": [
+       "81ee40d0a26563b01ecf3eb09844b80e1c9e7c7b",
+       []
+      ],
+      "cors-preflight-star.any.worker-expected.txt": [
+       "81ee40d0a26563b01ecf3eb09844b80e1c9e7c7b",
        []
       ],
       "cors-preflight.any-expected.txt": [
@@ -286931,7 +286930,7 @@
     ]
    },
    "lint.ignore": [
-    "c67b7412b13b94dc691513bcd802ace59aec123b",
+    "4b2ddb5a694f8eab62ebdf5dc325778c2987d378",
     []
    ],
    "loading": {
@@ -297286,6 +297285,24 @@
      ]
     }
    },
+   "speculation-rules": {
+    "prerender": {
+     "resources": {
+      "key-value-store.py": [
+       "1ab609f11bf2be22696f0b132b88d8fc86546b93",
+       []
+      ],
+      "prerender-state.html": [
+       "914db2a9ed900ece42982c12913576086f7db928",
+       []
+      ],
+      "utils.js": [
+       "1c1cdb2fbf08dcadd7502d9299077d1a298a0e0b",
+       []
+      ]
+     }
+    }
+   },
    "speech-api": {
     "META.yml": [
      "2b7a03e245ab82310d4637d3a2a4e1dbe3df38db",
@@ -300527,7 +300544,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "9e2383577b348ed2245105309974eede04bf4438",
+      "038f9ad14bda2d2fa937f33939c58cc8996d3bee",
       []
      ],
      "location": {
@@ -300672,6 +300689,10 @@
         "767da13cb2f6ef30d854bad9bb49d1d3445f5bfd",
         []
        ],
+       "cross-origin-b2.wbn": [
+        "03c31a8b5bbf9c7f6c534760c56ffd378aafa127",
+        []
+       ],
        "cross-origin.wbn": [
         "942ddb6d348c92d8b32a9936002328f1f527a680",
         []
@@ -300703,6 +300724,14 @@
         []
        ]
       },
+      "dynamic1-b2.wbn": [
+       "77ffd6e99535677881d765d387c8d9922b9c0a70",
+       []
+      ],
+      "dynamic1-crossorigin-b2.wbn": [
+       "a02538bdf22c4bac504b0b8bccbb9f11c6a24498",
+       []
+      ],
       "dynamic1-crossorigin.wbn": [
        "ab96d3597efa1d7686b4d86ed3db934a66635d0d",
        []
@@ -300711,8 +300740,16 @@
        "2fb02b199197d39546844b22336f983864f3cabc",
        []
       ],
+      "dynamic2-b2.wbn": [
+       "6097e1a896ae38a3ce30c6e8899150c9daf7b6ba",
+       []
+      ],
       "dynamic2.wbn": [
        "6698b37b1735fd600ab05b1a63229b1767f5130d",
+       []
+      ],
+      "location-b2.wbn": [
+       "b0dd7e2b287cbe56ded4029db3ddc09cdc726632",
        []
       ],
       "location.wbn": [
@@ -300728,6 +300765,10 @@
         "21e57b9caca1183ecda6f5d4fb9ebd556abf769a",
         []
        ],
+       "cross-origin-b2.wbn": [
+        "f6d565a9c3cb47ec9b3b65d884cf6531aff3fafd",
+        []
+       ],
        "cross-origin.wbn": [
         "4ceb691a9f2b425cfa31a83a6d24a1c37326ded4",
         []
@@ -300735,6 +300776,10 @@
       },
       "non-utf8-query-encoding.wbn": [
        "74a76b2b5fc463cd9caa3450682b4070ee33d725",
+       []
+      ],
+      "path-restriction-b2.wbn": [
+       "0edf4592df9546b95b08d1af26c4593f7ceecc8e",
        []
       ],
       "path-restriction.wbn": [
@@ -300797,8 +300842,16 @@
        "e58aa20a0da1b7afa935acc163e594727d49acd8",
        []
       ],
+      "subresource-b2.wbn": [
+       "297e1ef6c8acc991cf6e45b21a935ca2169327e7",
+       []
+      ],
       "subresource.wbn": [
        "c50fc67e9885213377732a6751ad880cb38312f3",
+       []
+      ],
+      "urn-uuid-b2.wbn": [
+       "643fa8a52a875a2cfbe4f6e42107b248852580e2",
        []
       ],
       "urn-uuid.wbn": [
@@ -300830,7 +300883,7 @@
        []
       ],
       "nested-bundle-test.js": [
-       "aafde46978716836d8ace828b900e7661cebaffe",
+       "3d9505f36a40344401d339928b9502ce7fea111f",
        []
       ],
       "network-error-test.sub.js": [
@@ -301450,7 +301503,7 @@
      []
     ],
     "image-decoder-utils.js": [
-     "0e9a0ea911a122aaa79dda8fdba3dbe890ede338",
+     "548ace0bd85be15eb23e92cd3f53f4cd2e1cd72c",
      []
     ],
     "image-decoder.crossOriginIsolated.https.any.js.headers": [
@@ -303534,6 +303587,10 @@
      []
     ],
     "handlers": {
+     "client-close.py": [
+      "68ae7e2621c969514ecf10ed2d0b047697dc66c8",
+      []
+     ],
      "custom-response.py": [
       "05e4c4ba368c1cb02c89f1953b42481388d06c18",
       []
@@ -303544,6 +303601,18 @@
      ],
      "echo.py": [
       "4347d4aae3e1c6475b21a8f246fb768d91a43afc",
+      []
+     ],
+     "query.py": [
+      "514d90c6116149768d582405ed3855dec846c4b7",
+      []
+     ],
+     "server-close.py": [
+      "0a8da68cc562a17cb7c98bbc596c215a6c9f7bbd",
+      []
+     ],
+     "server-connection-close.py": [
+      "9721c67170c832c9c0d6179c06744d31117289ae",
       []
      ]
     },
@@ -334805,6 +334874,53 @@
        }
       ]
      ],
+     "default-src-unsafe-eval-allows-wasm.any.js": [
+      "68a145caae1dede41715995abedc72b3b86e7209",
+      [
+       "content-security-policy/wasm-unsafe-eval/default-src-unsafe-eval-allows-wasm.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "content-security-policy/wasm-unsafe-eval/default-src-unsafe-eval-allows-wasm.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "content-security-policy/wasm-unsafe-eval/default-src-unsafe-eval-allows-wasm.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "content-security-policy/wasm-unsafe-eval/default-src-unsafe-eval-allows-wasm.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
+     ],
      "default-src-wasm-unsafe-eval-allows-wasm.any.js": [
       "68a145caae1dede41715995abedc72b3b86e7209",
       [
@@ -334889,6 +335005,53 @@
       ],
       [
        "content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
+     ],
+     "script-src-unsafe-eval-allows-wasm.any.js": [
+      "68a145caae1dede41715995abedc72b3b86e7209",
+      [
+       "content-security-policy/wasm-unsafe-eval/script-src-unsafe-eval-allows-wasm.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "content-security-policy/wasm-unsafe-eval/script-src-unsafe-eval-allows-wasm.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "content-security-policy/wasm-unsafe-eval/script-src-unsafe-eval-allows-wasm.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "content-security-policy/wasm-unsafe-eval/script-src-unsafe-eval-allows-wasm.any.worker.html",
        {
         "script_metadata": [
          [
@@ -388173,7 +388336,7 @@
        ]
       ],
       "cors-preflight-star.any.js": [
-       "d76e9a21fd4b946803d8df193fcf00f53921aa9d",
+       "e8cbc80b808adfde7e50bf4c9d46b06a4393b344",
        [
         "fetch/api/cors/cors-preflight-star.any.html",
         {
@@ -390276,6 +390439,53 @@
         ]
        ]
       },
+      "forbidden-method.any.js": [
+       "eb13f37f0b5ef83128bbd2adce9eb3341eee5f72",
+       [
+        "fetch/api/request/forbidden-method.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/forbidden-method.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/forbidden-method.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/forbidden-method.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ]
+      ],
       "multi-globals": {
        "url-parsing.html": [
         "df60e72507ffdf22ce3d6e8342a8a35aa03fb201",
@@ -391473,7 +391683,7 @@
        ]
       ],
       "request-init-001.sub.html": [
-       "ea302d623d541fe56a7e793ce90a401370207748",
+       "cc495a66527d7b2ab3729bf58c0dc31f8d1088e1",
        [
         null,
         {}
@@ -444835,6 +445045,13 @@
       {}
      ]
     ],
+    "initially-invisible-images.html": [
+     "d0bede67614ac3b0ca413dbc380457f32ab0d1f0",
+     [
+      null,
+      {}
+     ]
+    ],
     "invisible-images-composited-1.html": [
      "7723d2f2bea5b622395e09ae1bd7fd4bb6cf87bc",
      [
@@ -479535,6 +479752,19 @@
      ]
     ]
    },
+   "speculation-rules": {
+    "prerender": {
+     "state-and-event.html": [
+      "b8252121b1569dad90098636e86b8ad930cf5c70",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ]
+    }
+   },
    "speech-api": {
     "SpeechRecognition-basics.https.html": [
      "dc5d3f5c1df6e254b05ba1decf353abc3ccbef13",
@@ -496778,14 +497008,14 @@
       ]
      ],
      "link-cors-error.https.tentative.html": [
-      "edb9a66ed5ed882b30ee712dd33b462b9b30e351",
+      "a769fdbc61e76f03a9f2cc966e0d996ed4a7a87c",
       [
        null,
        {}
       ]
      ],
      "link-cors.https.tentative.html": [
-      "aea6c3b9d69c186d4555e3186eb8c3f25c5d4c84",
+      "de934737f4a994b782e1af1574095d85ac596957",
       [
        null,
        {}
@@ -496868,8 +497098,15 @@
        {}
       ]
      ],
+     "link-path-restriction-b2.https.tentative.html": [
+      "4fa5f0b6e58a74e8a06090ebd54b99e75b035330",
+      [
+       null,
+       {}
+      ]
+     ],
      "link-path-restriction.https.tentative.html": [
-      "3a5f8cbcee9e83fd45f6a13d9014116201f5f952",
+      "14fc2c80e094621f74d4769e6f1f068042094084",
       [
        null,
        {}
@@ -496953,7 +497190,7 @@
       ]
      ],
      "link-subresource-load.https.tentative.html": [
-      "1faafbfc96e2603048f35734a256ea779eddb767",
+      "426fb36cc873817734d57e03423b8c074db68bf7",
       [
        null,
        {}
@@ -497081,7 +497318,7 @@
     },
     "wbn-from-network": {
      "wbn-location.tentative.html": [
-      "e0604af6d1e19ac0661e518ba56574a587f3ffc5",
+      "64187a7b04b4db092d2d9349e4724c802e35408f",
       [
        null,
        {}
@@ -501335,7 +501572,7 @@
      ]
     ],
     "image-decoder.https.any.js": [
-     "565d943d6d43b71d3b394397cb3d03d4aa6e13dc",
+     "3ac6889df7c7d56ed100cffd2eedd0be1afe3d8e",
      [
       "webcodecs/image-decoder.https.any.html",
       {
@@ -502042,7 +502279,7 @@
      ]
     ],
     "videoFrame-createImageBitmap.any.js": [
-     "38a2591e343250de5cd0a8955f3513d44651ccb5",
+     "2923427b181011c61e67b1aaf1b25d17ad2efe43",
      [
       "webcodecs/videoFrame-createImageBitmap.any.html",
       {
@@ -502108,7 +502345,7 @@
      ]
     ],
     "videoFrame-drawImage.any.js": [
-     "28369564508fa5ae37d8bf4d2e0e17a1df4813ab",
+     "f8a246d14a71a5abac0732cba74bf6aad8fc2bd6",
      [
       "webcodecs/videoFrame-drawImage.any.html",
       {
@@ -517551,6 +517788,101 @@
     ]
    },
    "webtransport": {
+    "close.https.any.js": [
+     "b89636d58a8eb306657176b8870fbcd55174907d",
+     [
+      "webtransport/close.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/close.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/close.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/close.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "connect.any.js": [
      "93df5fe3f478df382918a49368d1a3ad0c5242aa",
      [
