@@ -36,9 +36,9 @@ import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallReason, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './app_management_page/constants.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from './app_management_page/constants.js';
 import {AppManagementStoreClient} from './app_management_page/store_client.js';
-import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './app_management_page/util.js';
+import {getAppIcon, getSelectedApp} from './app_management_page/util.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 
 /**

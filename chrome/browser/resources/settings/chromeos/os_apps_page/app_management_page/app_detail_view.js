@@ -17,9 +17,9 @@ import {Route, RouteObserverBehavior, Router} from '../../../router.js';
 import {routes} from '../../os_route.m.js';
 
 import {updateSelectedAppId} from './actions.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallReason, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementUserAction, AppType} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+import {getSelectedApp, openMainPage, recordAppManagementUserAction} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

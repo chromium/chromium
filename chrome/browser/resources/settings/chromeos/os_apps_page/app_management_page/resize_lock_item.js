@@ -9,8 +9,8 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallReason, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
-import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+import {AppManagementUserAction} from './constants.js';
+import {recordAppManagementUserAction} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,
