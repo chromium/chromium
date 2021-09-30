@@ -881,8 +881,8 @@ public class Fido2CredentialRequestTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         mCallback.blockUntilCalled();
-        Assert.assertEquals(mCallback.getStatus(),
-                Integer.valueOf(AuthenticatorStatus.CREDENTIAL_NOT_RECOGNIZED));
+        Assert.assertEquals(
+                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 

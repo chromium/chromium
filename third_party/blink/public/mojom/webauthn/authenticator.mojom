@@ -22,11 +22,6 @@ enum AuthenticatorStatus {
   INVALID_DOMAIN,
   INVALID_ICON_URL,
   CREDENTIAL_EXCLUDED,
-
-  // TODO(crbug/964439): Unused in Desktop, but kept around for Android. Delete
-  // once it's fully obsolete.
-  CREDENTIAL_NOT_RECOGNIZED,
-
   NOT_IMPLEMENTED,
   NOT_FOCUSED,
   RESIDENT_CREDENTIALS_UNSUPPORTED,

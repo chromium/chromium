@@ -364,12 +364,6 @@ DOMException* CredentialManagerErrorToDOMException(
           DOMExceptionCode::kInvalidStateError,
           "The user attempted to register an authenticator that contains one "
           "of the credentials already registered with the relying party.");
-    case CredentialManagerError::CREDENTIAL_NOT_RECOGNIZED:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          "The user attempted to use an authenticator "
-          "that recognized none of the provided "
-          "credentials.");
     case CredentialManagerError::NOT_IMPLEMENTED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Not implemented");

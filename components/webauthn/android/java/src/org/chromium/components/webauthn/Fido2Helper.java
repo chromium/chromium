@@ -284,8 +284,8 @@ public final class Fido2Helper {
             case UNKNOWN_ERR:
                 if (errorMsg != null && errorMsg.equals(LOW_LEVEL_ERROR_MSG)) {
                     // The error message returned from GmsCore when the user attempted to use a
-                    // credential that is not registered.
-                    return AuthenticatorStatus.CREDENTIAL_NOT_RECOGNIZED;
+                    // credential that is not registered with a U2F security key.
+                    return AuthenticatorStatus.NOT_ALLOWED_ERROR;
                 }
             // fall through
             default:
