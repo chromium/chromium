@@ -105,3 +105,27 @@ promise_test(async t => {
   assert_equals(close_info.code, code, 'code');
   assert_equals(close_info.reason, reason, 'reason');
 }, 'server initiated closure');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-connection-close.py'));
+
+  const streams_reader = wt.incomingBidirectionalStreams.getReader();
+  const { value: bidi } = await streams_reader.read();
+  const writer = bidi.writable.getWriter();
+  const reader = bidi.readable.getReader();
+  try {
+    writer.write(new Uint8Array([65]));
+  } catch (e) {
+  }
+
+  // Sadly we cannot use promise_rejects_dom as the error constructor is
+  // WebTransportError rather than DOMException.
+  // We get a possible error, and then make sure wt.closed is rejected with it.
+  const e = await wt.closed.catch(e => e);
+  await promise_rejects_exactly(t, e, wt.closed, 'wt.closed');
+  await promise_rejects_exactly(t, e, writer.closed, 'writer.closed');
+  await promise_rejects_exactly(t, e, reader.closed, 'reader.closed');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
+}, 'server initiated connection closure');
