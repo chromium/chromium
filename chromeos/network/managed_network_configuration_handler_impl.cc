@@ -675,6 +675,11 @@ void ManagedNetworkConfigurationHandlerImpl::
                      std::move(split_callback.second), FROM_HERE));
 }
 
+void ManagedNetworkConfigurationHandlerImpl::OnCellularPoliciesApplied(
+    const NetworkProfile& profile) {
+  OnPoliciesApplied(profile);
+}
+
 void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     const NetworkProfile& profile) {
   const std::string& userhash = profile.userhash;

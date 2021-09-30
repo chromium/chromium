@@ -26,6 +26,7 @@ namespace chromeos {
 class NetworkConfigurationHandler;
 class NetworkDeviceHandler;
 class NetworkPolicyObserver;
+struct NetworkProfile;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 
@@ -180,6 +181,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // NetworkStateHandler.
   virtual void NotifyPolicyAppliedToNetwork(
       const std::string& service_path) const = 0;
+
+  // Called after new Cellular networks have been provisioned and configured via
+  // policy. CellularPolicyHandler calls this method after eSIM profiles are
+  // installed from policy. The network list should be updated at this point.
+  virtual void OnCellularPoliciesApplied(const NetworkProfile& profile) = 0;
 
   // Return true if AllowOnlyPolicyCellularNetworks policy is enabled.
   virtual bool AllowOnlyPolicyCellularNetworks() const = 0;

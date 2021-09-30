@@ -182,6 +182,15 @@ void CellularPolicyHandler::PopRequestAndProcessNext() {
   // Pop out the completed request and process next request.
   remaining_install_requests_.pop_front();
   is_installing_ = false;
+  if (remaining_install_requests_.empty()) {
+    const NetworkProfile* profile =
+        network_profile_handler_->GetProfileForUserhash(
+            /*userhash=*/std::string());
+    DCHECK(profile);
+
+    managed_network_configuration_handler_->OnCellularPoliciesApplied(*profile);
+    return;
+  }
   ProcessRequests();
 }
 

@@ -119,6 +119,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void NotifyPolicyAppliedToNetwork(
       const std::string& service_path) const override;
 
+  void OnCellularPoliciesApplied(const NetworkProfile& profile) override;
+
   bool AllowOnlyPolicyCellularNetworks() const override;
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;
