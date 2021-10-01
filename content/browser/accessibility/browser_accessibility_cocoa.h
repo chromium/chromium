@@ -118,9 +118,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // Return the method name for the given attribute. For testing only.
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 
-// Swap the children array with the given scoped_nsobject.
-- (void)swapChildren:(base::scoped_nsobject<NSMutableArray>*)other;
-
 - (NSString*)valueForRange:(NSRange)range;
 - (NSAttributedString*)attributedValueForRange:(NSRange)range;
 - (NSRect)frameForRange:(NSRange)range;

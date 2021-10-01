@@ -2743,10 +2743,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return [attributeToMethodNameMap objectForKey:attribute];
 }
 
-- (void)swapChildren:(base::scoped_nsobject<NSMutableArray>*)other {
-  _children.swap(*other);
-}
-
 - (NSString*)valueForRange:(NSRange)range {
   if (![self instanceActive])
     return nil;

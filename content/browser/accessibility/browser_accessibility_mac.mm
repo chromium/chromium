@@ -78,16 +78,8 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // `platform_node_` relinquishing the ownership of the old wrapper.
   BrowserAccessibilityCocoa* new_native_obj = CreateNativeWrapper();
 
-  base::scoped_nsobject<NSMutableArray> new_children;
-  NSArray* old_children = [ToBrowserAccessibilityCocoa(parent) children];
-  for (uint i = 0; i < [old_children count]; ++i) {
-    AXPlatformNodeCocoa* child = [old_children objectAtIndex:i];
-    if (child == old_native_obj)
-      [new_children addObject:new_native_obj];
-    else
-      [new_children addObject:child];
-  }
-  [ToBrowserAccessibilityCocoa(parent) swapChildren:&new_children];
+  // Rebuild children to pick up a newly created cocoa object.
+  [ToBrowserAccessibilityCocoa(parent) childrenChanged];
 
   // If focused, fire a focus notification on the new native object.
   if (manager_->GetFocus() == this) {
