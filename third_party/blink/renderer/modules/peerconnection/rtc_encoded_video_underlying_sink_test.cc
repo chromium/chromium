@@ -75,11 +75,15 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     EXPECT_FALSE(transformer_.HasTransformedFrameSinkCallback(kSSRC));
   }
 
-  RTCEncodedVideoUnderlyingSink* CreateSink(ScriptState* script_state) {
+  RTCEncodedVideoUnderlyingSink* CreateSink(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction expected_direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
         script_state,
         WTF::BindRepeating(&RTCEncodedVideoUnderlyingSinkTest::GetTransformer,
-                           WTF::Unretained(this)));
+                           WTF::Unretained(this)),
+        expected_direction);
   }
 
   RTCEncodedVideoUnderlyingSink* CreateNullCallbackSink(
@@ -87,14 +91,20 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
         script_state,
         WTF::BindRepeating(
-            []() -> RTCEncodedVideoStreamTransformer* { return nullptr; }));
+            []() -> RTCEncodedVideoStreamTransformer* { return nullptr; }),
+        webrtc::TransformableFrameInterface::Direction::kSender);
   }
 
   RTCEncodedVideoStreamTransformer* GetTransformer() { return &transformer_; }
 
-  ScriptValue CreateEncodedVideoFrameChunk(ScriptState* script_state) {
+  ScriptValue CreateEncodedVideoFrameChunk(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
     auto mock_frame = std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+
     ON_CALL(*mock_frame.get(), GetSsrc).WillByDefault(Return(kSSRC));
+    ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
     RTCEncodedVideoFrame* frame =
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));
     return ScriptValue(script_state->GetIsolate(),
@@ -173,6 +183,23 @@ TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteToNullCallbackSinkFails) {
   EXPECT_TRUE(write_tester.IsRejected());
   EXPECT_TRUE(IsDOMException(script_state, write_tester.Value(),
                              DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDirectionFails) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+
+  // Write an encoded chunk with direction set to Receiver should fail as it
+  // doesn't match the expected direction of our sink.
+  DummyExceptionStateForTesting dummy_exception_state;
+  sink->write(script_state,
+              CreateEncodedVideoFrameChunk(
+                  script_state,
+                  webrtc::TransformableFrameInterface::Direction::kReceiver),
+              nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
 }  // namespace blink

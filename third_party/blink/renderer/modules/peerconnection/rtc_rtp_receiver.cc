@@ -592,7 +592,8 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
                                       ->GetEncodedVideoStreamTransformer()
                                 : nullptr;
               },
-              WrapWeakPersistent(this)));
+              WrapWeakPersistent(this)),
+          webrtc::TransformableFrameInterface::Direction::kReceiver);
   // The high water mark for the stream is set to 1 so that the stream seems
   // ready to write, but without queuing frames.
   WritableStream* writable_stream =
