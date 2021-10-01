@@ -1104,10 +1104,6 @@ void WebTransport::Init(const String& url,
   probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
 
   int outgoing_datagrams_high_water_mark = 1;
-  if (options.hasDatagramWritableHighWaterMark()) {
-    outgoing_datagrams_high_water_mark =
-        options.datagramWritableHighWaterMark();
-  }
   datagrams_ = MakeGarbageCollected<DatagramDuplexStream>(
       this, outgoing_datagrams_high_water_mark);
 

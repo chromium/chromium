@@ -716,12 +716,11 @@ TEST_F(WebTransportTest, SendDatagram) {
   EXPECT_TRUE(tester.Value().IsUndefined());
 }
 
+// TODO(yhirano): Move this to datagram_duplex_stream_test.cc.
 TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
   V8TestingScope scope;
-  auto* const options = MakeGarbageCollected<WebTransportOptions>();
-  options->setDatagramWritableHighWaterMark(3);
   auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com", options);
+      CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(*mock_web_transport_, SendDatagram(_, _))
       .Times(4)
@@ -731,6 +730,7 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
             std::move(callback).Run(true);
           }));
 
+  web_transport->datagrams()->setOutgoingHighWaterMark(3);
   auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
