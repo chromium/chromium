@@ -112,6 +112,7 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
   std::u16string title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   SetTitle(title);
   SetShowCloseButton(true);
+  set_draggable(true);
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
@@ -171,10 +172,8 @@ void WebAppProtocolHandlerIntentPickerView::OnClosed() {
 void WebAppProtocolHandlerIntentPickerView::InitChildViews() {
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
-  // Use CONTROL insets, because the icon is non-text (see documentation for
-  // DialogContentType).
   gfx::Insets margin_insets = layout_provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl, views::DialogContentType::kControl);
+      views::DialogContentType::kText, views::DialogContentType::kControl);
   set_margins(margin_insets);
 
   const int vertical_single_distance = layout_provider->GetDistanceMetric(
@@ -188,7 +187,7 @@ void WebAppProtocolHandlerIntentPickerView::InitChildViews() {
       l10n_util::GetStringFUTF16(
           IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION,
           content::ProtocolHandler::GetProtocolDisplayName(url_.scheme())),
-      views::style::CONTEXT_DIALOG_TITLE,
+      views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   open_app_label->SetElideBehavior(gfx::ELIDE_TAIL);
