@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "ui/aura/window.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
@@ -41,6 +40,29 @@ class CustomTestShellDelegate : public TestShellDelegate {
  private:
   // The desk model for the desks templates feature.
   desks_storage::DeskModel* const desk_model_;
+};
+
+// Wrapper for DesksTemplatesPresenter that exposes internal state to test
+// functions.
+class DesksTemplatesPresenterTestApi {
+ public:
+  explicit DesksTemplatesPresenterTestApi(DesksTemplatesPresenter* presenter)
+      : presenter_(presenter) {
+    DCHECK(presenter_);
+  }
+  DesksTemplatesPresenterTestApi(const DesksTemplatesPresenterTestApi&) =
+      delete;
+  DesksTemplatesPresenterTestApi& operator=(
+      const DesksTemplatesPresenterTestApi&) = delete;
+  ~DesksTemplatesPresenterTestApi() = default;
+
+  void SetOnUpdateUiClosure(base::OnceClosure closure) {
+    DCHECK(!presenter_->on_update_ui_closure_for_testing_);
+    presenter_->on_update_ui_closure_for_testing_ = std::move(closure);
+  }
+
+ private:
+  DesksTemplatesPresenter* const presenter_;
 };
 
 class DesksTemplatesTest : public OverviewTestBase {
@@ -74,6 +96,32 @@ class DesksTemplatesTest : public OverviewTestBase {
               loop.Quit();
             }));
     loop.Run();
+  }
+
+  // A lot of the UI relies on calling into the local desk data manager to
+  // update, which sends callbacks via posting tasks. Call `WaitForUI()` if
+  // testing a piece of the UI which calls into the desk model.
+  void WaitForUI() {
+    auto* overview_session = GetOverviewSession();
+    DCHECK(overview_session);
+
+    base::RunLoop run_loop;
+    DesksTemplatesPresenterTestApi(
+        overview_session->desks_templates_presenter())
+        .SetOnUpdateUiClosure(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  ExpandedDesksBarButton* GetDesksTemplatesButtonForRoot(
+      aura::Window* root_window) {
+    auto* overview_session = GetOverviewSession();
+    if (!overview_session)
+      return nullptr;
+
+    const auto* overview_grid =
+        overview_session->GetGridWithRootWindow(root_window);
+    const auto* desks_bar_view = overview_grid->desks_bar_view();
+    return desks_bar_view->desks_templates_button();
   }
 
   // OverviewTestBase:
@@ -126,12 +174,26 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
   UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
+  // There are no entries initially, so the desks templates buttons are not
+  // visible.
   ToggleOverview();
+  WaitForUI();
   for (auto* root_window : Shell::GetAllRootWindows()) {
-    const auto* overview_grid =
-        GetOverviewSession()->GetGridWithRootWindow(root_window);
-    const auto* desks_templates_button =
-        overview_grid->desks_bar_view()->desks_templates_button();
+    auto* desks_templates_button = GetDesksTemplatesButtonForRoot(root_window);
+    ASSERT_TRUE(desks_templates_button);
+    EXPECT_FALSE(desks_templates_button->GetVisible());
+  }
+
+  // Exit overview and add an entry.
+  ToggleOverview();
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Reenter overview and verify the desks templates buttons are visible since
+  // there is one entry to view.
+  ToggleOverview();
+  WaitForUI();
+  for (auto* root_window : Shell::GetAllRootWindows()) {
+    auto* desks_templates_button = GetDesksTemplatesButtonForRoot(root_window);
     ASSERT_TRUE(desks_templates_button);
     EXPECT_TRUE(desks_templates_button->GetVisible());
   }

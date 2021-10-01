@@ -23,9 +23,9 @@ class OverviewController;
 class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
-class TestShellDelegate;
 class ScopedOverviewTransformWindow;
 class SplitViewController;
+class TestShellDelegate;
 class WindowPreviewView;
 
 // The base test fixture for testing Overview Mode.

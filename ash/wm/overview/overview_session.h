@@ -327,6 +327,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return highlight_controller_.get();
   }
 
+  DesksTemplatesPresenter* desks_templates_presenter() {
+    return desks_templates_presenter_.get();
+  }
+
   RoundedLabelWidget* no_windows_widget_for_testing() {
     return no_windows_widget_.get();
   }
