@@ -124,6 +124,19 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
   UpdateLabelColor();
 }
 
+void ExpandedDesksBarButton::UpdateButtonState() {
+  inner_button_->UpdateButtonState();
+}
+
+void ExpandedDesksBarButton::UpdateLabelColor() {
+  const SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  label_->SetEnabledColor(
+      DesksController::Get()->CanCreateDesks()
+          ? label_color
+          : AshColorProvider::Get()->GetDisabledColor(label_color));
+}
+
 void ExpandedDesksBarButton::Layout() {
   // Layout the button until |mini_views_| have been created. This button only
   // needs to be laid out in the expanded desks bar where the |mini_views_| is
@@ -153,19 +166,6 @@ void ExpandedDesksBarButton::Layout() {
                      desk_mini_view->GetPreviewBorderInsets().bottom() +
                      kNewDeskButtonAndNameSpacing),
       gfx::Size(label_size.width(), label_height)));
-}
-
-void ExpandedDesksBarButton::UpdateButtonState() {
-  inner_button_->UpdateButtonState();
-}
-
-void ExpandedDesksBarButton::UpdateLabelColor() {
-  const SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  label_->SetEnabledColor(
-      DesksController::Get()->CanCreateDesks()
-          ? label_color
-          : AshColorProvider::Get()->GetDisabledColor(label_color));
 }
 
 BEGIN_METADATA(ExpandedDesksBarButton, views::View)
