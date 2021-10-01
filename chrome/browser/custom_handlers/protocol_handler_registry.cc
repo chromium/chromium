@@ -689,12 +689,13 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 
   const base::ListValue* handlers = prefs->GetList(pref_name);
   if (handlers) {
-    for (size_t i = 0; i < handlers->GetList().size(); ++i) {
-      const base::DictionaryValue* dict;
-      if (!handlers->GetDictionary(i, &dict))
+    for (const auto& dict : handlers->GetList()) {
+      if (!dict.is_dict())
         continue;
-      if (ProtocolHandler::IsValidDict(dict)) {
-        result.push_back(dict);
+      const base::DictionaryValue* dict_value =
+          static_cast<const base::DictionaryValue*>(&dict);
+      if (ProtocolHandler::IsValidDict(dict_value)) {
+        result.push_back(dict_value);
       }
     }
   }
