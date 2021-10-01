@@ -291,14 +291,11 @@ bool DOMStorageContextWrapper::IsRequestValid(
     absl::optional<blink::LocalFrameToken> local_frame_token,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
-  const std::string type_string =
-      type == StorageType::kLocalStorage ? "localStorage" : "sessionStorage";
   bool host_storage_key_did_not_match = false;
   if (local_frame_token) {
     RenderFrameHostImpl* host = RenderFrameHostImpl::FromFrameToken(
-        security_policy_handle.child_id(), *local_frame_token);
-    // TODO(https://crbug.com/1212808): This should cause a fatal if the
-    // load failed because the request was cross-process.
+        security_policy_handle.child_id(), *local_frame_token,
+        &bad_message_callback);
     if (!host) {
       return false;
     }
@@ -306,6 +303,8 @@ bool DOMStorageContextWrapper::IsRequestValid(
   }
   if (host_storage_key_did_not_match ||
       !security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
+    const std::string type_string =
+        type == StorageType::kLocalStorage ? "localStorage" : "sessionStorage";
     std::string reason;
     if (host_storage_key_did_not_match) {
       reason = "due to StorageKey.";

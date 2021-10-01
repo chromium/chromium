@@ -3456,8 +3456,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   EXPECT_EQ(0, EvalJs(web_contents()->GetMainFrame(), "sessionStorage.length"));
 }
 
-// TODO(https://crbug.com/1212808): This should cause a fatal error.
-// Verify not fatal if the renderer reads sessionStorage from the wrong
+// Verify fatal error if the renderer reads sessionStorage from the wrong
 // LocalFrameToken.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
                        SessionStorage_WrongLocalFrameToken) {
@@ -3494,7 +3493,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   // Re-do tests now that injection is in place
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
   EXPECT_EQ(1, EvalJs(web_contents()->GetMainFrame(), "sessionStorage.length"));
-  EXPECT_EQ(0, EvalJs(ChildFrameAt(shell(), 0), "sessionStorage.length"));
+  content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
+      ChildFrameAt(shell(), 0)->GetProcess());
+  ignore_result(ExecJs(ChildFrameAt(shell(), 0), "sessionStorage.length"));
+  EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
+  // The subframe has crashed, but the main frame should still be alive and
+  // working.
+  EXPECT_EQ(1, EvalJs(web_contents()->GetMainFrame(), "sessionStorage.length"));
 }
 
 // Verify not fatal if the renderer reads localStorage from an empty
@@ -3524,8 +3529,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, LocalStorage_EmptyLocalFrameToken) {
   EXPECT_EQ(0, EvalJs(web_contents()->GetMainFrame(), "localStorage.length"));
 }
 
-// TODO(https://crbug.com/1212808): This should cause a fatal error.
-// Verify not fatal if the renderer reads localStorage from the wrong
+// Verify fatal error if the renderer reads localStorage from the wrong
 // LocalFrameToken.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, LocalStorage_WrongLocalFrameToken) {
   // This sets up some initial localStorage state for the subsequent test.
@@ -3561,7 +3565,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, LocalStorage_WrongLocalFrameToken) {
   // Re-do tests now that injection is in place
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
   EXPECT_EQ(1, EvalJs(web_contents()->GetMainFrame(), "localStorage.length"));
-  EXPECT_EQ(0, EvalJs(ChildFrameAt(shell(), 0), "localStorage.length"));
+  content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
+      ChildFrameAt(shell(), 0)->GetProcess());
+  ignore_result(ExecJs(ChildFrameAt(shell(), 0), "localStorage.length"));
+  EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
+  // The subframe has crashed, but the main frame should still be alive and
+  // working.
+  EXPECT_EQ(1, EvalJs(web_contents()->GetMainFrame(), "localStorage.length"));
 }
 
 // Verify that an isolated renderer process cannot read localStorage of an

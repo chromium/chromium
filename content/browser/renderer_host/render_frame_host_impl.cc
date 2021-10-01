@@ -32,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -1267,15 +1268,24 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
 // static
 RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
     int process_id,
-    const blink::LocalFrameToken& frame_token) {
+    const blink::LocalFrameToken& frame_token,
+    mojo::ReportBadMessageCallback* process_mismatch_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = g_token_frame_map.Get().find(frame_token);
   if (it == g_token_frame_map.Get().end())
     return nullptr;
 
-  // TODO(tonikitoo): Consider killing the renderer when this happens
-  if (it->second->GetProcess()->GetID() != process_id)
+  if (it->second->GetProcess()->GetID() != process_id) {
+    if (process_mismatch_callback) {
+      SYSLOG(WARNING)
+          << "Denying illegal RenderFrameHost::FromFrameToken request.";
+      std::move(*process_mismatch_callback)
+          .Run(
+              "Unknown LocalFrame made RenderFrameHost::FromFrameToken "
+              "request.");
+    }
     return nullptr;
+  }
 
   return it->second;
 }
