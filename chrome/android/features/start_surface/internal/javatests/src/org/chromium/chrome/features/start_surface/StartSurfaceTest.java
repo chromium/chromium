@@ -65,6 +65,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -92,6 +93,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -156,6 +159,7 @@ public class StartSurfaceTest {
             "force-fieldtrial-params=Study.Group:start_surface_variation";
 
     private static final long MAX_TIMEOUT_MS = 40000L;
+    private static final long MILLISECONDS_PER_MINUTE = TimeUtils.SECONDS_PER_MINUTE * 1000;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -2003,6 +2007,130 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/behavioural_targeting/mv_tiles"
+        + "/user_clicks_threshold/1/num_days_user_click_below_threshold/2"})
+    public void testStartWithBehaviouralTargeting() throws Exception {
+        // clang-format on
+        Assume.assumeTrue(mImmediateReturn);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+
+        SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        // Verifies that the START_NEXT_SHOW_ON_STARTUP_DECISION_MS has been set.
+        long nextDecisionTime =
+                manager.readLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                        ReturnToChromeExperimentsUtil.INVALID_DECISION_TIMESTAMP);
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
+
+        StartSurfaceConfiguration.USER_CLICK_THRESHOLD.setForTesting(1);
+        int clicksHigherThreshold = StartSurfaceConfiguration.USER_CLICK_THRESHOLD.getValue();
+        Assert.assertEquals(1, clicksHigherThreshold);
+        ReturnToChromeExperimentsUtil.onMVTileOpened();
+        // Verifies that userBehaviourSupported() returns the same result before the next decision
+        // time arrives.
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertEquals(nextDecisionTime,
+                manager.readLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                        ReturnToChromeExperimentsUtil.INVALID_DECISION_TIMESTAMP));
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        Assert.assertEquals(1, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
+
+        // Verifies if the next decision time past and the clicks of MV tiles is higher than the
+        // threshold, userBehaviourSupported() returns true. Besides, the next decision time is set
+        // to NUM_DAYS_KEEP_SHOW_START_AT_STARTUP day's later, and MV tiles count is reset.
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertTrue(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertTrue(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP.getValue());
+        Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
+
+        // Verifies if the next decision time past and the clicks of MV tiles is lower than the
+        // threshold, userBehaviourSupported() returns false. Besides, the next decision time is
+        // set to NUM_DAYS_USER_CLICK_BELOW_THRESHOLD day's later.
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
+
+        StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("feeds");
+        verifyBehaviourTypeRecordedAndChecked(manager);
+
+        StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("open_new_tab");
+        verifyBehaviourTypeRecordedAndChecked(manager);
+
+        StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("open_history");
+        verifyBehaviourTypeRecordedAndChecked(manager);
+
+        StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("open_recent_tabs");
+        verifyBehaviourTypeRecordedAndChecked(manager);
+
+        // Verifies if the key doesn't match the value of
+        // StartSurfaceConfiguration.BEHAVIOURAL_TARGETING, e.g., the value isn't set, onUIClicked()
+        // doesn't record or increase the count.
+        StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("");
+        String type = "feeds";
+        String key = ReturnToChromeExperimentsUtil.getBehaviourTypeKeyForTesting(type);
+        ReturnToChromeExperimentsUtil.onUIClicked(key);
+        Assert.assertEquals(0, manager.readInt(key, 0));
+    }
+
+    /**
+     * Check that the next decision time is within |numOfDays| from now.
+     * @param numOfDays Number of days to check.
+     */
+    private void verifyNextDecisionTimeStampInDays(
+            SharedPreferencesManager manager, int numOfDays) {
+        long approximateTime = System.currentTimeMillis()
+                + numOfDays * ReturnToChromeExperimentsUtil.MILLISECONDS_PER_DAY;
+        long nextDecisionTime =
+                manager.readLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                        ReturnToChromeExperimentsUtil.INVALID_DECISION_TIMESTAMP);
+
+        Assert.assertThat("new decision time lower bound",
+                approximateTime - MILLISECONDS_PER_MINUTE,
+                Matchers.lessThanOrEqualTo(nextDecisionTime));
+
+        Assert.assertThat("new decision time upper bound",
+                approximateTime + MILLISECONDS_PER_MINUTE,
+                Matchers.greaterThanOrEqualTo(nextDecisionTime));
+    }
+
+    private void verifyBehaviourTypeRecordedAndChecked(SharedPreferencesManager manager) {
+        String key = ReturnToChromeExperimentsUtil.getBehaviourTypeKeyForTesting(
+                StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue());
+        Assert.assertEquals(0, manager.readInt(key, 0));
+
+        // Increase the count of the key.
+        ReturnToChromeExperimentsUtil.onUIClicked(key);
+        Assert.assertEquals(1, manager.readInt(key, 0));
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+
+        // Verifies that userBehaviourSupported() return true due to the count of this key is higher
+        // or equal to the threshold.
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertTrue(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertEquals(0, manager.readInt(key, 0));
+        Assert.assertTrue(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+
+        // Resets the decision.
+        manager.writeBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
     }
 
     private void backActionDeleteBlankTabForOmniboxFocusedOnNewTabSingleSurface(

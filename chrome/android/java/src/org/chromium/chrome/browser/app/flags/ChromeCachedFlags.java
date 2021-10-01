@@ -118,6 +118,7 @@ public class ChromeCachedFlags {
                 new ArrayList<CachedFieldTrialParameter>() {
                     {
                         add(ChimeFeatures.ALWAYS_REGISTER);
+                        add(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS);
@@ -128,6 +129,8 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
                         add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);
+                        add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
+                        add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
                         add(StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB);
                         add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
@@ -141,6 +144,7 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.START_SURFACE_VARIATION);
                         add(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY);
                         add(StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE);
+                        add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
                         add(StartSurfaceConfiguration.WARM_UP_RENDERER);
                         add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
                         add(CommerceSubscriptionsServiceConfig.STALE_TAB_LOWER_BOUND_SECONDS);
