@@ -247,8 +247,8 @@ $ adb shell dumpsys package org.chromium.chrome | grep splits
 *** note
 The wrapper script's `install` command does approximately:
 ```sh
-java -jar third_party/android_build_tools/bundletool/bundletool-all-$VERSION.jar build-apks --output tmp.apks ...
-java -jar third_party/android_build_tools/bundletool/bundletool-all-$VERSION.jar install-apks --apks tmp.apks
+java -jar third_party/android_build_tools/bundletool/bundletool.jar build-apks --output tmp.apks ...
+java -jar third_party/android_build_tools/bundletool/bundletool.jar install-apks --apks tmp.apks
 ```
 
 The `install-apks` command uses `adb install-multiple` under-the-hood.

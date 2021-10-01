@@ -68,9 +68,7 @@ group("apk_installer_data") {
       "//build/android/pylib/device/commands",
       "//tools/android/md5sum",
     ]
-    data = [
-      "//third_party/android_build_tools/bundletool/bundletool-all-1.8.0.jar",
-    ]
+    data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
   }
 }
 
