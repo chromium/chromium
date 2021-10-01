@@ -50,7 +50,9 @@ public class ChromeColors {
     public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
         return isIncognito ? ApiCompatibilityUtils.getColor(
                        context.getResources(), R.color.default_bg_color_dark)
-                           : MaterialColors.getColor(context, R.attr.default_bg_color_dynamic, TAG);
+                           : MaterialColors.getColor(context, R.attr.default_bg_color_dynamic,
+                                   // Temporarily pass a default, see https://crbug.com/1247186.
+                                   R.color.default_bg_color);
     }
 
     /**
