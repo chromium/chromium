@@ -69,11 +69,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "aggregated-ml-app-ranking",
-    "owners": [ "pdyson", "jiameng" ],
-    "expiry_milestone": 81
-  },
-  {
     "name": "align-font-display-auto-lcp",
     "owners": [ "xiaochengh" ],
     "expiry_milestone": 87
@@ -741,11 +736,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "collections-card-presentation-style",
-    "owners": [ "sczs", "bling-flags@google.com" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "color-provider-redirection",
     "owners": [ "//ui/color/OWNERS" ],
     "expiry_milestone": 88
@@ -1217,11 +1207,6 @@
     "name": "display-alignment-assistance",
     "owners": [ "baileyberro", "cros-peripherals@google.com" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "display-identification",
-    "owners": [ "baileyberro", "cros-peripherals@google.com" ],
-    "expiry_milestone": 89
   },
   {
     "name": "dns-httpssvc",
@@ -2163,16 +2148,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "enable-media-feeds",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "enable-media-feeds-background-fetch",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-media-foundation-video-capture",
     "owners": [ "agpalak", "guidou" ],
     "expiry_milestone": 95
@@ -2364,11 +2339,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-play-store-search",
-    "owners": [ "jennyz", "kaznacheev" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "enable-pointer-lock-options",
     "owners": [ "eirage", "nzolghadr", "input-dev" ],
     "expiry_milestone": 92
@@ -2500,11 +2470,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "enable-sharesheet",
-    "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-sharesheet-content-previews",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 96
@@ -2555,11 +2520,6 @@
     "name": "enable-storage-pressure-event",
     "owners": [ "jarrydg", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 89
-  },
-  {
-    "name": "enable-storage-pressure-ui",
-    "owners": [ "jarrydg" ],
-    "expiry_milestone": 85
   },
   {
     "name": "enable-store-hours",
@@ -3104,11 +3064,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "focus-mode",
-    "owners": [ "dfried", "pbos" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "font-access",
     "owners": [ "cmp", "pwnall" ],
     "expiry_milestone": 96
@@ -3523,11 +3478,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "kaleidoscope-ntp-module",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "keyboard-based-display-arrangement-in-settings",
     "owners": [ "czajka", "cros-peripherals@google.com"],
     "expiry_milestone": 94
@@ -3887,11 +3837,6 @@
     "name": "new-shortcut-mapping",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com", "cros-peripherals@google.com"],
     "expiry_milestone": 98
-  },
-  {
-    "name": "new-tabstrip-animation",
-    "owners": [ "tbergquist" ],
-    "expiry_milestone": 81
   },
   {
     "name": "new-usb-backend",
@@ -5086,11 +5031,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "sync-setup-friendly-settings",
-    "owners": [ "msalama" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "sync-trusted-vault-passphrase-ios-rpc",
     "owners": [ "mastiz", "jlebel" ],
     "expiry_milestone": 100
@@ -5213,11 +5153,6 @@
     "name": "touch-selection-strategy",
     "owners": [ "dovizu@google.com" ],
     "expiry_milestone": 99
-  },
-  {
-    "name": "trace-upload-url",
-    "owners": [ "oysteine" ],
-    "expiry_milestone": 85
   },
   {
     "name": "traffic-counters-settings-ui",
@@ -5369,11 +5304,6 @@
     "name": "use-lens-to-search-for-image",
     "owners": [ "bernsteine", "hujasonx" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "use-lookalikes-for-navigation-suggestions",
-    "owners": [ "jdeblasio", "meacer" ],
-    "expiry_milestone": 86
   },
   {
     "name": "use_messages_staging_url",
