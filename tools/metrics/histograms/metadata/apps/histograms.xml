@@ -1794,9 +1794,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
-    enum="WebAppCreateShortcutIconLinuxResult" expires_after="M95">
-  <owner>phillis@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="M100">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records the result of creating shortcut image for web app on Linux.
   </summary>
