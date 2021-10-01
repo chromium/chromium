@@ -663,11 +663,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   // Expect that remote approvals button is shown.
   EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frames[0]));
   // Expect that the local approvals button is shown if the flag is enabled.
-  if (IsLocalWebApprovalsEnabled()) {
-    EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  } else {
-    EXPECT_FALSE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  }
+  EXPECT_EQ(IsLocalWebApprovalsEnabled(),
+            IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -692,11 +689,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   EXPECT_FALSE(IsRemoteApprovalsButtonBeingShown(blocked_frames[0]));
   // Expect that the local approvals button is still shown on the page if the
   // flag is enabled.
-  if (IsLocalWebApprovalsEnabled()) {
-    EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  } else {
-    EXPECT_FALSE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  }
+  EXPECT_EQ(IsLocalWebApprovalsEnabled(),
+            IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -748,6 +742,90 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   auto blocked_frames = GetBlockedFrames();
   EXPECT_EQ(blocked_frames.size(), 1u);
   EXPECT_EQ(GetBlockedFrameURL(blocked_frames[0]).host(), "www.c.example2.com");
+}
+
+class SupervisedUserNarrowWidthIframeFilterTest
+    : public SupervisedUserIframeFilterTest {
+ protected:
+  SupervisedUserNarrowWidthIframeFilterTest() = default;
+  ~SupervisedUserNarrowWidthIframeFilterTest() override = default;
+
+  void SetUp() override;
+};
+
+void SupervisedUserNarrowWidthIframeFilterTest::SetUp() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ::switches::kHostWindowBounds, "0+0-400x800");
+  SupervisedUserIframeFilterTest::SetUp();
+}
+
+INSTANTIATE_TEST_SUITE_P(LocalWebApprovalsEnabledNarrowWidth,
+                         SupervisedUserNarrowWidthIframeFilterTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
+                       NarrowWidthWindow) {
+  BlockHost(kExampleHost);
+
+  GURL blocked_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/with_iframes.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  auto blocked_frames = GetBlockedFrames();
+  EXPECT_EQ(blocked_frames.size(), 1u);
+
+  // Expect that remote approvals button is shown.
+  EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frames[0]));
+  // Expect that the local approvals button is shown if the flag is enabled.
+  EXPECT_EQ(IsLocalWebApprovalsEnabled(),
+            IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+
+  // Delay approval/denial by parent.
+  permission_creator()->SetPermissionResult(true);
+  permission_creator()->DelayHandlingForNextRequests();
+
+  // Request permission.
+  RequestPermissionFromFrame(blocked_frames[0]);
+
+  // Navigate to another allowed url.
+  GURL allowed_url = embedded_test_server()->GetURL(
+      kExampleHost2, "/supervised_user/with_iframes.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  // Navigate back to the blocked url.
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  // Error page is being shown, but "Ask Permission" button is not being shown.
+  EXPECT_FALSE(IsRemoteApprovalsButtonBeingShown(blocked_frames[0]));
+  // Expect that the local approvals button is still shown on the page if the
+  // flag is enabled.
+  EXPECT_EQ(IsLocalWebApprovalsEnabled(),
+            IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SupervisedUserNavigationObserver* navigation_observer =
+      SupervisedUserNavigationObserver::FromWebContents(active_contents);
+  ASSERT_NE(navigation_observer, nullptr);
+
+  EXPECT_TRUE(base::Contains(navigation_observer->requested_hosts_for_test(),
+                             kExampleHost));
+
+  NavigationFinishedWaiter waiter(
+      active_contents, active_contents->GetMainFrame()->GetFrameTreeNodeId(),
+      blocked_url);
+  permission_creator()->HandleDelayedRequests();
+  waiter.Wait();
+
+  EXPECT_FALSE(base::Contains(navigation_observer->requested_hosts_for_test(),
+                              kExampleHost));
+
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
 class SupervisedUserNavigationThrottleNotSupervisedTest

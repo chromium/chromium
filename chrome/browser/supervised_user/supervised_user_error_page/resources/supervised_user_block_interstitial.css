@@ -32,26 +32,8 @@ button:active {
   background: var(--primary-button-fill-color-active);
 }
 
-.local-web-approvals-enabled button {
-  font-size: 13px;
-  font-weight: 500;
-  height: 32px;
-  line-height: normal;
-  padding: 6px 16px;
-}
-
 [dir='rtl'] button {
   float: left;
-}
-
-.local-web-approvals-enabled .secondary-button {
-  background: var(--background-color);
-  border: 1px solid var(--google-gray-300);
-  color: var(--google-blue-600);
-}
-
-.local-web-approvals-enabled .secondary-button:active {
-  background: var(--secondary-button-hover-fill-color);
 }
 
 #details {
@@ -95,11 +77,7 @@ h1 {
   color: var(--header-color);
   font-size: 24px;
   font-weight: normal;
-  margin-bottom: 16px;
-}
-
-.local-web-approvals-enabled h1 {
-  font-family: "Google Sans", sans-serif;
+  margin: 0 0 16px;
 }
 
 html {
@@ -110,11 +88,12 @@ html {
 p {
   color: var(--paragraph-color);
   font-size: 15px;
+  margin-bottom: 0;
 }
 
-.local-web-approvals-enabled p {
-  color: var(--paragraph-color);
-  font-size: 14px;
+.message-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .icon {
@@ -137,10 +116,6 @@ p {
   width: 100%;
 }
 
-.local-web-approvals-enabled .frame-blocked {
-  max-width: 432px;
-}
-
 #main-message {
   margin-top: 36px;
 }
@@ -153,22 +128,8 @@ p {
   float: right;
 }
 
-.local-approvals-button {
-  float: right;
-  margin-left: 24px;
-}
-
-.local-approvals-button:active {
-  background: var(--primary-button-fill-color-active);
-}
-
 .go-back-button {
   float: left;
-}
-
-.local-web-approvals-enabled .go-back-button {
-  float: right;
-  margin-left: 24px;
 }
 
 #custodians-information {
@@ -178,10 +139,6 @@ p {
 .custodian-information {
   clear: both;
   margin-top: 8px;
-}
-
-.local-web-approvals-enabled .custodian-information {
-  margin-top: 24px;
 }
 
 .avatar-img {
@@ -195,10 +152,6 @@ p {
   margin-right: 11px;
   user-select: none;
   width: 40px;
-}
-
-.local-web-approvals-enabled .avatar-img {
-  border: none;
 }
 
 .custodian-contact {
@@ -215,10 +168,6 @@ p {
   margin-bottom: 4px;
 }
 
-.local-web-approvals-enabled .custodian-name {
-  display: none;
-}
-
 .custodian-email {
   color: var(--custodian-email-color);
   display: flex;
@@ -228,16 +177,80 @@ p {
   justify-content: center;
 }
 
-.local-web-approvals-enabled .custodian-email {
-  font-size: 13px;
-}
-
 #details {
   margin-top: 32px;
 }
 
 #details-header {
   font-weight: bold;
+}
+
+/* Styles for when the local web approvals flag is enabled. */
+.local-web-approvals-enabled button {
+  font-size: 13px;
+  font-weight: 500;
+  height: 32px;
+  line-height: normal;
+  padding: 6px 16px;
+}
+
+.local-web-approvals-enabled .secondary-button {
+  background: var(--background-color);
+  border: 1px solid var(--google-gray-300);
+  color: var(--google-blue-600);
+}
+
+.local-web-approvals-enabled .secondary-button:active {
+  background: var(--secondary-button-hover-fill-color);
+}
+
+.local-web-approvals-enabled h1 {
+  font-family: "Google Sans", sans-serif;
+}
+
+.local-web-approvals-enabled p {
+  color: var(--paragraph-color);
+  font-size: 14px;
+}
+
+.local-web-approvals-enabled .frame-blocked {
+  display: flex;
+  flex-direction: column;
+  max-width: 432px;
+}
+
+.local-approvals-button {
+  float: right;
+  margin-left: 24px;
+}
+
+.local-approvals-button:active {
+  background: var(--primary-button-fill-color-active);
+}
+
+.local-web-approvals-enabled .go-back-button {
+  float: right;
+  margin-left: 24px;
+}
+
+.local-web-approvals-enabled #custodians-information {
+  margin-top: 0;
+}
+
+.local-web-approvals-enabled .custodian-information {
+  margin-top: 24px;
+}
+
+.local-web-approvals-enabled .avatar-img {
+  border: none;
+}
+
+.local-web-approvals-enabled .custodian-name {
+  display: none;
+}
+
+.local-web-approvals-enabled .custodian-email {
+  font-size: 13px;
 }
 
 /* If the height is smaller than min-height, set top and bottom
@@ -261,6 +274,73 @@ margin to 0. This will be useful for subframes. */
   }
 }
 
+/* Narrow width styles when local web approvals is enabled. */
+@media (max-width: 480px) {
+  .local-web-approvals-enabled {
+    padding: 0;
+    margin: auto;
+  }
+
+  .local-web-approvals-enabled button,
+  .local-web-approvals-enabled [dir='rtl'] button {
+    width: initial;
+  }
+
+  .local-web-approvals-enabled button {
+    margin: 0 4px 16px 4px;
+  }
+
+  .local-web-approvals-enabled .frame-blocked {
+    align-items: center;
+    background-color: rgba(232, 234, 237, .38);;
+    border-radius: 12px;
+    padding: 0 8px;
+    width: 284px;
+  }
+
+  .local-web-approvals-enabled .icon {
+    display: none;
+  }
+
+  .local-web-approvals-enabled .message-container {
+    align-items: center;
+  }
+
+  .local-web-approvals-enabled #main-message {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  .local-web-approvals-enabled #custodians-information {
+    margin-top: 8px;
+  }
+
+  .local-web-approvals-enabled .custodian-information {
+    margin-top: 8px;
+  }
+
+  .local-web-approvals-enabled .custodian-contact {
+    height: 24px;
+  }
+
+  .local-web-approvals-enabled .avatar-img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .local-web-approvals-enabled .button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 24px 0 16px;
+  }
+
+  .local-web-approvals-enabled .go-back-button {
+    margin-left: 4px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   body.supervised-user-block {
     --avatar-stroke-color: var(--google-blue-100);
@@ -276,5 +356,11 @@ margin to 0. This will be useful for subframes. */
   .local-web-approvals-enabled .remote-approvals-button {
     color: var(--google-blue-300);
     border-color: var(--secondary-button-border-color);
+  }
+}
+
+@media (prefers-color-scheme: dark) and (max-width: 480px) {
+  .local-web-approvals-enabled .frame-blocked {
+    background-color: initial;
   }
 }
