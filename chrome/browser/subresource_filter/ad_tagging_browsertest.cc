@@ -124,10 +124,9 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
 
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
-    // Allowlist rules are only checked if there is a matching blocklist rule.
+    // For subdocument resources, allowlist rules are always checked.
     SetRulesetWithRules({CreateSuffixRule("ad_script.js"),
                          CreateSuffixRule("ad=true"),
-                         CreateSuffixRule("allowed=true"),
                          CreateAllowlistSuffixRule("allowed=true")});
   }
 
