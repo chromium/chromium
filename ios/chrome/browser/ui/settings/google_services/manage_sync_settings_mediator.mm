@@ -14,7 +14,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
@@ -189,7 +188,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 
   BOOL shouldSyncEverythingBeEditable = !self.disabledBecauseOfSyncError;
   BOOL shouldSyncEverythingItemBeOn =
-      self.syncSetupService->CanSyncFeatureStart() &&
+      self.syncSetupService->IsSyncRequested() &&
       self.syncSetupService->IsSyncingAllDataTypes();
   SyncSwitchItem* syncEverythingItem =
       base::mac::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
@@ -456,12 +455,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
          !self.disabledBecauseOfSyncError;
 }
 
-// Only requires Sync-the-feature to not have any disable reasons and for the
-// user to be signed-in. Sync-the-transport may still be initializing.
+// Only requires Sync-the-feature to not be disabled because of a sync error and
+// to not need a trusted vault key.
 - (BOOL)shouldEncryptionItemBeEnabled {
-  return self.syncSetupService->CanSyncFeatureStart() &&
-         !self.disabledBecauseOfSyncError &&
-         self.syncSetupService->IsFirstSetupComplete() &&
+  return !self.disabledBecauseOfSyncError &&
          self.syncSetupService->GetSyncServiceState() !=
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
 }

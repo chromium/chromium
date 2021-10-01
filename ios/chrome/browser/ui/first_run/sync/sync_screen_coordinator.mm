@@ -128,7 +128,9 @@
                                         browserState)
                    syncSetupService:syncSetupService
               unifiedConsentService:UnifiedConsentServiceFactory::
-                                        GetForBrowserState(browserState)];
+                                        GetForBrowserState(browserState)
+                        syncService:SyncServiceFactory::GetForBrowserState(
+                                        self.browser->GetBrowserState())];
 
   self.mediator.delegate = self;
   self.mediator.consumer = self.viewController;
@@ -158,31 +160,23 @@
 #pragma mark - SyncScreenViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  [self startSyncWithAdvancedSettings:NO];
+  [self startSyncOrAdvancedSettings:NO];
 }
 
 - (void)didTapSecondaryActionButton {
   base::UmaHistogramEnumeration("FirstRun.Stage",
                                 first_run::kSyncScreenCompletionWithoutSync);
-  // The sync view will only be displayed if the user accepted sign in
-  // previously in the flow. If the "Don't turn on sync" button is tapped, the
-  // user will be reverted to the signed in not syncing state, since this is the
-  // only possible previous state.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  ChromeIdentity* syncingIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (syncingIdentity) {
-    authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                   /*force_clear_browsing_data=*/false, nil);
-    authenticationService->SignIn(syncingIdentity);
-  }
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+  // Call StopAndClear() to clear the encryption passphrase, in case the
+  // user entered it before canceling the sync opt-in flow, and also to set
+  // sync as requested.
+  syncService->StopAndClear();
   [self.delegate willFinishPresenting];
 }
 
 - (void)showSyncSettings {
-  [self startSyncWithAdvancedSettings:YES];
+  [self startSyncOrAdvancedSettings:YES];
 }
 
 - (void)addConsentStringID:(const int)stringID {
@@ -241,8 +235,8 @@
   [self.delegate skipAll];
 }
 
-// Starts syncing from |advancedSettings|.
-- (void)startSyncWithAdvancedSettings:(BOOL)advancedSettings {
+// Starts syncing or opens |advancedSettings|.
+- (void)startSyncOrAdvancedSettings:(BOOL)advancedSettings {
   self.advancedSettingsRequested = advancedSettings;
   int confirmationID = advancedSettings
                            ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS

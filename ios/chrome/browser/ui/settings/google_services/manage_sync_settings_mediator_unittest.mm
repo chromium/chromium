@@ -169,7 +169,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
 // Tests for Advanced Settings items.
 
-// Tests that encryption is not accessible when Sync settings have not been
+// Tests that encryption is  accessible even when Sync settings have not been
 // confirmed.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
   FirstSetupSyncOff();
@@ -182,7 +182,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
                                          SignOutSectionIdentifier]);
 
-  // Encryption item is disabled.
+  // Encryption item is enabled.
   NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        AdvancedSettingsSectionIdentifier];
@@ -190,7 +190,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
 
   TableViewImageItem* encryption_item = advanced_settings_items[0];
   ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
-  ASSERT_FALSE(encryption_item.enabled);
+  ASSERT_TRUE(encryption_item.enabled);
 }
 
 // Tests that encryption is accessible when there is a Sync error due to a
