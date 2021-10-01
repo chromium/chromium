@@ -48,6 +48,7 @@
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_local_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_remote_gatt_characteristic_bluez.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -462,6 +463,11 @@ ArcBluetoothBridge::ArcBluetoothBridge(content::BrowserContext* context,
       bluetooth_arc_connection_observer_(this) {
   arc_bridge_service_->app()->AddObserver(this);
   arc_bridge_service_->intent_helper()->AddObserver(this);
+
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    VLOG(1) << "Disabling ArcBluetoothBridge, Floss not yet supported.";
+    return;
+  }
 
   if (BluetoothAdapterFactory::IsBluetoothSupported()) {
     VLOG(1) << "Registering bluetooth adapter.";
