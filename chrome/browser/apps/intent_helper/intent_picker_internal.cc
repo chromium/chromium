@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -40,10 +41,10 @@ bool IsGoogleRedirectorUrl(const GURL& url) {
 }  // namespace
 
 bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
-  // Do not check apps for url if no apps can be installed.
-  // Do not check apps for url in incognito or for a no-state prefetcher
-  // navigation.
-  if (web_contents->GetBrowserContext()->IsOffTheRecord() ||
+  // Do not check apps for url if no apps can be installed, e.g. in incognito.
+  // Do not check apps for a no-state prefetcher navigation.
+  if (!web_app::AreWebAppsUserInstallable(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())) ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr) {
     return false;
