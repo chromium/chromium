@@ -21,6 +21,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-v23/text_highlight_color.xml",
     "java/res/color/blue_mode_tint.xml",
     "java/res/color/checkbox_tint.xml",
     "java/res/color/default_icon_color_light_tint_list.xml",

@@ -4,6 +4,5 @@
      found in the LICENSE file. -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="@dimen/text_highlight_alpha"
-        android:color="@color/default_control_color_active" />
+    <item android:alpha="@dimen/text_highlight_alpha" android:color="?attr/colorPrimary" />
 </selector>
