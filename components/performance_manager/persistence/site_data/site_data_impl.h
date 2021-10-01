@@ -172,7 +172,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
   friend class performance_manager::MockDataCache;
 
   SiteDataImpl(const url::Origin& origin,
-               OnDestroyDelegate* delegate,
+               base::WeakPtr<OnDestroyDelegate> delegate,
                SiteDataStore* data_store);
 
   virtual ~SiteDataImpl();
@@ -283,7 +283,13 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // The delegate that should get notified when this object is about to get
   // destroyed, it should outlive this object.
-  OnDestroyDelegate* const delegate_;
+  // The use of WeakPtr here is a temporary, minimally invasive fix for the UAF
+  // reported in https://crbug.com/1231933. By using a WeakPtr, the call-out
+  // is avoided in the case where the OnDestroyDelegate has been deleted before
+  // all SiteDataImpls have been released.
+  // The proper fix for this is going to be more invasive and less suitable
+  // for merging, should it come to that.
+  base::WeakPtr<OnDestroyDelegate> const delegate_;
 
   // Indicates if this object has been fully initialized, either because the
   // read operation from the database has completed or because it has been

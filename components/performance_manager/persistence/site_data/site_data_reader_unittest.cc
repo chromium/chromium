@@ -71,8 +71,9 @@ class SiteDataReaderTest : public ::testing::Test {
   // SiteDataImpl is protected and not visible to
   // base::MakeRefCounted.
   SiteDataReaderTest() {
-    test_impl_ = base::WrapRefCounted(new internal::SiteDataImpl(
-        url::Origin::Create(GURL("foo.com")), &delegate_, &data_store_));
+    test_impl_ = base::WrapRefCounted(
+        new internal::SiteDataImpl(url::Origin::Create(GURL("foo.com")),
+                                   delegate_.GetWeakPtr(), &data_store_));
     test_impl_->NotifySiteLoaded();
     test_impl_->NotifyLoadedSiteBackgrounded();
     SiteDataReader* reader = new SiteDataReader(test_impl_.get());
@@ -153,9 +154,9 @@ TEST_F(SiteDataReaderTest, FreeingReaderDoesntCauseWriteOperation) {
                               ::testing::_))
       .WillOnce(::testing::Invoke(read_from_store_mock_impl));
 
-  std::unique_ptr<SiteDataReader> reader =
-      base::WrapUnique(new SiteDataReader(base::WrapRefCounted(
-          new internal::SiteDataImpl(kOrigin, &delegate_, &data_store))));
+  std::unique_ptr<SiteDataReader> reader = base::WrapUnique(
+      new SiteDataReader(base::WrapRefCounted(new internal::SiteDataImpl(
+          kOrigin, delegate_.GetWeakPtr(), &data_store))));
   ::testing::Mock::VerifyAndClear(&data_store);
 
   EXPECT_TRUE(reader->impl_for_testing()->fully_initialized_for_testing());
@@ -177,7 +178,7 @@ TEST_F(SiteDataReaderTest, OnDataLoadedCallbackInvoked) {
                                                   kOrigin.Serialize()),
                               ::testing::_));
   scoped_refptr<internal::SiteDataImpl> impl = base::WrapRefCounted(
-      new internal::SiteDataImpl(kOrigin, &delegate_, &data_store));
+      new internal::SiteDataImpl(kOrigin, delegate_.GetWeakPtr(), &data_store));
 
   // Create the reader.
   std::unique_ptr<SiteDataReader> reader =
@@ -208,7 +209,7 @@ TEST_F(SiteDataReaderTest, DestroyingReaderCancelsPendingCallbacks) {
                                                   kOrigin.Serialize()),
                               ::testing::_));
   scoped_refptr<internal::SiteDataImpl> impl = base::WrapRefCounted(
-      new internal::SiteDataImpl(kOrigin, &delegate_, &data_store));
+      new internal::SiteDataImpl(kOrigin, delegate_.GetWeakPtr(), &data_store));
 
   // Create the reader.
   std::unique_ptr<SiteDataReader> reader =
