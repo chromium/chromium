@@ -30,15 +30,15 @@ namespace {
 int g_https_port_for_testing = 0;
 int g_http_port_for_testing = 0;
 
-// Only serve upgrade redirects for main frame, GET requests to HTTP URLs.
+// Only serve upgrade redirects for main frame, GET requests to HTTP URLs. This
+// excludes "localhost" (and loopback addresses) as they do not expose traffic
+// over the network.
 // The loader also handles redirecting fallback navigations back to HTTP after
 // proceeding through the interstitial.
-// TODO(crbug.com/1218526): Consider excluding IP addresses and non-unique
-// hostnames (as these are likely intranet or unable to have publicly trusted
-// certificates).
 bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
                         HttpsOnlyModeTabHelper* tab_helper) {
   if (resource_request.is_main_frame && resource_request.method == "GET" &&
+      !net::IsLocalhost(resource_request.url) &&
       (resource_request.url.SchemeIs(url::kHttpScheme) ||
        tab_helper->is_navigation_fallback())) {
     return true;
