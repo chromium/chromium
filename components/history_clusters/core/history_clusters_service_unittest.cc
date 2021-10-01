@@ -432,8 +432,9 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     const bool expect_first_cluster;
     const bool expect_second_cluster;
   } test_data[] = {
-      // Empty query should get both.
-      {"", true, true},
+      // Empty query should get only the second, because the first is marked
+      // hidden on prominent UI surfaces, including the zero query state.
+      {"", false, true},
       // Non matching query should get none.
       {"non_matching_query", false, false},
       // Query matching one cluster.
@@ -529,19 +530,24 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     AwaitAndVerifyTestClusteringBackendRequest();
 
     std::vector<history::Cluster> clusters;
+    // This first cluster with keywords is marked hidden on sensitive UI
+    // surfaces. This test thus verifies that it's hidden in the zero-query
+    // state, but the user can still get to it by searching for its keywords.
     clusters.push_back(
         history::Cluster(0,
                          {
                              test_clustering_backend_->GetVisitById(1),
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"apples", u"Red Oranges"}));
+                         {u"apples", u"Red Oranges"},
+                         /*should_show_on_prominent_ui_surfaces=*/false));
     clusters.push_back(
         history::Cluster(0,
                          {
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {}));
+                         {},
+                         /*should_show_on_prominent_ui_surfaces=*/true));
     test_clustering_backend_->FulfillCallback(clusters);
 
     // Verify the callback is invoked.
@@ -554,12 +560,12 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumVisitsToCluster", 2, base::size(test_data));
   histogram_tester.ExpectBucketCount(
-      "History.Clusters.PercentClustersFilteredByQuery", 0, 2);
+      "History.Clusters.PercentClustersFilteredByQuery", 0, 1);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.PercentClustersFilteredByQuery", 100, 1);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.PercentClustersFilteredByQuery", 50,
-      base::size(test_data) - 3);
+      base::size(test_data) - 2);
 }
 
 TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
@@ -702,11 +708,20 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                            test_clustering_backend_->GetVisitById(1),
                            test_clustering_backend_->GetVisitById(2),
                        },
-                       {u"apples", u"oranges"}));
+                       {u"apples", u"oranges"},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
+  clusters.push_back(history::Cluster(
+      0, {test_clustering_backend_->GetVisitById(1)}, {u"sensitive"},
+      /*should_show_on_prominent_ui_surfaces=*/false));
   test_clustering_backend_->FulfillCallback(clusters);
 
   // Now the exact query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
+
+  // Check that clusters that shouldn't be shown on prominent UI surfaces don't
+  // have their keywords inserted into the keyword bag.
+  EXPECT_FALSE(
+      history_clusters_service_->DoesQueryMatchAnyCluster("sensitive"));
 
   // Too-short queries rejected.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("ap"));

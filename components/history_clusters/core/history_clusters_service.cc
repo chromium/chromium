@@ -273,8 +273,17 @@ bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
 std::vector<history::Cluster> FilterClustersMatchingQuery(
     std::string query,
     const std::vector<history::Cluster>& clusters) {
-  if (query.empty())
-    return clusters;
+  if (query.empty()) {
+    // For the empty-query state, only show clusters with
+    // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
+    // NOT applied when the user is searching for a specific keyword.
+    std::vector<history::Cluster> shown_clusters;
+    base::ranges::copy_if(clusters, std::back_inserter(shown_clusters),
+                          [](const history::Cluster& cluster) {
+                            return cluster.should_show_on_prominent_ui_surfaces;
+                          });
+    return shown_clusters;
+  }
 
   // Extract query nodes from the query string.
   query_parser::QueryNodeVector find_nodes;
@@ -558,6 +567,11 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     // (The cache_query_task_tracker_ should also do this.)
     all_keywords_cache_timestamp_ = base::Time::Now();
 
+    // TODO(tommycli): This `QueryClusters()` correctly returns only clusters
+    // with `should_show_on_prominent_ui_surfaces` set to true because the
+    // `query` parameter is set to empty. However, it would be nice if this
+    // was more explicit, rather than just a happy coincidence. Likely the real
+    // solution will be to explicitly ask the backend for this bag of keywords.
     QueryClusters(
         /*query=*/"", /*end_time=*/base::Time(), kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
