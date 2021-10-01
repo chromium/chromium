@@ -130,7 +130,6 @@ class LoadingPredictorTabHelper
     RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
     scoped_refptr<PageData> page_data_;
-    content::RenderFrameHost* render_frame_host_;
     base::WeakPtrFactory<DocumentPageDataHolder> weak_factory_{this};
   };
 

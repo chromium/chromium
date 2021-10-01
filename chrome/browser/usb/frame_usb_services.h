@@ -44,8 +44,6 @@ class FrameUsbServices
   std::unique_ptr<WebUsbChooser> usb_chooser_;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
 
-  content::RenderFrameHost* render_frame_host_;
-
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };
 

@@ -55,7 +55,10 @@ class Data : public RenderDocumentHostUserData<Data> {
   int unique_id() { return unique_id_; }
 
  private:
-  explicit Data(RenderFrameHost* render_frame_host) { unique_id_ = ++next_id; }
+  explicit Data(RenderFrameHost* render_frame_host)
+      : RenderDocumentHostUserData<Data>(render_frame_host) {
+    unique_id_ = ++next_id;
+  }
 
   friend class content::RenderDocumentHostUserData<Data>;
 

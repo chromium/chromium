@@ -35,7 +35,6 @@ class DigitalGoodsFactoryImpl
   void BindRequest(
       mojo::PendingReceiver<payments::mojom::DigitalGoodsFactory> receiver);
 
-  content::RenderFrameHost* render_frame_host_;
   mojo::Receiver<payments::mojom::DigitalGoodsFactory> receiver_;
 };
 

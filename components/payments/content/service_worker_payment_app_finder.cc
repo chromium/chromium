@@ -411,8 +411,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     base::OnceClosure finished_writing_cache_callback_for_testing) {
   DCHECK(!requested_method_data.empty());
 
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsActive())
+  if (!render_frame_host().IsActive())
     return;
 
   // Do not look up payment handlers for ignored payment methods.
@@ -429,7 +428,8 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     return;
   }
 
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   auto self_delete_factory =
       SelfDeletingServiceWorkerPaymentAppFinder::CreateAndSetOwnedBy(
           web_contents);
@@ -441,14 +441,16 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
   } else {
     downloader = std::make_unique<payments::PaymentManifestDownloader>(
         std::make_unique<DeveloperConsoleLogger>(web_contents),
-        rfh->GetBrowserContext()
+        render_frame_host()
+            .GetBrowserContext()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
   }
 
   self_delete_factory->GetAllPaymentApps(
-      merchant_origin, rfh, std::move(downloader), cache, requested_method_data,
-      may_crawl_for_installable_payment_apps, std::move(callback),
+      merchant_origin, &render_frame_host(), std::move(downloader), cache,
+      requested_method_data, may_crawl_for_installable_payment_apps,
+      std::move(callback),
       std::move(finished_writing_cache_callback_for_testing));
 }
 
@@ -473,9 +475,7 @@ void ServiceWorkerPaymentAppFinder::IgnorePaymentMethodForTest(
 
 ServiceWorkerPaymentAppFinder::ServiceWorkerPaymentAppFinder(
     content::RenderFrameHost* rfh)
-    : frame_routing_id_(
-          content::GlobalRenderFrameHostId(rfh->GetProcess()->GetID(),
-                                           rfh->GetRoutingID())),
+    : content::RenderDocumentHostUserData<ServiceWorkerPaymentAppFinder>(rfh),
       ignored_methods_({methods::kGooglePlayBilling}),
       test_downloader_(nullptr) {}
 

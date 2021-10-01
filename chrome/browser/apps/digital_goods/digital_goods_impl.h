@@ -42,7 +42,6 @@ class DigitalGoodsImpl
 
   arc::ArcDigitalGoodsBridge* GetArcDigitalGoodsBridge();
 
-  content::RenderFrameHost* render_frame_host_;
   mojo::Receiver<payments::mojom::DigitalGoods> receiver_;
 };
 

@@ -63,8 +63,6 @@ class ImageCompressionAppliedDocument
   friend class content::RenderDocumentHostUserData<
       ImageCompressionAppliedDocument>;
 
-  content::RenderFrameHost* render_frame_host_;
-
   // Maintains whether https image compression was attempted for the last
   // navigation. Even though image compression was attempted, it doesn't mean at
   // least one image will get compressed, since that depends on a public image

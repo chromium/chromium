@@ -290,8 +290,9 @@ PageSpecificContentSettings::PageSpecificContentSettings(
     content::RenderFrameHost* main_frame,
     PageSpecificContentSettings::WebContentsHandler& handler,
     Delegate* delegate)
-    : handler_(handler),
-      main_frame_(main_frame),
+    : content::RenderDocumentHostUserData<PageSpecificContentSettings>(
+          main_frame),
+      handler_(handler),
       delegate_(delegate),
       map_(delegate_->GetSettingsMap()),
       allowed_local_shared_objects_(
@@ -303,9 +304,9 @@ PageSpecificContentSettings::PageSpecificContentSettings(
           delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
-  DCHECK(!main_frame_->GetParent());
+  DCHECK(!render_frame_host().GetParent());
   observation_.Observe(map_);
-  if (main_frame_->GetLifecycleState() ==
+  if (render_frame_host().GetLifecycleState() ==
       content::RenderFrameHost::LifecycleState::kPrerendering) {
     updates_queued_during_prerender_ = std::make_unique<PendingUpdates>();
   }
@@ -801,7 +802,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  const GURL current_url = main_frame_->GetLastCommittedURL();
+  const GURL current_url = render_frame_host().GetLastCommittedURL();
   if (!primary_pattern.Matches(current_url)) {
     return;
   }
@@ -868,7 +869,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
   if (!ShouldSendUpdatedContentSettingsRulesToRenderer(content_type))
     return;
 
-  MaybeSendRendererContentSettingsRules(main_frame_, map_, delegate_);
+  MaybeSendRendererContentSettingsRules(&render_frame_host(), map_, delegate_);
 }
 
 void PageSpecificContentSettings::AppCacheAccessed(const GURL& manifest_url,
@@ -907,9 +908,9 @@ void PageSpecificContentSettings::BlockAllContentForTesting() {
           PageSpecificContentSettings::MICROPHONE_BLOCKED |
           PageSpecificContentSettings::CAMERA_ACCESSED |
           PageSpecificContentSettings::CAMERA_BLOCKED);
-  OnMediaStreamPermissionSet(main_frame_->GetLastCommittedURL(), media_blocked,
-                             std::string(), std::string(), std::string(),
-                             std::string());
+  OnMediaStreamPermissionSet(render_frame_host().GetLastCommittedURL(),
+                             media_blocked, std::string(), std::string(),
+                             std::string(), std::string());
 }
 
 void PageSpecificContentSettings::ContentSettingChangedViaPageInfo(

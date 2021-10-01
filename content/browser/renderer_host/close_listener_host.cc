@@ -9,7 +9,8 @@
 
 namespace content {
 
-CloseListenerHost::CloseListenerHost(RenderFrameHost* render_frame_host) {}
+CloseListenerHost::CloseListenerHost(RenderFrameHost* render_frame_host)
+    : RenderDocumentHostUserData<CloseListenerHost>(render_frame_host) {}
 
 CloseListenerHost::~CloseListenerHost() = default;
 

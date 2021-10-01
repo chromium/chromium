@@ -60,6 +60,8 @@ CONTENT_EXPORT void RemoveRenderDocumentHostUserData(RenderFrameHost* rfh,
 //   ~FooDocumentHelper() override;
 //   // ... more public stuff here ...
 //  private:
+//   // No public constructors to force going through static methods of
+//   // RenderDocumentHostUserData (e.g. CreateForCurrentDocument).
 //   explicit FooDocumentHelper(content::RenderFrameHost* rfh);
 //   friend class content::RenderDocumentHostUserData<FooDocumentHelper>;
 //   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
@@ -68,7 +70,9 @@ CONTENT_EXPORT void RemoveRenderDocumentHostUserData(RenderFrameHost* rfh,
 //
 // --- in foo_document_helper.cc ---
 // RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FooDocumentHelper)
-
+//
+// FooDocumentHelper::FooDocumentHelper(content::RenderFrameHost* rfh)
+//     : content::RenderDocumentHostUserData<FooDocumentHelper>(rfh) { ... }
 template <typename T>
 class RenderDocumentHostUserData : public base::SupportsUserData::Data {
  public:
@@ -102,7 +106,30 @@ class RenderDocumentHostUserData : public base::SupportsUserData::Data {
     RemoveRenderDocumentHostUserData(rfh, UserDataKey());
   }
 
+  // Returns the RenderFrameHost associated with `this` object of a subclass
+  // which inherits from RenderDocumentHostUserData.
+  //
+  // The returned `render_frame_host()` is guaranteed to live as long as `this`
+  // RenderDocumentHostUserData (due to how UserData works - RenderFrameHost
+  // owns `this` UserData).  Note that only the lifetime of
+  // `render_frame_host()` is guaranteed, but not its state - e.g. the frame may
+  // be `!IsActive()`.
+  RenderFrameHost& render_frame_host() const { return *render_frame_host_; }
+
+ protected:
+  // TODO(https://crbug.com/1252044): Take a reference instead of a pointer
+  // (here + transitively/as-far-as-reasonably-possible in callers).
+  explicit RenderDocumentHostUserData(RenderFrameHost* rfh)
+      : render_frame_host_(rfh) {
+    CHECK(rfh);
+  }
+
+ private:
   static const void* UserDataKey() { return &T::kUserDataKey; }
+
+  // This is a pointer (rather than a reference) to ensure that go/miracleptr
+  // can cover this field (see also //base/memory/raw_ptr.md).
+  RenderFrameHost* const render_frame_host_ = nullptr;
 };
 
 // Users won't be able to instantiate the template if they miss declaring the

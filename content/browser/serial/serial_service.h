@@ -64,9 +64,6 @@ class SerialService
   void OnWatcherConnectionError();
   void DecrementActiveFrameCount();
 
-  // This raw pointer is safe because instances of this class are owned by
-  // RenderFrameHostImpl.
-  RenderFrameHost* const render_frame_host_;
   mojo::ReceiverSet<blink::mojom::SerialService> receivers_;
   mojo::RemoteSet<blink::mojom::SerialServiceClient> clients_;
 

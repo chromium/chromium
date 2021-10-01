@@ -126,7 +126,8 @@ class DocumentData : public RenderDocumentHostUserData<DocumentData> {
   }
 
  private:
-  explicit DocumentData(RenderFrameHost* render_frame_host) {}
+  explicit DocumentData(RenderFrameHost* render_frame_host)
+      : RenderDocumentHostUserData<DocumentData>(render_frame_host) {}
 
   friend class content::RenderDocumentHostUserData<DocumentData>;
 

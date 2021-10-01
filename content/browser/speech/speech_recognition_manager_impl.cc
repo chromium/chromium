@@ -110,7 +110,8 @@ class FrameSessionTracker
   }
 
  private:
-  explicit FrameSessionTracker(content::RenderFrameHost* rfh) {}
+  explicit FrameSessionTracker(content::RenderFrameHost* rfh)
+      : RenderDocumentHostUserData<FrameSessionTracker>(rfh) {}
 
   friend class content::RenderDocumentHostUserData<FrameSessionTracker>;
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();

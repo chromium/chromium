@@ -27,9 +27,9 @@ namespace content {
 struct PermissionServiceContext::DocumentPermissionServiceContextHolder
     : public RenderDocumentHostUserData<
           DocumentPermissionServiceContextHolder> {
-  explicit DocumentPermissionServiceContextHolder(
-      RenderFrameHost* render_frame_host)
-      : permission_service_context(render_frame_host) {}
+  explicit DocumentPermissionServiceContextHolder(RenderFrameHost* rfh)
+      : RenderDocumentHostUserData<DocumentPermissionServiceContextHolder>(rfh),
+        permission_service_context(rfh) {}
 
   PermissionServiceContext permission_service_context;
 

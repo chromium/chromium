@@ -203,9 +203,9 @@ void LoadingPredictorTabHelper::PageData::
 }
 
 LoadingPredictorTabHelper::DocumentPageDataHolder::DocumentPageDataHolder(
-    content::RenderFrameHost* render_frame_host)
-    : page_data_(base::MakeRefCounted<PageData>()),
-      render_frame_host_(render_frame_host) {}
+    content::RenderFrameHost* rfh)
+    : content::RenderDocumentHostUserData<DocumentPageDataHolder>(rfh),
+      page_data_(base::MakeRefCounted<PageData>()) {}
 LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() =
     default;
 LoadingPredictorTabHelper::NavigationPageDataHolder::NavigationPageDataHolder(

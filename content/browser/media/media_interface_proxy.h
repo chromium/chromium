@@ -147,9 +147,6 @@ class MediaInterfaceProxy final
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
 #endif  // defined(OS_WIN)
 
-  // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
-  RenderFrameHostImpl* const render_frame_host_;
-
   mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;
 
   // InterfacePtr to the remote InterfaceFactory implementation in the Media

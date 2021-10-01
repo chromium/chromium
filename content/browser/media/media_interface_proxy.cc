@@ -217,10 +217,9 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 
 }  // namespace
 
-MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
-    : render_frame_host_(static_cast<RenderFrameHostImpl*>(render_frame_host)) {
+MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* rfh)
+    : RenderDocumentHostUserData<MediaInterfaceProxy>(rfh) {
   DVLOG(1) << __func__;
-  DCHECK(render_frame_host_);
 
   std::string cdm_file_system_id;
 #if defined(OS_CHROMEOS)
@@ -300,7 +299,7 @@ void MediaInterfaceProxy::CreateFlingingRenderer(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   std::unique_ptr<FlingingRenderer> flinging_renderer =
-      FlingingRenderer::Create(render_frame_host_, presentation_id,
+      FlingingRenderer::Create(&render_frame_host(), presentation_id,
                                std::move(client_extension));
 
   if (!flinging_renderer)
@@ -321,7 +320,8 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
   media::MojoRendererService::Create(
       nullptr,
       std::make_unique<MediaPlayerRenderer>(
-          render_frame_host_, std::move(renderer_extension_receiver),
+          static_cast<RenderFrameHostImpl*>(&render_frame_host()),
+          std::move(renderer_extension_receiver),
           std::move(client_extension_remote)),
       std::move(receiver));
 }
@@ -435,9 +435,11 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 mojo::PendingRemote<media::mojom::FrameInterfaceFactory>
 MediaInterfaceProxy::GetFrameServices(const std::string& cdm_file_system_id) {
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> factory;
-  frame_factories_.Add(std::make_unique<FrameInterfaceFactoryImpl>(
-                           render_frame_host_, cdm_file_system_id),
-                       factory.InitWithNewPipeAndPassReceiver());
+  frame_factories_.Add(
+      std::make_unique<FrameInterfaceFactoryImpl>(
+          static_cast<RenderFrameHostImpl*>(&render_frame_host()),
+          cdm_file_system_id),
+      factory.InitWithNewPipeAndPassReceiver());
   return factory;
 }
 
@@ -466,8 +468,8 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   DCHECK(!mf_interface_factory_remote_);
 
   auto& mf_service = GetMediaFoundationService(
-      render_frame_host_->GetBrowserContext(),
-      render_frame_host_->GetSiteInstance()->GetSiteURL(), cdm_path);
+      render_frame_host().GetBrowserContext(),
+      render_frame_host().GetSiteInstance()->GetSiteURL(), cdm_path);
 
   // Passing empty arguments to GetFrameServices() as MediaFoundation-based
   // CDMs don't use CdmStorage currently.
@@ -533,8 +535,8 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
 
   DCHECK(!cdm_factory_map_.count(cdm_guid));
 
-  auto* browser_context = render_frame_host_->GetBrowserContext();
-  auto& site = render_frame_host_->GetSiteInstance()->GetSiteURL();
+  auto* browser_context = render_frame_host().GetBrowserContext();
+  auto& site = render_frame_host().GetSiteInstance()->GetSiteURL();
   auto& cdm_service = GetCdmService(cdm_guid, browser_context, site, cdm_info);
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;

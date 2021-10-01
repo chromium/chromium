@@ -536,7 +536,6 @@ class PageSpecificContentSettings
   void MaybeUpdateLocationBar();
 
   WebContentsHandler& handler_;
-  content::RenderFrameHost* main_frame_;
 
   Delegate* delegate_;
 

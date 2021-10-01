@@ -5974,7 +5974,9 @@ class DestructorLifetimeRenderDocumentHostUserData
   explicit DestructorLifetimeRenderDocumentHostUserData(
       RenderFrameHost* render_frame_host,
       bool& was_destroyed)
-      : render_frame_host_(
+      : RenderDocumentHostUserData<
+            DestructorLifetimeRenderDocumentHostUserData>(render_frame_host),
+        render_frame_host_(
             static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr()),
         was_destroyed_(was_destroyed) {}
 

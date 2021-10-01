@@ -81,7 +81,8 @@ void FlocEligibilityObserver::OnInterestCohortApiUsed() {
 }
 
 FlocEligibilityObserver::FlocEligibilityObserver(content::RenderFrameHost* rfh)
-    : web_contents_(content::WebContents::FromRenderFrameHost(rfh)) {}
+    : content::RenderDocumentHostUserData<FlocEligibilityObserver>(rfh),
+      web_contents_(content::WebContents::FromRenderFrameHost(rfh)) {}
 
 void FlocEligibilityObserver::OnOptInSignalObserved() {
   if (!eligible_commit_ || observed_opt_in_signal_)

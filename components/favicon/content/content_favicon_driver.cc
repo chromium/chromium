@@ -64,7 +64,8 @@ ContentFaviconDriver::ContentFaviconDriver(content::WebContents* web_contents,
 ContentFaviconDriver::~ContentFaviconDriver() = default;
 
 ContentFaviconDriver::DocumentManifestData::DocumentManifestData(
-    content::RenderFrameHost* render_frame_host) {}
+    content::RenderFrameHost* rfh)
+    : content::RenderDocumentHostUserData<DocumentManifestData>(rfh) {}
 ContentFaviconDriver::DocumentManifestData::~DocumentManifestData() = default;
 
 ContentFaviconDriver::NavigationManifestData::NavigationManifestData(
