@@ -1194,10 +1194,9 @@ void OmniboxEditModel::StartZeroSuggestRequest(
 
   // Send the textfield contents exactly as-is, as otherwise the verbatim
   // match can be wrong. The full page URL is anyways in set_current_url().
-  // Don't attempt to use https as the default scheme for these requests.
   input_ = AutocompleteInput(view_->GetText(), GetPageClassification(),
                              client_->GetSchemeClassifier(),
-                             /*should_use_https_as_default_scheme=*/false,
+                             client_->ShouldDefaultTypedNavigationsToHttps(),
                              client_->GetHttpsPortForTesting());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
