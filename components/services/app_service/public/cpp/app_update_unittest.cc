@@ -49,8 +49,8 @@ class AppUpdateTest : public testing::Test {
   std::vector<apps::mojom::PermissionPtr> expect_permissions_;
   bool expect_permissions_changed_;
 
-  apps::mojom::InstallReason expect_install_source_;
-  bool expect_install_source_changed_;
+  apps::mojom::InstallReason expect_install_reason_;
+  bool expect_install_reason_changed_;
 
   apps::mojom::OptionalBool expect_is_platform_app_;
   bool expect_is_platform_app_changed_;
@@ -112,7 +112,7 @@ class AppUpdateTest : public testing::Test {
     expect_last_launch_time_changed_ = false;
     expect_install_time_changed_ = false;
     expect_permissions_changed_ = false;
-    expect_install_source_changed_ = false;
+    expect_install_reason_changed_ = false;
     expect_is_platform_app_changed_ = false;
     expect_recommendable_changed_ = false;
     expect_searchable_changed_ = false;
@@ -163,8 +163,8 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_permissions_, u.Permissions());
     EXPECT_EQ(expect_permissions_changed_, u.PermissionsChanged());
 
-    EXPECT_EQ(expect_install_source_, u.InstallSource());
-    EXPECT_EQ(expect_install_source_changed_, u.InstallSourceChanged());
+    EXPECT_EQ(expect_install_reason_, u.InstallReason());
+    EXPECT_EQ(expect_install_reason_changed_, u.InstallReasonChanged());
 
     EXPECT_EQ(expect_is_platform_app_, u.IsPlatformApp());
     EXPECT_EQ(expect_is_platform_app_changed_, u.IsPlatformAppChanged());
@@ -224,7 +224,7 @@ class AppUpdateTest : public testing::Test {
     expect_last_launch_time_ = base::Time();
     expect_install_time_ = base::Time();
     expect_permissions_.clear();
-    expect_install_source_ = apps::mojom::InstallReason::kUnknown;
+    expect_install_reason_ = apps::mojom::InstallReason::kUnknown;
     expect_is_platform_app_ = apps::mojom::OptionalBool::kUnknown;
     expect_recommendable_ = apps::mojom::OptionalBool::kUnknown;
     expect_searchable_ = apps::mojom::OptionalBool::kUnknown;
@@ -470,15 +470,15 @@ class AppUpdateTest : public testing::Test {
     // InstallReason tests.
     if (state) {
       state->install_reason = apps::mojom::InstallReason::kUser;
-      expect_install_source_ = apps::mojom::InstallReason::kUser;
-      expect_install_source_changed_ = false;
+      expect_install_reason_ = apps::mojom::InstallReason::kUser;
+      expect_install_reason_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->install_reason = apps::mojom::InstallReason::kPolicy;
-      expect_install_source_ = apps::mojom::InstallReason::kPolicy;
-      expect_install_source_changed_ = true;
+      expect_install_reason_ = apps::mojom::InstallReason::kPolicy;
+      expect_install_reason_changed_ = true;
       CheckExpects(u);
     }
 

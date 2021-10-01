@@ -271,7 +271,7 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
     return false;
   }
 
-  if (app.InstallSource() == apps::mojom::InstallReason::kSystem) {
+  if (app.InstallReason() == apps::mojom::InstallReason::kSystem) {
     return false;
   }
 

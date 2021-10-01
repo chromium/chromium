@@ -337,7 +337,7 @@ bool AppUpdate::PermissionsChanged() const {
          (!state_ || (delta_->permissions != state_->permissions));
 }
 
-apps::mojom::InstallReason AppUpdate::InstallSource() const {
+apps::mojom::InstallReason AppUpdate::InstallReason() const {
   if (delta_ &&
       (delta_->install_reason != apps::mojom::InstallReason::kUnknown)) {
     return delta_->install_reason;
@@ -348,14 +348,14 @@ apps::mojom::InstallReason AppUpdate::InstallSource() const {
   return apps::mojom::InstallReason::kUnknown;
 }
 
-bool AppUpdate::InstallSourceChanged() const {
+bool AppUpdate::InstallReasonChanged() const {
   return delta_ &&
          (delta_->install_reason != apps::mojom::InstallReason::kUnknown) &&
          (!state_ || (delta_->install_reason != state_->install_reason));
 }
 
 apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
-  switch (InstallSource()) {
+  switch (InstallReason()) {
     case apps::mojom::InstallReason::kUnknown:
       return apps::mojom::OptionalBool::kUnknown;
     case apps::mojom::InstallReason::kSystem:
@@ -595,7 +595,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
     out << " is_managed: " << permission->is_managed << std::endl;
   }
 
-  out << "InstallSource: " << app.InstallSource() << std::endl;
+  out << "InstallReason: " << app.InstallReason() << std::endl;
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
   out << "IsPlatformApp: " << app.IsPlatformApp() << std::endl;
   out << "Recommendable: " << app.Recommendable() << std::endl;

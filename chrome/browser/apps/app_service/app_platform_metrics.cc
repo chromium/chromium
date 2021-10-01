@@ -163,7 +163,7 @@ apps::AppTypeName GetAppTypeNameForWebApp(
             // The app type may be kSystemWeb (system web apps in Ash when
             // Lacros web apps are enabled), or kWeb (all other cases).
             type_name =
-                (update.InstallSource() == apps::mojom::InstallReason::kSystem)
+                (update.InstallReason() == apps::mojom::InstallReason::kSystem)
                     ? apps::AppTypeName::kSystemWeb
                     : apps::AppTypeName::kWeb;
             window_mode = update.WindowMode();
@@ -1075,7 +1075,7 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
         }
 
         ++app_count[app_type_name];
-        ++app_count_per_install_source[app_type_name][update.InstallSource()];
+        ++app_count_per_install_source[app_type_name][update.InstallReason()];
       });
 
   for (auto it : app_count) {
@@ -1217,7 +1217,7 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
 
   ukm::builders::ChromeOSApp_InstalledApp builder(source_id);
   builder.SetAppType((int)app_type_name)
-      .SetInstallSource((int)update.InstallSource())
+      .SetInstallSource((int)update.InstallReason())
       .SetInstallTime((int)install_time)
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
@@ -1253,7 +1253,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
       app_registry_cache_.ForOneApp(app_id, [&publisher_id, &install_reason](
                                                 const apps::AppUpdate& update) {
         publisher_id = update.PublisherId();
-        install_reason = update.InstallSource();
+        install_reason = update.InstallReason();
       });
       if (publisher_id.empty()) {
         return ukm::kInvalidSourceId;

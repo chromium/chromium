@@ -273,7 +273,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->type = update.AppType();
   app->title = update.Name();
   app->permissions = std::move(permissions);
-  app->install_reason = update.InstallSource();
+  app->install_reason = update.InstallReason();
 
   app->description = update.Description();
 

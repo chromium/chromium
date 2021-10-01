@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [&](const apps::AppUpdate& update) {
-        install_reason = update.InstallSource();
+        install_reason = update.InstallReason();
       });
 
   EXPECT_EQ(install_reason, apps::mojom::InstallReason::kOem);

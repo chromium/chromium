@@ -100,8 +100,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   std::vector<apps::mojom::PermissionPtr> Permissions() const;
   bool PermissionsChanged() const;
 
-  apps::mojom::InstallReason InstallSource() const;
-  bool InstallSourceChanged() const;
+  apps::mojom::InstallReason InstallReason() const;
+  bool InstallReasonChanged() const;
 
   apps::mojom::OptionalBool InstalledInternally() const;
 

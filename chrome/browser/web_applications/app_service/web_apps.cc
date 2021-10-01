@@ -332,11 +332,11 @@ void WebApps::GetMenuModel(const std::string& app_id,
       ->AppRegistryCache()
       .ForOneApp(app_id, [&is_system_web_app, &can_use_uninstall,
                           &display_mode](const apps::AppUpdate& update) {
-        if (update.InstallSource() == apps::mojom::InstallReason::kSystem) {
+        if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
           is_system_web_app = true;
         }
-        if (update.InstallSource() == apps::mojom::InstallReason::kSystem ||
-            update.InstallSource() == apps::mojom::InstallReason::kPolicy) {
+        if (update.InstallReason() == apps::mojom::InstallReason::kSystem ||
+            update.InstallReason() == apps::mojom::InstallReason::kPolicy) {
           can_use_uninstall = false;
         }
         display_mode = update.WindowMode();

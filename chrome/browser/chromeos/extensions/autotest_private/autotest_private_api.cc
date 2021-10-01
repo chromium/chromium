@@ -3265,7 +3265,7 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
     app.publisher_id = update.PublisherId();
     app.additional_search_terms = update.AdditionalSearchTerms();
     app.type = GetAppType(update.AppType());
-    app.install_source = GetAppInstallSource(update.InstallSource());
+    app.install_source = GetAppInstallSource(update.InstallReason());
     app.readiness = GetAppReadiness(update.Readiness());
     app.show_in_launcher = ConvertMojomOptionalBool(update.ShowInLauncher());
     app.show_in_search = ConvertMojomOptionalBool(update.ShowInSearch());
