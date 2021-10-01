@@ -68,32 +68,37 @@ void SharedImageRepresentationGLOzoneShared::EndAccess(
   ozone_backing->EndAccess(readonly, std::move(fence));
 }
 
+scoped_refptr<gl::GLImageNativePixmap>
+SharedImageRepresentationGLOzoneShared::CreateGLImage(
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    gfx::BufferFormat buffer_format) {
+  scoped_refptr<gl::GLImageNativePixmap> image =
+      base::MakeRefCounted<gl::GLImageNativePixmap>(pixmap->GetBufferSize(),
+                                                    buffer_format);
+  if (!image->Initialize(std::move(pixmap))) {
+    LOG(ERROR) << "Unable to initialize GL image from pixmap";
+    return nullptr;
+  }
+  return image;
+}
+
 absl::optional<GLuint> SharedImageRepresentationGLOzoneShared::SetupTexture(
     scoped_refptr<gl::GLImageNativePixmap> image,
-    scoped_refptr<gfx::NativePixmap> pixmap,
-    viz::ResourceFormat format) {
+    GLenum target) {
   gl::GLApi* api = gl::g_current_gl_context;
   DCHECK(api);
 
   GLuint gl_texture_service_id;
   api->glGenTexturesFn(1, &gl_texture_service_id);
-  gl::ScopedTextureBinder binder(GL_TEXTURE_2D, gl_texture_service_id);
+  gl::ScopedTextureBinder binder(target, gl_texture_service_id);
 
-  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  image = base::MakeRefCounted<gl::GLImageNativePixmap>(pixmap->GetBufferSize(),
-                                                        buffer_format);
-  if (!image->Initialize(pixmap)) {
-    DLOG(ERROR) << "Unable to initialize GL image from pixmap";
-    api->glDeleteTexturesFn(1, &gl_texture_service_id);
-    return absl::nullopt;
-  }
+  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  api->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  api->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  if (!image->BindTexImage(GL_TEXTURE_2D)) {
-    DLOG(ERROR) << "Unable to bind GL image to GL_TEXTURE_2D";
+  if (!image->BindTexImage(target)) {
+    LOG(ERROR) << "Unable to bind GL image to target = " << target;
     api->glDeleteTexturesFn(1, &gl_texture_service_id);
     return absl::nullopt;
   }
@@ -109,17 +114,25 @@ SharedImageRepresentationGLTextureOzone::Create(
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
     viz::ResourceFormat format) {
-  scoped_refptr<gl::GLImageNativePixmap> image;
+  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
+  GLenum target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format)
+                      ? GL_TEXTURE_2D
+                      : gpu::GetPlatformSpecificTextureTarget();
+  auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
+      pixmap, buffer_format);
+  if (!image) {
+    return nullptr;
+  }
+
   auto gl_texture_service_id =
-      SharedImageRepresentationGLOzoneShared::SetupTexture(image, pixmap,
-                                                           format);
+      SharedImageRepresentationGLOzoneShared::SetupTexture(image, target);
   if (!gl_texture_service_id.has_value()) {
     return nullptr;
   }
 
   gles2::Texture* texture = new gles2::Texture(*gl_texture_service_id);
   texture->SetLightweightRef();
-  texture->SetTarget(GL_TEXTURE_2D, 1 /*max_levels=*/);
+  texture->SetTarget(target, /*max_levels=*/1);
   texture->set_min_filter(GL_LINEAR);
   texture->set_mag_filter(GL_LINEAR);
   texture->set_wrap_t(GL_CLAMP_TO_EDGE);
@@ -128,11 +141,11 @@ SharedImageRepresentationGLTextureOzone::Create(
   GLuint internal_format = viz::TextureStorageFormat(format);
   GLenum gl_format = viz::GLDataFormat(format);
   GLenum gl_type = viz::GLDataType(format);
-  texture->SetLevelInfo(GL_TEXTURE_2D, 0, internal_format,
+  texture->SetLevelInfo(target, 0, internal_format,
                         pixmap->GetBufferSize().width(),
                         pixmap->GetBufferSize().height(), 1, 0, gl_format,
                         gl_type, backing->ClearedRect());
-  texture->SetLevelImage(GL_TEXTURE_2D, 0, image.get(), gles2::Texture::BOUND);
+  texture->SetLevelImage(target, 0, image.get(), gles2::Texture::BOUND);
   texture->SetImmutable(true, true);
 
   return base::WrapUnique<SharedImageRepresentationGLTextureOzone>(
@@ -177,10 +190,18 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
     viz::ResourceFormat format) {
-  scoped_refptr<gl::GLImageNativePixmap> image;
+  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
+  GLenum target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format)
+                      ? GL_TEXTURE_2D
+                      : gpu::GetPlatformSpecificTextureTarget();
+  auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
+      pixmap, buffer_format);
+  if (!image) {
+    return nullptr;
+  }
+
   auto gl_texture_service_id =
-      SharedImageRepresentationGLOzoneShared::SetupTexture(
-          image, std::move(pixmap), format);
+      SharedImageRepresentationGLOzoneShared::SetupTexture(image, target);
   if (!gl_texture_service_id.has_value()) {
     return nullptr;
   }
@@ -191,7 +212,7 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
 
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
       base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-          *gl_texture_service_id, GL_TEXTURE_2D, internal_format,
+          *gl_texture_service_id, target, internal_format,
           backing->size().width(), backing->size().height(),
           /*depth=*/1, /*border=*/0, gl_format, gl_type);
 

@@ -26,8 +26,10 @@ class SharedImageRepresentationGLOzoneShared {
   static void EndAccess(GLenum mode, SharedImageBackingOzone* ozone_backing);
   static absl::optional<GLuint> SetupTexture(
       scoped_refptr<gl::GLImageNativePixmap> image,
+      GLenum target);
+  static scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      viz::ResourceFormat format);
+      gfx::BufferFormat buffer_format);
 };
 
 // Representation of an Ozone-backed SharedImage that can be accessed as a

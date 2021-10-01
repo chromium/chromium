@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -118,7 +119,10 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
     gfx::BufferFormat format,
     const gfx::Size& size,
     gfx::BufferUsage usage) {
-  DCHECK(device_);
+  if (!device_) {
+    LOG(ERROR) << "Device could not be created.";
+    return nullptr;
+  }
   DCHECK(base::Contains(supported_configs_,
                         gfx::BufferUsageAndFormat(usage, format)));
 
