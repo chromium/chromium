@@ -280,8 +280,14 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
+#if defined(OS_LINUX)
+// Flaky: https://crbug.com/1186169.
+#define MAYBE_Logging_LostFocus DISABLED_Logging_LostFocus
+#else
+#define MAYBE_Logging_LostFocus Logging_LostFocus
+#endif
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_LostFocus) {
+                       MAYBE_Logging_LostFocus) {
   base::HistogramTester histogram_tester;
   ShowBubbleAndVerify();
 
