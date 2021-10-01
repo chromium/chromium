@@ -126,6 +126,8 @@ class GEOMETRY_EXPORT Rect {
   // yourself. This safely handles cases where the width/height would overflow.
   void SetByBounds(int left, int top, int right, int bottom);
 
+  // Shrink the rectangle by |inset| on all sides.
+  void Inset(int inset) { Inset(inset, inset); }
   // Shrink the rectangle by a horizontal and vertical distance on all sides.
   void Inset(int horizontal, int vertical) {
     Inset(horizontal, vertical, horizontal, vertical);
@@ -136,6 +138,13 @@ class GEOMETRY_EXPORT Rect {
 
   // Shrink the rectangle by the specified amount on each side.
   void Inset(int left, int top, int right, int bottom);
+
+  // Expand the rectangle by the specified amount on each side.
+  void Outset(int outset) { Inset(-outset); }
+  void Outset(int horizontal, int vertical) { Inset(-horizontal, -vertical); }
+  void Outset(int left, int top, int right, int bottom) {
+    Inset(-left, -top, -right, -bottom);
+  }
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(int horizontal, int vertical) {

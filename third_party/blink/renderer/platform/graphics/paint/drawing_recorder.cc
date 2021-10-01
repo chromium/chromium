@@ -15,7 +15,7 @@ namespace blink {
 DrawingRecorder::DrawingRecorder(GraphicsContext& context,
                                  const DisplayItemClient& display_item_client,
                                  DisplayItem::Type display_item_type,
-                                 const IntRect& visual_rect)
+                                 const gfx::Rect& visual_rect)
     : context_(context),
       client_(display_item_client),
       type_(display_item_type),

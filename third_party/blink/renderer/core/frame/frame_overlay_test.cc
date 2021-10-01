@@ -159,7 +159,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
         ElementsAre(IsPaintChunk(
             0, 1,
             PaintChunk::Id(frame_overlay->Id(), DisplayItem::kFrameOverlay),
-            state, nullptr, IntRect(0, 0, 800, 600))));
+            state, nullptr, gfx::Rect(0, 0, 800, 600))));
   };
 
   PaintController paint_controller(PaintController::kTransient);

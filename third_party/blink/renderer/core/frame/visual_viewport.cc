@@ -221,8 +221,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
 
   {
     ScrollPaintPropertyNode::State state;
-    state.container_rect = IntRect(IntPoint(), size_);
-    state.contents_size = ContentsSize();
+    state.container_rect = gfx::Rect(IntRect(IntPoint(), size_));
+    state.contents_size = gfx::Size(ContentsSize());
 
     state.user_scrollable_horizontal =
         UserInputScrollable(kHorizontalScrollbar);
@@ -268,7 +268,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   {
     ScrollOffset scroll_position = GetScrollOffset();
     TransformPaintPropertyNode::State state{
-        FloatSize(-scroll_position.Width(), -scroll_position.Height())};
+        gfx::Vector2dF(-scroll_position.Width(), -scroll_position.Height())};
     state.scroll = scroll_node_;
     state.direct_compositing_reasons = CompositingReason::kViewport;
     if (!scroll_translation_node_) {

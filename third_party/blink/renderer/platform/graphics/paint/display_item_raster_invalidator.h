@@ -35,24 +35,25 @@ class DisplayItemRasterInvalidator {
   static const auto kClientIsNew = RasterInvalidator::kClientIsNew;
 
   ALWAYS_INLINE void AddRasterInvalidation(DisplayItemClientId,
-                                           const IntRect&,
+                                           const gfx::Rect&,
                                            PaintInvalidationReason,
                                            RasterInvalidator::ClientIsOldOrNew);
   ALWAYS_INLINE DisplayItemIterator
   MatchNewDisplayItemInOldChunk(const DisplayItem& new_item,
                                 DisplayItemIterator& next_old_item_to_match);
-  ALWAYS_INLINE void GenerateRasterInvalidation(DisplayItemClientId,
-                                                const IntRect& old_visual_rect,
-                                                const IntRect& new_visual_rect,
-                                                PaintInvalidationReason);
+  ALWAYS_INLINE void GenerateRasterInvalidation(
+      DisplayItemClientId,
+      const gfx::Rect& old_visual_rect,
+      const gfx::Rect& new_visual_rect,
+      PaintInvalidationReason);
   ALWAYS_INLINE void GenerateIncrementalRasterInvalidation(
       DisplayItemClientId,
-      const IntRect& old_visual_rect,
-      const IntRect& new_visual_rect);
+      const gfx::Rect& old_visual_rect,
+      const gfx::Rect& new_visual_rect);
   ALWAYS_INLINE void GenerateFullRasterInvalidation(
       DisplayItemClientId,
-      const IntRect& old_visual_rect,
-      const IntRect& new_visual_rect,
+      const gfx::Rect& old_visual_rect,
+      const gfx::Rect& new_visual_rect,
       PaintInvalidationReason reason);
 
   RasterInvalidator& invalidator_;

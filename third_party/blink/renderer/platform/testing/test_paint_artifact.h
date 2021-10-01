@@ -91,9 +91,9 @@ class TestPaintArtifact {
 
   // Add display item in the chunk. Each display item will have a different
   // automatically created client.
-  TestPaintArtifact& RectDrawing(const IntRect& bounds, Color color);
+  TestPaintArtifact& RectDrawing(const gfx::Rect& bounds, Color color);
   TestPaintArtifact& ScrollHitTest(
-      const IntRect&,
+      const gfx::Rect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
@@ -101,22 +101,22 @@ class TestPaintArtifact {
 
   // Add display item with the specified client in the chunk.
   TestPaintArtifact& RectDrawing(DisplayItemClient&,
-                                 const IntRect& bounds,
+                                 const gfx::Rect& bounds,
                                  Color color);
   TestPaintArtifact& ScrollHitTest(
       DisplayItemClient&,
-      const IntRect&,
+      const gfx::Rect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
   // overwritten when the PaintArtifact is constructed if the chunk has any
   // display items. Bounds() sets both bounds and drawable_bounds, while
   // DrawableBounds() sets drawable_bounds only.
-  TestPaintArtifact& Bounds(const IntRect&);
-  TestPaintArtifact& DrawableBounds(const IntRect&);
+  TestPaintArtifact& Bounds(const gfx::Rect&);
+  TestPaintArtifact& DrawableBounds(const gfx::Rect&);
 
   TestPaintArtifact& SetRasterEffectOutset(RasterEffectOutset);
-  TestPaintArtifact& RectKnownToBeOpaque(const IntRect&);
+  TestPaintArtifact& RectKnownToBeOpaque(const gfx::Rect&);
   TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
   TestPaintArtifact& HasText();
   TestPaintArtifact& EffectivelyInvisible();

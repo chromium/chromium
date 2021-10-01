@@ -14,14 +14,14 @@ namespace blink {
 
 struct PLATFORM_EXPORT HitTestData {
   Vector<TouchActionRect> touch_action_rects;
-  Vector<IntRect> wheel_event_rects;
+  Vector<gfx::Rect> wheel_event_rects;
 
   // If scroll_translation is nullptr or in pre-CompositeAfterPaint, this marks
   // a region in which composited scroll is not allowed. In CompositeAfterPaint
   // when scroll_translation is not nullptr, this is the bounds of the scroll
   // container, and whether the region allows composited scrolling depends
   // whether the scroll_translation is composited.
-  IntRect scroll_hit_test_rect;
+  gfx::Rect scroll_hit_test_rect;
   scoped_refptr<const TransformPaintPropertyNode> scroll_translation;
 
   bool operator==(const HitTestData& rhs) const {

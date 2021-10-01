@@ -1068,10 +1068,10 @@ TEST_P(PaintLayerScrollableAreaTest, CompositedStickyDescendant) {
                                    mojom::blink::ScrollType::kUser);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(FloatSize(0, 50), sticky->FirstFragment()
-                                  .PaintProperties()
-                                  ->StickyTranslation()
-                                  ->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(0, 50), sticky->FirstFragment()
+                                       .PaintProperties()
+                                       ->StickyTranslation()
+                                       ->Translation2D());
 }
 
 TEST_P(PaintLayerScrollableAreaTest, StickyPositionUseCounter) {

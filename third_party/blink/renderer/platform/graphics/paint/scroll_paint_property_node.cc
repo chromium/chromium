@@ -32,10 +32,10 @@ const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
 
 std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
   auto json = ToJSONBase();
-  if (state_.container_rect != IntRect())
-    json->SetString("containerRect", state_.container_rect.ToString());
-  if (!state_.contents_size.IsZero())
-    json->SetString("contentsSize", state_.contents_size.ToString());
+  if (!state_.container_rect.IsEmpty())
+    json->SetString("containerRect", String(state_.container_rect.ToString()));
+  if (!state_.contents_size.IsEmpty())
+    json->SetString("contentsSize", String(state_.contents_size.ToString()));
   if (state_.user_scrollable_horizontal || state_.user_scrollable_vertical) {
     json->SetString(
         "userScrollable",

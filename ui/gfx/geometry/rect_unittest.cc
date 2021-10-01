@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/test/gfx_util.h"
@@ -1218,6 +1219,82 @@ TEST(RectTest, ScaleToEnclosingRectSafe) {
             min_rect);
   // Min rect scaled by min is an empty rect at (max, max)
   EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, kMinInt), max_rect);
+}
+
+TEST(RectTest, Inset) {
+  Rect r(10, 20, 30, 40);
+  r.Inset(0);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+  r.Inset(1);
+  EXPECT_EQ(Rect(11, 21, 28, 38), r);
+  r.Inset(-1);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+
+  r.Inset(1, 2);
+  EXPECT_EQ(Rect(11, 22, 28, 36), r);
+  r.Inset(-1, -2);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+
+  // The parameters are left, top, right, bottom.
+  r.Inset(1, 2, 3, 4);
+  EXPECT_EQ(Rect(11, 22, 26, 34), r);
+  r.Inset(-1, -2, -3, -4);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+
+  // Insets parameters are top, right, bottom, left.
+  r.Inset(Insets(1, 2, 3, 4));
+  EXPECT_EQ(Rect(12, 21, 24, 36), r);
+  r.Inset(Insets(-1, -2, -3, -4));
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+}
+
+TEST(RectTest, Outset) {
+  Rect r(10, 20, 30, 40);
+  r.Outset(0);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+  r.Outset(1);
+  EXPECT_EQ(Rect(9, 19, 32, 42), r);
+  r.Outset(-1);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+
+  r.Outset(1, 2);
+  EXPECT_EQ(Rect(9, 18, 32, 44), r);
+  r.Outset(-1, -2);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+
+  r.Outset(1, 2, 3, 4);
+  EXPECT_EQ(Rect(9, 18, 34, 46), r);
+  r.Outset(-1, -2, -3, -4);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+}
+
+TEST(RectTest, InsetOutsetClamped) {
+  Rect r(10, 20, 30, 40);
+  r.Inset(18);
+  EXPECT_EQ(Rect(28, 38, 0, 4), r);
+  r.Inset(-18);
+  EXPECT_EQ(Rect(10, 20, 36, 40), r);
+
+  r.Inset(15, 30);
+  EXPECT_EQ(Rect(25, 50, 6, 0), r);
+  r.Inset(-15, -30);
+  EXPECT_EQ(Rect(10, 20, 36, 60), r);
+
+  r.Inset(20, 30, 40, 50);
+  EXPECT_EQ(Rect(30, 50, 0, 0), r);
+  r.Inset(-20, -30, -40, -50);
+  EXPECT_EQ(Rect(10, 20, 60, 80), r);
+
+  constexpr int kMaxInt = std::numeric_limits<int>::max();
+  constexpr int kMinInt = std::numeric_limits<int>::min();
+  r.Outset(kMaxInt);
+  EXPECT_EQ(Rect(10 - kMaxInt, 20 - kMaxInt, kMaxInt, kMaxInt), r);
+  r.Outset(0, kMaxInt);
+  EXPECT_EQ(Rect(10 - kMaxInt, kMinInt, kMaxInt, kMaxInt), r);
+  r.Outset(0, kMaxInt, kMaxInt, 0);
+  EXPECT_EQ(Rect(10 - kMaxInt, kMinInt, kMaxInt, kMaxInt), r);
+  r.Outset(kMaxInt, 0, kMaxInt, 0);
+  EXPECT_EQ(Rect(kMinInt, kMinInt, kMaxInt, kMaxInt), r);
 }
 
 }  // namespace gfx

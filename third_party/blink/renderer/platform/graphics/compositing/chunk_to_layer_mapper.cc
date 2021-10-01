@@ -7,15 +7,16 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
 ChunkToLayerMapper::ChunkToLayerMapper(const PropertyTreeState& layer_state,
-                                       const FloatPoint& layer_offset)
+                                       const gfx::Vector2dF& layer_offset)
     : layer_state_(layer_state),
       layer_offset_(layer_offset),
       chunk_state_(layer_state_),
-      translation_2d_or_matrix_(ToFloatSize(-layer_offset)) {}
+      translation_2d_or_matrix_(-layer_offset) {}
 
 void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
   raster_effect_outset_ = chunk.raster_effect_outset;
@@ -28,7 +29,7 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
   if (new_chunk_state == layer_state_) {
     has_filter_that_moves_pixels_ = false;
     translation_2d_or_matrix_ =
-        GeometryMapper::Translation2DOrMatrix(ToFloatSize(-layer_offset_));
+        GeometryMapper::Translation2DOrMatrix(-layer_offset_);
     clip_rect_ = FloatClipRect();
     chunk_state_ = new_chunk_state;
     return;
@@ -37,8 +38,8 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
   if (&new_chunk_state.Transform() != &chunk_state_.Transform()) {
     translation_2d_or_matrix_ = GeometryMapper::SourceToDestinationProjection(
         new_chunk_state.Transform(), layer_state_.Transform());
-    translation_2d_or_matrix_.PostTranslate(-layer_offset_.X(),
-                                            -layer_offset_.Y());
+    translation_2d_or_matrix_.PostTranslate(-layer_offset_.x(),
+                                            -layer_offset_.y());
   }
 
   bool new_has_filter_that_moves_pixels = has_filter_that_moves_pixels_;
@@ -61,37 +62,37 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
     clip_rect_ =
         GeometryMapper::LocalToAncestorClipRect(new_chunk_state, layer_state_);
     if (!clip_rect_.IsInfinite())
-      clip_rect_.MoveBy(-layer_offset_);
+      clip_rect_.MoveBy(FloatPoint(-layer_offset_));
   }
 
   chunk_state_ = new_chunk_state;
   has_filter_that_moves_pixels_ = new_has_filter_that_moves_pixels;
 }
 
-IntRect ChunkToLayerMapper::MapVisualRect(const IntRect& rect) const {
+gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
   if (rect.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
   if (UNLIKELY(has_filter_that_moves_pixels_))
     return MapUsingGeometryMapper(rect);
 
-  FloatRect mapped_rect(rect);
+  gfx::RectF mapped_rect(rect);
   translation_2d_or_matrix_.MapRect(mapped_rect);
   if (!mapped_rect.IsEmpty() && !clip_rect_.IsInfinite())
     mapped_rect.Intersect(clip_rect_.Rect());
 
-  IntRect result;
+  gfx::Rect result;
   if (!mapped_rect.IsEmpty()) {
     InflateForRasterEffectOutset(mapped_rect);
-    result = EnclosingIntRect(mapped_rect);
+    result = gfx::ToEnclosingRect(mapped_rect);
   }
 #if DCHECK_IS_ON()
   auto slow_result = MapUsingGeometryMapper(rect);
   if (result != slow_result) {
     // Not a DCHECK because this may result from a floating point error.
     LOG(WARNING) << "ChunkToLayerMapper::MapVisualRect: Different results from"
-                 << "fast path (" << result << ") and slow path ("
-                 << slow_result << ")";
+                 << "fast path (" << result.ToString() << ") and slow path ("
+                 << slow_result.ToString() << ")";
   }
 #endif
   return result;
@@ -100,23 +101,25 @@ IntRect ChunkToLayerMapper::MapVisualRect(const IntRect& rect) const {
 // This is called when the fast path doesn't apply if there is any filter that
 // moves pixels. GeometryMapper::LocalToAncestorVisualRect() will apply the
 // visual effects of the filters, though slowly.
-IntRect ChunkToLayerMapper::MapUsingGeometryMapper(const IntRect& rect) const {
-  FloatClipRect visual_rect((FloatRect(rect)));
+gfx::Rect ChunkToLayerMapper::MapUsingGeometryMapper(
+    const gfx::Rect& rect) const {
+  FloatClipRect visual_rect((FloatRect(IntRect(rect))));
   GeometryMapper::LocalToAncestorVisualRect(chunk_state_, layer_state_,
                                             visual_rect);
   if (visual_rect.Rect().IsEmpty())
     return IntRect();
 
-  visual_rect.Rect().MoveBy(-layer_offset_);
-  InflateForRasterEffectOutset(visual_rect.Rect());
-  return EnclosingIntRect(visual_rect.Rect());
+  gfx::RectF result(visual_rect.Rect());
+  result.Offset(-layer_offset_);
+  InflateForRasterEffectOutset(result);
+  return gfx::ToEnclosingRect(result);
 }
 
-void ChunkToLayerMapper::InflateForRasterEffectOutset(FloatRect& rect) const {
+void ChunkToLayerMapper::InflateForRasterEffectOutset(gfx::RectF& rect) const {
   if (raster_effect_outset_ == RasterEffectOutset::kHalfPixel)
-    rect.Inflate(0.5);
+    rect.Outset(0.5);
   else if (raster_effect_outset_ == RasterEffectOutset::kWholePixel)
-    rect.Inflate(1);
+    rect.Outset(1);
 }
 
 }  // namespace blink

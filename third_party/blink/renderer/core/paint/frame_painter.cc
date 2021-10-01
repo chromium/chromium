@@ -25,7 +25,7 @@ namespace {
 
 FloatQuad GetQuadForTraceEvent(const LocalFrameView& frame_view,
                                const CullRect& cull_rect) {
-  FloatQuad quad(FloatRect(cull_rect.Rect()));
+  FloatQuad quad(FloatRect(IntRect(cull_rect.Rect())));
   if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
     quad.Move(FloatSize(owner->PhysicalContentBoxOffset()));
     owner->LocalToAbsoluteQuad(
@@ -47,8 +47,8 @@ void FramePainter::Paint(GraphicsContext& context,
   GetFrameView().NotifyPageThatContentAreaWillPaint();
 
   CullRect document_cull_rect(
-      Intersection(cull_rect.Rect(), GetFrameView().FrameRect()));
-  document_cull_rect.MoveBy(-GetFrameView().Location());
+      IntersectRects(cull_rect.Rect(), GetFrameView().FrameRect()));
+  document_cull_rect.Move(gfx::Vector2d(-GetFrameView().Location()));
 
   if (document_cull_rect.Rect().IsEmpty())
     return;

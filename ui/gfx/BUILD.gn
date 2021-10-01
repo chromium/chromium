@@ -798,6 +798,7 @@ test("gfx_unittests") {
       "geometry/point_unittest.cc",
       "geometry/quad_unittest.cc",
       "geometry/quaternion_unittest.cc",
+      "geometry/rect_f_unittest.cc",
       "geometry/rect_unittest.cc",
       "geometry/resize_utils_unittest.cc",
       "geometry/rounded_corners_f_unittest.cc",

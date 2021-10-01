@@ -8,6 +8,9 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -26,12 +29,12 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
 }
 
 // When possible, provides a clip rect that limits the visibility.
-absl::optional<FloatRect> VisibilityLimit(const PropertyTreeState& state) {
+absl::optional<gfx::RectF> VisibilityLimit(const PropertyTreeState& state) {
   if (&state.Clip().LocalTransformSpace() == &state.Transform())
     return state.Clip().PaintClipRect().Rect();
   if (const auto* scroll = state.Transform().ScrollNode()) {
-    return FloatRect(
-        IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize()));
+    return gfx::RectF(
+        gfx::Rect(scroll->ContainerRect().origin(), scroll->ContentsSize()));
   }
   return absl::nullopt;
 }
@@ -54,16 +57,16 @@ bool IsCompositedScrollbar(const DisplayItem& item) {
 }
 
 // Snap |bounds| if within floating-point numeric limits of an integral rect.
-void PreserveNearIntegralBounds(FloatRect& bounds) {
-  if (std::abs(std::round(bounds.X()) - bounds.X()) <=
+void PreserveNearIntegralBounds(gfx::RectF& bounds) {
+  if (std::abs(std::round(bounds.x()) - bounds.x()) <=
           std::numeric_limits<float>::epsilon() &&
-      std::abs(std::round(bounds.Y()) - bounds.Y()) <=
+      std::abs(std::round(bounds.y()) - bounds.y()) <=
           std::numeric_limits<float>::epsilon() &&
-      std::abs(std::round(bounds.MaxX()) - bounds.MaxX()) <=
+      std::abs(std::round(bounds.right()) - bounds.right()) <=
           std::numeric_limits<float>::epsilon() &&
-      std::abs(std::round(bounds.MaxY()) - bounds.MaxY()) <=
+      std::abs(std::round(bounds.bottom()) - bounds.bottom()) <=
           std::numeric_limits<float>::epsilon()) {
-    bounds = FloatRect(RoundedIntRect(bounds));
+    bounds = gfx::RectF(gfx::ToRoundedRect(bounds));
   }
 }
 
@@ -90,7 +93,7 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
-  if (const absl::optional<FloatRect>& visibility_limit =
+  if (const absl::optional<gfx::RectF>& visibility_limit =
           VisibilityLimit(property_tree_state_)) {
     bounds_.Intersect(*visibility_limit);
   }
@@ -117,22 +120,22 @@ PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
   DCHECK(!graphics_layer_->ShouldCreateLayersAfterPaint());
 }
 
-FloatPoint PendingLayer::LayerOffset() const {
+gfx::Vector2dF PendingLayer::LayerOffset() const {
   // The solid color layer optimization is important for performance. Snapping
   // the location could make the solid color drawings not cover the entire
   // cc::Layer which would make the layer non-solid-color.
   if (IsSolidColor())
-    return bounds_.Location();
+    return bounds_.OffsetFromOrigin();
   // Otherwise return integral offset to reduce chance of additional blurriness.
-  return FloatPoint(FlooredIntPoint(bounds_.Location()));
+  return gfx::Vector2dF(gfx::ToFlooredVector2d(bounds_.OffsetFromOrigin()));
 }
 
-IntSize PendingLayer::LayerBounds() const {
+gfx::Size PendingLayer::LayerBounds() const {
   // Because solid color layers do not adjust their location (see:
   // |PendingLayer::LayerOffset()|), we only expand their size here.
   if (IsSolidColor())
-    return ExpandedIntSize(bounds_.Size());
-  return EnclosingIntRect(bounds_).Size();
+    return gfx::ToCeiledSize(bounds_.size());
+  return gfx::ToEnclosingRect(bounds_).size();
 }
 
 FloatRect PendingLayer::MapRectKnownToBeOpaque(
@@ -153,7 +156,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
                    RectAsJSONArray(rect_known_to_be_opaque_));
   result->SetObject("property_tree_state", property_tree_state_.ToJSON());
   result->SetArray("offset_of_decomposited_transforms",
-                   PointAsJSONArray(offset_of_decomposited_transforms_));
+                   VectorAsJSONArray(offset_of_decomposited_transforms_));
   std::unique_ptr<JSONArray> json_chunks = std::make_unique<JSONArray>();
   for (auto it = chunks_.begin(); it != chunks_.end(); ++it) {
     StringBuilder sb;
@@ -231,7 +234,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (!merged_state)
     return false;
 
-  const absl::optional<FloatRect>& merged_visibility_limit =
+  const absl::optional<gfx::RectF>& merged_visibility_limit =
       VisibilityLimit(*merged_state);
 
   // If the current bounds and known-to-be-opaque area already cover the entire
@@ -257,13 +260,13 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
                                             *merged_state, new_home_bounds);
   if (merged_visibility_limit)
-    new_home_bounds.Rect().Intersect(*merged_visibility_limit);
+    new_home_bounds.Rect().Intersect(FloatRect(*merged_visibility_limit));
 
   FloatClipRect new_guest_bounds(guest.bounds_);
   GeometryMapper::LocalToAncestorVisualRect(guest_state, *merged_state,
                                             new_guest_bounds);
   if (merged_visibility_limit)
-    new_guest_bounds.Rect().Intersect(*merged_visibility_limit);
+    new_guest_bounds.Rect().Intersect(FloatRect(*merged_visibility_limit));
 
   FloatRect merged_bounds =
       UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
@@ -456,9 +459,9 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
       transform = &transform->Parent()->Unalias();
     }
     pending_layer.property_tree_state_.SetTransform(*transform);
-    pending_layer.bounds_.MoveBy(
+    pending_layer.bounds_.Offset(
         pending_layer.OffsetOfDecompositedTransforms());
-    pending_layer.rect_known_to_be_opaque_.MoveBy(
+    pending_layer.rect_known_to_be_opaque_.Offset(
         pending_layer.OffsetOfDecompositedTransforms());
   }
 }

@@ -205,6 +205,7 @@ struct CORE_EXPORT PhysicalRect {
 
   explicit PhysicalRect(const IntRect& r)
       : offset(r.Location()), size(r.Size()) {}
+  explicit PhysicalRect(const gfx::Rect& r) : PhysicalRect(IntRect(r)) {}
 
   static IntRect InfiniteIntRect() { return LayoutRect::InfiniteIntRect(); }
 

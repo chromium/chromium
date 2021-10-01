@@ -8,11 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/display_item_list.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class DisplayItemList;
@@ -21,21 +21,20 @@ class Layer;
 
 namespace blink {
 
-class FloatPoint;
 class PaintChunkSubset;
 class PropertyTreeState;
 class RasterInvalidationTracking;
 
 struct RasterUnderInvalidationCheckingParams {
   RasterUnderInvalidationCheckingParams(RasterInvalidationTracking& tracking,
-                                        const IntRect& interest_rect,
+                                        const gfx::Rect& interest_rect,
                                         const String& debug_name)
       : tracking(tracking),
         interest_rect(interest_rect),
         debug_name(debug_name) {}
 
   RasterInvalidationTracking& tracking;
-  IntRect interest_rect;
+  gfx::Rect interest_rect;
   String debug_name;
 };
 
@@ -57,7 +56,7 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
   // of layer_state.Transform().
   static void ConvertInto(const PaintChunkSubset&,
                           const PropertyTreeState& layer_state,
-                          const FloatPoint& layer_offset,
+                          const gfx::Vector2dF& layer_offset,
                           cc::DisplayItemList&);
 
   // Similar to ConvertInto(), but returns a finalized new list instead of
@@ -65,7 +64,7 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
   static scoped_refptr<cc::DisplayItemList> Convert(
       const PaintChunkSubset&,
       const PropertyTreeState& layer_state,
-      const FloatPoint& layer_offset,
+      const gfx::Vector2dF& layer_offset,
       cc::DisplayItemList::UsageHint,
       RasterUnderInvalidationCheckingParams* = nullptr);
 

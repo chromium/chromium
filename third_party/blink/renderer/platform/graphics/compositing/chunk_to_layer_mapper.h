@@ -23,14 +23,14 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
 
  public:
   ChunkToLayerMapper(const PropertyTreeState& layer_state,
-                     const FloatPoint& layer_offset);
+                     const gfx::Vector2dF& layer_offset);
 
   // This class can map from multiple chunks. Before mapping from a chunk, this
   // method must be called to prepare for the chunk.
   void SwitchToChunk(const PaintChunk&);
 
   // Maps a visual rectangle in the current chunk space into the layer space.
-  IntRect MapVisualRect(const IntRect&) const;
+  gfx::Rect MapVisualRect(const gfx::Rect&) const;
 
   // Returns the combined transform from the current chunk to the layer.
   SkMatrix Transform() const { return translation_2d_or_matrix_.ToSkMatrix(); }
@@ -43,11 +43,11 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
  private:
   friend class ChunkToLayerMapperTest;
 
-  IntRect MapUsingGeometryMapper(const IntRect&) const;
-  void InflateForRasterEffectOutset(FloatRect&) const;
+  gfx::Rect MapUsingGeometryMapper(const gfx::Rect&) const;
+  void InflateForRasterEffectOutset(gfx::RectF&) const;
 
   const PropertyTreeState layer_state_;
-  const FloatPoint layer_offset_;
+  const gfx::Vector2dF layer_offset_;
 
   // The following fields are chunk-specific which are updated in
   // SwitchToChunk().

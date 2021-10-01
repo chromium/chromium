@@ -13,30 +13,33 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/skia_util.h"
 
 namespace blink {
 
 static SkBitmap RecordToBitmap(sk_sp<const PaintRecord> record,
-                               const IntRect& bounds) {
+                               const gfx::Rect& bounds) {
   SkBitmap bitmap;
   bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(bounds.Width(), bounds.Height()));
+      SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()));
   SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SK_ColorTRANSPARENT);
-  canvas.translate(-bounds.X(), -bounds.Y());
+  canvas.translate(-bounds.x(), -bounds.y());
   canvas.drawPicture(std::move(record));
   return bitmap;
 }
 
 static bool BitmapsEqual(sk_sp<const PaintRecord> record1,
                          sk_sp<const PaintRecord> record2,
-                         const IntRect& bounds) {
+                         const gfx::Rect& bounds) {
   SkBitmap bitmap1 = RecordToBitmap(record1, bounds);
   SkBitmap bitmap2 = RecordToBitmap(record2, bounds);
   int mismatch_count = 0;
   constexpr int kMaxMismatches = 10;
-  for (int y = 0; y < bounds.Height(); ++y) {
-    for (int x = 0; x < bounds.Width(); ++x) {
+  for (int y = 0; y < bounds.height(); ++y) {
+    for (int x = 0; x < bounds.width(); ++x) {
       SkColor pixel1 = bitmap1.getColor(x, y);
       SkColor pixel2 = bitmap2.getColor(x, y);
       if (pixel1 != pixel2) {
@@ -74,7 +77,7 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
   // Sometimes the client may produce different records for the same visual
   // result, which should be treated as equal.
   // Limit the bounds to prevent OOM.
-  bounds.Intersect(IntRect(bounds.X(), bounds.Y(), 6000, 6000));
+  bounds.Intersect(gfx::Rect(bounds.x(), bounds.y(), 6000, 6000));
   return BitmapsEqual(std::move(record), std::move(other_record), bounds);
 }
 
@@ -119,8 +122,8 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
   return SK_ColorTRANSPARENT;
 }
 
-IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
-  IntRect rect = CalculateRectKnownToBeOpaqueForRecord(record_.get());
+gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
+  gfx::Rect rect = CalculateRectKnownToBeOpaqueForRecord(record_.get());
   if (rect.IsEmpty()) {
     SetOpaqueness(Opaqueness::kNone);
   } else if (rect == VisualRect()) {
@@ -135,17 +138,17 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
 // This is not a PaintRecord method because it's not a general opaqueness
 // detection algorithm (which might be more complex and slower), but works well
 // and fast for most blink painted results.
-IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
+gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
     const PaintRecord* record) const {
   if (!record)
-    return IntRect();
+    return gfx::Rect();
 
   // This limit keeps the algorithm fast, while allowing check of enough paint
   // operations for most blink painted results.
   constexpr wtf_size_t kOpCountLimit = 8;
-  IntRect opaque_rect;
+  gfx::Rect opaque_rect;
   wtf_size_t op_count = 0;
-  IntRect clip_rect = VisualRect();
+  gfx::Rect clip_rect = VisualRect();
   for (cc::PaintOpBuffer::Iterator it(record); it; ++it) {
     if (++op_count > kOpCountLimit)
       break;
@@ -156,15 +159,15 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
     if (op->GetType() == cc::PaintOpType::Save)
       continue;
     if (op->GetType() == cc::PaintOpType::ClipRect) {
-      clip_rect.Intersect(
-          EnclosedIntRect(static_cast<const cc::ClipRectOp*>(op)->rect));
+      clip_rect.Intersect(gfx::ToEnclosedRect(
+          gfx::SkRectToRectF(static_cast<const cc::ClipRectOp*>(op)->rect)));
       continue;
     }
 
     if (!op->IsDrawOp())
       break;
 
-    IntRect op_opaque_rect;
+    gfx::Rect op_opaque_rect;
     if (op->GetType() == cc::PaintOpType::DrawRecord) {
       op_opaque_rect = CalculateRectKnownToBeOpaqueForRecord(
           static_cast<const cc::DrawRecordOp*>(op)->record.get());
@@ -184,8 +187,8 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
 
       switch (op->GetType()) {
         case cc::PaintOpType::DrawRect:
-          op_opaque_rect =
-              EnclosedIntRect(static_cast<const cc::DrawRectOp*>(op)->rect);
+          op_opaque_rect = gfx::ToEnclosedRect(
+              gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(op)->rect));
           break;
         case cc::PaintOpType::DrawRRect: {
           const SkRRect& rrect = static_cast<const cc::DrawRRectOp*>(op)->rrect;
@@ -197,26 +200,25 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           // When a rect has rounded corner with radius r, then the largest rect
           // that can be inscribed inside it has an inset of |((2 - sqrt(2)) /
           // 2) * radius|.
-          FloatRect contained = rrect.rect();
-          contained.Expand(FloatRectOutsets(
-              -std::max(top_left.y(), top_right.y()) * 0.3f,
-              -std::max(top_right.x(), bottom_right.x()) * 0.3f,
-              -std::max(bottom_left.y(), bottom_right.y()) * 0.3f,
-              -std::max(top_left.x(), bottom_left.x()) * 0.3f));
-          op_opaque_rect = EnclosedIntRect(contained);
+          gfx::RectF contained = gfx::SkRectToRectF(rrect.rect());
+          contained.Inset(std::max(top_left.y(), top_right.y()) * 0.3f,
+                          std::max(top_right.x(), bottom_right.x()) * 0.3f,
+                          std::max(bottom_left.y(), bottom_right.y()) * 0.3f,
+                          std::max(top_left.x(), bottom_left.x()) * 0.3f);
+          op_opaque_rect = ToEnclosedRect(contained);
           break;
         }
         case cc::PaintOpType::DrawIRect:
           op_opaque_rect =
-              IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
+              gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
           break;
         case cc::PaintOpType::DrawImage: {
           const auto* draw_image_op = static_cast<const cc::DrawImageOp*>(op);
           const auto& image = draw_image_op->image;
           if (!image.IsOpaque())
             continue;
-          op_opaque_rect = IntRect(draw_image_op->left, draw_image_op->top,
-                                   image.width(), image.height());
+          op_opaque_rect = gfx::Rect(draw_image_op->left, draw_image_op->top,
+                                     image.width(), image.height());
           break;
         }
         case cc::PaintOpType::DrawImageRect: {
@@ -227,7 +229,8 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
                      .contains(draw_image_rect_op->src));
           if (!image.IsOpaque())
             continue;
-          op_opaque_rect = EnclosedIntRect(draw_image_rect_op->dst);
+          op_opaque_rect =
+              gfx::ToEnclosedRect(gfx::SkRectToRectF(draw_image_rect_op->dst));
           break;
         }
         default:
@@ -235,7 +238,8 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
       }
     }
 
-    opaque_rect = MaximumCoveredRect(opaque_rect, op_opaque_rect);
+    opaque_rect =
+        MaximumCoveredRect(IntRect(opaque_rect), IntRect(op_opaque_rect));
     opaque_rect.Intersect(clip_rect);
     if (opaque_rect == VisualRect())
       break;
@@ -244,8 +248,8 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
   return opaque_rect;
 }
 
-IntRect DrawingDisplayItem::TightenVisualRect(
-    const IntRect& visual_rect,
+gfx::Rect DrawingDisplayItem::TightenVisualRect(
+    const gfx::Rect& visual_rect,
     sk_sp<const PaintRecord>& record) {
   DCHECK(ShouldTightenVisualRect(record));
 
@@ -263,18 +267,19 @@ IntRect DrawingDisplayItem::TightenVisualRect(
   // TODO(pdr): Consider using |PaintOp::GetBounds| which is a more complete
   // implementation of the logic below.
 
-  IntRect item_rect;
+  gfx::Rect item_rect;
   switch (op->GetType()) {
     case cc::PaintOpType::DrawRect:
-      item_rect =
-          EnclosingIntRect(static_cast<const cc::DrawRectOp*>(op)->rect);
+      item_rect = gfx::ToEnclosingRect(
+          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(op)->rect));
       break;
     case cc::PaintOpType::DrawIRect:
-      item_rect = IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
+      item_rect =
+          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
       break;
     case cc::PaintOpType::DrawRRect:
-      item_rect = EnclosingIntRect(
-          static_cast<const cc::DrawRRectOp*>(op)->rrect.rect());
+      item_rect = gfx::ToEnclosingRect(gfx::SkRectToRectF(
+          static_cast<const cc::DrawRRectOp*>(op)->rrect.rect()));
       break;
     // TODO(pdr): Support image PaintOpTypes such as DrawImage{Rect}.
     // TODO(pdr): Consider checking PaintOpType::DrawTextBlob too.
@@ -308,22 +313,22 @@ bool DrawingDisplayItem::IsSolidColor() const {
     return false;
   }
 
-  FloatRect solid_color_rect;
+  gfx::RectF solid_color_rect;
   switch (op->GetType()) {
     case cc::PaintOpType::DrawRect:
       solid_color_rect =
-          FloatRect(static_cast<const cc::DrawRectOp*>(op)->rect);
+          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(op)->rect);
       break;
     case cc::PaintOpType::DrawIRect:
-      solid_color_rect =
-          FloatRect(IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect));
+      solid_color_rect = gfx::RectF(
+          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp*>(op)->rect));
       break;
     default:
       return false;
   }
 
   // The solid color must fully cover the visual rect.
-  return solid_color_rect.Contains(VisualRect());
+  return solid_color_rect.Contains(gfx::RectF(VisualRect()));
 }
 
 }  // namespace blink

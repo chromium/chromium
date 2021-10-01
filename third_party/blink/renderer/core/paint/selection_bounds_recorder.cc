@@ -64,33 +64,33 @@ BoundEdges GetBoundEdges(WritingMode writing_mode, bool is_ltr) {
 
 // Set the given bound's edge_start and edge_end, based on the provided
 // selection rect and edge.
-void SetBoundEdge(IntRect selection_rect,
+void SetBoundEdge(gfx::Rect selection_rect,
                   RectEdge edge,
                   PaintedSelectionBound& bound) {
   switch (edge) {
     case RectEdge::kTopLeftToBottomLeft:
-      bound.edge_start = selection_rect.MinXMinYCorner();
-      bound.edge_end = selection_rect.MinXMaxYCorner();
+      bound.edge_start = selection_rect.origin();
+      bound.edge_end = selection_rect.bottom_left();
       return;
     case RectEdge::kTopRightToBottomRight:
-      bound.edge_start = selection_rect.MaxXMinYCorner();
-      bound.edge_end = selection_rect.MaxXMaxYCorner();
+      bound.edge_start = selection_rect.top_right();
+      bound.edge_end = selection_rect.bottom_right();
       return;
     case RectEdge::kTopLeftToTopRight:
-      bound.edge_start = selection_rect.MinXMinYCorner();
-      bound.edge_end = selection_rect.MaxXMinYCorner();
+      bound.edge_start = selection_rect.origin();
+      bound.edge_end = selection_rect.top_right();
       return;
     case RectEdge::kBottomLeftToBottomRight:
-      bound.edge_start = selection_rect.MinXMaxYCorner();
-      bound.edge_end = selection_rect.MaxXMaxYCorner();
+      bound.edge_start = selection_rect.bottom_left();
+      bound.edge_end = selection_rect.bottom_right();
       return;
     case RectEdge::kTopRightToTopLeft:
-      bound.edge_start = selection_rect.MaxXMinYCorner();
-      bound.edge_end = selection_rect.MinXMinYCorner();
+      bound.edge_start = selection_rect.top_right();
+      bound.edge_end = selection_rect.origin();
       return;
     case RectEdge::kBottomRightToBottomLeft:
-      bound.edge_start = selection_rect.MaxXMaxYCorner();
-      bound.edge_end = selection_rect.MinXMaxYCorner();
+      bound.edge_start = selection_rect.bottom_right();
+      bound.edge_end = selection_rect.bottom_left();
       return;
     default:
       NOTREACHED();
@@ -130,7 +130,7 @@ SelectionBoundsRecorder::SelectionBoundsRecorder(
 SelectionBoundsRecorder::~SelectionBoundsRecorder() {
   absl::optional<PaintedSelectionBound> start;
   absl::optional<PaintedSelectionBound> end;
-  auto selection_rect = PixelSnappedIntRect(selection_rect_);
+  gfx::Rect selection_rect = PixelSnappedIntRect(selection_rect_);
   const bool is_ltr = IsLtr(text_direction_);
   BoundEdges edges = GetBoundEdges(writing_mode_, is_ltr);
   if (state_ == SelectionState::kStart ||

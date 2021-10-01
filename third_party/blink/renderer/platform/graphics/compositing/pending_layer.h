@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -44,12 +46,12 @@ class PLATFORM_EXPORT PendingLayer {
   explicit PendingLayer(const PreCompositedLayerInfo&);
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
-  FloatPoint LayerOffset() const;
-  IntSize LayerBounds() const;
+  gfx::Vector2dF LayerOffset() const;
+  gfx::Size LayerBounds() const;
 
-  const FloatRect& BoundsForTesting() const { return bounds_; }
+  const gfx::RectF& BoundsForTesting() const { return bounds_; }
 
-  const FloatRect& RectKnownToBeOpaque() const {
+  const gfx::RectF& RectKnownToBeOpaque() const {
     return rect_known_to_be_opaque_;
   }
   bool TextKnownToBeOnOpaqueBackground() const {
@@ -59,7 +61,7 @@ class PLATFORM_EXPORT PendingLayer {
   const PropertyTreeState& GetPropertyTreeState() const {
     return property_tree_state_;
   }
-  const FloatPoint& OffsetOfDecompositedTransforms() const {
+  const gfx::Vector2dF& OffsetOfDecompositedTransforms() const {
     return offset_of_decomposited_transforms_;
   }
   PaintPropertyChangeType ChangeOfDecompositedTransforms() const {
@@ -139,13 +141,13 @@ class PLATFORM_EXPORT PendingLayer {
   bool IsSolidColor() const;
 
   // The rects are in the space of property_tree_state.
-  FloatRect bounds_;
-  FloatRect rect_known_to_be_opaque_;
+  gfx::RectF bounds_;
+  gfx::RectF rect_known_to_be_opaque_;
   bool has_text_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   PaintChunkSubset chunks_;
   PropertyTreeState property_tree_state_;
-  FloatPoint offset_of_decomposited_transforms_;
+  gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
   const GraphicsLayer* graphics_layer_ = nullptr;

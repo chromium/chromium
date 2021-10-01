@@ -19,12 +19,12 @@ ForeignLayerDisplayItem::ForeignLayerDisplayItem(
     DisplayItemClientId client_id,
     Type type,
     scoped_refptr<cc::Layer> layer,
-    const IntPoint& offset,
+    const gfx::Point& origin,
     RasterEffectOutset outset,
     PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client_id,
                   type,
-                  IntRect(offset, IntSize(layer->bounds())),
+                  gfx::Rect(origin, layer->bounds()),
                   outset,
                   paint_invalidation_reason),
       layer_(std::move(layer)) {
@@ -47,7 +47,7 @@ void RecordForeignLayer(GraphicsContext& context,
                         const DisplayItemClient& client,
                         DisplayItem::Type type,
                         scoped_refptr<cc::Layer> layer,
-                        const IntPoint& offset,
+                        const gfx::Point& origin,
                         const PropertyTreeStateOrAlias* properties) {
   PaintController& paint_controller = context.GetPaintController();
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -66,7 +66,7 @@ void RecordForeignLayer(GraphicsContext& context,
     paint_controller.UpdateCurrentPaintChunkProperties(*properties);
   }
   paint_controller.CreateAndAppend<ForeignLayerDisplayItem>(
-      client, type, std::move(layer), offset,
+      client, type, std::move(layer), origin,
       client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
   paint_controller.RecordDebugInfo(client);

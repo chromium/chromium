@@ -70,7 +70,7 @@ void PaintController::EnsureChunk() {
 }
 
 void PaintController::RecordHitTestData(const DisplayItemClient& client,
-                                        const IntRect& rect,
+                                        const gfx::Rect& rect,
                                         TouchAction touch_action,
                                         bool blocking_wheel) {
   if (rect.IsEmpty())
@@ -98,7 +98,7 @@ void PaintController::RecordScrollHitTestData(
     const DisplayItemClient& client,
     DisplayItem::Type type,
     const TransformPaintPropertyNode* scroll_translation,
-    const IntRect& rect) {
+    const gfx::Rect& rect) {
   PaintChunk::Id id(client.Id(), type, current_fragment_);
   CheckNewChunkId(id);
   ValidateNewChunkClient(client);

@@ -49,7 +49,7 @@ bool EffectPaintPropertyNodeOrAlias::Changed(
   return false;
 }
 
-FloatRect EffectPaintPropertyNode::MapRect(const FloatRect& rect) const {
+gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
   if (state_.filter.IsEmpty())
     return rect;
   return state_.filter.MapRect(rect);

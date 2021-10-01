@@ -30,7 +30,7 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
   ForeignLayerDisplayItem(DisplayItemClientId client_id,
                           Type,
                           scoped_refptr<cc::Layer>,
-                          const IntPoint& offset,
+                          const gfx::Point& origin,
                           RasterEffectOutset,
                           PaintInvalidationReason);
 
@@ -80,7 +80,7 @@ PLATFORM_EXPORT void RecordForeignLayer(
     const DisplayItemClient& client,
     DisplayItem::Type type,
     scoped_refptr<cc::Layer> layer,
-    const IntPoint& offset,
+    const gfx::Point& origin,
     const PropertyTreeStateOrAlias* properties = nullptr);
 
 }  // namespace blink

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/rrect_f.h"
 
 namespace blink {
@@ -262,7 +263,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
 
   // Returns a rect covering the pixels that can be affected by pixels in
   // |inputRect|. The rects are in the space of localTransformSpace.
-  FloatRect MapRect(const FloatRect& input_rect) const;
+  gfx::RectF MapRect(const gfx::RectF& input_rect) const;
 
   bool HasDirectCompositingReasons() const {
     return state_.direct_compositing_reasons != CompositingReason::kNone;

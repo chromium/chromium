@@ -608,9 +608,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
       // the first fragment.
       const FragmentData& first_fragment = object_.FirstFragment();
       const auto* properties = first_fragment.PaintProperties();
-      FloatSize translation =
-          properties->PaintOffsetTranslation()->Translation2D();
-      paint_offset_translation = RoundedIntPoint(FloatPoint(translation));
+      paint_offset_translation = RoundedIntPoint(
+          FloatPoint(properties->PaintOffsetTranslation()->Translation2D()));
       subpixel_accumulation =
           first_fragment.PaintOffset() -
           PhysicalOffset(RoundedIntPoint(first_fragment.PaintOffset()));
@@ -664,8 +663,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
   DCHECK(properties_);
 
   if (paint_offset_translation) {
-    FloatSize new_translation(ToIntSize(*paint_offset_translation));
-    TransformPaintPropertyNode::State state{new_translation};
+    TransformPaintPropertyNode::State state{
+        gfx::Vector2dF(gfx::Vector2d(*paint_offset_translation))};
     state.flags.flattens_inherited_transform =
         context_.current.should_flatten_inherited_transform;
     state.rendering_context_id = context_.current.rendering_context_id;
@@ -715,7 +714,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
       TransformPaintPropertyNode::State state{
-          FloatSize(box_model.StickyPositionOffset())};
+          gfx::Vector2dF(FloatSize(box_model.StickyPositionOffset()))};
       // TODO(wangxianzhu): Not using GetCompositorElementId() here because
       // sticky elements don't work properly under multicol for now, to keep
       // consistency with CompositorElementIdFromUniqueObjectId() below.
@@ -849,7 +848,7 @@ static void SetTransformNodeStateFromAffineTransform(
     TransformPaintPropertyNode::State& state,
     const AffineTransform& transform) {
   if (transform.IsIdentityOrTranslation())
-    state.transform_and_origin = {FloatSize(transform.E(), transform.F())};
+    state.transform_and_origin = {gfx::Vector2dF(transform.E(), transform.F())};
   else
     state.transform_and_origin = {TransformationMatrix(transform)};
 }
@@ -1045,7 +1044,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
             CompositingReason::kActiveTransformAnimation;
         if (!disable_2d_translation_optimization &&
             matrix.IsIdentityOr2DTranslation()) {
-          state.transform_and_origin = {matrix.To2DTranslation()};
+          state.transform_and_origin = {
+              gfx::Vector2dF(matrix.To2DTranslation())};
         } else {
           state.transform_and_origin = {matrix,
                                         TransformOrigin(box.StyleRef(), size)};
@@ -1133,7 +1133,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     }
     if (transform->IsIdentityOr2DTranslation()) {
       context_.translation_2d_to_layout_shift_root_delta +=
-          transform->Translation2D();
+          FloatSize(transform->Translation2D());
     }
   } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
              object_.IsForElement()) {
@@ -1855,7 +1855,7 @@ static PhysicalOffset VisualOffsetFromPaintOffsetRoot(
           paint_offset_root->FirstFragment().PaintProperties()) {
     if (const auto* scroll_translation = properties->ScrollTranslation()) {
       result -= PhysicalOffset::FromFloatSizeRound(
-          scroll_translation->Translation2D());
+          FloatSize(scroll_translation->Translation2D()));
     }
   }
   return result;
@@ -2104,7 +2104,7 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
-  FloatSize old_scroll_offset;
+  gfx::Vector2dF old_scroll_offset;
   if (const auto* old_scroll_translation = properties_->ScrollTranslation()) {
     DCHECK(full_context_.was_layout_shift_root);
     old_scroll_offset = old_scroll_translation->Translation2D();
@@ -2122,8 +2122,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // integer offsets used in CompositedLayerMapping.
       state.container_rect = PixelSnappedIntRect(
           box.OverflowClipRect(context_.current.paint_offset));
-      state.contents_size = scrollable_area->PixelSnappedContentsSize(
-          context_.current.paint_offset);
+      state.contents_size = gfx::Size(scrollable_area->PixelSnappedContentsSize(
+          context_.current.paint_offset));
 
       state.user_scrollable_horizontal =
           scrollable_area->UserInputScrollable(kHorizontalScrollbar);
@@ -2219,7 +2219,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // ScrollTranslation in object_paint_properties.h for details.
       FloatPoint scroll_position = FloatPoint(box.ScrollOrigin()) +
                                    box.GetScrollableArea()->GetScrollOffset();
-      TransformPaintPropertyNode::State state{-ToFloatSize(scroll_position)};
+      TransformPaintPropertyNode::State state{-gfx::Vector2dF(scroll_position)};
       if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
         context_.current.pending_scroll_anchor_adjustment +=
             box.GetScrollableArea()->PendingScrollAnchorAdjustment();
@@ -2310,7 +2310,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
     // A scroller creates a layout shift root, so we just calculate one scroll
     // offset delta without accumulation.
     context_.current.scroll_offset_to_layout_shift_root_delta =
-        scroll_translation->Translation2D() - old_scroll_offset;
+        FloatSize(scroll_translation->Translation2D() - old_scroll_offset);
   }
 }
 
@@ -3028,12 +3028,13 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
       // of additional_offset_to_layout_shift_root_delta is the difference
       // between the old and new paint offset translation.
       context.pending_additional_offset_to_layout_shift_root_delta =
-          -PhysicalOffset::FromFloatSizeRound(translation->Translation2D());
+          -PhysicalOffset::FromFloatSizeRound(
+              FloatSize(translation->Translation2D()));
     }
     if (const auto* transform = properties->Transform()) {
       if (transform->IsIdentityOr2DTranslation()) {
         context.translation_2d_to_layout_shift_root_delta -=
-            transform->Translation2D();
+            FloatSize(transform->Translation2D());
       }
     }
   }

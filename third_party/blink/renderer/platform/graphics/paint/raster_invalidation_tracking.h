@@ -30,7 +30,7 @@ struct RasterInvalidationInfo {
   String client_debug_name;
   // For CAP, this is set in PaintArtifactCompositor when converting chunk
   // raster invalidations to cc raster invalidations.
-  IntRect rect;
+  gfx::Rect rect;
   PaintInvalidationReason reason = PaintInvalidationReason::kFull;
 };
 
@@ -48,7 +48,7 @@ inline bool operator!=(const RasterInvalidationInfo& a,
 inline std::ostream& operator<<(std::ostream& os,
                                 const RasterInvalidationInfo& info) {
   return os << info.client_id << ":" << info.client_debug_name
-            << " rect=" << info.rect << " reason=" << info.reason;
+            << " rect=" << info.rect.ToString() << " reason=" << info.reason;
 }
 
 struct RasterUnderInvalidation {
@@ -77,7 +77,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
 
   void AddInvalidation(DisplayItemClientId,
                        const String& debug_name,
-                       const IntRect&,
+                       const gfx::Rect&,
                        PaintInvalidationReason);
   bool HasInvalidations() const { return !invalidations_.IsEmpty(); }
   const Vector<RasterInvalidationInfo>& Invalidations() const {
@@ -92,7 +92,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
   // original drawings to show the under raster invalidations.
   void CheckUnderInvalidations(const String& layer_debug_name,
                                sk_sp<PaintRecord> new_record,
-                               const IntRect& new_interest_rect);
+                               const gfx::Rect& new_interest_rect);
 
   void AsJSON(JSONObject*, bool detailed) const;
 
@@ -108,7 +108,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
 
   // The following fields are for raster under-invalidation detection.
   sk_sp<PaintRecord> last_painted_record_;
-  IntRect last_interest_rect_;
+  gfx::Rect last_interest_rect_;
   Region invalidation_region_since_last_paint_;
   Vector<RasterUnderInvalidation> under_invalidations_;
   sk_sp<PaintRecord> under_invalidation_record_;

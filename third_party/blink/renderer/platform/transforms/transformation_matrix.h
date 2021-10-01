@@ -36,19 +36,22 @@
 #include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
+#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkM44.h"
 
 namespace gfx {
+class PointF;
+class Rect;
+class RectF;
 class Transform;
 }
 
 namespace blink {
 
 class AffineTransform;
-class IntRect;
 class LayoutRect;
-class FloatRect;
 class FloatQuad;
 class FloatBox;
 class JSONArray;
@@ -202,14 +205,21 @@ class PLATFORM_EXPORT TransformationMatrix {
   // Note that this ignores the z component, effectively projecting the point
   // into the z=0 plane.
   FloatPoint MapPoint(const FloatPoint&) const;
+  gfx::PointF MapPoint(const gfx::PointF& p) const {
+    return MapPoint(FloatPoint(p));
+  }
 
   // If the matrix has 3D components, the z component of the result is
   // dropped, effectively projecting the rect into the z=0 plane
   FloatRect MapRect(const FloatRect&) const;
+  gfx::RectF MapRect(const gfx::RectF& r) const {
+    return MapRect(FloatRect(r));
+  }
 
   // Rounds the resulting mapped rectangle out. This is helpful for bounding
   // box computations but may not be what is wanted in other contexts.
   IntRect MapRect(const IntRect&) const;
+  gfx::Rect MapRect(const gfx::Rect& r) const { return MapRect(IntRect(r)); }
   LayoutRect MapRect(const LayoutRect&) const;
 
   // If the matrix has 3D components, the z component of the result is

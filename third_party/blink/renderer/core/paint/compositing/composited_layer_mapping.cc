@@ -1746,8 +1746,8 @@ IntRect CompositedLayerMapping::PaintableRegion(
   IntRect layer_rect(IntPoint(), IntSize(graphics_layer->Size()));
   if (cull_rect.IsInfinite())
     return layer_rect;
-  cull_rect.MoveBy(-graphics_layer->GetOffsetFromTransformNode());
-  return Intersection(cull_rect.Rect(), layer_rect);
+  cull_rect.Move(gfx::Vector2d(-graphics_layer->GetOffsetFromTransformNode()));
+  return Intersection(IntRect(cull_rect.Rect()), layer_rect);
 }
 
 LayoutSize CompositedLayerMapping::SubpixelAccumulation() const {
@@ -1905,7 +1905,7 @@ void CompositedLayerMapping::PaintScrollableArea(
   // cull_rect is in the space of the containing scrollable area in which
   // Scrollbar::Paint() will paint the scrollbar.
   CullRect cull_rect(interest_rect);
-  cull_rect.Move(graphics_layer->OffsetFromLayoutObject());
+  cull_rect.Move(gfx::Vector2d(graphics_layer->OffsetFromLayoutObject()));
   PaintLayerScrollableArea* scrollable_area =
       owning_layer_->GetScrollableArea();
   ScrollableAreaPainter painter(*scrollable_area);

@@ -32,7 +32,7 @@ std::unique_ptr<JSONObject> GraphicsLayerAsJSON(const GraphicsLayer* layer,
   if (flags & kLayerTreeIncludesDebugInfo &&
       layer->OffsetFromLayoutObject() != IntSize()) {
     json->SetArray("offsetFromLayoutObject",
-                   SizeAsJSONArray(layer->OffsetFromLayoutObject()));
+                   SizeAsJSONArray(gfx::Size(layer->OffsetFromLayoutObject())));
   }
 
   if (!layer->ContentsAreVisible())
@@ -41,8 +41,9 @@ std::unique_ptr<JSONObject> GraphicsLayerAsJSON(const GraphicsLayer* layer,
   if (layer->HasLayerState() && (flags & (kLayerTreeIncludesDebugInfo |
                                           kLayerTreeIncludesPaintRecords))) {
     json->SetString("layerState", layer->GetPropertyTreeState().ToString());
-    json->SetValue("layerOffset",
-                   PointAsJSONArray(layer->GetOffsetFromTransformNode()));
+    json->SetValue(
+        "layerOffset",
+        PointAsJSONArray(gfx::Point(layer->GetOffsetFromTransformNode())));
   }
 
   layer->AppendAdditionalInfoAsJSON(flags, layer->CcLayer(), *json.get());

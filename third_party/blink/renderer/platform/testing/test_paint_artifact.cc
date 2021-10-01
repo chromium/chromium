@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "ui/gfx/skia_util.h"
 
 namespace blink {
 
@@ -32,7 +33,7 @@ TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
   // invalidation rects of chunks. The actual values don't matter. If the chunk
   // has display items, we will recalculate the bounds from the display items
   // when constructing the PaintArtifact.
-  Bounds(IntRect(id * 110, id * 220, id * 220 + 200, id * 110 + 200));
+  Bounds(gfx::Rect(id * 110, id * 220, id * 220 + 200, id * 110 + 200));
   return *this;
 }
 
@@ -55,13 +56,13 @@ TestPaintArtifact& TestPaintArtifact::Properties(
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::RectDrawing(const IntRect& bounds,
+TestPaintArtifact& TestPaintArtifact::RectDrawing(const gfx::Rect& bounds,
                                                   Color color) {
   return RectDrawing(NewClient(), bounds, color);
 }
 
 TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
-    const IntRect& rect,
+    const gfx::Rect& rect,
     const TransformPaintPropertyNode* scroll_translation) {
   return ScrollHitTest(NewClient(), rect, scroll_translation);
 }
@@ -84,14 +85,14 @@ TestPaintArtifact& TestPaintArtifact::ForeignLayer(
 }
 
 TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
-                                                  const IntRect& bounds,
+                                                  const gfx::Rect& bounds,
                                                   Color color) {
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording(bounds);
+  cc::PaintCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
   if (!bounds.IsEmpty()) {
     PaintFlags flags;
     flags.setColor(color.Rgb());
-    canvas->drawRect(bounds, flags);
+    canvas->drawRect(gfx::RectToSkRect(bounds), flags);
   }
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<DrawingDisplayItem>(
@@ -107,7 +108,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
 
 TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
     DisplayItemClient& client,
-    const IntRect& rect,
+    const gfx::Rect& rect,
     const TransformPaintPropertyNode* scroll_translation) {
   auto& hit_test_data =
       paint_artifact_->PaintChunks().back().EnsureHitTestData();
@@ -122,7 +123,7 @@ TestPaintArtifact& TestPaintArtifact::SetRasterEffectOutset(
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::RectKnownToBeOpaque(const IntRect& r) {
+TestPaintArtifact& TestPaintArtifact::RectKnownToBeOpaque(const gfx::Rect& r) {
   auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.rect_known_to_be_opaque = r;
   DCHECK(chunk.bounds.Contains(r));
@@ -149,7 +150,7 @@ TestPaintArtifact& TestPaintArtifact::EffectivelyInvisible() {
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::Bounds(const IntRect& bounds) {
+TestPaintArtifact& TestPaintArtifact::Bounds(const gfx::Rect& bounds) {
   auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.bounds = bounds;
   chunk.drawable_bounds = bounds;
@@ -157,7 +158,7 @@ TestPaintArtifact& TestPaintArtifact::Bounds(const IntRect& bounds) {
 }
 
 TestPaintArtifact& TestPaintArtifact::DrawableBounds(
-    const IntRect& drawable_bounds) {
+    const gfx::Rect& drawable_bounds) {
   auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.drawable_bounds = drawable_bounds;
   DCHECK(chunk.bounds.Contains(drawable_bounds));
@@ -191,9 +192,9 @@ void TestPaintArtifact::DidAddDisplayItem() {
   auto& chunk = paint_artifact_->PaintChunks().back();
   DCHECK_EQ(chunk.end_index, paint_artifact_->GetDisplayItemList().size() - 1);
   const auto& item = paint_artifact_->GetDisplayItemList().back();
-  chunk.bounds.Unite(item.VisualRect());
+  chunk.bounds.Union(item.VisualRect());
   if (item.DrawsContent())
-    chunk.drawable_bounds.Unite(item.VisualRect());
+    chunk.drawable_bounds.Union(item.VisualRect());
   chunk.end_index++;
 }
 

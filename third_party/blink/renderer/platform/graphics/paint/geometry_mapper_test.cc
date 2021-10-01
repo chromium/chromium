@@ -51,38 +51,27 @@ class GeometryMapperTest : public testing::Test,
   // variables with proper values before calling CheckMappings().
   PropertyTreeStateOrAlias local_state = PropertyTreeState::Root();
   PropertyTreeStateOrAlias ancestor_state = PropertyTreeState::Root();
-  FloatRect input_rect;
+  gfx::RectF input_rect;
   FloatClipRect expected_visual_rect;
   absl::optional<FloatClipRect> expected_visual_rect_expanded_for_compositing;
-  FloatSize expected_translation_2d;
+  gfx::Vector2dF expected_translation_2d;
   absl::optional<TransformationMatrix> expected_transform;
   FloatClipRect expected_clip;
   bool expected_clip_has_transform_animation = false;
-  FloatRect expected_transformed_rect;
+  gfx::RectF expected_transformed_rect;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(GeometryMapperTest);
 
-#define EXPECT_FLOAT_RECT_NEAR(expected, actual)                             \
+#define EXPECT_CLIP_RECT_EQ(expected, actual)                                \
   do {                                                                       \
-    EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, (actual).X(),      \
-                        (expected).X());                                     \
-    EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, (actual).Y(),      \
-                        (expected).Y());                                     \
-    EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, (actual).Width(),  \
-                        (expected).Width());                                 \
-    EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, (actual).Height(), \
-                        (expected).Height());                                \
-  } while (false)
-
-#define EXPECT_CLIP_RECT_EQ(expected, actual)                       \
-  do {                                                              \
-    SCOPED_TRACE("EXPECT_CLIP_RECT_EQ: " #expected " vs " #actual); \
-    EXPECT_EQ((expected).IsInfinite(), (actual).IsInfinite());      \
-    EXPECT_EQ((expected).HasRadius(), (actual).HasRadius());        \
-    EXPECT_EQ((expected).IsTight(), (actual).IsTight());            \
-    if (!(expected).IsInfinite())                                   \
-      EXPECT_FLOAT_RECT_NEAR((expected).Rect(), (actual).Rect());   \
+    SCOPED_TRACE("EXPECT_CLIP_RECT_EQ: " #expected " vs " #actual);          \
+    EXPECT_EQ((expected).IsInfinite(), (actual).IsInfinite());               \
+    EXPECT_EQ((expected).HasRadius(), (actual).HasRadius());                 \
+    EXPECT_EQ((expected).IsTight(), (actual).IsTight());                     \
+    if (!(expected).IsInfinite()) {                                          \
+      EXPECT_EQ(gfx::RectF((expected).Rect()), gfx::RectF((actual).Rect())); \
+    }                                                                        \
   } while (false)
 
 void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
@@ -113,7 +102,7 @@ void GeometryMapperTest::CheckSourceToDestinationRect() {
   GeometryMapper::SourceToDestinationRect(local_state.Transform(),
                                           ancestor_state.Transform(),
                                           actual_transformed_rect);
-  EXPECT_FLOAT_RECT_NEAR(expected_transformed_rect, actual_transformed_rect);
+  EXPECT_EQ(expected_transformed_rect, actual_transformed_rect);
 }
 
 void GeometryMapperTest::CheckSourceToDestinationProjection() {
@@ -180,36 +169,36 @@ TEST_P(GeometryMapperTest, IdentityTransform) {
 }
 
 TEST_P(GeometryMapperTest, TranslationTransform) {
-  expected_translation_2d = FloatSize(20, 10);
+  expected_translation_2d = gfx::Vector2dF(20, 10);
   auto transform = Create2DTranslation(t0(), 20, 10);
   local_state.SetTransform(*transform);
 
   input_rect = FloatRect(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
-  expected_transformed_rect.Move(expected_translation_2d);
+  expected_transformed_rect.Offset(expected_translation_2d);
   expected_visual_rect = FloatClipRect(expected_transformed_rect);
   CheckMappings();
 
-  FloatRect rect = expected_transformed_rect;
+  gfx::RectF rect = expected_transformed_rect;
   GeometryMapper::SourceToDestinationRect(t0(), local_state.Transform(), rect);
-  EXPECT_FLOAT_RECT_NEAR(input_rect, rect);
+  EXPECT_EQ(input_rect, rect);
 }
 
 TEST_P(GeometryMapperTest, TranslationTransformWithAlias) {
-  expected_translation_2d = FloatSize(20, 10);
+  expected_translation_2d = gfx::Vector2dF(20, 10);
   auto real_transform = Create2DTranslation(t0(), 20, 10);
   auto transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
   local_state.SetTransform(*transform);
 
   input_rect = FloatRect(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
-  expected_transformed_rect.Move(expected_translation_2d);
+  expected_transformed_rect.Offset(expected_translation_2d);
   expected_visual_rect = FloatClipRect(expected_transformed_rect);
   CheckMappings();
 
-  FloatRect rect = expected_transformed_rect;
+  gfx::RectF rect = expected_transformed_rect;
   GeometryMapper::SourceToDestinationRect(t0(), local_state.Transform(), rect);
-  EXPECT_FLOAT_RECT_NEAR(input_rect, rect);
+  EXPECT_EQ(input_rect, rect);
 }
 
 TEST_P(GeometryMapperTest, RotationAndScaleTransform) {
@@ -674,19 +663,19 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   auto above_viewport = CreateTransform(t0(), TransformationMatrix());
   auto viewport = CreateTransform(*above_viewport, TransformationMatrix());
   auto scroll_translation = CreateScrollTranslation(
-      *viewport, -100, -200, IntRect(0, 0, 800, 600), IntSize(2400, 1800),
+      *viewport, -100, -200, gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800),
       CompositingReason::kOverflowScrolling);
 
   auto fixed_translate = TransformationMatrix().Translate(100, 0);
 
-  const FloatSize fixed_offset(200, 200);
+  const gfx::Vector2dF fixed_offset(200, 200);
   TransformPaintPropertyNode::State fixed_state{fixed_offset, nullptr,
                                                 scroll_translation};
   fixed_state.direct_compositing_reasons = CompositingReason::kFixedPosition;
   auto fixed_transform =
       TransformPaintPropertyNode::Create(*viewport, std::move(fixed_state));
 
-  const FloatSize child_of_fixed_offset(50, 50);
+  const gfx::Vector2dF child_of_fixed_offset(50, 50);
   TransformPaintPropertyNode::State child_of_fixed_state{child_of_fixed_offset};
   auto child_of_fixed = TransformPaintPropertyNode::Create(
       *fixed_transform, std::move(child_of_fixed_state));
@@ -694,13 +683,13 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   local_state.SetTransform(*child_of_fixed);
   ancestor_state.SetTransform(*viewport);
 
-  const FloatSize child_of_fixed_size(100, 100);
-  input_rect = FloatRect(FloatPoint(), child_of_fixed_size);
+  const gfx::SizeF child_of_fixed_size(100, 100);
+  input_rect = gfx::RectF(child_of_fixed_size);
 
-  const FloatSize descendant_offset = fixed_offset + child_of_fixed_offset;
+  const gfx::Vector2dF descendant_offset = fixed_offset + child_of_fixed_offset;
   expected_translation_2d = descendant_offset;
-  expected_transformed_rect =
-      FloatRect(FloatPoint(descendant_offset), child_of_fixed_size);
+  expected_transformed_rect = gfx::RectF(
+      gfx::PointAtOffsetFromOrigin(descendant_offset), child_of_fixed_size);
   expected_visual_rect = FloatClipRect(expected_transformed_rect);
   expected_visual_rect_expanded_for_compositing =
       FloatClipRect(FloatRect(150, 50, 1700, 1300));
@@ -710,8 +699,8 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   // If we're not mapping to the viewport, the fixed rect should not be
   // expanded.
   ancestor_state.SetTransform(*above_viewport);
-  expected_transform = TransformationMatrix().Translate(
-      descendant_offset.Width(), descendant_offset.Height());
+  expected_transform = TransformationMatrix().Translate(descendant_offset.x(),
+                                                        descendant_offset.y());
   expected_visual_rect.ClearIsTight();
   expected_visual_rect_expanded_for_compositing = expected_visual_rect;
   CheckMappings();
@@ -741,9 +730,9 @@ TEST_P(GeometryMapperTest, SiblingTransforms) {
   expected_clip.ClearIsTight();
   EXPECT_CLIP_RECT_EQ(expected_clip, result_clip);
 
-  FloatRect result = input_rect;
+  gfx::RectF result = input_rect;
   GeometryMapper::SourceToDestinationRect(*transform1, *transform2, result);
-  EXPECT_FLOAT_RECT_NEAR(FloatRect(-100, 0, 100, 100), result);
+  EXPECT_EQ(gfx::RectF(-100, 0, 100, 100), result);
 
   result_clip = FloatClipRect(input_rect);
   GeometryMapper::LocalToAncestorVisualRect(transform2_state, transform1_state,
@@ -754,7 +743,7 @@ TEST_P(GeometryMapperTest, SiblingTransforms) {
 
   result = input_rect;
   GeometryMapper::SourceToDestinationRect(*transform2, *transform1, result);
-  EXPECT_FLOAT_RECT_NEAR(FloatRect(0, -100, 100, 100), result);
+  EXPECT_EQ(gfx::RectF(0, -100, 100, 100), result);
 }
 
 TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
@@ -819,10 +808,10 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   local_state =
       PropertyTreeState(*transform_below_effect, *clip_below_effect, *effect);
 
-  input_rect = FloatRect(0, 0, 100, 100);
+  input_rect = gfx::RectF(0, 0, 100, 100);
   // 1. transformBelowEffect
   auto output = input_rect;
-  output.Move(transform_below_effect->Translation2D());
+  output.Offset(transform_below_effect->Translation2D());
   // 2. clipBelowEffect
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(FloatRect(20, 30, 90, 80), output);
@@ -833,13 +822,13 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(FloatRect(-40, -30, 140, 130), output);
   // 5. transformAboveEffect
-  output.Move(transform_above_effect->Translation2D());
+  output.Offset(transform_above_effect->Translation2D());
   EXPECT_EQ(FloatRect(0, 20, 140, 130), output);
 
   expected_translation_2d = transform_above_effect->Translation2D() +
                             transform_below_effect->Translation2D();
   expected_transformed_rect = input_rect;
-  expected_transformed_rect.Move(expected_translation_2d);
+  expected_transformed_rect.Offset(expected_translation_2d);
   expected_visual_rect = FloatClipRect(output);
   expected_visual_rect.ClearIsTight();
   expected_clip = FloatClipRect(FloatRect(50, 60, 90, 90));
@@ -869,10 +858,10 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   local_state = PropertyTreeStateOrAlias(*transform_below_effect,
                                          *clip_below_effect, *effect);
 
-  input_rect = FloatRect(0, 0, 100, 100);
+  input_rect = gfx::RectF(0, 0, 100, 100);
   // 1. transformBelowEffect
   auto output = input_rect;
-  output.Move(transform_below_effect->Translation2D());
+  output.Offset(transform_below_effect->Translation2D());
   // 2. clipBelowEffect
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(FloatRect(20, 30, 90, 80), output);
@@ -883,13 +872,13 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(FloatRect(-40, -30, 140, 130), output);
   // 5. transformAboveEffect
-  output.Move(transform_above_effect->Translation2D());
+  output.Offset(transform_above_effect->Translation2D());
   EXPECT_EQ(FloatRect(0, 20, 140, 130), output);
 
   expected_translation_2d = transform_above_effect->Translation2D() +
                             transform_below_effect->Translation2D();
   expected_transformed_rect = input_rect;
-  expected_transformed_rect.Move(expected_translation_2d);
+  expected_transformed_rect.Offset(expected_translation_2d);
   expected_visual_rect = FloatClipRect(output);
   expected_visual_rect.ClearIsTight();
   expected_clip = FloatClipRect(FloatRect(50, 60, 90, 90));

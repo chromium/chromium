@@ -88,6 +88,8 @@ class GEOMETRY_EXPORT RectF {
     size_.SetSize(width, height);
   }
 
+  // Shrink the rectangle by |inset| on all sides.
+  void Inset(float inset) { Inset(inset, inset); }
   // Shrink the rectangle by a horizontal and vertical distance on all sides.
   void Inset(float horizontal, float vertical) {
     Inset(horizontal, vertical, horizontal, vertical);
@@ -98,6 +100,15 @@ class GEOMETRY_EXPORT RectF {
 
   // Shrink the rectangle by the specified amount on each side.
   void Inset(float left, float top, float right, float bottom);
+
+  // Expand the rectangle by the specified amount on each side.
+  void Outset(float outset) { Inset(-outset); }
+  void Outset(float horizontal, float vertical) {
+    Inset(-horizontal, -vertical);
+  }
+  void Outset(float left, float top, float right, float bottom) {
+    Inset(-left, -top, -right, -bottom);
+  }
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(float horizontal, float vertical);

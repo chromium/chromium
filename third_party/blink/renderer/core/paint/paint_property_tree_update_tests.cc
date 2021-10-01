@@ -735,18 +735,18 @@ TEST_P(PaintPropertyTreeUpdateTest, TransformUpdatesOnRelativeLengthChanges) {
 
   auto* transform = GetDocument().getElementById("transform");
   auto* transform_object = transform->GetLayoutObject();
-  EXPECT_EQ(FloatSize(50, 100), transform_object->FirstFragment()
-                                    .PaintProperties()
-                                    ->Transform()
-                                    ->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(50, 100), transform_object->FirstFragment()
+                                         .PaintProperties()
+                                         ->Transform()
+                                         ->Translation2D());
 
   transform->setAttribute(html_names::kStyleAttr,
                           "width: 200px; height: 300px;");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(100, 150), transform_object->FirstFragment()
-                                     .PaintProperties()
-                                     ->Transform()
-                                     ->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(100, 150), transform_object->FirstFragment()
+                                          .PaintProperties()
+                                          ->Transform()
+                                          ->Translation2D());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, CSSClipDependingOnSize) {
@@ -792,8 +792,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollBoundsChange) {
                           .PaintProperties()
                           ->ScrollTranslation()
                           ->ScrollNode();
-  EXPECT_EQ(IntRect(0, 0, 100, 100), scroll_node->ContainerRect());
-  EXPECT_EQ(IntSize(200, 200), scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), scroll_node->ContainerRect());
+  EXPECT_EQ(gfx::Size(200, 200), scroll_node->ContentsSize());
 
   GetDocument().getElementById("content")->setAttribute(
       html_names::kStyleAttr, "width: 200px; height: 300px");
@@ -802,8 +802,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollBoundsChange) {
                              .PaintProperties()
                              ->ScrollTranslation()
                              ->ScrollNode());
-  EXPECT_EQ(IntRect(0, 0, 100, 100), scroll_node->ContainerRect());
-  EXPECT_EQ(IntSize(200, 300), scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), scroll_node->ContainerRect());
+  EXPECT_EQ(gfx::Size(200, 300), scroll_node->ContentsSize());
 }
 
 // The scrollbars are attached to the visual viewport but created by (and have
@@ -823,9 +823,10 @@ TEST_P(PaintPropertyTreeUpdateTest,
   VisualViewport& visual_viewport =
       GetDocument().GetPage()->GetVisualViewport();
 
-  EXPECT_EQ(IntRect(0, 0, 800, 600),
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             visual_viewport.GetScrollNode()->ContainerRect());
-  EXPECT_EQ(IntSize(800, 600), visual_viewport.GetScrollNode()->ContentsSize());
+  EXPECT_EQ(gfx::Size(800, 600),
+            visual_viewport.GetScrollNode()->ContentsSize());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
@@ -1600,7 +1601,7 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
   auto* child = GetLayoutObjectByElementId("child");
   EXPECT_EQ(PhysicalOffset(LayoutUnit(10.25), LayoutUnit()),
             parent->FirstFragment().PaintOffset());
-  EXPECT_EQ(FloatSize(10, 0),
+  EXPECT_EQ(gfx::Vector2dF(10, 0),
             isolation_properties->PaintOffsetTranslation()->Translation2D());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
@@ -1614,7 +1615,7 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
 
   EXPECT_EQ(PhysicalOffset(LayoutUnit(12.75), LayoutUnit()),
             parent->FirstFragment().PaintOffset());
-  EXPECT_EQ(FloatSize(13, 0),
+  EXPECT_EQ(gfx::Vector2dF(13, 0),
             isolation_properties->PaintOffsetTranslation()->Translation2D());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
@@ -1744,7 +1745,7 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionCompositing) {
   ASSERT_TRUE(properties);
   auto* paint_offset_translation = properties->PaintOffsetTranslation();
   ASSERT_TRUE(paint_offset_translation);
-  EXPECT_EQ(FloatSize(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
   EXPECT_TRUE(paint_offset_translation->HasDirectCompositingReasons());
   EXPECT_FALSE(properties->Transform());
 
@@ -1867,7 +1868,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
   ASSERT_TRUE(container_properties);
   auto* child1 = GetLayoutObjectByElementId("child1");
   auto* child2 = GetLayoutObjectByElementId("child2");
-  EXPECT_EQ(FloatSize(-20, 0),
+  EXPECT_EQ(gfx::Vector2dF(-20, 0),
             container_properties->ScrollTranslation()->Translation2D());
   EXPECT_EQ(PhysicalOffset(), child1->FirstFragment().PaintOffset());
   EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
@@ -1875,7 +1876,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
   To<Element>(child2->GetNode())
       ->setAttribute(html_names::kStyleAttr, "width: 100px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(-120, 0),
+  EXPECT_EQ(gfx::Vector2dF(-120, 0),
             container_properties->ScrollTranslation()->Translation2D());
   EXPECT_EQ(PhysicalOffset(100, 0), child1->FirstFragment().PaintOffset());
   EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
@@ -1897,13 +1898,13 @@ TEST_P(PaintPropertyTreeUpdateTest, IFrameContainStrictChangeBorderTopWidth) {
       ChildDocument().GetLayoutView()->FirstFragment().PaintProperties();
   ASSERT_TRUE(child_view_properties);
   ASSERT_TRUE(child_view_properties->PaintOffsetTranslation());
-  EXPECT_EQ(FloatSize(2, 2),
+  EXPECT_EQ(gfx::Vector2dF(2, 2),
             child_view_properties->PaintOffsetTranslation()->Translation2D());
 
   GetDocument().getElementById("iframe")->setAttribute(
       html_names::kStyleAttr, "border-top-width: 10px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(2, 10),
+  EXPECT_EQ(gfx::Vector2dF(2, 10),
             child_view_properties->PaintOffsetTranslation()->Translation2D());
 }
 

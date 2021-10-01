@@ -1405,11 +1405,11 @@ TEST_P(FrameThrottlingTest, UpdatePaintPropertiesOnUnthrottling) {
   EXPECT_TRUE(frame_document->GetLayoutView()->Layer()->SelfNeedsRepaint());
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
-  EXPECT_EQ(FloatSize(0, 20), inner_div->GetLayoutObject()
-                                  ->FirstFragment()
-                                  .PaintProperties()
-                                  ->Transform()
-                                  ->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(0, 20), inner_div->GetLayoutObject()
+                                       ->FirstFragment()
+                                       .PaintProperties()
+                                       ->Transform()
+                                       ->Translation2D());
 }
 
 TEST_P(FrameThrottlingTest, DisplayNoneNotThrottled) {

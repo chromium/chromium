@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
+#include "ui/gfx/skia_util.h"
 
 namespace blink {
 
@@ -21,7 +22,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     DisplayItemClientId client_id,
     Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
-    const IntRect& visual_rect,
+    const gfx::Rect& visual_rect,
     const TransformPaintPropertyNode* scroll_translation,
     CompositorElementId element_id,
     RasterEffectOutset outset,
@@ -48,13 +49,13 @@ sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
   }
 
   PaintRecorder recorder;
-  const IntRect& rect = VisualRect();
-  recorder.beginRecording(rect);
+  const gfx::Rect& rect = VisualRect();
+  recorder.beginRecording(gfx::RectToSkRect(rect));
   auto* canvas = recorder.getRecordingCanvas();
   scrollbar->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
                        rect);
   gfx::Rect thumb_rect = data_->scrollbar_->ThumbRect();
-  thumb_rect.Offset(rect.X(), rect.Y());
+  thumb_rect.Offset(rect.OffsetFromOrigin());
   scrollbar->PaintPart(canvas, cc::ScrollbarPart::THUMB, thumb_rect);
 
   data_->record_ = recorder.finishRecordingAsPicture();
@@ -79,8 +80,8 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
           ? data_->scroll_translation_->ScrollNode()->GetCompositorElementId()
           : CompositorElementId());
   layer->SetOffsetToTransformParent(
-      gfx::Vector2dF(FloatPoint(VisualRect().Location())));
-  layer->SetBounds(gfx::Size(VisualRect().Size()));
+      gfx::Vector2dF(VisualRect().OffsetFromOrigin()));
+  layer->SetBounds(VisualRect().size());
 
   if (scrollbar->NeedsRepaintPart(cc::ScrollbarPart::THUMB) ||
       scrollbar->NeedsRepaintPart(cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS))
@@ -111,7 +112,7 @@ void ScrollbarDisplayItem::Record(
     const DisplayItemClient& client,
     DisplayItem::Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
-    const IntRect& visual_rect,
+    const gfx::Rect& visual_rect,
     const TransformPaintPropertyNode* scroll_translation,
     CompositorElementId element_id) {
   PaintController& paint_controller = context.GetPaintController();

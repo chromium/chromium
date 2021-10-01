@@ -101,7 +101,7 @@ void PaintController::PaintArtifactAsJSON::AppendChunksAsJSON(
                            artifact_.ClientDebugName(chunk.id.client_id) + " " +
                                chunk.id.ToString(artifact_));
     json_object->SetString("state", chunk.properties.ToString());
-    json_object->SetString("bounds", chunk.bounds.ToString());
+    json_object->SetString("bounds", String(chunk.bounds.ToString()));
     if (flags_ & DisplayItemList::kShowPaintRecords)
       json_object->SetString("chunkData", chunk.ToString(artifact_));
 

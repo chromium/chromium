@@ -34,7 +34,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
   ScrollbarDisplayItem(DisplayItemClientId,
                        Type,
                        scoped_refptr<cc::Scrollbar>,
-                       const IntRect& visual_rect,
+                       const gfx::Rect& visual_rect,
                        const TransformPaintPropertyNode* scroll_translation,
                        CompositorElementId element_id,
                        RasterEffectOutset outset,
@@ -65,7 +65,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                      const DisplayItemClient&,
                      DisplayItem::Type,
                      scoped_refptr<cc::Scrollbar>,
-                     const IntRect& visual_rect,
+                     const gfx::Rect& visual_rect,
                      const TransformPaintPropertyNode* scroll_translation,
                      CompositorElementId element_id);
 

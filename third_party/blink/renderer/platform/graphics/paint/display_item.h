@@ -208,7 +208,7 @@ class PLATFORM_EXPORT DisplayItem {
 
   // The bounding box of all pixels of this display item, in the transform space
   // of the containing paint chunk.
-  const IntRect& VisualRect() const { return visual_rect_; }
+  const gfx::Rect& VisualRect() const { return visual_rect_; }
 
   RasterEffectOutset GetRasterEffectOutset() const {
     return static_cast<RasterEffectOutset>(raster_effect_outset_);
@@ -290,7 +290,7 @@ class PLATFORM_EXPORT DisplayItem {
   // later paint cycles when |client| may have been destroyed.
   DisplayItem(const DisplayItemClientId client_id,
               Type type,
-              const IntRect& visual_rect,
+              const gfx::Rect& visual_rect,
               RasterEffectOutset raster_effect_outset,
               PaintInvalidationReason paint_invalidation_reason,
               bool draws_content = false)
@@ -325,7 +325,7 @@ class PLATFORM_EXPORT DisplayItem {
   }
 
   DisplayItemClientId client_id_;
-  IntRect visual_rect_;
+  gfx::Rect visual_rect_;
   wtf_size_t fragment_;
   // paint_invalidation_reason_ is set during construction (or, in the case of a
   // DisplayItem copied from the cache, shortly thereafter). Once set, it is

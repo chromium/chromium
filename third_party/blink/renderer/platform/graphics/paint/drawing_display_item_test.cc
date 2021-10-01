@@ -7,7 +7,6 @@
 #include "cc/paint/display_item_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
@@ -15,6 +14,10 @@
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/skia_util.h"
 
 namespace blink {
 namespace {
@@ -27,48 +30,48 @@ class DrawingDisplayItemTest : public testing::Test {
       MakeGarbageCollected<FakeDisplayItemClient>();
 };
 
-static sk_sp<PaintRecord> CreateRectRecord(const FloatRect& record_bounds) {
+static sk_sp<PaintRecord> CreateRectRecord(const gfx::RectF& record_bounds) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas =
-      recorder.beginRecording(record_bounds.Width(), record_bounds.Height());
-  canvas->drawRect(record_bounds, PaintFlags());
+      recorder.beginRecording(record_bounds.width(), record_bounds.height());
+  canvas->drawRect(gfx::RectFToSkRect(record_bounds), PaintFlags());
   return recorder.finishRecordingAsPicture();
 }
 
 static sk_sp<PaintRecord> CreateRectRecordWithTranslate(
-    const FloatRect& record_bounds,
+    const gfx::RectF& record_bounds,
     float dx,
     float dy) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas =
-      recorder.beginRecording(record_bounds.Width(), record_bounds.Height());
+      recorder.beginRecording(record_bounds.width(), record_bounds.height());
   canvas->save();
   canvas->translate(dx, dy);
-  canvas->drawRect(record_bounds, PaintFlags());
+  canvas->drawRect(gfx::RectFToSkRect(record_bounds), PaintFlags());
   canvas->restore();
   return recorder.finishRecordingAsPicture();
 }
 
 TEST_F(DrawingDisplayItemTest, DrawsContent) {
-  FloatRect record_bounds(5.5, 6.6, 7.7, 8.8);
+  gfx::RectF record_bounds(5.5, 6.6, 7.7, 8.8);
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          EnclosingIntRect(record_bounds),
+                          ToEnclosingRect(record_bounds),
                           CreateRectRecord(record_bounds),
                           client_->VisualRectOutsetForRasterEffects());
-  EXPECT_EQ(EnclosingIntRect(record_bounds), item.VisualRect());
+  EXPECT_EQ(ToEnclosingRect(record_bounds), item.VisualRect());
   EXPECT_TRUE(item.DrawsContent());
 }
 
 TEST_F(DrawingDisplayItemTest, NullPaintRecord) {
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          IntRect(), nullptr,
+                          gfx::Rect(), nullptr,
                           client_->VisualRectOutsetForRasterEffects());
   EXPECT_FALSE(item.DrawsContent());
 }
 
 TEST_F(DrawingDisplayItemTest, EmptyPaintRecord) {
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          IntRect(), sk_make_sp<PaintRecord>(),
+                          gfx::Rect(), sk_make_sp<PaintRecord>(),
                           RasterEffectOutset::kNone);
   EXPECT_FALSE(item.DrawsContent());
 }
@@ -76,28 +79,28 @@ TEST_F(DrawingDisplayItemTest, EmptyPaintRecord) {
 TEST_F(DrawingDisplayItemTest, EqualsForUnderInvalidation) {
   ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
 
-  FloatRect bounds1(100.1, 100.2, 100.3, 100.4);
+  gfx::RectF bounds1(100.1, 100.2, 100.3, 100.4);
   DrawingDisplayItem item1(client_->Id(), DisplayItem::kDocumentBackground,
-                           EnclosingIntRect(bounds1), CreateRectRecord(bounds1),
+                           ToEnclosingRect(bounds1), CreateRectRecord(bounds1),
                            client_->VisualRectOutsetForRasterEffects());
   DrawingDisplayItem translated(client_->Id(), DisplayItem::kDocumentBackground,
-                                EnclosingIntRect(bounds1),
+                                ToEnclosingRect(bounds1),
                                 CreateRectRecordWithTranslate(bounds1, 10, 20),
                                 client_->VisualRectOutsetForRasterEffects());
   // This item contains a DrawingRecord that is different from but visually
   // equivalent to item1's.
   DrawingDisplayItem zero_translated(
-      client_->Id(), DisplayItem::kDocumentBackground,
-      EnclosingIntRect(bounds1), CreateRectRecordWithTranslate(bounds1, 0, 0),
+      client_->Id(), DisplayItem::kDocumentBackground, ToEnclosingRect(bounds1),
+      CreateRectRecordWithTranslate(bounds1, 0, 0),
       client_->VisualRectOutsetForRasterEffects());
 
-  FloatRect bounds2(100.5, 100.6, 100.7, 100.8);
+  gfx::RectF bounds2(100.5, 100.6, 100.7, 100.8);
   DrawingDisplayItem item2(client_->Id(), DisplayItem::kDocumentBackground,
-                           EnclosingIntRect(bounds1), CreateRectRecord(bounds2),
+                           ToEnclosingRect(bounds1), CreateRectRecord(bounds2),
                            client_->VisualRectOutsetForRasterEffects());
 
   DrawingDisplayItem empty_item(client_->Id(), DisplayItem::kDocumentBackground,
-                                IntRect(), nullptr,
+                                gfx::Rect(), nullptr,
                                 client_->VisualRectOutsetForRasterEffects());
 
   EXPECT_TRUE(item1.EqualsForUnderInvalidation(item1));
@@ -132,39 +135,39 @@ TEST_F(DrawingDisplayItemTest, EqualsForUnderInvalidation) {
 }
 
 TEST_F(DrawingDisplayItemTest, SolidColorRect) {
-  FloatRect record_bounds(5, 6, 10, 10);
+  gfx::RectF record_bounds(5, 6, 10, 10);
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          EnclosingIntRect(record_bounds),
+                          ToEnclosingRect(record_bounds),
                           CreateRectRecord(record_bounds),
                           client_->VisualRectOutsetForRasterEffects());
-  EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
+  EXPECT_EQ(gfx::Rect(5, 6, 10, 10), item.VisualRect());
   EXPECT_TRUE(item.IsSolidColor());
 }
 
 TEST_F(DrawingDisplayItemTest, NonSolidColorSnappedRect) {
-  FloatRect record_bounds(5.1, 6.9, 10, 10);
+  gfx::RectF record_bounds(5.1, 6.9, 10, 10);
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          EnclosingIntRect(record_bounds),
+                          ToEnclosingRect(record_bounds),
                           CreateRectRecord(record_bounds),
                           client_->VisualRectOutsetForRasterEffects());
-  EXPECT_EQ(IntRect(5, 6, 11, 11), item.VisualRect());
+  EXPECT_EQ(gfx::Rect(5, 6, 11, 11), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
   EXPECT_FALSE(item.IsSolidColor());
 }
 
 TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
-  FloatRect record_bounds(5, 6, 10, 10);
+  gfx::RectF record_bounds(5, 6, 10, 10);
 
   PaintRecorder recorder;
   cc::PaintCanvas* canvas =
-      recorder.beginRecording(record_bounds.Width(), record_bounds.Height());
-  canvas->drawOval(record_bounds, PaintFlags());
+      recorder.beginRecording(record_bounds.width(), record_bounds.height());
+  canvas->drawOval(gfx::RectFToSkRect(record_bounds), PaintFlags());
 
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          EnclosingIntRect(record_bounds),
+                          ToEnclosingRect(record_bounds),
                           recorder.finishRecordingAsPicture(),
                           client_->VisualRectOutsetForRasterEffects());
-  EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
+  EXPECT_EQ(gfx::Rect(5, 6, 10, 10), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
   EXPECT_FALSE(item.IsSolidColor());
 }
@@ -186,14 +189,14 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
                     flags);
     DrawingDisplayItem item(
         client_->Id(), DisplayItem::Type::kDocumentBackground,
-        IntRect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
+        gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
         RasterEffectOutset::kNone);
 
     auto rect = item.RectKnownToBeOpaque();
     bitmap.eraseColor(SK_ColorBLACK);
     SkiaPaintCanvas(bitmap).drawPicture(item.GetPaintRecord());
-    for (int y = rect.Y(); y < rect.MaxY(); ++y) {
-      for (int x = rect.X(); x < rect.MaxX(); ++x) {
+    for (int y = rect.y(); y < rect.bottom(); ++y) {
+      for (int x = rect.x(); x < rect.right(); ++x) {
         SkColor pixel = bitmap.getColor(x, y);
         EXPECT_EQ(SK_ColorWHITE, pixel)
             << " radius=" << r << " x=" << x << " y=" << y

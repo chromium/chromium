@@ -259,7 +259,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   void SetContentsTo(scoped_refptr<cc::Layer>);
 
   RasterInvalidator& EnsureRasterInvalidator();
-  void InvalidateRaster(const IntRect&);
+  void InvalidateRaster(const gfx::Rect&);
 
   GraphicsLayerClient& client_;
 

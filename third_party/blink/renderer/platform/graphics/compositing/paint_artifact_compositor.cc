@@ -135,13 +135,13 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     return nullptr;
 
   cc::Layer* layer = nullptr;
-  FloatPoint layer_offset;
+  gfx::Vector2dF layer_offset;
   if (pending_layer.GetCompositingType() == PendingLayer::kPreCompositedLayer) {
     DCHECK(pending_layer.GetGraphicsLayer());
     DCHECK(!pending_layer.GetGraphicsLayer()->ShouldCreateLayersAfterPaint());
     layer = &pending_layer.GetGraphicsLayer()->CcLayer();
-    layer_offset = FloatPoint(
-        pending_layer.GetGraphicsLayer()->GetOffsetFromTransformNode());
+    layer_offset = gfx::Vector2dF(gfx::Vector2d(
+        pending_layer.GetGraphicsLayer()->GetOffsetFromTransformNode()));
   } else {
     DCHECK_EQ(pending_layer.GetCompositingType(), PendingLayer::kForeignLayer);
     // UpdateTouchActionRects() depends on the layer's offset, but when the
@@ -152,11 +152,11 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     const auto& foreign_layer_display_item =
         To<ForeignLayerDisplayItem>(pending_layer.FirstDisplayItem());
     layer = foreign_layer_display_item.GetLayer();
-    layer_offset =
-        FloatPoint(foreign_layer_display_item.VisualRect().Location());
+    layer_offset = gfx::Vector2dF(
+        foreign_layer_display_item.VisualRect().OffsetFromOrigin());
   }
-  layer->SetOffsetToTransformParent(gfx::Vector2dF(
-      layer_offset + pending_layer.OffsetOfDecompositedTransforms()));
+  layer->SetOffsetToTransformParent(
+      layer_offset + pending_layer.OffsetOfDecompositedTransforms());
   return layer;
 }
 
@@ -180,7 +180,7 @@ PaintArtifactCompositor::ScrollHitTestLayerForPendingLayer(
     return nullptr;
 
   // We shouldn't decomposite scroll transform nodes.
-  DCHECK_EQ(FloatPoint(), pending_layer.OffsetOfDecompositedTransforms());
+  DCHECK_EQ(gfx::Vector2dF(), pending_layer.OffsetOfDecompositedTransforms());
 
   const auto& scroll_node =
       *pending_layer.ScrollTranslationForScrollHitTestLayer().ScrollNode();
@@ -203,16 +203,14 @@ PaintArtifactCompositor::ScrollHitTestLayerForPendingLayer(
   }
 
   scroll_layer->SetOffsetToTransformParent(
-      gfx::Vector2dF(FloatPoint(scroll_node.ContainerRect().Location())));
+      gfx::Vector2dF(scroll_node.ContainerRect().OffsetFromOrigin()));
   // TODO(pdr): The scroll layer's bounds are currently set to the clipped
   // container bounds but this does not include the border. We may want to
   // change this behavior to make non-composited and composited hit testing
   // match (see: crbug.com/753124). To do this, use
-  // |scroll_hit_test->scroll_container_bounds|.
-  auto bounds = scroll_node.ContainerRect().Size();
-  // Set the layer's bounds equal to the container because the scroll layer
-  // does not scroll.
-  scroll_layer->SetBounds(static_cast<gfx::Size>(bounds));
+  // |scroll_hit_test->scroll_container_bounds|. Set the layer's bounds equal
+  // to the container because the scroll layer does not scroll.
+  scroll_layer->SetBounds(scroll_node.ContainerRect().size());
 
   if (scroll_node.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
     scroll_layer->SetNeedsPushProperties();
@@ -289,8 +287,8 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   std::unique_ptr<ContentLayerClientImpl> content_layer_client =
       ClientForPaintChunk(pending_layer.FirstPaintChunk());
 
-  FloatPoint layer_offset = pending_layer.LayerOffset();
-  IntSize layer_bounds = pending_layer.LayerBounds();
+  gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
+  gfx::Size layer_bounds = pending_layer.LayerBounds();
   auto cc_layer = content_layer_client->UpdateCcPictureLayer(
       pending_layer.Chunks(), layer_offset, layer_bounds,
       pending_layer.GetPropertyTreeState());
@@ -301,7 +299,8 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   // here to avoid changing foreign layers. This includes things set by
   // GraphicsLayer on the ContentsLayer() or by video clients etc.
   bool contents_opaque = pending_layer.RectKnownToBeOpaque().Contains(
-      FloatRect(layer_offset, FloatSize(layer_bounds)));
+      gfx::RectF(gfx::PointAtOffsetFromOrigin(layer_offset),
+                 gfx::SizeF(layer_bounds)));
   cc_layer->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_layer->SetContentsOpaqueForText(
@@ -638,7 +637,7 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
 
   if (!path && new_translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
     const auto& translation = new_translation_2d_or_matrix.Translation2D();
-    new_rrect.offset(translation.Width(), translation.Height());
+    new_rrect.offset(translation.x(), translation.y());
     needs_display = !rrect_is_local_ || new_rrect != rrect_;
     translation_2d_or_matrix_ = GeometryMapper::Translation2DOrMatrix();
     rrect_is_local_ = true;
@@ -673,7 +672,7 @@ SynthesizedClip::PaintContentsToDisplayList() {
     cc_list->push<cc::SaveOp>();
     if (translation_2d_or_matrix_.IsIdentityOr2DTranslation()) {
       const auto& translation = translation_2d_or_matrix_.Translation2D();
-      cc_list->push<cc::TranslateOp>(translation.Width(), translation.Height());
+      cc_list->push<cc::TranslateOp>(translation.x(), translation.y());
     } else {
       cc_list->push<cc::ConcatOp>(
           TransformationMatrix::ToSkM44(translation_2d_or_matrix_.Matrix()));

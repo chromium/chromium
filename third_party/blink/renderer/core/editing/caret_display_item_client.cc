@@ -276,13 +276,13 @@ void CaretDisplayItemClient::RecordSelection(
     const PhysicalOffset& paint_offset) {
   PhysicalRect drawing_rect = local_rect_;
   drawing_rect.Move(paint_offset);
-  IntRect paint_rect = PixelSnappedIntRect(drawing_rect);
+  gfx::Rect paint_rect = PixelSnappedIntRect(drawing_rect);
 
   // For the caret, the start and selection selection bounds are recorded as
   // the same edges, with the type marked as CENTER.
   PaintedSelectionBound start = {gfx::SelectionBound::Type::CENTER,
-                                 paint_rect.MinXMinYCorner(),
-                                 paint_rect.MinXMaxYCorner(), false};
+                                 paint_rect.origin(), paint_rect.bottom_left(),
+                                 false};
   PaintedSelectionBound end = start;
 
   context.GetPaintController().RecordSelection(start, end);

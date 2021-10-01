@@ -75,13 +75,12 @@ static void UpdateCcTransformLocalMatrix(
     if (transform_node.ScrollNode()) {
       // Blink creates a 2d transform node just for scroll offset whereas cc's
       // transform node has a special scroll offset field.
-      compositor_node.scroll_offset =
-          gfx::ScrollOffset(-translation.Width(), -translation.Height());
+      compositor_node.scroll_offset = gfx::ScrollOffset(-translation);
       DCHECK(compositor_node.local.IsIdentity());
       DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
     } else {
-      compositor_node.local.matrix().setTranslate(translation.Width(),
-                                                  translation.Height(), 0);
+      compositor_node.local.matrix().setTranslate(translation.x(),
+                                                  translation.y(), 0);
       DCHECK_EQ(FloatPoint3D(), transform_node.Origin());
       compositor_node.origin = gfx::Point3F();
     }
@@ -146,10 +145,7 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
 
   DCHECK(!cc_transform->is_currently_animating);
 
-  auto translation = transform.Translation2D();
-  auto scroll_offset =
-      gfx::ScrollOffset(-translation.Width(), -translation.Height());
-
+  gfx::ScrollOffset scroll_offset(-transform.Translation2D());
   DirectlySetScrollOffset(host, scroll_node->GetCompositorElementId(),
                           scroll_offset);
   if (cc_transform->scroll_offset != scroll_offset) {
@@ -591,9 +587,8 @@ void PropertyTreeManager::CreateCompositorScrollNode(
   cc::ScrollNode& compositor_node = *GetScrollTree().Node(id);
   compositor_node.scrollable = true;
 
-  compositor_node.container_bounds =
-      static_cast<gfx::Size>(scroll_node.ContainerRect().Size());
-  compositor_node.bounds = static_cast<gfx::Size>(scroll_node.ContentsSize());
+  compositor_node.container_bounds = scroll_node.ContainerRect().size();
+  compositor_node.bounds = scroll_node.ContentsSize();
   compositor_node.user_scrollable_horizontal =
       scroll_node.UserScrollableHorizontal();
   compositor_node.user_scrollable_vertical =

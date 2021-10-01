@@ -66,7 +66,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   auto* transformed_element = GetDocument().getElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(FloatSize(100, 100),
+  EXPECT_EQ(gfx::Vector2dF(100, 100),
             transformed_properties->Transform()->Translation2D());
 
   // Artifically change the transform node.
@@ -78,7 +78,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   // Should have changed back.
-  EXPECT_EQ(FloatSize(100, 100),
+  EXPECT_EQ(gfx::Vector2dF(100, 100),
             transformed_properties->Transform()->Translation2D());
 }
 
@@ -90,7 +90,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithFrameScroll) {
   GetDocument().domWindow()->scrollTo(0, 100);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(FloatSize(0, -100), FrameScrollTranslation()->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(0, -100), FrameScrollTranslation()->Translation2D());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
@@ -106,7 +106,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
   auto* transformed_element = GetDocument().getElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(FloatSize(100, 100),
+  EXPECT_EQ(gfx::Vector2dF(100, 100),
             transformed_properties->Transform()->Translation2D());
 
   // Invalidate the CSS transform property.
@@ -114,7 +114,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   // The transform should have changed.
-  EXPECT_EQ(FloatSize(200, 200),
+  EXPECT_EQ(gfx::Vector2dF(200, 200),
             transformed_properties->Transform()->Translation2D());
 }
 

@@ -15,7 +15,7 @@ namespace blink {
 
 struct SameSizeAsDisplayItem {
   void* pointer;
-  IntRect rect;
+  gfx::Rect rect;
   uint32_t i1;
   uint32_t i2;
 };
@@ -227,7 +227,7 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
     json.SetString("invalidation", PaintInvalidationReasonToString(
                                        GetPaintInvalidationReason()));
   }
-  json.SetString("visualRect", VisualRect().ToString());
+  json.SetString("visualRect", String(VisualRect().ToString()));
   if (GetRasterEffectOutset() != RasterEffectOutset::kNone) {
     json.SetDouble(
         "outset",

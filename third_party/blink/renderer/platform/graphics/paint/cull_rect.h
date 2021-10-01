@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 #include <limits>
 
@@ -27,20 +27,18 @@ class PLATFORM_EXPORT CullRect {
 
  public:
   CullRect() = default;
-  explicit CullRect(const IntRect& rect) : rect_(rect) {}
+  explicit CullRect(const gfx::Rect& rect) : rect_(rect) {}
 
   static CullRect Infinite() { return CullRect(LayoutRect::InfiniteIntRect()); }
 
   bool IsInfinite() const { return rect_ == LayoutRect::InfiniteIntRect(); }
 
-  bool Intersects(const IntRect&) const;
+  bool Intersects(const gfx::Rect&) const;
   bool IntersectsTransformed(const AffineTransform&, const FloatRect&) const;
   bool IntersectsHorizontalRange(LayoutUnit lo, LayoutUnit hi) const;
   bool IntersectsVerticalRange(LayoutUnit lo, LayoutUnit hi) const;
 
-  void MoveBy(const IntPoint& offset);
-  void Move(const IntSize& offset);
-  void Move(const FloatSize& offset);
+  void Move(const gfx::Vector2d& offset);
 
   // Applies one transform to the cull rect. Before this function is called,
   // the cull rect is in the space of the parent the transform node.
@@ -57,9 +55,9 @@ class PLATFORM_EXPORT CullRect {
                             const PropertyTreeState& destination,
                             const absl::optional<CullRect>& old_cull_rect);
 
-  const IntRect& Rect() const { return rect_; }
+  const gfx::Rect& Rect() const { return rect_; }
 
-  String ToString() const { return rect_.ToString(); }
+  String ToString() const { return String(rect_.ToString()); }
 
  private:
   friend class CullRectTest;
@@ -89,9 +87,9 @@ class PLATFORM_EXPORT CullRect {
       const PropertyTreeState& destination);
 
   bool ChangedEnough(const CullRect& old_cull_rect,
-                     const absl::optional<IntRect>& expansion_bounds) const;
+                     const absl::optional<gfx::Rect>& expansion_bounds) const;
 
-  IntRect rect_;
+  gfx::Rect rect_;
 };
 
 inline bool operator==(const CullRect& a, const CullRect& b) {
@@ -102,7 +100,7 @@ inline bool operator!=(const CullRect& a, const CullRect& b) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, const CullRect& cull_rect) {
-  return os << cull_rect.Rect();
+  return os << cull_rect.ToString();
 }
 
 }  // namespace blink

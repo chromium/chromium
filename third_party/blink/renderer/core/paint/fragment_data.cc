@@ -174,14 +174,14 @@ void FragmentData::SetClipPathCache(const IntRect& bounding_box,
 }
 
 void FragmentData::MapRectToFragment(const FragmentData& fragment,
-                                     IntRect& rect) const {
+                                     gfx::Rect& rect) const {
   if (this == &fragment)
     return;
   const auto& from_transform = LocalBorderBoxProperties().Transform();
   const auto& to_transform = fragment.LocalBorderBoxProperties().Transform();
-  rect.MoveBy(RoundedIntPoint(PaintOffset()));
+  rect.Offset(gfx::Vector2d(RoundedIntPoint(PaintOffset())));
   GeometryMapper::SourceToDestinationRect(from_transform, to_transform, rect);
-  rect.MoveBy(-RoundedIntPoint(fragment.PaintOffset()));
+  rect.Offset(gfx::Vector2d(-RoundedIntPoint(fragment.PaintOffset())));
 }
 
 }  // namespace blink

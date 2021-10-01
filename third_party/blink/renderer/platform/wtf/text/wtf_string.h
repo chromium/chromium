@@ -81,6 +81,7 @@ class WTF_EXPORT String {
   // Construct a string with latin1 data.
   String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
+  explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
 
 #if defined(ARCH_CPU_64_BITS)
   // Only define size_t constructors if size_t is 64 bit otherwise

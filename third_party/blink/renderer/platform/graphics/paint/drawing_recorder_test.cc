@@ -17,7 +17,7 @@ using DrawingRecorderTest = PaintControllerTestBase;
 
 namespace {
 
-const IntRect kBounds(1, 2, 3, 4);
+const gfx::Rect kBounds(1, 2, 3, 4);
 
 TEST_F(DrawingRecorderTest, Nothing) {
   FakeDisplayItemClient& client =

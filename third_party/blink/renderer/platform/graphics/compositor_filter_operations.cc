@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -106,11 +107,10 @@ bool CompositorFilterOperations::IsEmpty() const {
   return filter_operations_.IsEmpty();
 }
 
-FloatRect CompositorFilterOperations::MapRect(
-    const FloatRect& input_rect) const {
-  gfx::Rect result =
-      filter_operations_.MapRect(EnclosingIntRect(input_rect), SkMatrix::I());
-  return FloatRect(result.x(), result.y(), result.width(), result.height());
+gfx::RectF CompositorFilterOperations::MapRect(
+    const gfx::RectF& input_rect) const {
+  return gfx::RectF(filter_operations_.MapRect(gfx::ToEnclosingRect(input_rect),
+                                               SkMatrix::I()));
 }
 
 bool CompositorFilterOperations::HasFilterThatMovesPixels() const {

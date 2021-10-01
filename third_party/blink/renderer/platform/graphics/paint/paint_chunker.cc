@@ -122,9 +122,9 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
   bool created_new_chunk = EnsureCurrentChunk(item.GetId(), client);
   auto& chunk = chunks_->back();
 
-  chunk.bounds.Unite(item.VisualRect());
+  chunk.bounds.Union(item.VisualRect());
   if (item.DrawsContent())
-    chunk.drawable_bounds.Unite(item.VisualRect());
+    chunk.drawable_bounds.Union(item.VisualRect());
 
   // If this paints the background and it's larger than our current candidate,
   // set the candidate to be this item.
@@ -136,8 +136,9 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
 
   if (should_compute_contents_opaque_ && item.IsDrawing()) {
     const DrawingDisplayItem& drawing = To<DrawingDisplayItem>(item);
-    chunk.rect_known_to_be_opaque = MaximumCoveredRect(
-        chunk.rect_known_to_be_opaque, drawing.RectKnownToBeOpaque());
+    chunk.rect_known_to_be_opaque =
+        gfx::Rect(MaximumCoveredRect(IntRect(chunk.rect_known_to_be_opaque),
+                                     IntRect(drawing.RectKnownToBeOpaque())));
     if (chunk.text_known_to_be_on_opaque_background) {
       if (const auto* paint_record = drawing.GetPaintRecord().get()) {
         if (paint_record->has_draw_text_ops()) {
@@ -171,7 +172,7 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
 
 bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
                                                 const DisplayItemClient& client,
-                                                const IntRect& rect,
+                                                const gfx::Rect& rect,
                                                 TouchAction touch_action,
                                                 bool blocking_wheel) {
   // In CompositeAfterPaint, we ensure a paint chunk for correct composited
@@ -186,7 +187,7 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
 
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   auto& chunk = chunks_->back();
-  chunk.bounds.Unite(rect);
+  chunk.bounds.Union(rect);
   if (touch_action != TouchAction::kAuto) {
     chunk.EnsureHitTestData().touch_action_rects.push_back(
         TouchActionRect{rect, touch_action});
@@ -209,12 +210,12 @@ void PaintChunker::AddSelectionToCurrentChunk(
 
 #if DCHECK_IS_ON()
   if (start) {
-    IntRect edge_rect(start->edge_start, start->edge_end - start->edge_start);
+    gfx::Rect edge_rect = gfx::BoundingRect(start->edge_start, start->edge_end);
     DCHECK(chunk.bounds.Contains(edge_rect));
   }
 
   if (end) {
-    IntRect edge_rect(end->edge_start, end->edge_end - end->edge_start);
+    gfx::Rect edge_rect = gfx::BoundingRect(end->edge_start, end->edge_end);
     DCHECK(chunk.bounds.Contains(edge_rect));
   }
 #endif
@@ -235,7 +236,7 @@ void PaintChunker::CreateScrollHitTestChunk(
     const PaintChunk::Id& id,
     const DisplayItemClient& client,
     const TransformPaintPropertyNode* scroll_translation,
-    const IntRect& rect) {
+    const gfx::Rect& rect) {
 #if DCHECK_IS_ON()
   if (id.type == DisplayItem::Type::kResizerScrollHitTest ||
       id.type == DisplayItem::Type::kPluginScrollHitTest ||
@@ -257,7 +258,7 @@ void PaintChunker::CreateScrollHitTestChunk(
   DCHECK(created_new_chunk);
 
   auto& chunk = chunks_->back();
-  chunk.bounds.Unite(rect);
+  chunk.bounds.Union(rect);
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
   hit_test_data.scroll_hit_test_rect = rect;
@@ -274,8 +275,8 @@ bool PaintChunker::ProcessBackgroundColorCandidate(
 
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   float min_background_area = kMinBackgroundColorCoverageRatio *
-                              chunks_->back().bounds.Width() *
-                              chunks_->back().bounds.Height();
+                              chunks_->back().bounds.width() *
+                              chunks_->back().bounds.height();
   if (created_new_chunk || area >= candidate_background_area_ ||
       area >= min_background_area) {
     candidate_background_color_ =

@@ -8,16 +8,16 @@
 #include <algorithm>
 
 #include "base/dcheck_is_on.h"
+#include "base/notreached.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -42,8 +42,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct State {
-    IntRect container_rect;
-    IntSize contents_size;
+    gfx::Rect container_rect;
+    gfx::Size contents_size;
     bool user_scrollable_horizontal = false;
     bool user_scrollable_vertical = false;
 
@@ -135,10 +135,10 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   // the parent of the associated transform node (ScrollTranslation).
   // It doesn't include non-overlay scrollbars. Overlay scrollbars do not affect
   // the rect.
-  const IntRect& ContainerRect() const { return state_.container_rect; }
+  const gfx::Rect& ContainerRect() const { return state_.container_rect; }
 
   // Size of the contents that is scrolled within the container rect.
-  const IntSize& ContentsSize() const { return state_.contents_size; }
+  const gfx::Size& ContentsSize() const { return state_.contents_size; }
 
   bool UserScrollableHorizontal() const {
     return state_.user_scrollable_horizontal;

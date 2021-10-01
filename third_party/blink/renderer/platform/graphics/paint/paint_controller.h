@@ -144,7 +144,7 @@ class PLATFORM_EXPORT PaintController {
   }
 
   void RecordHitTestData(const DisplayItemClient&,
-                         const IntRect&,
+                         const gfx::Rect&,
                          TouchAction,
                          bool);
 
@@ -152,7 +152,7 @@ class PLATFORM_EXPORT PaintController {
       const DisplayItemClient&,
       DisplayItem::Type,
       const TransformPaintPropertyNode* scroll_translation,
-      const IntRect&);
+      const gfx::Rect&);
 
   void RecordSelection(absl::optional<PaintedSelectionBound> start,
                        absl::optional<PaintedSelectionBound> end);
@@ -164,7 +164,7 @@ class PLATFORM_EXPORT PaintController {
   wtf_size_t NumNewChunks() const {
     return new_paint_artifact_->PaintChunks().size();
   }
-  const IntRect& LastChunkBounds() const {
+  const gfx::Rect& LastChunkBounds() const {
     return new_paint_artifact_->PaintChunks().back().bounds;
   }
 

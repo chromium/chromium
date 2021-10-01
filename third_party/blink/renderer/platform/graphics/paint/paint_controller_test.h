@@ -35,17 +35,17 @@ class PaintControllerTestBase : public testing::Test {
                           DisplayItem::Type type) {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
-    DrawingRecorder recorder(context, client, type, IntRect());
+    DrawingRecorder recorder(context, client, type, gfx::Rect());
   }
 
   static void DrawRect(GraphicsContext& context,
                        const DisplayItemClient& client,
                        DisplayItem::Type type,
-                       const IntRect& bounds) {
+                       const gfx::Rect& bounds) {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
     DrawingRecorder recorder(context, client, type, bounds);
-    context.DrawRect(bounds, AutoDarkMode::Disabled());
+    context.DrawRect(IntRect(bounds), AutoDarkMode::Disabled());
   }
 
  protected:
@@ -143,7 +143,7 @@ inline bool CheckChunk(const PaintChunk& chunk,
                        const PaintChunk::Id& id,
                        const PropertyTreeStateOrAlias& properties,
                        const HitTestData* hit_test_data = nullptr,
-                       const IntRect* bounds = nullptr) {
+                       const gfx::Rect* bounds = nullptr) {
   return chunk.begin_index == begin && chunk.end_index == end &&
          chunk.id == id && chunk.properties == properties &&
          ((!chunk.hit_test_data && !hit_test_data) ||

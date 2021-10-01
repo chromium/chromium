@@ -39,7 +39,7 @@ bool RasterInvalidationTracking::IsTracingRasterInvalidations() {
 void RasterInvalidationTracking::AddInvalidation(
     DisplayItemClientId client_id,
     const String& debug_name,
-    const IntRect& rect,
+    const gfx::Rect& rect,
     PaintInvalidationReason reason) {
   if (rect.IsEmpty())
     return;
@@ -53,22 +53,22 @@ void RasterInvalidationTracking::AddInvalidation(
 
   // TODO(crbug.com/496260): Some antialiasing effects overflow the paint
   // invalidation rect.
-  IntRect r = rect;
-  r.Inflate(1);
-  invalidation_region_since_last_paint_.Unite(r);
+  gfx::Rect r = rect;
+  r.Outset(1);
+  invalidation_region_since_last_paint_.Unite(IntRect(r));
 }
 
 static bool CompareRasterInvalidationInfo(const RasterInvalidationInfo& a,
                                           const RasterInvalidationInfo& b) {
   // Sort by rect first, bigger rects before smaller ones.
-  if (a.rect.Width() != b.rect.Width())
-    return a.rect.Width() > b.rect.Width();
-  if (a.rect.Height() != b.rect.Height())
-    return a.rect.Height() > b.rect.Height();
-  if (a.rect.X() != b.rect.X())
-    return a.rect.X() > b.rect.X();
-  if (a.rect.Y() != b.rect.Y())
-    return a.rect.Y() > b.rect.Y();
+  if (a.rect.width() != b.rect.width())
+    return a.rect.width() > b.rect.width();
+  if (a.rect.height() != b.rect.height())
+    return a.rect.height() > b.rect.height();
+  if (a.rect.x() != b.rect.x())
+    return a.rect.x() > b.rect.x();
+  if (a.rect.y() != b.rect.y())
+    return a.rect.y() > b.rect.y();
 
   // Then compare clientDebugName, in alphabetic order.
   int name_compare_result =
@@ -86,7 +86,7 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json, bool detailed) const {
     auto sorted = invalidations_;
     std::sort(sorted.begin(), sorted.end(), &CompareRasterInvalidationInfo);
     auto invalidations_json = std::make_unique<JSONArray>();
-    IntRect last_rect;
+    gfx::Rect last_rect;
     for (auto* it = sorted.begin(); it != sorted.end(); it++) {
       const auto& info = *it;
       if (detailed) {
@@ -155,7 +155,7 @@ static bool PixelsDiffer(SkColor p1, SkColor p2) {
 void RasterInvalidationTracking::CheckUnderInvalidations(
     const String& layer_debug_name,
     sk_sp<PaintRecord> new_record,
-    const IntRect& new_interest_rect) {
+    const gfx::Rect& new_interest_rect) {
   auto old_interest_rect = last_interest_rect_;
   Region invalidation_region;
   if (!g_simulate_raster_under_invalidations)
@@ -169,33 +169,33 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
   if (!old_record)
     return;
 
-  IntRect rect = Intersection(old_interest_rect, new_interest_rect);
+  gfx::Rect rect = gfx::IntersectRects(old_interest_rect, new_interest_rect);
   if (rect.IsEmpty())
     return;
 
   SkBitmap old_bitmap;
   old_bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(rect.Width(), rect.Height()));
+      SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   {
     SkiaPaintCanvas canvas(old_bitmap);
     canvas.clear(SK_ColorTRANSPARENT);
-    canvas.translate(-rect.X(), -rect.Y());
+    canvas.translate(-rect.x(), -rect.y());
     canvas.drawPicture(std::move(old_record));
   }
 
   SkBitmap new_bitmap;
   new_bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(rect.Width(), rect.Height()));
+      SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   {
     SkiaPaintCanvas canvas(new_bitmap);
     canvas.clear(SK_ColorTRANSPARENT);
-    canvas.translate(-rect.X(), -rect.Y());
+    canvas.translate(-rect.x(), -rect.y());
     canvas.drawPicture(std::move(new_record));
   }
 
   int mismatching_pixels = 0;
   static const int kMaxMismatchesToReport = 50;
-  for (int bitmap_y = 0; bitmap_y < rect.Height(); ++bitmap_y) {
+  for (int bitmap_y = 0; bitmap_y < rect.height(); ++bitmap_y) {
     // In the common case of no under-invalidation, memcmp/memset is much faster
     // than the pixel-by-pixel comparison below.
     void* new_row_addr = new_bitmap.pixmap().writable_addr(0, bitmap_y);
@@ -205,9 +205,9 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
       continue;
     }
 
-    int layer_y = bitmap_y + rect.Y();
-    for (int bitmap_x = 0; bitmap_x < rect.Width(); ++bitmap_x) {
-      int layer_x = bitmap_x + rect.X();
+    int layer_y = bitmap_y + rect.y();
+    for (int bitmap_x = 0; bitmap_x < rect.width(); ++bitmap_x) {
+      int layer_x = bitmap_x + rect.x();
       SkColor old_pixel = old_bitmap.getColor(bitmap_x, bitmap_y);
       SkColor new_pixel = new_bitmap.getColor(bitmap_x, bitmap_y);
       if (PixelsDiffer(old_pixel, new_pixel) &&
@@ -236,12 +236,12 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     return;
 
   PaintRecorder recorder;
-  recorder.beginRecording(rect);
+  recorder.beginRecording(gfx::RectToSkRect(rect));
   auto* canvas = recorder.getRecordingCanvas();
   if (under_invalidation_record_)
     canvas->drawPicture(std::move(under_invalidation_record_));
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(new_bitmap)),
-                    rect.X(), rect.Y());
+                    rect.x(), rect.y());
   under_invalidation_record_ = recorder.finishRecordingAsPicture();
 }
 

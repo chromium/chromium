@@ -49,13 +49,13 @@ TEST_P(SelectionBoundsRecorderTest, SelectAll) {
   PaintedSelectionBound start =
       chunks.begin()->layer_selection_data->start.value();
   EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
-  EXPECT_EQ(start.edge_start, IntPoint(8, 8));
-  EXPECT_EQ(start.edge_end, IntPoint(8, 9));
+  EXPECT_EQ(start.edge_start, gfx::Point(8, 8));
+  EXPECT_EQ(start.edge_end, gfx::Point(8, 9));
 
   PaintedSelectionBound end = chunks.begin()->layer_selection_data->end.value();
   EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
-  EXPECT_EQ(end.edge_start, IntPoint(9, 10));
-  EXPECT_EQ(end.edge_end, IntPoint(9, 11));
+  EXPECT_EQ(end.edge_start, gfx::Point(9, 10));
+  EXPECT_EQ(end.edge_end, gfx::Point(9, 11));
 }
 
 TEST_P(SelectionBoundsRecorderTest, SelectMultiline) {
@@ -75,13 +75,13 @@ TEST_P(SelectionBoundsRecorderTest, SelectMultiline) {
   PaintedSelectionBound start =
       chunks.begin()->layer_selection_data->start.value();
   EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
-  EXPECT_EQ(start.edge_start, IntPoint(8, 8));
-  EXPECT_EQ(start.edge_end, IntPoint(8, 9));
+  EXPECT_EQ(start.edge_start, gfx::Point(8, 8));
+  EXPECT_EQ(start.edge_end, gfx::Point(8, 9));
 
   PaintedSelectionBound end = chunks.begin()->layer_selection_data->end.value();
   EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
-  EXPECT_EQ(end.edge_start, IntPoint(9, 10));
-  EXPECT_EQ(end.edge_end, IntPoint(9, 11));
+  EXPECT_EQ(end.edge_start, gfx::Point(9, 10));
+  EXPECT_EQ(end.edge_end, gfx::Point(9, 11));
 }
 
 TEST_P(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
@@ -107,13 +107,13 @@ TEST_P(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
   PaintedSelectionBound start =
       chunks.begin()->layer_selection_data->start.value();
   EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
-  EXPECT_EQ(start.edge_start, IntPoint(30, 0));
-  EXPECT_EQ(start.edge_end, IntPoint(30, 10));
+  EXPECT_EQ(start.edge_start, gfx::Point(30, 0));
+  EXPECT_EQ(start.edge_end, gfx::Point(30, 10));
 
   PaintedSelectionBound end = chunks.begin()->layer_selection_data->end.value();
   EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
-  EXPECT_EQ(end.edge_start, IntPoint(0, 20));
-  EXPECT_EQ(end.edge_end, IntPoint(0, 30));
+  EXPECT_EQ(end.edge_start, gfx::Point(0, 20));
+  EXPECT_EQ(end.edge_end, gfx::Point(0, 30));
 }
 
 TEST_P(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
@@ -147,8 +147,8 @@ TEST_P(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
   PaintedSelectionBound start =
       chunk_iterator->layer_selection_data->start.value();
   EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
-  EXPECT_EQ(start.edge_start, IntPoint(30, 0));
-  EXPECT_EQ(start.edge_end, IntPoint(30, 10));
+  EXPECT_EQ(start.edge_start, gfx::Point(30, 0));
+  EXPECT_EQ(start.edge_end, gfx::Point(30, 10));
 
   // Skip the middle div as well to get to the third div where the end of the
   // selection is.
@@ -159,8 +159,8 @@ TEST_P(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
   PaintedSelectionBound end = chunk_iterator->layer_selection_data->end.value();
   EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
   // Coordinates are chunk-relative, so they should start at 0 y coordinate.
-  EXPECT_EQ(end.edge_start, IntPoint(0, 0));
-  EXPECT_EQ(end.edge_end, IntPoint(0, 10));
+  EXPECT_EQ(end.edge_start, gfx::Point(0, 0));
+  EXPECT_EQ(end.edge_end, gfx::Point(0, 10));
 
   // Move the selection around the start and end of the second div.
   local_frame->Selection().SetSelectionAndEndTyping(
@@ -190,13 +190,13 @@ TEST_P(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
   EXPECT_TRUE(chunk_iterator->layer_selection_data->end.has_value());
   start = chunk_iterator->layer_selection_data->start.value();
   EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
-  EXPECT_EQ(start.edge_start, IntPoint(0, 0));
-  EXPECT_EQ(start.edge_end, IntPoint(0, 10));
+  EXPECT_EQ(start.edge_start, gfx::Point(0, 0));
+  EXPECT_EQ(start.edge_end, gfx::Point(0, 10));
 
   end = chunk_iterator->layer_selection_data->end.value();
   EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
-  EXPECT_EQ(end.edge_start, IntPoint(30, 0));
-  EXPECT_EQ(end.edge_end, IntPoint(30, 10));
+  EXPECT_EQ(end.edge_start, gfx::Point(30, 0));
+  EXPECT_EQ(end.edge_end, gfx::Point(30, 10));
 
   // Third div's chunk should no longer have an end value.
   ++chunk_iterator;

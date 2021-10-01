@@ -414,8 +414,9 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     gfx::Size old_layer_size(raster_invalidator.LayerBounds());
     PropertyTreeState property_tree_state = GetPropertyTreeState().Unalias();
     EnsureRasterInvalidator().Generate(
-        raster_invalidation_function_, chunks, FloatPoint(layer_state_->offset),
-        IntSize(Size()), property_tree_state, this->Id());
+        raster_invalidation_function_, chunks,
+        gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+        Size(), property_tree_state, this->Id());
 
     absl::optional<RasterUnderInvalidationCheckingParams>
         raster_under_invalidation_params;
@@ -432,7 +433,8 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     if (raster_invalidated_ || !cc_display_item_list_ ||
         old_layer_size != Size() || raster_under_invalidation_params) {
       cc_display_item_list_ = PaintChunksToCcLayer::Convert(
-          chunks, property_tree_state, FloatPoint(layer_state_->offset),
+          chunks, property_tree_state,
+          gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
           cc::DisplayItemList::kTopLevelDisplayItemList,
           base::OptionalOrNullptr(raster_under_invalidation_params));
       raster_invalidated_ = false;
@@ -647,7 +649,7 @@ void GraphicsLayer::InvalidateContents() {
   }
 }
 
-void GraphicsLayer::InvalidateRaster(const IntRect& rect) {
+void GraphicsLayer::InvalidateRaster(const gfx::Rect& rect) {
   DCHECK(PaintsContentOrHitTest());
   raster_invalidated_ = true;
   CcLayer().SetNeedsDisplayRect(rect);

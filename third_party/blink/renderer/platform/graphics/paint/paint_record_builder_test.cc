@@ -21,8 +21,8 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   auto& context = builder->Context();
   FakeDisplayItemClient& client =
       *MakeGarbageCollected<FakeDisplayItemClient>("client");
-  DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
-  DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
+  DrawRect(context, client, kBackgroundType, gfx::Rect(10, 10, 20, 20));
+  DrawRect(context, client, kForegroundType, gfx::Rect(15, 15, 10, 10));
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 
   MockPaintCanvas canvas;
@@ -50,8 +50,8 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
 
     EXPECT_EQ(&context.GetPaintController(), &GetPaintController());
 
-    DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
-    DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
+    DrawRect(context, client, kBackgroundType, gfx::Rect(10, 10, 20, 20));
+    DrawRect(context, client, kForegroundType, gfx::Rect(15, 15, 10, 10));
     EXPECT_FALSE(ClientCacheIsValid(client));
 
     EXPECT_CALL(canvas, drawPicture(_)).Times(1);
@@ -88,8 +88,8 @@ TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
   {
     PaintController::CycleScope cycle_scope(GetPaintController());
     InitRootChunk();
-    DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
-    DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
+    DrawRect(context, client, kBackgroundType, gfx::Rect(10, 10, 20, 20));
+    DrawRect(context, client, kForegroundType, gfx::Rect(15, 15, 10, 10));
     GetPaintController().CommitNewDisplayItems();
   }
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
@@ -101,7 +101,7 @@ TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
     PaintController::CycleScope cycle_scope(GetPaintController());
     EXPECT_NE(&builder->Context().GetPaintController(), &GetPaintController());
     DrawRect(builder->Context(), client, kBackgroundType,
-             IntRect(10, 10, 20, 20));
+             gfx::Rect(10, 10, 20, 20));
     builder->EndRecording();
   }
 

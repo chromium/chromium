@@ -151,13 +151,13 @@ struct PLATFORM_EXPORT PaintChunk {
   // It's in the coordinate space of the containing transform node. This can be
   // larger than |drawble_bounds|, because of non-drawable display items and
   // extra bounds.
-  IntRect bounds;
+  gfx::Rect bounds;
 
   // The total bounds of visual rects of drawable display items in this paint
   // chunk.
-  IntRect drawable_bounds;
+  gfx::Rect drawable_bounds;
 
-  IntRect rect_known_to_be_opaque;
+  gfx::Rect rect_known_to_be_opaque;
 
   // Some raster effects can exceed |bounds| in the rasterization space. This
   // is the maximum DisplayItemClient::VisualRectOutsetForRasterEffects() of

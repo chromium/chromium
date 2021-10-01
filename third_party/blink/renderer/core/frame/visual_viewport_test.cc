@@ -419,7 +419,7 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
     UpdateAllLifecyclePhases();
     EXPECT_EQ(TransformationMatrix().Scale(2),
               visual_viewport.GetPageScaleNode()->Matrix());
-    EXPECT_EQ(FloatSize(0, -300),
+    EXPECT_EQ(gfx::Vector2dF(0, -300),
               visual_viewport.GetScrollTranslationNode()->Translation2D());
     EXPECT_EQ(TransformationMatrix().Scale(2).Translate(0, -300),
               GeometryMapper::SourceToDestinationProjection(
@@ -443,7 +443,7 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
     UpdateAllLifecyclePhases();
     EXPECT_EQ(TransformationMatrix().Scale(4),
               visual_viewport.GetPageScaleNode()->Matrix());
-    EXPECT_EQ(FloatSize(0, -75),
+    EXPECT_EQ(gfx::Vector2dF(0, -75),
               visual_viewport.GetScrollTranslationNode()->Translation2D());
     EXPECT_EQ(TransformationMatrix().Scale(4).Translate(0, -75),
               GeometryMapper::SourceToDestinationProjection(
@@ -507,7 +507,7 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
     UpdateAllLifecyclePhases();
     EXPECT_EQ(TransformationMatrix().Scale(2),
               visual_viewport.GetPageScaleNode()->Matrix());
-    EXPECT_EQ(FloatSize(-150, 0),
+    EXPECT_EQ(gfx::Vector2dF(-150, 0),
               visual_viewport.GetScrollTranslationNode()->Translation2D());
     EXPECT_EQ(TransformationMatrix().Scale(2).Translate(-150, 0),
               GeometryMapper::SourceToDestinationProjection(
@@ -530,7 +530,7 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
     UpdateAllLifecyclePhases();
     EXPECT_EQ(TransformationMatrix().Scale(4),
               visual_viewport.GetPageScaleNode()->Matrix());
-    EXPECT_EQ(FloatSize(-150, 0),
+    EXPECT_EQ(gfx::Vector2dF(-150, 0),
               visual_viewport.GetScrollTranslationNode()->Translation2D());
     EXPECT_EQ(TransformationMatrix().Scale(4).Translate(-150, 0),
               GeometryMapper::SourceToDestinationProjection(
@@ -854,7 +854,8 @@ TEST_P(VisualViewportTest, TestAttachingNewFrameSetsInnerScrollLayerSize) {
 
   // Ensure the scroll contents size matches the frame view's size.
   EXPECT_EQ(gfx::Size(320, 240), visual_viewport.LayerForScrolling()->bounds());
-  EXPECT_EQ(IntSize(320, 240), visual_viewport.GetScrollNode()->ContentsSize());
+  EXPECT_EQ(gfx::Size(320, 240),
+            visual_viewport.GetScrollNode()->ContentsSize());
 
   // Ensure the location and scale were reset.
   EXPECT_EQ(FloatSize(), visual_viewport.GetScrollOffset());
@@ -1717,9 +1718,9 @@ TEST_P(VisualViewportTest, TestChangingContentSizeAffectsScrollBounds) {
   const auto* scroll_node =
       frame_view.GetLayoutView()->FirstFragment().PaintProperties()->Scroll();
   float scale = GetFrame()->GetPage()->GetVisualViewport().Scale();
-  EXPECT_EQ(IntSize(100 / scale, 150 / scale),
-            scroll_node->ContainerRect().Size());
-  EXPECT_EQ(IntSize(1500, 2400), scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Size(100 / scale, 150 / scale),
+            scroll_node->ContainerRect().size());
+  EXPECT_EQ(gfx::Size(1500, 2400), scroll_node->ContentsSize());
 }
 
 // Tests that resizing the visual viepwort keeps its bounds within the outer
@@ -2516,18 +2517,20 @@ TEST_F(VisualViewportSimTest, ScrollingContentsSmallerThanContainer) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(gfx::Size(320, 480), visual_viewport.LayerForScrolling()->bounds());
 
-  EXPECT_EQ(IntSize(400, 600),
-            visual_viewport.GetScrollNode()->ContainerRect().Size());
-  EXPECT_EQ(IntSize(320, 480), visual_viewport.GetScrollNode()->ContentsSize());
+  EXPECT_EQ(gfx::Size(400, 600),
+            visual_viewport.GetScrollNode()->ContainerRect().size());
+  EXPECT_EQ(gfx::Size(320, 480),
+            visual_viewport.GetScrollNode()->ContentsSize());
 
   WebView().MainFrameViewWidget()->ApplyViewportChangesForTesting(
       {gfx::ScrollOffset(1, 1), gfx::Vector2dF(), 2, false, 1, 0,
        cc::BrowserControlsState::kBoth});
   EXPECT_EQ(gfx::Size(320, 480), visual_viewport.LayerForScrolling()->bounds());
 
-  EXPECT_EQ(IntSize(400, 600),
-            visual_viewport.GetScrollNode()->ContainerRect().Size());
-  EXPECT_EQ(IntSize(320, 480), visual_viewport.GetScrollNode()->ContentsSize());
+  EXPECT_EQ(gfx::Size(400, 600),
+            visual_viewport.GetScrollNode()->ContainerRect().size());
+  EXPECT_EQ(gfx::Size(320, 480),
+            visual_viewport.GetScrollNode()->ContentsSize());
 }
 
 class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {

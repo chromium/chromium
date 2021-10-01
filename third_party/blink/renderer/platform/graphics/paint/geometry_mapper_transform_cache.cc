@@ -30,7 +30,7 @@ void GeometryMapperTransformCache::Update(
 
   if (node.IsRoot()) {
     DCHECK(node.IsIdentity());
-    to_2d_translation_root_ = FloatSize();
+    to_2d_translation_root_ = gfx::Vector2dF();
     root_of_2d_translation_ = &node;
     plane_root_transform_ = nullptr;
     screen_transform_ = nullptr;
@@ -57,11 +57,11 @@ void GeometryMapperTransformCache::Update(
         plane_root_transform_ = std::make_unique<PlaneRootTransform>();
       plane_root_transform_->plane_root = parent.plane_root();
       plane_root_transform_->to_plane_root = parent.to_plane_root();
-      plane_root_transform_->to_plane_root.Translate(translation.Width(),
-                                                     translation.Height());
+      plane_root_transform_->to_plane_root.Translate(translation.x(),
+                                                     translation.y());
       plane_root_transform_->from_plane_root = parent.from_plane_root();
-      plane_root_transform_->from_plane_root.PostTranslate(
-          -translation.Width(), -translation.Height());
+      plane_root_transform_->from_plane_root.PostTranslate(-translation.x(),
+                                                           -translation.y());
       plane_root_transform_->has_animation =
           parent.plane_root_transform_->has_animation ||
           node.HasActiveTransformAnimation();
@@ -76,7 +76,7 @@ void GeometryMapperTransformCache::Update(
   }
 
   root_of_2d_translation_ = &node;
-  to_2d_translation_root_ = FloatSize();
+  to_2d_translation_root_ = gfx::Vector2dF();
 
   TransformationMatrix local = node.MatrixWithOriginApplied();
   bool is_plane_root = !local.IsFlat() || !local.IsInvertible();
@@ -131,8 +131,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
     screen_transform_->to_screen.FlattenTo2d();
   if (node.IsIdentityOr2DTranslation()) {
     const auto& translation = node.Translation2D();
-    screen_transform_->to_screen.Translate(translation.Width(),
-                                           translation.Height());
+    screen_transform_->to_screen.Translate(translation.x(), translation.y());
   } else {
     screen_transform_->to_screen.Multiply(node.MatrixWithOriginApplied());
   }

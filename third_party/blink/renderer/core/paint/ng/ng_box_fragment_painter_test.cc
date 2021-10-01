@@ -90,7 +90,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
                 1, 1,
                 PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
                 scroller.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, IntRect(0, 0, 40, 40)),
+                &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
             IsPaintChunk(1, 2)));
   } else {
     EXPECT_THAT(
@@ -101,7 +101,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
                 1, 1,
                 PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
                 scroller.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, IntRect(0, 0, 40, 40)),
+                &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
             IsPaintChunk(1, 2)));
   }
 }

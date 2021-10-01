@@ -54,7 +54,7 @@ TEST_P(BoxPainterTest, EmptyDecorationBackground) {
                                PaintChunk::Id(body->Layer()->Id(),
                                               DisplayItem::kLayerChunk),
                                body->FirstFragment().LocalBorderBoxProperties(),
-                               nullptr, IntRect(-2, 0, 202, 350))));
+                               nullptr, gfx::Rect(-2, 0, 202, 350))));
 }
 
 TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
@@ -94,7 +94,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
     HitTestData scroll_hit_test;
     scroll_hit_test.scroll_translation =
         container.FirstFragment().PaintProperties()->ScrollTranslation();
-    scroll_hit_test.scroll_hit_test_rect = IntRect(0, 0, 200, 200);
+    scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
     EXPECT_THAT(
         ContentPaintChunks(),
         ElementsAre(
@@ -107,7 +107,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
                 2, 2,
                 PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
                 container.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, IntRect(0, 0, 200, 200)),
+                &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
             IsPaintChunk(2, 3)));
   } else {
     // Because the frame composited scrolls, no scroll hit test is needed.
@@ -166,7 +166,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
     HitTestData scroll_hit_test;
     scroll_hit_test.scroll_translation =
         container.FirstFragment().PaintProperties()->ScrollTranslation();
-    scroll_hit_test.scroll_hit_test_rect = IntRect(0, 0, 200, 200);
+    scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
     EXPECT_THAT(
         ContentPaintChunks(),
         ElementsAre(
@@ -179,7 +179,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
                 1, 1,
                 PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
                 container.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, IntRect(0, 0, 200, 200)),
+                &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
             IsPaintChunk(
                 1, 3,
                 PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
@@ -239,7 +239,7 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
       container.FirstFragment().ContentsProperties();
   scroll_hit_test_data.scroll_translation =
       container.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test_data.scroll_hit_test_rect = IntRect(0, 0, 200, 200);
+  scroll_hit_test_data.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
   EXPECT_THAT(
       paint_chunks,
       ElementsAre(
@@ -251,7 +251,7 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
           IsPaintChunk(
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
-              &scroll_hit_test_data, IntRect(0, 0, 200, 200)),
+              &scroll_hit_test_data, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(2, 3,
                        PaintChunk::Id(container.Id(),
                                       kClippedContentsBackgroundChunkType),
@@ -287,8 +287,8 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
   const auto& contents_transform =
       ToUnaliased(contents_chunk.properties.Transform());
   const auto* contents_scroll = contents_transform.ScrollNode();
-  EXPECT_EQ(IntSize(200, 300), contents_scroll->ContentsSize());
-  EXPECT_EQ(IntRect(0, 0, 200, 200), contents_scroll->ContainerRect());
+  EXPECT_EQ(gfx::Size(200, 300), contents_scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200), contents_scroll->ContainerRect());
   const auto& contents_clip = ToUnaliased(contents_chunk.properties.Clip());
   EXPECT_EQ(FloatRect(0, 0, 200, 200), contents_clip.PaintClipRect().Rect());
 

@@ -84,12 +84,6 @@ class ScopedPaintState {
 
   const FragmentData* FragmentToPaint() const { return fragment_to_paint_; }
 
-  PhysicalRect LocalCullRect() const {
-    PhysicalRect cull_rect(LayoutRect(GetPaintInfo().GetCullRect().Rect()));
-    cull_rect.Move(-PaintOffset());
-    return cull_rect;
-  }
-
   bool LocalRectIntersectsCullRect(const PhysicalRect& local_rect) const {
     return GetPaintInfo().IntersectsCullRect(local_rect, PaintOffset());
   }
