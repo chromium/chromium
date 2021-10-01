@@ -3059,6 +3059,9 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 
 bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const Browser* browser = GetBrowser();
+  const bool in_app =
+      browser && (browser->is_type_app() || browser->is_type_app_popup());
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
          search::DefaultSearchProviderIsGoogle(GetProfile()) &&
 // Build flag for enable_pdf is needed here because the function used does not
@@ -3067,6 +3070,7 @@ bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
          !IsPdfExtensionUrl(GetDocumentURL(params_)) &&
 #endif
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
+         !in_app &&
          GetPrefs(browser_context_)
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else
