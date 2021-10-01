@@ -321,6 +321,11 @@ void LacrosExtensionAppsPublisher::Initialize() {
   profile_manager_observation_.Observe(g_browser_process->profile_manager());
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles) {
+    // TODO(https://crbug.com/1254894): The app id is not stable for secondary
+    // profiles and cannot be stored in sync. Thus, the app cannot be published
+    // at all.
+    if (!profile->IsMainProfile())
+      continue;
     profile_trackers_[profile] =
         std::make_unique<ProfileTracker>(profile, this);
   }
@@ -372,6 +377,11 @@ void LacrosExtensionAppsPublisher::OnAppWindowRemoved(
 }
 
 void LacrosExtensionAppsPublisher::OnProfileAdded(Profile* profile) {
+  // TODO(https://crbug.com/1254894): The app id is not stable for secondary
+  // profiles and cannot be stored in sync. Thus, the app cannot be published
+  // at all.
+  if (!profile->IsMainProfile())
+    return;
   profile_trackers_[profile] = std::make_unique<ProfileTracker>(profile, this);
 }
 
