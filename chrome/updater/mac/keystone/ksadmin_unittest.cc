@@ -9,6 +9,8 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
+#include "chrome/updater/updater_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -37,6 +39,15 @@ TEST(KSAdminTest, ExitsOK) {
   ASSERT_EQ(RunKSAdmin(&out, {}), 0);
   ASSERT_EQ(RunKSAdmin(&out, {"-H"}), 0);
   ASSERT_EQ(RunKSAdmin(&out, {"--unrecognized-argument", "value"}), 0);
+}
+
+TEST(KSAdminTest, PrintVersion) {
+  std::string out;
+  ASSERT_EQ(RunKSAdmin(&out, {"--ksadmin-version"}), 0);
+  ASSERT_EQ(out, base::StrCat({kUpdaterVersion, "\n"}));
+  out.clear();
+  ASSERT_EQ(RunKSAdmin(&out, {"-k"}), 0);
+  ASSERT_EQ(out, base::StrCat({kUpdaterVersion, "\n"}));
 }
 
 }  // namespace updater

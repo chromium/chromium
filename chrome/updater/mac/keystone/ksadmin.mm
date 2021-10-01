@@ -29,6 +29,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -249,8 +250,8 @@ void KSAdminApp::PrintTag() {
 }
 
 void KSAdminApp::PrintVersion() {
-  // TODO(crbug.com/1250524): Implement.
-  Shutdown(1);
+  printf("%s\n", kUpdaterVersion);
+  Shutdown(0);
 }
 
 void KSAdminApp::PrintTickets() {
