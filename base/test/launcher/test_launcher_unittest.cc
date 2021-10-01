@@ -479,6 +479,36 @@ TEST_F(TestLauncherTest, DisablePreTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Tests fail if they produce too much output.
+TEST_F(TestLauncherTest, ExcessiveOutput) {
+  AddMockedTests("Test", {"firstTest"});
+  SetUpExpectCalls();
+  using ::testing::_;
+  command_line->AppendSwitchASCII("test-launcher-retry-limit", "0");
+  command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
+  TestResult test_result = GenerateTestResult(
+      "Test.firstTest", TestResult::TEST_SUCCESS,
+      TimeDelta::FromMilliseconds(30), std::string(500000, 'a'));
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(OnTestResult(&test_launcher, test_result));
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
+// Use command-line switch to allow more output.
+TEST_F(TestLauncherTest, OutputLimitSwitch) {
+  AddMockedTests("Test", {"firstTest"});
+  SetUpExpectCalls();
+  command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
+  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit", "800000");
+  using ::testing::_;
+  TestResult test_result = GenerateTestResult(
+      "Test.firstTest", TestResult::TEST_SUCCESS,
+      TimeDelta::FromMilliseconds(30), std::string(500000, 'a'));
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(OnTestResult(&test_launcher, test_result));
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
 // Shard index must be lesser than total shards
 TEST_F(TestLauncherTest, FaultyShardSetup) {
   command_line->AppendSwitchASCII("test-launcher-total-shards", "2");

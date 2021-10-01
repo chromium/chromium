@@ -286,6 +286,9 @@ class TestLauncher {
   // Maximum number of retries per iteration.
   size_t retry_limit_;
 
+  // Maximum number of output bytes per test.
+  size_t output_bytes_limit_;
+
   // If true will not early exit nor skip retries even if too many tests are
   // broken.
   bool force_run_broken_tests_;
@@ -305,7 +308,7 @@ class TestLauncher {
   StdioRedirect print_test_stdio_;
 
   // Skip disabled tests unless explicitly requested.
-  bool skip_diabled_tests_;
+  bool skip_disabled_tests_;
 
   // Stop test iterations due to failure.
   bool stop_on_failure_;
