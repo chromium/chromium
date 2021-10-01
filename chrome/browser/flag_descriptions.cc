@@ -4151,6 +4151,12 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kDesksTrackpadSwipeImprovementsName[] =
+    "Experiment: Trackpad swiping to switch desks.";
+const char kDesksTrackpadSwipeImprovementsDescription[] =
+    "Adds some modifications to the four finger trackpad gesture which "
+    "switches desks.";
+
 const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "

@@ -7638,6 +7638,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     "Win11StyleMenus")},
 #endif  // defined(OS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-desks-trackpad-swipe-improvements",
+     flag_descriptions::kDesksTrackpadSwipeImprovementsName,
+     flag_descriptions::kDesksTrackpadSwipeImprovementsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableDesksTrackpadSwipeImprovements)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
