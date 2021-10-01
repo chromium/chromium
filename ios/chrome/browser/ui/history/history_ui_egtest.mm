@@ -243,14 +243,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that long press on scrim while search box is enabled dismisses the
 // search controller.
 - (void)testSearchLongPressOnScrimCancelsSearchController {
-// TODO(crbug.com/1254206): Test fails on iOS simulator (iOS 14).
-#if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 14, *)) {
-    EARL_GREY_TEST_DISABLED(
-        @"This test fails on iOS simulato (iOS 14 or newer).");
-  }
-#endif
-
   [self loadTestURLs];
   [self openHistoryPanel];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
