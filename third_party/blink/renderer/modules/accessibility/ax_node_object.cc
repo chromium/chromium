@@ -3220,7 +3220,39 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
 
   // According to the AccName spec, we need to separate controls from text nodes
   // using a space.
-  return previous->IsControl() || next->IsControl();
+  if (previous->IsControl() || next->IsControl())
+    return true;
+
+  if (!RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
+    return false;
+
+  // When |previous| and |next| are in same inline formatting context, we
+  // may have block-in-inline between |previous| and |next|.
+  // For <div>abc<p aria-hidden=true>...</p>def</div>, we have following
+  // layout tree:
+  //    LayoutBlockFlow {DIV}, children are inline
+  //      LayoutText "abc"  <= previous
+  //      LayoutBlockFlow (anonymous) block-in-inline wrapper
+  //        LayoutBlockFlow {P}
+  //          ...
+  //      LayoutText "def" <= next
+  // When block-in-inline disabled, layout tree is:
+  //    LayoutBlockFlow {DIV}, children are block
+  //      LayoutBlockFlow (anonymous)
+  //        LayoutText "abc"  <= previous
+  //      LayoutBlockFlow (anonymous) block-in-inline wrapper
+  //        LayoutBlockFlow {P}
+  //          ...
+  //      LayoutBlockFlow (anonymous)
+  //        LayoutText "def" <= next
+  // See accessibility/name-calc-aria-hidden.html
+  for (auto* layout_object = previous->GetLayoutObject();
+       layout_object != next->GetLayoutObject();
+       layout_object = layout_object->NextInPreOrder()) {
+    if (layout_object->IsBlockInInline())
+      return true;
+  }
+  return false;
 }
 
 String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
