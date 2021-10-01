@@ -613,7 +613,7 @@ void ClientControlledShellSurface::SetExtraTitle(
 }
 
 void ClientControlledShellSurface::SetOrientationLock(
-    ash::OrientationLockType orientation_lock) {
+    chromeos::OrientationType orientation_lock) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetOrientationLock",
                "orientation_lock", static_cast<int>(orientation_lock));
 
@@ -1101,7 +1101,7 @@ void ClientControlledShellSurface::InitializeWindowState(
       frame_visible_button_mask_, frame_enabled_button_mask_));
   UpdateAutoHideFrame();
   UpdateFrameWidth();
-  if (initial_orientation_lock_ != ash::OrientationLockType::kAny)
+  if (initial_orientation_lock_ != chromeos::OrientationType::kAny)
     SetOrientationLock(initial_orientation_lock_);
   if (initial_extra_title_ != std::u16string())
     SetExtraTitle(initial_extra_title_);

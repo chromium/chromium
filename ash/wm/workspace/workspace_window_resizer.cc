@@ -451,8 +451,9 @@ DragTriggerArea GetActiveDragAreaForSnapAndMaximize(
 WorkspaceWindowResizer::SnapType GetSnapType(
     const display::Display& display,
     const gfx::PointF& location_in_screen) {
-  const OrientationLockType orientation = GetSnapDisplayOrientation(display);
-  const bool is_horizontal = IsLandscapeOrientation(orientation);
+  const chromeos::OrientationType orientation =
+      GetSnapDisplayOrientation(display);
+  const bool is_horizontal = chromeos::IsLandscapeOrientation(orientation);
   const DragTriggerArea drag_area = GetActiveDragAreaForSnapAndMaximize(
       location_in_screen, display, is_horizontal);
 
@@ -464,22 +465,22 @@ WorkspaceWindowResizer::SnapType GetSnapType(
   switch (drag_area) {
     case DragTriggerArea::kLeft:
       DCHECK(is_horizontal);
-      return orientation == OrientationLockType::kLandscapePrimary
+      return orientation == chromeos::OrientationType::kLandscapePrimary
                  ? WorkspaceWindowResizer::SnapType::kPrimary
                  : WorkspaceWindowResizer::SnapType::kSecondary;
     case DragTriggerArea::kRight:
       DCHECK(is_horizontal);
-      return orientation == OrientationLockType::kLandscapePrimary
+      return orientation == chromeos::OrientationType::kLandscapePrimary
                  ? WorkspaceWindowResizer::SnapType::kSecondary
                  : WorkspaceWindowResizer::SnapType::kPrimary;
     case DragTriggerArea::kTop:
       DCHECK(!is_horizontal);
-      return orientation == OrientationLockType::kPortraitPrimary
+      return orientation == chromeos::OrientationType::kPortraitPrimary
                  ? WorkspaceWindowResizer::SnapType::kPrimary
                  : WorkspaceWindowResizer::SnapType::kSecondary;
     case DragTriggerArea::kBottom:
       DCHECK(!is_horizontal);
-      return orientation == OrientationLockType::kPortraitPrimary
+      return orientation == chromeos::OrientationType::kPortraitPrimary
                  ? WorkspaceWindowResizer::SnapType::kSecondary
                  : WorkspaceWindowResizer::SnapType::kPrimary;
     case DragTriggerArea::kInvalid:
@@ -1437,9 +1438,9 @@ bool WorkspaceWindowResizer::IsSnapTopOrMaximize(SnapType type) const {
   if (type == SnapType::kMaximize)
     return true;
   switch (GetSnapDisplayOrientation(GetDisplay())) {
-    case OrientationLockType::kPortraitPrimary:
+    case chromeos::OrientationType::kPortraitPrimary:
       return type == SnapType::kPrimary;
-    case OrientationLockType::kPortraitSecondary:
+    case chromeos::OrientationType::kPortraitSecondary:
       return type == SnapType::kSecondary;
     default:
       return false;

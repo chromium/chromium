@@ -74,7 +74,7 @@ ASH_EXPORT gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
 // If vertical snap state is not enabled, returns primary-landscape
 // orientation. Otherwise, returns the current orientation relative to natural
 // orientation of this |display|.
-ash::OrientationLockType GetSnapDisplayOrientation(
+chromeos::OrientationType GetSnapDisplayOrientation(
     const display::Display& display);
 
 // Moves the window to the center of the display.

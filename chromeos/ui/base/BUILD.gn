@@ -13,6 +13,8 @@ component("base") {
 
   sources = [
     "chromeos_ui_constants.h",
+    "display_util.cc",
+    "display_util.h",
     "tablet_state.cc",
     "tablet_state.h",
     "window_pin_type.cc",

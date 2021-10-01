@@ -277,7 +277,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
     test_api.SetDisplayRotation(display::Display::ROTATE_270,
                                 display::Display::RotationSource::ACTIVE);
     EXPECT_EQ(test_api.GetCurrentOrientation(),
-              OrientationLockType::kPortraitPrimary);
+              chromeos::OrientationType::kPortraitPrimary);
     // Enter tablet mode. Avoid TabletModeController::OnGetSwitchStates() from
     // disabling tablet mode.
     base::RunLoop().RunUntilIdle();

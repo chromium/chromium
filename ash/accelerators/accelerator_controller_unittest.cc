@@ -927,21 +927,21 @@ TEST_F(AcceleratorControllerTest, RotateScreenInPhysicalTabletState) {
   EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
   EXPECT_FALSE(screen_orientation_controller->rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   TriggerRotateScreenShortcut();
 
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             screen_orientation_controller->GetCurrentOrientation());
 
   // When the device is no longer used as a tablet, the original rotation will
   // be restored.
   ShellTestApi().SetTabletModeEnabledForTest(false);
   EXPECT_FALSE(tablet_mode_controller->is_in_tablet_physical_state());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
   // User rotation lock remains in place to be restored again when the device
   // goes to physical tablet state again.
@@ -965,14 +965,14 @@ TEST_F(AcceleratorControllerTest,
   EXPECT_TRUE(screen_orientation_controller->IsAutoRotationAllowed());
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
   EXPECT_FALSE(screen_orientation_controller->rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   TriggerRotateScreenShortcut();
 
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             screen_orientation_controller->GetCurrentOrientation());
 }
 
@@ -990,16 +990,16 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
   auto win0 = CreateAppWindow(gfx::Rect{100, 300});
   auto win1 = CreateAppWindow(gfx::Rect{200, 200});
   screen_orientation_controller->LockOrientationForWindow(
-      win0.get(), OrientationLockType::kPortraitPrimary);
+      win0.get(), chromeos::OrientationType::kPortraitPrimary);
   screen_orientation_controller->LockOrientationForWindow(
-      win1.get(), OrientationLockType::kLandscape);
+      win1.get(), chromeos::OrientationType::kLandscape);
 
   // `win0` requests to lock the orientation to only portrait-primary. The
   // shortcut therefore won't be able to change the current rotation at all.
   wm::ActivateWindow(win0.get());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   TriggerRotateScreenShortcut();
@@ -1007,7 +1007,7 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
   // app-locked.
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   // Activate `win1` which allows any landscape orientations (either primary or
@@ -1016,19 +1016,19 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
   wm::ActivateWindow(win1.get());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   TriggerRotateScreenShortcut();
   // User rotation will now be locked.
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
             screen_orientation_controller->GetCurrentOrientation());
   TriggerRotateScreenShortcut();
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   // Hook a mouse device, exiting tablet mode to clamshell mode (but remaining
@@ -1042,21 +1042,21 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
   wm::ActivateWindow(win0.get());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
   TriggerRotateScreenShortcut();
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             screen_orientation_controller->GetCurrentOrientation());
   TriggerRotateScreenShortcut();
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
             screen_orientation_controller->GetCurrentOrientation());
 
   wm::ActivateWindow(win1.get());
   TriggerRotateScreenShortcut();
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             screen_orientation_controller->GetCurrentOrientation());
   TriggerRotateScreenShortcut();
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 }
 
@@ -1660,7 +1660,7 @@ TEST_P(SideVolumeButtonAcceleratorTest, FlipSideVolumeButtonAction) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   base::UserActionTester user_action_tester;
   const ui::Accelerator volume_down(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
@@ -1689,7 +1689,7 @@ TEST_P(SideVolumeButtonAcceleratorTest, FlipSideVolumeButtonAction) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   ProcessInController(volume_down_from_side_volume_button);
   // Tests that the action of side volume button will not be flipped in portrait
   // primary if the button is at the left or right of screen. Otherwise, the
@@ -1704,7 +1704,7 @@ TEST_P(SideVolumeButtonAcceleratorTest, FlipSideVolumeButtonAction) {
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
   ProcessInController(volume_down_from_side_volume_button);
   // Tests that the action of side volume button will not be flipped in
   // landscape secondary if the button is at the left or right of keyboard.
@@ -1719,7 +1719,7 @@ TEST_P(SideVolumeButtonAcceleratorTest, FlipSideVolumeButtonAction) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
   ProcessInController(volume_down_from_side_volume_button);
   // Tests that the action of side volume button will be flipped in portrait
   // secondary if the buttonis at the left or right of screen.

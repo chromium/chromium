@@ -1547,7 +1547,7 @@ TEST_F(SplitViewControllerTest, RotationTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   const gfx::Rect bounds(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
@@ -1572,7 +1572,7 @@ TEST_F(SplitViewControllerTest, RotationTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
 
   bounds_window1 = window1->GetBoundsInScreen();
   bounds_window2 = window2->GetBoundsInScreen();
@@ -1590,7 +1590,7 @@ TEST_F(SplitViewControllerTest, RotationTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
 
   bounds_window1 = window1->GetBoundsInScreen();
   bounds_window2 = window2->GetBoundsInScreen();
@@ -1608,7 +1608,7 @@ TEST_F(SplitViewControllerTest, RotationTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
   bounds_window1 = window1->GetBoundsInScreen();
   bounds_window2 = window2->GetBoundsInScreen();
   bounds_divider =
@@ -1625,7 +1625,7 @@ TEST_F(SplitViewControllerTest, RotationTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
   bounds_window1 = window1->GetBoundsInScreen();
   bounds_window2 = window2->GetBoundsInScreen();
   bounds_divider =
@@ -1695,7 +1695,7 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -1740,7 +1740,7 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
 
   display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -1770,7 +1770,7 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
 
   display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -1802,7 +1802,7 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
 
   display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -1840,7 +1840,7 @@ TEST_F(SplitViewControllerTest,
   aura::test::TestWindowDelegate* delegate1 =
       static_cast<aura::test::TestWindowDelegate*>(window1->delegate());
   ui::test::EventGenerator* generator = GetEventGenerator();
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             GetCurrentScreenOrientation());
   gfx::Rect workarea_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -2352,7 +2352,7 @@ TEST_F(SplitViewControllerTest, DividerClosestRatioOnWorkArea) {
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
   ui::test::EventGenerator* generator = GetEventGenerator();
-  ASSERT_EQ(OrientationLockType::kLandscapePrimary,
+  ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             test_api.GetCurrentOrientation());
 
   const gfx::Rect bounds(0, 0, 200, 200);
@@ -2362,13 +2362,13 @@ TEST_F(SplitViewControllerTest, DividerClosestRatioOnWorkArea) {
 
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
   EXPECT_EQ(divider_closest_ratio(), 0.5f);
 
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             test_api.GetCurrentOrientation());
   EXPECT_EQ(divider_closest_ratio(), 0.5f);
   gfx::Rect divider_bounds =
@@ -2387,7 +2387,7 @@ TEST_F(SplitViewControllerTest, DividerClosestRatioOnWorkArea) {
   // left/top window changes.
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
   EXPECT_EQ(divider_closest_ratio(), 0.67f);
 
@@ -2395,7 +2395,7 @@ TEST_F(SplitViewControllerTest, DividerClosestRatioOnWorkArea) {
   // doesn't changes.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
   EXPECT_EQ(divider_closest_ratio(), 0.33f);
 }
@@ -2951,7 +2951,7 @@ TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
   ASSERT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   constexpr char kDeviceOrientationTablet[] =
       "Ash.SplitView.DeviceOrientation.TabletMode";
@@ -2984,7 +2984,7 @@ TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   ASSERT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationTablet,
       SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
@@ -4016,7 +4016,7 @@ TEST_F(SplitViewTabDraggingTest, DragIndicatorsInPortraitOrientationTest) {
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
   ASSERT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window(
@@ -4039,7 +4039,7 @@ TEST_F(SplitViewTabDraggingTest, DragIndicatorsInPortraitOrientationTest) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   resizer = StartDrag(window.get(), window.get());
   ASSERT_TRUE(resizer.get());
   // Drag the window past the indicators threshold to show the indicators.

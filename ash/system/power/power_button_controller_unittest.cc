@@ -1162,7 +1162,7 @@ TEST_P(PowerButtonControllerWithPositionTest,
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   // Menu is set at the center of the display if it is not in tablet mode.
   OpenPowerButtonMenu();
@@ -1195,7 +1195,7 @@ TEST_P(PowerButtonControllerWithPositionTest,
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   EXPECT_FALSE(IsMenuCentered());
   if (power_button_position() == PowerButtonPosition::LEFT) {
     EXPECT_EQ(animation_transform,
@@ -1217,7 +1217,7 @@ TEST_P(PowerButtonControllerWithPositionTest,
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
   EXPECT_FALSE(IsMenuCentered());
   if (power_button_position() == PowerButtonPosition::LEFT) {
     EXPECT_EQ(animation_transform,
@@ -1239,7 +1239,7 @@ TEST_P(PowerButtonControllerWithPositionTest,
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
   EXPECT_FALSE(IsMenuCentered());
   if (power_button_position() == PowerButtonPosition::LEFT) {
     EXPECT_EQ(animation_transform,
@@ -1331,7 +1331,7 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
   EnableTabletMode(true);
   OpenPowerButtonMenu();
   // Menu's bounds is always inside the display.
@@ -1342,7 +1342,7 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   EXPECT_TRUE(GetPrimaryDisplay().bounds().Contains(
       power_button_test_api_->GetMenuBoundsInScreen()));
 
@@ -1350,7 +1350,7 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
   EXPECT_TRUE(GetPrimaryDisplay().bounds().Contains(
       power_button_test_api_->GetMenuBoundsInScreen()));
 
@@ -1358,7 +1358,7 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
   EXPECT_TRUE(GetPrimaryDisplay().bounds().Contains(
       power_button_test_api_->GetMenuBoundsInScreen()));
 }

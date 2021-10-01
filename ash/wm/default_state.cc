@@ -521,7 +521,7 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
           GetSnappedWindowBoundsInParent(window_state->window(), state_type_);
       base::UmaHistogramEnumeration(
           kSnapWindowDeviceOrientationHistogramName,
-          IsDisplayLayoutHorizontal(
+          chromeos::IsDisplayLayoutHorizontal(
               display::Screen::GetScreen()->GetDisplayNearestWindow(window))
               ? SplitViewMetricsController::DeviceOrientation::kLandscape
               : SplitViewMetricsController::DeviceOrientation::kPortrait);

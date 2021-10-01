@@ -1995,13 +1995,13 @@ TEST_F(ClientControlledShellSurfaceTest, SetOrientationLock) {
   surface->Commit();
 
   shell_surface->SetOrientationLock(
-      ash::OrientationLockType::kLandscapePrimary);
+      chromeos::OrientationType::kLandscapePrimary);
   EXPECT_TRUE(controller->rotation_locked());
   display::Display display(display::Screen::GetScreen()->GetPrimaryDisplay());
   gfx::Size displaySize = display.size();
   EXPECT_GT(displaySize.width(), displaySize.height());
 
-  shell_surface->SetOrientationLock(ash::OrientationLockType::kAny);
+  shell_surface->SetOrientationLock(chromeos::OrientationType::kAny);
   EXPECT_FALSE(controller->rotation_locked());
 
   EnableTabletMode(false);

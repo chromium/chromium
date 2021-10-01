@@ -7,12 +7,11 @@
 
 #include "ash/display/display_configuration_controller.h"
 #include "base/macros.h"
+#include "chromeos/ui/base/display_util.h"
 #include "ui/display/display.h"
 
 namespace ash {
 class ScreenOrientationController;
-
-enum class OrientationLockType;
 
 class ScreenOrientationControllerTestApi {
  public:
@@ -32,9 +31,9 @@ class ScreenOrientationControllerTestApi {
 
   void SetRotationLocked(bool rotation_locked);
 
-  OrientationLockType UserLockedOrientation() const;
+  chromeos::OrientationType UserLockedOrientation() const;
 
-  OrientationLockType GetCurrentOrientation() const;
+  chromeos::OrientationType GetCurrentOrientation() const;
 
   void UpdateNaturalOrientation();
 

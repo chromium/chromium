@@ -21,6 +21,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -144,7 +145,7 @@ std::string GetHistogramNameWithDeviceUIMode(std::string prefix) {
 
 SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
     const display::Display& display) {
-  return IsDisplayLayoutHorizontal(display)
+  return chromeos::IsDisplayLayoutHorizontal(display)
              ? SplitViewMetricsController::DeviceOrientation::kLandscape
              : SplitViewMetricsController::DeviceOrientation::kPortrait;
 }

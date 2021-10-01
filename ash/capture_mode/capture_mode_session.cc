@@ -375,7 +375,7 @@ class CaptureModeSession::CursorSetter {
     // For custom cursors, update the cursor if we need to change between image
     // capture and video capture, if the device scale factor changes, or if the
     // screen orientation changes.
-    const OrientationLockType orientation = GetCurrentScreenOrientation();
+    const chromeos::OrientationType orientation = GetCurrentScreenOrientation();
     const bool is_cursor_changed =
         current_cursor_type != new_cursor_type ||
         (current_cursor_type == ui::mojom::CursorType::kCustom &&
@@ -465,7 +465,7 @@ class CaptureModeSession::CursorSetter {
 
   // Records the current screen orientation. If screen orientation changes, we
   // will need to update the cursor if we're using custom cursor.
-  OrientationLockType current_orientation_;
+  chromeos::OrientationType current_orientation_;
 
   // True if the cursor has reset back to its original cursor. It's to prevent
   // Reset() from setting the cursor to |original_cursor_| more than once.

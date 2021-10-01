@@ -280,7 +280,7 @@ TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   gfx::Point start(0, 100);
   gfx::Point update_and_end(200, 100);
@@ -290,7 +290,7 @@ TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_RELEASED);
   // Left edge swipe back should be cancelled due to screen rotation, so the
   // fling event with velocity larger than |kFlingVelocityForGoingBack| above
@@ -403,7 +403,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   ASSERT_EQ(right_window.get(), window_util::GetActiveWindow());
   gfx::Point start(0, 10);
@@ -438,7 +438,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
 
   SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
@@ -466,7 +466,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
 
   SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
@@ -499,7 +499,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
 
   SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);

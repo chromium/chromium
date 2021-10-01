@@ -95,7 +95,7 @@ void AddWindowAndActivateParent(aura::Window* child, aura::Window* parent) {
   Shell::Get()->activation_client()->ActivateWindow(parent);
 }
 
-void Lock(aura::Window* window, OrientationLockType orientation_lock) {
+void Lock(aura::Window* window, chromeos::OrientationType orientation_lock) {
   Shell::Get()->screen_orientation_controller()->LockOrientationForWindow(
       window, orientation_lock);
 }
@@ -157,7 +157,7 @@ class ScreenOrientationControllerTest : public AshTestBase {
     }
   }
 
-  OrientationLockType UserLockedOrientation() const {
+  chromeos::OrientationType UserLockedOrientation() const {
     ScreenOrientationControllerTestApi test_api(
         Shell::Get()->screen_orientation_controller());
     return test_api.UserLockedOrientation();
@@ -178,7 +178,7 @@ TEST_F(ScreenOrientationControllerTest, LockOrientation) {
   ASSERT_FALSE(RotationLocked());
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
@@ -198,7 +198,7 @@ TEST_F(ScreenOrientationControllerTest, Unlock) {
   ASSERT_FALSE(RotationLocked());
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
@@ -217,11 +217,11 @@ TEST_F(ScreenOrientationControllerTest, OrientationChanges) {
   ASSERT_FALSE(RotationLocked());
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kPortrait);
+  Lock(child_window.get(), chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
 }
 
@@ -237,8 +237,8 @@ TEST_F(ScreenOrientationControllerTest, SecondContentCannotChangeOrientation) {
 
   AddWindowAndActivateParent(child_window1.get(), focus_window1.get());
   AddWindowAndShow(child_window2.get(), focus_window2.get());
-  Lock(child_window1.get(), OrientationLockType::kLandscape);
-  Lock(child_window2.get(), OrientationLockType::kPortrait);
+  Lock(child_window1.get(), chromeos::OrientationType::kLandscape);
+  Lock(child_window2.get(), chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
 }
 
@@ -253,7 +253,7 @@ TEST_F(ScreenOrientationControllerTest, SecondContentCannotUnlock) {
 
   AddWindowAndActivateParent(child_window1.get(), focus_window1.get());
   AddWindowAndShow(child_window2.get(), focus_window2.get());
-  Lock(child_window1.get(), OrientationLockType::kLandscape);
+  Lock(child_window1.get(), chromeos::OrientationType::kLandscape);
   Unlock(child_window2.get());
   EXPECT_TRUE(RotationLocked());
 }
@@ -268,7 +268,7 @@ TEST_F(ScreenOrientationControllerTest, ActiveWindowChangesUpdateLock) {
   std::unique_ptr<aura::Window> focus_window2(CreateAppWindowInShellWithId(1));
 
   AddWindowAndActivateParent(child_window.get(), focus_window1.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   ASSERT_TRUE(RotationLocked());
 
   ::wm::ActivationClient* activation_client = Shell::Get()->activation_client();
@@ -291,8 +291,8 @@ TEST_F(ScreenOrientationControllerTest, ActiveWindowChangesUpdateOrientation) {
   AddWindowAndActivateParent(child_window1.get(), focus_window1.get());
   AddWindowAndShow(child_window2.get(), focus_window2.get());
 
-  Lock(child_window1.get(), OrientationLockType::kLandscape);
-  Lock(child_window2.get(), OrientationLockType::kPortrait);
+  Lock(child_window1.get(), chromeos::OrientationType::kLandscape);
+  Lock(child_window2.get(), chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
 
   ::wm::ActivationClient* activation_client = Shell::Get()->activation_client();
@@ -313,7 +313,7 @@ TEST_F(ScreenOrientationControllerTest, VisibilityChangesLock) {
   std::unique_ptr<aura::Window> child_window = CreateControlWindow();
   std::unique_ptr<aura::Window> focus_window(CreateAppWindowInShellWithId(0));
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   EXPECT_TRUE(RotationLocked());
 
   child_window->Hide();
@@ -333,7 +333,7 @@ TEST_F(ScreenOrientationControllerTest, WindowDestructionRemovesLock) {
   std::unique_ptr<aura::Window> focus_window2(CreateAppWindowInShellWithId(1));
 
   AddWindowAndActivateParent(child_window.get(), focus_window1.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   ASSERT_TRUE(RotationLocked());
 
   focus_window1->RemoveChild(child_window.get());
@@ -358,8 +358,8 @@ TEST_F(ScreenOrientationControllerTest, SplitViewPreventsLock) {
 
   AddWindowAndActivateParent(child_window1.get(), focus_window1.get());
   AddWindowAndShow(child_window2.get(), focus_window2.get());
-  Lock(child_window1.get(), OrientationLockType::kLandscape);
-  Lock(child_window2.get(), OrientationLockType::kPortrait);
+  Lock(child_window1.get(), chromeos::OrientationType::kLandscape);
+  Lock(child_window2.get(), chromeos::OrientationType::kPortrait);
   ASSERT_TRUE(RotationLocked());
 
   split_view_controller()->SnapWindow(focus_window1.get(),
@@ -556,7 +556,7 @@ TEST_F(ScreenOrientationControllerTest, LandscapeOrientationAllowsRotation) {
   EnableTabletMode(true);
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
@@ -579,7 +579,7 @@ TEST_F(ScreenOrientationControllerTest, PortraitOrientationAllowsRotation) {
   EnableTabletMode(true);
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kPortrait);
+  Lock(child_window.get(), chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
@@ -602,7 +602,7 @@ TEST_F(ScreenOrientationControllerTest, OrientationLockDisallowsRotation) {
   EnableTabletMode(true);
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kPortraitPrimary);
+  Lock(child_window.get(), chromeos::OrientationType::kPortraitPrimary);
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
@@ -623,7 +623,7 @@ TEST_F(ScreenOrientationControllerTest, UserRotationLockDisallowsRotation) {
   EnableTabletMode(true);
 
   AddWindowAndActivateParent(child_window.get(), focus_window.get());
-  Lock(child_window.get(), OrientationLockType::kLandscape);
+  Lock(child_window.get(), chromeos::OrientationType::kLandscape);
   Unlock(child_window.get());
 
   SetUserRotationLocked(true);
@@ -680,22 +680,26 @@ TEST_F(ScreenOrientationControllerTest, UserRotationLockedOrientation) {
       Shell::Get()->screen_orientation_controller();
   orientation_controller->ToggleUserRotationLock();
   EXPECT_TRUE(orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            UserLockedOrientation());
 
   orientation_controller->ToggleUserRotationLock();
   SetInternalDisplayRotation(display::Display::ROTATE_270);
   orientation_controller->ToggleUserRotationLock();
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
+            UserLockedOrientation());
 
   orientation_controller->ToggleUserRotationLock();
   SetInternalDisplayRotation(display::Display::ROTATE_180);
   orientation_controller->ToggleUserRotationLock();
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
+            UserLockedOrientation());
 
   orientation_controller->ToggleUserRotationLock();
   SetInternalDisplayRotation(display::Display::ROTATE_90);
   orientation_controller->ToggleUserRotationLock();
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
+            UserLockedOrientation());
   orientation_controller->ToggleUserRotationLock();
 
   SetInternalDisplayRotation(display::Display::ROTATE_270);
@@ -703,22 +707,26 @@ TEST_F(ScreenOrientationControllerTest, UserRotationLockedOrientation) {
   UpdateDisplay("800x1280");
   orientation_controller->ToggleUserRotationLock();
   EXPECT_TRUE(orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
+            UserLockedOrientation());
 
   orientation_controller->ToggleUserRotationLock();
   SetInternalDisplayRotation(display::Display::ROTATE_90);
   orientation_controller->ToggleUserRotationLock();
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            UserLockedOrientation());
 
   orientation_controller->ToggleUserRotationLock();
   SetInternalDisplayRotation(display::Display::ROTATE_180);
   orientation_controller->ToggleUserRotationLock();
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
+            UserLockedOrientation());
 
   orientation_controller->ToggleUserRotationLock();
   SetInternalDisplayRotation(display::Display::ROTATE_270);
   orientation_controller->ToggleUserRotationLock();
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
+            UserLockedOrientation());
   orientation_controller->ToggleUserRotationLock();
 }
 
@@ -743,7 +751,7 @@ TEST_F(ScreenOrientationControllerTest, UserRotationLock) {
   orientation_controller->ToggleUserRotationLock();
   ASSERT_TRUE(orientation_controller->user_rotation_locked());
 
-  Lock(child_window1.get(), OrientationLockType::kPortrait);
+  Lock(child_window1.get(), chromeos::OrientationType::kPortrait);
 
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
 
@@ -765,10 +773,10 @@ TEST_F(ScreenOrientationControllerTest, UserRotationLock) {
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
 
   // Application forced to be landscape.
-  Lock(child_window2.get(), OrientationLockType::kLandscape);
+  Lock(child_window2.get(), chromeos::OrientationType::kLandscape);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
 
-  Lock(child_window1.get(), OrientationLockType::kAny);
+  Lock(child_window1.get(), chromeos::OrientationType::kAny);
   activation_client->ActivateWindow(focus_window1.get());
   // Switching back to any will rotate to user rotation.
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
@@ -820,10 +828,11 @@ TEST_F(ScreenOrientationControllerTest,
       Shell::Get()->screen_orientation_controller();
   orientation_controller->ToggleUserRotationLock();
   EXPECT_TRUE(orientation_controller->user_rotation_locked());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            UserLockedOrientation());
 
   // Apps' requested orientation locks are only applied in UI tablet mode.
-  Lock(window.get(), OrientationLockType::kPortrait);
+  Lock(window.get(), chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
 
   // Exiting to clamshell mode while the device is still physically a tablet
@@ -833,12 +842,14 @@ TEST_F(ScreenOrientationControllerTest,
   EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
   EXPECT_TRUE(orientation_controller->user_rotation_locked());
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            UserLockedOrientation());
 
   // Further requested orientation locks by apps will remain ignored.
-  Lock(window.get(), OrientationLockType::kPortraitSecondary);
+  Lock(window.get(), chromeos::OrientationType::kPortraitSecondary);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            UserLockedOrientation());
 
   // When UI tablet mode triggers again, the most recent app requested
   // orientation lock for the active window will be applied.
@@ -864,19 +875,19 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
   EXPECT_EQ(win0->GetRootWindow(), roots[0]);
   EXPECT_EQ(win1->GetRootWindow(), roots[1]);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
   screen_orientation_controller->LockOrientationForWindow(
-      win0.get(), OrientationLockType::kPortraitPrimary);
+      win0.get(), chromeos::OrientationType::kPortraitPrimary);
   screen_orientation_controller->LockOrientationForWindow(
-      win1.get(), OrientationLockType::kLandscape);
+      win1.get(), chromeos::OrientationType::kLandscape);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   EXPECT_EQ(
-      OrientationLockType::kAny,
+      chromeos::OrientationType::kAny,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
 
   // Enter tablet mode and expect nothing will change until we activate win0.
@@ -885,19 +896,19 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
   // Run a loop for mirror mode to kick in which is triggered asynchronously.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_EQ(OrientationLockType::kLandscape,
+  EXPECT_EQ(chromeos::OrientationType::kLandscape,
             screen_orientation_controller->natural_orientation());
   EXPECT_EQ(win1.get(), window_util::GetActiveWindow());
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   wm::ActivateWindow(win0.get());
   EXPECT_EQ(
-      OrientationLockType::kPortraitPrimary,
+      chromeos::OrientationType::kPortraitPrimary,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   base::RunLoop().RunUntilIdle();
@@ -911,27 +922,27 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
   // rotation.
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
   EXPECT_EQ(
-      OrientationLockType::kPortraitPrimary,
+      chromeos::OrientationType::kPortraitPrimary,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   // Even if you activate `win1`, internal display is not affected and remain
   // locked to the rotation requested by `win0`.
   wm::ActivateWindow(win1.get());
   EXPECT_EQ(
-      OrientationLockType::kPortraitPrimary,
+      chromeos::OrientationType::kPortraitPrimary,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   // Once `win0` is snapped in splitview, it can no longer lock the rotation.
   SplitViewController::Get(win0->GetRootWindow())
       ->SnapWindow(win0.get(), SplitViewController::RIGHT);
   EXPECT_EQ(
-      OrientationLockType::kAny,
+      chromeos::OrientationType::kAny,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
 }
 
@@ -956,19 +967,19 @@ TEST_F(ScreenOrientationControllerTest,
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
-  EXPECT_EQ(OrientationLockType::kLandscape,
+  EXPECT_EQ(chromeos::OrientationType::kLandscape,
             screen_orientation_controller->natural_orientation());
   screen_orientation_controller->LockOrientationForWindow(
-      win0.get(), OrientationLockType::kPortraitPrimary);
+      win0.get(), chromeos::OrientationType::kPortraitPrimary);
 
   // Even with an accelerometer update that would trigger a 0 degree rotation,
   // the rotation of the internal display is locked to 270.
   TriggerLidUpdate(gfx::Vector3dF(0.0f, kMeanGravityFloat, 0.0f));
   EXPECT_EQ(
-      OrientationLockType::kPortraitPrimary,
+      chromeos::OrientationType::kPortraitPrimary,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   // Triggers the move-active-window-between-displays shortcut.
   auto* event_generator = GetEventGenerator();
@@ -984,10 +995,10 @@ TEST_F(ScreenOrientationControllerTest,
   TriggerLidUpdate(gfx::Vector3dF(0.0f, kMeanGravityFloat, 0.0f));
   EXPECT_EQ(win0->GetRootWindow(), roots[1]);
   EXPECT_EQ(
-      OrientationLockType::kAny,
+      chromeos::OrientationType::kAny,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
   // Move the window back to the internal display, and expect that its
   // orientation is locked again by that window.
@@ -995,10 +1006,10 @@ TEST_F(ScreenOrientationControllerTest,
   TriggerLidUpdate(gfx::Vector3dF(0.0f, kMeanGravityFloat, 0.0f));
   EXPECT_EQ(win0->GetRootWindow(), roots[0]);
   EXPECT_EQ(
-      OrientationLockType::kPortraitPrimary,
+      chromeos::OrientationType::kPortraitPrimary,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
+  EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 }
 
 class SupportsClamshellAutoRotation : public ScreenOrientationControllerTest {

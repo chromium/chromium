@@ -2846,7 +2846,7 @@ TEST_F(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   EXPECT_TRUE(split_view_controller()->CanSnapWindow(window.get()));
 
   // Snap the window in this orientation.
@@ -2866,7 +2866,7 @@ TEST_F(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   // Switch back to the first desk, and expect that SplitView is not restored,
   // since the only available window on that desk is not snappable.
@@ -6319,7 +6319,7 @@ TEST_F(PersistentDesksBarTest, DisplayMetricsChanged) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
   const int display_width_after_rotate = GetPrimaryDisplay().bounds().width();
   ASSERT_NE(display_width_before_rotate, display_width_after_rotate);
   EXPECT_EQ(display_width_after_rotate,

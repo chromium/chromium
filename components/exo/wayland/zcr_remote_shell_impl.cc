@@ -1292,27 +1292,27 @@ void remote_surface_set_extra_title(wl_client* client,
       std::u16string(base::UTF8ToUTF16(extra_title)));
 }
 
-ash::OrientationLockType OrientationLock(uint32_t orientation_lock) {
+chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
   switch (orientation_lock) {
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_NONE:
-      return ash::OrientationLockType::kAny;
+      return chromeos::OrientationType::kAny;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_CURRENT:
-      return ash::OrientationLockType::kCurrent;
+      return chromeos::OrientationType::kCurrent;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_PORTRAIT:
-      return ash::OrientationLockType::kPortrait;
+      return chromeos::OrientationType::kPortrait;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_LANDSCAPE:
-      return ash::OrientationLockType::kLandscape;
+      return chromeos::OrientationType::kLandscape;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_PORTRAIT_PRIMARY:
-      return ash::OrientationLockType::kPortraitPrimary;
+      return chromeos::OrientationType::kPortraitPrimary;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_PORTRAIT_SECONDARY:
-      return ash::OrientationLockType::kPortraitSecondary;
+      return chromeos::OrientationType::kPortraitSecondary;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_LANDSCAPE_PRIMARY:
-      return ash::OrientationLockType::kLandscapePrimary;
+      return chromeos::OrientationType::kLandscapePrimary;
     case ZCR_REMOTE_SURFACE_V1_ORIENTATION_LOCK_LANDSCAPE_SECONDARY:
-      return ash::OrientationLockType::kLandscapeSecondary;
+      return chromeos::OrientationType::kLandscapeSecondary;
   }
   VLOG(2) << "Unexpected value of orientation_lock: " << orientation_lock;
-  return ash::OrientationLockType::kAny;
+  return chromeos::OrientationType::kAny;
 }
 
 void remote_surface_set_orientation_lock(wl_client* client,

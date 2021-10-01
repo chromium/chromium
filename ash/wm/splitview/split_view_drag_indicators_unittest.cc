@@ -427,7 +427,7 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
   // Verify that only snap preview in state
   // |SplitViewDragIndicators::WindowDraggingState::kFromTop| in landscape
   // orientation.
-  ASSERT_EQ(OrientationLockType::kLandscapePrimary,
+  ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             orientation_api.GetCurrentOrientation());
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kNoDrag);
@@ -446,7 +446,7 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
   // orientation.
   orientation_api.SetDisplayRotation(display::Display::ROTATE_270,
                                      display::Display::RotationSource::ACTIVE);
-  ASSERT_EQ(OrientationLockType::kPortraitPrimary,
+  ASSERT_EQ(chromeos::OrientationType::kPortraitPrimary,
             orientation_api.GetCurrentOrientation());
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kNoDrag);

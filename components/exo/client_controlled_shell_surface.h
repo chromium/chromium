@@ -176,7 +176,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // foreground and the display can be rotated (e.g. tablet mode), apply the
   // behavior defined by |orientation_lock|. See more details in
   // //ash/display/screen_orientation_controller.h.
-  void SetOrientationLock(ash::OrientationLockType orientation_lock);
+  void SetOrientationLock(chromeos::OrientationType orientation_lock);
 
   // Set the accessibility ID provided by client for the surface. If
   // |accessibility_id| is negative value, it will unset the ID.
@@ -338,8 +338,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // The orientation to be applied when widget is being created. Only set when
   // widget is not created yet orientation lock is being set.
-  ash::OrientationLockType initial_orientation_lock_ =
-      ash::OrientationLockType::kAny;
+  chromeos::OrientationType initial_orientation_lock_ =
+      chromeos::OrientationType::kAny;
   // The extra title to be applied when widget is being created.
   std::u16string initial_extra_title_ = std::u16string();
 

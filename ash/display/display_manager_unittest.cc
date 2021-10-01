@@ -3620,22 +3620,22 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
   {
     window_a->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
-    orientation_controller->LockOrientationForWindow(window_a,
-                                                     OrientationLockType::kAny);
+    orientation_controller->LockOrientationForWindow(
+        window_a, chromeos::OrientationType::kAny);
   }
   aura::Window* window_p = CreateTestWindowInShellWithId(0);
   {
     window_p->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
     orientation_controller->LockOrientationForWindow(
-        window_p, OrientationLockType::kPortrait);
+        window_p, chromeos::OrientationType::kPortrait);
   }
   aura::Window* window_l = CreateTestWindowInShellWithId(0);
   {
     window_l->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
     orientation_controller->LockOrientationForWindow(
-        window_l, OrientationLockType::kLandscape);
+        window_l, chromeos::OrientationType::kLandscape);
   }
 
   DisplayConfigurationController* configuration_controller =
@@ -3657,7 +3657,7 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
 
   EXPECT_EQ(display::Display::ROTATE_0, screen->GetPrimaryDisplay().rotation());
   EXPECT_FALSE(display_manager->registered_internal_display_rotation_lock());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             test_api.GetCurrentOrientation());
 
   // Enable lock at 0.
@@ -3675,7 +3675,7 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
   EXPECT_EQ(display::Display::ROTATE_0,
             display_manager->registered_internal_display_rotation());
   EXPECT_EQ(0, test_observer.countAndReset());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
 
   // Any will rotate to the locked rotation.
@@ -3748,7 +3748,7 @@ TEST_F(DisplayManagerOrientationTest, UserRotationLockReverse) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   orientation_controller->LockOrientationForWindow(
-      window, OrientationLockType::kPortrait);
+      window, chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_270,
             screen->GetPrimaryDisplay().rotation());
 
@@ -3786,15 +3786,15 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
   {
     window_a->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
-    orientation_controller->LockOrientationForWindow(window_a,
-                                                     OrientationLockType::kAny);
+    orientation_controller->LockOrientationForWindow(
+        window_a, chromeos::OrientationType::kAny);
   }
   wm::ActivateWindow(window_a);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
 
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
 
   orientation_controller->OnAccelerometerUpdated(portrait_secondary);
@@ -3808,44 +3808,44 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
                           static_cast<int>(AppType::CHROME_APP));
 
   orientation_controller->LockOrientationForWindow(
-      window_psc, OrientationLockType::kPortraitSecondary);
+      window_psc, chromeos::OrientationType::kPortraitSecondary);
   orientation_controller->LockOrientationForWindow(
-      window_psc, OrientationLockType::kCurrent);
+      window_psc, chromeos::OrientationType::kCurrent);
   wm::ActivateWindow(window_psc);
 
   orientation_controller->LockOrientationForWindow(
-      window_lsc, OrientationLockType::kLandscapeSecondary);
+      window_lsc, chromeos::OrientationType::kLandscapeSecondary);
   orientation_controller->LockOrientationForWindow(
-      window_lsc, OrientationLockType::kCurrent);
+      window_lsc, chromeos::OrientationType::kCurrent);
 
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
 
   // The orientation should stay portrait secondary.
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
   wm::ActivateWindow(window_lsc);
 
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
             test_api.GetCurrentOrientation());
 
   // The orientation should stay landscape secondary.
   orientation_controller->OnAccelerometerUpdated(landscape_primary);
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
             test_api.GetCurrentOrientation());
 
   wm::ActivateWindow(window_a);
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
 
   // Swtching to |window_a| enables rotation.
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
 
   // The orientation has alraedy been locked to secondary once, so
   // it should swtich back to the portrait secondary.
   wm::ActivateWindow(window_psc);
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
 }
 
@@ -4626,9 +4626,9 @@ TEST_F(DisplayManagerTest, PanelOrientation) {
   // Check the orientation controller reports correct orientation.
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
-  EXPECT_EQ(OrientationLockType::kLandscape,
+  EXPECT_EQ(chromeos::OrientationType::kLandscape,
             screen_orientation_controller->natural_orientation());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   // Test if changing rotation works as if it's landscape panel.
@@ -4641,7 +4641,7 @@ TEST_F(DisplayManagerTest, PanelOrientation) {
             display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel());
   EXPECT_EQ(display::Display::ROTATE_270,
             display::Screen::GetScreen()->GetPrimaryDisplay().rotation());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             screen_orientation_controller->GetCurrentOrientation());
 }
 

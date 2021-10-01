@@ -732,7 +732,7 @@ bool SplitViewController::IsLayoutHorizontal(const display::Display& display) {
     return IsCurrentScreenOrientationLandscape();
   // TODO(crbug.com/1233192): add DCHECK to avoid square size display.
   DCHECK(display.is_valid());
-  return IsLandscapeOrientation(GetSnapDisplayOrientation(display));
+  return chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display));
 }
 
 // static
@@ -748,7 +748,7 @@ bool SplitViewController::IsLayoutPrimary(const display::Display& display) {
   if (tablet_mode_controller && tablet_mode_controller->InTabletMode())
     return IsCurrentScreenOrientationPrimary();
   DCHECK(display.is_valid());
-  return IsPrimaryOrientation(GetSnapDisplayOrientation(display));
+  return chromeos::IsPrimaryOrientation(GetSnapDisplayOrientation(display));
 }
 
 // static

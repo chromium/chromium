@@ -120,7 +120,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
                                  aura::Window* window,
                                  SnapViewType type,
                                  float snap_ratio) {
-  OrientationLockType orientation = GetSnapDisplayOrientation(display);
+  chromeos::OrientationType orientation = GetSnapDisplayOrientation(display);
   enum class SnapPosition { kLeft, kRight, kBottom, kTop, kInvalid };
   SnapPosition position = SnapPosition::kInvalid;
   const bool is_primary_snap = type == SnapViewType::kPrimary;
@@ -129,17 +129,17 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
   // Find the actual position of window should be snapped to based on
   // |orientation| and |type|
   switch (orientation) {
-    case ash::OrientationLockType::kLandscapePrimary:
+    case chromeos::OrientationType::kLandscapePrimary:
       position = is_primary_snap ? SnapPosition::kLeft : SnapPosition::kRight;
       break;
-    case ash::OrientationLockType::kLandscapeSecondary:
+    case chromeos::OrientationType::kLandscapeSecondary:
       position = is_primary_snap ? SnapPosition::kRight : SnapPosition::kLeft;
       break;
-    case ash::OrientationLockType::kPortraitPrimary:
+    case chromeos::OrientationType::kPortraitPrimary:
       position = is_primary_snap ? SnapPosition::kTop : SnapPosition::kBottom;
       is_horizontal = false;
       break;
-    case ash::OrientationLockType::kPortraitSecondary:
+    case chromeos::OrientationType::kPortraitSecondary:
       position = is_primary_snap ? SnapPosition::kBottom : SnapPosition::kTop;
       is_horizontal = false;
       break;
@@ -192,10 +192,10 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
   return snap_bounds;
 }
 
-ash::OrientationLockType GetSnapDisplayOrientation(
+chromeos::OrientationType GetSnapDisplayOrientation(
     const display::Display& display) {
   if (!chromeos::wm::features::IsVerticalSnapEnabled())
-    return ash::OrientationLockType::kLandscapePrimary;
+    return chromeos::OrientationType::kLandscapePrimary;
 
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
@@ -209,7 +209,8 @@ ash::OrientationLockType GetSnapDisplayOrientation(
           ->GetDisplayInfo(display.id())
           .GetActiveRotation();
 
-  return RotationToOrientation(GetDisplayNaturalOrientation(display), rotation);
+  return RotationToOrientation(chromeos::GetDisplayNaturalOrientation(display),
+                               rotation);
 }
 
 void CenterWindow(aura::Window* window) {

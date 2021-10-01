@@ -344,9 +344,9 @@ void UserSettingsEventLogger::PopulateSharedFeatures(
           : UserSettingsEvent::Features::CLAMSHELL_MODE);
   const auto orientation =
       Shell::Get()->screen_orientation_controller()->GetCurrentOrientation();
-  if (IsLandscapeOrientation(orientation)) {
+  if (chromeos::IsLandscapeOrientation(orientation)) {
     features->set_device_orientation(UserSettingsEvent::Features::LANDSCAPE);
-  } else if (IsPortraitOrientation(orientation)) {
+  } else if (chromeos::IsPortraitOrientation(orientation)) {
     features->set_device_orientation(UserSettingsEvent::Features::PORTRAIT);
   }
 }
