@@ -1894,8 +1894,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (mStartSurfaceScrollFraction != startSurfaceScrollFraction) {
             mStartSurfaceScrollFraction = startSurfaceScrollFraction;
             updateUrlExpansionFraction();
-            updateVisualsForLocationBarState();
         }
+        updateVisualsForLocationBarState();
     }
 
     @Override
