@@ -4884,7 +4884,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
               self.browser->GetWebStateList()->count() - 1);
     // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
     NewTabPageCoordinator* newTabPageCoordinator =
-        [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
+        [[NewTabPageCoordinator alloc] initWithBaseViewController:self
+                                                          browser:self.browser];
     newTabPageCoordinator.panGestureHandler = self.thumbStripPanHandler;
     newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
     newTabPageCoordinator.webState = webState;

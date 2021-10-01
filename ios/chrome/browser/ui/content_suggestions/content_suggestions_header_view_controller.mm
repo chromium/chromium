@@ -453,7 +453,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)identityDiscTapped {
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
-  [self.dispatcher showSettingsFromViewController:self];
+  [self.dispatcher showSettingsFromViewController:self.baseViewController];
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread

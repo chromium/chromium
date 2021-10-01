@@ -155,10 +155,11 @@
 
 #pragma mark - ChromeCoordinator
 
-- (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super initWithBaseViewController:nil browser:browser];
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    self.containerViewController = [[UIViewController alloc] init];
+    _containerViewController = [[UIViewController alloc] init];
 
     _prefService =
         ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
@@ -340,6 +341,9 @@
 // Configures |self.ntpViewController| and sets it up as the main ViewController
 // managed by this Coordinator.
 - (void)configureNTPAsMainViewController {
+  self.contentSuggestionsCoordinator.headerController.baseViewController =
+      self.baseViewController;
+
   self.ntpViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
   self.ntpViewController.panGestureHandler = self.panGestureHandler;
