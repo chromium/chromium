@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/version.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -76,6 +77,8 @@
 namespace {
 // The tag describing the product name with a placeholder for the version.
 const char kProductTagWithPlaceholder[] = "CriOS/%s";
+
+constexpr char kMajorVersion100[] = "100";
 
 // Returns an autoreleased string containing the JavaScript loaded from a
 // bundled resource file with the given name (excluding extension).
@@ -171,9 +174,30 @@ NSString* GetLegacyTLSErrorPageHTML(web::WebState* web_state,
   return base::SysUTF8ToNSString(error_page_content);
 }
 
+// Returns a version string that matches the current version number except that
+// the major version is 100.
+const std::string& GetM100VersionNumber() {
+  static const base::NoDestructor<std::string> m100_version_number([] {
+    base::Version version(version_info::GetVersionNumber());
+    std::string version_str(kMajorVersion100);
+    const std::vector<uint32_t>& components = version.components();
+    // Rest of the version string remains the same.
+    for (size_t i = 1; i < components.size(); ++i) {
+      version_str.append(".");
+      version_str.append(base::NumberToString(components[i]));
+    }
+    return version_str;
+  }());
+  return *m100_version_number;
+}
+
 // Returns a string describing the product name and version, of the
 // form "productname/version". Used as part of the user agent string.
 std::string GetMobileProduct() {
+  if (base::FeatureList::IsEnabled(web::kForceMajorVersion100InUserAgent)) {
+    return base::StringPrintf(kProductTagWithPlaceholder,
+                              GetM100VersionNumber().c_str());
+  }
   return base::StringPrintf(kProductTagWithPlaceholder,
                             version_info::GetVersionNumber().c_str());
 }
@@ -184,6 +208,10 @@ std::string GetMobileProduct() {
 // for fingerprinting. The Mobile one is using the full version for legacy
 // reasons.
 std::string GetDesktopProduct() {
+  if (base::FeatureList::IsEnabled(web::kForceMajorVersion100InUserAgent)) {
+    return base::StringPrintf(kProductTagWithPlaceholder, kMajorVersion100);
+  }
+
   return base::StringPrintf(kProductTagWithPlaceholder,
                             version_info::GetMajorVersionNumber().c_str());
 }

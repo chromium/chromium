@@ -296,6 +296,7 @@ source_set("unit_tests_internal") {
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/strings:components_strings_grit",
+    "//components/version_info",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/content_settings:content_settings",

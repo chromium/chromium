@@ -722,7 +722,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"use-lens-to-search-for-image",
      flag_descriptions::kUseLensToSearchForImageName,
      flag_descriptions::kUseLensToSearchForImageDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kUseLensToSearchForImage)}};
+     FEATURE_VALUE_TYPE(kUseLensToSearchForImage)},
+    {"force-major-version-to-100",
+     flag_descriptions::kForceMajorVersion100InUserAgentName,
+     flag_descriptions::kForceMajorVersion100InUserAgentDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::kForceMajorVersion100InUserAgent)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;
