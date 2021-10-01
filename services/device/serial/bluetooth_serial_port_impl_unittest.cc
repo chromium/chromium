@@ -44,6 +44,13 @@ constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
 constexpr uint32_t kElementNumBytes = 1;
 constexpr uint32_t kCapacityNumBytes = 64;
 
+std::string CreateTestData(size_t buffer_size) {
+  std::string test_data(buffer_size, 'X');
+  for (size_t i = 0; i < test_data.size(); i++)
+    test_data[i] = 1 + (i % 127);
+  return test_data;
+}
+
 class BluetoothSerialPortImplTest : public testing::Test {
  public:
   BluetoothSerialPortImplTest() {
@@ -224,6 +231,78 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
   for (uint32_t i = 0; i < bytes_read; i++) {
     EXPECT_EQ(consumer_data[i], kBuffer[i])
         << "buffer comparison failed at index " << i;
+  }
+
+  base::RunLoop disconnect_loop;
+  watcher->set_connection_error_handler(disconnect_loop.QuitClosure());
+
+  serial_port.reset();
+  disconnect_loop.Run();
+}
+
+TEST_F(BluetoothSerialPortImplTest, StartReadingLargeBufferTest) {
+  mojo::Remote<mojom::SerialPort> serial_port;
+  mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher;
+  CreatePort(&serial_port, &watcher);
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CreateDataPipe(&producer, &consumer);
+
+  constexpr uint32_t kTestBufferNumBytes = 2 * kCapacityNumBytes;
+  static_assert(kTestBufferNumBytes > kCapacityNumBytes,
+                "must be greater than pipe capacity to test large reads.");
+  const std::string test_data = CreateTestData(kTestBufferNumBytes);
+  auto data_buffer = base::MakeRefCounted<net::StringIOBuffer>(test_data);
+
+  std::vector<char> consumer_data;
+  size_t total_bytes_read = 0;
+
+  base::RunLoop watcher_loop;
+  mojo::SimpleWatcher consumer_watcher(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
+  MojoResult result = consumer_watcher.Watch(
+      consumer.get(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindLambdaForTesting(
+          [&](MojoResult result, const mojo::HandleSignalsState& state) {
+            EXPECT_EQ(result, MOJO_RESULT_OK);
+            if (state.readable()) {
+              char read_buffer[32];
+              uint32_t bytes_read = sizeof(read_buffer);
+              result = consumer->ReadData(read_buffer, &bytes_read,
+                                          MOJO_READ_DATA_FLAG_NONE);
+              if (result == MOJO_RESULT_OK) {
+                consumer_data.insert(consumer_data.end(), read_buffer,
+                                     read_buffer + bytes_read);
+                total_bytes_read += bytes_read;
+              }
+            } else if (state.peer_closed()) {
+              watcher_loop.Quit();
+            }
+          }));
+  EXPECT_EQ(MOJO_RESULT_OK, result);
+  consumer_watcher.ArmOrNotify();
+
+  // BluetoothSerialPortImpl::StartReading() will request to receive the
+  // datapipe capacity (kCapacityNumBytes), but this test will respond with
+  // a larger buffer size.
+  EXPECT_CALL(mock_socket(), Receive(_, _, _))
+      .WillOnce(RunOnceCallback<1>(data_buffer->size(), data_buffer))
+      .WillOnce(RunOnceCallback<2>(BluetoothSocket::kSystemError, "Error"));
+
+  EXPECT_CALL(mock_socket(), Disconnect(_)).WillOnce(RunOnceCallback<0>());
+
+  serial_port->StartReading(std::move(producer));
+
+  watcher_loop.Run();
+
+  // Validate the data that was read is correct.
+  ASSERT_EQ(total_bytes_read, kTestBufferNumBytes);
+  for (size_t i = 0; i < total_bytes_read; i++) {
+    EXPECT_EQ(test_data[i], consumer_data[i])
+        << "consumer data invalid at index " << i;
   }
 
   base::RunLoop disconnect_loop;

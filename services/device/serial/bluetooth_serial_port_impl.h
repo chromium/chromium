@@ -106,6 +106,13 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   bool read_pending_ = false;
   bool write_pending_ = false;
 
+  // If the data being received from BluetoothSocket::Receive
+  // is too large, these fields will be used to save the data
+  // so a single write can be broken up into multiple.
+  size_t receive_buffer_size_ = 0;
+  size_t receive_buffer_next_byte_pos_ = 0;
+  scoped_refptr<net::IOBuffer> receive_buffer_;
+
   mojom::SerialConnectionOptionsPtr options_;
 
   base::WeakPtrFactory<BluetoothSerialPortImpl> weak_ptr_factory_{this};

@@ -4,6 +4,9 @@
 
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
+#include <limits.h>
+#include <algorithm>
+
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -178,9 +181,9 @@ void BluetoothSerialPortImpl::ReadMore() {
 
   void* buffer = nullptr;
 
-  uint32_t buffer_max_size = 0;
+  uint32_t buffer_num_bytes = 0;
   // The |buffer| is owned by |out_stream_|.
-  MojoResult result = out_stream_->BeginWriteData(&buffer, &buffer_max_size,
+  MojoResult result = out_stream_->BeginWriteData(&buffer, &buffer_num_bytes,
                                                   MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     out_stream_watcher_.ArmOrNotify();
@@ -197,13 +200,35 @@ void BluetoothSerialPortImpl::ReadMore() {
     return;
   }
 
+  if (receive_buffer_) {
+    const size_t num_remaining_bytes =
+        receive_buffer_size_ - receive_buffer_next_byte_pos_;
+    const size_t bytes_to_copy =
+        std::min(num_remaining_bytes, size_t{buffer_num_bytes});
+    std::copy(
+        receive_buffer_->data() + receive_buffer_next_byte_pos_,
+        receive_buffer_->data() + receive_buffer_next_byte_pos_ + bytes_to_copy,
+        reinterpret_cast<char*>(buffer));
+    out_stream_->EndWriteData(bytes_to_copy);
+    if (bytes_to_copy == num_remaining_bytes) {  // If copied the last byte.
+      receive_buffer_size_ = 0;
+      receive_buffer_next_byte_pos_ = 0;
+      receive_buffer_.reset();
+    } else {
+      receive_buffer_next_byte_pos_ += buffer_num_bytes;
+    }
+    out_stream_watcher_.ArmOrNotify();
+    return;
+  }
+  if (read_pending_)
+    return;
   read_pending_ = true;
   bluetooth_socket_->Receive(
-      buffer_max_size,
+      buffer_num_bytes,
       base::BindOnce(
           &BluetoothSerialPortImpl::OnBluetoothSocketReceive,
           weak_ptr_factory_.GetWeakPtr(),
-          base::make_span(reinterpret_cast<char*>(buffer), buffer_max_size)),
+          base::make_span(reinterpret_cast<char*>(buffer), buffer_num_bytes)),
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketReceiveError,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -217,9 +242,19 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceive(
   DCHECK(out_stream_.is_valid());
 
   read_pending_ = false;
-  std::copy(io_buffer->data(), io_buffer->data() + num_bytes_received,
+  // Note: Some platform implementations of BluetoothSocket::Receive ignore the
+  // buffer size parameter. This means that |num_bytes_received| could be
+  // larger than |pending_write_buffer|. Check to avoid buffer overflow.
+  size_t bytes_to_copy = std::min(pending_write_buffer.size(),
+                                  static_cast<size_t>(num_bytes_received));
+  std::copy(io_buffer->data(), io_buffer->data() + bytes_to_copy,
             pending_write_buffer.data());
-  out_stream_->EndWriteData(static_cast<uint32_t>(num_bytes_received));
+  out_stream_->EndWriteData(bytes_to_copy);
+  if (pending_write_buffer.size() < static_cast<size_t>(num_bytes_received)) {
+    receive_buffer_size_ = num_bytes_received;
+    receive_buffer_next_byte_pos_ = pending_write_buffer.size();
+    receive_buffer_ = std::move(io_buffer);
+  }
 
   if (read_flush_callback_) {
     std::move(read_flush_callback_).Run();
