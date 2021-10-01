@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -29,9 +31,19 @@
 #include "components/policy/core/common/policy_types.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+using testing::UnorderedElementsAre;
+
 namespace {
 const char kRequestingUrl[] = "https://www.example.com";
+
+// A GMock matcher that checks whether the
+// `std::unique_ptr<net::ClientCertIdentity>` argument has the certificate
+// that's equal to the expected `scoped_refptr<net::X509Certificate>`.
+MATCHER_P(CertEq, expected_cert, "") {
+  return arg->certificate()->EqualsExcludingChain(expected_cert.get());
 }
+
+}  // namespace
 
 TEST(ManagedBrowserUtils, NoPolicies) {
   content::BrowserTaskEnvironment task_environment;
@@ -83,6 +95,13 @@ TEST_F(ManagedBrowserUtilsTest, HasMachineLevelPolicies) {
 class AutoSelectCertificateTest : public testing::Test {
  protected:
   void SetUp() override {
+    client_1_ =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1.pem");
+    ASSERT_TRUE(client_1_);
+    client_2_ =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_2.pem");
+    ASSERT_TRUE(client_2_);
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -96,15 +115,9 @@ class AutoSelectCertificateTest : public testing::Test {
     m->ClearSettingsForOneType(ContentSettingsType::AUTO_SELECT_CERTIFICATE);
   }
 
-  net::ClientCertIdentityList GetDefaultClientCertList() {
-    EXPECT_EQ(0UL, client_certs_.size());
-
-    client_certs_.push_back(
-        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1.pem"));
-    client_certs_.push_back(
-        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_2.pem"));
-
-    return net::FakeClientCertIdentityListFromCertificateList(client_certs_);
+  net::ClientCertIdentityList GetDefaultClientCertList() const {
+    return net::FakeClientCertIdentityListFromCertificateList(
+        {client_1_, client_2_});
   }
 
   void SetPolicyValueInContentSettings(
@@ -143,27 +156,31 @@ class AutoSelectCertificateTest : public testing::Test {
 
   TestingProfile* profile() { return profile_; }
 
-  std::vector<scoped_refptr<net::X509Certificate>>& client_certs() {
-    return client_certs_;
-  }
+  const scoped_refptr<net::X509Certificate>& client_1() { return client_1_; }
+  const scoped_refptr<net::X509Certificate>& client_2() { return client_2_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+
+  scoped_refptr<net::X509Certificate> client_1_;
+  scoped_refptr<net::X509Certificate> client_2_;
+
   TestingProfile* profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-
-  std::vector<scoped_refptr<net::X509Certificate>> client_certs_;
 };
 
-TEST_F(AutoSelectCertificateTest, NoPolicyAppliedReturnsNull) {
+TEST_F(AutoSelectCertificateTest, NoPolicyAppliedReturnsNoMatch) {
   GURL requesting_url(kRequestingUrl);
   net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
 
-  EXPECT_EQ(nullptr, cert);
+  EXPECT_TRUE(matching_certs_list.empty());
+  EXPECT_THAT(nonmatching_certs_list,
+              UnorderedElementsAre(CertEq(client_1()), CertEq(client_2())));
 }
 
 TEST_F(AutoSelectCertificateTest,
@@ -177,13 +194,13 @@ TEST_F(AutoSelectCertificateTest,
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_NE(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
 
-  EXPECT_TRUE(
-      cert->certificate()->EqualsIncludingChain(client_certs()[0].get()));
+  EXPECT_THAT(matching_certs_list, UnorderedElementsAre(CertEq(client_1())));
+  EXPECT_THAT(nonmatching_certs_list, UnorderedElementsAre(CertEq(client_2())));
 }
 
 TEST_F(AutoSelectCertificateTest,
@@ -197,13 +214,14 @@ TEST_F(AutoSelectCertificateTest,
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_NE(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
 
-  EXPECT_TRUE(
-      cert->certificate()->EqualsIncludingChain(client_certs()[1].get()));
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
+
+  EXPECT_THAT(matching_certs_list, UnorderedElementsAre(CertEq(client_2())));
+  EXPECT_THAT(nonmatching_certs_list, UnorderedElementsAre(CertEq(client_1())));
 }
 
 TEST_F(AutoSelectCertificateTest,
@@ -218,13 +236,14 @@ TEST_F(AutoSelectCertificateTest,
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_NE(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
 
-  EXPECT_TRUE(
-      cert->certificate()->EqualsIncludingChain(client_certs()[0].get()));
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
+
+  EXPECT_THAT(matching_certs_list, UnorderedElementsAre(CertEq(client_1())));
+  EXPECT_THAT(nonmatching_certs_list, UnorderedElementsAre(CertEq(client_2())));
 }
 
 TEST_F(AutoSelectCertificateTest,
@@ -239,13 +258,14 @@ TEST_F(AutoSelectCertificateTest,
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_NE(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
 
-  EXPECT_TRUE(
-      cert->certificate()->EqualsIncludingChain(client_certs()[1].get()));
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
+
+  EXPECT_THAT(matching_certs_list, UnorderedElementsAre(CertEq(client_2())));
+  EXPECT_THAT(nonmatching_certs_list, UnorderedElementsAre(CertEq(client_1())));
 }
 
 TEST_F(AutoSelectCertificateTest, IssuerNotMatchingDoesntSelectCerts) {
@@ -257,10 +277,15 @@ TEST_F(AutoSelectCertificateTest, IssuerNotMatchingDoesntSelectCerts) {
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_EQ(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
+
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
+
+  EXPECT_TRUE(matching_certs_list.empty());
+  EXPECT_THAT(nonmatching_certs_list,
+              UnorderedElementsAre(CertEq(client_1()), CertEq(client_2())));
 }
 
 TEST_F(AutoSelectCertificateTest, SubjectNotMatchingDoesntSelectCerts) {
@@ -272,10 +297,15 @@ TEST_F(AutoSelectCertificateTest, SubjectNotMatchingDoesntSelectCerts) {
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_EQ(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
+
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
+
+  EXPECT_TRUE(matching_certs_list.empty());
+  EXPECT_THAT(nonmatching_certs_list,
+              UnorderedElementsAre(CertEq(client_1()), CertEq(client_2())));
 }
 
 TEST_F(AutoSelectCertificateTest, MatchingCertOnDifferentUrlDoesntSelectCerts) {
@@ -287,8 +317,12 @@ TEST_F(AutoSelectCertificateTest, MatchingCertOnDifferentUrlDoesntSelectCerts) {
 
   SetPolicyValueInContentSettings(filters);
 
-  std::unique_ptr<net::ClientCertIdentity> cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile(), requesting_url,
-                                                     client_certs_list);
-  EXPECT_EQ(nullptr, cert);
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile(), requesting_url, std::move(client_certs_list),
+      &matching_certs_list, &nonmatching_certs_list);
+
+  EXPECT_TRUE(matching_certs_list.empty());
+  EXPECT_THAT(nonmatching_certs_list,
+              UnorderedElementsAre(CertEq(client_1()), CertEq(client_2())));
 }

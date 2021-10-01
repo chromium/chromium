@@ -1128,6 +1128,7 @@ extern const char kRequiredClientCertificateForDevice[];
 extern const char kCertificateProvisioningStateForUser[];
 extern const char kCertificateProvisioningStateForDevice[];
 #endif
+extern const char kPromptOnMultipleMatchingCertificates[];
 
 extern const char kMediaFeedsBackgroundFetching[];
 extern const char kMediaFeedsSafeSearchEnabled[];

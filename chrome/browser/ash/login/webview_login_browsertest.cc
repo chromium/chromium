@@ -56,6 +56,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -65,6 +66,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
@@ -89,6 +91,7 @@
 #include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
@@ -109,6 +112,8 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_status_code.h"
+#include "net/ssl/client_cert_identity.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_test_util.h"
@@ -276,18 +281,25 @@ class ErrorScreenWatcher : public OobeUI::Observer {
   bool has_error_screen_been_shown_ = false;
 };
 
+bool EqualsTestCert(const net::X509Certificate& cert,
+                    const std::string& expected_test_cert_name) {
+  const base::FilePath cert_file_name =
+      base::FilePath::FromASCII(expected_test_cert_name)
+          .AddExtensionASCII("pem");
+  scoped_refptr<net::X509Certificate> expected = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), cert_file_name.MaybeAsASCII());
+  if (!expected) {
+    ADD_FAILURE() << "Failed to read test certificate "
+                  << expected_test_cert_name;
+    return false;
+  }
+  return expected->EqualsExcludingChain(&cert);
+}
+
 MATCHER_P(EqualsCert,
           cert_name,
           base::StringPrintf("Is test certificate %s", cert_name.c_str())) {
-  const std::string cert_file_name =
-      base::StringPrintf("%s.pem", cert_name.c_str());
-  scoped_refptr<net::X509Certificate> expected =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), cert_file_name);
-  if (!expected) {
-    *result_listener << "Failed to read test certificate " << cert_name;
-    return false;
-  }
-  return expected->EqualsExcludingChain(&arg);
+  return EqualsTestCert(arg, cert_name);
 }
 
 }  // namespace
@@ -1053,6 +1065,23 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     watcher.Wait();
   }
 
+  // Sets the DeviceLoginScreenPromptOnMultipleMatchingCertificates device
+  // policy.
+  void SetPromptOnMultipleMatchingCertificatesPolicy(
+      bool prompt_on_multiple_matches) {
+    em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
+    proto.mutable_login_screen_prompt_on_multiple_matching_certificates()
+        ->set_value(prompt_on_multiple_matches);
+    device_policy_builder_.Build();
+
+    FakeSessionManagerClient::Get()->set_device_policy(
+        device_policy_builder_.GetBlob());
+    PrefChangeWatcher watcher(prefs::kPromptOnMultipleMatchingCertificates,
+                              ProfileHelper::GetSigninProfile()->GetPrefs());
+    FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
+    watcher.Wait();
+  }
+
   // Starts the Test HTTPS server with `ssl_options`.
   void StartHttpsServer(const net::SSLServerConfig& server_config) {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -1117,14 +1146,16 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
       PK11SlotInfo* system_slot) {
     base::ScopedAllowBlockingForTesting allow_io;
     for (const auto& client_cert_name : client_cert_names) {
-      const std::string pem_file_name =
-          base::StringPrintf("%s.pem", client_cert_name.c_str());
-      const std::string pk8_file_name =
-          base::StringPrintf("%s.pk8", client_cert_name.c_str());
+      const base::FilePath base_file_name =
+          base::FilePath::FromASCII(client_cert_name);
+      const base::FilePath pem_file_name =
+          base_file_name.AddExtensionASCII("pem");
+      const base::FilePath pk8_file_name =
+          base_file_name.AddExtensionASCII("pk8");
       scoped_refptr<net::X509Certificate> client_cert =
-          net::ImportClientCertAndKeyFromFile(net::GetTestCertsDirectory(),
-                                              pem_file_name, pk8_file_name,
-                                              system_slot);
+          net::ImportClientCertAndKeyFromFile(
+              net::GetTestCertsDirectory(), pem_file_name.MaybeAsASCII(),
+              pk8_file_name.MaybeAsASCII(), system_slot);
       if (!client_cert)
         ADD_FAILURE() << "Failed to import cert from " << client_cert_name;
     }
@@ -1220,17 +1251,24 @@ struct SigninCertParam {
   // Arrange the test to install these client certificates (specified by name,
   // e.g., "client1") into the system slot - see
   // `SetUpClientCertsInSystemSlot()`.
-  std::vector<std::string> arrange_client_certs;
+  std::vector<std::string> client_certs;
   // If non-null, arrange the test to configure this intermediate CA (specified
   // by name, e.g., "client_1_ca") as known to the client via device policy -
   // see `SetIntermediateAuthorityInDeviceOncPolicy()`.
-  absl::optional<std::string> arrange_intermediate_cert;
+  absl::optional<std::string> intermediate_cert;
   // Arrange the test to configure these certificate auto-selection patterns in
   // device policy - see `SetAutoSelectCertificatePatterns()`.
-  std::vector<std::string> arrange_autoselect_patterns;
+  std::vector<std::string> autoselect_patterns;
+  // If non-null, arrange the test to configure the device policy for prompting
+  // when multiple certificates are auto-selected - see
+  // `SetPromptOnMultipleMatchingCertificatesPolicy()`.
+  absl::optional<bool> prompt_on_multiple_matches;
   // Make the web server include the specified CA certificates in its client
   // certificate request. Entries should be DER-encoded X.509 names.
-  std::vector<std::string> act_ca_certs;
+  std::vector<std::string> ca_certs;
+  // If non-null, simulate a user gesture to select the given client certificate
+  // (specified by name, e.g., "client1") in the cert selector dialog.
+  absl::optional<std::string> manually_select_cert;
   // Assert that the selected certificate is the one specified here. When null,
   // asserts that no certificate is selected.
   absl::optional<std::string> assert_cert;
@@ -1242,28 +1280,71 @@ struct SigninCertParam {
 // selection behavior in the sign-in frame.
 class SigninFrameWebviewClientCertsLoginTest
     : public WebviewClientCertsLoginTest,
-      public ::testing::WithParamInterface<SigninCertParam> {};
+      public ::testing::WithParamInterface<SigninCertParam> {
+ protected:
+  // Configures the specified certificate to be chosen in the certificate
+  // selector dialog once it's opened.
+  void SimulateUserWillSelectClientCert(
+      const std::string& cert_name_to_select) {
+    chrome::SetShowSSLClientCertificateSelectorHookForTest(base::BindRepeating(
+        &SigninFrameWebviewClientCertsLoginTest::OnClientCertSelectorRequested,
+        cert_name_to_select));
+  }
+
+ private:
+  static base::OnceClosure OnClientCertSelectorRequested(
+      const std::string& cert_name_to_select,
+      content::WebContents* contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+    for (auto& cert_identity : client_certs) {
+      if (EqualsTestCert(*cert_identity->certificate(), cert_name_to_select)) {
+        scoped_refptr<net::X509Certificate> cert = cert_identity->certificate();
+        net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
+            std::move(cert_identity),
+            base::BindOnce(
+                &content::ClientCertificateDelegate::ContinueWithCertificate,
+                std::move(delegate), cert));
+        // Return a null cancellation callback - cancelling is not supported.
+        return base::OnceClosure();
+      }
+    }
+    ADD_FAILURE() << "Cannot select cert " << cert_name_to_select
+                  << ": not present in the cert selector";
+    // Return a null cancellation callback - cancelling is not supported.
+    return base::OnceClosure();
+  }
+};
 
 IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, Test) {
   // Arrange the system slot.
   ASSERT_NO_FATAL_FAILURE(
-      SetUpClientCertsInSystemSlot(GetParam().arrange_client_certs));
+      SetUpClientCertsInSystemSlot(GetParam().client_certs));
   // Arrange the device policy.
-  if (GetParam().arrange_intermediate_cert) {
-    const std::string intermediate_cert_name = base::StringPrintf(
-        "%s.pem", GetParam().arrange_intermediate_cert->c_str());
+  if (GetParam().intermediate_cert) {
     const base::FilePath intermediate_cert_path =
-        net::GetTestCertsDirectory().AppendASCII(intermediate_cert_name);
+        net::GetTestCertsDirectory()
+            .AppendASCII(*GetParam().intermediate_cert)
+            .AddExtensionASCII("pem");
     ASSERT_NO_FATAL_FAILURE(
         SetIntermediateAuthorityInDeviceOncPolicy(intermediate_cert_path));
   }
-  SetAutoSelectCertificatePatterns(GetParam().arrange_autoselect_patterns);
+  SetAutoSelectCertificatePatterns(GetParam().autoselect_patterns);
+  if (GetParam().prompt_on_multiple_matches) {
+    SetPromptOnMultipleMatchingCertificatesPolicy(
+        *GetParam().prompt_on_multiple_matches);
+  }
 
   // Prepare the test server for the "act" part of the test.
   net::SSLServerConfig server_config;
   server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
-  server_config.cert_authorities = GetParam().act_ca_certs;
+  server_config.cert_authorities = GetParam().ca_certs;
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
+  // Prepare the certificate selector hook for simulating the user gesture in
+  // the "act" part of the test.
+  if (GetParam().manually_select_cert)
+    SimulateUserWillSelectClientCert(*GetParam().manually_select_cert);
 
   WaitForGaiaPageLoadAndPropertyUpdate();
 
@@ -1288,11 +1369,13 @@ INSTANTIATE_TEST_SUITE_P(
     SuccessSimple,
     SigninFrameWebviewClientCertsLoginTest,
     testing::Values(SigninCertParam{
-        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
-        /*arrange_intermediate_cert=*/absl::nullopt,
-        /*arrange_autoselect_patterns=*/
+        /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*intermediate_cert=*/absl::nullopt,
+        /*autoselect_patterns=*/
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
-        /*act_ca_certs=*/{},
+        /*prompt_on_multiple_matches=*/absl::nullopt,
+        /*ca_certs=*/{},
+        /*manually_select_cert=*/absl::nullopt,
         /*assert_cert=*/kClientCert1Name}));
 
 // Test that client certificate autoselect selects the right certificate even
@@ -1301,12 +1384,14 @@ INSTANTIATE_TEST_SUITE_P(
     SuccessMultipleFilters,
     SigninFrameWebviewClientCertsLoginTest,
     testing::Values(SigninCertParam{
-        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
-        /*arrange_intermediate_cert=*/absl::nullopt,
-        /*arrange_autoselect_patterns=*/
+        /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*intermediate_cert=*/absl::nullopt,
+        /*autoselect_patterns=*/
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})",
          R"({"pattern": "*", "filter": {"ISSUER": {"CN": "foo bar"}}})"},
-        /*act_ca_certs=*/{},
+        /*prompt_on_multiple_matches=*/absl::nullopt,
+        /*ca_certs=*/{},
+        /*manually_select_cert=*/absl::nullopt,
         /*assert_cert=*/kClientCert1Name}));
 
 // Test that client certificate authentication using certificates from the
@@ -1316,14 +1401,16 @@ INSTANTIATE_TEST_SUITE_P(
     SuccessViaCa,
     SigninFrameWebviewClientCertsLoginTest,
     testing::Values(SigninCertParam{
-        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
-        /*arrange_intermediate_cert=*/absl::nullopt,
-        /*arrange_autoselect_patterns=*/
+        /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*intermediate_cert=*/absl::nullopt,
+        /*autoselect_patterns=*/
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
-        /*act_ca_certs=*/
+        /*prompt_on_multiple_matches=*/absl::nullopt,
+        /*ca_certs=*/
         {// client_1_ca ("B CA")
          {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03,
           0x0c, 0x04, 0x42, 0x20, 0x43, 0x41}},
+        /*manually_select_cert=*/absl::nullopt,
         /*assert_cert=*/kClientCert1Name}));
 
 // Test that client certificate will be discovered if the server requests
@@ -1334,14 +1421,16 @@ INSTANTIATE_TEST_SUITE_P(
     SuccessViaCaAndIntermediate,
     SigninFrameWebviewClientCertsLoginTest,
     testing::Values(SigninCertParam{
-        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
-        /*arrange_intermediate_cert=*/"client_1_ca",
-        /*arrange_autoselect_patterns=*/
+        /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*intermediate_cert=*/"client_1_ca",
+        /*autoselect_patterns=*/
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
-        /*act_ca_certs=*/
+        /*prompt_on_multiple_matches=*/absl::nullopt,
+        /*ca_certs=*/
         {// client_root_ca ("C Root CA")
          {0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04, 0x03,
           0x0c, 0x09, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 0x20, 0x43, 0x41}},
+        /*manually_select_cert=*/absl::nullopt,
         /*assert_cert=*/kClientCert1Name}));
 
 // Test that if no client certificate is auto-selected using policy on the
@@ -1349,15 +1438,16 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(ErrorNoAutoSelect,
                          SigninFrameWebviewClientCertsLoginTest,
                          testing::Values(SigninCertParam{
-                             /*arrange_client_certs=*/{kClientCert1Name},
-                             /*arrange_intermediate_cert=*/absl::nullopt,
-                             /*arrange_autoselect_patterns=*/
-                             {},
-                             /*act_ca_certs=*/
+                             /*client_certs=*/{kClientCert1Name},
+                             /*intermediate_cert=*/absl::nullopt,
+                             /*autoselect_patterns=*/{},
+                             /*prompt_on_multiple_matches=*/absl::nullopt,
+                             /*ca_certs=*/
                              {// client_1_ca ("B CA")
                               {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03,
                                0x55, 0x04, 0x03, 0x0c, 0x04, 0x42, 0x20, 0x43,
                                0x41}},
+                             /*manually_select_cert=*/absl::nullopt,
                              /*assert_cert=*/absl::nullopt}));
 
 // Test that client certificate authentication using certificates from the
@@ -1368,14 +1458,16 @@ INSTANTIATE_TEST_SUITE_P(
     ErrorWrongCa,
     SigninFrameWebviewClientCertsLoginTest,
     testing::Values(SigninCertParam{
-        /*arrange_client_certs=*/{kClientCert1Name},
-        /*arrange_intermediate_cert=*/absl::nullopt,
-        /*arrange_autoselect_patterns=*/
+        /*client_certs=*/{kClientCert1Name},
+        /*intermediate_cert=*/absl::nullopt,
+        /*autoselect_patterns=*/
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
-        /*act_ca_certs=*/
+        /*prompt_on_multiple_matches=*/absl::nullopt,
+        /*ca_certs=*/
         {// client_2_ca ("E CA")
          {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03,
           0x0c, 0x04, 0x45, 0x20, 0x43, 0x41}},
+        /*manually_select_cert=*/absl::nullopt,
         /*assert_cert=*/absl::nullopt}));
 
 // Test that client certificate will not be discovered if the server requests
@@ -1387,15 +1479,85 @@ INSTANTIATE_TEST_SUITE_P(
     ErrorNoIntermediateCa,
     SigninFrameWebviewClientCertsLoginTest,
     testing::Values(SigninCertParam{
-        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
-        /*arrange_intermediate_cert=*/absl::nullopt,
-        /*arrange_autoselect_patterns=*/
+        /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*intermediate_cert=*/absl::nullopt,
+        /*autoselect_patterns=*/
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
-        /*act_ca_certs=*/
+        /*prompt_on_multiple_matches=*/absl::nullopt,
+        /*ca_certs=*/
         {// client_root_ca ("C Root CA")
          {0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04, 0x03,
           0x0c, 0x09, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 0x20, 0x43, 0x41}},
+        /*manually_select_cert=*/absl::nullopt,
         /*assert_cert=*/absl::nullopt}));
+
+// Test that the DeviceLoginScreenPromptOnMultipleMatchingCertificates policy
+// doesn't prevent the client cert from being auto-selected via policy.
+INSTANTIATE_TEST_SUITE_P(
+    SuccessRegardlessOfPromptPolicy,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(
+        SigninCertParam{
+            /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+            /*intermediate_cert=*/absl::nullopt,
+            /*autoselect_patterns=*/
+            {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+            /*prompt_on_multiple_matches=*/false,
+            /*ca_certs=*/{},
+            /*manually_select_cert=*/absl::nullopt,
+            /*assert_cert=*/kClientCert1Name},
+        SigninCertParam{
+            /*client_certs=*/{kClientCert1Name, kClientCert2Name},
+            /*intermediate_cert=*/absl::nullopt,
+            /*autoselect_patterns=*/
+            {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+            /*prompt_on_multiple_matches=*/true,
+            /*ca_certs=*/{},
+            /*manually_select_cert=*/absl::nullopt,
+            /*assert_cert=*/kClientCert1Name}));
+// Test that the DeviceLoginScreenPromptOnMultipleMatchingCertificates policy
+// doesn't affect the failure to select a client cert when no auto-selection is
+// configured.
+INSTANTIATE_TEST_SUITE_P(
+    ErrorNoPatternRegardlessOfPromptPolicy,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{/*client_certs=*/{kClientCert1Name},
+                                    /*intermediate_cert=*/absl::nullopt,
+                                    /*autoselect_patterns=*/{},
+                                    /*prompt_on_multiple_matches=*/false,
+                                    /*ca_certs=*/{},
+                                    /*manually_select_cert=*/absl::nullopt,
+                                    /*assert_cert=*/absl::nullopt},
+                    SigninCertParam{/*client_certs=*/{kClientCert1Name},
+                                    /*intermediate_cert=*/absl::nullopt,
+                                    /*autoselect_patterns=*/{},
+                                    /*prompt_on_multiple_matches=*/true,
+                                    /*ca_certs=*/{},
+                                    /*manually_select_cert=*/absl::nullopt,
+                                    /*assert_cert=*/absl::nullopt}));
+// Test that the certificate can be manually selected in case the auto-selection
+// matches multiple certificates and the
+// DeviceLoginScreenPromptOnMultipleMatchingCertificates policy is set to true.
+INSTANTIATE_TEST_SUITE_P(
+    SuccessManualSelection,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(
+        SigninCertParam{/*client_certs=*/{kClientCert1Name, kClientCert2Name},
+                        /*intermediate_cert=*/absl::nullopt,
+                        /*autoselect_patterns=*/
+                        {R"({"pattern": "*", "filter": {}})"},
+                        /*prompt_on_multiple_matches=*/true,
+                        /*ca_certs=*/{},
+                        /*manually_select_cert=*/kClientCert1Name,
+                        /*assert_cert=*/kClientCert1Name},
+        SigninCertParam{/*client_certs=*/{kClientCert1Name, kClientCert2Name},
+                        /*intermediate_cert=*/absl::nullopt,
+                        /*autoselect_patterns=*/
+                        {R"({"pattern": "*", "filter": {}})"},
+                        /*prompt_on_multiple_matches=*/true,
+                        /*ca_certs=*/{},
+                        /*manually_select_cert=*/kClientCert2Name,
+                        /*assert_cert=*/kClientCert2Name}));
 
 // Tests the scenario where the system token is not initialized initially (due
 // to the TPM not being ready).

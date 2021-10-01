@@ -3205,6 +3205,12 @@ const char kCertificateProvisioningStateForUser[] =
 const char kCertificateProvisioningStateForDevice[] =
     "cert_provisioning_device_state";
 #endif
+// A boolean pref that enables certificate prompts when multiple certificates
+// match the auto-selection policy. This pref is controlled exclusively by
+// policies (PromptOnMultipleMatchingCertificates or, in the sign-in profile,
+// DeviceLoginScreenPromptOnMultipleMatchingCertificates).
+const char kPromptOnMultipleMatchingCertificates[] =
+    "prompt_on_multiple_matching_certificates";
 
 // This pref enables periodically fetching new Media Feed items for top feeds.
 const char kMediaFeedsBackgroundFetching[] =

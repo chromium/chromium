@@ -1241,6 +1241,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kWebXRImmersiveArEnabled, true);
 #endif
+  registry->RegisterBooleanPref(prefs::kPromptOnMultipleMatchingCertificates,
+                                false);
 }
 
 // static
@@ -2935,6 +2937,33 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
 }
 
+// Returns whether the user can be prompted to select a client certificate after
+// no certificate got auto-selected.
+bool CanPromptWithNonmatchingCertificates(const Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+    // On the sign-in profile, never show certificate selection to the user for
+    // certificates that weren't auto-selected via policy. A client certificate
+    // is an identifier that can be stable for a long time, so only the
+    // administrator is allowed to decide which endpoints should see it.
+    return false;
+  }
+#endif
+  return true;
+}
+
+// Returns whether the user should be prompted to select a client certificate
+// when multiple certificates got auto-selected.
+bool ShouldPromptOnMultipleMatchingCertificates(const Profile* profile) {
+  const PrefService* const prefs = profile->GetPrefs();
+  DCHECK(prefs);
+  const PrefService::Preference* pref =
+      prefs->FindPreference(prefs::kPromptOnMultipleMatchingCertificates);
+  if (pref && pref->IsManaged() && pref->GetValue()->is_bool())
+    return pref->GetValue()->GetBool();
+  return false;
+}
+
 }  // namespace
 
 base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
@@ -2956,18 +2985,10 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
       << "Invalid URL string: https://"
       << cert_request_info->host_and_port.ToString();
 
-  bool may_show_cert_selection = true;
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
-    // On the sign-in profile, never show certificate selection to the user. A
-    // client certificate is an identifier that can be stable for a long time,
-    // so only the administrator is allowed to decide which endpoints should see
-    // it.
-    may_show_cert_selection = false;
-
     content::StoragePartition* storage_partition =
         profile->GetStoragePartition(web_contents->GetSiteInstance());
     auto* signin_partition_manager =
@@ -2989,10 +3010,19 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  std::unique_ptr<net::ClientCertIdentity> auto_selected_identity =
-      chrome::enterprise_util::AutoSelectCertificate(profile, requesting_url,
-                                                     client_certs);
-  if (auto_selected_identity) {
+  net::ClientCertIdentityList matching_certificates, nonmatching_certificates;
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile, requesting_url, std::move(client_certs), &matching_certificates,
+      &nonmatching_certificates);
+
+  if (matching_certificates.size() == 1 ||
+      (matching_certificates.size() > 1 &&
+       !ShouldPromptOnMultipleMatchingCertificates(profile))) {
+    // Always take the first certificate, even if multiple ones matched -
+    // there's no other criteria available for tie-breaking, and user prompts
+    // aren't enabled.
+    std::unique_ptr<net::ClientCertIdentity> auto_selected_identity =
+        std::move(matching_certificates[0]);
     // The callback will own |auto_selected_identity| and |delegate|, keeping
     // them alive until after ContinueWithCertificate is called.
     scoped_refptr<net::X509Certificate> cert =
@@ -3006,7 +3036,8 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     return base::OnceClosure();
   }
 
-  if (!may_show_cert_selection) {
+  if (matching_certificates.empty() &&
+      !CanPromptWithNonmatchingCertificates(profile)) {
     LOG(WARNING) << "No client cert matched by policy and user selection is "
                     "not allowed.";
     LogClientAuthResult(ClientCertSelectionResult::kNoSelectionAllowed);
@@ -3016,8 +3047,14 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     return base::OnceClosure();
   }
 
+  // Note: It can happen that both lists are empty, still the selector needs to
+  // be shown - see the comment in SSLClientAuthHandler::DidGetClientCerts()
+  // about platforms not having a client cert store.
+  net::ClientCertIdentityList client_cert_choices =
+      !matching_certificates.empty() ? std::move(matching_certificates)
+                                     : std::move(nonmatching_certificates);
   return chrome::ShowSSLClientCertificateSelector(
-      web_contents, cert_request_info, std::move(client_certs),
+      web_contents, cert_request_info, std::move(client_cert_choices),
       std::move(delegate));
 }
 

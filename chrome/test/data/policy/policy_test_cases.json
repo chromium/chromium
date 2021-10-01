@@ -15861,5 +15861,66 @@
         }
       }
     ]
+  },
+  "DeviceLoginScreenPromptOnMultipleMatchingCertificates": {
+    "os": ["chromeos_ash"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "prompt_on_multiple_matching_certificates": {
+            "default_value": false,
+            "location": "signin_profile"
+          }
+        }
+      },
+      {
+        "policies": { "DeviceLoginScreenPromptOnMultipleMatchingCertificates": false },
+        "prefs": {
+          "prompt_on_multiple_matching_certificates": {
+            "value": false,
+            "location": "signin_profile"
+          }
+        }
+      },
+      {
+        "policies": { "DeviceLoginScreenPromptOnMultipleMatchingCertificates": true },
+        "prefs": {
+          "prompt_on_multiple_matching_certificates": {
+            "value": true,
+            "location": "signin_profile"
+          }
+        }
+      }
+    ]
+  },
+  "PromptOnMultipleMatchingCertificates": {
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "prompt_on_multiple_matching_certificates": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "PromptOnMultipleMatchingCertificates": false },
+        "prefs": {
+          "prompt_on_multiple_matching_certificates": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "PromptOnMultipleMatchingCertificates": true },
+        "prefs": {
+          "prompt_on_multiple_matching_certificates": {
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

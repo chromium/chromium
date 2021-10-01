@@ -26453,6 +26453,9 @@ Called by update_document_policy_enum.py.-->
   <int value="901" label="EnableDeviceGranularReporting"/>
   <int value="902" label="WebSQLInThirdPartyContextEnabled"/>
   <int value="903" label="U2fSecurityKeyApiEnabled"/>
+  <int value="904"
+      label="DeviceLoginScreenPromptOnMultipleMatchingCertificates"/>
+  <int value="905" label="PromptOnMultipleMatchingCertificates"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

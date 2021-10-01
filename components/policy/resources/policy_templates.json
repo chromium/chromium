@@ -930,7 +930,8 @@
         'DeviceLoginScreenSitePerProcess',
         'DeviceLoginScreenAutoSelectCertificateForUrls',
         'DeviceShowNumericKeyboardForPassword',
-        'DeviceFamilyLinkAccountsAllowed'
+        'DeviceFamilyLinkAccountsAllowed',
+        'DeviceLoginScreenPromptOnMultipleMatchingCertificates',
       ],
     },
     {
@@ -1065,6 +1066,7 @@
         'SuggestedContentEnabled',
         'DeviceShowLowDiskSpaceNotification',
         'WebXRImmersiveArEnabled',
+        'PromptOnMultipleMatchingCertificates',
       ],
     },
     {
@@ -28062,6 +28064,66 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           If this policy is set to false or unset, WebSQL in third party contexts will remain off.
           If this policy is set to true, WebSQL in third-party contexts will be re-enabled.''',
     },
+    {
+      'name': 'DeviceLoginScreenPromptOnMultipleMatchingCertificates',
+      'owners': ['emaxx@chromium.org', 'pmarko@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'device_only': True,
+      'supported_on': ['chrome_os:96-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Prompt the user to select the client certificate whenever the auto-selection policy matches multiple certificates.',
+        },
+        {
+          'value': False,
+          'caption': 'Do not prompt the user to select a client certificate on the sign-in screen.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 904,
+      'tags': [],
+      'caption': '''Prompt for the client certificate when multiple certificates match on the sign-in screen.''',
+      'desc': '''This policy controls whether the user is prompted to select a client certificate on the sign-in screen in the frame hosting the SAML flow when more than one certificate matches <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME">DeviceLoginScreenAutoSelectCertificateForUrls</ph>.
+      If this policy is set to Enabled, the user is asked to select the client certificate whenever the auto-selection policy matches multiple certificates.
+      If this policy is set to Disabled or not set, the user is never prompted to select a client certificate on the sign-in screen.
+      Note: This policy is in general not recommended, since it imposes potential privacy risks (in case device-wide TPM-backed certificates are used) and presents poor user experience.''',
+    },
+    {
+      'name': 'PromptOnMultipleMatchingCertificates',
+      'owners': ['emaxx@chromium.org', 'pmarko@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:96-', 'chrome.*:96-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Prompt the user to select the client certificate whenever the auto-selection policy matches multiple certificates.',
+        },
+        {
+          'value': False,
+          'caption': 'Only prompt the user when no certificate matches the auto-selection.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 905,
+      'tags': [],
+      'caption': '''Prompt for the client certificate when multiple certificates match.''',
+      'desc': '''This policy controls whether the user is prompted to select a client certificate when more than one certificate matches <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME">AutoSelectCertificateForUrls</ph>.
+      If this policy is set to Enabled, the user is prompted to select a client certificate whenever the auto-selection policy matches multiple certificates.
+      If this policy is set to Disabled or not set, the user may only be prompted when no certificate matches the auto-selection.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -28519,6 +28581,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceScheduledReboot': 'device_scheduled_reboot.device_scheduled_reboot_settings',
     'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled_v2.enabled',
     'DeviceRestrictedManagedGuestSessionEnabled': 'device_restricted_managed_guest_session_enabled.enabled',
+    'DeviceLoginScreenPromptOnMultipleMatchingCertificates': 'login_screen_prompt_on_multiple_matching_certificates.value',
   },
   'policy_atomic_group_definitions': [
     {
@@ -29025,6 +29088,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 903,
+  'highest_id_currently_used': 905,
   'highest_atomic_group_id_currently_used': 41
 }

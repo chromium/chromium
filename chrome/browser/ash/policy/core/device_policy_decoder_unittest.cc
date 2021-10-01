@@ -353,4 +353,20 @@ TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListError) {
             error);
 }
 
+TEST_F(DevicePolicyDecoderTest,
+       DecodeLoginScreenPromptOnMultipleMatchingCertificates) {
+  em::ChromeDeviceSettingsProto device_policy;
+  device_policy.mutable_login_screen_prompt_on_multiple_matching_certificates()
+      ->set_value(true);
+
+  PolicyMap policies;
+  DecodeDevicePolicy(device_policy, /*external_data_manager=*/{}, &policies);
+
+  const base::Value* policy_value = policies.GetValue(
+      key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates);
+  ASSERT_NE(policy_value, nullptr);
+  ASSERT_TRUE(policy_value->is_bool());
+  EXPECT_TRUE(policy_value->GetBool());
+}
+
 }  // namespace policy

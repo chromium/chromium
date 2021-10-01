@@ -1986,4 +1986,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceRestrictedManagedGuestSessionEnabledProto
       device_restricted_managed_guest_session_enabled = 124;
   optional HostnameUserConfigurableProto hostname_user_configurable = 125;
+  optional BooleanPolicyProto
+      login_screen_prompt_on_multiple_matching_certificates = 126;
 }

@@ -4,6 +4,12 @@
 
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/notreached.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -14,12 +20,15 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/cert/x509_certificate.h"
+#include "net/ssl/client_cert_identity.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -39,6 +48,72 @@
 
 namespace chrome {
 namespace enterprise_util {
+
+namespace {
+
+// Returns client certificate auto-selection filters configured for the given
+// URL in |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting. The
+// format of the returned filters corresponds to the "filter" property of the
+// AutoSelectCertificateForUrls policy as documented at policy_templates.json.
+std::vector<base::Value> GetCertAutoSelectionFilters(
+    Profile* profile,
+    const GURL& requesting_url) {
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  std::unique_ptr<base::Value> setting =
+      host_content_settings_map->GetWebsiteSetting(
+          requesting_url, requesting_url,
+          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+
+  if (!setting || !setting->is_dict())
+    return {};
+
+  base::Value* filters =
+      setting->FindKeyOfType("filters", base::Value::Type::LIST);
+  if (!filters) {
+    // |setting_dict| has the wrong format (e.g. single filter instead of a
+    // list of filters). This content setting is only provided by
+    // the |PolicyProvider|, which should always set it to a valid format.
+    // Therefore, delete the invalid value.
+    host_content_settings_map->SetWebsiteSettingDefaultScope(
+        requesting_url, requesting_url,
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+    return {};
+  }
+  return std::move(*filters).TakeList();
+}
+
+// Returns whether the client certificate matches any of the auto-selection
+// filters. Returns false when there's no valid filter.
+bool CertMatchesSelectionFilters(
+    const net::ClientCertIdentity& client_cert,
+    const std::vector<base::Value>& auto_selection_filters) {
+  for (const auto& filter : auto_selection_filters) {
+    if (!filter.is_dict()) {
+      // The filter has a wrong format, so ignore it. Note that reporting of
+      // schema violations, like this, to UI is already implemented in the
+      // policy handler - see configuration_policy_handler_list_factory.cc.
+      continue;
+    }
+
+    auto issuer_pattern = certificate_matching::CertificatePrincipalPattern::
+        ParseFromOptionalDict(
+            filter.FindKeyOfType("ISSUER", base::Value::Type::DICTIONARY), "CN",
+            "L", "O", "OU");
+    auto subject_pattern = certificate_matching::CertificatePrincipalPattern::
+        ParseFromOptionalDict(
+            filter.FindKeyOfType("SUBJECT", base::Value::Type::DICTIONARY),
+            "CN", "L", "O", "OU");
+
+    if (issuer_pattern.Matches(client_cert.certificate()->issuer()) &&
+        subject_pattern.Matches(client_cert.certificate()->subject())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 bool HasBrowserPoliciesApplied(Profile* profile) {
   DCHECK(profile);
@@ -97,54 +172,22 @@ std::string GetDomainFromEmail(const std::string& email) {
   return gaia::ExtractDomainName(email);
 }
 
-std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
+void AutoSelectCertificates(
     Profile* profile,
     const GURL& requesting_url,
-    net::ClientCertIdentityList& client_certs) {
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  std::unique_ptr<base::Value> setting =
-      host_content_settings_map->GetWebsiteSetting(
-          requesting_url, requesting_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
-
-  if (!setting || !setting->is_dict())
-    return nullptr;
-
-  const base::Value* filters =
-      setting->FindKeyOfType("filters", base::Value::Type::LIST);
-  if (!filters) {
-    // |setting_dict| has the wrong format (e.g. single filter instead of a
-    // list of filters). This content setting is only provided by
-    // the |PolicyProvider|, which should always set it to a valid format.
-    // Therefore, delete the invalid value.
-    host_content_settings_map->SetWebsiteSettingDefaultScope(
-        requesting_url, requesting_url,
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
-    return nullptr;
+    net::ClientCertIdentityList client_certs,
+    net::ClientCertIdentityList* matching_client_certs,
+    net::ClientCertIdentityList* nonmatching_client_certs) {
+  matching_client_certs->clear();
+  nonmatching_client_certs->clear();
+  const std::vector<base::Value> auto_selection_filters =
+      GetCertAutoSelectionFilters(profile, requesting_url);
+  for (auto& client_cert : client_certs) {
+    if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters))
+      matching_client_certs->push_back(std::move(client_cert));
+    else
+      nonmatching_client_certs->push_back(std::move(client_cert));
   }
-
-  for (const base::Value& filter : filters->GetList()) {
-    DCHECK(filter.is_dict());
-
-    auto issuer_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(
-            filter.FindKeyOfType("ISSUER", base::Value::Type::DICTIONARY), "CN",
-            "L", "O", "OU");
-    auto subject_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(
-            filter.FindKeyOfType("SUBJECT", base::Value::Type::DICTIONARY),
-            "CN", "L", "O", "OU");
-    // Use the first certificate that is matched by the filter.
-    for (auto& client_cert : client_certs) {
-      if (issuer_pattern.Matches(client_cert->certificate()->issuer()) &&
-          subject_pattern.Matches(client_cert->certificate()->subject())) {
-        return std::move(client_cert);
-      }
-    }
-  }
-
-  return nullptr;
 }
 
 bool IsMachinePolicyPref(const std::string& pref_name) {

@@ -590,6 +590,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_login_screen_prompt_on_multiple_matching_certificates()) {
+    const em::BooleanPolicyProto& container(
+        policy.login_screen_prompt_on_multiple_matching_certificates());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,

@@ -26,13 +26,18 @@ bool HasBrowserPoliciesApplied(Profile* profile);
 // returns an empty string, otherwise.
 std::string GetDomainFromEmail(const std::string& email);
 
-// Attempts to auto-select a client certificate according to the value of
-// |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting for
-// |requesting_url|. If no certificate was auto-selected, returns nullptr.
-std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
+// Partitions |client_certs| according to the value of the
+// |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting for the
+// |requesting_url|. If a filter is set, all certs that match the
+// filter will be returned in |matching_client_certs|, and all certificates
+// that don't in |nonmatching_client_certs|. If no filter is set, then
+// all certificates will be returned in |nonmatching_client_certs|.
+void AutoSelectCertificates(
     Profile* profile,
     const GURL& requesting_url,
-    net::ClientCertIdentityList& client_certs);
+    net::ClientCertIdentityList client_certs,
+    net::ClientCertIdentityList* matching_client_certs,
+    net::ClientCertIdentityList* nonmatching_client_certs);
 
 // Returns true if the given pref is set through a machine-scope policy.
 bool IsMachinePolicyPref(const std::string& pref_name);
