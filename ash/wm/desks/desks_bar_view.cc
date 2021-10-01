@@ -340,11 +340,11 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     vertical_dots_button_->layer()->SetFillsBoundsOpaquely(false);
   }
 
+  // Make the scroll content view animatable by painting to a layer.
   scroll_view_contents_ =
       scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_view_contents_->SetPaintToLayer();
 
-  // Make the scroll content view animable by painting to a layer.
   expanded_state_new_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ExpandedDesksBarButton>(
           this, &kDesksNewDeskButtonIcon,

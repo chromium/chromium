@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/overview/overview_grid.h"
 #include "base/macros.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
@@ -257,7 +256,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   views::ScrollView* scroll_view_ = nullptr;
 
   // Contents of `scroll_view_`, which includes `mini_views_`,
-  // `expanded_state_new_desk_button_` and optionally `desks_template_button_
+  // `expanded_state_new_desk_button_` and optionally `desks_templates_button_`
   // currently.
   views::View* scroll_view_contents_ = nullptr;
 

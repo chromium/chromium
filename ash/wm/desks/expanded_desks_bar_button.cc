@@ -56,20 +56,21 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kButtonIconColor);
     SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(*outer_button_->icon(), enabled_icon_color));
+             gfx::CreateVectorIcon(*outer_button_->button_icon(),
+                                   enabled_icon_color));
     SetImage(views::Button::STATE_DISABLED,
              gfx::CreateVectorIcon(
-                 *outer_button_->icon(),
+                 *outer_button_->button_icon(),
                  AshColorProvider::GetDisabledColor(enabled_icon_color)));
     UpdateButtonState();
   }
 
   void OnButtonPressed() override { button_callback_.Run(); }
+
   // Update the button's enable/disable state based on current desks state.
   // TODO(sophiewen): This disables all expanded button types when the max # of
   // desks is created, but this logic should be separated for New Desk creation
   // and Desks Templates.
-
   void UpdateButtonState() override {
     outer_button_->UpdateLabelColor();
     const bool enabled = DesksController::Get()->CanCreateDesks();
@@ -100,6 +101,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
 
 BEGIN_METADATA(InnerExpandedDesksBarButton, views::LabelButton)
 END_METADATA
+
 }  // namespace
 
 ExpandedDesksBarButton::ExpandedDesksBarButton(

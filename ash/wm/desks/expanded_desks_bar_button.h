@@ -36,18 +36,18 @@ class ExpandedDesksBarButton : public views::View {
   ExpandedDesksBarButton& operator=(const ExpandedDesksBarButton&) = delete;
   ~ExpandedDesksBarButton() override = default;
 
-  const gfx::VectorIcon* icon() const { return button_icon_; }
+  const gfx::VectorIcon* button_icon() const { return button_icon_; }
+
+  DeskButtonBase* inner_button() { return inner_button_; }
+
+  // Updates `inner_button_`'s state on current desks state.
+  void UpdateButtonState();
+
+  // Updates the `label_`'s color on DesksController::CanCreateDesks.
+  void UpdateLabelColor();
 
   // views::View:
   void Layout() override;
-
-  // Updates |new_desk_button_|'s state on current desks state.
-  void UpdateButtonState();
-
-  // Updates the |label_|'s color on DesksController::CanCreateDesks.
-  void UpdateLabelColor();
-
-  DeskButtonBase* inner_button() { return inner_button_; }
 
  private:
   DesksBarView* const bar_view_;  // Not owned.
