@@ -83,8 +83,6 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
     kPrefSet,
     // Wait until the extension is loaded.
     kLoad,
-    // Wait until the extension's background page is ready.
-    kBackgroundPageReady,
     // Wait until the extension's background page is loaded for the first time.
     kBackgroundPageFirstLoad,
   };
@@ -141,12 +139,6 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
       const extensions::ExtensionId& extension_id) const;
   // Returns the extension, or null if it's not installed or not enabled yet.
   const extensions::Extension* GetEnabledExtension(
-      const extensions::ExtensionId& extension_id) const;
-  // Returns whether the installed extension's background page is ready.
-  // Note: this is only valid for extensions with persistent background pages.
-  // TODO(devlin): But it's definitely called for event page-based items, like
-  // platform apps. : ( See https://crbug.com/1253332.
-  bool IsExtensionBackgroundPageReady(
       const extensions::ExtensionId& extension_id) const;
 
   // InProcessBrowserTestMixin:
