@@ -2874,7 +2874,11 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-fonts/generic-family-keywords
 crbug.com/626703 [ Linux ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Win7 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/scheduler/post-task-without-signals.any.serviceworker.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/scheduler/post-task-without-signals.any.worker.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/scheduler/tentative/current-task-signal.any.serviceworker.html [ Crash ]
 crbug.com/626703 external/wpt/geolocation-API/non-fully-active.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/coop-navigate-same-origin-csp-sandbox.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/coop-navigate-same-origin-csp-sandbox.html [ Timeout ]
@@ -5462,7 +5466,7 @@ crbug.com/952717 [ Debug ] http/tests/xmlhttprequest/redirect-cross-origin-post.
 # Sheriff 2020-05-18
 crbug.com/1084256 [ Linux ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Failure Pass ]
 crbug.com/1084256 [ Mac ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Failure Pass ]
-crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Failure Pass ]
+crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Failure Crash Pass ]
 
 # Disabled to prepare fixing the tests in V8
 crbug.com/v8/10556 external/wpt/wasm/jsapi/instance/constructor-caching.any.html [ Failure Pass ]
@@ -6913,6 +6917,32 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-spec
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_avc [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/12-55.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
+
+crbug.com/1249176 [ Mac11-arm64 ] editing/selection/find-in-text-control.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-min-max-attribute.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/stylesheet-and-script-load-order-http.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/blob/send-sliced-data-blob.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/formdata/send-form-data-with-empty-name.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/xss-DENIED-assign-location-hostname.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] media/picture-in-picture/v2/request-picture-in-picture.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] paint/invalidation/selection/invalidation-rect-includes-newline-for-rtl.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] storage/indexeddb/intversion-revert-on-abort.html [ Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] svg/animations/animate-setcurrenttime.html [ Crash ]
+
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Failure Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-018.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/xhr/send-no-response-event-loadend.htm [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/network/xhr-post-replay-cors.js [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/cross-origin-shared-worker-allowed.html [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/cors-rfc1918/internal-to-internal-xhr.html [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] media/autoplay/webaudio-audio-context-init.html [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] media/picture-in-picture/v2/detached-iframe.html [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-005.html [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-yes-subdomain-child2-no-port.sub.https.html [ Pass Crash ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Pass Crash ]
 
 # Sheriff 2021-09-16
 crbug.com/1250457 [ Win7 ] http/tests/devtools/sources/debugger-ui/script-formatter-breakpoints-3.js [ Failure ]
