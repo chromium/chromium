@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -42,6 +43,23 @@ PageContentAnnotationsWebContentsObserver::
 
 void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  optimization_guide::HistoryVisit history_visit = optimization_guide::
+      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
+          web_contents(), navigation_handle->GetNavigationId());
+
+  // TODO(crbug/1177102): Remove this title hack once the PageTextObserver works
+  // for same-document navigations.
+  if (navigation_handle->IsSameDocument()) {
+    // Annotate the title instead.
+    page_content_annotations_service_->Annotate(
+        history_visit, base::UTF16ToUTF8(web_contents()->GetTitle()));
+  }
+
   if (!optimization_guide::features::ShouldExtractRelatedSearches()) {
     return;
   }
@@ -50,16 +68,8 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     return;
   }
 
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
-  page_content_annotations_service_->ExtractRelatedSearches(
-      optimization_guide::PageContentAnnotationsService::
-          CreateHistoryVisitFromWebContents(
-              web_contents(), navigation_handle->GetNavigationId()),
-      web_contents());
+  page_content_annotations_service_->ExtractRelatedSearches(history_visit,
+                                                            web_contents());
 }
 
 std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -74,7 +84,8 @@ PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return nullptr;
 
-  // TODO(crbug/1177102): Figure out how to deal with same document navigations.
+  if (navigation_handle->IsSameDocument())
+    return nullptr;
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request =
       std::make_unique<PageTextObserver::ConsumerTextDumpRequest>();

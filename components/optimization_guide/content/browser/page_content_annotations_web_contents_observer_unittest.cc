@@ -119,12 +119,13 @@ class PageContentAnnotationsWebContentsObserverTest
   TestPageTextObserver* page_text_observer() { return page_text_observer_; }
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
-  RequestTextDumpForUrl(const GURL& url) {
+  RequestTextDumpForUrl(const GURL& url, bool is_same_document = false) {
     content::MockNavigationHandle navigation_handle(url, main_rfh());
     navigation_handle.set_url(url);
     // PageTextObserver is guaranteed to call MaybeRequestFrameTextDump after
     // the navigation has been committed.
     navigation_handle.set_has_committed(true);
+    navigation_handle.set_is_same_document(is_same_document);
     return helper()->MaybeRequestFrameTextDump(&navigation_handle);
   }
 
@@ -146,6 +147,13 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        DoesNotRequestForNonHttpHttps) {
   EXPECT_EQ(RequestTextDumpForUrl(GURL("chrome://new-tab")), nullptr);
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest,
+       DoesNotRequestForSameDocument) {
+  EXPECT_EQ(
+      RequestTextDumpForUrl(GURL("http://test.com"), /*is_same_document=*/true),
+      nullptr);
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -181,6 +189,31 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_TRUE(last_annotation_request.has_value());
   EXPECT_EQ(last_annotation_request->first.url, GURL("http://test.com"));
   EXPECT_EQ(last_annotation_request->second, "some text");
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest,
+       SameDocumentNavigationsAnnotateTitle) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://foo"), main_rfh());
+
+  // Set title and favicon.
+  std::u16string title(u"Title");
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      title);
+
+  // history.pushState() is called for url2.
+  GURL url2("http://foo#foo");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(url2, main_rfh());
+  navigation_simulator->CommitSameDocument();
+
+  // The title should be what is requested to be annotated.
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+      service()->last_annotation_request();
+  EXPECT_TRUE(last_annotation_request.has_value());
+  EXPECT_EQ(last_annotation_request->first.url, url2);
+  EXPECT_EQ(last_annotation_request->second, "Title");
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
