@@ -6678,8 +6678,6 @@ static_library("browser") {
 
   if (enable_service_discovery) {
     sources += [
-      "local_discovery/endpoint_resolver.cc",
-      "local_discovery/endpoint_resolver.h",
       "local_discovery/service_discovery_client.cc",
       "local_discovery/service_discovery_client.h",
       "local_discovery/service_discovery_client_mac.h",
@@ -6698,6 +6696,13 @@ static_library("browser") {
         "local_discovery/service_discovery_client_impl.h",
         "local_discovery/service_discovery_client_mdns.cc",
         "local_discovery/service_discovery_client_mdns.h",
+      ]
+    }
+
+    if (is_chromeos_ash) {
+      sources += [
+        "local_discovery/endpoint_resolver.cc",
+        "local_discovery/endpoint_resolver.h",
       ]
     }
   }
