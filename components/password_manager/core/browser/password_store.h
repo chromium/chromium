@@ -184,7 +184,7 @@ class PasswordStore : public PasswordStoreInterface {
   // instance of PasswordStoreImpl, this member is not used.
   //
   // The backend is injected via the public constructor, this member owns the
-  /// instance and deletes it by calling PasswordStoreBackend::Shutdown on it.
+  // instance and deletes it by calling PasswordStoreBackend::Shutdown on it.
   std::unique_ptr<PasswordStoreBackend> backend_deleter_ = nullptr;
 
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).

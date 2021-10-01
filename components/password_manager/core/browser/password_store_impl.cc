@@ -408,11 +408,18 @@ PasswordStoreImpl::CreateSyncControllerDelegateFactory() {
   // GetSyncControllerDelegateOnBackgroundSequence() because this getter itself
   // must also run in the backend sequence, and the proxy object below will take
   // care of that.
+  // Since the controller delegate can (only in theory) invoke the factory after
+  // `Shutdown` was called, it only returns nullptr then to prevent a UAF.
   return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
       background_task_runner_,
       base::BindRepeating(
-          &PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence,
-          base::Unretained(this)));  // Safe until `Shutdown()`.
+          [](base::WeakPtr<PasswordStoreImpl> backend) {
+            if (!backend)
+              return base::WeakPtr<syncer::ModelTypeControllerDelegate>(
+                  nullptr);
+            return backend->GetSyncControllerDelegateOnBackgroundSequence();
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordStoreImpl::AddSiteStats(const InteractionsStats& stats) {
