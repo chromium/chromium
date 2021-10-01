@@ -1614,6 +1614,7 @@ ci.chromium_builder(
         short_name = "tag",
     ),
     main_console_view = "main",
+    cores = 12,
     os = os.MAC_DEFAULT,
     tree_closing = False,
     schedule = "triggered",
