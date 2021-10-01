@@ -5131,8 +5131,6 @@ crbug.com/1029489 http/tests/devtools/elements/elements-linkify-attributes.js [ 
 crbug.com/1030258 http/tests/devtools/network/network-cookies-pane.js [ Failure Pass ]
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Failure Pass ]
 
-crbug.com/1192637 http/tests/devtools/tracing/ui-devtools-not-generic-trace.js [ Failure Pass ]
-
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]
 crbug.com/1033852 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
