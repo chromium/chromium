@@ -3605,7 +3605,7 @@ void Element::SetNeedsCompositingUpdate() {
 }
 
 RegionCaptureCropId Element::MarkWithRegionCaptureCropId() {
-  if (RegionCaptureCropId().is_empty()) {
+  if (GetRegionCaptureCropId().is_empty()) {
     EnsureElementRareData().SetRegionCaptureCropId(
         base::UnguessableToken::Create());
 
@@ -3616,10 +3616,10 @@ RegionCaptureCropId Element::MarkWithRegionCaptureCropId() {
       GetLayoutObject()->SetShouldDoFullPaintInvalidation();
     }
   }
-  return RegionCaptureCropId();
+  return GetRegionCaptureCropId();
 }
 
-RegionCaptureCropId Element::RegionCaptureCropId() const {
+RegionCaptureCropId Element::GetRegionCaptureCropId() const {
   return HasRareData() ? GetElementRareData()->RegionCaptureCropId()
                        : base::UnguessableToken::Null();
 }

@@ -564,7 +564,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   RegionCaptureCropId MarkWithRegionCaptureCropId();
 
   // Returns a null token if not marked for capture.
-  RegionCaptureCropId RegionCaptureCropId() const;
+  RegionCaptureCropId GetRegionCaptureCropId() const;
 
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
