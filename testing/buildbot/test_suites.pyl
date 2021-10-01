@@ -3953,7 +3953,6 @@
 
     'gpu_webgpu_integration_backend_validation_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
@@ -3988,7 +3987,6 @@
 
     'gpu_webgpu_integration_isolated_scripts': {
       'webgpu_blink_web_tests': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
@@ -4023,7 +4021,6 @@
     # validation and shader patching. This avoids hangs on less powerful systems.
     'gpu_webgpu_integration_partial_backend_validation_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_partial_backend_validation',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests

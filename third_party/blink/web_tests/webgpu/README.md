@@ -67,7 +67,58 @@ See below for step-by-step instructions on performing a roll.
 
 ## Testing Locally
 
-This is not necessary for the roll process, but if you want to run a test
-locally with `--enable-unsafe-webgpu`, you can easily do so here:
+This is not necessary for the roll process, but it can be useful to run tests locally.
 
-*   <https://gpuweb.github.io/cts/standalone/>
+Chromium must be launched with `--enable-unsafe-webgpu`
+(or `--enable-features=WebGPUService,WebGPU`).
+
+### Manually through standalone, without expectations
+
+- Open <https://gpuweb.github.io/cts/standalone/>
+    (or <http://localhost:8080/standalone/> if running the cts locally)
+    in the browser of your choice.
+
+(Note: reftests can be loaded this way, but they won't get compared against the
+reference automatically. Use web_tests for that.)
+
+### Through WPT (Blink web_tests)
+
+(If you want to test unlanded changes to the WebGPU CTS, first check them out in
+`third_party/webgpu-cts/src`, then run
+`third_party/webgpu-cts/scripts/gen_ts_dep_lists.py` and
+`third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py`.)
+
+Build the `webgpu_blink_web_tests` target (change build directory name as needed):
+
+```sh
+autoninja -C out/YOUR_TARGET webgpu_blink_web_tests
+```
+
+Then, do one of the following:
+
+#### Manually, without expectations
+
+- Run `third_party/blink/tools/run_blink_wptserve.py -t YOUR_TARGET`
+- Open <http://localhost:8001/wpt_internal/webgpu/> in the browser of your choice.
+
+#### Through the automated harness, with expectations
+
+Run tests with expectations applied (arguments copied from `test_suites.pyl`;
+check there to see if this documentation is outdated):
+
+```sh
+./out/YOUR_TARGET/bin/run_webgpu_blink_web_tests --target YOUR_TARGET --flag-specific=webgpu
+```
+
+- On Linux, add:
+    `--no-xvfb --additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan`.
+- For backend validation, `--flag-specific` may be changed from `webgpu` to
+    `webgpu-with-backend-validation` or `webgpu-with-partial-backend-validation`.
+
+To run a particular test rather than the entire WebGPU CTS, add a test filter.
+(Note, queries can't be more specific than "variants" already in `cts.html`).
+Examples:
+- `--isolated-script-test-filter='wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:mapAsync,read:*'`
+- `--isolated-script-test-filter='wpt_internal/webgpu/web_platform/reftests/canvas_clear.html'`
+
+Finally, to view the results, open `out/YOUR_TARGET/layout-test-results/results.html`.
