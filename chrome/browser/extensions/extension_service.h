@@ -55,7 +55,6 @@
 #endif
 
 class BlocklistedExtensionSyncServiceTest;
-class HostContentSettingsMap;
 class Profile;
 
 namespace base {
@@ -365,11 +364,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // doesn't notify the user that the extension was terminated, if such a
   // notification is desired the calling code is responsible for doing that.
   void TerminateExtension(const std::string& extension_id);
-
-  // Register self and content settings API with the specified map.
-  static void RegisterContentSettings(
-      HostContentSettingsMap* host_content_settings_map,
-      Profile* profile);
 
   // Adds/Removes update observers.
   void AddUpdateObserver(UpdateObserver* observer);

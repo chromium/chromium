@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/one_time_geolocation_permission_provider.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_factory.h"
@@ -23,10 +24,9 @@
 #include "ui/webui/webui_allowlist_provider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/extension_system_provider.h"
-#include "extensions/browser/extensions_browser_client.h"
+#include "base/trace_event/trace_event.h"
+#include "chrome/browser/extensions/api/content_settings/content_settings_custom_extension_provider.h"
+#include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -51,8 +51,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  DependsOn(
-      extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
 #endif
 }
 
@@ -79,13 +78,15 @@ scoped_refptr<RefcountedKeyedService>
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = static_cast<Profile*>(context);
+  // extensions::ContentSettingsService::Get() needs the original profile.
+  Profile* original_profile = profile->GetOriginalProfile();
 
   // In OffTheRecord mode, retrieve the host content settings map of the parent
   // profile in order to ensure the preferences have been migrated.
   // This is not required for guest sessions, since the parent profile of a
   // guest OTR profile is empty.
   if (profile->IsOffTheRecord() && !profile->IsGuestSession())
-    GetForProfile(profile->GetOriginalProfile());
+    GetForProfile(original_profile);
 
   scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(
       profile->GetPrefs(),
@@ -112,8 +113,16 @@ scoped_refptr<RefcountedKeyedService>
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // These must be registered before before the HostSettings are passed over to
   // the IOThread.  Simplest to do this on construction.
-  extensions::ExtensionService::RegisterContentSettings(settings_map.get(),
-                                                        profile);
+  settings_map->RegisterProvider(
+      HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER,
+      std::make_unique<content_settings::CustomExtensionProvider>(
+          extensions::ContentSettingsService::Get(original_profile)
+              ->content_settings_store(),
+          // TODO(crbug.com/1254409): This is the only call site, so can we
+          // remove this constructor parameter, or should this actually reflect
+          // the case where profile->IsOffTheRecord() is true? And what is the
+          // interaction with profile->IsGuestSession()?
+          false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserSettingsService* supervised_service =
