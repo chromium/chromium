@@ -7767,9 +7767,9 @@ test("unit_tests") {
     ]
   }
 
-  if ((is_win || is_linux || is_chromeos) && is_chrome_branded) {
+  if (!is_android && is_chrome_branded) {
     sources += [
-      "../browser/lens/region_search/lens_region_search_controller_unittest.cc",
+      "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
       "../browser/ui/views/lens/lens_side_panel_controller_unittest.cc",
     ]
     deps += [ "//chrome/browser/lens/region_search" ]

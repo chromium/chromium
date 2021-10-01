@@ -61,13 +61,15 @@ class LensRegionSearchController : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // The function handling the metrics recording and resizing that happens when
+  // the capture has been completed.
+  void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
+
  private:
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
 
   void RecordRegionSizeRelatedMetrics(gfx::Rect screen_bounds,
                                       gfx::Size region_size);
-
-  void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
 
   gfx::Image ResizeImageIfNecessary(const gfx::Image& image);
 
