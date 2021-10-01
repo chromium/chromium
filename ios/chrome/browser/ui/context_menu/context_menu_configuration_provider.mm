@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/public/provider/chrome/browser/lens/lens_api.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -279,7 +280,8 @@ const CGFloat kFaviconWidthHeight = 24;
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
     __weak ContextMenuConfigurationProvider* weakSelf = self;
-    if (base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
+    if (ios::provider::IsLensSupported() &&
+        base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
         search_engines::SupportsSearchImageWithLens(service)) {
       UIAction* searchImageWithLensAction =
           [actionFactory actionToSearchImageUsingLensWithBlock:^{
