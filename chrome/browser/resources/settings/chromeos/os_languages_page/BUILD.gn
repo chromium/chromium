@@ -41,8 +41,8 @@ js_library("languages") {
   deps = [
     ":languages_browser_proxy",
     ":languages_types",
+    "..:prefs_behavior",
     "../../prefs:prefs",
-    "../../prefs:prefs_behavior",
     "../../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -85,7 +85,7 @@ js_library("add_spellcheck_languages_dialog") {
     ":cr_checkbox_with_policy",
     ":languages_types",
     "..:metrics_recorder.m",
-    "../../prefs:prefs_behavior",
+    "..:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -246,8 +246,8 @@ js_library("smart_inputs_page.m") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
+    "..:prefs_behavior",
     "../..:router",
-    "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":smart_inputs_page_module" ]

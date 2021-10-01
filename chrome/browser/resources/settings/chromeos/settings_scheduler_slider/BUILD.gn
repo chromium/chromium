@@ -14,7 +14,7 @@ js_type_check("closure_compile_module") {
 
 js_library("settings_scheduler_slider") {
   deps = [
-    "../../prefs:prefs_behavior",
+    "..:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
   ]

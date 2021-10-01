@@ -14,7 +14,7 @@ import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-beh
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 
 const HOURS_PER_DAY = 24;
 const MIN_KNOBS_DISTANCE_MINUTES = 60;

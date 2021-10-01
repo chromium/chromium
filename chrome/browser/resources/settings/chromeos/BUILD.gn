@@ -277,13 +277,13 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_settings.js",
     "chromeos/personalization_page/change_picture_browser_proxy.js",
     "chromeos/personalization_page/wallpaper_browser_proxy.js",
+    "chromeos/prefs_behavior.js",
     "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.js",
     "people_page/account_manager_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
     "chromeos/ambient_mode_page/constants.js",
     "people_page/sync_browser_proxy.js",
-    "prefs/prefs_behavior.js",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
@@ -620,6 +620,7 @@ js_type_check("closure_compile_local_module") {
     ":os_settings_icons_css.m",
     ":os_settings_routes.m",
     ":pref_to_setting_metric_converter.m",
+    ":prefs_behavior",
     ":route_origin_behavior.m",
     ":search_handler.m",
   ]
@@ -698,6 +699,11 @@ js_library("os_settings_routes.m") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]
+}
+
+js_library("prefs_behavior") {
+  deps = [ "//ui/webui/resources/js:assert.m" ]
+  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("pref_to_setting_metric_converter.m") {

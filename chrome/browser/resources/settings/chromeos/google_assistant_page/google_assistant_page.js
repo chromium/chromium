@@ -50,7 +50,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import '../../controls/controlled_button.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 import '../../prefs/pref_util.js';
 import {Router, Route, RouteObserverBehavior} from '../../router.js';
 import '../../settings_shared_css.js';

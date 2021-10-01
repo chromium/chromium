@@ -24,11 +24,11 @@ import '../os_people_page/lock_screen_password_prompt_dialog.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from '../os_people_page/lock_state_behavior.m.js';
 import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 
 import {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 

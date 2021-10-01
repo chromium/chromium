@@ -10,7 +10,6 @@ js_type_check("closure_compile") {
   deps = [
     ":pref_util",
     ":prefs",
-    ":prefs_behavior",
     ":prefs_mixin",
     ":prefs_types",
   ]
@@ -36,11 +35,6 @@ js_library("prefs_mixin") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("prefs_behavior") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 

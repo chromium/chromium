@@ -23,8 +23,8 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 
 Polymer({
   _template: html`{__html_template__}`,

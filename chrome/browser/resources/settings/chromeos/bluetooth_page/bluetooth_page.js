@@ -32,7 +32,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import '../os_icons.m.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import '../../prefs/prefs.js';
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {recordSettingChange} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.m.js';

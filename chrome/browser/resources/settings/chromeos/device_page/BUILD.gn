@@ -153,7 +153,7 @@ js_library("storage_external") {
 
 js_library("storage_external_entry") {
   deps = [
-    "../../prefs:prefs_behavior",
+    "..:prefs_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }

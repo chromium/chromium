@@ -190,7 +190,7 @@ settings_auto_imports = [
   "chrome/browser/resources/settings/controls/settings_boolean_control_mixin.html|SettingsBooleanControlMixin",
   "chrome/browser/resources/settings/extension_control_browser_proxy.html|ExtensionControlBrowserProxyImpl,ExtensionControlBrowserProxy",
   "chrome/browser/resources/settings/i18n_setup.html|loadTimeData",
-  "chrome/browser/resources/settings/prefs/prefs_behavior.html|PrefsBehavior",
+  "chrome/browser/resources/settings/chromeos/prefs_behavior.html|PrefsBehavior",
   "chrome/browser/resources/settings/prefs/prefs_types.html|CrSettingsPrefs",
   "chrome/browser/resources/settings/router.html|Router,Route,RouteObserverBehavior",
 ]
@@ -499,7 +499,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/people_page/sync_browser_proxy.html",
                                  "chrome/browser/resources/settings/people_page/sync_controls.html",
                                  "chrome/browser/resources/settings/people_page/sync_page.html",
-                                 "chrome/browser/resources/settings/prefs/prefs_behavior.html",
+                                 "chrome/browser/resources/settings/chromeos/prefs_behavior.html",
                                  "chrome/browser/resources/settings/prefs/prefs.html",
                                  "chrome/browser/resources/settings/prefs/prefs_types.html",
                                  "chrome/browser/resources/settings/prefs/pref_util.html",

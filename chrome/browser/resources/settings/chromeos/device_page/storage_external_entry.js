@@ -15,7 +15,7 @@ import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 
 Polymer({
   _template: html`{__html_template__}`,

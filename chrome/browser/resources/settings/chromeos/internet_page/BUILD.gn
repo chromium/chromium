@@ -224,7 +224,7 @@ js_library("network_proxy_section") {
     ":internet_shared_css",
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/prefs:prefs_behavior",
+    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
@@ -302,8 +302,8 @@ js_library("cellular_roaming_toggle_button") {
   deps = [
     ":internet_shared_css",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
+    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//chrome/browser/resources/settings/prefs:prefs",
-    "//chrome/browser/resources/settings/prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
