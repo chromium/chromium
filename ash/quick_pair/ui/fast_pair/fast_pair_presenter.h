@@ -16,7 +16,7 @@ namespace ash {
 namespace quick_pair {
 
 struct Device;
-struct DeviceMetadata;
+class DeviceMetadata;
 
 using DiscoveryCallback = base::OnceCallback<void(DiscoveryAction)>;
 using PairingFailedCallback = base::OnceCallback<void(PairingFailedAction)>;

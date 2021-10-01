@@ -13,16 +13,25 @@ namespace ash {
 namespace quick_pair {
 
 // Thin wrapper around decoded metadata for a Fast Pair device.
-struct COMPONENT_EXPORT(QUICK_PAIR_REPOSITORY) DeviceMetadata {
-  DeviceMetadata(const nearby::fastpair::Device device, const gfx::Image image);
-  DeviceMetadata(const DeviceMetadata&) = delete;
+class COMPONENT_EXPORT(QUICK_PAIR_REPOSITORY) DeviceMetadata {
+ public:
+  DeviceMetadata(const nearby::fastpair::GetObservedDeviceResponse device,
+                 const gfx::Image image);
   DeviceMetadata(DeviceMetadata&&);
+  DeviceMetadata(const DeviceMetadata&) = delete;
   DeviceMetadata& operator=(const DeviceMetadata&) = delete;
   DeviceMetadata& operator=(DeviceMetadata&&) = delete;
-  ~DeviceMetadata() = default;
+  ~DeviceMetadata();
 
-  const nearby::fastpair::Device device;
-  const gfx::Image image;
+  const nearby::fastpair::Device& GetDetails();
+  const gfx::Image& image() { return image_; }
+  const nearby::fastpair::GetObservedDeviceResponse& response() {
+    return response_;
+  }
+
+ private:
+  const nearby::fastpair::GetObservedDeviceResponse response_;
+  const gfx::Image image_;
 };
 
 }  // namespace quick_pair

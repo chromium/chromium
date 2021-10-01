@@ -73,7 +73,7 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
   }
 
   const std::string& public_anti_spoofing_key =
-      device_metadata->device.anti_spoofing_key_pair().public_key();
+      device_metadata->GetDetails().anti_spoofing_key_pair().public_key();
   absl::optional<fast_pair_encryption::KeyPair> key_pair =
       fast_pair_encryption::GenerateKeysWithEcdhKeyAgreement(
           public_anti_spoofing_key);

@@ -60,7 +60,7 @@ void FastPairRepositoryImpl::OnMetadataFetched(
   }
   if (response->image().empty()) {
     metadata_cache_[normalized_model_id] =
-        std::make_unique<DeviceMetadata>(response->device(), gfx::Image());
+        std::make_unique<DeviceMetadata>(std::move(*response), gfx::Image());
     std::move(callback).Run(metadata_cache_[normalized_model_id].get());
     return;
   }
@@ -81,7 +81,7 @@ void FastPairRepositoryImpl::OnImageDecoded(
     nearby::fastpair::GetObservedDeviceResponse response,
     gfx::Image image) {
   metadata_cache_[normalized_model_id] =
-      std::make_unique<DeviceMetadata>(response.device(), std::move(image));
+      std::make_unique<DeviceMetadata>(response, std::move(image));
   std::move(callback).Run(metadata_cache_[normalized_model_id].get());
 }
 

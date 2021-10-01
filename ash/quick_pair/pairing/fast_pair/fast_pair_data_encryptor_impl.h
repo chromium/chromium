@@ -20,7 +20,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct DeviceMetadata;
+class DeviceMetadata;
 
 // Holds a secret key for a device and has methods to encrypt bytes, decrypt
 // response and decrypt passkey.

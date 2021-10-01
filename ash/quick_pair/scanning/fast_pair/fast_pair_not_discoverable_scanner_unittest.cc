@@ -12,6 +12,7 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
@@ -191,12 +192,12 @@ TEST_F(FastPairNotDiscoverableScannerTest, InvokesLostCallbackAfterFound) {
   std::unique_ptr<device::BluetoothDevice> device =
       GetInRangeDevice(GetAdvServicedata(), /*expect_call=*/true);
 
-  nearby::fastpair::Device fp_device;
-  fp_device.set_id(kModelIdLong);
-  fp_device.set_trigger_distance(2);
+  nearby::fastpair::GetObservedDeviceResponse response;
+  response.mutable_device()->set_id(kModelIdLong);
+  response.mutable_device()->set_trigger_distance(2);
 
   auto device_metadata =
-      std::make_unique<DeviceMetadata>(fp_device, gfx::Image());
+      std::make_unique<DeviceMetadata>(std::move(response), gfx::Image());
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);

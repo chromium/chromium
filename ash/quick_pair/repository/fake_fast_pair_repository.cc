@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/strings/string_util.h"
 
 namespace ash {
@@ -16,8 +17,11 @@ FakeFastPairRepository::~FakeFastPairRepository() = default;
 void FakeFastPairRepository::SetFakeMetadata(const std::string& hex_model_id,
                                              nearby::fastpair::Device metadata,
                                              gfx::Image image) {
+  nearby::fastpair::GetObservedDeviceResponse response;
+  response.mutable_device()->CopyFrom(metadata);
+
   data_[base::ToUpperASCII(hex_model_id)] =
-      std::make_unique<DeviceMetadata>(metadata, image);
+      std::make_unique<DeviceMetadata>(response, image);
 }
 
 void FakeFastPairRepository::ClearFakeMetadata(

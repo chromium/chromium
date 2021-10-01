@@ -137,20 +137,21 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
   if (!metadata || !metadata->device_metadata)
     return;
 
+  auto& details = metadata->device_metadata->GetDetails();
+
   QP_LOG(INFO) << __func__
                << ": Checking if device is in range, and waiting if not.  "
                   "trigger_distance="
-               << metadata->device_metadata->device.trigger_distance();
+               << details.trigger_distance();
 
   // Convert the integer model id to uppercase hex string.
   std::stringstream model_id_stream;
-  model_id_stream << std::uppercase << std::hex
-                  << metadata->device_metadata->device.id();
+  model_id_stream << std::uppercase << std::hex << details.id();
 
-  int tx_power = metadata->device_metadata->device.ble_tx_power();
+  int tx_power = details.ble_tx_power();
 
   range_tracker_->Track(
-      device, metadata->device_metadata->device.trigger_distance(),
+      device, details.trigger_distance(),
       base::BindRepeating(&FastPairNotDiscoverableScanner::NotifyDeviceFound,
                           weak_pointer_factory_.GetWeakPtr(),
                           model_id_stream.str()),

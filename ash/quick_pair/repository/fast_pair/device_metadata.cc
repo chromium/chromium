@@ -7,9 +7,18 @@
 namespace ash {
 namespace quick_pair {
 
-DeviceMetadata::DeviceMetadata(const nearby::fastpair::Device device,
-                               const gfx::Image image)
-    : device(std::move(device)), image(std::move(image)) {}
+DeviceMetadata::DeviceMetadata(
+    const nearby::fastpair::GetObservedDeviceResponse response,
+    const gfx::Image image)
+    : response_(std::move(response)), image_(std::move(image)) {}
+
+DeviceMetadata::DeviceMetadata(DeviceMetadata&&) = default;
+
+DeviceMetadata::~DeviceMetadata() = default;
+
+const nearby::fastpair::Device& DeviceMetadata::GetDetails() {
+  return response_.device();
+}
 
 }  // namespace quick_pair
 }  // namespace ash

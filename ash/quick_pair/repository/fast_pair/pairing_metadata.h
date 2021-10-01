@@ -12,7 +12,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct DeviceMetadata;
+class DeviceMetadata;
 
 // Thin wrapper around Account Key + decoded metadata for a Fast Pair device
 // which has already been paired.

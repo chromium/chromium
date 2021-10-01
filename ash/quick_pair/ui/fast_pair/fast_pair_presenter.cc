@@ -50,8 +50,8 @@ void FastPairPresenter::OnDiscoveryMetadataRetrieved(
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   notification_controller_->ShowDiscoveryNotification(
-      base::ASCIIToUTF16(device_metadata->device.name()),
-      device_metadata->image,
+      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
+      device_metadata->image(),
       base::BindOnce(&FastPairPresenter::OnDiscoveryClicked,
                      weak_pointer_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),
@@ -86,8 +86,8 @@ void FastPairPresenter::OnPairingMetadataRetrieved(
   }
 
   notification_controller_->ShowPairingNotification(
-      base::ASCIIToUTF16(device_metadata->device.name()),
-      device_metadata->image, base::DoNothing(), base::DoNothing());
+      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
+      device_metadata->image(), base::DoNothing(), base::DoNothing());
 }
 
 void FastPairPresenter::ShowPairingFailed(scoped_refptr<Device> device,
@@ -110,8 +110,8 @@ void FastPairPresenter::OnPairingFailedMetadataRetrieved(
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   notification_controller_->ShowErrorNotification(
-      base::ASCIIToUTF16(device_metadata->device.name()),
-      device_metadata->image,
+      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
+      device_metadata->image(),
       base::BindOnce(&FastPairPresenter::OnNavigateToSettings,
                      weak_pointer_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),
@@ -132,9 +132,9 @@ void FastPairPresenter::OnNavigateToSettings(PairingFailedCallback callback) {
 }
 
 void FastPairPresenter::OnPairingFailedDismissed(PairingFailedCallback callback,
-                                                 bool user_dimissed) {
-  std::move(callback).Run(user_dimissed ? PairingFailedAction::kDismissedByUser
-                                        : PairingFailedAction::kDismissed);
+                                                 bool user_dismissed) {
+  std::move(callback).Run(user_dismissed ? PairingFailedAction::kDismissedByUser
+                                         : PairingFailedAction::kDismissed);
 }
 
 void FastPairPresenter::ShowAssociateAccount(

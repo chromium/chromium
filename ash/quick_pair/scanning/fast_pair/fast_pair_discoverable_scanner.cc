@@ -114,9 +114,10 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
     return;
   }
 
+  auto& details = device_metadata->GetDetails();
   double trigger_distance;
-  if (device_metadata && device_metadata->device.trigger_distance() > 0) {
-    trigger_distance = device_metadata->device.trigger_distance();
+  if (details.trigger_distance() > 0) {
+    trigger_distance = details.trigger_distance();
   } else {
     NOTREACHED();
     trigger_distance = kDefaultRangeInMeters;
@@ -127,7 +128,7 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
                   "trigger_distance="
                << trigger_distance;
 
-  int tx_power = device_metadata->device.ble_tx_power();
+  int tx_power = details.ble_tx_power();
 
   range_tracker_->Track(
       device, trigger_distance,
