@@ -63,18 +63,18 @@ class SpeechRecognitionPrivateManagerTest
   }
 
   void DispatchOnStopEvent(const std::string& key) {
-    manager_->DispatchOnStopEvent(key);
+    manager_->HandleSpeechRecognitionStopped(key);
   }
 
   void DispatchOnResultEvent(const std::string& key,
                              const std::u16string transcript,
                              bool is_final) {
-    manager_->DispatchOnResultEvent(key, transcript, is_final);
+    manager_->HandleSpeechRecognitionResult(key, transcript, is_final);
   }
 
   void DispatchOnErrorEvent(const std::string& key,
                             const std::string& message) {
-    manager_->DispatchOnErrorEvent(key, message);
+    manager_->HandleSpeechRecognitionError(key, message);
   }
 
  private:

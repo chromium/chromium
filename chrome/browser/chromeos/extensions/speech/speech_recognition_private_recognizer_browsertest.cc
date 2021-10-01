@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_base_test.h"
+#include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_delegate.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 
@@ -15,6 +16,34 @@ const char kFrenchLocale[] = "fr-FR";
 }  // namespace
 
 namespace extensions {
+
+class FakeSpeechRecognitionPrivateDelegate
+    : public SpeechRecogntionPrivateDelegate {
+ public:
+  void HandleSpeechRecognitionStopped(const std::string& key) override {
+    handled_stop_ = true;
+  }
+
+  void HandleSpeechRecognitionResult(const std::string& key,
+                                     const std::u16string& transcript,
+                                     bool is_final) override {
+    last_transcript_ = transcript;
+    last_is_final_ = is_final;
+  }
+
+  void HandleSpeechRecognitionError(const std::string& key,
+                                    const std::string& error) override {
+    last_error_ = error;
+  }
+
+ private:
+  friend class SpeechRecognitionPrivateRecognizerTest;
+
+  bool handled_stop_ = false;
+  std::u16string last_transcript_;
+  bool last_is_final_ = false;
+  std::string last_error_;
+};
 
 class SpeechRecognitionPrivateRecognizerTest
     : public SpeechRecognitionPrivateBaseTest {
@@ -27,21 +56,15 @@ class SpeechRecognitionPrivateRecognizerTest
       const SpeechRecognitionPrivateRecognizerTest&) = delete;
 
   void SetUpOnMainThread() override {
+    delegate_ = std::make_unique<FakeSpeechRecognitionPrivateDelegate>();
     recognizer_ = std::make_unique<SpeechRecognitionPrivateRecognizer>(
-        base::BindRepeating(
-            &SpeechRecognitionPrivateRecognizerTest::OnStopRepeatingCallback,
-            base::Unretained(this)),
-        base::BindRepeating(
-            &SpeechRecognitionPrivateRecognizerTest::OnResultCallback,
-            base::Unretained(this)),
-        base::BindRepeating(
-            &SpeechRecognitionPrivateRecognizerTest::OnErrorCallback,
-            base::Unretained(this)));
+        delegate_.get(), "example_id");
     SpeechRecognitionPrivateBaseTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     recognizer_.reset();
+    delegate_.reset();
     SpeechRecognitionPrivateBaseTest::TearDownOnMainThread();
   }
 
@@ -86,12 +109,8 @@ class SpeechRecognitionPrivateRecognizerTest
 
     ran_on_stop_once_callback_ = true;
   }
-  void OnStopRepeatingCallback() { ran_on_stop_repeating_callback_ = true; }
-  void OnResultCallback(const std::u16string& transcript, bool is_final) {
-    last_transcript_ = transcript;
-    last_is_final_ = is_final;
-  }
-  void OnErrorCallback(const std::string& message) { last_error_ = message; }
+
+  SpeechRecognitionPrivateRecognizer* recognizer() { return recognizer_.get(); }
 
   bool ran_on_start_callback() { return ran_on_start_callback_; }
   void set_ran_on_start_callback(bool value) { ran_on_start_callback_ = value; }
@@ -101,29 +120,25 @@ class SpeechRecognitionPrivateRecognizerTest
     ran_on_stop_once_callback_ = value;
   }
 
-  bool ran_on_stop_repeating_callback() {
-    return ran_on_stop_repeating_callback_;
-  }
-  void set_ran_on_stop_repeating_callback(bool value) {
-    ran_on_stop_repeating_callback_ = value;
+  bool delegate_handled_stop() { return delegate_->handled_stop_; }
+  void set_delegate_handled_stop(bool value) {
+    delegate_->handled_stop_ = value;
   }
 
-  SpeechRecognitionPrivateRecognizer* recognizer() { return recognizer_.get(); }
   std::string on_stop_once_callback_error() {
     return on_stop_once_callback_error_;
   }
-  std::u16string last_transcript() { return last_transcript_; }
-  bool last_is_final() { return last_is_final_; }
-  std::string last_error() { return last_error_; }
+
+  std::u16string last_transcript() { return delegate_->last_transcript_; }
+  bool last_is_final() { return delegate_->last_is_final_; }
+  std::string last_error() { return delegate_->last_error_; }
 
   bool ran_on_start_callback_ = false;
   bool ran_on_stop_once_callback_ = false;
   std::string on_stop_once_callback_error_;
-  bool ran_on_stop_repeating_callback_ = false;
-  std::u16string last_transcript_;
-  bool last_is_final_ = false;
-  std::string last_error_;
+
   std::unique_ptr<SpeechRecognitionPrivateRecognizer> recognizer_;
+  std::unique_ptr<FakeSpeechRecognitionPrivateDelegate> delegate_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Network,
@@ -181,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
   HandleStopAndWait();
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   ASSERT_TRUE(ran_on_stop_once_callback());
-  ASSERT_TRUE(ran_on_stop_repeating_callback());
+  ASSERT_TRUE(delegate_handled_stop());
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
@@ -219,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 
   HandleStopAndWait();
   ASSERT_TRUE(ran_on_stop_once_callback());
-  ASSERT_TRUE(ran_on_stop_repeating_callback());
+  ASSERT_TRUE(delegate_handled_stop());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
   ASSERT_EQ(false, recognizer()->interim_results());
@@ -231,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
   interim_results = true;
   set_ran_on_start_callback(false);
   set_ran_on_stop_once_callback(false);
-  set_ran_on_stop_repeating_callback(false);
+  set_delegate_handled_stop(false);
   HandleStartAndWait(locale, interim_results);
   ASSERT_TRUE(ran_on_start_callback());
   ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, recognizer()->current_state());
@@ -240,7 +255,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 
   HandleStopAndWait();
   ASSERT_TRUE(ran_on_stop_once_callback());
-  ASSERT_TRUE(ran_on_stop_repeating_callback());
+  ASSERT_TRUE(delegate_handled_stop());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
   ASSERT_EQ(true, recognizer()->interim_results());
@@ -255,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
   ASSERT_TRUE(ran_on_stop_once_callback());
   ASSERT_EQ("Speech recognition already stopped",
             on_stop_once_callback_error());
-  ASSERT_FALSE(ran_on_stop_repeating_callback());
+  ASSERT_FALSE(delegate_handled_stop());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
   ASSERT_EQ(false, recognizer()->interim_results());
@@ -267,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        StoppedInBackground) {
   HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
   FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
-  ASSERT_TRUE(ran_on_stop_repeating_callback());
+  ASSERT_TRUE(delegate_handled_stop());
   ASSERT_FALSE(ran_on_stop_once_callback());
   ASSERT_EQ("", on_stop_once_callback_error());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
@@ -278,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
   HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
   SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait();
-  ASSERT_TRUE(ran_on_stop_repeating_callback());
+  ASSERT_TRUE(delegate_handled_stop());
   ASSERT_FALSE(ran_on_stop_once_callback());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   ASSERT_EQ("A speech recognition error occurred", last_error());

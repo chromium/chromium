@@ -3336,6 +3336,7 @@ source_set("chromeos") {
     "extensions/media_player_api.h",
     "extensions/speech/speech_recognition_private_api.cc",
     "extensions/speech/speech_recognition_private_api.h",
+    "extensions/speech/speech_recognition_private_delegate.h",
     "extensions/speech/speech_recognition_private_manager.cc",
     "extensions/speech/speech_recognition_private_manager.h",
     "extensions/speech/speech_recognition_private_recognizer.cc",

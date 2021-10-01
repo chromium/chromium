@@ -20,12 +20,11 @@ const char kSpeechRecognitionError[] = "A speech recognition error occurred";
 namespace extensions {
 
 SpeechRecognitionPrivateRecognizer::SpeechRecognitionPrivateRecognizer(
-    base::RepeatingClosure on_stop_callback,
-    OnResultCallback on_result_callback,
-    OnErrorCallback on_error_callback)
-    : on_stop_callback_(std::move(on_stop_callback)),
-      on_result_callback_(std::move(on_result_callback)),
-      on_error_callback_(std::move(on_error_callback)) {}
+    SpeechRecogntionPrivateDelegate* delegate,
+    const std::string& id)
+    : delegate_(delegate), id_(id) {
+  DCHECK(delegate);
+}
 
 SpeechRecognitionPrivateRecognizer::~SpeechRecognitionPrivateRecognizer() {}
 
@@ -37,13 +36,12 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
   // results, but OnDeviceSpeechRecognizer doesn't. Add behavior in
   // OnDeviceSpeechRecognizer so it's consistent with NetworkSpeechRecognizer.
   if (!interim_results_ && !is_final) {
-    // If |interim_results_| is false, then don't run on_result_callback_
-    // unless this is a final result.
+    // If |interim_results_| is false, then don't handle the result unless this
+    // is a final result.
     return;
   }
 
-  DCHECK(!on_result_callback_.is_null());
-  on_result_callback_.Run(text, is_final);
+  delegate_->HandleSpeechRecognitionResult(id_, text, is_final);
 }
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
@@ -54,25 +52,22 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
       // The SpeechRecognizer is ready to start recognizing speech.
       speech_recognizer_->Start();
     } else {
-      // Turn the recognizer off and run on_stop_callback_ to notify
-      // listeners of the API that speech recognition has stopped.
+      // Turn the recognizer off and use |delegate_| to notify listeners of the
+      // API that speech recognition has stopped.
       next_state = SPEECH_RECOGNIZER_OFF;
       RecognizerOff();
-      DCHECK(!on_stop_callback_.is_null());
-      on_stop_callback_.Run();
+      delegate_->HandleSpeechRecognitionStopped(id_);
     }
   } else if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
     DCHECK(!on_start_callback_.is_null());
     std::move(on_start_callback_).Run();
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
-    // When a speech recognition error occurs, run callbacks for both error and
-    // stop.
+    // When a speech recognition error occurs, ask the delegate to handle both
+    // error and stop events.
     next_state = SPEECH_RECOGNIZER_OFF;
     RecognizerOff();
-    DCHECK(!on_error_callback_.is_null());
-    on_error_callback_.Run(kSpeechRecognitionError);
-    DCHECK(!on_stop_callback_.is_null());
-    on_stop_callback_.Run();
+    delegate_->HandleSpeechRecognitionError(id_, kSpeechRecognitionError);
+    delegate_->HandleSpeechRecognitionStopped(id_);
   }
   current_state_ = next_state;
 }
@@ -117,8 +112,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStop(
 
   RecognizerOff();
 
-  DCHECK(!on_stop_callback_.is_null());
-  on_stop_callback_.Run();
+  delegate_->HandleSpeechRecognitionStopped(id_);
 
   DCHECK(!callback.is_null());
   std::move(callback).Run(/*error=*/absl::optional<std::string>());

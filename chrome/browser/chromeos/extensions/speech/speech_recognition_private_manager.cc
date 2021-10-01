@@ -143,7 +143,7 @@ void SpeechRecognitionPrivateManager::HandleStop(
   GetSpeechRecognizer(key)->HandleStop(std::move(callback));
 }
 
-void SpeechRecognitionPrivateManager::DispatchOnStopEvent(
+void SpeechRecognitionPrivateManager::HandleSpeechRecognitionStopped(
     const std::string& key) {
   std::string extension_id = GetExtensionIdFromKey(key);
   absl::optional<int> client_id = GetClientIdFromKey(key);
@@ -163,7 +163,7 @@ void SpeechRecognitionPrivateManager::DispatchOnStopEvent(
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
-void SpeechRecognitionPrivateManager::DispatchOnResultEvent(
+void SpeechRecognitionPrivateManager::HandleSpeechRecognitionResult(
     const std::string& key,
     const std::u16string& transcript,
     bool is_final) {
@@ -186,7 +186,7 @@ void SpeechRecognitionPrivateManager::DispatchOnResultEvent(
   event_router->DispatchEventToExtension(extension_id, std::move(event_ptr));
 }
 
-void SpeechRecognitionPrivateManager::DispatchOnErrorEvent(
+void SpeechRecognitionPrivateManager::HandleSpeechRecognitionError(
     const std::string& key,
     const std::string& message) {
   std::string extension_id = GetExtensionIdFromKey(key);
@@ -220,16 +220,8 @@ SpeechRecognitionPrivateRecognizer*
 SpeechRecognitionPrivateManager::GetSpeechRecognizer(const std::string& key) {
   auto& recognizer = recognition_data_[key];
   if (!recognizer)
-    recognizer = std::make_unique<SpeechRecognitionPrivateRecognizer>(
-        base::BindRepeating(
-            &SpeechRecognitionPrivateManager::DispatchOnStopEvent, GetWeakPtr(),
-            key),
-        base::BindRepeating(
-            &SpeechRecognitionPrivateManager::DispatchOnResultEvent,
-            GetWeakPtr(), key),
-        base::BindRepeating(
-            &SpeechRecognitionPrivateManager::DispatchOnErrorEvent,
-            GetWeakPtr(), key));
+    recognizer =
+        std::make_unique<SpeechRecognitionPrivateRecognizer>(this, key);
 
   return recognizer.get();
 }

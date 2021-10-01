@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,7 +26,8 @@ class SpeechRecognitionPrivateRecognizer;
 // This class implements core bookkeeping logic for the SpeechRecognitionPrivate
 // API. It is responsible for routing API function calls to the correct speech
 // recognizer and routing events back to the correct extension.
-class SpeechRecognitionPrivateManager : public KeyedService {
+class SpeechRecognitionPrivateManager : public KeyedService,
+                                        public SpeechRecogntionPrivateDelegate {
  public:
   explicit SpeechRecognitionPrivateManager(content::BrowserContext* context);
   ~SpeechRecognitionPrivateManager() override;
@@ -57,16 +58,13 @@ class SpeechRecognitionPrivateManager : public KeyedService {
   friend class SpeechRecognitionPrivateManagerTest;
   friend class SpeechRecognitionPrivateApiTest;
 
-  // Dispatches an event when speech recognition stops in the background without
-  // an explicit call to HandleStop() e.g. when speech recognition encounters
-  // a fatal error.
-  void DispatchOnStopEvent(const std::string& key);
-  // Dispatches an event when speech recognition returns a result.
-  void DispatchOnResultEvent(const std::string& key,
-                             const std::u16string& transcript,
-                             bool is_final);
-  // Dispatches an event when a speech recognition error occurs.
-  void DispatchOnErrorEvent(const std::string& key, const std::string& message);
+  // SpeechRecogntionPrivateDelegate:
+  void HandleSpeechRecognitionStopped(const std::string& key) override;
+  void HandleSpeechRecognitionResult(const std::string& key,
+                                     const std::u16string& transcript,
+                                     bool is_final) override;
+  void HandleSpeechRecognitionError(const std::string& key,
+                                    const std::string& error) override;
 
   // Retrieves the factory instance for SpeechRecognitionPrivateManager.
   static BrowserContextKeyedServiceFactory* GetFactory();
@@ -76,18 +74,12 @@ class SpeechRecognitionPrivateManager : public KeyedService {
   SpeechRecognitionPrivateRecognizer* GetSpeechRecognizer(
       const std::string& key);
 
-  base::WeakPtr<SpeechRecognitionPrivateManager> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   // Maps API client IDs to their speech recognizers.
   std::map<std::string, std::unique_ptr<SpeechRecognitionPrivateRecognizer>>
       recognition_data_;
 
   // The browser context associated with the keyed service.
   content::BrowserContext* context_;
-
-  base::WeakPtrFactory<SpeechRecognitionPrivateManager> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

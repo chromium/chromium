@@ -16,22 +16,16 @@ class SpeechRecognizer;
 
 namespace extensions {
 
-using OnResultCallback =
-    base::RepeatingCallback<void(const std::u16string& transcript,
-                                 bool isFinal)>;
-
-using OnErrorCallback =
-    base::RepeatingCallback<void(const std::string& message)>;
+class SpeechRecogntionPrivateDelegate;
 
 // This class is a wrapper around SpeechRecognizer and can be used to start and
-// stop speech recognition. It routes speech recognition events to the API
-// manager using callbacks. It is also responsible for deciding whether to
-// use the on-device or network speech recognition.
+// stop speech recognition. It uses the |delegate| to handle speech recognition
+// events. It is also responsible for deciding whether to use the on-device or
+// network speech recognition.
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
  public:
-  SpeechRecognitionPrivateRecognizer(base::RepeatingClosure on_stop_calback,
-                                     OnResultCallback on_result_callback,
-                                     OnErrorCallback on_error_callback);
+  SpeechRecognitionPrivateRecognizer(SpeechRecogntionPrivateDelegate* delegate,
+                                     const std::string& id);
   ~SpeechRecognitionPrivateRecognizer() override;
 
   // SpeechRecognizerDelegate:
@@ -77,13 +71,11 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   // A callback that is run when speech recognition starts. Note, this is a
   // OnceClosure and is updated whenever HandleStart() is called.
   base::OnceClosure on_start_callback_;
-  // A callback that is run whenever speech recognition stops.
-  base::RepeatingClosure on_stop_callback_;
-  // A callback that is run whenever speech recognition results are received
-  // from the speech recognition service.
-  OnResultCallback on_result_callback_;
-  // A callback that is run whenever a speech recognition error occurs.
-  OnErrorCallback on_error_callback_;
+  // Delegate that helps handle speech recognition events. `delegate_` is
+  // required to outlive this object.
+  SpeechRecogntionPrivateDelegate* const delegate_;
+  // A unique ID for this speech recognizer.
+  const std::string id_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
 
   base::WeakPtrFactory<SpeechRecognitionPrivateRecognizer> weak_ptr_factory_{
