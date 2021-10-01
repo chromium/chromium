@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "base/task/post_task.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
@@ -35,6 +38,10 @@ typedef void (^CWVFetchPasswordsCompletionHandler)(
 
 @interface CWVAutofillDataManager ()
 
+// Called when WebViewPasswordStoreObserver's |OnLoginsChanged| is called.
+- (void)handlePasswordStoreLoginsAdded:(NSArray<CWVPassword*>*)added
+                               updated:(NSArray<CWVPassword*>*)updated
+                               removed:(NSArray<CWVPassword*>*)removed;
 // Called when WebViewPasswordStoreConsumer's |OnGetPasswordStoreResults| is
 // invoked.
 - (void)handlePasswordStoreResults:(NSArray<CWVPassword*>*)passwords;
@@ -94,6 +101,53 @@ class WebViewPasswordStoreConsumer
   __weak CWVAutofillDataManager* data_manager_;
 };
 
+// C++ to ObjC bridge for PasswordStoreInterface::Observer.
+class WebViewPasswordStoreObserver
+    : public password_manager::PasswordStoreInterface::Observer {
+ public:
+  explicit WebViewPasswordStoreObserver(CWVAutofillDataManager* data_manager)
+      : data_manager_(data_manager) {}
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override {
+    NSMutableArray* added = [NSMutableArray array];
+    NSMutableArray* updated = [NSMutableArray array];
+    NSMutableArray* removed = [NSMutableArray array];
+    for (const password_manager::PasswordStoreChange& change : changes) {
+      if (change.form().blocked_by_user) {
+        continue;
+      }
+      CWVPassword* password =
+          [[CWVPassword alloc] initWithPasswordForm:change.form()];
+      switch (change.type()) {
+        case password_manager::PasswordStoreChange::ADD:
+          [added addObject:password];
+          break;
+        case password_manager::PasswordStoreChange::UPDATE:
+          [updated addObject:password];
+          break;
+        case password_manager::PasswordStoreChange::REMOVE:
+          [removed addObject:password];
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
+    [data_manager_ handlePasswordStoreLoginsAdded:added
+                                          updated:updated
+                                          removed:removed];
+  }
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override {
+    // No op.
+  }
+
+ private:
+  __weak CWVAutofillDataManager* data_manager_;
+};
+
 }  // namespace ios_web_view
 
 @implementation CWVAutofillDataManager {
@@ -114,6 +168,8 @@ class WebViewPasswordStoreConsumer
   password_manager::PasswordStoreInterface* _passwordStore;
   std::unique_ptr<ios_web_view::WebViewPasswordStoreConsumer>
       _passwordStoreConsumer;
+  std::unique_ptr<ios_web_view::WebViewPasswordStoreObserver>
+      _passwordStoreObserver;
 }
 
 - (instancetype)initWithPersonalDataManager:
@@ -125,6 +181,9 @@ class WebViewPasswordStoreConsumer
   if (self) {
     _personalDataManager = personalDataManager;
     _passwordStore = passwordStore;
+    _passwordStoreObserver =
+        std::make_unique<ios_web_view::WebViewPasswordStoreObserver>(self);
+    _passwordStore->AddObserver(_passwordStoreObserver.get());
     _personalDataManagerObserverBridge = std::make_unique<
         ios_web_view::WebViewPersonalDataManagerObserverBridge>(self);
     _personalDataManager->AddObserver(_personalDataManagerObserverBridge.get());
@@ -139,6 +198,7 @@ class WebViewPasswordStoreConsumer
 - (void)dealloc {
   _personalDataManager->RemoveObserver(
       _personalDataManagerObserverBridge.get());
+  _passwordStore->RemoveObserver(_passwordStoreObserver.get());
 }
 
 #pragma mark - Public Methods
@@ -208,6 +268,17 @@ class WebViewPasswordStoreConsumer
 }
 
 #pragma mark - Private Methods
+
+- (void)handlePasswordStoreLoginsAdded:(NSArray<CWVPassword*>*)added
+                               updated:(NSArray<CWVPassword*>*)updated
+                               removed:(NSArray<CWVPassword*>*)removed {
+  for (id<CWVAutofillDataManagerObserver> observer in _observers) {
+    [observer autofillDataManager:self
+        didChangePasswordsByAdding:added
+                          updating:updated
+                          removing:removed];
+  }
+}
 
 - (void)handlePasswordStoreResults:(NSArray<CWVPassword*>*)passwords {
   for (CWVFetchPasswordsCompletionHandler completionHandler in

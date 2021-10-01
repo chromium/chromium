@@ -57,7 +57,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(true);
 
-    password_store_ = new password_manager::TestPasswordStore();
+    password_store_ = new password_manager::TestPasswordStore(
+        password_manager::IsAccountStore(true));
     password_store_->Init(nullptr);
 
     autofill_data_manager_ = [[CWVAutofillDataManager alloc]
@@ -230,6 +231,35 @@ TEST_F(CWVAutofillDataManagerTest, DeletePassword) {
   [autofill_data_manager_ deletePassword:passwords[0]];
   passwords = FetchPasswords();
   EXPECT_EQ(0ul, passwords.count);
+}
+
+// Tests CWVAutofillDataManager invokes password did change callback.
+TEST_F(CWVAutofillDataManagerTest, PasswordsDidChangeCallback) {
+  // OCMock objects are often autoreleased, but it must be destroyed before this
+  // test exits to avoid holding on to |autofill_data_manager_|.
+  @autoreleasepool {
+    id observer = OCMProtocolMock(@protocol(CWVAutofillDataManagerObserver));
+    [autofill_data_manager_ addObserver:observer];
+
+    password_manager::PasswordForm test_password = GetTestPassword();
+    [[observer expect]
+               autofillDataManager:autofill_data_manager_
+        didChangePasswordsByAdding:[OCMArg checkWithBlock:^BOOL(
+                                               NSArray<CWVPassword*>* added) {
+          EXPECT_EQ(1U, added.count);
+          CWVPassword* added_password = added.firstObject;
+          return *[added_password internalPasswordForm] == test_password;
+        }]
+                          updating:@[]
+                          removing:@[]];
+
+    // AddLogin is async, so the run loop needs to run until idle so the
+    // callback will be invoked.
+    password_store_->AddLogin(test_password);
+    base::RunLoop().RunUntilIdle();
+
+    [observer verify];
+  }
 }
 
 }  // namespace ios_web_view

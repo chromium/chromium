@@ -21,7 +21,8 @@ NSString* const kWebViewShellAddressFieldAccessibilityLabel = @"Address field";
 NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     @"WebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier";
 
-@interface ShellViewController () <CWVDownloadTaskDelegate,
+@interface ShellViewController () <CWVAutofillDataManagerObserver,
+                                   CWVDownloadTaskDelegate,
                                    CWVNavigationDelegate,
                                    CWVUIDelegate,
                                    CWVScriptCommandHandler,
@@ -265,6 +266,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
   CWVWebViewConfiguration* configuration =
       [CWVWebViewConfiguration defaultConfiguration];
+  [configuration.autofillDataManager addObserver:self];
   configuration.syncController.delegate = self;
   self.webView = [self createWebViewWithConfiguration:configuration];
 }
@@ -1061,6 +1063,22 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
           fromMainFrame:(BOOL)fromMainFrame {
   NSLog(@"%@ command.content=%@", NSStringFromSelector(_cmd), command.content);
   return YES;
+}
+
+#pragma mark CWVAutofillDataManagerObserver
+
+- (void)autofillDataManagerDataDidChange:
+    (CWVAutofillDataManager*)autofillDataManager {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+}
+
+- (void)autofillDataManager:(CWVAutofillDataManager*)autofillDataManager
+    didChangePasswordsByAdding:(NSArray<CWVPassword*>*)added
+                      updating:(NSArray<CWVPassword*>*)updated
+                      removing:(NSArray<CWVPassword*>*)removed {
+  NSLog(@"%@: added %@, updated %@, and removed %@ passwords",
+        NSStringFromSelector(_cmd), @(added.count), @(updated.count),
+        @(removed.count));
 }
 
 #pragma mark CWVDownloadTaskDelegate
