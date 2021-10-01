@@ -14,11 +14,14 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
+#include "chrome/browser/ash/arc/nearby_share/ui/error_dialog_view.h"
+#include "chrome/browser/ash/arc/nearby_share/ui/low_disk_space_dialog_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -26,11 +29,14 @@
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/arc/arc_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/cros_system_api/constants/cryptohome.h"
 
 namespace arc {
 
@@ -62,6 +68,20 @@ void DeletePathAndFiles(const base::FilePath& file_path) {
     base::DeletePathRecursively(file_path);
   }
 }
+
+// Calculate the amount of disk space, in bytes, needed in |share_dir| to
+// stream |total_file_size| bytes from Android to the Chrome OS file system.
+static const int64_t CalculateRequiredSpace(const base::FilePath share_dir,
+                                            const uint64_t total_file_size) {
+  DVLOG(1) << __func__;
+  int64_t free_disk_space = base::SysInfo::AmountOfFreeDiskSpace(share_dir);
+  VLOG(1) << "Free disk space: " << free_disk_space;
+  int64_t shared_files_size =
+      static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes + total_file_size);
+  VLOG(1) << "Shared file size: " << shared_files_size;
+  return shared_files_size - free_disk_space;
+}
+
 }  // namespace
 
 NearbyShareSessionImpl::NearbyShareSessionImpl(
@@ -114,8 +134,6 @@ base::FilePath NearbyShareSessionImpl::GetUserCacheFilePath(
   return cache_base_path.Append(kArcNearbyShareDirname);
 }
 
-// TODO(b/197588898): Currently OnNearbyShareClosed() is called just before the
-// Nearby Share bubble is actually closed. This is not an issue functionally.
 void NearbyShareSessionImpl::OnNearbyShareClosed(
     views::Widget::ClosedReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -169,6 +187,7 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
   DCHECK(profile_);
 
   DVLOG(1) << __func__;
+  arc_window_ = arc_window;
   if (share_info_->files.has_value()) {
     // File sharing.
     const base::FilePath arc_nearby_share_directory =
@@ -182,10 +201,10 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
         arc_nearby_share_directory, file_handler_->GetTotalSizeOfFiles());
     prepare_directory_task_->StartWithCallback(
         base::BindOnce(&NearbyShareSessionImpl::OnPreparedDirectory,
-                       weak_ptr_factory_.GetWeakPtr(), arc_window));
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Sharing text.
-    ShowNearbyShareBubbleInArcWindow(arc_window);
+    ShowNearbyShareBubbleInArcWindow();
   }
 }
 
@@ -229,18 +248,22 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
   return nullptr;
 }
 
-void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
-                                                 base::File::Error result) {
+void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window);
+  DCHECK(arc_window_);
   DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0);
 
   DVLOG(1) << __func__;
   if (result == base::File::FILE_ERROR_NO_SPACE) {
     LOG(ERROR) << "Not enough disk space to proceed with sharing.";
-    CleanupSession(/*should_cleanup_files=*/true);
-    // TODO(b/197784924): Show message in UI (e.g. toast) for the user to take
-    // action and reduce disk space usage.
+    // Calculate required space and then show the LowDiskSpace Dialog
+    backend_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CalculateRequiredSpace,
+                       file_handler_->GetShareDirectory(),
+                       file_handler_->GetTotalSizeOfFiles()),
+        base::BindOnce(&NearbyShareSessionImpl::OnShowLowDiskSpaceDialog,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -252,10 +275,10 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
   file_handler_->StartPreparingFiles(
       /*started_callback=*/base::BindOnce(
           &NearbyShareSessionImpl::OnFileStreamingStarted,
-          weak_ptr_factory_.GetWeakPtr(), arc_window),
+          weak_ptr_factory_.GetWeakPtr()),
       /*completed_callback=*/
       base::BindOnce(&NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow,
-                     weak_ptr_factory_.GetWeakPtr(), arc_window),
+                     weak_ptr_factory_.GetWeakPtr()),
       /*update_callback=*/
       base::BindRepeating(&NearbyShareSessionImpl::OnProgressBarUpdate,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -281,13 +304,13 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
     }
   }
   if (result != sharesheet::SharesheetResult::kSuccess) {
-    CleanupSession(/*should_cleanup_files=*/true);
+    ShowErrorDialog();
   }
 }
 
-void NearbyShareSessionImpl::OnFileStreamingStarted(
-    aura::Window* const window) {
+void NearbyShareSessionImpl::OnFileStreamingStarted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(arc_window_);
   DCHECK(file_handler_);
 
   DVLOG(1) << __func__;
@@ -298,7 +321,7 @@ void NearbyShareSessionImpl::OnFileStreamingStarted(
     const bool is_multiple_files = file_handler_->GetNumberOfFiles() > 1;
     progress_bar_view_ =
         std::make_unique<ProgressBarDialogView>(is_multiple_files);
-    ProgressBarDialogView::Show(window, progress_bar_view_.get());
+    ProgressBarDialogView::Show(arc_window_, progress_bar_view_.get());
 
     // Keep updating the progress bar if the interval timer elapsed to update
     // the user on the file streaming progress.
@@ -309,19 +332,11 @@ void NearbyShareSessionImpl::OnFileStreamingStarted(
 }
 
 void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
-    aura::Window* const arc_window,
     absl::optional<base::File::Error> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window);
+  DCHECK(arc_window_);
 
   DVLOG(1) << __func__;
-  // Only applicable if sharing files.
-  if (result.has_value() && result.value() != base::File::FILE_OK) {
-    LOG(ERROR) << "Failed to complete file streaming with error: "
-               << base::File::ErrorToString(result.value());
-    CleanupSession(/*should_cleanup_files=*/true);
-    return;
-  }
 
   // If the progress bar is visible at this point, stop the update interval
   // timer so that we can show the Nearby Share bubble.
@@ -331,7 +346,15 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
 
   // Close any overlay and respective child views that may still be shown.
   progress_bar_view_.reset();
-  NearbyShareOverlayView::CloseOverlayOn(arc_window);
+  NearbyShareOverlayView::CloseOverlayOn(arc_window_);
+
+  // Only applicable if sharing files.
+  if (result.has_value() && result.value() != base::File::FILE_OK) {
+    LOG(ERROR) << "Failed to complete file streaming with error: "
+               << base::File::ErrorToString(result.value());
+    ShowErrorDialog();
+    return;
+  }
 
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -339,19 +362,18 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
                      base::Unretained(this)),
       base::BindOnce(
           &NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent,
-          weak_ptr_factory_.GetWeakPtr(), arc_window));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
-    aura::Window* const arc_window,
     apps::mojom::IntentPtr intent) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window);
+  DCHECK(arc_window_);
 
   DVLOG(1) << __func__;
   if (!intent) {
     LOG(ERROR) << "No share info found.";
-    CleanupSession(/*should_cleanup_files=*/true);
+    ShowErrorDialog();
     return;
   }
 
@@ -359,7 +381,7 @@ void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
     LOG(ERROR) << "Cannot find sharesheet service.";
-    CleanupSession(/*should_cleanup_files=*/true);
+    ShowErrorDialog();
     return;
   }
 
@@ -368,7 +390,7 @@ void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
     share_path = file_handler_->GetShareDirectory();
   }
   sharesheet_service->ShowNearbyShareBubbleForArc(
-      arc_window, std::move(intent),
+      arc_window_, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare,
       /*delivered_callback=*/
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
@@ -382,7 +404,7 @@ void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
 void NearbyShareSessionImpl::OnTimerFired() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(b/191232397): Handle error case and add UMA metric.
+  // TODO(b/191232397): Handle error case.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s)";
   UpdateNearbyShareWindowFound(false);
@@ -392,6 +414,7 @@ void NearbyShareSessionImpl::OnTimerFired() {
 void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  DVLOG(1) << __func__;
   if (progress_bar_view_) {
     progress_bar_view_->UpdateInterpolatedProgressBarValue();
   }
@@ -437,10 +460,21 @@ void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
   FinishSession();
 }
 
+void NearbyShareSessionImpl::ShowErrorDialog() {
+  DCHECK(arc_window_);
+
+  DVLOG(1) << __func__;
+  ErrorDialogView::Show(arc_window_,
+                        base::BindOnce(&NearbyShareSessionImpl::CleanupSession,
+                                       weak_ptr_factory_.GetWeakPtr(),
+                                       /*should_cleanup_files=*/true));
+}
+
 void NearbyShareSessionImpl::FinishSession() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(session_instance_);
 
+  DVLOG(1) << __func__;
   // Stop timers and destroy any lingering UI surfaces or observers.
   arc_window_observation_.Reset();
   env_observation_.Reset();
@@ -463,6 +497,28 @@ void NearbyShareSessionImpl::FinishSession() {
     VLOG(1) << "Deleting session with task ID: " << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
   }
+}
+
+void NearbyShareSessionImpl::OnShowLowDiskSpaceDialog(
+    int64_t required_disk_space) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_GT(required_disk_space, 0);
+
+  DVLOG(1) << "OnCalculateRequiredSpace required_disk_space: "
+           << required_disk_space;
+  LowDiskSpaceDialogView::Show(
+      arc_window_, file_handler_->GetNumberOfFiles(), required_disk_space,
+      base::BindOnce(&NearbyShareSessionImpl::OnLowStorageDialogClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyShareSessionImpl::OnLowStorageDialogClosed(
+    bool should_open_storage_settings) {
+  if (should_open_storage_settings) {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile_, chromeos::settings::mojom::kStorageSubpagePath);
+  }
+  CleanupSession(/*should_cleanup_files=*/true);
 }
 
 }  // namespace arc

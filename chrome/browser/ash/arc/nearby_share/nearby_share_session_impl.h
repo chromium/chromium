@@ -69,21 +69,18 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
 
   // Called when top level directory for Nearby Share cache files is created.
-  void OnPreparedDirectory(aura::Window* const arc_window,
-                           base::File::Error result);
+  void OnPreparedDirectory(base::File::Error result);
 
   // Called once streaming shared files to local filesystem is started. At this
   // point we show the progress bar UI to the user.
-  void OnFileStreamingStarted(aura::Window* const window);
+  void OnFileStreamingStarted();
 
   // Called when Share Intent Info object is converted to Intent mojom object.
-  void OnConvertedShareIntentInfoToIntent(aura::Window* const arc_window,
-                                          apps::mojom::IntentPtr intent);
+  void OnConvertedShareIntentInfoToIntent(apps::mojom::IntentPtr intent);
 
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow and display bubble in ARC window.
   void ShowNearbyShareBubbleInArcWindow(
-      aura::Window* const arc_window,
       absl::optional<base::File::Error> result = absl::nullopt);
 
   // Called back once the session duration exceeds the maximum duration.
@@ -96,13 +93,25 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Called when progress bar UI update is available.
   void OnProgressBarUpdate(double value);
 
+  // Clean up session and attempt to delete any existing cached files. If
+  // |should_cleanup_files| is false, clean up session without deleting files.
+  void CleanupSession(bool should_cleanup_files);
+
   // Finish destroying the session by cleaning up the Android activity and
   // destroying the session object from the map owned by ArcNearbyShareBridge.
   void FinishSession();
 
-  // Clean up session and attempt to delete any existing cached files. If
-  // |should_cleanup_files| is false, clean up session without deleting files.
-  void CleanupSession(bool should_cleanup_files);
+  // Shows an error dialog for non-actionable errors, and calls
+  // |NearbyShareSessionImpl::CleanupSession()| on close.
+  void ShowErrorDialog();
+
+  // Shows the LowDiskSpaeDialogView.
+  void OnShowLowDiskSpaceDialog(int64_t required_disk_space);
+
+  // Call back when the |LowDiskStorageDialogView| is closed. If
+  // |should_open_storage_settings| is true, then show the "Storage management"
+  // settings page.
+  void OnLowStorageDialogClosed(bool should_open_storage_settings);
 
   // Android activity's task ID
   uint32_t task_id_;
@@ -119,6 +128,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
 
   // Unowned pointer.
   Profile* profile_;
+
+  // Unowned pointer
+  aura::Window* arc_window_ = nullptr;
 
   // Created and lives on the UI thread but is destructed on the IO thread.
   scoped_refptr<ShareInfoFileHandler> file_handler_;
