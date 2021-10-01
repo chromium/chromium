@@ -16,7 +16,6 @@ import("//chrome/android/feed/feed_java_sources.gni")
 import("//chrome/browser/commerce/price_tracking/android/test_java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
-import("//chrome/browser/feed/android/web_feed_java_sources.gni")
 import("//chrome/browser/share/android/test_java_sources.gni")
 import("//chrome/common/features.gni")
 import("//components/feed/features.gni")

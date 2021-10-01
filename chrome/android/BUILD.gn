@@ -23,7 +23,6 @@ import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
-import("//chrome/browser/feed/android/web_feed_java_sources.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
@@ -610,7 +609,6 @@ android_library("chrome_java") {
   ]
 
   deps += feed_deps
-  deps += web_feed_deps
 
   srcjar_deps = [
     ":autofill_verification_status_generated_enum",
@@ -650,9 +648,6 @@ android_library("chrome_java") {
   # Include sources from feed_java_sources.gni.
   sources += feed_java_sources
   srcjar_deps += feed_srcjar_deps
-
-  # Include sources from web_feed_java_sources.gni.
-  sources += web_feed_java_sources
 
   sources += public_vr_java_sources
 
