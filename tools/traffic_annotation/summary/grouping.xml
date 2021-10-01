@@ -214,7 +214,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="safe_browsing_extended_reporting"/>
       <traffic_annotation unique_id="safe_browsing_feedback"/>
       <traffic_annotation unique_id="safe_browsing_incident"/>
-      <traffic_annotation unique_id="safe_browsing_module_loader"/>
       <traffic_annotation unique_id="safe_browsing_v4_get_hash"/>
       <traffic_annotation unique_id="safe_browsing_v4_update"/>
       <traffic_annotation unique_id="safe_browsing_binary_upload_app"/>
