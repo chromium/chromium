@@ -669,7 +669,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente um novo evento no Calendário Google</translation>
 <translation id="3264837738038045344">Botão Gerir definições do Chrome, prima Enter para visitar as definições do Chrome</translation>
 <translation id="3266793032086590337">Valor (em conflito)</translation>
-<translation id="3268451620468152448">Abrir Separadores</translation>
+<translation id="3268451620468152448">Separadores abertos</translation>
 <translation id="3270847123878663523">&amp;Anular reordenação</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> pretende estabelecer ligação</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1282,7 +1282,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
 <translation id="5205222826937269299">Nome obrigatório</translation>
 <translation id="5209518306177824490">Impressão digital SHA-1</translation>
-<translation id="5215116848420601511">Métodos de pagamento e endereços com o Google Pay</translation>
+<translation id="5215116848420601511">Métodos de pagamento e endereços do Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="5222812217790122047">Email obrigatório</translation>
 <translation id="5230733896359313003">Endereço de envio</translation>
@@ -2344,7 +2344,7 @@ Detalhes adicionais:
 <translation id="8975012916872825179">Inclui informações como números de telefone, endereços de email e moradas para envio</translation>
 <translation id="8975263830901772334">Nomes dos ficheiros impressos</translation>
 <translation id="8978053250194585037">A Navegação segura do Google <ph name="BEGIN_LINK" />detetou phishing<ph name="END_LINK" /> recentemente em <ph name="SITE" />. Os sites de phishing simulam ser outros Websites para o enganar.</translation>
-<translation id="8983003182662520383">Métodos de pagamento e endereços com o Google Pay</translation>
+<translation id="8983003182662520383">Métodos de pagamento e endereços do Google Pay</translation>
 <translation id="8983369100812962543">Já pode redimensionar a app</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para ver o histórico de navegação no Chrome</translation>
 <translation id="8987927404178983737">Mês</translation>

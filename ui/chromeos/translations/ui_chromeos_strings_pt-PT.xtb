@@ -32,7 +32,7 @@
 <translation id="1210831758834677569">Laosiano</translation>
 <translation id="1243314992276662751">Carregar</translation>
 <translation id="1249250836236328755">Género</translation>
-<translation id="1254593899333212300">Ligação directa à internet</translation>
+<translation id="1254593899333212300">Ligação direta à Internet</translation>
 <translation id="1272293450992660632">Os valores de PIN não correspondem.</translation>
 <translation id="1280820357415527819">A pesquisar redes móveis…</translation>
 <translation id="1291603679744561561">SIM bloqueado</translation>
@@ -168,7 +168,7 @@
 <translation id="2470939964922472929">Foi introduzido um PIN incorreto demasiadas vezes. Para configurar um novo PIN, introduza a chave de desbloqueio pessoal de 8 dígitos (PUK) fornecida pelo seu operador.</translation>
 <translation id="2500392669976258912">Fonética guzerate</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">Analisar</translation>
+<translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> itens eliminados</translation>
 <translation id="2534460670861217804">Proxy de HTTP seguro</translation>
 <translation id="2541377937973966830">O conteúdo desta pasta é só de leitura. Algumas atividades não são suportadas.</translation>
@@ -348,7 +348,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
 <translation id="4186579485882418952">Ativar modo offline</translation>
 <translation id="4193154014135846272">Documento do Google</translation>
-<translation id="4197674956721858839">Seleção de zip</translation>
+<translation id="4197674956721858839">Comprimir seleção</translation>
 <translation id="4202378258276439759">Espanhol (América Latina)</translation>
 <translation id="4202977638116331303">Georgiano</translation>
 <translation id="421017592316736757">Tem de estar online para aceder a este ficheiro.</translation>

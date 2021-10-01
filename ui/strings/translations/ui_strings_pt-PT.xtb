@@ -23,7 +23,7 @@
 <translation id="1450753235335490080">Não é possível partilhar <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Houve uma troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1498028757988366001">Já efetuou esta pesquisa anteriormente. A eliminação de "<ph name="QUERY" />" do histórico remove permanentemente esta consulta da sua conta em todos os dispositivos.</translation>
-<translation id="1510238584712386396">Launcher</translation>
+<translation id="1510238584712386396">Iniciador</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto e  }other{# minutos e  }}</translation>
 <translation id="1643823602425662293">Notificação</translation>
 <translation id="169515659049020177">Shift</translation>

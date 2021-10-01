@@ -48,7 +48,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1269405891096105529">Periférico não suportado no Modo convidado</translation>
 <translation id="1270290102613614947">Teclado no ecrã desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
-<translation id="1275285675049378717">Ligar o <ph name="POWER_SOURCE" /></translation>
+<translation id="1275285675049378717">A carregar <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizar telemóvel</translation>
 <translation id="1289185460362160437">Volte <ph name="COME_BACK_DAY_OF_WEEK" /> à(s) <ph name="COME_BACK_TIME" />.</translation>
@@ -79,7 +79,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Esta conta de proprietário tem de ser a primeira conta com início de sessão integrado.</translation>
-<translation id="1510238584712386396">Launcher</translation>
+<translation id="1510238584712386396">Iniciador</translation>
 <translation id="1516740043221086139">O modo Não incomodar está ativado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
@@ -342,7 +342,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3621712662352432595">Definições de Áudio</translation>
 <translation id="3626281679859535460">Brilho</translation>
 <translation id="3630697955794050612">desativado</translation>
-<translation id="3631369015426612114">Permitir notificações das fontes seguintes:</translation>
+<translation id="3631369015426612114">Permitir notificações das seguintes fontes:</translation>
 <translation id="3638400994746983214">Ative/desative o ecrã de privacidade. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Utilizador gerido por <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Gravar microfone</translation>
@@ -462,7 +462,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
 <translation id="4477892968187500306">Este dispositivo pode conter aplicações que não foram validadas pela Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4481530544597605423">Dispositivos dessincronizados</translation>
+<translation id="4481530544597605423">Dispositivos não sincronizados</translation>
 <translation id="4485060137115666462">Ao clicar com o botão direito do rato ou ao manter o botão premido, o Assistente mostra-lhe informações como a definição, a tradução ou a conversão de unidades para a sua seleção.</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
 <translation id="4513946894732546136">Comentários</translation>
