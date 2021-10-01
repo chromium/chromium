@@ -89,22 +89,6 @@
             ]
         }
     ],
-    "AndroidAutofillQueryServerFieldTypes": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidAutofillQueryServerFieldTypes"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidBindingManagementWaiveCpu": [
         {
             "platforms": [
