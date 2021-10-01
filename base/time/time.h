@@ -870,41 +870,41 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Days(T n) {
   return TimeDelta::FromInternalValue(
-      int64_t{ClampMul(int64_t{n}, Time::kMicrosecondsPerDay)});
+      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerDay));
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Hours(T n) {
   return TimeDelta::FromInternalValue(
-      int64_t{ClampMul(int64_t{n}, Time::kMicrosecondsPerHour)});
+      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerHour));
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Minutes(T n) {
   return TimeDelta::FromInternalValue(
-      int64_t{ClampMul(int64_t{n}, Time::kMicrosecondsPerMinute)});
+      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerMinute));
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Seconds(T n) {
   return TimeDelta::FromInternalValue(
-      int64_t{ClampMul(int64_t{n}, Time::kMicrosecondsPerSecond)});
+      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerSecond));
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Milliseconds(T n) {
   return TimeDelta::FromInternalValue(
-      int64_t{ClampMul(int64_t{n}, Time::kMicrosecondsPerMillisecond)});
+      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerMillisecond));
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Microseconds(T n) {
-  return TimeDelta::FromInternalValue(int64_t{n});
+  return TimeDelta::FromInternalValue(static_cast<int64_t>(n));
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Nanoseconds(T n) {
-  return TimeDelta::FromInternalValue(int64_t{n} /
+  return TimeDelta::FromInternalValue(static_cast<int64_t>(n) /
                                       Time::kNanosecondsPerMicrosecond);
 }
 template <typename T, time_internal::EnableIfIntegral<T> = 0>
 constexpr TimeDelta Hertz(T n) {
   return TimeDelta::FromInternalValue(Time::kMicrosecondsPerSecond /
-                                      int64_t{n});
+                                      static_cast<int64_t>(n));
 }
 
 template <typename T, time_internal::EnableIfFloat<T> = 0>
