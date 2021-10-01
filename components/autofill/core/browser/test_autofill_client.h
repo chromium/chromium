@@ -202,8 +202,6 @@ class TestAutofillClient : public AutofillClient {
     security_level_ = security_level;
   }
 
-  void set_last_committed_url(const GURL& url);
-
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   void set_allowed_merchants(
       const std::vector<std::string>& merchant_allowlist) {

@@ -308,10 +308,6 @@ void TestAutofillClient::set_form_origin(const GURL& url) {
   test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
 }
 
-void TestAutofillClient::set_last_committed_url(const GURL& url) {
-  last_committed_url_ = url;
-}
-
 ukm::TestUkmRecorder* TestAutofillClient::GetTestUkmRecorder() {
   return &test_ukm_recorder_;
 }

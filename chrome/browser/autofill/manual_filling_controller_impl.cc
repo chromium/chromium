@@ -128,10 +128,8 @@ void ManualFillingControllerImpl::RefreshSuggestions(
   view_->OnItemsAvailable(accessory_sheet_data);
   available_sheets_.insert_or_assign(GetSourceForTabType(accessory_sheet_data),
                                      accessory_sheet_data);
-  UpdateSourceAvailability(
-      GetSourceForTabType(accessory_sheet_data),
-      !accessory_sheet_data.user_info_list().empty() ||
-          !accessory_sheet_data.promo_code_info_list().empty());
+  UpdateSourceAvailability(GetSourceForTabType(accessory_sheet_data),
+                           !accessory_sheet_data.user_info_list().empty());
 }
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
