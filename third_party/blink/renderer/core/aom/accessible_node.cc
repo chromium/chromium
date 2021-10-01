@@ -1032,6 +1032,8 @@ const AtomicString& AccessibleNode::InterfaceName() const {
 ExecutionContext* AccessibleNode::GetExecutionContext() const {
   if (element_)
     return element_->GetExecutionContext();
+  if (document_)
+    return document_->GetExecutionContext();
 
   if (parent_)
     return parent_->GetExecutionContext();
