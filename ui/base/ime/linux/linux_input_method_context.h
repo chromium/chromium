@@ -63,8 +63,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   // Commits the |text| to the text input client.
   virtual void OnCommit(const std::u16string& text) = 0;
 
-  // Deletes the surrounding text at |index| for given |length|.
-  virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
+  // Deletes the surrounding text around selection. |before| and |after|
+  // are in UTF-16 code points.
+  virtual void OnDeleteSurroundingText(size_t before, size_t after) = 0;
 
   // Sets the composition text to the text input client.
   virtual void OnPreeditChanged(const CompositionText& composition_text) = 0;

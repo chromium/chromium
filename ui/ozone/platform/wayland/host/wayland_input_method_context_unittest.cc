@@ -61,8 +61,8 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
   void OnPreeditEnd() override {}
   void OnPreeditStart() override {}
-  void OnDeleteSurroundingText(int32_t index, uint32_t length) override {
-    on_delete_surrounding_text_range_ = gfx::Range(index, index + length);
+  void OnDeleteSurroundingText(size_t before, size_t after) override {
+    last_on_delete_surrounding_text_args_ = std::make_pair(before, after);
   }
 
   void OnSetPreeditRegion(const gfx::Range& range,
@@ -80,15 +80,17 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return was_on_set_preedit_region_called_;
   }
 
-  absl::optional<gfx::Range> on_delete_surrounding_text_range() const {
-    return on_delete_surrounding_text_range_;
+  const absl::optional<std::pair<size_t, size_t>>&
+  last_on_delete_surrounding_text_args() const {
+    return last_on_delete_surrounding_text_args_;
   }
 
  private:
   bool was_on_commit_called_ = false;
   bool was_on_preedit_changed_called_ = false;
   bool was_on_set_preedit_region_called_ = false;
-  absl::optional<gfx::Range> on_delete_surrounding_text_range_;
+  absl::optional<std::pair<size_t, size_t>>
+      last_on_delete_surrounding_text_args_;
 };
 
 class WaylandInputMethodContextTest : public WaylandTest {
@@ -218,8 +220,8 @@ TEST_P(WaylandInputMethodContextTest, SetCursorLocation) {
 }
 
 TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
-  std::u16string text(50, u'あ');
-  gfx::Range range(20, 30);
+  const std::u16string text(50, u'あ');
+  const gfx::Range range(20, 30);
 
   std::string sent_text;
   gfx::Range sent_range;
@@ -238,15 +240,14 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
   zwp_text_input_v1_send_delete_surrounding_text(
       zwp_text_input_->resource(), sent_range.start(), sent_range.length());
   Sync();
-  absl::optional<gfx::Range> index =
-      input_method_context_delegate_->on_delete_surrounding_text_range();
-  EXPECT_TRUE(index.has_value());
-  EXPECT_EQ(index, range);
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(0, 0)));
 }
 
 TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
-  std::u16string text(5000, u'あ');
-  gfx::Range range(2800, 3200);
+  const std::u16string text(5000, u'あ');
+  const gfx::Range range(2800, 3200);
 
   std::string sent_text;
   gfx::Range sent_range;
@@ -267,15 +268,14 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
   zwp_text_input_v1_send_delete_surrounding_text(
       zwp_text_input_->resource(), sent_range.start(), sent_range.length());
   Sync();
-  absl::optional<gfx::Range> index =
-      input_method_context_delegate_->on_delete_surrounding_text_range();
-  EXPECT_TRUE(index.has_value());
-  EXPECT_EQ(index, range);
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(0, 0)));
 }
 
 TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
-  std::u16string text(5000, u'あ');
-  gfx::Range range(0, 500);
+  const std::u16string text(5000, u'あ');
+  const gfx::Range range(0, 500);
 
   std::string sent_text;
   gfx::Range sent_range;
@@ -296,16 +296,15 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
   zwp_text_input_v1_send_delete_surrounding_text(
       zwp_text_input_->resource(), sent_range.start(), sent_range.length());
   Sync();
-  absl::optional<gfx::Range> index =
-      input_method_context_delegate_->on_delete_surrounding_text_range();
-  EXPECT_TRUE(index.has_value());
-  EXPECT_EQ(index, range);
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(0, 0)));
 }
 
 TEST_P(WaylandInputMethodContextTest,
        SetSurroundingTextForLongTextInRightEdge) {
-  std::u16string text(5000, u'あ');
-  gfx::Range range(4500, 5000);
+  const std::u16string text(5000, u'あ');
+  const gfx::Range range(4500, 5000);
 
   std::string sent_text;
   gfx::Range sent_range;
@@ -326,15 +325,14 @@ TEST_P(WaylandInputMethodContextTest,
   zwp_text_input_v1_send_delete_surrounding_text(
       zwp_text_input_->resource(), sent_range.start(), sent_range.length());
   Sync();
-  absl::optional<gfx::Range> index =
-      input_method_context_delegate_->on_delete_surrounding_text_range();
-  EXPECT_TRUE(index.has_value());
-  EXPECT_EQ(index, range);
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(0, 0)));
 }
 
 TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
-  std::u16string text(5000, u'あ');
-  gfx::Range range(1000, 4000);
+  const std::u16string text(5000, u'あ');
+  const gfx::Range range(1000, 4000);
 
   // set_surrounding_text request should be skipped when the selection range in
   // UTF8 form is longer than 4000 byte.
@@ -342,6 +340,33 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
   input_method_context_->SetSurroundingText(text, range);
   connection_->ScheduleFlush();
   Sync();
+}
+
+TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
+  const std::u16string text(50, u'あ');
+  const gfx::Range range(20, 30);
+
+  std::string sent_text;
+  gfx::Range sent_range;
+  EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&sent_text), SaveArg<1>(&sent_range)));
+  input_method_context_->SetSurroundingText(text, range);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+  // The text and range sent as wayland protocol must be same to the original
+  // text and range where the original text is shorter than 4000 byte.
+  EXPECT_EQ(sent_text, base::UTF16ToUTF8(text));
+  EXPECT_EQ(sent_range, gfx::Range(60, 90));
+
+  // Test OnDeleteSurroundingText with this input.
+  // One char more deletion for each before and after the selection.
+  zwp_text_input_v1_send_delete_surrounding_text(zwp_text_input_->resource(),
+                                                 57, 36);
+  Sync();
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(1, 1)));
 }
 
 TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {

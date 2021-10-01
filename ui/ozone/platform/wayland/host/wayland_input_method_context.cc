@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -371,21 +372,35 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
     return;
   }
 
+  // TODO(crbug.com/1227590): Currently data sent from delete surrounding text
+  // from exo is broken. Currently this broken behavior is supported to prevent
+  // visible regressions, but should be fixed in the future, specifically the
+  // compatibility with non-exo wayland compositors.
   std::vector<size_t> offsets_for_adjustment = {
+      selection_range_utf8_.GetMin(),
+      selection_range_utf8_.GetMax(),
       surrounding_text_offset_ + index,
-      surrounding_text_offset_ + index + length};
+      surrounding_text_offset_ + index + length,
+  };
   base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets_for_adjustment);
-  if (offsets_for_adjustment[0] == std::u16string::npos ||
-      offsets_for_adjustment[1] == std::u16string::npos) {
+  if (base::Contains(offsets_for_adjustment, std::u16string::npos)) {
     LOG(DFATAL) << "The selection range for surrounding text is invalid.";
+    return;
+  }
+
+  if (offsets_for_adjustment[0] < offsets_for_adjustment[2] ||
+      offsets_for_adjustment[1] > offsets_for_adjustment[3]) {
+    // The range is started after the selection, or ended before the selection,
+    // which is not supported.
+    LOG(DFATAL) << "The deletion range needs to cover whole selection range.";
     return;
   }
 
   // Move by offset calculated in SetSurroundingText to adjust to the original
   // text place.
   ime_delegate_->OnDeleteSurroundingText(
-      offsets_for_adjustment[0],
-      offsets_for_adjustment[1] - offsets_for_adjustment[0]);
+      /* before= */ offsets_for_adjustment[0] - offsets_for_adjustment[2],
+      /* after= */ offsets_for_adjustment[3] - offsets_for_adjustment[1]);
 }
 
 void WaylandInputMethodContext::OnKeysym(uint32_t keysym,

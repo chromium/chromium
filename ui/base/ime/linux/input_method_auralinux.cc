@@ -456,12 +456,11 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   }
 }
 
-void InputMethodAuraLinux::OnDeleteSurroundingText(int32_t index,
-                                                   uint32_t length) {
-  if (GetTextInputClient() && composition_.text.empty()) {
-    uint32_t before = index >= 0 ? 0U : static_cast<uint32_t>(-1 * index);
-    GetTextInputClient()->ExtendSelectionAndDelete(before, length - before);
-  }
+void InputMethodAuraLinux::OnDeleteSurroundingText(size_t before,
+                                                   size_t after) {
+  auto* client = GetTextInputClient();
+  if (client && composition_.text.empty())
+    client->ExtendSelectionAndDelete(before, after);
 }
 
 void InputMethodAuraLinux::OnPreeditChanged(
