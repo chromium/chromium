@@ -856,8 +856,7 @@ TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
   // Empty callback to keep the onboarding open indefinitely.
-  fake_platform_delegate_.on_show_onboarding_callback_ =
-      base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
+  fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   std::map<std::string, std::string> script_parameters = {
@@ -887,8 +886,7 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
   // Empty callback to keep the onboarding open indefinitely.
-  fake_platform_delegate_.on_show_onboarding_callback_ =
-      base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
+  fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
@@ -937,8 +935,7 @@ TEST_F(StarterTest, RegularStartupAllowsCertainNavigationsDuringOnboarding) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
   // Empty callback to keep the onboarding open indefinitely.
-  fake_platform_delegate_.on_show_onboarding_callback_ =
-      base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
+  fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
@@ -998,8 +995,7 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
   // Empty callback to keep the onboarding open indefinitely.
-  fake_platform_delegate_.on_show_onboarding_callback_ =
-      base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
+  fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
   // Note: the starter does not actually care about the last committed URL at
   // the time of startup. All that matters is that it has received the startup
@@ -2058,8 +2054,7 @@ TEST_F(StarterPrerenderTest, DoNotAffectRecordUkmDuringPrendering) {
 
   fake_platform_delegate_.feature_module_installed_ = true;
   // Empty callback to keep the onboarding open indefinitely.
-  fake_platform_delegate_.on_show_onboarding_callback_ =
-      base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
+  fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 

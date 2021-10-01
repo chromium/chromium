@@ -76,9 +76,7 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
         base::BindOnce(
             &QuotaManager::GetUsageAndQuotaForWebApps, quota_manager(),
             blink::StorageKey::CreateFromStringForTesting(test_url.spec()),
-            blink::mojom::StorageType::kTemporary,
-            base::DoNothing::Once<blink::mojom::QuotaStatusCode, int64_t,
-                                  int64_t>()));
+            blink::mojom::StorageType::kTemporary, base::DoNothing()));
   }
 
   Shell* browser() {

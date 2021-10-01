@@ -284,11 +284,8 @@ class VideoCaptureDeviceTest
         local_gpu_memory_buffer_manager_.get());
     if (media::ShouldUseCrosCameraService() &&
         !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      CameraHalDispatcherImpl::GetInstance()->Start(
-          base::DoNothing::Repeatedly<mojo::PendingReceiver<
-              chromeos_camera::mojom::MjpegDecodeAccelerator>>(),
-          base::DoNothing::Repeatedly<mojo::PendingReceiver<
-              chromeos_camera::mojom::JpegEncodeAccelerator>>());
+      CameraHalDispatcherImpl::GetInstance()->Start(base::DoNothing(),
+                                                    base::DoNothing());
     }
 #endif
     video_capture_device_factory_ =

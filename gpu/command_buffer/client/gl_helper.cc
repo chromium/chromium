@@ -759,15 +759,15 @@ void GLHelper::CopyTextureToImpl::ReadbackYUVImpl::ReadbackYUV(
                               GL_TEXTURE_2D, texture, 0);
   };
   SetUpAndBindFramebuffer(y_readback_framebuffer_, y_);
-  copy_impl_->ReadbackPlane(
-      GetYPlaneTextureSize(output_rect.size()), y_plane_row_stride_bytes,
-      y_plane_data, 0, paste_rect, swizzle_, base::DoNothing::Once<bool>());
+  copy_impl_->ReadbackPlane(GetYPlaneTextureSize(output_rect.size()),
+                            y_plane_row_stride_bytes, y_plane_data, 0,
+                            paste_rect, swizzle_, base::DoNothing());
   SetUpAndBindFramebuffer(u_readback_framebuffer_, u_);
   const gfx::Size chroma_texture_size =
       GetChromaPlaneTextureSize(output_rect.size());
   copy_impl_->ReadbackPlane(chroma_texture_size, u_plane_row_stride_bytes,
                             u_plane_data, 1, paste_rect, swizzle_,
-                            base::DoNothing::Once<bool>());
+                            base::DoNothing());
   SetUpAndBindFramebuffer(v_readback_framebuffer_, v_);
   copy_impl_->ReadbackPlane(chroma_texture_size, v_plane_row_stride_bytes,
                             v_plane_data, 1, paste_rect, swizzle_,

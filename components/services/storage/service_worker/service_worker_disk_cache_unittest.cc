@@ -31,13 +31,12 @@ class ServiceWorkerDiskCacheTest : public testing::Test {
 
   void InitializeDiskCache(ServiceWorkerDiskCache* disk_cache) {
     base::RunLoop loop;
-    disk_cache->InitWithDiskBackend(
-        GetPath(),
-        /*post_cleanup_callback=*/base::DoNothing::Once(),
-        base::BindLambdaForTesting([&](int rv) {
-          ASSERT_EQ(rv, net::OK);
-          loop.Quit();
-        }));
+    disk_cache->InitWithDiskBackend(GetPath(),
+                                    /*post_cleanup_callback=*/base::DoNothing(),
+                                    base::BindLambdaForTesting([&](int rv) {
+                                      ASSERT_EQ(rv, net::OK);
+                                      loop.Quit();
+                                    }));
     loop.Run();
   }
 

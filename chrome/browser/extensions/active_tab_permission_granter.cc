@@ -204,8 +204,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
                                   new_hosts.Clone(), new_hosts.Clone());
     permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
-    SetCorsOriginAccessList(browser_context, *extension,
-                            base::DoNothing::Once());
+    SetCorsOriginAccessList(browser_context, *extension, base::DoNothing());
 
     if (web_contents()->GetController().GetVisibleEntry()) {
       // We update all extension render views with the new tab permissions, and
@@ -283,8 +282,7 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
   ProcessManager* process_manager = ProcessManager::Get(browser_context);
   for (const scoped_refptr<const Extension>& extension : granted_extensions_) {
     extension->permissions_data()->ClearTabSpecificPermissions(tab_id_);
-    SetCorsOriginAccessList(browser_context, *extension,
-                            base::DoNothing::Once());
+    SetCorsOriginAccessList(browser_context, *extension, base::DoNothing());
 
     extension_ids.push_back(extension->id());
     std::set<content::RenderFrameHost*> extension_frame_hosts =

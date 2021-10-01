@@ -313,11 +313,10 @@ void OptimizationGuideStore::PurgeInactiveModels() {
   database_->LoadKeysAndEntriesWithFilter(
       base::BindRepeating(&DatabasePrefixFilter,
                           GetPredictionModelEntryKeyPrefix()),
-      base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::make_unique<EntryVector>(),
-                     std::make_unique<leveldb_proto::KeyVector>(),
-                     base::DoNothing::Once()));
+      base::BindOnce(
+          &OptimizationGuideStore::OnLoadModelsToBeUpdated,
+          weak_ptr_factory_.GetWeakPtr(), std::make_unique<EntryVector>(),
+          std::make_unique<leveldb_proto::KeyVector>(), base::DoNothing()));
 }
 
 void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
@@ -345,7 +344,7 @@ void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
       std::make_unique<EntryVector>(),
       base::BindRepeating(&KeySetFilter, std::move(expired_keys_to_remove)),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 void OptimizationGuideStore::RemoveFetchedHintsByKey(
@@ -632,7 +631,7 @@ void OptimizationGuideStore::ClearFetchedHintsFromDatabase() {
       base::BindRepeating(&DatabasePrefixFilter,
                           GetFetchedHintEntryKeyPrefix()),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 void OptimizationGuideStore::MaybeLoadEntryKeys(base::OnceClosure callback) {
@@ -1071,7 +1070,7 @@ bool OptimizationGuideStore::RemovePredictionModelFromEntryKey(
       base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::make_unique<EntryVector>(), std::move(key_to_remove),
-                     base::DoNothing::Once()));
+                     base::DoNothing()));
 
   return true;
 }
@@ -1329,7 +1328,7 @@ void OptimizationGuideStore::ClearHostModelFeaturesFromDatabase() {
       base::BindRepeating(&DatabasePrefixFilter,
                           GetHostModelFeaturesEntryKeyPrefix()),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 }  // namespace optimization_guide

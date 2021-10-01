@@ -663,7 +663,7 @@ bool Controller::SetForm(
   form_.reset();
   form_result_.reset();
   form_changed_callback_ = base::DoNothing();
-  form_cancel_callback_ = base::DoNothing::Once<const ClientStatus&>();
+  form_cancel_callback_ = base::DoNothing();
 
   if (!form) {
     for (ControllerObserver& observer : observers_) {

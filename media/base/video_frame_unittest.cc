@@ -481,9 +481,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
       gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 10)};
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, coded_size, std::move(gmb), mailbox_holders,
-      base::DoNothing::Once<const gpu::SyncToken&,
-                            std::unique_ptr<gfx::GpuMemoryBuffer>>(),
-      timestamp);
+      base::DoNothing(), timestamp);
 
   EXPECT_EQ(frame->layout().format(), PIXEL_FORMAT_NV12);
   EXPECT_EQ(frame->layout().coded_size(), coded_size);

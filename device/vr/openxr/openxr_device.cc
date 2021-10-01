@@ -191,14 +191,14 @@ void OpenXrDevice::RequestSession(
 
   // OpenXr doesn't need to handle anything when presentation has ended, but
   // the mojo interface to call to XRCompositorCommon::RequestSession requires
-  // a method and cannot take nullptr, so passing in base::DoNothing::Once()
+  // a method and cannot take nullptr, so passing in base::DoNothing()
   // for on_presentation_ended
   render_loop_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&XRCompositorCommon::RequestSession,
-                                base::Unretained(render_loop_.get()),
-                                base::DoNothing::Once(),
-                                std::move(on_visibility_state_changed),
-                                std::move(options), std::move(my_callback)));
+      FROM_HERE,
+      base::BindOnce(&XRCompositorCommon::RequestSession,
+                     base::Unretained(render_loop_.get()), base::DoNothing(),
+                     std::move(on_visibility_state_changed), std::move(options),
+                     std::move(my_callback)));
 
   request_session_callback_ = std::move(callback);
 }

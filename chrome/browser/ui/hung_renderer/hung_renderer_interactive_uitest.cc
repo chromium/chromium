@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererNavigationTest,
   TabDialogs::FromWebContents(active_web_contents)
       ->ShowHungRendererDialog(
           active_web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
-          base::DoNothing::Repeatedly());
+          base::DoNothing());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html")));
   // Expect that the dialog has been dismissed.

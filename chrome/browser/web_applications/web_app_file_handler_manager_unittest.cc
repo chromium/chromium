@@ -176,8 +176,8 @@ TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
   }
 
   // Ensure they can be disabled.
-  file_handler_manager().DisableAndUnregisterOsFileHandlers(
-      app_id, base::DoNothing::Once<bool>());
+  file_handler_manager().DisableAndUnregisterOsFileHandlers(app_id,
+                                                            base::DoNothing());
 
   {
     const auto* handlers =

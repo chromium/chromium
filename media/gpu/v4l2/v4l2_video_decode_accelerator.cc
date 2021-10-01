@@ -15,6 +15,7 @@
 #include <sys/mman.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
@@ -1925,7 +1926,7 @@ bool V4L2VideoDecodeAccelerator::StopDevicePoll() {
   // Must be done after the Stop() above to ensure
   // |cancelable_service_device_task_callback_| is not copied.
   cancelable_service_device_task_.Cancel();
-  cancelable_service_device_task_callback_ = {};
+  cancelable_service_device_task_callback_ = base::NullCallback();
   // Clear the interrupt now, to be sure.
   if (!device_->ClearDevicePollInterrupt()) {
     PLOG(ERROR) << "ClearDevicePollInterrupt: failed";

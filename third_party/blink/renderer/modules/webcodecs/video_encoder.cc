@@ -915,13 +915,9 @@ static void isConfigSupportedWithSoftwareOnly(
     DeleteLater(resolver->GetScriptState(), std::move(sw_encoder));
   };
 
-  auto output_callback = base::DoNothing::Repeatedly<
-      media::VideoEncoderOutput,
-      absl::optional<media::VideoEncoder::CodecDescription>>();
-
   auto* software_encoder_raw = software_encoder.get();
   software_encoder_raw->Initialize(
-      config->profile, config->options, std::move(output_callback),
+      config->profile, config->options, base::DoNothing(),
       ConvertToBaseOnceCallback(
           CrossThreadBindOnce(done_callback, std::move(software_encoder),
                               WrapCrossThreadPersistent(resolver),

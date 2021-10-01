@@ -707,7 +707,7 @@ TEST_F(DeviceSettingsProviderTest, PolicyFailedPermanentlyNotification) {
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(this);
 
-  closure = base::DoNothing::Once();
+  closure = base::DoNothing();
   EXPECT_EQ(CrosSettingsProvider::PERMANENTLY_UNTRUSTED,
             provider_->PrepareTrustedValues(&closure));
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.

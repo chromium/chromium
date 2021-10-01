@@ -111,7 +111,7 @@ void CameraAppDeviceBridgeImpl::SetCameraInfoGetter(
 
 void CameraAppDeviceBridgeImpl::UnsetCameraInfoGetter() {
   base::AutoLock lock(camera_info_getter_lock_);
-  camera_info_getter_ = {};
+  camera_info_getter_ = base::NullCallback();
 }
 
 void CameraAppDeviceBridgeImpl::SetVirtualDeviceController(
@@ -122,7 +122,7 @@ void CameraAppDeviceBridgeImpl::SetVirtualDeviceController(
 
 void CameraAppDeviceBridgeImpl::UnsetVirtualDeviceController() {
   base::AutoLock lock(virtual_device_controller_lock_);
-  virtual_device_controller_ = {};
+  virtual_device_controller_ = base::NullCallback();
 }
 
 base::WeakPtr<CameraAppDeviceImpl>

@@ -79,7 +79,7 @@ void SlowHttpResponse::SendResponse(
   auto send_first_part = base::BindPostTask(
       task_runner, base::BindOnce(&HttpResponseDelegate::SendContents, delegate,
                                   std::string(kFirstResponsePartSize, '*'),
-                                  base::DoNothing::Once()));
+                                  base::DoNothing()));
   auto send_second_part = base::BindPostTask(
       task_runner,
       base::BindOnce(&HttpResponseDelegate::SendContentsAndFinish, delegate,

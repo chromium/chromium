@@ -669,8 +669,7 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
     chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
-    chooser_context->GetDevices(
-        base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
+    chooser_context->GetDevices(base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
     const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);

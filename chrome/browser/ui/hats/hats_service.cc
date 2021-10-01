@@ -339,7 +339,7 @@ bool HatsService::LaunchDelayedSurvey(
   return base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HatsService::LaunchSurvey, weak_ptr_factory_.GetWeakPtr(),
-                     trigger, base::DoNothing::Once(), base::DoNothing::Once(),
+                     trigger, base::DoNothing(), base::DoNothing(),
                      product_specific_bits_data, product_specific_string_data),
       base::TimeDelta::FromMilliseconds(timeout_ms));
 }

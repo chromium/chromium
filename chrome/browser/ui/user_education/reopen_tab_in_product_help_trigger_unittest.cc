@@ -104,7 +104,7 @@ TEST_F(ReopenTabInProductHelpTriggerTest, TabNotActiveLongEnough) {
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(base::DoNothing::Repeatedly());
+  reopen_tab_iph.SetShowHelpCallback(base::DoNothing());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration / 2);
   reopen_tab_iph.NewTabOpened();
@@ -118,7 +118,7 @@ TEST_F(ReopenTabInProductHelpTriggerTest, RespectsTimeout) {
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(base::DoNothing::Repeatedly());
+  reopen_tab_iph.SetShowHelpCallback(base::DoNothing());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration);
   clock.Advance(kNewTabOpenedTimeout);

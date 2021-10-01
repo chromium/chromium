@@ -21,8 +21,7 @@ namespace remoting {
 namespace {
 
 OAuthTokenGetter::TokenCallback GetDoNothingTokenCallback() {
-  return base::DoNothing::Repeatedly<OAuthTokenGetter::Status,
-                                     const std::string&, const std::string&>();
+  return base::DoNothing();
 }
 
 class FakeOAuthTokenGetter : public OAuthTokenGetter {

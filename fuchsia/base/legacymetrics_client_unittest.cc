@@ -586,7 +586,7 @@ TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
   for (size_t i = 0; i < kSizeForMultipleBatches; ++i)
     base::RecordComputedAction("bar");
 
-  client_.FlushAndDisconnect(base::DoNothing::Once());
+  client_.FlushAndDisconnect(base::DoNothing());
   base::RunLoop().RunUntilIdle();
   test_recorder_.SendAck();
   base::RunLoop().RunUntilIdle();

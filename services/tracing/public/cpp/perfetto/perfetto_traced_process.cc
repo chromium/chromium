@@ -441,7 +441,7 @@ bool PerfettoTracedProcess::CanStartTracing(
     }
   } else if (producer == system_producer_.get()) {
     if (producer_client_->IsTracingActive()) {
-      system_producer_->DisconnectWithReply(base::DoNothing().Once());
+      system_producer_->DisconnectWithReply(base::DoNothing());
       return false;
     }
   } else {

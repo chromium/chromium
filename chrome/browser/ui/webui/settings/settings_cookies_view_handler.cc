@@ -107,7 +107,7 @@ CookiesViewHandler::Request::Request(TreeModelBatchBehavior batch_behavior,
                                      base::OnceClosure initial_task)
     : batch_behavior(batch_behavior), initial_task(std::move(initial_task)) {
   if (batch_behavior == Request::ASYNC_BATCH)
-    batch_end_task = base::DoNothing::Once();
+    batch_end_task = base::DoNothing();
 }
 
 CookiesViewHandler::Request::Request(base::OnceClosure initial_task,

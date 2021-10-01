@@ -545,7 +545,7 @@ bool BasicInteractions::SetUserActions(const SetUserActionsProto& proto) {
     // No callback needed, the framework relies on generic events which will
     // be fired automatically when user actions are called.
     user_actions->back().SetCallback(
-        base::DoNothing::Once<std::unique_ptr<TriggerContext>>());
+        base::DoNothingAs<void(std::unique_ptr<TriggerContext>)>());
   }
 
   delegate_->SetUserActions(std::move(user_actions));

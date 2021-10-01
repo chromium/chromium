@@ -69,9 +69,8 @@ void DatabaseHelper::StartFetching(FetchCallback callback) {
 void DatabaseHelper::DeleteDatabase(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   tracker_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&storage::DatabaseTracker::DeleteDataForOrigin, tracker_,
-                     origin, base::DoNothing::Once<int>()));
+      FROM_HERE, base::BindOnce(&storage::DatabaseTracker::DeleteDataForOrigin,
+                                tracker_, origin, base::DoNothing()));
 }
 
 CannedDatabaseHelper::CannedDatabaseHelper(

@@ -2529,7 +2529,7 @@ void LegacyCacheStorageCache::InitBackend() {
           base::BindOnce(
               &LegacyCacheStorageCache::InitDidCreateBackend,
               weak_ptr_factory_.GetWeakPtr(),
-              scheduler_->WrapCallbackToRunNext(id, base::DoNothing::Once()))));
+              scheduler_->WrapCallbackToRunNext(id, base::BindOnce([] {})))));
 }
 
 void LegacyCacheStorageCache::InitDidCreateBackend(

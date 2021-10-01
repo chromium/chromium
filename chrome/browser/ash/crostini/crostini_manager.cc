@@ -586,7 +586,7 @@ class CrostiniManager::CrostiniRestarter
     if (options_.start_vm_only) {
       Abort(base::BindOnce(&CrostiniManager::OnAbortRestartCrostini,
                            crostini_manager_->weak_ptr_factory_.GetWeakPtr(),
-                           restart_id_, base::DoNothing::Once()),
+                           restart_id_, base::DoNothing()),
             CrostiniResult::SUCCESS);
     }
     if (ReturnEarlyIfAborted()) {

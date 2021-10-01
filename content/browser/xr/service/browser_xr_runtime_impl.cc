@@ -290,9 +290,9 @@ void BrowserXRRuntimeImpl::OnServiceRemoved(VRServiceImpl* service) {
     // may still need to be notified to terminate its session. ExitPresent may
     // be called when the service *is* still valid and would need to be notified
     // of this shutdown.
-    runtime_->ShutdownSession(base::BindOnce(
-        &BrowserXRRuntimeImpl::StopImmersiveSession,
-        weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+    runtime_->ShutdownSession(
+        base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
+                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
   }
 }
 

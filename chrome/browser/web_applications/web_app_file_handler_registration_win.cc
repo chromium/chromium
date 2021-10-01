@@ -87,7 +87,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                      base::UTF8ToWide(app_name), profile->GetPath(),
                      file_extensions_wide, app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, base::DoNothing::Once<bool>()));
+                     app_id, base::DoNothing()));
 }
 
 void UnregisterFileHandlersWithOsTask(const AppId& app_id,

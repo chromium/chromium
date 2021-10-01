@@ -201,7 +201,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
 
     PermissionsUpdaterListener listener;
     PermissionsUpdater(profile_.get())
-        .GrantOptionalPermissions(*extension, delta, base::DoNothing::Once());
+        .GrantOptionalPermissions(*extension, delta, base::DoNothing());
 
     listener.Wait();
 
@@ -237,7 +237,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     PermissionsUpdater(profile_.get())
         .RevokeOptionalPermissions(*extension, delta,
                                    PermissionsUpdater::REMOVE_SOFT,
-                                   base::DoNothing::Once());
+                                   base::DoNothing());
     listener.Wait();
 
     // Verify that the notification was correct.

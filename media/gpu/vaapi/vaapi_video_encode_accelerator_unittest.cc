@@ -626,10 +626,7 @@ class VaapiVideoEncodeAcceleratorTest
     gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
     auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         gfx::Rect(kDefaultEncodeSize), kDefaultEncodeSize, std::move(gmb),
-        mailbox_holders,
-        base::DoNothing::Once<const gpu::SyncToken&,
-                              std::unique_ptr<gfx::GpuMemoryBuffer>>(),
-        base::TimeDelta());
+        mailbox_holders, base::DoNothing(), base::TimeDelta());
     ASSERT_TRUE(frame);
     encoder_->Encode(std::move(frame), /*force_keyframe=*/false);
     run_loop.Run();

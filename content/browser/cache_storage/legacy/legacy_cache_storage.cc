@@ -862,7 +862,7 @@ void LegacyCacheStorage::ScheduleWriteIndex() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   index_write_task_.Reset(base::BindOnce(&LegacyCacheStorage::WriteIndex,
                                          weak_factory_.GetWeakPtr(),
-                                         base::DoNothing::Once<bool>()));
+                                         base::DoNothing()));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, index_write_task_.callback(),
       base::TimeDelta::FromMilliseconds(delay_ms));
@@ -1454,7 +1454,7 @@ void LegacyCacheStorage::FlushIndexIfDirty() {
   if (!index_write_pending())
     return;
   index_write_task_.Cancel();
-  cache_loader_->WriteIndex(*cache_index_, base::DoNothing::Once<bool>());
+  cache_loader_->WriteIndex(*cache_index_, base::DoNothing());
 }
 
 #if defined(OS_ANDROID)

@@ -74,11 +74,7 @@ class MockLoaderPolicy : public ComponentLoaderPolicy {
       : on_loaded_(std::move(on_loaded)), on_failed_(std::move(on_failed)) {}
 
   MockLoaderPolicy()
-      : on_loaded_(
-            base::DoNothing::Once<const base::Version&,
-                                  base::flat_map<std::string, base::ScopedFD>&,
-                                  std::unique_ptr<base::DictionaryValue>>()),
-        on_failed_(base::DoNothing::Once<ComponentLoadResult>()) {}
+      : on_loaded_(base::DoNothing()), on_failed_(base::DoNothing()) {}
 
   ~MockLoaderPolicy() override = default;
 

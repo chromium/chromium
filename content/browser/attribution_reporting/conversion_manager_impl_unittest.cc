@@ -894,7 +894,7 @@ TEST_F(ConversionManagerImplTest, ClearData_RequeuesReports) {
       base::Time::Min(), base::Time::Max(),
       base::BindLambdaForTesting(
           [&](const url::Origin& origin) { return origin == origin_a; }),
-      base::DoNothing::Once());
+      base::DoNothing());
 
   test_reporter_->WaitForNumReports(3);
   EXPECT_EQ(3u, test_reporter_->num_reports());
@@ -924,7 +924,7 @@ TEST_F(ConversionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
       base::Time::Min(), base::Time::Max(),
       base::BindLambdaForTesting(
           [&](const url::Origin& origin) { return origin == origin_b; }),
-      base::DoNothing::Once());
+      base::DoNothing());
 
   ExpectNumStoredReports(1u);
 }

@@ -90,8 +90,8 @@ TEST_F(FeaturePromoBubbleViewTest, AutoDismissIfNoButtons) {
 }
 
 TEST_F(FeaturePromoBubbleViewTest, NoAutoDismissWithButtons) {
-  FeaturePromoBubbleView* bubble = FeaturePromoBubbleView::Create(
-      GetBubbleParams(base::DoNothing::Repeatedly()));
+  FeaturePromoBubbleView* bubble =
+      FeaturePromoBubbleView::Create(GetBubbleParams(base::DoNothing()));
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(0);
   bubble->GetWidget()->AddObserver(&dismiss_observer);

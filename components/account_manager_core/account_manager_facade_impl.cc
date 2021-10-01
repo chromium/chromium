@@ -267,9 +267,7 @@ void AccountManagerFacadeImpl::GetPersistentErrorForAccount(
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
     AccountAdditionSource source) {
-  ShowAddAccountDialog(
-      source,
-      base::DoNothing::Once<const account_manager::AccountAdditionResult&>());
+  ShowAddAccountDialog(source, base::DoNothing());
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(

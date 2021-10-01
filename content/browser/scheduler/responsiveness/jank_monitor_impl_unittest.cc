@@ -336,8 +336,7 @@ TEST_F(JankMonitorTest, JankUIAndIOThread) {
 // timer on new activity.
 TEST_F(JankMonitorTest, StartStopTimer) {
   // Activity on the UI thread - timer should be running.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(base::DoNothing::Once()));
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(monitor_->timer_running());
 
@@ -346,8 +345,7 @@ TEST_F(JankMonitorTest, StartStopTimer) {
   EXPECT_FALSE(monitor_->timer_running());
 
   // Activity on IO thread - timer should be restarted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(base::DoNothing::Once()));
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(monitor_->timer_running());
 
@@ -379,8 +377,7 @@ class TestJankMonitorShutdownRace : public JankMonitorImpl {
     // destruction of MetricSource. Even if MetricSource is still active and
     // attempts to start the timer, the attempt should be a no-op since the
     // the timer is already destroyed. We should still expect timer not running.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(base::DoNothing::Once()));
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
 
     shutdown_on_monitor_thread_->Signal();
   }

@@ -84,8 +84,7 @@ class MockOAuthTokenGetter : public OAuthTokenGetter {
 };
 
 EchoResponseCallback DoNothingResponse() {
-  return base::DoNothing::Once<const ProtobufHttpStatus&,
-                               std::unique_ptr<EchoResponse>>();
+  return base::DoNothing();
 }
 
 std::unique_ptr<ProtobufHttpRequestConfig> CreateDefaultRequestConfig() {
@@ -108,11 +107,10 @@ std::unique_ptr<ProtobufHttpRequest> CreateDefaultTestRequest() {
 std::unique_ptr<ProtobufHttpStreamRequest> CreateDefaultTestStreamRequest() {
   auto request =
       std::make_unique<ProtobufHttpStreamRequest>(CreateDefaultRequestConfig());
-  request->SetStreamReadyCallback(base::DoNothing::Once());
-  request->SetStreamClosedCallback(
-      base::DoNothing::Once<const ProtobufHttpStatus&>());
+  request->SetStreamReadyCallback(base::DoNothing());
+  request->SetStreamClosedCallback(base::DoNothing());
   request->SetMessageCallback(
-      base::DoNothing::Repeatedly<std::unique_ptr<EchoResponse>>());
+      base::BindRepeating([](std::unique_ptr<EchoResponse>) {}));
   return request;
 }
 
@@ -546,14 +544,12 @@ TEST_F(ProtobufHttpClientTest, StartStreamRequestAndDecodeMessages) {
   // TestURLLoaderFactory can't simulate streaming, so we invoke the request
   // directly.
   stream_consumer->OnDataReceived(
-      CreateSerializedStreamBodyWithText("response text 1"),
-      base::DoNothing::Once());
+      CreateSerializedStreamBodyWithText("response text 1"), base::DoNothing());
   stream_consumer->OnDataReceived(
-      CreateSerializedStreamBodyWithText("response text 2"),
-      base::DoNothing::Once());
+      CreateSerializedStreamBodyWithText("response text 2"), base::DoNothing());
   stream_consumer->OnDataReceived(CreateSerializedStreamBodyWithStatusCode(
                                       ProtobufHttpStatus::Code::CANCELLED),
-                                  base::DoNothing::Once());
+                                  base::DoNothing());
   ASSERT_FALSE(client_.HasPendingRequests());
 }
 

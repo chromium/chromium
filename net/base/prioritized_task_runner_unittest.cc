@@ -122,8 +122,7 @@ TEST_F(PrioritizedTaskRunnerTest, PostTaskAndReplyThreadCheck) {
       };
 
   prioritized_task_runner->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(thread_check, task_runner, base::DoNothing::Once()),
+      FROM_HERE, base::BindOnce(thread_check, task_runner, base::DoNothing()),
       base::BindOnce(thread_check, task_environment_.GetMainThreadTaskRunner(),
                      run_loop.QuitClosure()),
       0);
@@ -353,7 +352,7 @@ TEST_F(PrioritizedTaskRunnerTest, OrderSamePriorityByPostOrder) {
         FROM_HERE,
         base::BindOnce(&PrioritizedTaskRunnerTest::PushName,
                        base::Unretained(this), base::NumberToString(id)),
-        base::BindOnce(base::DoNothing::Once()), priority);
+        base::DoNothing(), priority);
   }
   ReleaseTaskRunner();
 

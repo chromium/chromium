@@ -567,9 +567,8 @@ TEST_F(DataItemTest, RepeatedWrite) {
   std::vector<char> first_write = {'f', 'i', 'l', 'e', '_', '1'};
   std::vector<char> second_write = {'f', 'i', 'l', 'e', '_', '2'};
 
-  writer->Write(
-      first_write,
-      base::BindOnce(&WriteCallback, base::DoNothing::Once(), &write_result));
+  writer->Write(first_write, base::BindOnce(&WriteCallback, base::DoNothing(),
+                                            &write_result));
   EXPECT_EQ(OperationResult::kSuccess,
             WriteItemAndWaitForResult(writer.get(), second_write));
 

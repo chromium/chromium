@@ -183,8 +183,7 @@ void AndroidPushNotificationManager::OnDelegateReady() {
 
     // The helper here is used only for tracking success and logging that to
     // metrics. In this case, nothing needs to be done in the event of failure.
-    auto helper =
-        DroppedSuccessCallbackHelper::CreateAndArm(base::DoNothing::Once());
+    auto helper = DroppedSuccessCallbackHelper::CreateAndArm(base::DoNothing());
     helper->SetReportResultHistogram(
         "OptimizationGuide.PushNotifications."
         "CachedNotificationsHandledSuccessfully");

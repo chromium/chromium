@@ -221,7 +221,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // In browser tests |ui_task| runs the "body" of each test.
   if (parameters_.ui_task) {
     // Since the main loop won't run, there is nothing to quit.
-    quit_closure_ = base::DoNothing::Once();
+    quit_closure_ = base::DoNothing();
 
     std::move(*parameters_.ui_task).Run();
     delete parameters_.ui_task;

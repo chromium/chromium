@@ -102,13 +102,12 @@ void FakeShillDeviceClient::SetProperty(const dbus::ObjectPath& device_path,
     std::move(callback).Run();
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &FakeShillDeviceClient::SetPropertyInternal,
-            weak_ptr_factory_.GetWeakPtr(), device_path, name, value.Clone(),
-            /*callback=*/base::DoNothing::Once<>(),
-            /*error_callback=*/
-            base::DoNothing::Once<const std::string&, const std::string&>(),
-            /*notify_changed=*/true),
+        base::BindOnce(&FakeShillDeviceClient::SetPropertyInternal,
+                       weak_ptr_factory_.GetWeakPtr(), device_path, name,
+                       value.Clone(),
+                       /*callback=*/base::DoNothing(),
+                       /*error_callback=*/base::DoNothing(),
+                       /*notify_changed=*/true),
         *property_change_delay_);
     return;
   }

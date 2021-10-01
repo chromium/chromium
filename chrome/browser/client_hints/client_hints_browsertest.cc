@@ -2231,7 +2231,7 @@ class AcceptCHFrameObserverInterceptor {
     mojo::Remote<network::mojom::AcceptCHFrameObserver> remote(std::move(
         params->url_request.trusted_params->accept_ch_frame_observer));
     remote->OnAcceptCHFrameReceived(params->url_request.url, hints,
-                                    base::DoNothing::Once<int>());
+                                    base::DoNothing());
     // At this point it's expected that either the remote's callback will be
     // called or the URLLoader will be destroyed to make way for a new one.
     // As this is essentially unobservable, RunUntilIdle must be used.

@@ -603,7 +603,7 @@ void MediaClientImpl::ShowCameraOffNotification() {
               kCameraPrivacySwitchNotifierId),
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
-              base::DoNothing::Repeatedly()),
+              base::DoNothingAs<void()>()),
           vector_icons::kVideocamOffIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(*notification);

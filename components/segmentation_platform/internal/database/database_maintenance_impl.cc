@@ -56,12 +56,13 @@ std::set<SignalIdentifier> CollectAllSignalIdentifiers(
 
 // Takes in the list of tasks and creates a link between each of them, and
 // returns the first task which points to the next one, which points to the next
-// one, etc., until the last task points to base::DoNothing::Once().
+// one, etc., until the last task points to a callback that does nothing.
 base::OnceClosure LinkTasks(
     std::vector<base::OnceCallback<void(base::OnceClosure)>> tasks) {
   // Iterate in reverse order over the list of tasks and put them into a type
-  // of linked list, where the last task refers to base::DoNothing::Once().
-  base::OnceClosure first_task = base::DoNothing::Once();
+  // of linked list, where the last task refers to a callback that does
+  // nothing.
+  base::OnceClosure first_task = base::DoNothing();
   for (auto curr_task = tasks.rbegin(); curr_task != tasks.rend();
        ++curr_task) {
     // We need to first perform the current task, and then move on to the next

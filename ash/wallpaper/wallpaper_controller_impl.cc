@@ -2620,8 +2620,7 @@ void WallpaperControllerImpl::StartDailyRefreshTimer(base::TimeDelta delay) {
   daily_refresh_timer_.Start(
       FROM_HERE, desired_run_time,
       base::BindOnce(&WallpaperControllerImpl::UpdateDailyRefreshWallpaper,
-                     weak_factory_.GetWeakPtr(),
-                     base::DoNothing::Once<bool>()));
+                     weak_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
@@ -2708,7 +2707,7 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
       base::BindOnce(&WallpaperControllerImpl::SetDailyWallpaper,
                      weak_factory_.GetWeakPtr(), account_id, info.collection_id,
                      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                     /*preview_mode=*/false, base::DoNothing::Once<bool>()));
+                     /*preview_mode=*/false, base::DoNothing()));
 }
 
 }  // namespace ash

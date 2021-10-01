@@ -55,7 +55,7 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
     HungRendererDialogView::Show(
         web_contents,
         web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
-        base::DoNothing::Repeatedly());
+        base::DoNothing());
 
     if (name == "MultiplePages") {
       HungRendererDialogView* view =
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, ProcessClosed) {
   dialog->table_model_for_testing()->InitForWebContents(
       web_contents,
       web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
-      base::DoNothing::Repeatedly());
+      base::DoNothing());
 
   // Makes sure the virtual accessibility views are in sync with the model when
   // the dialog is created. Should consist of a single item.
@@ -169,12 +169,10 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
 
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents2));
-  HungRendererDialogView::Show(web_contents1, widget_host1,
-                               base::DoNothing::Repeatedly());
+  HungRendererDialogView::Show(web_contents1, widget_host1, base::DoNothing());
   EXPECT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents2));
-  HungRendererDialogView::Show(web_contents2, widget_host2,
-                               base::DoNothing::Repeatedly());
+  HungRendererDialogView::Show(web_contents2, widget_host2, base::DoNothing());
   EXPECT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents2));
   HungRendererDialogView::Hide(web_contents1, widget_host1);
@@ -184,12 +182,10 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents2));
 
-  HungRendererDialogView::Show(web_contents1, widget_host1,
-                               base::DoNothing::Repeatedly());
+  HungRendererDialogView::Show(web_contents1, widget_host1, base::DoNothing());
   EXPECT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents2));
-  HungRendererDialogView::Show(web_contents2, widget_host2,
-                               base::DoNothing::Repeatedly());
+  HungRendererDialogView::Show(web_contents2, widget_host2, base::DoNothing());
   EXPECT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents2));
   HungRendererDialogView::Hide(web_contents2, widget_host2);

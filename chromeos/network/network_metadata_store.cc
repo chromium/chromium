@@ -180,7 +180,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     dict.SetBoolKey(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
         network->path(), base::Value::AsDictionaryValue(dict),
-        base::DoNothing::Once(),
+        base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,
                        weak_ptr_factory_.GetWeakPtr()));
   }

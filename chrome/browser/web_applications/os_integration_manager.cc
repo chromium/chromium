@@ -634,13 +634,13 @@ void OsIntegrationManager::UpdateFileHandlers(
           // an UMA metric.
           if (!os_integration_manager)
             return;
-          os_integration_manager->RegisterFileHandlers(
-              app_id, base::DoNothing::Once<bool>());
+          os_integration_manager->RegisterFileHandlers(app_id,
+                                                       base::DoNothing());
         },
         weak_ptr_factory_.GetWeakPtr(), app_id);
   } else {
     DCHECK_EQ(file_handlers_need_os_update, FileHandlerUpdateAction::kRemove);
-    callback_after_removal = base::DoNothing::Once<bool>();
+    callback_after_removal = base::DoNothing();
   }
 
   // Update file handlers via complete uninstallation, then potential

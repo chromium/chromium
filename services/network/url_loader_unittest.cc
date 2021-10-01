@@ -436,8 +436,7 @@ class URLRequestFakeTransportInfoJob : public net::URLRequestJob {
 
  private:
   void StartAsync() {
-    const int result =
-        NotifyConnected(transport_info_, base::DoNothing::Once<int>());
+    const int result = NotifyConnected(transport_info_, base::DoNothing());
 
     if (result != net::OK && result != net::ERR_IO_PENDING) {
       NotifyStartError(result);

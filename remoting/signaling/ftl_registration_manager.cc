@@ -225,8 +225,7 @@ void FtlRegistrationManager::OnSignInGaiaResponse(
   sign_in_refresh_timer_.Start(
       FROM_HERE, refresh_delay,
       base::BindOnce(&FtlRegistrationManager::SignInGaia,
-                     base::Unretained(this),
-                     base::DoNothing::Once<const ProtobufHttpStatus&>()));
+                     base::Unretained(this), base::DoNothing()));
   VLOG(1) << "Scheduled auth token refresh in: " << refresh_delay;
   std::move(on_done).Run(status);
 }

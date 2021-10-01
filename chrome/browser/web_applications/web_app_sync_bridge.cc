@@ -724,10 +724,10 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
 
   MergeLocalAppsToSync(entity_data, metadata_change_list.get());
 
-  database_->Write(*update_local_data, std::move(metadata_change_list),
-                   base::BindOnce(&WebAppSyncBridge::OnDataWritten,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  base::DoNothing::Once<bool>()));
+  database_->Write(
+      *update_local_data, std::move(metadata_change_list),
+      base::BindOnce(&WebAppSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
   return absl::nullopt;
@@ -744,10 +744,10 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
   for (const auto& change : entity_changes)
     ApplySyncDataChange(*change, update_local_data.get());
 
-  database_->Write(*update_local_data, std::move(metadata_change_list),
-                   base::BindOnce(&WebAppSyncBridge::OnDataWritten,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  base::DoNothing::Once<bool>()));
+  database_->Write(
+      *update_local_data, std::move(metadata_change_list),
+      base::BindOnce(&WebAppSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
   return absl::nullopt;

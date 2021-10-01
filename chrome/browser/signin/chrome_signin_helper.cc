@@ -278,8 +278,7 @@ void ProcessMirrorHeader(
         gaia::AreEmailsSame(primary_account.email,
                             manage_accounts_params.email)) {
       identity_manager->GetAccountsCookieMutator()->LogOutAllAccounts(
-          gaia::GaiaSource::kChromeOS,
-          base::DoNothing::Once<const GoogleServiceAuthError&>());
+          gaia::GaiaSource::kChromeOS, base::DoNothing());
       return;
     }
 

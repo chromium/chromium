@@ -89,7 +89,7 @@ bool SecurityTokenRequestController::SetPinUiState(
   if (!security_token_request_in_progress_) {
     security_token_request_in_progress_ = true;
     PinRequest pin_request;
-    pin_request.on_pin_request_done = base::DoNothing::Once<bool>();
+    pin_request.on_pin_request_done = base::DoNothing();
     pin_request.pin_keyboard_always_enabled = true;
     pin_request.extra_dimmer = true;
     pin_request.title = GetTitle();

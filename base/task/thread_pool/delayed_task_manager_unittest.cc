@@ -160,7 +160,7 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskRunsAfterCancelled) {
   delayed_task_manager_.Start(service_thread_task_runner_);
 
   // Add a cancelable task to the DelayedTaskManager with a longer delay.
-  CancelableOnceClosure cancelable_closure(DoNothing::Once());
+  CancelableOnceClosure cancelable_closure(DoNothing());
   bool post_cancelable_task_now_invoked = false;
   Task cancelable_task(FROM_HERE, cancelable_closure.callback(),
                        TimeTicks::Now(), kLongerDelay);

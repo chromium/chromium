@@ -159,8 +159,7 @@ TEST_F(FileRemoverTest, NoKnownFileRemoval) {
 
   FileRemover remover(
       DigestVerifier::CreateFromResource(IDS_TEST_SAMPLE_DLL_DIGEST),
-      /*archiver=*/nullptr, LayeredServiceProviderWrapper(),
-      base::DoNothing::Repeatedly());
+      /*archiver=*/nullptr, LayeredServiceProviderWrapper(), base::DoNothing());
 
   // Copy the sample DLL to the temp folder.
   base::FilePath dll_path = GetSampleDLLPath();
@@ -200,7 +199,7 @@ TEST_F(FileRemoverTest, NoLSPRemoval) {
   lsp.AddProvider(kGUID1, provider_path);
 
   FileRemover remover(/*digest_verifier=*/nullptr, /*archiver=*/nullptr, lsp,
-                      base::DoNothing::Repeatedly());
+                      base::DoNothing());
 
   TestBlacklistedRemoval(&remover, provider_path);
 }
@@ -447,7 +446,7 @@ class FileRemoverQuarantineTest : public base::MultiProcessTest,
         temp_dir_.GetPath(), kTestPassword);
     file_remover_ = std::make_unique<FileRemover>(
         /*digest_verifier=*/nullptr, std::move(zip_archiver),
-        LayeredServiceProviderWrapper(), base::DoNothing::Repeatedly());
+        LayeredServiceProviderWrapper(), base::DoNothing());
   }
 
  protected:

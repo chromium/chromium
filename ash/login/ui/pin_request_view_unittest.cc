@@ -93,7 +93,7 @@ class PinRequestViewTest : public LoginTestBase,
     request.help_button_enabled = true;
     request.obscure_pin = false;
     request.pin_length = pin_length;
-    request.on_pin_request_done = base::DoNothing::Once<bool>();
+    request.on_pin_request_done = base::DoNothing();
     view_ = new PinRequestView(std::move(request), this);
 
     SetWidget(CreateWidgetWithContent(view_));
@@ -104,7 +104,7 @@ class PinRequestViewTest : public LoginTestBase,
     PinRequest request;
     request.help_button_enabled = true;
     request.pin_length = pin_length;
-    request.on_pin_request_done = base::DoNothing::Once<bool>();
+    request.on_pin_request_done = base::DoNothing();
     PinRequestWidget::Show(std::move(request), this);
     PinRequestWidget* widget = PinRequestWidget::Get();
     ASSERT_TRUE(widget);

@@ -1728,9 +1728,9 @@ TEST(SingleThreadTaskExecutorTest,
   executor.task_runner()->PostTask(
       FROM_HERE, BindOnce(&SubPumpFunc, run_loop.QuitClosure()));
   executor.task_runner()->PostTask(FROM_HERE,
-                                   BindOnce(&SubPumpFunc, DoNothing::Once()));
+                                   BindOnce(&SubPumpFunc, DoNothing()));
   executor.task_runner()->PostTask(FROM_HERE,
-                                   BindOnce(&SubPumpFunc, DoNothing::Once()));
+                                   BindOnce(&SubPumpFunc, DoNothing()));
 
   // Quit two layers (with tasks in between to allow each quit to be handled
   // before continuing -- ::PostQuitMessage() sets a bit, it's not a real queued

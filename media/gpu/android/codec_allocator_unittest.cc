@@ -179,7 +179,7 @@ TEST_F(CodecAllocatorTest, MultipleCreation) {
   base::RunLoop run_loop;
   allocator_->CreateMediaCodecAsync(
       base::BindOnce(&CodecAllocatorTest::OnCodecCreatedInternal,
-                     base::Unretained(this), base::DoNothing::Once()),
+                     base::Unretained(this), base::DoNothing()),
       std::move(config));
 
   // Advance some time, but not enough to trigger hang detection.
@@ -209,7 +209,7 @@ TEST_F(CodecAllocatorTest, MultipleRelease) {
   allocator_->ReleaseMediaCodec(
       std::make_unique<MockMediaCodecBridge>(),
       base::BindOnce(&CodecAllocatorTest::OnCodecReleasedInternal,
-                     base::Unretained(this), base::DoNothing::Once()));
+                     base::Unretained(this), base::DoNothing()));
 
   // Advance some time, but not enough to trigger hang detection.
   ASSERT_FALSE(IsPrimaryTaskRunnerLikelyHung());

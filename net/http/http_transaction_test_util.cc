@@ -552,8 +552,7 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
 
   int result = OK;
   if (!connected_callback_.is_null()) {
-    result = connected_callback_.Run(t->transport_info,
-                                     base::DoNothing::Repeatedly<int>());
+    result = connected_callback_.Run(t->transport_info, base::DoNothing());
   }
 
   CallbackLater(std::move(callback), result);

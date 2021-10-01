@@ -274,7 +274,7 @@ void AudioInputDevice::OnStreamCreated(
       alive_checker_
           ? base::BindRepeating(&AliveChecker::NotifyAlive,
                                 base::Unretained(alive_checker_.get()))
-          : base::DoNothing::Repeatedly();
+          : base::DoNothing();
 
   audio_callback_ = std::make_unique<AudioInputDevice::AudioThreadCallback>(
       audio_parameters_, std::move(shared_memory_region),

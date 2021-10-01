@@ -291,8 +291,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   virtual DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback() {
-    return base::DoNothing::Repeatedly<gpu::SwapBuffersCompleteParams,
-                                       const gfx::Size&, gfx::GpuFenceHandle>();
+    return base::DoNothing();
   }
 
   void SetUpOnGpu() override {
@@ -405,18 +404,11 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   virtual void SwapBuffers() {
-    auto present_callback =
-        base::DoNothing::Once<const gfx::PresentationFeedback&>();
-
-    output_device_->SwapBuffers(std::move(present_callback),
-                                OutputSurfaceFrame());
+    output_device_->SwapBuffers(base::DoNothing(), OutputSurfaceFrame());
   }
 
   void CommitOverlayPlanes() {
-    auto present_callback =
-        base::DoNothing::Once<const gfx::PresentationFeedback&>();
-
-    output_device_->CommitOverlayPlanes(std::move(present_callback),
+    output_device_->CommitOverlayPlanes(base::DoNothing(),
                                         OutputSurfaceFrame());
   }
 

@@ -585,7 +585,7 @@ TEST_F(CastMessageHandlerTest, SendVolumeCommand) {
     "type": "SET_VOLUME",
   })";
   handler_.SendSetVolumeRequest(channel_id_, ParseJson(message_str),
-                                "theSourceId", base::DoNothing::Once<Result>());
+                                "theSourceId", base::DoNothing());
 }
 
 // Check that closing a socket removes pending requests, and that the pending

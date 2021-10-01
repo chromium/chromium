@@ -119,7 +119,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
           frame && frame->Client()
               ? manager_->UseDevice(session_id_,
                                     &frame->GetBrowserInterfaceBroker())
-              : base::DoNothing::Once();
+              : base::DoNothing();
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");

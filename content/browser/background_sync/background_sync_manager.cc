@@ -627,7 +627,7 @@ void BackgroundSyncManager::EmulateServiceWorkerOffline(
     return;
   emulated_offline_sw_.erase(service_worker_id);
   FireReadyEvents(BackgroundSyncType::ONE_SHOT, /* reschedule= */ true,
-                  base::DoNothing::Once());
+                  base::DoNothing());
 }
 
 BackgroundSyncManager::BackgroundSyncManager(
@@ -771,9 +771,9 @@ void BackgroundSyncManager::InitDidGetDataFromBackend(
   }
 
   FireReadyEvents(BackgroundSyncType::ONE_SHOT, /* reschedule= */ true,
-                  base::DoNothing::Once());
+                  base::DoNothing());
   FireReadyEvents(BackgroundSyncType::PERIODIC, /* reschedule= */ true,
-                  base::DoNothing::Once());
+                  base::DoNothing());
   proxy_->SendSuspendedPeriodicSyncOrigins(
       std::move(suspended_periodic_sync_origins));
   proxy_->SendRegisteredPeriodicSyncOrigins(std::move(registered_origins));
@@ -1237,7 +1237,7 @@ void BackgroundSyncManager::ResolveRegistrationDidCreateKeepAlive(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   FireReadyEvents(BackgroundSyncType::ONE_SHOT, /* reschedule= */ true,
-                  base::DoNothing::Once(), std::move(keepalive));
+                  base::DoNothing(), std::move(keepalive));
   op_scheduler_.CompleteOperationAndRunNext();
 }
 
@@ -1818,7 +1818,7 @@ void BackgroundSyncManager::ScheduleDelayedProcessingOfRegistrations(
 
   auto fire_events_callback = base::BindOnce(
       &BackgroundSyncManager::FireReadyEvents, weak_ptr_factory_.GetWeakPtr(),
-      sync_type, /* reschedule= */ true, base::DoNothing::Once(),
+      sync_type, /* reschedule= */ true, base::DoNothing(),
       /* keepalive= */ nullptr);
 
   proxy_->ScheduleDelayedProcessing(
@@ -1926,7 +1926,7 @@ void BackgroundSyncManager::FireReadyEventsImpl(
   } else {
     events_fired_callback =
         op_scheduler_.WrapCallbackToRunNext(std::move(callback));
-    events_completed_callback = base::DoNothing::Once();
+    events_completed_callback = base::DoNothing();
   }
 
   // Fire the sync event of the ready registrations and run
@@ -2248,7 +2248,7 @@ void BackgroundSyncManager::EventCompleteDidStore(
   }
 
   // Fire any ready events and call RunInBackground if anything is waiting.
-  FireReadyEvents(sync_type, /* reschedule= */ true, base::DoNothing::Once());
+  FireReadyEvents(sync_type, /* reschedule= */ true, base::DoNothing());
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
@@ -2298,14 +2298,14 @@ void BackgroundSyncManager::OnNetworkChanged() {
     return;
 
   FireReadyEvents(BackgroundSyncType::ONE_SHOT, /* reschedule= */ true,
-                  base::DoNothing::Once());
+                  base::DoNothing());
   FireReadyEvents(BackgroundSyncType::PERIODIC, /* reschedule= */ true,
-                  base::DoNothing::Once());
+                  base::DoNothing());
 }
 
 base::OnceClosure BackgroundSyncManager::MakeEmptyCompletion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return op_scheduler_.WrapCallbackToRunNext(base::DoNothing::Once());
+  return op_scheduler_.WrapCallbackToRunNext(base::BindOnce([] {}));
 }
 
 blink::ServiceWorkerStatusCode BackgroundSyncManager::CanEmulateSyncEvent(

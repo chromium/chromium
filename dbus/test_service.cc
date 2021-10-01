@@ -113,7 +113,7 @@ void TestService::SendTestSignalFromRootInternal(const std::string& message) {
   bus_->RequestOwnership(
       service_name_, request_ownership_options_,
       base::BindOnce(&TestService::OnOwnership, base::Unretained(this),
-                     base::DoNothing::Once<bool>()));
+                     base::DoNothing()));
 
   // Use "/" just like dbus-send does.
   ExportedObject* root_object = bus_->GetExportedObject(ObjectPath("/"));
@@ -179,7 +179,7 @@ void TestService::OnExported(const std::string& interface_name,
     bus_->RequestOwnership(
         service_name_, request_ownership_options_,
         base::BindOnce(&TestService::OnOwnership, base::Unretained(this),
-                       base::DoNothing::Once<bool>()));
+                       base::DoNothing()));
   }
 }
 

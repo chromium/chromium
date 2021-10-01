@@ -681,8 +681,7 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name) {
-  return SetCurrentLayoutByNameWithCallback(layout_name,
-                                            base::DoNothing::Once());
+  return SetCurrentLayoutByNameWithCallback(layout_name, base::DoNothing());
 }
 
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(

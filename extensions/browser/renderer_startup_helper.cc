@@ -249,7 +249,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
   // SetCorsOriginAccessListsForOrigin and CreateURLLoaderFactory are 2 methods
   // of the same mojom::NetworkContext interface).
   util::SetCorsOriginAccessListForExtension({process->GetBrowserContext()},
-                                            extension, base::DoNothing::Once());
+                                            extension, base::DoNothing());
 
   auto remote = process_mojo_map_.find(process);
   if (remote != process_mojo_map_.end()) {

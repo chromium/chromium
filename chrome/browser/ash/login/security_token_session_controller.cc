@@ -105,7 +105,7 @@ void DisplayNotification(const std::u16string& title,
               kNotifierSecurityTokenSession),
           /*optional_fields=*/{},
           new message_center::HandleNotificationClickDelegate(
-              base::DoNothing::Repeatedly()),
+              base::DoNothingAs<void()>()),
           chromeos::kEnterpriseIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_fullscreen_visibility(

@@ -123,7 +123,7 @@ void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
       base::BindOnce(&DecodeImageFileAndCopyToClipboard,
                      /*clipboard_sequence=*/ui::ClipboardSequenceNumberToken(),
                      /*maintain_clipboard=*/false, png_data,
-                     base::DoNothing::Once<bool>()));
+                     base::DoNothing()));
 }
 
 void DecodeImageFileAndCopyToClipboard(

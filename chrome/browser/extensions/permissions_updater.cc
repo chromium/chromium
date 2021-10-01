@@ -448,18 +448,16 @@ void PermissionsUpdater::SetPolicyHostRestrictions(
 
   // Update the BrowserContext origin lists, and send notification to the
   // currently running renderers of the runtime block hosts settings.
-  NetworkPermissionsUpdateHelper::UpdatePermissions(browser_context_, POLICY,
-                                                    extension, PermissionSet(),
-                                                    base::DoNothing::Once());
+  NetworkPermissionsUpdateHelper::UpdatePermissions(
+      browser_context_, POLICY, extension, PermissionSet(), base::DoNothing());
 }
 
 void PermissionsUpdater::SetUsesDefaultHostRestrictions(
     const Extension* extension) {
   extension->permissions_data()->SetUsesDefaultHostRestrictions(
       util::GetBrowserContextId(browser_context_));
-  NetworkPermissionsUpdateHelper::UpdatePermissions(browser_context_, POLICY,
-                                                    extension, PermissionSet(),
-                                                    base::DoNothing::Once());
+  NetworkPermissionsUpdateHelper::UpdatePermissions(
+      browser_context_, POLICY, extension, PermissionSet(), base::DoNothing());
 }
 
 void PermissionsUpdater::SetDefaultPolicyHostRestrictions(
@@ -498,7 +496,7 @@ void PermissionsUpdater::RemovePermissionsUnsafe(
   SetPermissions(extension, std::move(total), update_active_prefs);
   NetworkPermissionsUpdateHelper::UpdatePermissions(
       browser_context_, REMOVED, extension, *successfully_removed,
-      base::DoNothing::Once());
+      base::DoNothing());
 }
 
 std::unique_ptr<const PermissionSet>
@@ -570,7 +568,7 @@ void PermissionsUpdater::AddPermissionsForTesting(
     const Extension& extension,
     const PermissionSet& permissions) {
   AddPermissionsImpl(extension, permissions, kNone, permissions,
-                     base::DoNothing::Once());
+                     base::DoNothing());
 }
 
 void PermissionsUpdater::SetPermissions(

@@ -50,7 +50,7 @@ class MockSignalingTracker : public SignalingTracker {
 class FakeScopedProtobufHttpRequest : public ScopedProtobufHttpRequest {
  public:
   FakeScopedProtobufHttpRequest()
-      : ScopedProtobufHttpRequest(base::DoNothing::Once()) {}
+      : ScopedProtobufHttpRequest(base::DoNothing()) {}
 
   FakeScopedProtobufHttpRequest(const FakeScopedProtobufHttpRequest&) = delete;
   FakeScopedProtobufHttpRequest& operator=(

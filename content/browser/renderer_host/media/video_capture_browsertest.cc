@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
       FROM_HERE,
       base::BindOnce(
           &VideoCaptureBrowserTest::SetUpAndStartCaptureDeviceOnIOThread,
-          base::Unretained(this), base::DoNothing::Once()));
+          base::Unretained(this), base::DoNothing()));
   run_loop.Run();
 
   EXPECT_FALSE(must_wait_for_gpu_decode_to_start);

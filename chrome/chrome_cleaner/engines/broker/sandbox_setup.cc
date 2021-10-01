@@ -65,7 +65,7 @@ ResultCode SpawnWithoutSandboxForTesting(
             new EngineCommandsImpl(engine_delegate,
                                    engine_client->engine_commands_remote()
                                        ->BindNewPipeAndPassReceiver(),
-                                   task_runner, base::DoNothing::Repeatedly());
+                                   task_runner, base::DoNothing());
           },
           engine_client, CreateEngineDelegate(engine_name), mojo_task_runner));
 

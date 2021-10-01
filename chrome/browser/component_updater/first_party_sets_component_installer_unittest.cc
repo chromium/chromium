@@ -216,8 +216,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Disabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
 
-  FirstPartySetsComponentInstallerPolicy policy(
-      base::DoNothing::Repeatedly<const std::string&>());
+  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
               UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
@@ -232,8 +231,7 @@ TEST_F(FirstPartySetsComponentInstallerTest,
       net::features::kFirstPartySets,
       {{net::features::kFirstPartySetsIsDogfooder.name, "false"}});
 
-  FirstPartySetsComponentInstallerPolicy policy(
-      base::DoNothing::Repeatedly<const std::string&>());
+  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
               UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
@@ -247,8 +245,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Dogfooder) {
       net::features::kFirstPartySets,
       {{net::features::kFirstPartySetsIsDogfooder.name, "true"}});
 
-  FirstPartySetsComponentInstallerPolicy policy(
-      base::DoNothing::Repeatedly<const std::string&>());
+  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
               UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
