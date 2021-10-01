@@ -8,12 +8,13 @@ const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
 // file, for each piece of data we're interested in communicating between the
 // fenced frame's embedder and the fenced frame itself, we have to fix a key so
 // that both frames can reference it. We need a separate stash key for each
-// piece of data, because multiple tests may run in parallel.
+// test that passes data, since multiple tests can run in parallel and would
+// otherwise interfere with each other's server state.
 const KEYS = {
   // This key is only used to test that the server-side stash works properly.
   "dummy"             : "00000000-0000-0000-0000-000000000000",
 
-  // Add keys below this list:
+  // Add keys below this list, incrementing the key UUID in hexadecimal:
   "document.referrer" : "00000000-0000-0000-0000-000000000001",
   "navigate"          : "00000000-0000-0000-0000-000000000002",
   "window.top"        : "00000000-0000-0000-0000-000000000003",
