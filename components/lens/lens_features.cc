@@ -29,28 +29,28 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4{
     &kLensRegionSearch, "use-menu-item-alt-text-4", true};
 
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
-    &kLensRegionSearch, "enable-ukm-logging", false};
+    &kLensRegionSearch, "region-search-enable-ukm-logging", false};
 
 const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch{
     &kLensStandalone, "enable-ukm-logging", false};
 
 const base::FeatureParam<bool> kEnableSidePanelForLensRegionSearch{
-    &kLensRegionSearch, "enable-side-panel", true};
+    &kLensRegionSearch, "region-search-enable-side-panel", true};
 
 const base::FeatureParam<bool> kEnableSidePanelForLensImageSearch{
     &kLensStandalone, "enable-side-panel", false};
 
 constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
-    &kLensRegionSearch, "dimensions-max-pixels", 1000};
+    &kLensRegionSearch, "region-search-dimensions-max-pixels", 1000};
 
 constexpr base::FeatureParam<int> kMaxAreaForRegionSearch{
-    &kLensRegionSearch, "dimensions-max-area", 1000000};
+    &kLensRegionSearch, "region-search-dimensions-max-area", 1000000};
 
 constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
     &kLensStandalone, "dimensions-max-pixels", 1000};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForImageSearch{
-    &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
+    &kLensStandalone, "region-search-lens-homepage-url", "https://lens.google.com/"};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForRegionSearch{
     &kLensRegionSearch, "lens-homepage-url", "https://lens.google.com/"};
