@@ -6591,7 +6591,8 @@ TEST_F(WebFrameTest, ReplaceMisspelledRange) {
 
   element->focus();
   NonThrowableExceptionState exception_state;
-  document->execCommand("InsertText", false, "_wellcome_.", exception_state);
+  document->execCommandForTesting("InsertText", false, "_wellcome_.",
+                                  exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   document->GetFrame()
@@ -6637,7 +6638,8 @@ TEST_F(WebFrameTest, RemoveSpellingMarkers) {
 
   element->focus();
   NonThrowableExceptionState exception_state;
-  document->execCommand("InsertText", false, "_wellcome_.", exception_state);
+  document->execCommandForTesting("InsertText", false, "_wellcome_.",
+                                  exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   document->GetFrame()
@@ -6688,7 +6690,8 @@ TEST_F(WebFrameTest, RemoveSpellingMarkersUnderWords) {
 
   element->focus();
   NonThrowableExceptionState exception_state;
-  document->execCommand("InsertText", false, " wellcome ", exception_state);
+  document->execCommandForTesting("InsertText", false, " wellcome ",
+                                  exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   frame->GetSpellChecker()
@@ -6762,9 +6765,10 @@ TEST_F(WebFrameTest, SlowSpellcheckMarkerPosition) {
 
   element->focus();
   NonThrowableExceptionState exception_state;
-  document->execCommand("InsertText", false, "wellcome ", exception_state);
+  document->execCommandForTesting("InsertText", false, "wellcome ",
+                                  exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  document->execCommand("InsertText", false, "he", exception_state);
+  document->execCommandForTesting("InsertText", false, "he", exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   document->GetFrame()
@@ -6796,7 +6800,8 @@ TEST_F(WebFrameTest, SpellcheckResultErasesMarkers) {
 
   element->focus();
   NonThrowableExceptionState exception_state;
-  document->execCommand("InsertText", false, "welcome ", exception_state);
+  document->execCommandForTesting("InsertText", false, "welcome ",
+                                  exception_state);
 
   document->GetFrame()
       ->GetSpellChecker()
@@ -6832,7 +6837,8 @@ TEST_F(WebFrameTest, SpellcheckResultsSavedInDocument) {
 
   element->focus();
   NonThrowableExceptionState exception_state;
-  document->execCommand("InsertText", false, "wellcome ", exception_state);
+  document->execCommandForTesting("InsertText", false, "wellcome ",
+                                  exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   document->GetFrame()
@@ -6847,7 +6853,8 @@ TEST_F(WebFrameTest, SpellcheckResultsSavedInDocument) {
   EXPECT_EQ(DocumentMarker::kSpelling,
             document->Markers().Markers()[0]->GetType());
 
-  document->execCommand("InsertText", false, "wellcome ", exception_state);
+  document->execCommandForTesting("InsertText", false, "wellcome ",
+                                  exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   document->GetFrame()

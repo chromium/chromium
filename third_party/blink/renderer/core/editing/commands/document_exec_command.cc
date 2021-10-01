@@ -93,10 +93,10 @@ String TrustedTypesCheck(Document* document,
 
 }  // namespace
 
-bool Document::execCommand(const String& command_name,
-                           bool unused_bool,
-                           const String& value,
-                           ExceptionState& exception_state) {
+bool Document::execCommandForTesting(const String& command_name,
+                                     bool unused_bool,
+                                     const String& value,
+                                     ExceptionState& exception_state) {
   V8UnionStringOrTrustedHTML tmp(value);
   return execCommand(command_name, unused_bool, &tmp, exception_state);
 }
