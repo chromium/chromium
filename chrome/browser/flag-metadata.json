@@ -3958,11 +3958,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "omnibox-default-typed-navigations-to-https",
-    "owners": ["meacer", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 93
-  },
-  {
     "name": "omnibox-disable-cgi-param-matching",
     "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 96

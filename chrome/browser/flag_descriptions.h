@@ -1001,9 +1001,6 @@ extern const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[];
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
 
-extern const char kOmniboxDefaultTypedNavigationsToHttpsName[];
-extern const char kOmniboxDefaultTypedNavigationsToHttpsDescription[];
-
 extern const char kOmniboxDocumentProviderAsoName[];
 extern const char kOmniboxDocumentProviderAsoDescription[];
 
