@@ -2663,6 +2663,48 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemToShelf) {
   EXPECT_EQ("Item 1", ShelfModel::Get()->items()[0].id.app_id);
 }
 
+TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleItemToShelf) {
+  // Add more apps to the root apps grid.
+  model_->PopulateApps(50);
+  UpdateLayout();
+
+  // Select item that is not withing the default apps grid view bounds.
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(40);
+  ASSERT_FALSE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      item_view->GetBoundsInScreen()));
+
+  // Focusing and scrolling view to visible should ensure it becomes visible
+  // both in scrollable and paged apps grid.
+  item_view->RequestFocus();
+  item_view->ScrollViewToVisible();
+
+  ASSERT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      item_view->GetBoundsInScreen()));
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+
+  // Verify app list item drag has started.
+  ASSERT_TRUE(apps_grid_view_->drag_item());
+  ASSERT_TRUE(apps_grid_view_->IsDragging());
+  ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+
+  // Shelf should start handling the drag if it moves within its bounds.
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  generator->MoveMouseTo(shelf_view->GetBoundsInScreen().left_center());
+  ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
+
+  EXPECT_EQ("Item 40", shelf_view->drag_and_drop_shelf_id().app_id);
+
+  // Releasing drag over shelf should pin the dragged app.
+  generator->ReleaseLeftButton();
+  EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 40"));
+  EXPECT_EQ("Item 40", ShelfModel::Get()->items()[0].id.app_id);
+}
+
 TEST_P(AppsGridViewDragTest, DragItemToAndFromShelf) {
   model_->PopulateApps(2);
   UpdateLayout();
@@ -2738,6 +2780,61 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemFromFolderToShelf) {
   generator->ReleaseLeftButton();
   EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 1"));
   EXPECT_EQ("Item 1", ShelfModel::Get()->items()[0].id.app_id);
+}
+
+TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleFolderItemToShelf) {
+  model_->CreateAndPopulateFolderWithApps(2 * kMaxItemsPerFolderPage);
+  UpdateLayout();
+
+  // Open the folder.
+  test_api_->PressItemAt(0);
+
+  // Select item that is not within the initial folder view bounds.
+  AppListItemView* const item_view =
+      GetItemViewInAppsGridAt(30, folder_apps_grid_view());
+
+  ASSERT_FALSE(app_list_folder_view()->GetBoundsInScreen().Contains(
+      item_view->GetBoundsInScreen()));
+
+  // Focusing and scrolling view to visible should ensure it becomes visible
+  // both in scrollable and paged apps grid.
+  item_view->RequestFocus();
+  item_view->ScrollViewToVisible();
+
+  ASSERT_TRUE(app_list_folder_view()->GetBoundsInScreen().Contains(
+      item_view->GetBoundsInScreen()));
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+
+  // Verify app list item drag has started.
+  ASSERT_TRUE(folder_apps_grid_view()->drag_item());
+  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+  ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
+
+  generator->MoveMouseTo(
+      app_list_folder_view()->GetBoundsInScreen().right_center() +
+      gfx::Vector2d(20, 0));
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Shelf should start handling the drag if it moves within its bounds.
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  generator->MoveMouseTo(shelf_view->GetBoundsInScreen().left_center());
+  ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
+
+  EXPECT_EQ("Item 30", shelf_view->drag_and_drop_shelf_id().app_id);
+
+  // Releasing drag over shelf should pin the dragged app.
+  generator->ReleaseLeftButton();
+
+  EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 30"));
+  EXPECT_EQ("Item 30", ShelfModel::Get()->items()[0].id.app_id);
 }
 
 TEST_P(AppsGridViewDragTest, DragAnItemFromFolderToAndFromShelf) {

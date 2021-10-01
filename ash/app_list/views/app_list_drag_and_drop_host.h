@@ -22,9 +22,9 @@ class AppDragIconProxy;
 // shortcuts onto another host (the shelf).
 class ApplicationDragAndDropHost {
  public:
-  // Returns whether the host wants to handle the drag start operation.
-  virtual bool ShouldStartDrag(const std::string& app_id,
-                               const gfx::Point& location_in_screen) const = 0;
+  // Returns whether the host wants to handle the drag operation.
+  virtual bool ShouldHandleDrag(const std::string& app_id,
+                                const gfx::Point& location_in_screen) const = 0;
 
   // A drag operation could get started. The recipient has to return true if
   // it wants to take it - e.g. `location_in_screen` is over a

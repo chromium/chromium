@@ -201,8 +201,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool ShouldEventActivateButton(views::View* view, const ui::Event& event);
 
   // ApplicationDragAndDropHost:
-  bool ShouldStartDrag(const std::string& app_id,
-                       const gfx::Point& location_in_screen) const override;
+  bool ShouldHandleDrag(const std::string& app_id,
+                        const gfx::Point& location_in_screen) const override;
   bool StartDrag(const std::string& app_id,
                  const gfx::Point& location_in_screen,
                  const gfx::Rect& drag_icon_bounds_in_screen) override;

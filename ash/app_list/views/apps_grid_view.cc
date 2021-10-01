@@ -1763,12 +1763,13 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
   if (!drag_view_ || !drag_and_drop_host_)
     return;
 
-  const bool should_host_start_drag = drag_and_drop_host_->ShouldStartDrag(
+  const bool should_host_handle_drag = drag_and_drop_host_->ShouldHandleDrag(
       drag_view_->item()->id(), location_in_screen_coordinates);
-  if (!should_host_start_drag && host_drag_start_timer_.IsRunning())
-    host_drag_start_timer_.AbandonAndStop();
 
-  if (GetLocalBounds().Contains(last_drag_point_)) {
+  if (!should_host_handle_drag) {
+    if (host_drag_start_timer_.IsRunning())
+      host_drag_start_timer_.AbandonAndStop();
+
     // The event was issued inside the app menu and we should get all events.
     if (forward_events_to_drag_and_drop_host_) {
       // The DnD host was previously called and needs to be informed that the
@@ -1785,26 +1786,34 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
   if (IsFolderItem(drag_view_->item()))
     return;
 
-  // The event happened outside our app menu and we might need to dispatch.
-  if (forward_events_to_drag_and_drop_host_) {
-    // Dispatch since we have already started.
-    if (!drag_and_drop_host_->Drag(location_in_screen_coordinates,
-                                   drag_icon_proxy_->GetBoundsInScreen())) {
-      // The host is not active any longer and we cancel the operation.
-      forward_events_to_drag_and_drop_host_ = false;
-      // NOTE: Not passing the drag icon proxy to the drag and drop host because
-      // the drag operation is still in progress, and remains being handled by
-      // the apps grid view.
-      drag_and_drop_host_->EndDrag(true, /*drag_icon_proxy=*/nullptr);
+  // NOTE: Drag events are forwarded to drag and drop host whenever drag and
+  // drop host can handle them. At the time of writing, drag and drop host
+  // bounds and apps grid view bounds are not expected to overlap - if that
+  // changes, the logic for determining when to forward events to the host
+  // should be re-evaluated.
+
+  DCHECK(should_host_handle_drag);
+  // If the drag and drop host is not already handling drag events, make sure a
+  // drag and drop host start timer gets scheduled.
+  if (!forward_events_to_drag_and_drop_host_) {
+    if (!host_drag_start_timer_.IsRunning()) {
+      host_drag_start_timer_.Start(FROM_HERE, kShelfHandleIconDragDelay, this,
+                                   &AppsGridView::OnHostDragStartTimerFired);
+      MaybeStopPageFlip();
+      StopAutoScroll();
     }
     return;
   }
 
-  if (should_host_start_drag && !host_drag_start_timer_.IsRunning()) {
-    host_drag_start_timer_.Start(FROM_HERE, kShelfHandleIconDragDelay, this,
-                                 &AppsGridView::OnHostDragStartTimerFired);
-    MaybeStopPageFlip();
-    StopAutoScroll();
+  DCHECK(forward_events_to_drag_and_drop_host_);
+  if (!drag_and_drop_host_->Drag(location_in_screen_coordinates,
+                                 drag_icon_proxy_->GetBoundsInScreen())) {
+    // The host is not active any longer and we cancel the operation.
+    forward_events_to_drag_and_drop_host_ = false;
+    // NOTE: Not passing the drag icon proxy to the drag and drop host because
+    // the drag operation is still in progress, and remains being handled by
+    // the apps grid view.
+    drag_and_drop_host_->EndDrag(true, /*drag_icon_proxy=*/nullptr);
   }
 }
 

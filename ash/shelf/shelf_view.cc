@@ -1101,22 +1101,29 @@ void ShelfView::UpdateSeparatorIndex() {
   separator_index_ = last_pinned_index;
 }
 
-bool ShelfView::ShouldStartDrag(const std::string& app_id,
-                                const gfx::Point& location_in_screen) const {
+bool ShelfView::ShouldHandleDrag(const std::string& app_id,
+                                 const gfx::Point& location_in_screen) const {
   // Remote Apps are not pinnable.
   if (IsRemoteApp(app_id))
     return false;
 
-  // Do not start drag if an operation is already going on - or the cursor is
-  // not inside. This could happen if mouse / touch operations overlap.
-  return (drag_and_drop_shelf_id_.IsNull() && !app_id.empty() &&
-          GetBoundsInScreen().Contains(location_in_screen));
+  // Do not handle drag if an operation for another app is already in progress,
+  // or the cursor is not inside the shelf bounds. This could happen if mouse /
+  // touch operations overlap.
+  return !app_id.empty() &&
+         (drag_and_drop_shelf_id_.IsNull() ||
+          drag_and_drop_shelf_id_.app_id == app_id) &&
+         GetBoundsInScreen().Contains(location_in_screen);
 }
 
 bool ShelfView::StartDrag(const std::string& app_id,
                           const gfx::Point& location_in_screen,
                           const gfx::Rect& drag_icon_bounds_in_screen) {
-  if (!ShouldStartDrag(app_id, location_in_screen))
+  // Don't start a drag if another one is in progress.
+  if (!drag_and_drop_shelf_id_.IsNull())
+    return false;
+
+  if (!ShouldHandleDrag(app_id, location_in_screen))
     return false;
 
   DCHECK(!is_active_drag_and_drop_host_);

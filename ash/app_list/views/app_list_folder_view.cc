@@ -808,6 +808,7 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
 
 void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   if (folder_item_) {
+    items_grid_view_->ClearSelectedView();
     items_grid_view_->SetItemList(nullptr);
     folder_header_view_->SetFolderItem(nullptr);
     folder_item_ = nullptr;
