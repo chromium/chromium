@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DiagnosticsNetworkIconElement} from 'chrome://diagnostics/diagnostics_network_icon.js';
-import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function diagnosticsNetworkIconTestSuite() {
   /** @type {?DiagnosticsNetworkIconElement} */
   let diagnosticsNetworkIconElement = null;
-
 
   setup(() => {
     document.body.innerHTML = '';
   });
 
   teardown(() => {
-    diagnosticsNetworkIconElement.remove();
+    if (diagnosticsNetworkIconElement) {
+      diagnosticsNetworkIconElement.remove();
+    }
     diagnosticsNetworkIconElement = null;
   });
 
@@ -33,7 +36,20 @@ export function diagnosticsNetworkIconTestSuite() {
   }
 
   test('DiagnosticsNetworkIcon', () => {
-    return initializeDiagnosticsNetworkIcon().then(
-        () => assertTrue(!!diagnosticsNetworkIconElement));
+    return initializeDiagnosticsNetworkIcon().then(() => {
+      assertTrue(isVisible(diagnosticsNetworkIconElement));
+    });
+  });
+
+  test('NetworkToNetworkStateAdapter', () => {
+    assertEquals(
+        CrosNetworkType.kEthernet,
+        networkToNetworkStateAdapter(fakeEthernetNetwork).type);
+    assertEquals(
+        CrosNetworkType.kWiFi,
+        networkToNetworkStateAdapter(fakeWifiNetwork).type);
+    assertEquals(
+        CrosNetworkType.kCellular,
+        networkToNetworkStateAdapter(fakeCellularNetwork).type);
   });
 }

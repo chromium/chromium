@@ -123,6 +123,8 @@ js_library("diagnostics_network_icon_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_network_icon",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_types",
+    "//ash/webui/diagnostics_ui/resources:fake_data",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

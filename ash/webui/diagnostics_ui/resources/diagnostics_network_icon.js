@@ -2,9 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
 import './diagnostics_shared_css.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Network, NetworkType} from './diagnostics_types.js';
+
+/**
+ * Type alias for network_config NetworkType.
+ * @typedef {chromeos.networkConfig.mojom.NetworkType}
+ */
+export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
+
+/**
+ * Struct for minimal required network state required to display network-icon
+ * element.
+ * @typedef {{type: !CrosNetworkType}}
+ */
+export let NetworkIconNetworkState;
+
+/**
+ * @param {!NetworkType} type
+ * @return {!CrosNetworkType}
+ */
+function convertNetworkTypeToCrosNetworkType(type) {
+  switch (type) {
+    case NetworkType.kEthernet:
+      return CrosNetworkType.kEthernet;
+    case NetworkType.kWiFi:
+      return CrosNetworkType.kWiFi;
+    case NetworkType.kCellular:
+      return CrosNetworkType.kCellular;
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * Adapter to convert network data to fit data required for network-icon.
+ * @param {!Network} network
+ * @return {!NetworkIconNetworkState}
+ */
+export function networkToNetworkStateAdapter(network) {
+  const type = convertNetworkTypeToCrosNetworkType(network.type);
+
+  return {type};
+}
 
 /**
  * @fileoverview
