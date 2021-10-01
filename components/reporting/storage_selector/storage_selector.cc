@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind_post_task.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -14,8 +15,10 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/storage/missive_storage_module_delegate_impl.h"
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
@@ -27,6 +30,8 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/storage/missive_storage_module.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+using ::chromeos::MissiveClient;
 
 namespace reporting {
 
@@ -63,7 +68,7 @@ bool StorageSelector::is_uploader_required() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return base::FeatureList::IsEnabled(kProvideUploaderFeature);
 #else   // Not ChromeOS
-  return true;  // Local storage must have an uploader.
+  return true;   // Local storage must have an uploader.
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
@@ -87,8 +92,7 @@ void StorageSelector::CreateStorageModule(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(kUseMissiveDaemonFeature)) {
     // Use Missive daemon as a storage.
-    chromeos::MissiveClient* const missive_client =
-        chromeos::MissiveClient::Get();
+    MissiveClient* const missive_client = MissiveClient::Get();
     if (!missive_client) {
       std::move(cb).Run(Status(
           error::FAILED_PRECONDITION,
@@ -96,16 +100,25 @@ void StorageSelector::CreateStorageModule(
       return;
     }
     // Refer to the storage module.
-    scoped_refptr<MissiveStorageModule> missive_module =
-        missive_client->chromeos::MissiveClient::GetMissiveStorageModule();
-    if (!missive_module) {
-      std::move(cb).Run(
-          Status(error::FAILED_PRECONDITION,
-                 "Missive Client has not returned Storage Module"));
+    auto missive_storage_module_delegate =
+        std::make_unique<MissiveStorageModuleDelegateImpl>(
+            base::BindPostTask(
+                missive_client->origin_task_runner(),
+                base::BindRepeating(&MissiveClient::EnqueueRecord,
+                                    missive_client->GetWeakPtr())),
+            base::BindPostTask(
+                missive_client->origin_task_runner(),
+                base::BindRepeating(&MissiveClient::Flush,
+                                    missive_client->GetWeakPtr())));
+    auto missive_storage_module = MissiveStorageModule::Create(
+        std::move(missive_storage_module_delegate));
+    if (!missive_storage_module) {
+      std::move(cb).Run(Status(error::FAILED_PRECONDITION,
+                               "Missive Storage Module failed to create"));
       return;
     }
     LOG(WARNING) << "Store reporting data by a Missive daemon";
-    std::move(cb).Run(missive_module);
+    std::move(cb).Run(missive_storage_module);
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

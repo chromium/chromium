@@ -12,16 +12,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/storage/missive_storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
 
-// MissiveStorageModule is initialized by the |MissiveClient|, in order to get a
-// copy call |MissiveClient::GetMissiveStorageModule|.
-//
-// MissiveStorageModule utilizes a Delegate and forwards all calls to the
-// delegate.
+// MissiveStorageModule is a StorageModuleInterface implementation forwarded to
+// MissiveClient (it utilizes a Delegate and channels all calls through it).
 class MissiveStorageModule : public StorageModuleInterface {
  public:
   // MissiveStorageModuleDelegateInterface has the same interface as
@@ -71,7 +69,7 @@ class MissiveStorageModule : public StorageModuleInterface {
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.
   // If |force| is false (which is used in most cases), |sequencing_information|
-  // only affects Storage if no higher sequeincing was confirmed before;
+  // only affects Storage if no higher sequencing was confirmed before;
   // otherwise it is accepted unconditionally.
   void ReportSuccess(SequencingInformation sequencing_information,
                      bool force) override;

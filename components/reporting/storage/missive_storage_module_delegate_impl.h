@@ -21,16 +21,9 @@ class MissiveStorageModuleDelegateImpl
       void(Priority, Record, base::OnceCallback<void(Status)>)>;
   using FlushCallback =
       base::RepeatingCallback<void(Priority, base::OnceCallback<void(Status)>)>;
-  using ReportSuccessCallback =
-      base::RepeatingCallback<void(const SequencingInformation&, bool)>;
-  using UpdateEncryptionKeyCallback =
-      base::RepeatingCallback<void(const SignedEncryptionInfo&)>;
 
-  MissiveStorageModuleDelegateImpl(
-      AddRecordCallback add_record,
-      FlushCallback flush,
-      ReportSuccessCallback report_success,
-      UpdateEncryptionKeyCallback update_encryption_key);
+  MissiveStorageModuleDelegateImpl(AddRecordCallback add_record,
+                                   FlushCallback flush);
   ~MissiveStorageModuleDelegateImpl() override;
 
   void AddRecord(Priority priority,
@@ -49,8 +42,6 @@ class MissiveStorageModuleDelegateImpl
  private:
   const AddRecordCallback add_record_;
   const FlushCallback flush_;
-  const ReportSuccessCallback report_success_;
-  const UpdateEncryptionKeyCallback update_encryption_key_;
 };
 
 }  // namespace reporting

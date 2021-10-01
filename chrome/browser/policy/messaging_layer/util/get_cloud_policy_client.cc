@@ -41,9 +41,7 @@ namespace {
 // if it isn't will recall itself to do so.
 // TODO(chromium:1078512) Wrap CloudPolicyClient in a new object so that its
 // methods and retrieval are accessed on the correct thread.
-void GetCloudPolicyClient(
-    base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
-        get_client_cb) {
+void GetCloudPolicyClient(CloudPolicyClientResultCb get_client_cb) {
   if (!content::GetUIThreadTaskRunner({})->RunsTasksInCurrentSequence()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -82,8 +80,7 @@ void GetCloudPolicyClient(
 }
 }  // namespace
 
-base::RepeatingCallback<void(CloudPolicyClientResultCb)>
-GetCloudPolicyClientCb() {
+GetCloudPolicyClientCallback GetCloudPolicyClientCb() {
   return base::BindRepeating(&GetCloudPolicyClient);
 }
 

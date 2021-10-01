@@ -5,11 +5,15 @@
 #ifndef CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_
 #define CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
-#include "components/reporting/storage/missive_storage_module.h"
+#include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
+#include "components/reporting/proto/interface.pb.h"
+#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/util/status.h"
 
 namespace dbus {
 class Bus;
@@ -22,6 +26,16 @@ namespace chromeos {
 // and store |reporting::Record|s.
 class COMPONENT_EXPORT(MISSIVE) MissiveClient {
  public:
+  // Interface with testing functionality. Accessed through GetTestInterface(),
+  // only implemented in the fake implementation.
+  class TestInterface {
+   protected:
+    virtual ~TestInterface() = default;
+  };
+
+  MissiveClient(const MissiveClient& other) = delete;
+  MissiveClient& operator=(const MissiveClient& other) = delete;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
@@ -34,14 +48,34 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   // Returns the global instance which may be null if not initialized.
   static MissiveClient* Get();
 
-  scoped_refptr<reporting::MissiveStorageModule> GetMissiveStorageModule();
+  // Returns an interface for testing (fake only), or returns nullptr.
+  virtual TestInterface* GetTestInterface() = 0;
+
+  virtual void EnqueueRecord(
+      const reporting::Priority priority,
+      reporting::Record record,
+      base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
+  virtual void Flush(
+      const reporting::Priority priority,
+      base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
+  virtual void UpdateEncryptionKey(
+      const reporting::SignedEncryptionInfo& encryption_info) = 0;
+  virtual void ReportSuccess(
+      const reporting::SequencingInformation& sequencing_information,
+      bool force_confirm) = 0;
+  virtual base::WeakPtr<MissiveClient> GetWeakPtr() = 0;
+
+  // Returns sequenced task runner.
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner() const;
 
  protected:
   // Initialize/Shutdown should be used instead.
   MissiveClient();
   virtual ~MissiveClient();
 
-  scoped_refptr<reporting::MissiveStorageModule> missive_storage_module_;
+  // Sequenced task runner - must be first member of the class.
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+  SEQUENCE_CHECKER(origin_checker_);
 };
 
 }  // namespace chromeos

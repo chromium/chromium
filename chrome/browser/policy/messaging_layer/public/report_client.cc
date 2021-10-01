@@ -421,8 +421,9 @@ ReportingClient::TestEnvironment::TestEnvironment(
   ReportingClient::GetInstance()->build_cloud_policy_client_cb_ =
       base::BindRepeating(
           [](policy::CloudPolicyClient* client,
-             base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
-                 build_cb) { std::move(build_cb).Run(std::move(client)); },
+             CloudPolicyClientResultCb build_cb) {
+            std::move(build_cb).Run(std::move(client));
+          },
           std::move(client));
 }
 

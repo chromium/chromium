@@ -5,15 +5,17 @@
 #ifndef CHROMEOS_DBUS_MISSIVE_FAKE_MISSIVE_CLIENT_H_
 #define CHROMEOS_DBUS_MISSIVE_FAKE_MISSIVE_CLIENT_H_
 
-#include "base/callback_forward.h"
-#include "base/files/scoped_file.h"
+#include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "chromeos/dbus/missive/missive_client.h"
 
 namespace chromeos {
 
 // Fake implementation of MissiveClient. This is currently a no-op fake.
-class FakeMissiveClient : public MissiveClient {
+class FakeMissiveClient : public MissiveClient,
+                          public MissiveClient::TestInterface {
  public:
   FakeMissiveClient();
   ~FakeMissiveClient() override;
@@ -23,24 +25,21 @@ class FakeMissiveClient : public MissiveClient {
 
   void Init();
 
- private:
+  // MissiveClient implementation:
   void EnqueueRecord(
-      reporting::Priority priority,
+      const reporting::Priority priority,
       reporting::Record record,
-      base::OnceCallback<void(reporting::Status)> completion_callback);
-
-  void Flush(reporting::Priority priority,
-             base::OnceCallback<void(reporting::Status)> completion_callback);
-
+      base::OnceCallback<void(reporting::Status)> completion_callback) override;
+  void Flush(
+      const reporting::Priority priority,
+      base::OnceCallback<void(reporting::Status)> completion_callback) override;
+  void UpdateEncryptionKey(
+      const reporting::SignedEncryptionInfo& encryption_info) override;
   void ReportSuccess(
       const reporting::SequencingInformation& sequencing_information,
-      bool force_confirm);
-
-  void UpdateEncryptionKey(
-      const reporting::SignedEncryptionInfo& encryption_info);
-
-  // Sequenced task runner - must be first member of the class.
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+      bool force_confirm) override;
+  TestInterface* GetTestInterface() override;
+  base::WeakPtr<MissiveClient> GetWeakPtr() override;
 
   // Weak pointer factory - must be last member of the class.
   base::WeakPtrFactory<FakeMissiveClient> weak_ptr_factory_{this};

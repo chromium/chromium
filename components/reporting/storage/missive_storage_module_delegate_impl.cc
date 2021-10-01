@@ -14,13 +14,8 @@ namespace reporting {
 
 MissiveStorageModuleDelegateImpl::MissiveStorageModuleDelegateImpl(
     AddRecordCallback add_record,
-    FlushCallback flush,
-    ReportSuccessCallback report_success,
-    UpdateEncryptionKeyCallback update_encryption_key)
-    : add_record_(std::move(add_record)),
-      flush_(std::move(flush)),
-      report_success_(std::move(report_success)),
-      update_encryption_key_(std::move(update_encryption_key)) {}
+    FlushCallback flush)
+    : add_record_(std::move(add_record)), flush_(std::move(flush)) {}
 
 MissiveStorageModuleDelegateImpl::~MissiveStorageModuleDelegateImpl() = default;
 
@@ -40,12 +35,14 @@ void MissiveStorageModuleDelegateImpl::Flush(
 void MissiveStorageModuleDelegateImpl::ReportSuccess(
     const SequencingInformation& sequencing_information,
     bool force) {
-  report_success_.Run(sequencing_information, force);
+  // Intended for upload, but called directly to MissiveClient.
+  DLOG(FATAL) << "Should never be called";
 }
 
 void MissiveStorageModuleDelegateImpl::UpdateEncryptionKey(
     const SignedEncryptionInfo& signed_encryption_key) {
-  update_encryption_key_.Run(signed_encryption_key);
+  // Intended for upload, but called directly to MissiveClient.
+  DLOG(FATAL) << "Should never be called";
 }
 
 }  // namespace reporting

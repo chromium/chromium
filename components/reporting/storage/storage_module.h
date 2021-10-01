@@ -52,7 +52,7 @@ class StorageModule : public StorageModuleInterface {
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.
   // If |force| is false (which is used in most cases), |sequencing_information|
-  // only affects Storage if no higher sequeincing was confirmed before;
+  // only affects Storage if no higher sequencing was confirmed before;
   // otherwise it is accepted unconditionally.
   void ReportSuccess(SequencingInformation sequencing_information,
                      bool force) override;

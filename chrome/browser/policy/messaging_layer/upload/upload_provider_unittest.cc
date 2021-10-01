@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#include "chrome/browser/ash/dbus/encrypted_reporting_service_provider.h"
+#include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 
 #include <memory>
 #include <utility>
@@ -10,33 +10,26 @@
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chromeos/dbus/missive/missive_client.h"
-#include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/proto/interface.pb.h"
-#include "dbus/exported_object.h"
-#include "dbus/message.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ReportSuccessfulUploadCallback =
     ::reporting::UploadClient::ReportSuccessfulUploadCallback;
 using EncryptionKeyAttachedCallback =
     ::reporting::UploadClient::EncryptionKeyAttachedCallback;
 
-using UploadProvider = ::reporting::EncryptedReportingUploadProvider;
-
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::WithArgs;
 
-namespace ash {
+namespace reporting {
 namespace {
 
 MATCHER_P(EqualsProto,
@@ -109,20 +102,20 @@ base::Value ValueFromSucceededSequencingInfo(
 // environment, to sidestep this we override the functions that normally build
 // and retrieve these clients and provide a MockCloudPolicyClient and a
 // FakeUploadClient.
-class TestEncryptedReportingServiceProvider
-    : public EncryptedReportingServiceProvider {
+class TestEncryptedReportingUploadProvider
+    : public EncryptedReportingUploadProvider {
  public:
-  TestEncryptedReportingServiceProvider(
+  TestEncryptedReportingUploadProvider(
       policy::CloudPolicyClient* cloud_policy_client,
       ReportSuccessfulUploadCallback report_successful_upload_cb,
       EncryptionKeyAttachedCallback encrypted_key_cb)
-      : EncryptedReportingServiceProvider(std::make_unique<UploadProvider>(
+      : EncryptedReportingUploadProvider(
             report_successful_upload_cb,
             encrypted_key_cb,
             /*build_cloud_policy_client_cb=*/
             base::BindRepeating(
                 [](policy::CloudPolicyClient* cloud_policy_client,
-                   ::reporting::CloudPolicyClientResultCb callback) {
+                   CloudPolicyClientResultCb callback) {
                   std::move(callback).Run(cloud_policy_client);
                 },
                 base::Unretained(cloud_policy_client)),
@@ -131,15 +124,15 @@ class TestEncryptedReportingServiceProvider
                 [](policy::CloudPolicyClient* client,
                    ReportSuccessfulUploadCallback report_successful_upload_cb,
                    EncryptionKeyAttachedCallback encrypted_key_cb,
-                   ::reporting::UploadClient::CreatedCallback
+                   reporting::UploadClient::CreatedCallback
                        update_upload_client_cb) {
-                  ::reporting::FakeUploadClient::Create(
+                  reporting::FakeUploadClient::Create(
                       client, report_successful_upload_cb, encrypted_key_cb,
                       std::move(update_upload_client_cb));
-                }))) {}
+                })) {}
 };
 
-class EncryptedReportingServiceProviderTest : public ::testing::Test {
+class EncryptedReportingUploadProviderTest : public ::testing::Test {
  public:
   MOCK_METHOD(void,
               ReportSuccessfulUpload,
@@ -152,18 +145,16 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    MissiveClient::InitializeFake();
     cloud_policy_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     auto successful_upload_cb = base::BindRepeating(
-        &EncryptedReportingServiceProviderTest::ReportSuccessfulUpload,
+        &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
         base::Unretained(this));
     auto encryption_key_cb = base::BindRepeating(
-        &EncryptedReportingServiceProviderTest::EncryptionKeyCallback,
+        &EncryptedReportingUploadProviderTest::EncryptionKeyCallback,
         base::Unretained(this));
-    service_provider_ = std::make_unique<TestEncryptedReportingServiceProvider>(
-        &cloud_policy_client_, std::move(successful_upload_cb),
-        std::move(encryption_key_cb));
+    service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
+        &cloud_policy_client_, successful_upload_cb, encryption_key_cb);
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
 
@@ -173,40 +164,13 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     sequencing_information->set_priority(reporting::Priority::SLOW_BATCH);
   }
 
-  void TearDown() override {
-    // Destruct test helper before the client shut down.
-    test_helper_.TearDown();
-    MissiveClient::Shutdown();
-  }
-
-  void SetupForRequestUploadEncryptedRecord() {
-    test_helper_.SetUp(
-        chromeos::kChromeReportingServiceName,
-        dbus::ObjectPath(chromeos::kChromeReportingServicePath),
-        chromeos::kChromeReportingServiceInterface,
-        chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
-        service_provider_.get());
-    // There are multiple Tasks that are started by calling the Upload request.
-    // We need to wait for them to complete, or we will get race conditions on
-    // exit and some test runs will be flakey.
-    task_environment_.RunUntilIdle();
-  }
-
-  void CallRequestUploadEncryptedRecord(
-      const reporting::UploadEncryptedRecordRequest& request,
-      reporting::UploadEncryptedRecordResponse* encrypted_record_response) {
-    dbus::MethodCall method_call(
-        chromeos::kChromeReportingServiceInterface,
-        chromeos::kChromeReportingServiceUploadEncryptedRecordMethod);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendProtoAsArrayOfBytes(request);
-
-    std::unique_ptr<dbus::Response> response =
-        test_helper_.CallMethod(&method_call);
-
-    ASSERT_TRUE(response);
-    dbus::MessageReader reader(response.get());
-    ASSERT_TRUE(reader.PopArrayOfBytesAsProto(encrypted_record_response));
+  Status CallRequestUploadEncryptedRecord(
+      bool need_encryption_key,
+      std::unique_ptr<std::vector<EncryptedRecord>> records) {
+    test::TestEvent<Status> result;
+    service_provider_->RequestUploadEncryptedRecord(
+        need_encryption_key, std::move(records), result.cb());
+    return result.result();
   }
 
   // Must be initialized before any other class member.
@@ -215,14 +179,10 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   policy::MockCloudPolicyClient cloud_policy_client_;
   reporting::EncryptedRecord record_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
-  ServiceProviderTestHelper test_helper_;
+  std::unique_ptr<TestEncryptedReportingUploadProvider> service_provider_;
 };
 
-TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
-  SetupForRequestUploadEncryptedRecord();
+TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
   EXPECT_CALL(*this, ReportSuccessfulUpload(
                          EqualsProto(record_.sequencing_information()), _))
       .Times(1);
@@ -235,29 +195,12 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
                                                       false));
           })));
 
-  reporting::UploadEncryptedRecordRequest request;
-  request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
-
-  reporting::UploadEncryptedRecordResponse response;
-  CallRequestUploadEncryptedRecord(request, &response);
-
-  EXPECT_EQ(response.status().code(), reporting::error::OK);
-}
-
-TEST_F(EncryptedReportingServiceProviderTest,
-       NoRecordUploadWhenUploaderDisabled) {
-  SetupForRequestUploadEncryptedRecord();
-  EXPECT_CALL(cloud_policy_client_, UploadEncryptedReport(_, _, _)).Times(0);
-
-  reporting::UploadEncryptedRecordRequest request;
-  request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
-
-  // Disable uploader.
-  scoped_feature_list_.InitFromCommandLine("", "ProvideUploader");
-
-  reporting::UploadEncryptedRecordResponse response;
-  CallRequestUploadEncryptedRecord(request, &response);
+  auto records = std::make_unique<std::vector<EncryptedRecord>>();
+  records->push_back(record_);
+  const auto status = CallRequestUploadEncryptedRecord(
+      /*need_encryption_key=*/false, std::move(records));
+  EXPECT_OK(status) << status;
 }
 
 }  // namespace
-}  // namespace ash
+}  // namespace reporting

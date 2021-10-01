@@ -48,7 +48,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
              base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records according to the priority up to
-  // |sequencing_id| (inclusively). All records with sequeincing ids <= this
+  // |sequencing_id| (inclusively). All records with sequencing ids <= this
   // one can be removed from the Storage, and can no longer be uploaded.
   // If |force| is false (which is used in most cases), |sequencing_id| is
   // only accepted if no higher ids were confirmed before; otherwise it is

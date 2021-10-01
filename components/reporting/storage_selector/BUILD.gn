@@ -23,6 +23,7 @@ source_set("storage_selector") {
     "//build:chromeos_buildflags",
     "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module",
+    "//components/reporting/proto:interface_proto",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
