@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_MOJOM_TRAITS_H_
 
+#include <bitset>
+
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -240,10 +242,10 @@ template <>
 struct StructTraits<network::mojom::CookieInclusionStatusDataView,
                     net::CookieInclusionStatus> {
   static uint32_t exclusion_reasons(const net::CookieInclusionStatus& s) {
-    return s.exclusion_reasons();
+    return static_cast<uint32_t>(s.exclusion_reasons().to_ulong());
   }
   static uint32_t warning_reasons(const net::CookieInclusionStatus& s) {
-    return s.warning_reasons();
+    return static_cast<uint32_t>(s.warning_reasons().to_ulong());
   }
   static bool Read(network::mojom::CookieInclusionStatusDataView status,
                    net::CookieInclusionStatus* out);

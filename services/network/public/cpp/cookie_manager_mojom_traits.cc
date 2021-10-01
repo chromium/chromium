@@ -542,7 +542,8 @@ bool StructTraits<network::mojom::CookieInclusionStatusDataView,
   out->set_exclusion_reasons(status.exclusion_reasons());
   out->set_warning_reasons(status.warning_reasons());
 
-  return out->IsValid();
+  return net::CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
+      status.exclusion_reasons(), status.warning_reasons());
 }
 
 bool StructTraits<network::mojom::CookieAndLineWithAccessResultDataView,

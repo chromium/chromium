@@ -112,13 +112,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieInclusionStatus) {
        net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
        net::CookieInclusionStatus::
            WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE}));
-
-  net::CookieInclusionStatus invalid;
-  invalid.set_exclusion_reasons(~0u);
-
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<mojom::CookieInclusionStatus>(
-          invalid, copied));
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {

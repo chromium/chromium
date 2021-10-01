@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 #define NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 
+#include <bitset>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -253,6 +254,11 @@ class NET_EXPORT CookieInclusionStatus {
     // Keep last.
     kMaxValue = LAX_CROSS_LAX_SECURE
   };
+
+  using ExclusionReasonBitset =
+      std::bitset<ExclusionReason::NUM_EXCLUSION_REASONS>;
+  using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
+
   // Makes a status that says include and should not warn.
   CookieInclusionStatus();
 
@@ -262,6 +268,10 @@ class NET_EXPORT CookieInclusionStatus {
   CookieInclusionStatus(ExclusionReason reason, WarningReason warning);
   // Makes a status that contains the given warning.
   explicit CookieInclusionStatus(WarningReason warning);
+
+  // Copyable.
+  CookieInclusionStatus(const CookieInclusionStatus& other);
+  CookieInclusionStatus& operator=(const CookieInclusionStatus& other);
 
   bool operator==(const CookieInclusionStatus& other) const;
   bool operator!=(const CookieInclusionStatus& other) const;
@@ -317,13 +327,13 @@ class NET_EXPORT CookieInclusionStatus {
   void RemoveWarningReason(WarningReason reason);
 
   // Used for serialization/deserialization.
-  uint32_t exclusion_reasons() const { return exclusion_reasons_; }
-  void set_exclusion_reasons(uint32_t exclusion_reasons) {
+  ExclusionReasonBitset exclusion_reasons() const { return exclusion_reasons_; }
+  void set_exclusion_reasons(ExclusionReasonBitset exclusion_reasons) {
     exclusion_reasons_ = exclusion_reasons;
   }
 
-  uint32_t warning_reasons() const { return warning_reasons_; }
-  void set_warning_reasons(uint32_t warning_reasons) {
+  WarningReasonBitset warning_reasons() const { return warning_reasons_; }
+  void set_warning_reasons(WarningReasonBitset warning_reasons) {
     warning_reasons_ = warning_reasons;
   }
 
@@ -332,11 +342,6 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Get exclusion reason(s) and warning in string format.
   std::string GetDebugString() const;
-
-  // Checks that the underlying bit vector representation doesn't contain any
-  // extraneous bits that are not mapped to any enum values. Does not check
-  // for reasons which semantically cannot coexist.
-  bool IsValid() const;
 
   // Checks whether the exclusion reasons are exactly the set of exclusion
   // reasons in the vector. (Ignores warnings.)
@@ -348,6 +353,10 @@ class NET_EXPORT CookieInclusionStatus {
   bool HasExactlyWarningReasonsForTesting(
       std::vector<WarningReason> reasons) const;
 
+  // Validates mojo data, since mojo does not support bitsets.
+  static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
+                                                  uint32_t warning_reasons);
+
   // Makes a status that contains the given exclusion reasons and warning.
   static CookieInclusionStatus MakeFromReasonsForTesting(
       std::vector<ExclusionReason> reasons,
@@ -355,14 +364,14 @@ class NET_EXPORT CookieInclusionStatus {
 
  private:
   // Returns the `exclusion_reasons_` with the given `reasons` unset.
-  uint32_t ExclusionReasonsWithout(
+  ExclusionReasonBitset ExclusionReasonsWithout(
       const std::vector<ExclusionReason>& reasons) const;
 
   // A bit vector of the applicable exclusion reasons.
-  uint32_t exclusion_reasons_ = 0u;
+  ExclusionReasonBitset exclusion_reasons_;
 
   // A bit vector of the applicable warning reasons.
-  uint32_t warning_reasons_ = 0u;
+  WarningReasonBitset warning_reasons_;
 };
 
 NET_EXPORT inline std::ostream& operator<<(std::ostream& os,
