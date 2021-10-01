@@ -4,20 +4,29 @@
 
 #include <stddef.h>
 
+#include "apps/test/app_window_waiter.h"
+#include "base/run_loop.h"
+#include "base/strings/pattern.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace extensions {
 
@@ -176,5 +185,235 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          NonPersistentExtensionTabsTest,
                          ::testing::Values(ContextType::kServiceWorker));
+
+// TODO(llandwerlin): Activating a browser window and waiting for the
+// action to happen requires views::Widget which is not available on
+// MacOSX. Deactivate for now.
+#if !defined(OS_MAC)
+class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
+ public:
+  void SetUpOnMainThread() override;
+
+  void ActivateBrowserWindow(Browser* browser);
+
+  Browser* CreateBrowserWithEmptyTab(bool as_popup);
+
+  int GetTabId(const base::DictionaryValue* value) const;
+
+  base::Value* RunFunction(ExtensionFunction* function,
+                           const std::string& params);
+
+  const Extension* extension() { return extension_.get(); }
+
+ private:
+  // A helper class to wait for an views::Widget to become activated.
+  class WidgetActivatedWaiter : public views::WidgetObserver {
+   public:
+    explicit WidgetActivatedWaiter(views::Widget* widget)
+        : widget_(widget), waiting_(false) {
+      widget_->AddObserver(this);
+    }
+    ~WidgetActivatedWaiter() override { widget_->RemoveObserver(this); }
+
+    void ActivateAndWait() {
+      widget_->Activate();
+      if (!widget_->IsActive()) {
+        waiting_ = true;
+        base::RunLoop nested_run_loop(
+            base::RunLoop::Type::kNestableTasksAllowed);
+        quit_closure_ = nested_run_loop.QuitWhenIdleClosure();
+        nested_run_loop.Run();
+      }
+    }
+
+    // views::WidgetObserver:
+    void OnWidgetActivationChanged(views::Widget* widget,
+                                   bool active) override {
+      if (widget_ == widget && waiting_) {
+        waiting_ = false;
+        std::move(quit_closure_).Run();
+      }
+    }
+
+   private:
+    views::Widget* widget_;
+    bool waiting_;
+    base::RepeatingClosure quit_closure_;
+  };
+
+  scoped_refptr<const Extension> extension_;
+};
+
+void ExtensionWindowLastFocusedTest::SetUpOnMainThread() {
+  PlatformAppBrowserTest::SetUpOnMainThread();
+  extension_ = ExtensionBuilder("Test").Build();
+}
+
+void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(Browser* browser) {
+  BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
+  EXPECT_NE(nullptr, view);
+  views::Widget* widget = view->frame();
+  EXPECT_NE(nullptr, widget);
+  WidgetActivatedWaiter waiter(widget);
+  waiter.ActivateAndWait();
+}
+
+Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
+    bool as_popup) {
+  Browser* new_browser;
+  if (as_popup) {
+    new_browser = Browser::Create(
+        Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  } else {
+    new_browser =
+        Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  }
+  AddBlankTabAndShow(new_browser);
+  return new_browser;
+}
+
+int ExtensionWindowLastFocusedTest::GetTabId(
+    const base::DictionaryValue* value) const {
+  const base::ListValue* tabs = nullptr;
+  if (!value->GetList(keys::kTabsKey, &tabs))
+    return -2;
+  const base::Value* tab = nullptr;
+  if (!tabs->Get(0, &tab))
+    return -2;
+  const base::DictionaryValue* tab_dict = nullptr;
+  if (!tab->GetAsDictionary(&tab_dict))
+    return -2;
+  int tab_id = 0;
+  if (!tab_dict->GetInteger(keys::kIdKey, &tab_id))
+    return -2;
+  return tab_id;
+}
+
+base::Value* ExtensionWindowLastFocusedTest::RunFunction(
+    ExtensionFunction* function,
+    const std::string& params) {
+  function->set_extension(extension_.get());
+  return utils::RunFunctionAndReturnSingleResult(function, params, browser());
+}
+
+// Flaky. https://crbug.com/1035622
+IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
+                       DISABLED_NoDevtoolsAndAppWindows) {
+  DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
+  {
+    int devtools_window_id = ExtensionTabUtil::GetWindowId(
+        DevToolsWindowTesting::Get(devtools)->browser());
+    ActivateBrowserWindow(DevToolsWindowTesting::Get(devtools)->browser());
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]")));
+    EXPECT_NE(devtools_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+  }
+
+  AppWindow* app_window = CreateTestAppWindow(
+      "{\"outerBounds\": "
+      "{\"width\": 300, \"height\": 300,"
+      " \"minWidth\": 200, \"minHeight\": 200,"
+      " \"maxWidth\": 400, \"maxHeight\": 400}}");
+  {
+    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(browser()->profile()),
+                                 app_window->extension_id());
+    waiter.WaitForActivated();
+
+    scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(get_current_app_function.get(), "[{\"populate\": true}]")));
+    int app_window_id = app_window->session_id().id();
+    EXPECT_NE(app_window_id, api_test_utils::GetInteger(result.get(), "id"));
+  }
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+  CloseAppWindow(app_window);
+}
+
+// https://crbug.com/956870
+IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
+                       DISABLED_NoTabIdForDevToolsAndAppWindows) {
+  Browser* normal_browser = CreateBrowserWithEmptyTab(false);
+  {
+    ActivateBrowserWindow(normal_browser);
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]")));
+    int normal_browser_window_id =
+        ExtensionTabUtil::GetWindowId(normal_browser);
+    EXPECT_EQ(normal_browser_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+    EXPECT_NE(-1, GetTabId(result.get()));
+    EXPECT_EQ("normal", api_test_utils::GetString(result.get(), "type"));
+  }
+
+  Browser* popup_browser = CreateBrowserWithEmptyTab(true);
+  {
+    ActivateBrowserWindow(popup_browser);
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]")));
+    int popup_browser_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
+    EXPECT_EQ(popup_browser_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+    EXPECT_NE(-1, GetTabId(result.get()));
+    EXPECT_EQ("popup", api_test_utils::GetString(result.get(), "type"));
+  }
+
+  DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
+  {
+    ActivateBrowserWindow(DevToolsWindowTesting::Get(devtools)->browser());
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(
+        utils::ToDictionary(RunFunction(
+            function.get(),
+            "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]")));
+    int devtools_window_id = ExtensionTabUtil::GetWindowId(
+        DevToolsWindowTesting::Get(devtools)->browser());
+    EXPECT_EQ(devtools_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+    EXPECT_EQ(-1, GetTabId(result.get()));
+    EXPECT_EQ("devtools", api_test_utils::GetString(result.get(), "type"));
+  }
+
+  AppWindow* app_window = CreateTestAppWindow(
+      "{\"outerBounds\": "
+      "{\"width\": 300, \"height\": 300,"
+      " \"minWidth\": 200, \"minHeight\": 200,"
+      " \"maxWidth\": 400, \"maxHeight\": 400}}");
+  {
+    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(browser()->profile()),
+                                 app_window->extension_id());
+    waiter.WaitForActivated();
+
+    scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
+        new WindowsGetLastFocusedFunction();
+    get_current_app_function->set_extension(extension());
+    EXPECT_EQ(
+        tabs_constants::kNoLastFocusedWindowError,
+        extension_function_test_utils::RunFunctionAndReturnError(
+            get_current_app_function.get(),
+            "[{\"populate\": true, \"windowTypes\": [ \"app\" ]}]", browser()));
+  }
+
+  chrome::CloseWindow(normal_browser);
+  chrome::CloseWindow(popup_browser);
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+  CloseAppWindow(app_window);
+}
+#endif  // !defined(OS_MAC)
 
 }  // namespace extensions
