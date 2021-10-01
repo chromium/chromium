@@ -18,6 +18,10 @@ namespace arc {
 namespace {
 
 class ArcNetHostImplTest : public testing::Test {
+ public:
+  ArcNetHostImplTest(const ArcNetHostImplTest&) = delete;
+  ArcNetHostImplTest& operator=(const ArcNetHostImplTest&) = delete;
+
  protected:
   ArcNetHostImplTest()
       : arc_service_manager_(std::make_unique<ArcServiceManager>()),
@@ -39,8 +43,6 @@ class ArcNetHostImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestBrowserContext> context_;
   ArcNetHostImpl* const service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNetHostImplTest);
 };
 
 TEST_F(ArcNetHostImplTest, SetAlwaysOnVpn_SetPackage) {

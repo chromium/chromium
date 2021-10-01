@@ -20,6 +20,10 @@ struct PasswordForm;
 // CSV format.
 class PasswordCSVWriter {
  public:
+  PasswordCSVWriter() = delete;
+  PasswordCSVWriter(const PasswordCSVWriter&) = delete;
+  PasswordCSVWriter& operator=(const PasswordCSVWriter&) = delete;
+
   // Creates a CSV representation of the forms stored in |password|. Note that
   // this loses all the metadata except for the origin, username and password.
   static std::string SerializePasswords(
@@ -30,8 +34,6 @@ class PasswordCSVWriter {
   // see SerializePasswords.
   static std::map<std::string, std::string> PasswordFormToRecord(
       const PasswordForm& form);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PasswordCSVWriter);
 };
 
 }  // namespace password_manager

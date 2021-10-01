@@ -47,6 +47,9 @@ class CookieSettingsObserver : public CookieSettings::Observer {
     scoped_observation_.Observe(settings);
   }
 
+  CookieSettingsObserver(const CookieSettingsObserver&) = delete;
+  CookieSettingsObserver& operator=(const CookieSettingsObserver&) = delete;
+
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override {
     ASSERT_EQ(block_third_party_cookies,
@@ -61,8 +64,6 @@ class CookieSettingsObserver : public CookieSettings::Observer {
   bool last_value_ = false;
   base::ScopedObservation<CookieSettings, CookieSettings::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsObserver);
 };
 
 class CookieSettingsTest : public testing::Test {

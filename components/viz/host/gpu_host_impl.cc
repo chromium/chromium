@@ -48,6 +48,9 @@ namespace {
 // the same thread.
 class FontRenderParams {
  public:
+  FontRenderParams(const FontRenderParams&) = delete;
+  FontRenderParams& operator=(const FontRenderParams&) = delete;
+
   void Set(const gfx::FontRenderParams& params);
   void Reset();
   const absl::optional<gfx::FontRenderParams>& Get();
@@ -60,8 +63,6 @@ class FontRenderParams {
 
   THREAD_CHECKER(thread_checker_);
   absl::optional<gfx::FontRenderParams> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontRenderParams);
 };
 
 void FontRenderParams::Set(const gfx::FontRenderParams& params) {

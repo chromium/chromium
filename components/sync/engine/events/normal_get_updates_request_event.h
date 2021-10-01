@@ -31,7 +31,13 @@ class NormalGetUpdatesRequestEvent : public ProtocolEvent {
                                ModelTypeSet refresh_requested_types,
                                bool is_retry,
                                sync_pb::ClientToServerMessage request);
+
+  NormalGetUpdatesRequestEvent(const NormalGetUpdatesRequestEvent&) = delete;
+  NormalGetUpdatesRequestEvent& operator=(const NormalGetUpdatesRequestEvent&) =
+      delete;
+
   ~NormalGetUpdatesRequestEvent() override;
+
   std::unique_ptr<ProtocolEvent> Clone() const override;
 
  private:
@@ -49,8 +55,6 @@ class NormalGetUpdatesRequestEvent : public ProtocolEvent {
   const bool is_retry_;
 
   const sync_pb::ClientToServerMessage request_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalGetUpdatesRequestEvent);
 };
 
 }  // namespace syncer

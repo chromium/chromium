@@ -179,6 +179,11 @@ class ResourceLoadingCancellingThrottle
                 TestNavigationThrottle::ASYNCHRONOUS, CANCEL);
   }
 
+  ResourceLoadingCancellingThrottle(const ResourceLoadingCancellingThrottle&) =
+      delete;
+  ResourceLoadingCancellingThrottle& operator=(
+      const ResourceLoadingCancellingThrottle&) = delete;
+
  private:
   // content::TestNavigationThrottle:
   void OnWillRespond(NavigationThrottle::ThrottleCheckResult result) {
@@ -211,8 +216,6 @@ class ResourceLoadingCancellingThrottle
         mojom::DeferredResourceCountsPtr(base::in_place),
         mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoadingCancellingThrottle);
 };
 
 // Mock noise provider which always gives a supplied value of noise for the
@@ -446,6 +449,11 @@ class AdsPageLoadMetricsObserverTest
                 nullptr,
                 base::DefaultClock::GetInstance(),
                 this)) {}
+
+  AdsPageLoadMetricsObserverTest(const AdsPageLoadMetricsObserverTest&) =
+      delete;
+  AdsPageLoadMetricsObserverTest& operator=(
+      const AdsPageLoadMetricsObserverTest&) = delete;
 
   void SetUp() override {
     SubresourceFilterTestHarness::SetUp();
@@ -838,8 +846,6 @@ class AdsPageLoadMetricsObserverTest
 
   // A pointer to the AdsPageLoadMetricsObserver used by the tests.
   AdsPageLoadMetricsObserver* ads_observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserverTest);
 };
 
 TEST_F(AdsPageLoadMetricsObserverTest, PageWithNoAds) {

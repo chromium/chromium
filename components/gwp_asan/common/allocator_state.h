@@ -118,6 +118,9 @@ class AllocatorState {
 
   AllocatorState();
 
+  AllocatorState(const AllocatorState&) = delete;
+  AllocatorState& operator=(const AllocatorState&) = delete;
+
   // Returns true if address is in memory managed by this class.
   inline bool PointerIsMine(uintptr_t addr) const {
     return pages_base_addr <= addr && addr < pages_end_addr;
@@ -184,8 +187,6 @@ class AllocatorState {
   // If an invalid pointer has been free()d, this is the address of that invalid
   // pointer.
   uintptr_t free_invalid_address = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AllocatorState);
 };
 
 // Ensure that the allocator state is a plain-old-data. That way we can safely

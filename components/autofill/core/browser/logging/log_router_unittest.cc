@@ -23,20 +23,20 @@ class MockLogReceiver : public LogReceiver {
  public:
   MockLogReceiver() = default;
 
-  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
+  MockLogReceiver(const MockLogReceiver&) = delete;
+  MockLogReceiver& operator=(const MockLogReceiver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLogReceiver);
+  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
 };
 
 class MockLogManager : public StubLogManager {
  public:
   MockLogManager() = default;
 
-  MOCK_METHOD(void, OnLogRouterAvailabilityChanged, (bool), (override));
+  MockLogManager(const MockLogManager&) = delete;
+  MockLogManager& operator=(const MockLogManager&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLogManager);
+  MOCK_METHOD(void, OnLogRouterAvailabilityChanged, (bool), (override));
 };
 
 }  // namespace

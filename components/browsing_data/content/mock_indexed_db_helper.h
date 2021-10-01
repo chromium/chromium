@@ -29,6 +29,9 @@ class MockIndexedDBHelper : public IndexedDBHelper {
  public:
   explicit MockIndexedDBHelper(content::BrowserContext* browser_context);
 
+  MockIndexedDBHelper(const MockIndexedDBHelper&) = delete;
+  MockIndexedDBHelper& operator=(const MockIndexedDBHelper&) = delete;
+
   // Adds some StorageUsageInfo samples.
   void AddIndexedDBSamples();
 
@@ -53,8 +56,6 @@ class MockIndexedDBHelper : public IndexedDBHelper {
   FetchCallback callback_;
   std::map<blink::StorageKey, bool> storage_keys_;
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockIndexedDBHelper);
 };
 
 }  // namespace browsing_data

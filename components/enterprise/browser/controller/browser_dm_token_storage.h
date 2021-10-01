@@ -63,6 +63,10 @@ class BrowserDMTokenStorage {
   // Returns the global singleton object. Must be called from the UI thread. The
   // first caller must set the platform-specific delegate via SetDelegate().
   static BrowserDMTokenStorage* Get();
+
+  BrowserDMTokenStorage(const BrowserDMTokenStorage&) = delete;
+  BrowserDMTokenStorage& operator=(const BrowserDMTokenStorage&) = delete;
+
   // Sets the delegate to use for platform-specific operations.
   static void SetDelegate(std::unique_ptr<Delegate> delegate);
 
@@ -133,8 +137,6 @@ class BrowserDMTokenStorage {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BrowserDMTokenStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserDMTokenStorage);
 };
 
 }  // namespace policy

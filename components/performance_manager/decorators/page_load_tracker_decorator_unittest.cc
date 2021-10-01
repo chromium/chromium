@@ -26,6 +26,11 @@ using LIS = Data::LoadIdleState;
 using LS = PageNode::LoadingState;
 
 class PageLoadTrackerDecoratorTest : public GraphTestHarness {
+ public:
+  PageLoadTrackerDecoratorTest(const PageLoadTrackerDecoratorTest&) = delete;
+  PageLoadTrackerDecoratorTest& operator=(const PageLoadTrackerDecoratorTest&) =
+      delete;
+
  protected:
   using Super = GraphTestHarness;
 
@@ -50,9 +55,6 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
   }
 
   PageLoadTrackerDecorator* pltd_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadTrackerDecoratorTest);
 };
 
 void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(

@@ -70,6 +70,10 @@ class AffiliationFetchThrottlerTest : public testing::Test {
  public:
   AffiliationFetchThrottlerTest() { SimulateHasNetworkConnectivity(true); }
 
+  AffiliationFetchThrottlerTest(const AffiliationFetchThrottlerTest&) = delete;
+  AffiliationFetchThrottlerTest& operator=(
+      const AffiliationFetchThrottlerTest&) = delete;
+
   std::unique_ptr<AffiliationFetchThrottler> CreateThrottler() {
     return std::make_unique<AffiliationFetchThrottler>(
         &mock_delegate_, task_runner_,
@@ -131,8 +135,6 @@ class AffiliationFetchThrottlerTest : public testing::Test {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   MockAffiliationFetchThrottlerDelegate mock_delegate_{
       task_runner_->GetMockTickClock()};
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationFetchThrottlerTest);
 };
 
 TEST_F(AffiliationFetchThrottlerTest, SuccessfulRequests) {

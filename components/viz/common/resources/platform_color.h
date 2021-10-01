@@ -17,6 +17,10 @@ class PlatformColor {
  public:
   enum SourceDataFormat { SOURCE_FORMAT_RGBA8, SOURCE_FORMAT_BGRA8 };
 
+  PlatformColor() = delete;
+  PlatformColor(const PlatformColor&) = delete;
+  PlatformColor& operator=(const PlatformColor&) = delete;
+
   static SourceDataFormat Format() {
     return SK_B32_SHIFT ? SOURCE_FORMAT_RGBA8 : SOURCE_FORMAT_BGRA8;
   }
@@ -48,9 +52,6 @@ class PlatformColor {
     NOTREACHED();
     return RGBA_8888;
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PlatformColor);
 };
 
 }  // namespace viz

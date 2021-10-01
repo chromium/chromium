@@ -68,6 +68,9 @@ class ComponentPatcher : public base::RefCountedThreadSafe<ComponentPatcher> {
                    scoped_refptr<CrxInstaller> installer,
                    scoped_refptr<Patcher> patcher);
 
+  ComponentPatcher(const ComponentPatcher&) = delete;
+  ComponentPatcher& operator=(const ComponentPatcher&) = delete;
+
   // Starts patching files. This member function returns immediately, after
   // posting a task to do the patching. When patching has been completed,
   // |callback| will be called with the error codes if any error codes were
@@ -95,8 +98,6 @@ class ComponentPatcher : public base::RefCountedThreadSafe<ComponentPatcher> {
   std::unique_ptr<base::ListValue> commands_;
   base::ListValue::const_iterator next_command_;
   scoped_refptr<DeltaUpdateOp> current_operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentPatcher);
 };
 
 }  // namespace update_client

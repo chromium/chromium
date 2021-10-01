@@ -114,6 +114,10 @@ MATCHER_P(GuidIs, e, "") {
 }
 
 class SendTabToSelfBridgeTest : public testing::Test {
+ public:
+  SendTabToSelfBridgeTest(const SendTabToSelfBridgeTest&) = delete;
+  SendTabToSelfBridgeTest& operator=(const SendTabToSelfBridgeTest&) = delete;
+
  protected:
   SendTabToSelfBridgeTest()
       : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
@@ -247,8 +251,6 @@ class SendTabToSelfBridgeTest : public testing::Test {
   testing::NiceMock<MockSendTabToSelfModelObserver> mock_observer_;
 
   std::unique_ptr<syncer::DeviceInfo> local_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBridgeTest);
 };
 
 TEST_F(SendTabToSelfBridgeTest, CheckEmpties) {

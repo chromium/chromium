@@ -28,6 +28,10 @@ class ZoomObserver;
 class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
  public:
   ZoomRequestClient() {}
+
+  ZoomRequestClient(const ZoomRequestClient&) = delete;
+  ZoomRequestClient& operator=(const ZoomRequestClient&) = delete;
+
   virtual bool ShouldSuppressBubble() const = 0;
 
  protected:
@@ -35,8 +39,6 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
 
  private:
   friend class base::RefCounted<ZoomRequestClient>;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomRequestClient);
 };
 
 // Per-tab class to manage zoom changes and the Omnibox zoom icon. Lives on the

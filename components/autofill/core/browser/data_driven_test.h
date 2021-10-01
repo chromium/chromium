@@ -19,6 +19,9 @@ namespace autofill {
 // compared to this gold output.
 class DataDrivenTest {
  public:
+  DataDrivenTest(const DataDrivenTest&) = delete;
+  DataDrivenTest& operator=(const DataDrivenTest&) = delete;
+
   // For each file in |input_directory| whose filename matches
   // |file_name_pattern|, slurps in the file contents and calls into
   // |GenerateResults()|. If the corresponding output file already exists in
@@ -53,8 +56,6 @@ class DataDrivenTest {
 
  private:
   base::FilePath test_data_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataDrivenTest);
 };
 
 }  // namespace autofill

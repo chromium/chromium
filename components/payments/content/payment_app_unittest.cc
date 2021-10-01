@@ -51,6 +51,10 @@ static const RequiredPaymentOptions kRequiredPaymentOptionsValues[]{
 
 class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
                        public PaymentRequestSpec::Observer {
+ public:
+  PaymentAppTest(const PaymentAppTest&) = delete;
+  PaymentAppTest& operator=(const PaymentAppTest&) = delete;
+
  protected:
   PaymentAppTest()
       : address_(autofill::test::GetFullProfile()),
@@ -188,8 +192,6 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
   RequiredPaymentOptions required_options_;
   std::unique_ptr<PaymentRequestSpec> spec_;
   base::WeakPtrFactory<PaymentAppTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

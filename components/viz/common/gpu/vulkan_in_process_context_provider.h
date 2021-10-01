@@ -42,6 +42,11 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
       base::TimeDelta cooldown_duration_at_memory_pressure_critical =
           base::TimeDelta::FromSeconds(15));
 
+  VulkanInProcessContextProvider(const VulkanInProcessContextProvider&) =
+      delete;
+  VulkanInProcessContextProvider& operator=(
+      const VulkanInProcessContextProvider&) = delete;
+
   void Destroy();
 
   // VulkanContextProvider implementation
@@ -82,8 +87,6 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
 #endif
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanInProcessContextProvider);
 };
 
 }  // namespace viz

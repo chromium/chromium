@@ -48,6 +48,9 @@ class WEBDATA_EXPORT WebDataServiceBase
       scoped_refptr<WebDatabaseService> wdbs,
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
 
+  WebDataServiceBase(const WebDataServiceBase&) = delete;
+  WebDataServiceBase& operator=(const WebDataServiceBase&) = delete;
+
   // Cancel any pending request. You need to call this method if your
   // WebDataServiceConsumer is about to be deleted.
   virtual void CancelRequest(Handle h);
@@ -74,9 +77,6 @@ class WEBDATA_EXPORT WebDataServiceBase
 
   // Our database service.
   scoped_refptr<WebDatabaseService> wdbs_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceBase);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATA_SERVICE_BASE_H_

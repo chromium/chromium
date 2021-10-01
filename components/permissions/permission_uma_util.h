@@ -252,6 +252,10 @@ class PermissionUmaUtil {
   static const char kPermissionsPromptDeniedGesture[];
   static const char kPermissionsPromptDeniedNoGesture[];
 
+  PermissionUmaUtil() = delete;
+  PermissionUmaUtil(const PermissionUmaUtil&) = delete;
+  PermissionUmaUtil& operator=(const PermissionUmaUtil&) = delete;
+
   static void PermissionRequested(ContentSettingsType permission,
                                   const GURL& requesting_origin);
 
@@ -390,8 +394,6 @@ class PermissionUmaUtil {
       const std::vector<PermissionRequest*>& requests,
       bool accepted,
       bool is_one_time);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionUmaUtil);
 };
 
 }  // namespace permissions

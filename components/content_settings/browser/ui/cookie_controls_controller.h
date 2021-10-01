@@ -62,13 +62,14 @@ class CookieControlsController : content_settings::CookieSettings::Observer {
     TabObserver(CookieControlsController* cookie_controls,
                 content::WebContents* web_contents);
 
+    TabObserver(const TabObserver&) = delete;
+    TabObserver& operator=(const TabObserver&) = delete;
+
     // PageSpecificContentSettings::SiteDataObserver:
     void OnSiteDataAccessed() override;
 
    private:
     CookieControlsController* cookie_controls_;
-
-    DISALLOW_COPY_AND_ASSIGN(TabObserver);
   };
 
   void OnThirdPartyCookieBlockingChanged(

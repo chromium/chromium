@@ -60,6 +60,9 @@ class LineHelper {
     StartNewLine(0);
   }
 
+  LineHelper(const LineHelper&) = delete;
+  LineHelper& operator=(const LineHelper&) = delete;
+
   void StartNewLine(size_t current_index) {
     DCHECK(current_index == 0 || current_index < text_runs_.size());
     start_index_ = current_index;
@@ -138,8 +141,6 @@ class LineHelper {
   float accumulated_weight_top_;
   float accumulated_weight_bottom_;
   float accumulated_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(LineHelper);
 };
 
 void ComputeParagraphAndHeadingThresholds(

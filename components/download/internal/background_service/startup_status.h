@@ -14,6 +14,10 @@ namespace download {
 // internal components.
 struct StartupStatus {
   StartupStatus();
+
+  StartupStatus(const StartupStatus&) = delete;
+  StartupStatus& operator=(const StartupStatus&) = delete;
+
   ~StartupStatus();
 
   absl::optional<bool> driver_ok;
@@ -33,9 +37,6 @@ struct StartupStatus {
 
   // Whether any of the components have failed to initialize.
   bool Failed() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StartupStatus);
 };
 
 }  // namespace download

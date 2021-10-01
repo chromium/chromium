@@ -116,6 +116,9 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       std::unique_ptr<ComponentInstallerPolicy> installer_policy,
       scoped_refptr<update_client::ActionHandler> action_handler = nullptr);
 
+  ComponentInstaller(const ComponentInstaller&) = delete;
+  ComponentInstaller& operator=(const ComponentInstaller&) = delete;
+
   // Registers the component for update checks and installs.
   // |cus| provides the registration logic.
   // The passed |callback| will be called once the initial check for installed
@@ -145,6 +148,9 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   struct RegistrationInfo : base::RefCountedThreadSafe<RegistrationInfo> {
     RegistrationInfo();
 
+    RegistrationInfo(const RegistrationInfo&) = delete;
+    RegistrationInfo& operator=(const RegistrationInfo&) = delete;
+
     base::FilePath install_dir;
     base::Version version;
     std::string fingerprint;
@@ -154,8 +160,6 @@ class ComponentInstaller final : public update_client::CrxInstaller {
     friend class base::RefCountedThreadSafe<RegistrationInfo>;
 
     ~RegistrationInfo();
-
-    DISALLOW_COPY_AND_ASSIGN(RegistrationInfo);
   };
 
   ~ComponentInstaller() override;
@@ -190,8 +194,6 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   // Posts responses back to the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentInstaller);
 };
 
 }  // namespace component_updater

@@ -210,6 +210,11 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
     ON_CALL(can_send_history_data_getter_, Run()).WillByDefault(Return(true));
   }
 
+  HistoryUiFaviconRequestHandlerImplTest(
+      const HistoryUiFaviconRequestHandlerImplTest&) = delete;
+  HistoryUiFaviconRequestHandlerImplTest& operator=(
+      const HistoryUiFaviconRequestHandlerImplTest&) = delete;
+
  protected:
   testing::NiceMock<MockFaviconServiceWithFake> mock_favicon_service_;
   testing::NiceMock<MockLargeIconServiceWithFake> mock_large_icon_service_;
@@ -227,8 +232,6 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
   const std::string kOriginHistogramSuffix = ".HISTORY";
   const std::string kAvailabilityHistogramName =
       "Sync.SyncedHistoryFaviconAvailability";
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryUiFaviconRequestHandlerImplTest);
 };
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {

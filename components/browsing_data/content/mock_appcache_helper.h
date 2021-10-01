@@ -22,6 +22,9 @@ class MockAppCacheHelper : public AppCacheHelper {
  public:
   explicit MockAppCacheHelper(content::BrowserContext* browser_context);
 
+  MockAppCacheHelper(const MockAppCacheHelper&) = delete;
+  MockAppCacheHelper& operator=(const MockAppCacheHelper&) = delete;
+
   void StartFetching(FetchCallback completion_callback) override;
   void DeleteAppCaches(const url::Origin& origin) override;
 
@@ -37,8 +40,6 @@ class MockAppCacheHelper : public AppCacheHelper {
   FetchCallback completion_callback_;
 
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAppCacheHelper);
 };
 
 }  // namespace browsing_data

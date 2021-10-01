@@ -28,6 +28,9 @@ class CaptivePortalClient {
   explicit CaptivePortalClient(CaptivePortalDetector* captive_portal_detector)
       : num_results_received_(0) {}
 
+  CaptivePortalClient(const CaptivePortalClient&) = delete;
+  CaptivePortalClient& operator=(const CaptivePortalClient&) = delete;
+
   void OnPortalDetectionCompleted(
       const CaptivePortalDetector::Results& results) {
     results_ = results;
@@ -43,8 +46,6 @@ class CaptivePortalClient {
  private:
   CaptivePortalDetector::Results results_;
   int num_results_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalClient);
 };
 
 }  // namespace

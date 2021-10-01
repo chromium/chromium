@@ -35,6 +35,11 @@ class KEYED_SERVICE_EXPORT BrowserStateKeyedServiceFactory
   using TestingFactory = base::RepeatingCallback<std::unique_ptr<KeyedService>(
       web::BrowserState* context)>;
 
+  BrowserStateKeyedServiceFactory(const BrowserStateKeyedServiceFactory&) =
+      delete;
+  BrowserStateKeyedServiceFactory& operator=(
+      const BrowserStateKeyedServiceFactory&) = delete;
+
   // Associates |testing_factory| with |context| so that |testing_factory| is
   // used to create the KeyedService when requested.  |testing_factory| can be
   // empty to signal that KeyedService should be null. Multiple calls to
@@ -127,8 +132,6 @@ class KEYED_SERVICE_EXPORT BrowserStateKeyedServiceFactory
   void ContextDestroyed(void* context) final;
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) final;
   void CreateServiceNow(void* context) final;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserStateKeyedServiceFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_KEYED_SERVICE_FACTORY_H_

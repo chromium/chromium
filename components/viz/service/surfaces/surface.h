@@ -107,6 +107,10 @@ class VIZ_SERVICE_EXPORT Surface final {
           SurfaceManager* surface_manager,
           SurfaceAllocationGroup* allocation_group,
           base::WeakPtr<SurfaceClient> surface_client);
+
+  Surface(const Surface&) = delete;
+  Surface& operator=(const Surface&) = delete;
+
   ~Surface();
 
   void SetDependencyDeadline(
@@ -397,8 +401,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   bool has_damage_from_interpolated_frame_ = false;
 
   base::WeakPtrFactory<Surface> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Surface);
 };
 
 }  // namespace viz

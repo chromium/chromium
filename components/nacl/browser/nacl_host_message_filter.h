@@ -33,6 +33,9 @@ class NaClHostMessageFilter : public content::BrowserMessageFilter {
                         bool is_off_the_record,
                         const base::FilePath& profile_directory);
 
+  NaClHostMessageFilter(const NaClHostMessageFilter&) = delete;
+  NaClHostMessageFilter& operator=(const NaClHostMessageFilter&) = delete;
+
   // content::BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelClosing() override;
@@ -96,8 +99,6 @@ class NaClHostMessageFilter : public content::BrowserMessageFilter {
   base::FilePath profile_directory_;
 
   base::WeakPtrFactory<NaClHostMessageFilter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NaClHostMessageFilter);
 };
 
 }  // namespace nacl

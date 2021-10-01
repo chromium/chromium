@@ -109,6 +109,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       autofill::PersonalDataManager* personal_data_manager,
       base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
       base::WeakPtr<JourneyLogger> journey_logger);
+
+  PaymentRequestState(const PaymentRequestState&) = delete;
+  PaymentRequestState& operator=(const PaymentRequestState&) = delete;
+
   ~PaymentRequestState() override;
 
   // PaymentAppFactory::Delegate
@@ -422,8 +426,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool can_make_payment_even_without_apps_ = false;
 
   base::WeakPtrFactory<PaymentRequestState> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestState);
 };
 
 }  // namespace payments

@@ -133,6 +133,9 @@ class SyncedBookmarkTracker {
       const bookmarks::BookmarkModel* model,
       sync_pb::BookmarkModelMetadata model_metadata);
 
+  SyncedBookmarkTracker(const SyncedBookmarkTracker&) = delete;
+  SyncedBookmarkTracker& operator=(const SyncedBookmarkTracker&) = delete;
+
   ~SyncedBookmarkTracker();
 
   // This method is used to denote that all bookmarks are reuploaded and there
@@ -367,8 +370,6 @@ class SyncedBookmarkTracker {
   // TODO(crbug.com/1032052): Remove this code once all local sync metadata is
   // required to populate the client tag (and be considered invalid otherwise).
   base::Time last_sync_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedBookmarkTracker);
 };
 
 }  // namespace sync_bookmarks

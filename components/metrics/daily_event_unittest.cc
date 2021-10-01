@@ -21,6 +21,9 @@ class TestDailyObserver : public DailyEvent::Observer {
  public:
   TestDailyObserver() = default;
 
+  TestDailyObserver(const TestDailyObserver&) = delete;
+  TestDailyObserver& operator=(const TestDailyObserver&) = delete;
+
   bool fired() const { return type_.has_value(); }
   DailyEvent::IntervalType type() const { return type_.value(); }
 
@@ -31,8 +34,6 @@ class TestDailyObserver : public DailyEvent::Observer {
  private:
   // Last-received type, or unset if OnDailyEvent() hasn't been called.
   absl::optional<DailyEvent::IntervalType> type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDailyObserver);
 };
 
 class DailyEventTest : public testing::Test {
@@ -43,13 +44,13 @@ class DailyEventTest : public testing::Test {
     event_.AddObserver(base::WrapUnique(observer_));
   }
 
+  DailyEventTest(const DailyEventTest&) = delete;
+  DailyEventTest& operator=(const DailyEventTest&) = delete;
+
  protected:
   TestingPrefServiceSimple prefs_;
   TestDailyObserver* observer_;
   DailyEvent event_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DailyEventTest);
 };
 
 }  // namespace

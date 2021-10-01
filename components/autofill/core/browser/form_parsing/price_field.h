@@ -29,6 +29,9 @@ class PriceField : public FormField {
                                           LogManager* log_manager);
   explicit PriceField(const AutofillField* field);
 
+  PriceField(const PriceField&) = delete;
+  PriceField& operator=(const PriceField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
@@ -37,8 +40,6 @@ class PriceField : public FormField {
   FRIEND_TEST_ALL_PREFIXES(PriceFieldTest, ParseNonPrice);
 
   const AutofillField* field_;
-
-  DISALLOW_COPY_AND_ASSIGN(PriceField);
 };
 
 }  // namespace autofill

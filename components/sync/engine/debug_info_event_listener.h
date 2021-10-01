@@ -42,6 +42,10 @@ class DebugInfoEventListener : public SyncManager::Observer,
                                public DataTypeDebugInfoListener {
  public:
   DebugInfoEventListener();
+
+  DebugInfoEventListener(const DebugInfoEventListener&) = delete;
+  DebugInfoEventListener& operator=(const DebugInfoEventListener&) = delete;
+
   ~DebugInfoEventListener() override;
 
   void InitializationComplete();
@@ -113,8 +117,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DebugInfoEventListener> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DebugInfoEventListener);
 };
 
 }  // namespace syncer

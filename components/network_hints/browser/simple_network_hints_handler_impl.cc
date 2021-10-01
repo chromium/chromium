@@ -55,6 +55,9 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
         render_frame_id_(render_frame_id),
         hostname_(hostname) {}
 
+  DnsLookupRequest(const DnsLookupRequest&) = delete;
+  DnsLookupRequest& operator=(const DnsLookupRequest&) = delete;
+
   // Return underlying network resolver status.
   // net::OK ==> Host was found synchronously.
   // net:ERR_IO_PENDING ==> Network will callback later with result.
@@ -109,8 +112,6 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
   const int render_frame_id_;
   const std::string hostname_;
   std::unique_ptr<DnsLookupRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsLookupRequest);
 };
 
 }  // namespace

@@ -44,6 +44,9 @@ class NaClValidationQuery {
 
   NaClValidationQuery(NaClValidationDB* db, const std::string& profile_key);
 
+  NaClValidationQuery(const NaClValidationQuery&) = delete;
+  NaClValidationQuery& operator=(const NaClValidationQuery&) = delete;
+
   void AddData(const char* data, size_t length);
   void AddData(const unsigned char* data, size_t length);
   void AddData(const base::StringPiece& data);
@@ -80,8 +83,6 @@ class NaClValidationQuery {
   // compressed as an intermediate step in the expected use cases.
   char buffer_[kDigestLength * 4];
   size_t buffer_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClValidationQuery);
 };
 
 // Create a validation cache interface for use by sel_ldr.

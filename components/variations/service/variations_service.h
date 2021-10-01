@@ -87,6 +87,9 @@ class VariationsService
     virtual ~Observer() {}
   };
 
+  VariationsService(const VariationsService&) = delete;
+  VariationsService& operator=(const VariationsService&) = delete;
+
   ~VariationsService() override;
 
   // Enum used to choose whether GetVariationsServerURL will return an HTTPS
@@ -428,8 +431,6 @@ class VariationsService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VariationsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsService);
 };
 
 }  // namespace variations

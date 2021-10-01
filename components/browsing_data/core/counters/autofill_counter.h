@@ -46,6 +46,10 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
   explicit AutofillCounter(
       scoped_refptr<autofill::AutofillWebDataService> web_data_service,
       syncer::SyncService* sync_service);
+
+  AutofillCounter(const AutofillCounter&) = delete;
+  AutofillCounter& operator=(const AutofillCounter&) = delete;
+
   ~AutofillCounter() override;
 
   // BrowsingDataCounter implementation.
@@ -90,8 +94,6 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
 
   base::Time period_start_for_testing_;
   base::Time period_end_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCounter);
 };
 
 }  // namespace browsing_data

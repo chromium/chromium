@@ -33,6 +33,9 @@ class UpdateClientImpl : public UpdateClient {
                    scoped_refptr<PingManager> ping_manager,
                    UpdateChecker::Factory update_checker_factory);
 
+  UpdateClientImpl(const UpdateClientImpl&) = delete;
+  UpdateClientImpl& operator=(const UpdateClientImpl&) = delete;
+
   // Overrides for UpdateClient.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -87,8 +90,6 @@ class UpdateClientImpl : public UpdateClient {
   scoped_refptr<PingManager> ping_manager_;
   scoped_refptr<UpdateEngine> update_engine_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateClientImpl);
 };
 
 }  // namespace update_client

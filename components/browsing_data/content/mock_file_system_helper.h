@@ -26,6 +26,9 @@ class MockFileSystemHelper : public FileSystemHelper {
  public:
   explicit MockFileSystemHelper(content::BrowserContext* browser_context);
 
+  MockFileSystemHelper(const MockFileSystemHelper&) = delete;
+  MockFileSystemHelper& operator=(const MockFileSystemHelper&) = delete;
+
   // FileSystemHelper implementation.
   void StartFetching(FetchCallback callback) override;
   void DeleteFileSystemOrigin(const url::Origin& origin) override;
@@ -63,8 +66,6 @@ class MockFileSystemHelper : public FileSystemHelper {
   std::map<const std::string, bool> file_systems_;
 
   std::list<FileSystemInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileSystemHelper);
 };
 
 }  // namespace browsing_data

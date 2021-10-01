@@ -54,13 +54,13 @@ class MockObserver {
         &MockObserver::OnGaiaAccountsInCookieUpdated, base::Unretained(this)));
   }
 
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   MOCK_METHOD3(OnGaiaAccountsInCookieUpdated,
                void(const std::vector<gaia::ListedAccount>&,
                     const std::vector<gaia::ListedAccount>&,
                     const GoogleServiceAuthError&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 // Counts number of InstrumentedGaiaCookieManagerService created.

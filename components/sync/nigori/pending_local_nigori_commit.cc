@@ -57,6 +57,9 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
         key_derivation_params_(CreateKeyDerivationParamsForCustomPassphrase()) {
   }
 
+  CustomPassphraseSetter(const CustomPassphraseSetter&) = delete;
+  CustomPassphraseSetter& operator=(const CustomPassphraseSetter&) = delete;
+
   ~CustomPassphraseSetter() override = default;
 
   bool TryApply(NigoriState* state) const override {
@@ -122,13 +125,15 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  private:
   const std::string passphrase_;
   const KeyDerivationParams key_derivation_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomPassphraseSetter);
 };
 
 class KeystoreInitializer : public PendingLocalNigoriCommit {
  public:
   KeystoreInitializer() = default;
+
+  KeystoreInitializer(const KeystoreInitializer&) = delete;
+  KeystoreInitializer& operator=(const KeystoreInitializer&) = delete;
+
   ~KeystoreInitializer() override = default;
 
   bool TryApply(NigoriState* state) const override {
@@ -156,14 +161,15 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeystoreInitializer);
 };
 
 class KeystoreReencryptor : public PendingLocalNigoriCommit {
  public:
   KeystoreReencryptor() = default;
+
+  KeystoreReencryptor(const KeystoreReencryptor&) = delete;
+  KeystoreReencryptor& operator=(const KeystoreReencryptor&) = delete;
+
   ~KeystoreReencryptor() override = default;
 
   bool TryApply(NigoriState* state) const override {
@@ -186,9 +192,6 @@ class KeystoreReencryptor : public PendingLocalNigoriCommit {
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeystoreReencryptor);
 };
 
 }  // namespace

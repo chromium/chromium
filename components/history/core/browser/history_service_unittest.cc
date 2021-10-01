@@ -568,6 +568,9 @@ class HistoryDBTaskImpl : public HistoryDBTask {
   HistoryDBTaskImpl(int* invoke_count, bool* done_invoked)
       : invoke_count_(invoke_count), done_invoked_(done_invoked) {}
 
+  HistoryDBTaskImpl(const HistoryDBTaskImpl&) = delete;
+  HistoryDBTaskImpl& operator=(const HistoryDBTaskImpl&) = delete;
+
   bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
     return (++*invoke_count_ == kWantInvokeCount);
   }
@@ -582,8 +585,6 @@ class HistoryDBTaskImpl : public HistoryDBTask {
 
  private:
   ~HistoryDBTaskImpl() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDBTaskImpl);
 };
 
 // static

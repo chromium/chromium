@@ -17,6 +17,9 @@ class HeapProfilingTestShim {
   HeapProfilingTestShim(JNIEnv* env, jobject obj);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
+  HeapProfilingTestShim(const HeapProfilingTestShim&) = delete;
+  HeapProfilingTestShim& operator=(const HeapProfilingTestShim&) = delete;
+
   jboolean RunTestForMode(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -28,8 +31,6 @@ class HeapProfilingTestShim {
 
  private:
   ~HeapProfilingTestShim();
-
-  DISALLOW_COPY_AND_ASSIGN(HeapProfilingTestShim);
 };
 
 #endif  // COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_HEAP_PROFILING_TEST_SHIM_H_

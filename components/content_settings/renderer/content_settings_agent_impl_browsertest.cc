@@ -153,6 +153,10 @@ class CommitTimeConditionChecker : public content::RenderFrameObserver {
         predicate_(predicate),
         expectation_(expectation) {}
 
+  CommitTimeConditionChecker(const CommitTimeConditionChecker&) = delete;
+  CommitTimeConditionChecker& operator=(const CommitTimeConditionChecker&) =
+      delete;
+
  protected:
   // RenderFrameObserver:
   void OnDestruct() override {}
@@ -163,8 +167,6 @@ class CommitTimeConditionChecker : public content::RenderFrameObserver {
  private:
   const Predicate predicate_;
   const bool expectation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitTimeConditionChecker);
 };
 
 }  // namespace

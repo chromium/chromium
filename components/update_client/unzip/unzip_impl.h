@@ -20,7 +20,11 @@ class UnzipChromiumFactory : public UnzipperFactory {
  public:
   using Callback =
       base::RepeatingCallback<mojo::PendingRemote<unzip::mojom::Unzipper>()>;
+
   explicit UnzipChromiumFactory(Callback callback);
+
+  UnzipChromiumFactory(const UnzipChromiumFactory&) = delete;
+  UnzipChromiumFactory& operator=(const UnzipChromiumFactory&) = delete;
 
   std::unique_ptr<Unzipper> Create() const override;
 
@@ -29,8 +33,6 @@ class UnzipChromiumFactory : public UnzipperFactory {
 
  private:
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnzipChromiumFactory);
 };
 
 }  // namespace update_client

@@ -213,6 +213,9 @@ class VIZ_SERVICE_EXPORT VertexShader {
 
 class VIZ_SERVICE_EXPORT FragmentShader {
  public:
+  FragmentShader(const FragmentShader&) = delete;
+  FragmentShader& operator=(const FragmentShader&) = delete;
+
   virtual void Init(gpu::gles2::GLES2Interface* context,
                     unsigned program,
                     int* base_uniform_index);
@@ -314,8 +317,6 @@ class VIZ_SERVICE_EXPORT FragmentShader {
   void AppendBlendFunction(std::string* buffer) const;
   base::StringPiece GetBlendFunctionBodyForAlpha() const;
   base::StringPiece GetBlendFunctionBodyForRGB() const;
-
-  DISALLOW_COPY_AND_ASSIGN(FragmentShader);
 };
 
 }  // namespace viz

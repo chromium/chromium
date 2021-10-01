@@ -71,6 +71,10 @@ class PaymentRequest : public mojom::PaymentRequest,
                  base::WeakPtr<PaymentRequestDisplayManager> display_manager,
                  mojo::PendingReceiver<mojom::PaymentRequest> receiver,
                  base::WeakPtr<ObserverForTest> observer_for_testing);
+
+  PaymentRequest(const PaymentRequest&) = delete;
+  PaymentRequest& operator=(const PaymentRequest&) = delete;
+
   ~PaymentRequest() override;
 
   // mojom::PaymentRequest
@@ -276,8 +280,6 @@ class PaymentRequest : public mojom::PaymentRequest,
   std::string reject_show_error_message_;
 
   base::WeakPtrFactory<PaymentRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequest);
 };
 
 }  // namespace payments

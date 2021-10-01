@@ -114,6 +114,10 @@ class DistillerPageMediaBlocker : public web::WebStatePolicyDecider {
       : web::WebStatePolicyDecider(web_state),
         main_frame_navigation_blocked_(false) {}
 
+  DistillerPageMediaBlocker(const DistillerPageMediaBlocker&) = delete;
+  DistillerPageMediaBlocker& operator=(const DistillerPageMediaBlocker&) =
+      delete;
+
   void ShouldAllowResponse(
       NSURLResponse* response,
       web::WebStatePolicyDecider::ResponseInfo response_info,
@@ -135,7 +139,6 @@ class DistillerPageMediaBlocker : public web::WebStatePolicyDecider {
 
  private:
   bool main_frame_navigation_blocked_;
-  DISALLOW_COPY_AND_ASSIGN(DistillerPageMediaBlocker);
 };
 
 #pragma mark -

@@ -25,6 +25,10 @@ namespace syncer {
 class MutableDataBatch : public DataBatch {
  public:
   MutableDataBatch();
+
+  MutableDataBatch(const MutableDataBatch&) = delete;
+  MutableDataBatch& operator=(const MutableDataBatch&) = delete;
+
   ~MutableDataBatch() override;
 
   // Takes ownership of the data tied to a given key used for storage. Put
@@ -40,8 +44,6 @@ class MutableDataBatch : public DataBatch {
  private:
   std::vector<KeyAndData> key_data_pairs_;
   size_t read_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MutableDataBatch);
 };
 
 }  // namespace syncer

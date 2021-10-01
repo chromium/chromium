@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
             const apps::mojom::App* delta,
             const AccountId& account_id);
 
+  AppUpdate(const AppUpdate&) = delete;
+  AppUpdate& operator=(const AppUpdate&) = delete;
+
   // Returns whether this is the first update for the given AppId.
   // Equivalently, there are no previous deltas for the AppId.
   bool StateIsNull() const;
@@ -151,8 +154,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const apps::mojom::App* delta_;
 
   const ::AccountId& account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppUpdate);
 };
 
 // For logging and debug purposes.

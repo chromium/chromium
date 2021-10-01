@@ -20,6 +20,10 @@ namespace plugins {
 // (blocked or disabled).
 class LoadablePluginPlaceholder : public PluginPlaceholderBase {
  public:
+  LoadablePluginPlaceholder(const LoadablePluginPlaceholder&) = delete;
+  LoadablePluginPlaceholder& operator=(const LoadablePluginPlaceholder&) =
+      delete;
+
   void set_blocked_for_prerendering(bool blocked_for_prerendering) {
     is_blocked_for_prerendering_ = blocked_for_prerendering;
   }
@@ -85,8 +89,6 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
   std::string identifier_;
 
   base::WeakPtrFactory<LoadablePluginPlaceholder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoadablePluginPlaceholder);
 };
 
 }  // namespace plugins

@@ -44,6 +44,9 @@ class MockFeedbackUploader : public FeedbackUploader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : FeedbackUploader(is_off_the_record, state_path, url_loader_factory) {}
 
+  MockFeedbackUploader(const MockFeedbackUploader&) = delete;
+  MockFeedbackUploader& operator=(const MockFeedbackUploader&) = delete;
+
   void RunMessageLoop() {
     if (ProcessingComplete())
       return;
@@ -106,8 +109,6 @@ class MockFeedbackUploader : public FeedbackUploader {
   size_t dispatched_reports_count_ = 0;
   size_t expected_reports_ = 0;
   bool simulate_failure_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFeedbackUploader);
 };
 
 }  // namespace

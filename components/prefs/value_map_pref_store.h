@@ -22,6 +22,9 @@ class COMPONENTS_PREFS_EXPORT ValueMapPrefStore : public WriteablePrefStore {
  public:
   ValueMapPrefStore();
 
+  ValueMapPrefStore(const ValueMapPrefStore&) = delete;
+  ValueMapPrefStore& operator=(const ValueMapPrefStore&) = delete;
+
   // PrefStore overrides:
   bool GetValue(const std::string& key,
                 const base::Value** value) const override;
@@ -52,8 +55,6 @@ class COMPONENTS_PREFS_EXPORT ValueMapPrefStore : public WriteablePrefStore {
   PrefValueMap prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueMapPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_VALUE_MAP_PREF_STORE_H_

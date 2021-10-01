@@ -95,6 +95,10 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
  public:
   MockPasswordStoreConsumer() = default;
 
+  MockPasswordStoreConsumer(const MockPasswordStoreConsumer&) = delete;
+  MockPasswordStoreConsumer& operator=(const MockPasswordStoreConsumer&) =
+      delete;
+
   MOCK_METHOD1(OnGetPasswordStoreResultsConstRef,
                void(const std::vector<std::unique_ptr<PasswordForm>>&));
   MOCK_METHOD1(OnGetAllFieldInfo, void(const std::vector<FieldInfo>));
@@ -104,9 +108,6 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
       std::vector<std::unique_ptr<PasswordForm>> results) override {
     OnGetPasswordStoreResultsConstRef(results);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordStoreConsumer);
 };
 
 class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
@@ -199,6 +200,10 @@ PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {
 }  // namespace
 
 class PasswordStoreTest : public testing::Test {
+ public:
+  PasswordStoreTest(const PasswordStoreTest&) = delete;
+  PasswordStoreTest& operator=(const PasswordStoreTest&) = delete;
+
  protected:
   PasswordStoreTest() = default;
 
@@ -248,8 +253,6 @@ class PasswordStoreTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreTest);
 };
 
 absl::optional<PasswordHashData> GetPasswordFromPref(

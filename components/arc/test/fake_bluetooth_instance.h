@@ -109,6 +109,10 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
   };
 
   FakeBluetoothInstance();
+
+  FakeBluetoothInstance(const FakeBluetoothInstance&) = delete;
+  FakeBluetoothInstance& operator=(const FakeBluetoothInstance&) = delete;
+
   ~FakeBluetoothInstance() override;
 
   // mojom::BluetoothInstance overrides:
@@ -221,8 +225,6 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::BluetoothHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothInstance);
 };
 
 }  // namespace arc

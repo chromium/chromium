@@ -50,6 +50,9 @@ class NaClBrowser {
  public:
   static NaClBrowser* GetInstance();
 
+  NaClBrowser(const NaClBrowser&) = delete;
+  NaClBrowser& operator=(const NaClBrowser&) = delete;
+
   // Will it be possible to launch a NaCl process, eventually?
   bool IsOk() const;
 
@@ -219,8 +222,6 @@ class NaClBrowser {
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrowser);
 };
 
 } // namespace nacl

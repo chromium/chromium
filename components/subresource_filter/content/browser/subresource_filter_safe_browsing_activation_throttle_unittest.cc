@@ -383,6 +383,12 @@ class SubresourceFilterSafeBrowsingActivationThrottleParamTest
       public ::testing::WithParamInterface<ActivationListTestData> {
  public:
   SubresourceFilterSafeBrowsingActivationThrottleParamTest() {}
+
+  SubresourceFilterSafeBrowsingActivationThrottleParamTest(
+      const SubresourceFilterSafeBrowsingActivationThrottleParamTest&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottleParamTest& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleParamTest&) = delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottleParamTest() override {}
 
   void Configure() override {
@@ -399,10 +405,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleParamTest
     metadata.subresource_filter_match = test_data.match;
     ConfigureForMatch(url, test_data.threat_type, metadata);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      SubresourceFilterSafeBrowsingActivationThrottleParamTest);
 };
 
 class SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling
@@ -414,6 +416,14 @@ class SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling
   SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling() {
     std::tie(throttle_method_, result_sync_) = GetParam();
   }
+
+  SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling(
+      const SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling&) =
+      delete;
+  SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling&) =
+      delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling()
       override {}
 
@@ -437,9 +447,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling
  private:
   content::TestNavigationThrottle::ThrottleMethod throttle_method_;
   content::TestNavigationThrottle::ResultSynchrony result_sync_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling);
 };
 
 struct ActivationScopeTestData {
@@ -466,11 +473,13 @@ class SubresourceFilterSafeBrowsingActivationThrottleScopeTest
       public ::testing::WithParamInterface<ActivationScopeTestData> {
  public:
   SubresourceFilterSafeBrowsingActivationThrottleScopeTest() {}
-  ~SubresourceFilterSafeBrowsingActivationThrottleScopeTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      SubresourceFilterSafeBrowsingActivationThrottleScopeTest);
+  SubresourceFilterSafeBrowsingActivationThrottleScopeTest(
+      const SubresourceFilterSafeBrowsingActivationThrottleScopeTest&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottleScopeTest& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleScopeTest&) = delete;
+
+  ~SubresourceFilterSafeBrowsingActivationThrottleScopeTest() override {}
 };
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, NoConfigs) {

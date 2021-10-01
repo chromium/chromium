@@ -38,6 +38,9 @@ class SubKeyReceiver : public base::RefCountedThreadSafe<SubKeyReceiver> {
  public:
   SubKeyReceiver() : subkeys_size_(kInvalidSize) {}
 
+  SubKeyReceiver(const SubKeyReceiver&) = delete;
+  SubKeyReceiver& operator=(const SubKeyReceiver&) = delete;
+
   void OnSubKeysReceived(const std::vector<std::string>& subkeys_codes,
                          const std::vector<std::string>& subkeys_names) {
     subkeys_size_ = subkeys_codes.size();
@@ -50,8 +53,6 @@ class SubKeyReceiver : public base::RefCountedThreadSafe<SubKeyReceiver> {
   ~SubKeyReceiver() {}
 
   int subkeys_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubKeyReceiver);
 };
 
 // A test subclass of the SubKeyRequesterImpl. Used to simulate rules not
@@ -85,6 +86,10 @@ class TestSubKeyRequester : public SubKeyRequester {
 }  // namespace
 
 class SubKeyRequesterTest : public testing::Test {
+ public:
+  SubKeyRequesterTest(const SubKeyRequesterTest&) = delete;
+  SubKeyRequesterTest& operator=(const SubKeyRequesterTest&) = delete;
+
  protected:
   SubKeyRequesterTest() {
     base::FilePath file_path;
@@ -105,9 +110,6 @@ class SubKeyRequesterTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestSubKeyRequester> requester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubKeyRequesterTest);
 };
 
 // Tests that rules are not loaded by default.

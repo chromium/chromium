@@ -138,6 +138,11 @@ class AndroidMetricsServiceClientTest : public testing::Test {
     base::SetRecordActionTaskRunner(task_runner_);
   }
 
+  AndroidMetricsServiceClientTest(const AndroidMetricsServiceClientTest&) =
+      delete;
+  AndroidMetricsServiceClientTest& operator=(
+      const AndroidMetricsServiceClientTest&) = delete;
+
   const int64_t test_begin_time_;
 
   content::BrowserTaskEnvironment* task_environment() {
@@ -150,8 +155,6 @@ class AndroidMetricsServiceClientTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidMetricsServiceClientTest);
 };
 
 TEST_F(AndroidMetricsServiceClientTest, TestSetConsentTrueBeforeInit) {

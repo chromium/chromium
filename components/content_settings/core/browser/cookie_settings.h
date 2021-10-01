@@ -69,6 +69,9 @@ class CookieSettings : public CookieSettingsBase,
                  bool is_incognito,
                  const char* extension_scheme = kDummyExtensionScheme);
 
+  CookieSettings(const CookieSettings&) = delete;
+  CookieSettings& operator=(const CookieSettings&) = delete;
+
   // Returns the default content setting (CONTENT_SETTING_ALLOW,
   // CONTENT_SETTING_BLOCK, or CONTENT_SETTING_SESSION_ONLY) for cookies. If
   // |provider_id| is not nullptr, the id of the provider which provided the
@@ -188,8 +191,6 @@ class CookieSettings : public CookieSettingsBase,
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettings);
 };
 
 }  // namespace content_settings

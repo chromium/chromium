@@ -46,6 +46,9 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // is found.
   class Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     // Called when |resource| is classified as unsafe by SafeBrowsing, and is
     // not allowlisted.
     // The |resource| must not be accessed after OnSafeBrowsingHit returns.
@@ -55,9 +58,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
    protected:
     Observer() {}
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Interface via which the embedder supplies contextual information to
@@ -132,6 +132,9 @@ class SafeBrowsingUIManager : public BaseUIManager {
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
       const GURL& default_safe_page);
+
+  SafeBrowsingUIManager(const SafeBrowsingUIManager&) = delete;
+  SafeBrowsingUIManager& operator=(const SafeBrowsingUIManager&) = delete;
 
   // Displays a SafeBrowsing interstitial.
   // |resource| is the unsafe resource for which the warning is displayed.
@@ -227,8 +230,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   bool shut_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUIManager);
 };
 
 }  // namespace safe_browsing

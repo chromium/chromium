@@ -32,6 +32,11 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   // Must be initialized by calling StartOnIOThread() before using.
   RemoteSafeBrowsingDatabaseManager();
 
+  RemoteSafeBrowsingDatabaseManager(const RemoteSafeBrowsingDatabaseManager&) =
+      delete;
+  RemoteSafeBrowsingDatabaseManager& operator=(
+      const RemoteSafeBrowsingDatabaseManager&) = delete;
+
   //
   // SafeBrowsingDatabaseManager implementation
   //
@@ -80,7 +85,6 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
       request_destinations_to_check_;
 
   friend class base::RefCountedThreadSafe<RemoteSafeBrowsingDatabaseManager>;
-  DISALLOW_COPY_AND_ASSIGN(RemoteSafeBrowsingDatabaseManager);
 };  // class RemoteSafeBrowsingDatabaseManager
 
 }  // namespace safe_browsing

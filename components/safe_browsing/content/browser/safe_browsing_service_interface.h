@@ -37,6 +37,10 @@ class SafeBrowsingServiceInterface
   // Create an instance of the safe browsing service.
   static SafeBrowsingServiceInterface* CreateSafeBrowsingService();
 
+  SafeBrowsingServiceInterface(const SafeBrowsingServiceInterface&) = delete;
+  SafeBrowsingServiceInterface& operator=(const SafeBrowsingServiceInterface&) =
+      delete;
+
   virtual network::mojom::NetworkContext* GetNetworkContext(
       content::BrowserContext* browser_context) = 0;
 
@@ -61,8 +65,6 @@ class SafeBrowsingServiceInterface
   // Useful for tests, so they can provide their own implementation of
   // SafeBrowsingServiceInterface.
   static SafeBrowsingServiceFactory* factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceInterface);
 };
 
 // Factory for creating SafeBrowsingServiceInterface.  Useful for tests.

@@ -19,14 +19,15 @@ class IconCoalescer::RefCountedReleaser
  public:
   explicit RefCountedReleaser(std::unique_ptr<IconLoader::Releaser> releaser);
 
+  RefCountedReleaser(const RefCountedReleaser&) = delete;
+  RefCountedReleaser& operator=(const RefCountedReleaser&) = delete;
+
  private:
   friend class base::RefCounted<RefCountedReleaser>;
 
   virtual ~RefCountedReleaser();
 
   std::unique_ptr<IconLoader::Releaser> releaser_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedReleaser);
 };
 
 IconCoalescer::RefCountedReleaser::RefCountedReleaser(

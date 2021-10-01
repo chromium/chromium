@@ -35,6 +35,11 @@ const char kInvalidModelData[] = "not a valid model";
 const int kInvalidModelSize = sizeof(kInvalidModelData) - 1;
 
 class RankerModelLoaderImplTest : public ::testing::Test {
+ public:
+  RankerModelLoaderImplTest(const RankerModelLoaderImplTest&) = delete;
+  RankerModelLoaderImplTest& operator=(const RankerModelLoaderImplTest&) =
+      delete;
+
  protected:
   RankerModelLoaderImplTest();
 
@@ -108,9 +113,6 @@ class RankerModelLoaderImplTest : public ::testing::Test {
   RankerModel remote_model_;
   RankerModel local_model_;
   RankerModel expired_model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RankerModelLoaderImplTest);
 };
 
 RankerModelLoaderImplTest::RankerModelLoaderImplTest() {

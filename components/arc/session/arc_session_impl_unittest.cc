@@ -134,6 +134,9 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
  public:
   FakeDelegate() = default;
 
+  FakeDelegate(const FakeDelegate&) = delete;
+  FakeDelegate& operator=(const FakeDelegate&) = delete;
+
   // Emulates to fail Mojo connection establishing. |callback| passed to
   // ConnectMojo will be called with nullptr.
   void EmulateMojoConnectionFailure() { success_ = false; }
@@ -200,8 +203,6 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
   bool suspend_ = false;
   int64_t free_disk_space_ = kMinimumFreeDiskSpaceBytes * 2;
   ConnectMojoCallback pending_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDelegate);
 };
 
 class TestArcSessionObserver : public ArcSession::Observer {

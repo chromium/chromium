@@ -33,6 +33,11 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
             base::SequencedTaskRunnerHandle::Get(),
             base::SequencedTaskRunnerHandle::Get()) {}
 
+  MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
+      delete;
+  MockSafeBrowsingDatabaseManager& operator=(
+      const MockSafeBrowsingDatabaseManager&) = delete;
+
   MOCK_METHOD1(CancelCheck, void(SafeBrowsingDatabaseManager::Client*));
 
   MOCK_METHOD2(CheckCsdAllowlistUrl,
@@ -43,9 +48,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
  protected:
   ~MockSafeBrowsingDatabaseManager() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingDatabaseManager);
 };
 }  // namespace
 

@@ -49,6 +49,9 @@ class SharedWorkerHelper
 
   explicit SharedWorkerHelper(content::StoragePartition* storage_partition);
 
+  SharedWorkerHelper(const SharedWorkerHelper&) = delete;
+  SharedWorkerHelper& operator=(const SharedWorkerHelper&) = delete;
+
   // Starts the fetching process returning the list of shared workers, which
   // will notify its completion via |callback|. This must be called only in the
   // UI thread.
@@ -66,8 +69,6 @@ class SharedWorkerHelper
   friend class base::RefCountedThreadSafe<SharedWorkerHelper>;
 
   content::StoragePartition* storage_partition_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerHelper);
 };
 
 // This class is an implementation of SharedWorkerHelper that does
@@ -77,6 +78,9 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
  public:
   explicit CannedSharedWorkerHelper(
       content::StoragePartition* storage_partition);
+
+  CannedSharedWorkerHelper(const CannedSharedWorkerHelper&) = delete;
+  CannedSharedWorkerHelper& operator=(const CannedSharedWorkerHelper&) = delete;
 
   // Adds Shared Worker to the set of canned Shared Workers that is returned by
   // this helper.
@@ -107,8 +111,6 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
   ~CannedSharedWorkerHelper() override;
 
   std::set<SharedWorkerInfo> pending_shared_worker_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedSharedWorkerHelper);
 };
 
 }  // namespace browsing_data

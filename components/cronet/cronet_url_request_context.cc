@@ -72,6 +72,10 @@ class NetLogWithNetworkChangeEvents {
  public:
   NetLogWithNetworkChangeEvents() : net_log_(net::NetLog::Get()) {}
 
+  NetLogWithNetworkChangeEvents(const NetLogWithNetworkChangeEvents&) = delete;
+  NetLogWithNetworkChangeEvents& operator=(
+      const NetLogWithNetworkChangeEvents&) = delete;
+
   net::NetLog* net_log() { return net_log_; }
   // This function registers with the NetworkChangeNotifier and so must be
   // called *after* the NetworkChangeNotifier is created. Should only be
@@ -97,8 +101,6 @@ class NetLogWithNetworkChangeEvents {
   // This class bundles one LoggingNetworkChangeObserver with one NetLog,
   // so network change event are logged just once in the NetLog.
   std::unique_ptr<net::LoggingNetworkChangeObserver> net_change_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetLogWithNetworkChangeEvents);
 };
 
 // Use a global NetLog instance. See crbug.com/486120.
@@ -468,6 +470,9 @@ class CronetURLRequestContext::ContextGetter
     DCHECK(cronet_context_);
   }
 
+  ContextGetter(const ContextGetter&) = delete;
+  ContextGetter& operator=(const ContextGetter&) = delete;
+
   net::URLRequestContext* GetURLRequestContext() override {
     return cronet_context_->GetURLRequestContext();
   }
@@ -483,8 +488,6 @@ class CronetURLRequestContext::ContextGetter
 
   // CronetURLRequestContext associated with this ContextGetter.
   CronetURLRequestContext* const cronet_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextGetter);
 };
 
 net::URLRequestContextGetter*

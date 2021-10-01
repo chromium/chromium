@@ -34,6 +34,9 @@ class AppCacheHelper : public base::RefCountedThreadSafe<AppCacheHelper> {
   // and DeleteAppCaches will silently be a noop.
   explicit AppCacheHelper(content::AppCacheService* appcache_service);
 
+  AppCacheHelper(const AppCacheHelper&) = delete;
+  AppCacheHelper& operator=(const AppCacheHelper&) = delete;
+
   virtual void StartFetching(FetchCallback completion_callback);
   virtual void DeleteAppCaches(const url::Origin& origin_url);
 
@@ -44,8 +47,6 @@ class AppCacheHelper : public base::RefCountedThreadSafe<AppCacheHelper> {
  private:
   // Owned by the profile.
   content::AppCacheService* appcache_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheHelper);
 };
 
 // This class is a thin wrapper around AppCacheHelper that does not
@@ -54,6 +55,9 @@ class AppCacheHelper : public base::RefCountedThreadSafe<AppCacheHelper> {
 class CannedAppCacheHelper : public AppCacheHelper {
  public:
   explicit CannedAppCacheHelper(content::AppCacheService* appcache_service);
+
+  CannedAppCacheHelper(const CannedAppCacheHelper&) = delete;
+  CannedAppCacheHelper& operator=(const CannedAppCacheHelper&) = delete;
 
   // Add an appcache to the set of canned caches that is returned by this
   // helper.
@@ -79,8 +83,6 @@ class CannedAppCacheHelper : public AppCacheHelper {
   ~CannedAppCacheHelper() override;
 
   std::set<url::Origin> pending_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedAppCacheHelper);
 };
 
 }  // namespace browsing_data

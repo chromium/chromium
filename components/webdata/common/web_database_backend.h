@@ -48,6 +48,9 @@ class WEBDATA_EXPORT WebDatabaseBackend
       std::unique_ptr<Delegate> delegate,
       const scoped_refptr<base::SingleThreadTaskRunner>& db_thread);
 
+  WebDatabaseBackend(const WebDatabaseBackend&) = delete;
+  WebDatabaseBackend& operator=(const WebDatabaseBackend&) = delete;
+
   // Must call only before InitDatabaseWithCallback.
   void AddTable(std::unique_ptr<WebDatabaseTable> table);
 
@@ -133,8 +136,6 @@ class WEBDATA_EXPORT WebDatabaseBackend
 
   // Delegate. See the class definition above for more information.
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseBackend);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_BACKEND_H_

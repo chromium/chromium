@@ -37,6 +37,9 @@ class MockUploader : public FeedbackUploader {
       : FeedbackUploader(is_off_the_record, state_path, url_loader_factory),
         on_report_sent_(std::move(on_report_sent)) {}
 
+  MockUploader(const MockUploader&) = delete;
+  MockUploader& operator=(const MockUploader&) = delete;
+
   // feedback::FeedbackUploader:
   void StartDispatchingReport() override { std::move(on_report_sent_).Run(); }
 
@@ -53,8 +56,6 @@ class MockUploader : public FeedbackUploader {
   base::OnceClosure on_report_sent_;
   bool called_queue_report_ = false;
   bool report_had_email_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUploader);
 };
 
 }  // namespace

@@ -342,6 +342,9 @@ class VariationsServiceTest : public ::testing::Test {
     metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
   }
 
+  VariationsServiceTest(const VariationsServiceTest&) = delete;
+  VariationsServiceTest& operator=(const VariationsServiceTest&) = delete;
+
   metrics::MetricsStateManager* GetMetricsStateManager() {
     // Lazy-initialize the metrics_state_manager so that it correctly reads the
     // stability state from prefs after tests have a chance to initialize it.
@@ -364,8 +367,6 @@ class VariationsServiceTest : public ::testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsServiceTest);
 };
 
 TEST_F(VariationsServiceTest, GetVariationsServerURL) {

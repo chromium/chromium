@@ -21,12 +21,12 @@ class ClickInputTrackerTest : public testing::Test {
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_handle_(task_runner_) {}
 
+  ClickInputTrackerTest(const ClickInputTrackerTest&) = delete;
+  ClickInputTrackerTest& operator=(const ClickInputTrackerTest&) = delete;
+
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClickInputTrackerTest);
 };
 
 TEST_F(ClickInputTrackerTest, OnUserInputGestureTapClickBurst) {

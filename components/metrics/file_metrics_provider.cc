@@ -134,6 +134,10 @@ struct FileMetricsProvider::SourceInfo {
         break;
     }
   }
+
+  SourceInfo(const SourceInfo&) = delete;
+  SourceInfo& operator=(const SourceInfo&) = delete;
+
   ~SourceInfo() {}
 
   struct FoundFile {
@@ -183,9 +187,6 @@ struct FileMetricsProvider::SourceInfo {
   // Once a file has been recognized as needing to be read, it is mapped
   // into memory and assigned to an |allocator| object.
   std::unique_ptr<base::PersistentHistogramAllocator> allocator;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SourceInfo);
 };
 
 FileMetricsProvider::Params::Params(const base::FilePath& path,

@@ -30,12 +30,13 @@ class VulkanClient : ClientBase {
  public:
   VulkanClient() {}
 
+  VulkanClient(const VulkanClient&) = delete;
+  VulkanClient& operator=(const VulkanClient&) = delete;
+
   void Run(const ClientBase::InitParams& params);
 
  private:
   friend class ScopedVulkanRenderFrame;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanClient);
 };
 
 // ScopedVulkanRenderFrame class helps setting up all the state needed to begin

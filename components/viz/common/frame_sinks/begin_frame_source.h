@@ -188,6 +188,10 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // be incremented. This ensures that |source_id_| is still unique after
   // process restart.
   explicit BeginFrameSource(uint32_t restart_id);
+
+  BeginFrameSource(const BeginFrameSource&) = delete;
+  BeginFrameSource& operator=(const BeginFrameSource&) = delete;
+
   virtual ~BeginFrameSource();
 
   // Returns an identifier for this BeginFrameSource. Guaranteed unique within a
@@ -251,8 +255,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   };
   GpuBusyThrottlingState gpu_busy_response_state_ =
       GpuBusyThrottlingState::kIdle;
-
-  DISALLOW_COPY_AND_ASSIGN(BeginFrameSource);
 };
 
 // A BeginFrameSource that does nothing.

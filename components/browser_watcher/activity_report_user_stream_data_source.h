@@ -26,13 +26,16 @@ class ActivityReportUserStreamDataSource
   explicit ActivityReportUserStreamDataSource(
       const base::FilePath& user_data_dir);
 
+  ActivityReportUserStreamDataSource(
+      const ActivityReportUserStreamDataSource&) = delete;
+  ActivityReportUserStreamDataSource& operator=(
+      const ActivityReportUserStreamDataSource&) = delete;
+
   std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
   ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
 
  private:
   base::FilePath user_data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityReportUserStreamDataSource);
 };
 
 }  // namespace browser_watcher

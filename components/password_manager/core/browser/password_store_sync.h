@@ -118,6 +118,9 @@ class PasswordStoreSync {
 
   PasswordStoreSync();
 
+  PasswordStoreSync(const PasswordStoreSync&) = delete;
+  PasswordStoreSync& operator=(const PasswordStoreSync&) = delete;
+
   // Overwrites |key_to_form_map| with a map from the DB primary key to the
   // corresponding form for all stored credentials. Returns true on success.
   virtual FormRetrievalResult ReadAllLogins(
@@ -179,9 +182,6 @@ class PasswordStoreSync {
 
  protected:
   virtual ~PasswordStoreSync();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreSync);
 };
 
 }  // namespace password_manager

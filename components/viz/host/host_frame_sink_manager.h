@@ -227,9 +227,14 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   struct FrameSinkData {
     FrameSinkData();
+
+    FrameSinkData(const FrameSinkData&) = delete;
+    FrameSinkData& operator=(const FrameSinkData&) = delete;
+
     FrameSinkData(FrameSinkData&& other);
-    ~FrameSinkData();
     FrameSinkData& operator=(FrameSinkData&& other);
+
+    ~FrameSinkData();
 
     bool IsFrameSinkRegistered() const { return client != nullptr; }
 
@@ -262,9 +267,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
     // Track frame sink hierarchy.
     std::vector<FrameSinkId> children;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FrameSinkData);
   };
 
   void CreateFrameSink(

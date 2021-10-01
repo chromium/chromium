@@ -34,6 +34,10 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   };
 
   OutputDeviceBacking();
+
+  OutputDeviceBacking(const OutputDeviceBacking&) = delete;
+  OutputDeviceBacking& operator=(const OutputDeviceBacking&) = delete;
+
   ~OutputDeviceBacking();
 
   void RegisterClient(Client* client);
@@ -58,8 +62,6 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   std::vector<Client*> clients_;
   base::UnsafeSharedMemoryRegion region_;
   size_t created_shm_bytes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputDeviceBacking);
 };
 
 }  // namespace viz

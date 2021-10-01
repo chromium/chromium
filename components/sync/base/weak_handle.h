@@ -71,6 +71,9 @@ class WeakHandleCoreBase {
   // Assumes the current thread is the owner thread.
   WeakHandleCoreBase();
 
+  WeakHandleCoreBase(const WeakHandleCoreBase&) = delete;
+  WeakHandleCoreBase& operator=(const WeakHandleCoreBase&) = delete;
+
   // May be called on any thread.
   bool IsOnOwnerThread() const;
 
@@ -85,8 +88,6 @@ class WeakHandleCoreBase {
  private:
   // May be used on any thread.
   const scoped_refptr<base::SequencedTaskRunner> owner_loop_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakHandleCoreBase);
 };
 
 // WeakHandleCore<T> contains all the logic for WeakHandle<T>.
@@ -97,6 +98,9 @@ class WeakHandleCore : public WeakHandleCoreBase,
   // Must be called on |ptr|'s owner thread, which is assumed to be
   // the current thread.
   explicit WeakHandleCore(const base::WeakPtr<T>& ptr) : ptr_(ptr) {}
+
+  WeakHandleCore(const WeakHandleCore&) = delete;
+  WeakHandleCore& operator=(const WeakHandleCore&) = delete;
 
   // Must be called on |ptr_|'s owner thread.
   base::WeakPtr<T> Get() const {
@@ -123,8 +127,6 @@ class WeakHandleCore : public WeakHandleCoreBase,
   // Must be dereferenced only on the owner thread.  May be destroyed
   // from any thread.
   base::WeakPtr<T> ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakHandleCore);
 };
 
 }  // namespace internal

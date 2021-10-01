@@ -42,6 +42,10 @@ class InstanceIDAndroid : public InstanceID {
   };
 
   InstanceIDAndroid(const std::string& app_id, gcm::GCMDriver* gcm_driver);
+
+  InstanceIDAndroid(const InstanceIDAndroid&) = delete;
+  InstanceIDAndroid& operator=(const InstanceIDAndroid&) = delete;
+
   ~InstanceIDAndroid() override;
 
   // InstanceID implementation:
@@ -94,8 +98,6 @@ class InstanceIDAndroid : public InstanceID {
   base::IDMap<std::unique_ptr<DeleteIDCallback>> delete_id_callbacks_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDAndroid);
 };
 
 }  // namespace instance_id

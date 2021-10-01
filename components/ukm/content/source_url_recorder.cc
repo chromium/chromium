@@ -53,6 +53,11 @@ class SourceUrlRecorderWebContentsObserver
       public content::WebContentsUserData<
           SourceUrlRecorderWebContentsObserver> {
  public:
+  SourceUrlRecorderWebContentsObserver(
+      const SourceUrlRecorderWebContentsObserver&) = delete;
+  SourceUrlRecorderWebContentsObserver& operator=(
+      const SourceUrlRecorderWebContentsObserver&) = delete;
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -110,8 +115,6 @@ class SourceUrlRecorderWebContentsObserver
   int num_same_document_sources_for_full_navigation_source_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SourceUrlRecorderWebContentsObserver);
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SourceUrlRecorderWebContentsObserver)

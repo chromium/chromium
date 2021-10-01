@@ -45,6 +45,9 @@ class HttpBridge : public HttpPostProviderInterface {
              std::unique_ptr<network::PendingSharedURLLoaderFactory>
                  pending_url_loader_factory);
 
+  HttpBridge(const HttpBridge&) = delete;
+  HttpBridge& operator=(const HttpBridge&) = delete;
+
   // HttpPostProviderInterface implementation.
   void SetExtraRequestHeaders(const char* headers) override;
   void SetURL(const GURL& url) override;
@@ -180,8 +183,6 @@ class HttpBridge : public HttpPostProviderInterface {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpBridge);
 };
 
 class HttpBridgeFactory : public HttpPostProviderFactory {
@@ -189,6 +190,10 @@ class HttpBridgeFactory : public HttpPostProviderFactory {
   HttpBridgeFactory(const std::string& user_agent,
                     std::unique_ptr<network::PendingSharedURLLoaderFactory>
                         pending_url_loader_factory);
+
+  HttpBridgeFactory(const HttpBridgeFactory&) = delete;
+  HttpBridgeFactory& operator=(const HttpBridgeFactory&) = delete;
+
   ~HttpBridgeFactory() override;
 
   // HttpPostProviderFactory:
@@ -200,8 +205,6 @@ class HttpBridgeFactory : public HttpPostProviderFactory {
 
   // The URL loader factory used for making all requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpBridgeFactory);
 };
 
 }  //  namespace syncer

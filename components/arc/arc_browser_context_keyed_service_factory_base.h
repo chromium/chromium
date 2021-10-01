@@ -105,6 +105,11 @@ class ArcBrowserContextKeyedServiceFactoryBase
     return GetForBrowserContext(context);
   }
 
+  ArcBrowserContextKeyedServiceFactoryBase(
+      const ArcBrowserContextKeyedServiceFactoryBase&) = delete;
+  ArcBrowserContextKeyedServiceFactoryBase& operator=(
+      const ArcBrowserContextKeyedServiceFactoryBase&) = delete;
+
  protected:
   ArcBrowserContextKeyedServiceFactoryBase()
       : BrowserContextKeyedServiceFactory(
@@ -130,9 +135,6 @@ class ArcBrowserContextKeyedServiceFactoryBase
 
     return new Service(context, arc_service_manager->arc_bridge_service());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcBrowserContextKeyedServiceFactoryBase);
 };
 
 }  // namespace internal

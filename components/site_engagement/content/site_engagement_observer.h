@@ -21,6 +21,9 @@ enum class EngagementType;
 
 class SiteEngagementObserver {
  public:
+  SiteEngagementObserver(const SiteEngagementObserver&) = delete;
+  SiteEngagementObserver& operator=(const SiteEngagementObserver&) = delete;
+
   // Called when the engagement for |url| loaded in |web_contents| is changed
   // to |score|, due to an event of type |type|. This method may be run on user
   // input, so observers *must not* perform any expensive tasks here.
@@ -50,8 +53,6 @@ class SiteEngagementObserver {
   friend class SiteEngagementService;
 
   SiteEngagementService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementObserver);
 };
 
 }  // namespace site_engagement

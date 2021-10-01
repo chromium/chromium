@@ -30,6 +30,10 @@ namespace client_update_protocol {
 // ValidateResponse().
 class Ecdsa {
  public:
+  Ecdsa() = delete;
+  Ecdsa(const Ecdsa&) = delete;
+  Ecdsa& operator=(const Ecdsa&) = delete;
+
   ~Ecdsa();
 
   // Initializes this instance of CUP-ECDSA with a versioned public key.
@@ -81,8 +85,6 @@ class Ecdsa {
   // The query string containing key version and nonce in UTF-8 form.  This is
   // modified on each call to SignRequest(), and checked by ValidateResponse().
   std::string request_query_cup2key_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Ecdsa);
 };
 
 }  // namespace client_update_protocol

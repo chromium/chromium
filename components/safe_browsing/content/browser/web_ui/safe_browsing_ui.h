@@ -295,6 +295,9 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
  public:
   static WebUIInfoSingleton* GetInstance();
 
+  WebUIInfoSingleton(const WebUIInfoSingleton&) = delete;
+  WebUIInfoSingleton& operator=(const WebUIInfoSingleton&) = delete;
+
   // Returns true when there is a listening chrome://safe-browsing tab.
   static bool HasListener();
 
@@ -644,8 +647,6 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // Whether there is a test listener.
   bool has_test_listener_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIInfoSingleton);
 };
 
 // Used for streaming messages to the WebUIInfoSingleton. Collects streamed

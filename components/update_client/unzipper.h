@@ -34,15 +34,15 @@ class Unzipper {
 
 class UnzipperFactory : public base::RefCountedThreadSafe<UnzipperFactory> {
  public:
+  UnzipperFactory(const UnzipperFactory&) = delete;
+  UnzipperFactory& operator=(const UnzipperFactory&) = delete;
+
   virtual std::unique_ptr<Unzipper> Create() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<UnzipperFactory>;
   UnzipperFactory() = default;
   virtual ~UnzipperFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnzipperFactory);
 };
 
 }  // namespace update_client

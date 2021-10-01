@@ -70,6 +70,10 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
                      std::vector<mojom::PaymentMethodDataPtr> method_data,
                      base::WeakPtr<PaymentRequestSpec::Observer> observer,
                      const std::string& app_locale);
+
+  PaymentRequestSpec(const PaymentRequestSpec&) = delete;
+  PaymentRequestSpec& operator=(const PaymentRequestSpec&) = delete;
+
   ~PaymentRequestSpec() override;
 
   // Called when the merchant has new PaymentDetails. Will recompute every spec
@@ -295,8 +299,6 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::set<std::string> app_store_billing_methods_;
 
   base::WeakPtrFactory<PaymentRequestSpec> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestSpec);
 };
 
 }  // namespace payments

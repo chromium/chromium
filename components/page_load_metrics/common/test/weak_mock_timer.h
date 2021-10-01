@@ -18,8 +18,8 @@ class WeakMockTimer : public base::MockOneShotTimer,
  public:
   WeakMockTimer();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WeakMockTimer);
+  WeakMockTimer(const WeakMockTimer&) = delete;
+  WeakMockTimer& operator=(const WeakMockTimer&) = delete;
 };
 
 // WeakMockTimerProvider is a testing helper class that test classes can inherit

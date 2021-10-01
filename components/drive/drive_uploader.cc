@@ -110,6 +110,9 @@ struct DriveUploader::UploadFileInfo {
     }
   }
 
+  UploadFileInfo(const UploadFileInfo&) = delete;
+  UploadFileInfo& operator=(const UploadFileInfo&) = delete;
+
   ~UploadFileInfo() = default;
 
   // Useful for printf debugging.
@@ -167,7 +170,6 @@ struct DriveUploader::UploadFileInfo {
   }
 
   base::WeakPtrFactory<UploadFileInfo> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UploadFileInfo);
 };
 
 DriveUploader::DriveUploader(

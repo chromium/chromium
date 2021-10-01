@@ -56,6 +56,11 @@ class TestNativeWebContentsModalDialogManager
       tracker_->SetState(NativeManagerTracker::NOT_SHOWN);
   }
 
+  TestNativeWebContentsModalDialogManager(
+      const TestNativeWebContentsModalDialogManager&) = delete;
+  TestNativeWebContentsModalDialogManager& operator=(
+      const TestNativeWebContentsModalDialogManager&) = delete;
+
   void Show() override {
     if (tracker_)
       tracker_->SetState(NativeManagerTracker::SHOWN);
@@ -80,14 +85,17 @@ class TestNativeWebContentsModalDialogManager
   SingleWebContentsDialogManagerDelegate* delegate_;
   gfx::NativeWindow dialog_;
   NativeManagerTracker* tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeWebContentsModalDialogManager);
 };
 
 class WebContentsModalDialogManagerTest
     : public content::RenderViewHostTestHarness {
  public:
   WebContentsModalDialogManagerTest() : next_dialog_id(1), manager(nullptr) {}
+
+  WebContentsModalDialogManagerTest(const WebContentsModalDialogManagerTest&) =
+      delete;
+  WebContentsModalDialogManagerTest& operator=(
+      const WebContentsModalDialogManagerTest&) = delete;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -121,8 +129,6 @@ class WebContentsModalDialogManagerTest
   std::unique_ptr<TestWebContentsModalDialogManagerDelegate> delegate;
   WebContentsModalDialogManager* manager;
   std::unique_ptr<WebContentsModalDialogManager::TestApi> test_api;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsModalDialogManagerTest);
 };
 
 // Test that the dialog is shown immediately when the delegate indicates the web

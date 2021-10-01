@@ -23,6 +23,9 @@ class SessionSyncTestHelper {
  public:
   SessionSyncTestHelper() : max_tab_node_id_(0) {}
 
+  SessionSyncTestHelper(const SessionSyncTestHelper&) = delete;
+  SessionSyncTestHelper& operator=(const SessionSyncTestHelper&) = delete;
+
   static void BuildSessionSpecifics(const std::string& tag,
                                     sync_pb::SessionSpecifics* meta);
 
@@ -58,8 +61,6 @@ class SessionSyncTestHelper {
 
  private:
   int max_tab_node_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncTestHelper);
 };
 
 }  // namespace sync_sessions

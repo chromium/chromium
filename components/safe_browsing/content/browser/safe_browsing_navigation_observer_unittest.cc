@@ -28,6 +28,10 @@ namespace safe_browsing {
 class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
  public:
   SBNavigationObserverTest() {}
+
+  SBNavigationObserverTest(const SBNavigationObserverTest&) = delete;
+  SBNavigationObserverTest& operator=(const SBNavigationObserverTest&) = delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("http://foo/0"));
@@ -179,9 +183,6 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
       navigation_observer_manager_;
   SafeBrowsingNavigationObserver* navigation_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SBNavigationObserverTest);
 };
 
 TEST_F(SBNavigationObserverTest, TestNavigationEventList) {

@@ -22,6 +22,9 @@ class TestingPrefStore : public PersistentPrefStore {
  public:
   TestingPrefStore();
 
+  TestingPrefStore(const TestingPrefStore&) = delete;
+  TestingPrefStore& operator=(const TestingPrefStore&) = delete;
+
   // Overriden from PrefStore.
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
@@ -117,8 +120,6 @@ class TestingPrefStore : public PersistentPrefStore {
 
   std::unique_ptr<ReadErrorDelegate> error_delegate_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_TESTING_PREF_STORE_H_

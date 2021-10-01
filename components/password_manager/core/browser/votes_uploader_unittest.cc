@@ -100,6 +100,10 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
   MockAutofillDownloadManager()
       : AutofillDownloadManager(nullptr, &fake_observer) {}
 
+  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
+  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+      delete;
+
   MOCK_METHOD6(StartUploadRequest,
                bool(const FormStructure&,
                     bool,
@@ -116,7 +120,6 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
   };
 
   StubObserver fake_observer;
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillDownloadManager);
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {

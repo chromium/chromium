@@ -63,6 +63,10 @@ class LibsecretLoader {
     GError* error_ = nullptr;
   };
 
+  LibsecretLoader() = delete;
+  LibsecretLoader(const LibsecretLoader&) = delete;
+  LibsecretLoader& operator=(const LibsecretLoader&) = delete;
+
   // Loads the libsecret library and checks that it responds to queries.
   // Returns false if either step fails.
   // Repeated calls check the responsiveness every time, but do not load the
@@ -94,8 +98,6 @@ class LibsecretLoader {
   // True if the libsecret binaries have been loaded and the library responds
   // to queries.
   static bool LibsecretIsAvailable();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LibsecretLoader);
 };
 
 class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {

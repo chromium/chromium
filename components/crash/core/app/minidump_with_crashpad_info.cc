@@ -25,6 +25,9 @@ class MinidumpUpdater {
  public:
   MinidumpUpdater();
 
+  MinidumpUpdater(const MinidumpUpdater&) = delete;
+  MinidumpUpdater& operator=(const MinidumpUpdater&) = delete;
+
   // Reads the existing directory from |file|.
   bool Initialize(base::File* file);
 
@@ -41,8 +44,6 @@ class MinidumpUpdater {
 
   base::File* file_;
   std::vector<MINIDUMP_DIRECTORY> directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUpdater);
 };
 
 MinidumpUpdater::MinidumpUpdater() : file_(nullptr) {}

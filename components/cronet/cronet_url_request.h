@@ -153,6 +153,9 @@ class CronetURLRequest {
                    int32_t traffic_stats_uid,
                    net::Idempotency idempotency);
 
+  CronetURLRequest(const CronetURLRequest&) = delete;
+  CronetURLRequest& operator=(const CronetURLRequest&) = delete;
+
   // Methods called prior to Start are never called on network thread.
 
   // Sets the request method GET, POST etc.
@@ -308,8 +311,6 @@ class CronetURLRequest {
   std::string initial_method_;
   std::unique_ptr<net::HttpRequestHeaders> initial_request_headers_;
   std::unique_ptr<net::UploadDataStream> upload_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetURLRequest);
 };
 
 }  // namespace cronet

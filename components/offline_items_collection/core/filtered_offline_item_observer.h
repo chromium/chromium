@@ -33,6 +33,11 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
   };
 
   FilteredOfflineItemObserver(OfflineContentProvider* provider);
+
+  FilteredOfflineItemObserver(const FilteredOfflineItemObserver&) = delete;
+  FilteredOfflineItemObserver& operator=(const FilteredOfflineItemObserver&) =
+      delete;
+
   ~FilteredOfflineItemObserver() override;
 
   void AddObserver(const ContentId& id, Observer* observer);
@@ -55,8 +60,6 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
                           OfflineContentProvider::Observer>
       observation_{this};
   ObserversMap observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteredOfflineItemObserver);
 };
 
 }  // namespace offline_items_collection

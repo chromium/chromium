@@ -25,6 +25,10 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
                                  public NigoriLocalChangeProcessor {
  public:
   NigoriModelTypeProcessor();
+
+  NigoriModelTypeProcessor(const NigoriModelTypeProcessor&) = delete;
+  NigoriModelTypeProcessor& operator=(const NigoriModelTypeProcessor&) = delete;
+
   ~NigoriModelTypeProcessor() override;
 
   // ModelTypeProcessor implementation.
@@ -112,8 +116,6 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
   // invalidated during destruction).
   base::WeakPtrFactory<ModelTypeControllerDelegate>
       weak_ptr_factory_for_controller_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NigoriModelTypeProcessor);
 };
 
 }  // namespace syncer

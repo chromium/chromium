@@ -29,6 +29,9 @@ struct FaviconURL;
 class FaviconDriverImpl : public FaviconDriver,
                           public FaviconHandler::Delegate {
  public:
+  FaviconDriverImpl(const FaviconDriverImpl&) = delete;
+  FaviconDriverImpl& operator=(const FaviconDriverImpl&) = delete;
+
   // FaviconDriver implementation.
   void FetchFavicon(const GURL& page_url, bool is_same_document) override;
 
@@ -62,8 +65,6 @@ class FaviconDriverImpl : public FaviconDriver,
 
   // FaviconHandlers used to download the different kind of favicons.
   std::vector<std::unique_ptr<FaviconHandler>> handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconDriverImpl);
 };
 
 }  // namespace favicon

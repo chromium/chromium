@@ -29,6 +29,8 @@ class AddressField : public FormField {
                                           const LanguageCode& page_language,
                                           LogManager* log_manager);
 
+  AddressField(const AddressField&) = delete;
+  AddressField& operator=(const AddressField&) = delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
@@ -132,8 +134,6 @@ class AddressField : public FormField {
   AutofillField* zip_ = nullptr;
   AutofillField* zip4_ = nullptr;  // optional ZIP+4; we don't fill this yet.
   AutofillField* country_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressField);
 };
 
 }  // namespace autofill

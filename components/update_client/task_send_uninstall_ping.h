@@ -40,6 +40,9 @@ class TaskSendUninstallPing : public Task {
                         int reason,
                         Callback callback);
 
+  TaskSendUninstallPing(const TaskSendUninstallPing&) = delete;
+  TaskSendUninstallPing& operator=(const TaskSendUninstallPing&) = delete;
+
   void Run() override;
 
   void Cancel() override;
@@ -59,8 +62,6 @@ class TaskSendUninstallPing : public Task {
   const base::Version version_;
   int reason_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSendUninstallPing);
 };
 
 }  // namespace update_client

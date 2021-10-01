@@ -31,6 +31,9 @@ class AutofillRegexes {
  public:
   AutofillRegexes() = default;
 
+  AutofillRegexes(const AutofillRegexes&) = delete;
+  AutofillRegexes& operator=(const AutofillRegexes&) = delete;
+
   // Returns the compiled regex matcher corresponding to |pattern|.
   icu::RegexMatcher* GetMatcher(const base::StringPiece16& pattern);
 
@@ -40,8 +43,6 @@ class AutofillRegexes {
   // Maps patterns to their corresponding regex matchers.
   std::map<std::u16string, std::unique_ptr<icu::RegexMatcher>, std::less<>>
       matchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillRegexes);
 };
 
 icu::RegexMatcher* AutofillRegexes::GetMatcher(

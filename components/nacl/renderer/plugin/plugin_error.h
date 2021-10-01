@@ -24,6 +24,9 @@ class ErrorInfo {
     SetReport(PP_NACL_ERROR_UNKNOWN, std::string());
   }
 
+  ErrorInfo(const ErrorInfo&) = delete;
+  ErrorInfo& operator=(const ErrorInfo&) = delete;
+
   void SetReport(PP_NaClError error_code, const std::string& message) {
     error_code_ = error_code;
     message_ = message;
@@ -40,7 +43,6 @@ class ErrorInfo {
  private:
   PP_NaClError error_code_;
   std::string message_;
-  DISALLOW_COPY_AND_ASSIGN(ErrorInfo);
 };
 
 }  // namespace plugin

@@ -61,6 +61,11 @@ class PaymentRequestDisplayManager : public KeyedService {
   };
 
   PaymentRequestDisplayManager();
+
+  PaymentRequestDisplayManager(const PaymentRequestDisplayManager&) = delete;
+  PaymentRequestDisplayManager& operator=(const PaymentRequestDisplayManager&) =
+      delete;
+
   ~PaymentRequestDisplayManager() override;
 
   // If no PaymentRequest is currently showing, returns a unique_ptr to a
@@ -83,7 +88,6 @@ class PaymentRequestDisplayManager : public KeyedService {
   base::WeakPtr<DisplayHandle> current_handle_;
 
   base::WeakPtrFactory<PaymentRequestDisplayManager> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestDisplayManager);
 };
 
 }  // namespace payments

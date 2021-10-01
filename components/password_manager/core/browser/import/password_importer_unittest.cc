@@ -28,6 +28,9 @@ class PasswordImporterTest : public testing::Test {
  public:
   PasswordImporterTest() { CHECK(temp_directory_.CreateUniqueTempDir()); }
 
+  PasswordImporterTest(const PasswordImporterTest&) = delete;
+  PasswordImporterTest& operator=(const PasswordImporterTest&) = delete;
+
  protected:
   void StartImportAndWaitForCompletion(const base::FilePath& input_file) {
     PasswordImporter::Import(
@@ -65,8 +68,6 @@ class PasswordImporterTest : public testing::Test {
   bool callback_called_ = false;
   PasswordImporter::Result result_ = PasswordImporter::NUM_IMPORT_RESULTS;
   std::vector<PasswordForm> imported_passwords_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordImporterTest);
 };
 
 TEST_F(PasswordImporterTest, CSVImport) {

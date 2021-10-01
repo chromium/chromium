@@ -23,6 +23,11 @@ class CallStackProfileMetricsProviderTest : public testing::Test {
         TestState::kSamplingProfilerReporting);
   }
 
+  CallStackProfileMetricsProviderTest(
+      const CallStackProfileMetricsProviderTest&) = delete;
+  CallStackProfileMetricsProviderTest& operator=(
+      const CallStackProfileMetricsProviderTest&) = delete;
+
  protected:
   // Exposes the feature from the CallStackProfileMetricsProvider.
   class TestState : public CallStackProfileMetricsProvider {
@@ -33,8 +38,6 @@ class CallStackProfileMetricsProviderTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallStackProfileMetricsProviderTest);
 };
 
 // Checks that the unserialized pending profile is encoded in the session data.

@@ -25,6 +25,9 @@ class NaClBrokerService {
   // Returns the NaClBrokerService singleton.
   static NaClBrokerService* GetInstance();
 
+  NaClBrokerService(const NaClBrokerService&) = delete;
+  NaClBrokerService& operator=(const NaClBrokerService&) = delete;
+
   // Can be called several times, must be called before LaunchLoader.
   bool StartBroker();
 
@@ -64,8 +67,6 @@ class NaClBrokerService {
   int next_launch_id_ = 0;
   PendingLaunchesMap pending_launches_;
   PendingDebugExceptionHandlersMap pending_debuggers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerService);
 };
 
 }  // namespace nacl

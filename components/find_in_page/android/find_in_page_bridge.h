@@ -16,6 +16,10 @@ class FindInPageBridge {
   FindInPageBridge(JNIEnv* env,
                    const base::android::JavaRef<jobject>& obj,
                    const base::android::JavaRef<jobject>& j_web_contents);
+
+  FindInPageBridge(const FindInPageBridge&) = delete;
+  FindInPageBridge& operator=(const FindInPageBridge&) = delete;
+
   void Destroy(JNIEnv*, const base::android::JavaParamRef<jobject>&);
 
   void StartFinding(JNIEnv* env,
@@ -49,8 +53,6 @@ class FindInPageBridge {
  private:
   content::WebContents* web_contents_;
   JavaObjectWeakGlobalRef weak_java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindInPageBridge);
 };
 
 }  // namespace find_in_page

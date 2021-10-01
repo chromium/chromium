@@ -35,6 +35,9 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
 
   WriteablePrefStore() {}
 
+  WriteablePrefStore(const WriteablePrefStore&) = delete;
+  WriteablePrefStore& operator=(const WriteablePrefStore&) = delete;
+
   // Sets a |value| for |key| in the store. |value| must be non-NULL. |flags| is
   // a bitmask of PrefWriteFlags.
   virtual void SetValue(const std::string& key,
@@ -82,9 +85,6 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
 
  protected:
   ~WriteablePrefStore() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WriteablePrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_WRITEABLE_PREF_STORE_H_

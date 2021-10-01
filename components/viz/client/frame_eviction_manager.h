@@ -45,6 +45,9 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager {
 
   static FrameEvictionManager* GetInstance();
 
+  FrameEvictionManager(const FrameEvictionManager&) = delete;
+  FrameEvictionManager& operator=(const FrameEvictionManager&) = delete;
+
   void AddFrame(FrameEvictionManagerClient*, bool locked);
   void RemoveFrame(FrameEvictionManagerClient*);
   void LockFrame(FrameEvictionManagerClient*);
@@ -92,8 +95,6 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager {
 
   // Argument of the last CullUnlockedFrames call while paused.
   absl::optional<size_t> pending_unlocked_frame_limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameEvictionManager);
 };
 
 }  // namespace viz

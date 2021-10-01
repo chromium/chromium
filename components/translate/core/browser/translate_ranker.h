@@ -26,6 +26,9 @@ class TranslateRanker : public KeyedService {
  public:
   TranslateRanker() = default;
 
+  TranslateRanker(const TranslateRanker&) = delete;
+  TranslateRanker& operator=(const TranslateRanker&) = delete;
+
   // Returns the version id for the ranker model.
   virtual uint32_t GetModelVersion() const = 0;
 
@@ -60,9 +63,6 @@ class TranslateRanker : public KeyedService {
 
   // Override the default enabled/disabled state of translate event logging.
   virtual void EnableLogging(bool enable_logging) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateRanker);
 };
 
 }  // namespace translate

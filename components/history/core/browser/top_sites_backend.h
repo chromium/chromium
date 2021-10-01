@@ -42,6 +42,9 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
 
   TopSitesBackend();
 
+  TopSitesBackend(const TopSitesBackend&) = delete;
+  TopSitesBackend& operator=(const TopSitesBackend&) = delete;
+
   void Init(const base::FilePath& path);
 
   // Schedules the db to be shutdown.
@@ -83,8 +86,6 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
 
   std::unique_ptr<TopSitesDatabase> db_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesBackend);
 };
 
 }  // namespace history

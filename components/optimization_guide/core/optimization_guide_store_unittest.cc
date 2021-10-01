@@ -74,6 +74,10 @@ class OptimizationGuideStoreTest : public testing::Test {
 
   OptimizationGuideStoreTest() = default;
 
+  OptimizationGuideStoreTest(const OptimizationGuideStoreTest&) = delete;
+  OptimizationGuideStoreTest& operator=(const OptimizationGuideStoreTest&) =
+      delete;
+
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override { last_loaded_hint_.reset(); }
@@ -509,8 +513,6 @@ class OptimizationGuideStoreTest : public testing::Test {
   std::unique_ptr<std::vector<proto::HostModelFeatures>>
       last_loaded_all_host_model_features_;
   std::unique_ptr<proto::PredictionModel> last_loaded_prediction_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideStoreTest);
 };
 
 TEST_F(OptimizationGuideStoreTest, NoInitialization) {

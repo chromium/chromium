@@ -83,6 +83,12 @@ class MockSyncableService : public SyncableService {
 };
 
 class SyncableServiceBasedBridgeTest : public ::testing::Test {
+ public:
+  SyncableServiceBasedBridgeTest(const SyncableServiceBasedBridgeTest&) =
+      delete;
+  SyncableServiceBasedBridgeTest& operator=(
+      const SyncableServiceBasedBridgeTest&) = delete;
+
  protected:
   SyncableServiceBasedBridgeTest()
       : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
@@ -173,9 +179,6 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   // SyncChangeProcessor received via MergeDataAndStartSyncing(), or null if it
   // hasn't been called.
   std::unique_ptr<SyncChangeProcessor> start_syncing_sync_processor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncableServiceBasedBridgeTest);
 };
 
 TEST_F(SyncableServiceBasedBridgeTest,

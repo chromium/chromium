@@ -38,6 +38,9 @@ class TranslateRankerImplTest : public ::testing::Test {
  protected:
   TranslateRankerImplTest();
 
+  TranslateRankerImplTest(const TranslateRankerImplTest&) = delete;
+  TranslateRankerImplTest& operator=(const TranslateRankerImplTest&) = delete;
+
   // Initializes the explicitly |enabled| and |disabled| features for this test.
   void InitFeatures(const std::initializer_list<base::Feature>& enabled,
                     const std::initializer_list<base::Feature>& disabled);
@@ -78,8 +81,6 @@ class TranslateRankerImplTest : public ::testing::Test {
 
   // Manages the enabling/disabling of features within the scope of a test.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerImplTest);
 };
 
 TranslateRankerImplTest::TranslateRankerImplTest() = default;

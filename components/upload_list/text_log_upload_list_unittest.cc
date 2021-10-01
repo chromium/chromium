@@ -29,6 +29,9 @@ class TextLogUploadListTest : public testing::Test {
  public:
   TextLogUploadListTest() = default;
 
+  TextLogUploadListTest(const TextLogUploadListTest&) = delete;
+  TextLogUploadListTest& operator=(const TextLogUploadListTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
@@ -49,8 +52,6 @@ class TextLogUploadListTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextLogUploadListTest);
 };
 
 // These tests test that UploadList can parse a vector of log entry strings of

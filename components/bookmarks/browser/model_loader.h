@@ -37,6 +37,9 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
       std::unique_ptr<BookmarkLoadDetails> details,
       LoadCallback callback);
 
+  ModelLoader(const ModelLoader&) = delete;
+  ModelLoader& operator=(const ModelLoader&) = delete;
+
   // Blocks until loaded. This is intended for usage on a thread other than
   // the main thread.
   void BlockTillLoaded();
@@ -63,8 +66,6 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
 
   // Signaled once loading completes.
   base::WaitableEvent loaded_signal_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModelLoader);
 };
 
 }  // namespace bookmarks

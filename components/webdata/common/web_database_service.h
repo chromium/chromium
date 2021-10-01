@@ -59,6 +59,9 @@ class WEBDATA_EXPORT WebDatabaseService
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
 
+  WebDatabaseService(const WebDatabaseService&) = delete;
+  WebDatabaseService& operator=(const WebDatabaseService&) = delete;
+
   // Adds |table| as a WebDatabaseTable that will participate in
   // managing the database, transferring ownership. All calls to this
   // method must be made before |LoadDatabase| is called.
@@ -126,8 +129,6 @@ class WEBDATA_EXPORT WebDatabaseService
 
   // All vended weak pointers are invalidated in ShutdownDatabase().
   base::WeakPtrFactory<WebDatabaseService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseService);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_SERVICE_H_

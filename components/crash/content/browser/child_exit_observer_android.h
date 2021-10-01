@@ -129,6 +129,9 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
   // called.
   static ChildExitObserver* GetInstance();
 
+  ChildExitObserver(const ChildExitObserver&) = delete;
+  ChildExitObserver& operator=(const ChildExitObserver&) = delete;
+
   void RegisterClient(std::unique_ptr<Client> client);
 
   // crashpad::CrashHandlerHost::Observer
@@ -172,8 +175,6 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
   base::ScopedObservation<crashpad::CrashHandlerHost,
                           crashpad::CrashHandlerHost::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildExitObserver);
 };
 
 }  // namespace crash_reporter

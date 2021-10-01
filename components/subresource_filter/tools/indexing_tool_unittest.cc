@@ -41,6 +41,9 @@ class IndexingToolTest : public ::testing::Test {
  public:
   IndexingToolTest() {}
 
+  IndexingToolTest(const IndexingToolTest&) = delete;
+  IndexingToolTest& operator=(const IndexingToolTest&) = delete;
+
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
@@ -76,8 +79,6 @@ class IndexingToolTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexingToolTest);
 };
 
 TEST_F(IndexingToolTest, UnindexedFileDoesNotExist) {

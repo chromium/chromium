@@ -28,6 +28,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJobFactory {
   using WakeLockProviderBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<device::mojom::WakeLockProvider>)>;
 
+  DownloadJobFactory(const DownloadJobFactory&) = delete;
+  DownloadJobFactory& operator=(const DownloadJobFactory&) = delete;
+
   static std::unique_ptr<DownloadJob> CreateJob(
       DownloadItem* download_item,
       DownloadJob::CancelRequestCallback cancel_request_callback,
@@ -36,9 +39,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJobFactory {
       URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
           url_loader_factory_provider,
       WakeLockProviderBinder wake_lock_provider_binder);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadJobFactory);
 };
 
 }  // namespace download

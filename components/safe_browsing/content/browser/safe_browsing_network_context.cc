@@ -36,6 +36,9 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
         network_context_params_factory_(
             std::move(network_context_params_factory)) {}
 
+  SharedURLLoaderFactory(const SharedURLLoaderFactory&) = delete;
+  SharedURLLoaderFactory& operator=(const SharedURLLoaderFactory&) = delete;
+
   void Reset() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     url_loader_factory_.reset();
@@ -138,8 +141,6 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
   NetworkContextParamsFactory network_context_params_factory_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedURLLoaderFactory);
 };
 
 SafeBrowsingNetworkContext::SafeBrowsingNetworkContext(

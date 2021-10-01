@@ -152,12 +152,13 @@ struct WaylandXdgSurface {
       : shell_surface(std::move(shell_surface)),
         serial_tracker(serial_tracker) {}
 
+  WaylandXdgSurface(const WaylandXdgSurface&) = delete;
+  WaylandXdgSurface& operator=(const WaylandXdgSurface&) = delete;
+
   std::unique_ptr<XdgShellSurface> shell_surface;
 
   // Owned by Server, which always outlives this surface.
   SerialTracker* const serial_tracker;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandXdgSurface);
 };
 
 // Wrapper around shell surface that allows us to handle the case where the

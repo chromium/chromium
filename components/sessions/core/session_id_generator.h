@@ -22,6 +22,9 @@ class SESSIONS_EXPORT SessionIdGenerator {
   // Returns the singleton instance of this class.
   static SessionIdGenerator* GetInstance();
 
+  SessionIdGenerator(const SessionIdGenerator&) = delete;
+  SessionIdGenerator& operator=(const SessionIdGenerator&) = delete;
+
   // Register preferences used by this class.
   static void RegisterPrefs(PrefRegistrySimple* prefs);
 
@@ -55,8 +58,6 @@ class SESSIONS_EXPORT SessionIdGenerator {
 
   // Used to override the random number generator for tests.
   RandomGenerator rand_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionIdGenerator);
 };
 
 }  // namespace sessions

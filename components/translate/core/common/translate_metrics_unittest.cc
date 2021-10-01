@@ -34,6 +34,9 @@ class MetricsRecorder {
       base_samples_ = histogram->SnapshotSamples();
   }
 
+  MetricsRecorder(const MetricsRecorder&) = delete;
+  MetricsRecorder& operator=(const MetricsRecorder&) = delete;
+
   void CheckLanguageVerification(int expected_model_disabled,
                                  int expected_model_only,
                                  int expected_unknown,
@@ -128,8 +131,6 @@ class MetricsRecorder {
   std::string key_;
   std::unique_ptr<HistogramSamples> base_samples_;
   std::unique_ptr<HistogramSamples> samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRecorder);
 };
 
 TEST(TranslateMetricsTest, ReportLanguageVerification) {

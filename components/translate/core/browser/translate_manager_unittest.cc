@@ -60,6 +60,10 @@ class TestNetworkChangeNotifier {
   TestNetworkChangeNotifier()
       : mock_notifier_(net::test::MockNetworkChangeNotifier::Create()) {}
 
+  TestNetworkChangeNotifier(const TestNetworkChangeNotifier&) = delete;
+  TestNetworkChangeNotifier& operator=(const TestNetworkChangeNotifier&) =
+      delete;
+
   // Simulates a change of the connection type to |type|. This will notify any
   // objects that are NetworkChangeNotifiers.
   void SimulateNetworkConnectionChange(
@@ -82,8 +86,6 @@ class TestNetworkChangeNotifier {
 
  private:
   std::unique_ptr<net::test::MockNetworkChangeNotifier> mock_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkChangeNotifier);
 };
 
 // Compares TranslateEventProto on a restricted set of fields.

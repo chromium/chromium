@@ -38,6 +38,9 @@ class GuestView : public GuestViewBase {
     return FromWebContents(web_contents);
   }
 
+  GuestView(const GuestView&) = delete;
+  GuestView& operator=(const GuestView&) = delete;
+
   // GuestViewBase implementation.
   const char* GetViewType() const final {
     return T::Type;
@@ -65,8 +68,6 @@ class GuestView : public GuestViewBase {
 
     return static_cast<T*>(guest);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(GuestView);
 };
 
 }  // namespace guest_view

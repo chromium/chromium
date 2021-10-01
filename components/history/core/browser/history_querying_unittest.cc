@@ -92,6 +92,9 @@ class HistoryQueryTest : public testing::Test {
  public:
   HistoryQueryTest() : nav_entry_id_(0) {}
 
+  HistoryQueryTest(const HistoryQueryTest&) = delete;
+  HistoryQueryTest& operator=(const HistoryQueryTest&) = delete;
+
   // Acts like a synchronous call to history's QueryHistory.
   void QueryHistory(const std::string& text_query,
                     const QueryOptions& options,
@@ -221,8 +224,6 @@ class HistoryQueryTest : public testing::Test {
   base::FilePath history_dir_;
 
   base::CancelableTaskTracker tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryQueryTest);
 };
 
 TEST_F(HistoryQueryTest, Basic) {

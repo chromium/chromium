@@ -39,11 +39,12 @@ class ShortcutInfoTest : public testing::Test {
  public:
   ShortcutInfoTest() : info_(GURL()) {}
 
+  ShortcutInfoTest(const ShortcutInfoTest&) = delete;
+  ShortcutInfoTest& operator=(const ShortcutInfoTest&) = delete;
+
  protected:
   ShortcutInfo info_;
   blink::mojom::Manifest manifest_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShortcutInfoTest);
 };
 
 TEST_F(ShortcutInfoTest, AllAttributesUpdate) {

@@ -234,6 +234,9 @@ class RectsClient : public ClientBase {
  public:
   RectsClient() {}
 
+  RectsClient(const RectsClient&) = delete;
+  RectsClient& operator=(const RectsClient&) = delete;
+
   // Initialize and run client main loop.
   int Run(const ClientBase::InitParams& params,
           size_t max_frames_pending,
@@ -241,9 +244,6 @@ class RectsClient : public ClientBase {
           size_t num_benchmark_runs,
           base::TimeDelta benchmark_interval,
           bool show_fps_counter);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RectsClient);
 };
 
 int RectsClient::Run(const ClientBase::InitParams& params,

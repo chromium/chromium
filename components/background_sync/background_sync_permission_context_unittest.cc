@@ -26,6 +26,12 @@
 
 class BackgroundSyncPermissionContextTest
     : public content::RenderViewHostTestHarness {
+ public:
+  BackgroundSyncPermissionContextTest(
+      const BackgroundSyncPermissionContextTest&) = delete;
+  BackgroundSyncPermissionContextTest& operator=(
+      const BackgroundSyncPermissionContextTest&) = delete;
+
  protected:
   BackgroundSyncPermissionContextTest() = default;
   ~BackgroundSyncPermissionContextTest() override = default;
@@ -63,8 +69,6 @@ class BackgroundSyncPermissionContextTest
 
  private:
   bool permission_granted_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncPermissionContextTest);
 };
 
 // Background sync permission should be allowed by default for a secure origin.

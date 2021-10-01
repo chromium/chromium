@@ -78,6 +78,9 @@ class GamepadTest : public testing::Test {
     gamepad_ = std::make_unique<TestGamepad>(device);
   }
 
+  GamepadTest(const GamepadTest&) = delete;
+  GamepadTest& operator=(const GamepadTest&) = delete;
+
   void SetUp() override {
     testing::Test::SetUp();
     // Allow test to signal to gamepad that it can vibrate.
@@ -90,8 +93,6 @@ class GamepadTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadTest);
 };
 
 TEST_F(GamepadTest, OneShotVibrationTest) {

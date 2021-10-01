@@ -49,6 +49,10 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   DownloadCreateInfo(const base::Time& start_time,
                      std::unique_ptr<DownloadSaveInfo> save_info);
   DownloadCreateInfo();
+
+  DownloadCreateInfo(const DownloadCreateInfo&) = delete;
+  DownloadCreateInfo& operator=(const DownloadCreateInfo&) = delete;
+
   ~DownloadCreateInfo();
 
   bool is_new_download;
@@ -181,9 +185,6 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
 
   // Isolation info for the download request, mainly for same site cookies.
   absl::optional<net::IsolationInfo> isolation_info;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadCreateInfo);
 };
 
 }  // namespace download

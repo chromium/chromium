@@ -48,6 +48,9 @@ class ImageFetcherImplTest : public testing::Test {
         std::move(decoder), shared_factory_);
   }
 
+  ImageFetcherImplTest(const ImageFetcherImplTest&) = delete;
+  ImageFetcherImplTest& operator=(const ImageFetcherImplTest&) = delete;
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   FakeImageDecoder* image_decoder() { return fake_image_decoder_; }
@@ -62,8 +65,6 @@ class ImageFetcherImplTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImplTest);
 };
 MATCHER(ValidImage, "") {
   return arg.Width() == 2 && arg.Height() == 3;

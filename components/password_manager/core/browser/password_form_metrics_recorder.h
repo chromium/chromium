@@ -56,6 +56,10 @@ class PasswordFormMetricsRecorder
                               ukm::SourceId source_id,
                               PrefService* pref_service);
 
+  PasswordFormMetricsRecorder(const PasswordFormMetricsRecorder&) = delete;
+  PasswordFormMetricsRecorder& operator=(const PasswordFormMetricsRecorder&) =
+      delete;
+
   // ManagerAction - What does the PasswordFormManager do with this form? Either
   // it fills it, or it doesn't. If it doesn't fill it, that's either
   // because it has no match or it is disabled via the AUTOCOMPLETE=off
@@ -534,8 +538,6 @@ class PasswordFormMetricsRecorder
   absl::optional<JsOnlyInput> js_only_input_;
 
   bool is_mixed_content_form_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormMetricsRecorder);
 };
 
 }  // namespace password_manager

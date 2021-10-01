@@ -24,6 +24,12 @@
 
 class SourceUrlRecorderWebContentsObserverBrowserTest
     : public content::ContentBrowserTest {
+ public:
+  SourceUrlRecorderWebContentsObserverBrowserTest(
+      const SourceUrlRecorderWebContentsObserverBrowserTest&) = delete;
+  SourceUrlRecorderWebContentsObserverBrowserTest& operator=(
+      const SourceUrlRecorderWebContentsObserverBrowserTest&) = delete;
+
  protected:
   SourceUrlRecorderWebContentsObserverBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -64,8 +70,6 @@ class SourceUrlRecorderWebContentsObserverBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceUrlRecorderWebContentsObserverBrowserTest);
 };
 
 class SourceUrlRecorderWebContentsObserverDownloadBrowserTest

@@ -115,6 +115,9 @@ class AppBannerManager : public content::WebContentsObserver,
   // |web_contents|.
   static AppBannerManager* FromWebContents(content::WebContents* web_contents);
 
+  AppBannerManager(const AppBannerManager&) = delete;
+  AppBannerManager& operator=(const AppBannerManager&) = delete;
+
   // Returns the current time.
   static base::Time GetCurrentTime();
 
@@ -434,8 +437,6 @@ class AppBannerManager : public content::WebContentsObserver,
   PwaInstallPathTracker install_path_tracker_;
 
   base::ObserverList<Observer, true> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppBannerManager);
 };
 
 }  // namespace webapps

@@ -117,6 +117,9 @@ class ClientBase {
     sk_sp<SkSurface> sk_surface;
   };
 
+  ClientBase(const ClientBase&) = delete;
+  ClientBase& operator=(const ClientBase&) = delete;
+
   bool Init(const InitParams& params);
 
  protected:
@@ -238,7 +241,6 @@ class ClientBase {
   base::flat_set<uint32_t> bug_fix_ids_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ClientBase);
   void SetupAuraShellIfAvailable();
 };
 

@@ -30,6 +30,9 @@ class StorageInfoFetcher
 
   explicit StorageInfoFetcher(content::BrowserContext* context);
 
+  StorageInfoFetcher(const StorageInfoFetcher&) = delete;
+  StorageInfoFetcher& operator=(const StorageInfoFetcher&) = delete;
+
   // Asynchronously fetches the StorageInfo.
   void FetchStorageInfo(FetchCallback fetch_callback);
 
@@ -72,8 +75,6 @@ class StorageInfoFetcher
 
   // The callback to use when storage has been cleared.
   ClearCallback clear_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageInfoFetcher);
 };
 
 }  // namespace browser_ui

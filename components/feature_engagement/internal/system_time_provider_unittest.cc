@@ -33,6 +33,9 @@ class TestSystemTimeProvider : public SystemTimeProvider {
  public:
   TestSystemTimeProvider() = default;
 
+  TestSystemTimeProvider(const TestSystemTimeProvider&) = delete;
+  TestSystemTimeProvider& operator=(const TestSystemTimeProvider&) = delete;
+
   // SystemTimeProvider implementation.
   base::Time Now() const override { return current_time_; }
 
@@ -40,19 +43,17 @@ class TestSystemTimeProvider : public SystemTimeProvider {
 
  private:
   base::Time current_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSystemTimeProvider);
 };
 
 class SystemTimeProviderTest : public ::testing::Test {
  public:
   SystemTimeProviderTest() = default;
 
+  SystemTimeProviderTest(const SystemTimeProviderTest&) = delete;
+  SystemTimeProviderTest& operator=(const SystemTimeProviderTest&) = delete;
+
  protected:
   TestSystemTimeProvider time_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTimeProviderTest);
 };
 
 }  // namespace

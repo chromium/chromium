@@ -21,7 +21,11 @@ struct Cronet_Error {
  public:
   Cronet_Error();
   explicit Cronet_Error(const Cronet_Error& from);
+
+  Cronet_Error& operator=(const Cronet_Error&) = delete;
+
   explicit Cronet_Error(Cronet_Error&& from);
+
   ~Cronet_Error();
 
   Cronet_Error_ERROR_CODE error_code = Cronet_Error_ERROR_CODE_ERROR_CALLBACK;
@@ -29,9 +33,6 @@ struct Cronet_Error {
   int32_t internal_error_code = 0;
   bool immediately_retryable = false;
   int32_t quic_detailed_error_code = 0;
-
- private:
-  DISALLOW_ASSIGN(Cronet_Error);
 };
 
 // Struct Cronet_QuicHint.
@@ -39,15 +40,16 @@ struct Cronet_QuicHint {
  public:
   Cronet_QuicHint();
   explicit Cronet_QuicHint(const Cronet_QuicHint& from);
+
+  Cronet_QuicHint& operator=(const Cronet_QuicHint&) = delete;
+
   explicit Cronet_QuicHint(Cronet_QuicHint&& from);
+
   ~Cronet_QuicHint();
 
   std::string host;
   int32_t port = 0;
   int32_t alternate_port = 0;
-
- private:
-  DISALLOW_ASSIGN(Cronet_QuicHint);
 };
 
 // Struct Cronet_PublicKeyPins.
@@ -55,16 +57,17 @@ struct Cronet_PublicKeyPins {
  public:
   Cronet_PublicKeyPins();
   explicit Cronet_PublicKeyPins(const Cronet_PublicKeyPins& from);
+
+  Cronet_PublicKeyPins& operator=(const Cronet_PublicKeyPins&) = delete;
+
   explicit Cronet_PublicKeyPins(Cronet_PublicKeyPins&& from);
+
   ~Cronet_PublicKeyPins();
 
   std::string host;
   std::vector<std::string> pins_sha256;
   bool include_subdomains = false;
   int64_t expiration_date = 0;
-
- private:
-  DISALLOW_ASSIGN(Cronet_PublicKeyPins);
 };
 
 // Struct Cronet_EngineParams.
@@ -72,7 +75,11 @@ struct Cronet_EngineParams {
  public:
   Cronet_EngineParams();
   explicit Cronet_EngineParams(const Cronet_EngineParams& from);
+
+  Cronet_EngineParams& operator=(const Cronet_EngineParams&) = delete;
+
   explicit Cronet_EngineParams(Cronet_EngineParams&& from);
+
   ~Cronet_EngineParams();
 
   bool enable_check_result = true;
@@ -90,9 +97,6 @@ struct Cronet_EngineParams {
   bool enable_public_key_pinning_bypass_for_local_trust_anchors = true;
   double network_thread_priority = std::numeric_limits<double>::quiet_NaN();
   std::string experimental_options;
-
- private:
-  DISALLOW_ASSIGN(Cronet_EngineParams);
 };
 
 // Struct Cronet_HttpHeader.
@@ -100,14 +104,15 @@ struct Cronet_HttpHeader {
  public:
   Cronet_HttpHeader();
   explicit Cronet_HttpHeader(const Cronet_HttpHeader& from);
+
+  Cronet_HttpHeader& operator=(const Cronet_HttpHeader&) = delete;
+
   explicit Cronet_HttpHeader(Cronet_HttpHeader&& from);
+
   ~Cronet_HttpHeader();
 
   std::string name;
   std::string value;
-
- private:
-  DISALLOW_ASSIGN(Cronet_HttpHeader);
 };
 
 // Struct Cronet_UrlResponseInfo.
@@ -115,7 +120,11 @@ struct Cronet_UrlResponseInfo {
  public:
   Cronet_UrlResponseInfo();
   explicit Cronet_UrlResponseInfo(const Cronet_UrlResponseInfo& from);
+
+  Cronet_UrlResponseInfo& operator=(const Cronet_UrlResponseInfo&) = delete;
+
   explicit Cronet_UrlResponseInfo(Cronet_UrlResponseInfo&& from);
+
   ~Cronet_UrlResponseInfo();
 
   std::string url;
@@ -127,9 +136,6 @@ struct Cronet_UrlResponseInfo {
   std::string negotiated_protocol;
   std::string proxy_server;
   int64_t received_byte_count = 0;
-
- private:
-  DISALLOW_ASSIGN(Cronet_UrlResponseInfo);
 };
 
 // Struct Cronet_UrlRequestParams.
@@ -137,7 +143,11 @@ struct Cronet_UrlRequestParams {
  public:
   Cronet_UrlRequestParams();
   explicit Cronet_UrlRequestParams(const Cronet_UrlRequestParams& from);
+
+  Cronet_UrlRequestParams& operator=(const Cronet_UrlRequestParams&) = delete;
+
   explicit Cronet_UrlRequestParams(Cronet_UrlRequestParams&& from);
+
   ~Cronet_UrlRequestParams();
 
   std::string http_method;
@@ -153,9 +163,6 @@ struct Cronet_UrlRequestParams {
   Cronet_ExecutorPtr request_finished_executor = nullptr;
   Cronet_UrlRequestParams_IDEMPOTENCY idempotency =
       Cronet_UrlRequestParams_IDEMPOTENCY_DEFAULT_IDEMPOTENCY;
-
- private:
-  DISALLOW_ASSIGN(Cronet_UrlRequestParams);
 };
 
 // Struct Cronet_DateTime.
@@ -163,13 +170,14 @@ struct Cronet_DateTime {
  public:
   Cronet_DateTime();
   explicit Cronet_DateTime(const Cronet_DateTime& from);
+
+  Cronet_DateTime& operator=(const Cronet_DateTime&) = delete;
+
   explicit Cronet_DateTime(Cronet_DateTime&& from);
+
   ~Cronet_DateTime();
 
   int64_t value = 0;
-
- private:
-  DISALLOW_ASSIGN(Cronet_DateTime);
 };
 
 // Struct Cronet_Metrics.
@@ -177,7 +185,11 @@ struct Cronet_Metrics {
  public:
   Cronet_Metrics();
   explicit Cronet_Metrics(const Cronet_Metrics& from);
+
+  Cronet_Metrics& operator=(const Cronet_Metrics&) = delete;
+
   explicit Cronet_Metrics(Cronet_Metrics&& from);
+
   ~Cronet_Metrics();
 
   absl::optional<Cronet_DateTime> request_start;
@@ -196,9 +208,6 @@ struct Cronet_Metrics {
   bool socket_reused = false;
   int64_t sent_byte_count = -1;
   int64_t received_byte_count = -1;
-
- private:
-  DISALLOW_ASSIGN(Cronet_Metrics);
 };
 
 // Struct Cronet_RequestFinishedInfo.
@@ -206,16 +215,18 @@ struct Cronet_RequestFinishedInfo {
  public:
   Cronet_RequestFinishedInfo();
   explicit Cronet_RequestFinishedInfo(const Cronet_RequestFinishedInfo& from);
+
+  Cronet_RequestFinishedInfo& operator=(const Cronet_RequestFinishedInfo&) =
+      delete;
+
   explicit Cronet_RequestFinishedInfo(Cronet_RequestFinishedInfo&& from);
+
   ~Cronet_RequestFinishedInfo();
 
   absl::optional<Cronet_Metrics> metrics;
   std::vector<Cronet_RawDataPtr> annotations;
   Cronet_RequestFinishedInfo_FINISHED_REASON finished_reason =
       Cronet_RequestFinishedInfo_FINISHED_REASON_SUCCEEDED;
-
- private:
-  DISALLOW_ASSIGN(Cronet_RequestFinishedInfo);
 };
 
 #endif  // COMPONENTS_CRONET_NATIVE_GENERATED_CRONET_IDL_IMPL_STRUCT_H_

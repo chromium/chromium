@@ -68,6 +68,9 @@ class TestDeviceStatusListener : public DeviceStatusListener {
                              std::move(battery_listener),
                              std::move(network_listener)) {}
 
+  TestDeviceStatusListener(const TestDeviceStatusListener&) = delete;
+  TestDeviceStatusListener& operator=(const TestDeviceStatusListener&) = delete;
+
   // DeviceStatusListener implementation.
   void Start(const base::TimeDelta& start_delay) override {
     // Cache the start delay for verification.
@@ -80,8 +83,6 @@ class TestDeviceStatusListener : public DeviceStatusListener {
  private:
   friend class DeviceStatusListenerTest;
   base::TimeDelta start_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDeviceStatusListener);
 };
 
 class DeviceStatusListenerTest : public testing::Test {

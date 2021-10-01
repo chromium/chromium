@@ -39,6 +39,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   static base::Version GetOSVersion();
 
   explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function);
+
+  ClientFilterableState(const ClientFilterableState&) = delete;
+  ClientFilterableState& operator=(const ClientFilterableState&) = delete;
+
   ~ClientFilterableState();
 
   // Whether this is an enterprise client. Always false on android, iOS, and
@@ -94,8 +98,6 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // most once.
   mutable IsEnterpriseFunction is_enterprise_function_;
   mutable absl::optional<bool> is_enterprise_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientFilterableState);
 };
 
 }  // namespace variations

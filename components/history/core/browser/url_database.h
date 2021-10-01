@@ -138,11 +138,11 @@ class URLDatabase {
    public:
     URLEnumerator();
 
+    URLEnumerator(const URLEnumerator&) = delete;
+    URLEnumerator& operator=(const URLEnumerator&) = delete;
+
     // Retrieves the next url. Returns false if no more urls are available.
     bool GetNextURL(URLRow* r);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(URLEnumerator);
   };
 
   // Initializes the given enumerator to enumerator all URLs in the database.

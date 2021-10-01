@@ -35,6 +35,10 @@ class DataTypeManagerImpl : public DataTypeManager,
       const DataTypeEncryptionHandler* encryption_handler,
       ModelTypeConfigurer* configurer,
       DataTypeManagerObserver* observer);
+
+  DataTypeManagerImpl(const DataTypeManagerImpl&) = delete;
+  DataTypeManagerImpl& operator=(const DataTypeManagerImpl&) = delete;
+
   ~DataTypeManagerImpl() override;
 
   // DataTypeManager interface.
@@ -225,8 +229,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataTypeManagerImpl);
 };
 
 }  // namespace syncer

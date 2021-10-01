@@ -21,11 +21,13 @@ class SingleInvalidConfigurationTest : public ::testing::Test {
  public:
   SingleInvalidConfigurationTest() = default;
 
+  SingleInvalidConfigurationTest(const SingleInvalidConfigurationTest&) =
+      delete;
+  SingleInvalidConfigurationTest& operator=(
+      const SingleInvalidConfigurationTest&) = delete;
+
  protected:
   SingleInvalidConfiguration configuration_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleInvalidConfigurationTest);
 };
 
 }  // namespace

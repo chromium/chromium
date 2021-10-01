@@ -195,6 +195,9 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
         compression_stats_(compression_stats),
         pref_path_(pref_path) {}
 
+  DailyContentLengthUpdate(const DailyContentLengthUpdate&) = delete;
+  DailyContentLengthUpdate& operator=(const DailyContentLengthUpdate&) = delete;
+
   void UpdateForDateChange(int days_since_last_update) {
     if (days_since_last_update) {
       MaybeInitialize();
@@ -267,8 +270,6 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
   DataReductionProxyCompressionStats* compression_stats_;
   // The path of the content length pref for |this|.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyContentLengthUpdate);
 };
 
 // DailyDataSavingUpdate maintains a pair of data saving prefs, original_update_
@@ -283,6 +284,9 @@ class DataReductionProxyCompressionStats::DailyDataSavingUpdate {
                         const char* received_pref_path)
       : original_(compression_stats, original_pref_path),
         received_(compression_stats, received_pref_path) {}
+
+  DailyDataSavingUpdate(const DailyDataSavingUpdate&) = delete;
+  DailyDataSavingUpdate& operator=(const DailyDataSavingUpdate&) = delete;
 
   void UpdateForDateChange(int days_since_last_update) {
     original_.UpdateForDateChange(days_since_last_update);
@@ -305,8 +309,6 @@ class DataReductionProxyCompressionStats::DailyDataSavingUpdate {
  private:
   DailyContentLengthUpdate original_;
   DailyContentLengthUpdate received_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyDataSavingUpdate);
 };
 
 DataReductionProxyCompressionStats::DataReductionProxyCompressionStats(

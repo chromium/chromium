@@ -24,13 +24,14 @@ class EmailField : public FormField {
                                           LogManager* log_manager);
   explicit EmailField(const AutofillField* field);
 
+  EmailField(const EmailField&) = delete;
+  EmailField& operator=(const EmailField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
  private:
   const AutofillField* field_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmailField);
 };
 
 }  // namespace autofill

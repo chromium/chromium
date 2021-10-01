@@ -35,10 +35,11 @@ class TranslateErrors {
     TYPE_LAST = TRANSLATE_ERROR_MAX
   };
 
+  TranslateErrors(const TranslateErrors&) = delete;
+  TranslateErrors& operator=(const TranslateErrors&) = delete;
+
  private:
   TranslateErrors() {}
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateErrors);
 };
 
 }  // namespace translate

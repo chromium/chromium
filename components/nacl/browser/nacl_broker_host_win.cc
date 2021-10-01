@@ -32,12 +32,14 @@ class NaClBrokerSandboxedProcessLauncherDelegate
  public:
   NaClBrokerSandboxedProcessLauncherDelegate() {}
 
+  NaClBrokerSandboxedProcessLauncherDelegate(
+      const NaClBrokerSandboxedProcessLauncherDelegate&) = delete;
+  NaClBrokerSandboxedProcessLauncherDelegate& operator=(
+      const NaClBrokerSandboxedProcessLauncherDelegate&) = delete;
+
   sandbox::policy::SandboxType GetSandboxType() override {
     return sandbox::policy::SandboxType::kNoSandbox;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerSandboxedProcessLauncherDelegate);
 };
 }  // namespace
 

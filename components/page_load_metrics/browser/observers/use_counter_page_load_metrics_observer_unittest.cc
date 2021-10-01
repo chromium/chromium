@@ -47,6 +47,11 @@ class UseCounterPageLoadMetricsObserverTest
  public:
   UseCounterPageLoadMetricsObserverTest() {}
 
+  UseCounterPageLoadMetricsObserverTest(
+      const UseCounterPageLoadMetricsObserverTest&) = delete;
+  UseCounterPageLoadMetricsObserverTest& operator=(
+      const UseCounterPageLoadMetricsObserverTest&) = delete;
+
   void ExpectBucketCount(const blink::UseCounterFeature& feature,
                          size_t count) {
     if (feature.type() == blink::mojom::UseCounterFeatureType::kWebFeature) {
@@ -96,9 +101,6 @@ class UseCounterPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UseCounterPageLoadMetricsObserverTest);
 };
 
 TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {

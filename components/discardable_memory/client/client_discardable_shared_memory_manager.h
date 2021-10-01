@@ -41,6 +41,11 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       mojo::PendingRemote<mojom::DiscardableSharedMemoryManager> manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
+  ClientDiscardableSharedMemoryManager(
+      const ClientDiscardableSharedMemoryManager&) = delete;
+  ClientDiscardableSharedMemoryManager& operator=(
+      const ClientDiscardableSharedMemoryManager&) = delete;
+
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) override LOCKS_EXCLUDED(lock_);
@@ -202,7 +207,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   bool foregrounded_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(ClientDiscardableSharedMemoryManager);
 };
 
 }  // namespace discardable_memory

@@ -49,6 +49,10 @@ struct WaitInterval {
 class DataTypeTracker {
  public:
   explicit DataTypeTracker(ModelType type);
+
+  DataTypeTracker(const DataTypeTracker&) = delete;
+  DataTypeTracker& operator=(const DataTypeTracker&) = delete;
+
   ~DataTypeTracker();
 
   // For STL compatibility, we do not forbid the creation of a default copy
@@ -199,8 +203,6 @@ class DataTypeTracker {
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.
   base::TimeDelta local_change_nudge_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataTypeTracker);
 };
 
 }  // namespace syncer

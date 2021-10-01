@@ -97,6 +97,9 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     virtual ~Observer() = 0;
   };
 
+  NoStatePrefetchContents(const NoStatePrefetchContents&) = delete;
+  NoStatePrefetchContents& operator=(const NoStatePrefetchContents&) = delete;
+
   ~NoStatePrefetchContents() override;
 
   // All observers of a NoStatePrefetchContents are removed after the
@@ -304,8 +307,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   int64_t network_bytes_;
 
   base::WeakPtrFactory<NoStatePrefetchContents> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchContents);
 };
 
 }  // namespace prerender

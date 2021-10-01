@@ -153,6 +153,10 @@ class MetricsStateMetricsProvider : public MetricsProvider {
         initial_client_id_(std::move(initial_client_id)),
         cloned_install_detector_(cloned_install_detector) {}
 
+  MetricsStateMetricsProvider(const MetricsStateMetricsProvider&) = delete;
+  MetricsStateMetricsProvider& operator=(const MetricsStateMetricsProvider&) =
+      delete;
+
   // MetricsProvider:
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile) override {
@@ -232,8 +236,6 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   const std::string initial_client_id_;
   const ClonedInstallDetector& cloned_install_detector_;
   LogNormalMetricState log_normal_metric_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsStateMetricsProvider);
 };
 
 }  // namespace

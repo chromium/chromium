@@ -68,6 +68,11 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
       : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
+  StorageServiceDomStorageDatabaseTest(
+      const StorageServiceDomStorageDatabaseTest&) = delete;
+  StorageServiceDomStorageDatabaseTest& operator=(
+      const StorageServiceDomStorageDatabaseTest&) = delete;
+
  protected:
   // Helper for tests to block on the result of an OpenInMemory call.
   base::SequenceBound<DomStorageDatabase> OpenInMemorySync(
@@ -138,8 +143,6 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageServiceDomStorageDatabaseTest);
 };
 
 }  // namespace

@@ -29,6 +29,11 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
  public:
   SubresourceFilterContentSettingsManagerTest() {}
 
+  SubresourceFilterContentSettingsManagerTest(
+      const SubresourceFilterContentSettingsManagerTest&) = delete;
+  SubresourceFilterContentSettingsManagerTest& operator=(
+      const SubresourceFilterContentSettingsManagerTest&) = delete;
+
   // Creates and configures the SubresourceFilterContentSettingsManager instance
   // used by the tests, first creating the dependencies that need to be supplied
   // to that instance.
@@ -85,8 +90,6 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
 
   // Instance under test.
   std::unique_ptr<SubresourceFilterContentSettingsManager> settings_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManagerTest);
 };
 
 TEST_F(SubresourceFilterContentSettingsManagerTest, LogDefaultSetting) {

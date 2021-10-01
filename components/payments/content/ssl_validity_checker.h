@@ -18,6 +18,10 @@ namespace payments {
 
 class SslValidityChecker {
  public:
+  SslValidityChecker() = delete;
+  SslValidityChecker(const SslValidityChecker&) = delete;
+  SslValidityChecker& operator=(const SslValidityChecker&) = delete;
+
   // Returns a developer-facing error message for invalid SSL certificate state
   // or an empty string when the SSL certificate is valid. Only SECURE and
   // SECURE_WITH_POLICY_INSTALLED_CERT are considered valid for web payments,
@@ -38,9 +42,6 @@ class SslValidityChecker {
   // should not be null.
   static security_state::SecurityLevel GetSecurityLevel(
       content::WebContents* web_contents);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SslValidityChecker);
 };
 
 }  // namespace payments

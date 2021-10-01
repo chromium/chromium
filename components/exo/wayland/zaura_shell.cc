@@ -609,6 +609,9 @@ class AuraOutput : public WaylandDisplayObserver {
  public:
   explicit AuraOutput(wl_resource* resource) : resource_(resource) {}
 
+  AuraOutput(const AuraOutput&) = delete;
+  AuraOutput& operator=(const AuraOutput&) = delete;
+
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override {
@@ -680,8 +683,6 @@ class AuraOutput : public WaylandDisplayObserver {
 
  private:
   wl_resource* const resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraOutput);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

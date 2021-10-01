@@ -35,6 +35,9 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
  public:
   FontServiceThread();
 
+  FontServiceThread(const FontServiceThread&) = delete;
+  FontServiceThread& operator=(const FontServiceThread&) = delete;
+
   // Initializes the thread, binding to |pending_font_service| in the
   // background sequence.
   void Init(mojo::PendingRemote<mojom::FontService> pending_font_service);
@@ -188,8 +191,6 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   std::set<base::WaitableEvent*> pending_waitable_events_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontServiceThread);
 };
 
 }  // namespace internal

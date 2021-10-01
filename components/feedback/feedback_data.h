@@ -27,6 +27,9 @@ class FeedbackData : public FeedbackCommon {
  public:
   FeedbackData(FeedbackUploader* uploader, TracingManager* tracing_manager);
 
+  FeedbackData(const FeedbackData&) = delete;
+  FeedbackData& operator=(const FeedbackData&) = delete;
+
   // Called once we've updated all the data from the feedback page.
   void OnFeedbackPageDataComplete();
 
@@ -125,8 +128,6 @@ class FeedbackData : public FeedbackCommon {
   bool from_assistant_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool assistant_debug_info_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackData);
 };
 
 }  // namespace feedback

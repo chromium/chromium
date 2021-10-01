@@ -482,6 +482,9 @@ class CrashReporterWriter : public MimeWriter {
  public:
   explicit CrashReporterWriter(int fd);
 
+  CrashReporterWriter(const CrashReporterWriter&) = delete;
+  CrashReporterWriter& operator=(const CrashReporterWriter&) = delete;
+
   void AddBoundary() override;
 
   void AddEnd() override;
@@ -501,9 +504,6 @@ class CrashReporterWriter : public MimeWriter {
   void AddFileContents(const char* filename_msg,
                        uint8_t* file_data,
                        size_t file_size) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashReporterWriter);
 };
 
 

@@ -117,6 +117,11 @@ class TestUkmConsentStateObserver : public UkmConsentStateObserver {
 class UkmConsentStateObserverTest : public testing::Test {
  public:
   UkmConsentStateObserverTest() {}
+
+  UkmConsentStateObserverTest(const UkmConsentStateObserverTest&) = delete;
+  UkmConsentStateObserverTest& operator=(const UkmConsentStateObserverTest&) =
+      delete;
+
   void RegisterUrlKeyedAnonymizedDataCollectionPref(
       sync_preferences::TestingPrefServiceSyncable& prefs) {
     unified_consent::UnifiedConsentService::RegisterPrefs(prefs.registry());
@@ -128,9 +133,6 @@ class UkmConsentStateObserverTest : public testing::Test {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         enabled);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmConsentStateObserverTest);
 };
 
 }  // namespace

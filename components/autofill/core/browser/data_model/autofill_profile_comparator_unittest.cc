@@ -92,6 +92,10 @@ class AutofillProfileComparatorTest
     autofill::CountryNames::SetLocaleString(kLocale);
   }
 
+  AutofillProfileComparatorTest(const AutofillProfileComparatorTest&) = delete;
+  AutofillProfileComparatorTest& operator=(
+      const AutofillProfileComparatorTest&) = delete;
+
   NameInfo CreateNameInfo(const char16_t* first,
                           const char16_t* middle,
                           const char16_t* last,
@@ -361,9 +365,6 @@ class AutofillProfileComparatorTest
   bool structured_names_enabled_;
   bool structured_addresses_enabled_;
   base::test::ScopedFeatureList scoped_features_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileComparatorTest);
 };
 
 }  // namespace

@@ -76,14 +76,15 @@ class SentinelFile {
   explicit SentinelFile(const base::FilePath& version_directory)
       : path_(IndexedRulesetLocator::GetSentinelFilePath(version_directory)) {}
 
+  SentinelFile(const SentinelFile&) = delete;
+  SentinelFile& operator=(const SentinelFile&) = delete;
+
   bool IsPresent() { return base::PathExists(path_); }
   bool Create() { return base::WriteFile(path_, nullptr, 0) == 0; }
   bool Remove() { return base::DeleteFile(path_); }
 
  private:
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SentinelFile);
 };
 
 }  // namespace

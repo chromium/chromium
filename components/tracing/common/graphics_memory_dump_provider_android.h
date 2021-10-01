@@ -28,6 +28,10 @@ class TRACING_EXPORT GraphicsMemoryDumpProvider
  public:
   static GraphicsMemoryDumpProvider* GetInstance();
 
+  GraphicsMemoryDumpProvider(const GraphicsMemoryDumpProvider&) = delete;
+  GraphicsMemoryDumpProvider& operator=(const GraphicsMemoryDumpProvider&) =
+      delete;
+
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -48,8 +52,6 @@ class TRACING_EXPORT GraphicsMemoryDumpProvider
   // Stores key names coming from the memtrack helper in long-lived storage.
   // This is to allow using cheap char* strings in tracing without copies.
   std::unordered_set<std::string> key_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(GraphicsMemoryDumpProvider);
 };
 
 }  // namespace tracing

@@ -32,6 +32,9 @@ class BookmarkNodeDataTest : public testing::Test {
   BookmarkNodeDataTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
+  BookmarkNodeDataTest(const BookmarkNodeDataTest&) = delete;
+  BookmarkNodeDataTest& operator=(const BookmarkNodeDataTest&) = delete;
+
   void SetUp() override {
     model_ = TestBookmarkClient::CreateModel();
     test::WaitForBookmarkModelToLoad(model_.get());
@@ -59,8 +62,6 @@ class BookmarkNodeDataTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<BookmarkModel> model_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkNodeDataTest);
 };
 
 namespace {

@@ -89,6 +89,9 @@ class ReportScheduler {
       std::unique_ptr<RealTimeReportGenerator> real_time_report_generator,
       std::unique_ptr<ReportScheduler::Delegate> delegate);
 
+  ReportScheduler(const ReportScheduler&) = delete;
+  ReportScheduler& operator=(const ReportScheduler&) = delete;
+
   ~ReportScheduler();
 
   // Returns true if cloud reporting is enabled.
@@ -170,8 +173,6 @@ class ReportScheduler {
   uint32_t pending_triggers_ = 0;
 
   base::WeakPtrFactory<ReportScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReportScheduler);
 };
 
 }  // namespace enterprise_reporting

@@ -23,14 +23,15 @@ struct WaylandDataDeviceManager {
   WaylandDataDeviceManager(Display* display, SerialTracker* serial_tracker)
       : display(display), serial_tracker(serial_tracker) {}
 
+  WaylandDataDeviceManager(const WaylandDataDeviceManager&) = delete;
+  WaylandDataDeviceManager& operator=(const WaylandDataDeviceManager&) = delete;
+
   // Owned by WaylandServerController, which always outlives
   // wl_data_device_manager.
   Display* const display;
 
   // Owned by Server, which always outlives wl_data_device_manager.
   SerialTracker* const serial_tracker;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataDeviceManager);
 };
 
 void bind_data_device_manager(wl_client* client,

@@ -43,6 +43,11 @@ class BidirectionalStreamTestURLRequestContextGetter
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
       : task_runner_(task_runner) {}
 
+  BidirectionalStreamTestURLRequestContextGetter(
+      const BidirectionalStreamTestURLRequestContextGetter&) = delete;
+  BidirectionalStreamTestURLRequestContextGetter& operator=(
+      const BidirectionalStreamTestURLRequestContextGetter&) = delete;
+
   net::URLRequestContext* GetURLRequestContext() override {
     if (!request_context_) {
       request_context_ = std::make_unique<net::TestURLRequestContext>(
@@ -105,8 +110,6 @@ class BidirectionalStreamTestURLRequestContextGetter
   std::unique_ptr<net::MappedHostResolver> host_resolver_;
   std::unique_ptr<net::TestURLRequestContext> request_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamTestURLRequestContextGetter);
 };
 
 base::LazyInstance<

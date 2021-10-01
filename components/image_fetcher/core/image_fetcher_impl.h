@@ -54,8 +54,13 @@ class ImageFetcherImpl : public ImageFetcher {
   // State related to an image fetch (id, pending callbacks).
   struct ImageRequest {
     ImageRequest();
-    ~ImageRequest();
+
+    ImageRequest(const ImageRequest&) = delete;
+    ImageRequest& operator=(const ImageRequest&) = delete;
+
     ImageRequest(ImageRequest&& other);
+
+    ~ImageRequest();
 
     std::string id;
     // These have the default value if the image data has not yet been fetched.
@@ -65,8 +70,6 @@ class ImageFetcherImpl : public ImageFetcher {
     // flight.
     std::vector<ImageFetcherCallback> image_callbacks;
     std::vector<ImageDataFetcherCallback> image_data_callbacks;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageRequest);
   };
 
   using ImageRequestMap = std::map<GURL, ImageRequest>;

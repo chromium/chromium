@@ -85,6 +85,9 @@ class AffiliationDatabaseTest : public testing::Test {
  public:
   AffiliationDatabaseTest() = default;
 
+  AffiliationDatabaseTest(const AffiliationDatabaseTest&) = delete;
+  AffiliationDatabaseTest& operator=(const AffiliationDatabaseTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
     OpenDatabase();
@@ -113,8 +116,6 @@ class AffiliationDatabaseTest : public testing::Test {
  private:
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<AffiliationDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationDatabaseTest);
 };
 
 TEST_F(AffiliationDatabaseTest, Store) {

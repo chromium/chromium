@@ -31,6 +31,11 @@ class PasswordManagerLogRouterFactory
 
   static PasswordManagerLogRouterFactory* GetInstance();
 
+  PasswordManagerLogRouterFactory(const PasswordManagerLogRouterFactory&) =
+      delete;
+  PasswordManagerLogRouterFactory& operator=(
+      const PasswordManagerLogRouterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PasswordManagerLogRouterFactory>;
 
@@ -40,8 +45,6 @@ class PasswordManagerLogRouterFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerLogRouterFactory);
 };
 
 }  // namespace password_manager

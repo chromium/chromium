@@ -67,6 +67,10 @@ namespace {
 class CastTrustStore {
  public:
   using AccessCallback = base::OnceCallback<void(net::TrustStore*)>;
+
+  CastTrustStore(const CastTrustStore&) = delete;
+  CastTrustStore& operator=(const CastTrustStore&) = delete;
+
   static void AccessInstance(AccessCallback callback) {
     CastTrustStore* instance = GetInstance();
     const base::AutoLock guard(instance->lock_);
@@ -135,7 +139,6 @@ class CastTrustStore {
 
   base::Lock lock_;
   net::TrustStoreInMemory store_ GUARDED_BY(lock_);
-  DISALLOW_COPY_AND_ASSIGN(CastTrustStore);
 };
 
 // Returns the OID for the Audio-Only Cast policy

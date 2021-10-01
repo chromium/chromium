@@ -43,6 +43,9 @@ class ImageCache : public base::RefCounted<ImageCache> {
              base::Clock* clock,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  ImageCache(const ImageCache&) = delete;
+  ImageCache& operator=(const ImageCache&) = delete;
+
   // Adds or updates the image data for the |url|. If the class hasn't been
   // initialized yet, the call is queued.
   void SaveImage(std::string url,
@@ -123,8 +126,6 @@ class ImageCache : public base::RefCounted<ImageCache> {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ImageCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageCache);
 };
 
 }  // namespace image_fetcher

@@ -91,6 +91,9 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
         index_array_(index_array),
         index_array_count_(index_array_count) {}
 
+  CrashKeyStringImpl(const CrashKeyStringImpl&) = delete;
+  CrashKeyStringImpl& operator=(const CrashKeyStringImpl&) = delete;
+
   void Set(base::StringPiece value);
   void Clear();
 
@@ -107,8 +110,6 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
   // table. This will be |num_entries| if unset.
   size_t* index_array_;
   size_t index_array_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringImpl);
 };
 
 // This type creates a C array that is initialized with a specific default
@@ -154,6 +155,9 @@ class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
   constexpr CrashKeyStringBreakpad(const char name[], Tag tag)
       : CrashKeyStringBreakpad(name) {}
 
+  CrashKeyStringBreakpad(const CrashKeyStringBreakpad&) = delete;
+  CrashKeyStringBreakpad& operator=(const CrashKeyStringBreakpad&) = delete;
+
  private:
   // Indexes into the TransitionalCrashKeyStorage for when a value is set.
   // See the comment in CrashKeyStringImpl for details.
@@ -164,8 +168,6 @@ class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
                              chunk_count,
                              internal::kCrashKeyStorageNumEntries>
       indexes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringBreakpad);
 };
 
 #if BUILDFLAG(USE_COMBINED_ANNOTATIONS)
@@ -178,6 +180,10 @@ class CrashKeyStringCombinedImpl {
                                        crashpad::Annotation* crashpad_key)
       : breakpad_key_(breakpad_key), crashpad_key_(crashpad_key) {}
 
+  CrashKeyStringCombinedImpl(const CrashKeyStringCombinedImpl&) = delete;
+  CrashKeyStringCombinedImpl& operator=(const CrashKeyStringCombinedImpl&) =
+      delete;
+
   void Clear() {
     breakpad_key_->Clear();
     crashpad_key_->Clear();
@@ -188,8 +194,6 @@ class CrashKeyStringCombinedImpl {
  private:
   CrashKeyStringImpl* breakpad_key_;
   crashpad::Annotation* crashpad_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringCombinedImpl);
 };
 
 }  // namespace internal
@@ -207,6 +211,9 @@ class CrashKeyStringCombined : public internal::CrashKeyStringCombinedImpl {
   constexpr CrashKeyStringCombined(const char name[], Tag tag)
       : CrashKeyStringCombined(name) {}
 
+  CrashKeyStringCombined(const CrashKeyStringCombined&) = delete;
+  CrashKeyStringCombined& operator=(const CrashKeyStringCombined&) = delete;
+
   void Set(base::StringPiece value) {
     breakpad_key_.Set(value);
     crashpad_key_.Set(value);
@@ -215,8 +222,6 @@ class CrashKeyStringCombined : public internal::CrashKeyStringCombinedImpl {
  private:
   CrashKeyStringBreakpad<MaxLength> breakpad_key_;
   crashpad::StringAnnotation<MaxLength> crashpad_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringCombined);
 };
 
 template <uint32_t MaxLength>

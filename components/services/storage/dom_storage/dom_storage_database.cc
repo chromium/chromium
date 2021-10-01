@@ -32,8 +32,8 @@ class DomStorageDatabaseEnv : public leveldb_env::ChromiumEnv {
   DomStorageDatabaseEnv()
       : ChromiumEnv("ChromiumEnv.StorageService", CreateFilesystemProxy()) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomStorageDatabaseEnv);
+  DomStorageDatabaseEnv(const DomStorageDatabaseEnv&) = delete;
+  DomStorageDatabaseEnv& operator=(const DomStorageDatabaseEnv&) = delete;
 };
 
 DomStorageDatabaseEnv* GetDomStorageDatabaseEnv() {

@@ -188,6 +188,9 @@ class
   inline constexpr GenericEnumTableEntry(int32_t value);
   inline constexpr GenericEnumTableEntry(int32_t value, base::StringPiece str);
 
+  GenericEnumTableEntry(const GenericEnumTableEntry&) = delete;
+  GenericEnumTableEntry& operator=(const GenericEnumTableEntry&) = delete;
+
  private:
   static const GenericEnumTableEntry* FindByString(
       const GenericEnumTableEntry data[],
@@ -213,7 +216,6 @@ class
 
   template <typename E>
   friend class EnumTable;
-  DISALLOW_COPY_AND_ASSIGN(GenericEnumTableEntry);
 };
 
 // Yes, these constructors really needs to be inlined.  Even though they look
@@ -252,7 +254,8 @@ class EnumTable {
     constexpr Entry(E value, base::StringPiece str)
         : GenericEnumTableEntry(static_cast<int32_t>(value), str) {}
 
-    DISALLOW_COPY_AND_ASSIGN(Entry);
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
   };
 
   static_assert(sizeof(E) <= sizeof(int32_t),
@@ -300,6 +303,9 @@ class EnumTable {
         << "Don't use this constructor for sorted entries.";
 #endif  // NDEBUG
   }
+
+  EnumTable(const EnumTable&) = delete;
+  EnumTable& operator=(const EnumTable&) = delete;
 
   // Gets the string associated with the given enum value.  When the argument
   // is a constant, prefer the zero-argument form below.
@@ -396,8 +402,6 @@ class EnumTable {
     return {};
   }
 #endif  // NDEBUG
-
-  DISALLOW_COPY_AND_ASSIGN(EnumTable);
 };
 
 // Converts an enum value to a string using the default table

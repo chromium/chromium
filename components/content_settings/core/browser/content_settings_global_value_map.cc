@@ -19,6 +19,9 @@ class RuleIteratorSimple : public RuleIterator {
  public:
   RuleIteratorSimple(ContentSetting setting) : setting_(setting) {}
 
+  RuleIteratorSimple(const RuleIteratorSimple&) = delete;
+  RuleIteratorSimple& operator=(const RuleIteratorSimple&) = delete;
+
   bool HasNext() const override { return !is_done_; }
 
   Rule Next() override {
@@ -32,8 +35,6 @@ class RuleIteratorSimple : public RuleIterator {
  private:
   const ContentSetting setting_;
   bool is_done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RuleIteratorSimple);
 };
 
 }  // namespace

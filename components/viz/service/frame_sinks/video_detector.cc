@@ -27,6 +27,9 @@ class VideoDetector::ClientInfo {
  public:
   ClientInfo() = default;
 
+  ClientInfo(const ClientInfo&) = delete;
+  ClientInfo& operator=(const ClientInfo&) = delete;
+
   // Called when a Surface belonging to this client is drawn. Returns true if we
   // determine that video is playing in this client.
   bool ReportDrawnAndCheckForVideo(Surface* surface, base::TimeTicks now) {
@@ -89,8 +92,6 @@ class VideoDetector::ClientInfo {
   // whether a new frame was submitted since the last time the Surface was
   // drawn.
   uint64_t last_drawn_frame_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientInfo);
 };
 
 VideoDetector::VideoDetector(

@@ -32,6 +32,9 @@ class FeedbackUploaderFactory : public BrowserContextKeyedServiceFactory {
   static FeedbackUploader* GetForBrowserContext(
       content::BrowserContext* context);
 
+  FeedbackUploaderFactory(const FeedbackUploaderFactory&) = delete;
+  FeedbackUploaderFactory& operator=(const FeedbackUploaderFactory&) = delete;
+
  protected:
   FeedbackUploaderFactory(const char* service_name);
   ~FeedbackUploaderFactory() override;
@@ -46,8 +49,6 @@ class FeedbackUploaderFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderFactory);
 };
 
 }  // namespace feedback

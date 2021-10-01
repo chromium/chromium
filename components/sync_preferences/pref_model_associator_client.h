@@ -17,6 +17,10 @@ namespace sync_preferences {
 // events from the server.
 class PrefModelAssociatorClient {
  public:
+  PrefModelAssociatorClient(const PrefModelAssociatorClient&) = delete;
+  PrefModelAssociatorClient& operator=(const PrefModelAssociatorClient&) =
+      delete;
+
   // Returns true if the preference named |pref_name| is a list preference
   // whose server value is merged with local value during synchronisation.
   virtual bool IsMergeableListPreference(
@@ -39,9 +43,6 @@ class PrefModelAssociatorClient {
  protected:
   PrefModelAssociatorClient() {}
   virtual ~PrefModelAssociatorClient() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefModelAssociatorClient);
 };
 
 }  // namespace sync_preferences

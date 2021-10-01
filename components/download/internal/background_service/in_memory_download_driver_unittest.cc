@@ -48,6 +48,9 @@ class TestInMemoryDownload : public InMemoryDownload {
     DCHECK(delegate_) << "Delegate can't be nullptr.";
   }
 
+  TestInMemoryDownload(const TestInMemoryDownload&) = delete;
+  TestInMemoryDownload& operator=(const TestInMemoryDownload&) = delete;
+
   void SimulateDownloadStarted() {
     state_ = InMemoryDownload::State::IN_PROGRESS;
     delegate_->OnDownloadStarted(this);
@@ -75,7 +78,6 @@ class TestInMemoryDownload : public InMemoryDownload {
 
  private:
   InMemoryDownload::Delegate* delegate_;
-  DISALLOW_COPY_AND_ASSIGN(TestInMemoryDownload);
 };
 
 // Factory that injects to InMemoryDownloadDriver and only creates fake objects.

@@ -19,14 +19,13 @@ class RemoteCommandsService;
 // An interface class for creating remote commands based on command type.
 class POLICY_EXPORT RemoteCommandsFactory {
  public:
+  RemoteCommandsFactory& operator=(const RemoteCommandsFactory&) = delete;
+
   virtual ~RemoteCommandsFactory();
 
   virtual std::unique_ptr<RemoteCommandJob> BuildJobForType(
       enterprise_management::RemoteCommand_Type type,
       RemoteCommandsService* service) = 0;
-
- private:
-  DISALLOW_ASSIGN(RemoteCommandsFactory);
 };
 
 }  // namespace policy

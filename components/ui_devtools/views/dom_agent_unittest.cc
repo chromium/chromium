@@ -35,12 +35,13 @@ class TestView : public views::View {
  public:
   TestView(const char* name) : name_(name) {}
 
+  TestView(const TestView&) = delete;
+  TestView& operator=(const TestView&) = delete;
+
   const char* GetClassName() const override { return name_; }
 
  private:
   const char* name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestView);
 };
 
 std::string GetAttributeValue(const std::string& attribute, DOM::Node* node) {

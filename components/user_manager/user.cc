@@ -97,6 +97,10 @@ class GuestUser : public User {
 
 class DeviceLocalAccountUserBase : public User {
  public:
+  DeviceLocalAccountUserBase(const DeviceLocalAccountUserBase&) = delete;
+  DeviceLocalAccountUserBase& operator=(const DeviceLocalAccountUserBase&) =
+      delete;
+
   // User:
   bool IsAffiliated() const override;
 
@@ -106,9 +110,6 @@ class DeviceLocalAccountUserBase : public User {
   // User:
   void SetAffiliation(bool) override;
   bool IsDeviceLocalAccount() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountUserBase);
 };
 
 class KioskAppUser : public DeviceLocalAccountUserBase {

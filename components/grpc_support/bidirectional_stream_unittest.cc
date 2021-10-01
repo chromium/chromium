@@ -47,6 +47,11 @@ namespace grpc_support {
 #endif
 
 class MAYBE_BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
+ public:
+  MAYBE_BidirectionalStreamTest(const MAYBE_BidirectionalStreamTest&) = delete;
+  MAYBE_BidirectionalStreamTest& operator=(
+      const MAYBE_BidirectionalStreamTest&) = delete;
+
  protected:
   void SetUp() override {
     net::QuicSimpleTestServer::Start();
@@ -70,8 +75,6 @@ class MAYBE_BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
 
  private:
   std::string quic_server_hello_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_BidirectionalStreamTest);
 };
 
 class TestBidirectionalStreamCallback {

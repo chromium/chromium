@@ -50,6 +50,9 @@ class ArcDataRemoverTest : public testing::Test {
  public:
   ArcDataRemoverTest() = default;
 
+  ArcDataRemoverTest(const ArcDataRemoverTest&) = delete;
+  ArcDataRemoverTest& operator=(const ArcDataRemoverTest&) = delete;
+
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
     test_upstart_client_ = std::make_unique<TestUpstartClient>();
@@ -76,8 +79,6 @@ class ArcDataRemoverTest : public testing::Test {
   const cryptohome::Identification cryptohome_id_{EmptyAccountId()};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestUpstartClient> test_upstart_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDataRemoverTest);
 };
 
 TEST_F(ArcDataRemoverTest, NotScheduled) {

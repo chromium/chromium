@@ -57,6 +57,9 @@ class CountryDataMap {
  public:
   static CountryDataMap* GetInstance();
 
+  CountryDataMap(const CountryDataMap&) = delete;
+  CountryDataMap& operator=(const CountryDataMap&) = delete;
+
   // Returns true if a |CountryData| entry for the supplied |country_code|
   // exists.
   bool HasRequiredFieldsForAddressImport(const std::string& country_code) const;
@@ -86,8 +89,6 @@ class CountryDataMap {
       required_fields_for_address_import_map_;
   const std::map<std::string, std::string> country_code_aliases_;
   const std::vector<std::string> country_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountryDataMap);
 };
 
 }  // namespace autofill

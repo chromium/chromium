@@ -21,6 +21,9 @@ class OWNERSHIP_EXPORT OwnerKeyUtilImpl : public OwnerKeyUtil {
  public:
   explicit OwnerKeyUtilImpl(const base::FilePath& public_key_file);
 
+  OwnerKeyUtilImpl(const OwnerKeyUtilImpl&) = delete;
+  OwnerKeyUtilImpl& operator=(const OwnerKeyUtilImpl&) = delete;
+
   // OwnerKeyUtil implementation:
   bool ImportPublicKey(std::vector<uint8_t>* output) override;
   crypto::ScopedSECKEYPrivateKey FindPrivateKeyInSlot(
@@ -33,8 +36,6 @@ class OWNERSHIP_EXPORT OwnerKeyUtilImpl : public OwnerKeyUtil {
 
   // The file that holds the public key.
   base::FilePath public_key_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerKeyUtilImpl);
 };
 
 }  // namespace ownership

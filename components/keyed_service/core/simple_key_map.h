@@ -32,6 +32,9 @@ class KEYED_SERVICE_EXPORT SimpleKeyMap {
  public:
   static SimpleKeyMap* GetInstance();
 
+  SimpleKeyMap(const SimpleKeyMap&) = delete;
+  SimpleKeyMap& operator=(const SimpleKeyMap&) = delete;
+
   // When |browser_context| creates or takes ownership of a SimpleFactoryKey
   // |key|, it should register this association in this map.
   void Associate(content::BrowserContext* browser_context,
@@ -52,8 +55,6 @@ class KEYED_SERVICE_EXPORT SimpleKeyMap {
   ~SimpleKeyMap();
 
   std::map<content::BrowserContext*, SimpleFactoryKey*> mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleKeyMap);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_KEY_MAP_H_

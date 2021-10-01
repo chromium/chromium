@@ -37,6 +37,9 @@ class GeoLanguageProvider {
 
   static GeoLanguageProvider* GetInstance();
 
+  GeoLanguageProvider(const GeoLanguageProvider&) = delete;
+  GeoLanguageProvider& operator=(const GeoLanguageProvider&) = delete;
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Call this once near browser startup. Begins ongoing geo-language updates.
@@ -120,8 +123,6 @@ class GeoLanguageProvider {
   // The pref service used to cached the latest latitude/longitude pair
   // obtained.
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeoLanguageProvider);
 };
 
 }  // namespace language

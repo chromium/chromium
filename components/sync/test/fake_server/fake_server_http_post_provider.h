@@ -28,6 +28,10 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
       const base::WeakPtr<FakeServer>& fake_server,
       scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner);
 
+  FakeServerHttpPostProvider(const FakeServerHttpPostProvider&) = delete;
+  FakeServerHttpPostProvider& operator=(const FakeServerHttpPostProvider&) =
+      delete;
+
   // HttpPostProviderInterface implementation.
   void SetExtraRequestHeaders(const char* headers) override;
   void SetURL(const GURL& url) override;
@@ -74,8 +78,6 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
   std::string extra_request_headers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServerHttpPostProvider);
 };
 
 class FakeServerHttpPostProviderFactory
@@ -84,6 +86,12 @@ class FakeServerHttpPostProviderFactory
   FakeServerHttpPostProviderFactory(
       const base::WeakPtr<FakeServer>& fake_server,
       scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner);
+
+  FakeServerHttpPostProviderFactory(const FakeServerHttpPostProviderFactory&) =
+      delete;
+  FakeServerHttpPostProviderFactory& operator=(
+      const FakeServerHttpPostProviderFactory&) = delete;
+
   ~FakeServerHttpPostProviderFactory() override;
 
   // HttpPostProviderFactory:
@@ -94,8 +102,6 @@ class FakeServerHttpPostProviderFactory
   // |fake_server_task_runner_| runs on.
   base::WeakPtr<FakeServer> fake_server_;
   scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServerHttpPostProviderFactory);
 };
 
 }  // namespace fake_server

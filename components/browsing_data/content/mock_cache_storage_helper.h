@@ -25,6 +25,9 @@ class MockCacheStorageHelper : public CacheStorageHelper {
  public:
   explicit MockCacheStorageHelper(content::BrowserContext* browser_context);
 
+  MockCacheStorageHelper(const MockCacheStorageHelper&) = delete;
+  MockCacheStorageHelper& operator=(const MockCacheStorageHelper&) = delete;
+
   // Adds some StorageUsageInfo samples.
   void AddCacheStorageSamples();
 
@@ -49,8 +52,6 @@ class MockCacheStorageHelper : public CacheStorageHelper {
   bool fetched_ = false;
   std::map<url::Origin, bool> origins_;
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCacheStorageHelper);
 };
 
 }  // namespace browsing_data

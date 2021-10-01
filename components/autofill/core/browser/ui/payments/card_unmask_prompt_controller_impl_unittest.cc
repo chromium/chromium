@@ -81,6 +81,11 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
       TestingPrefServiceSimple* pref_service)
       : CardUnmaskPromptControllerImpl(pref_service) {}
 
+  TestCardUnmaskPromptController(const TestCardUnmaskPromptController&) =
+      delete;
+  TestCardUnmaskPromptController& operator=(
+      const TestCardUnmaskPromptController&) = delete;
+
 #if defined(OS_ANDROID)
   bool ShouldOfferWebauthn() const override { return should_offer_webauthn_; }
 #endif
@@ -95,13 +100,16 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
  private:
   bool should_offer_webauthn_;
   base::WeakPtrFactory<TestCardUnmaskPromptController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestCardUnmaskPromptController);
 };
 
 class CardUnmaskPromptControllerImplGenericTest {
  public:
   CardUnmaskPromptControllerImplGenericTest() {}
+
+  CardUnmaskPromptControllerImplGenericTest(
+      const CardUnmaskPromptControllerImplGenericTest&) = delete;
+  CardUnmaskPromptControllerImplGenericTest& operator=(
+      const CardUnmaskPromptControllerImplGenericTest&) = delete;
 
   void SetUp() {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
@@ -150,8 +158,6 @@ class CardUnmaskPromptControllerImplGenericTest {
   CardUnmaskPromptView* GetCardUnmaskPromptView() {
     return test_unmask_prompt_view_.get();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptControllerImplGenericTest);
 };
 
 class CardUnmaskPromptControllerImplTest

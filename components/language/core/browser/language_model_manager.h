@@ -24,7 +24,12 @@ class LanguageModelManager : public KeyedService {
     GEO,
   };
 
+  LanguageModelManager() = delete;
+
   LanguageModelManager(PrefService* prefs, const std::string& ui_lang);
+
+  LanguageModelManager(const LanguageModelManager&) = delete;
+  LanguageModelManager& operator=(const LanguageModelManager&) = delete;
 
   ~LanguageModelManager() override;
 
@@ -41,8 +46,6 @@ class LanguageModelManager : public KeyedService {
   std::map<ModelType, std::unique_ptr<LanguageModel>> models_;
 
   ModelType primary_model_type_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LanguageModelManager);
 };
 
 }  // namespace language

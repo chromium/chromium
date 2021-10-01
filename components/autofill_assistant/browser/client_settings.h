@@ -22,6 +22,10 @@ namespace autofill_assistant {
 // pointer to the single ClientSettings instance instead of making a copy.
 struct ClientSettings {
   ClientSettings();
+
+  ClientSettings(const ClientSettings&) = delete;
+  ClientSettings& operator=(const ClientSettings&) = delete;
+
   ~ClientSettings();
 
   void UpdateFromProto(const ClientSettingsProto& proto);
@@ -143,9 +147,6 @@ struct ClientSettings {
   // should be concatenated.
   ClientSettingsProto::SlowWarningSettings::MessageMode message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientSettings);
 };
 
 }  // namespace autofill_assistant

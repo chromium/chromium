@@ -26,6 +26,9 @@ class AutofillLogRouterFactory : public BrowserContextKeyedServiceFactory {
 
   static AutofillLogRouterFactory* GetInstance();
 
+  AutofillLogRouterFactory(const AutofillLogRouterFactory&) = delete;
+  AutofillLogRouterFactory& operator=(const AutofillLogRouterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AutofillLogRouterFactory>;
 
@@ -35,8 +38,6 @@ class AutofillLogRouterFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillLogRouterFactory);
 };
 
 }  // namespace autofill

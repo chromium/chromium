@@ -33,11 +33,12 @@ class CustomLinksStoreTest : public testing::Test {
     CustomLinksStore::RegisterProfilePrefs(prefs_.registry());
   }
 
+  CustomLinksStoreTest(const CustomLinksStoreTest&) = delete;
+  CustomLinksStoreTest& operator=(const CustomLinksStoreTest&) = delete;
+
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<CustomLinksStore> custom_links_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksStoreTest);
 };
 
 TEST_F(CustomLinksStoreTest, StoreAndRetrieveLinks) {

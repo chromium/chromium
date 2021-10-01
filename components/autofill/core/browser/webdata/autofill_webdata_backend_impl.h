@@ -58,6 +58,10 @@ class AutofillWebDataBackendImpl
       const base::RepeatingCallback<void(syncer::ModelType)>&
           on_sync_started_callback);
 
+  AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
+  AutofillWebDataBackendImpl& operator=(const AutofillWebDataBackendImpl&) =
+      delete;
+
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
@@ -271,8 +275,6 @@ class AutofillWebDataBackendImpl
       on_autofill_profile_changed_cb_;
   base::RepeatingCallback<void(const std::vector<std::string>&)>
       on_card_art_image_change_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataBackendImpl);
 };
 
 }  // namespace autofill

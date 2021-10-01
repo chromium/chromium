@@ -91,6 +91,9 @@ class ShellSurfaceWidget : public views::Widget {
  public:
   ShellSurfaceWidget() = default;
 
+  ShellSurfaceWidget(const ShellSurfaceWidget&) = delete;
+  ShellSurfaceWidget& operator=(const ShellSurfaceWidget&) = delete;
+
   // Overridden from views::Widget:
   void OnKeyEvent(ui::KeyEvent* event) override {
     if (GetFocusManager()->GetFocusedView() &&
@@ -103,9 +106,6 @@ class ShellSurfaceWidget : public views::Widget {
       event->SetHandled();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellSurfaceWidget);
 };
 
 class CustomFrameView : public ash::NonClientFrameViewAsh {

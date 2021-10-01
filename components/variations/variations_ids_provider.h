@@ -73,6 +73,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   static VariationsIdsProvider* GetInstance();
 
+  VariationsIdsProvider(const VariationsIdsProvider&) = delete;
+  VariationsIdsProvider& operator=(const VariationsIdsProvider&) = delete;
+
   Mode mode() const { return mode_; }
 
   // Returns the X-Client-Data headers corresponding to |is_signed_in|: a header
@@ -283,8 +286,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   const VariationsClient* variations_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsIdsProvider);
 };
 
 }  // namespace variations

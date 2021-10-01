@@ -165,6 +165,9 @@ class AffiliationBackendTest : public testing::Test {
  public:
   AffiliationBackendTest() = default;
 
+  AffiliationBackendTest(const AffiliationBackendTest&) = delete;
+  AffiliationBackendTest& operator=(const AffiliationBackendTest&) = delete;
+
  protected:
   void GetAffiliationsAndBranding(MockAffiliationConsumer* consumer,
                                   const FacetURI& facet_uri,
@@ -379,8 +382,6 @@ class AffiliationBackendTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   // Owned by |backend_|.
   MockAffiliationFetchThrottler* mock_fetch_throttler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationBackendTest);
 };
 
 TEST_F(AffiliationBackendTest, OnDemandRequestSucceedsWithFetch) {

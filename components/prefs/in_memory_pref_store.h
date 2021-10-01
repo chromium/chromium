@@ -23,6 +23,9 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
  public:
   InMemoryPrefStore();
 
+  InMemoryPrefStore(const InMemoryPrefStore&) = delete;
+  InMemoryPrefStore& operator=(const InMemoryPrefStore&) = delete;
+
   // PrefStore implementation.
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
@@ -61,8 +64,6 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   PrefValueMap prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_IN_MEMORY_PREF_STORE_H_

@@ -22,8 +22,14 @@ class LocationBarModelDelegate;
 // from the navigation controller returned by GetNavigationController().
 class LocationBarModelImpl : public LocationBarModel {
  public:
+  LocationBarModelImpl() = delete;
+
   LocationBarModelImpl(LocationBarModelDelegate* delegate,
                        size_t max_url_display_chars);
+
+  LocationBarModelImpl(const LocationBarModelImpl&) = delete;
+  LocationBarModelImpl& operator=(const LocationBarModelImpl&) = delete;
+
   ~LocationBarModelImpl() override;
 
   // LocationBarModel:
@@ -48,8 +54,6 @@ class LocationBarModelImpl : public LocationBarModel {
 
   LocationBarModelDelegate* delegate_;
   const size_t max_url_display_chars_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocationBarModelImpl);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_IMPL_H_

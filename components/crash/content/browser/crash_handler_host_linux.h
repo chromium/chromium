@@ -147,6 +147,9 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   // by the first call to this method.
   static CrashHandlerHost* Get();
 
+  CrashHandlerHost(const CrashHandlerHost&) = delete;
+  CrashHandlerHost& operator=(const CrashHandlerHost&) = delete;
+
   // Get the file descriptor which processes should be given in order to signal
   // crashes to the browser.
   int GetDeathSignalSocket();
@@ -175,8 +178,6 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   base::MessagePumpForIO::FdWatchController fd_watch_controller_;
   base::ScopedFD process_socket_;
   base::ScopedFD browser_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandlerHost);
 };
 
 }  // namespace crashpad

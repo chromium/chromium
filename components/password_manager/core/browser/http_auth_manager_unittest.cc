@@ -79,11 +79,12 @@ class MockHttpAuthObserver : public HttpAuthObserver {
  public:
   MockHttpAuthObserver() = default;
 
+  MockHttpAuthObserver(const MockHttpAuthObserver&) = delete;
+  MockHttpAuthObserver& operator=(const MockHttpAuthObserver&) = delete;
+
   MOCK_METHOD0(OnLoginModelDestroying, void());
   MOCK_METHOD2(OnAutofillDataAvailable,
                void(const std::u16string&, const std::u16string&));
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpAuthObserver);
 };
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {

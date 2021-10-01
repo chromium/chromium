@@ -25,6 +25,9 @@ class ContentViewRenderView : public content::CompositorClient {
                         jobject obj,
                         gfx::NativeWindow root_window);
 
+  ContentViewRenderView(const ContentViewRenderView&) = delete;
+  ContentViewRenderView& operator=(const ContentViewRenderView&) = delete;
+
   // Methods called from Java via JNI -----------------------------------------
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   void SetCurrentWebContents(
@@ -66,8 +69,6 @@ class ContentViewRenderView : public content::CompositorClient {
 
   gfx::NativeWindow root_window_;
   int current_surface_format_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentViewRenderView);
 };
 
 }  // namespace embedder_support

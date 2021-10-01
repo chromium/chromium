@@ -23,6 +23,9 @@ class MockDatabaseHelper : public DatabaseHelper {
  public:
   explicit MockDatabaseHelper(content::BrowserContext* browser_context);
 
+  MockDatabaseHelper(const MockDatabaseHelper&) = delete;
+  MockDatabaseHelper& operator=(const MockDatabaseHelper&) = delete;
+
   void StartFetching(FetchCallback callback) override;
 
   void DeleteDatabase(const url::Origin& origin) override;
@@ -53,8 +56,6 @@ class MockDatabaseHelper : public DatabaseHelper {
   std::map<const std::string, bool> databases_;
 
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDatabaseHelper);
 };
 
 }  // namespace browsing_data

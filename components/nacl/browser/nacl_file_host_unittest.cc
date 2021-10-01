@@ -35,6 +35,10 @@ class FileHostTestNaClBrowserDelegate : public TestNaClBrowserDelegate {
 };
 
 class NaClFileHostTest : public testing::Test {
+ public:
+  NaClFileHostTest(const NaClFileHostTest&) = delete;
+  NaClFileHostTest& operator=(const NaClFileHostTest&) = delete;
+
  protected:
   NaClFileHostTest();
   ~NaClFileHostTest() override;
@@ -55,7 +59,6 @@ class NaClFileHostTest : public testing::Test {
 
  private:
   FileHostTestNaClBrowserDelegate* nacl_browser_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(NaClFileHostTest);
 };
 
 NaClFileHostTest::NaClFileHostTest() : nacl_browser_delegate_(nullptr) {}

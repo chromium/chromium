@@ -45,6 +45,9 @@ class TopSites : public RefcountedKeyedService {
  public:
   TopSites();
 
+  TopSites(const TopSites&) = delete;
+  TopSites& operator=(const TopSites&) = delete;
+
   using GetMostVisitedURLsCallback =
       base::OnceCallback<void(const MostVisitedURLList&)>;
 
@@ -104,8 +107,6 @@ class TopSites : public RefcountedKeyedService {
   friend class base::RefCountedThreadSafe<TopSites>;
 
   base::ObserverList<TopSitesObserver, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSites);
 };
 
 }  // namespace history

@@ -73,6 +73,9 @@ class MetricsStateManagerTest : public testing::Test {
     MetricsService::RegisterPrefs(prefs_.registry());
   }
 
+  MetricsStateManagerTest(const MetricsStateManagerTest&) = delete;
+  MetricsStateManagerTest& operator=(const MetricsStateManagerTest&) = delete;
+
   std::unique_ptr<MetricsStateManager> CreateStateManager(
       const std::string& external_client_id = "") {
     std::unique_ptr<MetricsStateManager> state_manager =
@@ -161,8 +164,6 @@ class MetricsStateManagerTest : public testing::Test {
   }
 
   std::unique_ptr<TestEnabledStateProvider> enabled_state_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsStateManagerTest);
 };
 
 TEST_F(MetricsStateManagerTest, ClientIdCorrectlyFormatted_ConsentInitially) {

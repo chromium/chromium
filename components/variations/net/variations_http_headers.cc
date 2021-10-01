@@ -234,6 +234,9 @@ class VariationsHeaderHelper {
     variations_header_ = std::move(variations_header);
   }
 
+  VariationsHeaderHelper(const VariationsHeaderHelper&) = delete;
+  VariationsHeaderHelper& operator=(const VariationsHeaderHelper&) = delete;
+
   bool AppendHeaderIfNeeded(const GURL& url, InIncognito incognito) {
     AppendOmniboxOnDeviceSuggestionsHeaderIfNeeded(url, resource_request_);
 
@@ -284,8 +287,6 @@ class VariationsHeaderHelper {
 
   network::ResourceRequest* resource_request_;
   std::string variations_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsHeaderHelper);
 };
 
 }  // namespace

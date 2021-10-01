@@ -321,6 +321,9 @@ void TrimElements(const std::set<int> target_ids,
 // don't leak it.
 class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
  public:
+  ThreatDetailsFactoryImpl(const ThreatDetailsFactoryImpl&) = delete;
+  ThreatDetailsFactoryImpl& operator=(const ThreatDetailsFactoryImpl&) = delete;
+
   std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* ui_manager,
       WebContents* web_contents,
@@ -345,8 +348,6 @@ class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
   friend struct base::LazyInstanceTraitsBase<ThreatDetailsFactoryImpl>;
 
   ThreatDetailsFactoryImpl() {}
-
-  DISALLOW_COPY_AND_ASSIGN(ThreatDetailsFactoryImpl);
 };
 
 static base::LazyInstance<ThreatDetailsFactoryImpl>::DestructorAtExit

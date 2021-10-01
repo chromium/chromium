@@ -57,6 +57,9 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
    public:
     Internal();
 
+    Internal(const Internal&) = delete;
+    Internal& operator=(const Internal&) = delete;
+
     // Update the value, either by calling |UpdateValueInternal| directly
     // or by dispatching to the right sequence.
     // Takes ownership of |value|.
@@ -90,8 +93,6 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
     mutable bool is_managed_ = false;
     mutable bool is_user_modifiable_ = false;
     mutable bool is_default_value_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Internal);
   };
 
   PrefMemberBase();
@@ -264,6 +265,9 @@ class PrefMember : public subtle::PrefMemberBase {
    public:
     Internal() : value_(ValueType()) {}
 
+    Internal(const Internal&) = delete;
+    Internal& operator=(const Internal&) = delete;
+
     ValueType value() {
       CheckOnCorrectSequence();
       return value_;
@@ -278,9 +282,6 @@ class PrefMember : public subtle::PrefMemberBase {
     // We cache the value of the pref so we don't have to keep walking the pref
     // tree.
     mutable ValueType value_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Internal);
   };
 
   Internal* internal() const override { return internal_.get(); }

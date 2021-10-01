@@ -60,6 +60,11 @@ class WebDocumentSubresourceFilterImpl
       scoped_refptr<const MemoryMappedRuleset> ruleset,
       base::OnceClosure first_disallowed_load_callback);
 
+  WebDocumentSubresourceFilterImpl(const WebDocumentSubresourceFilterImpl&) =
+      delete;
+  WebDocumentSubresourceFilterImpl& operator=(
+      const WebDocumentSubresourceFilterImpl&) = delete;
+
   ~WebDocumentSubresourceFilterImpl() override;
 
   const DocumentSubresourceFilter& filter() const { return filter_; }
@@ -94,8 +99,6 @@ class WebDocumentSubresourceFilterImpl
   // WebDocumentSubresourceFilter most recently created by the
   // SubresourceFilterAgent.
   AdResourceTracker* ad_resource_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDocumentSubresourceFilterImpl);
 };
 
 }  // namespace subresource_filter

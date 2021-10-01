@@ -96,6 +96,10 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
         kDeleteWithExtremePrejudice);
   }
 
+  OnCloseWebContentsDeleter(const OnCloseWebContentsDeleter&) = delete;
+  OnCloseWebContentsDeleter& operator=(const OnCloseWebContentsDeleter&) =
+      delete;
+
   void CloseContents(WebContents* source) override {
     DCHECK_EQ(tab_.get(), source);
     ScheduleWebContentsForDeletion(/*timeout=*/false);
@@ -111,8 +115,6 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
 
   NoStatePrefetchManager* const manager_;
   std::unique_ptr<WebContents> tab_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnCloseWebContentsDeleter);
 };
 
 NoStatePrefetchManagerObserver::~NoStatePrefetchManagerObserver() = default;

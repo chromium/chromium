@@ -58,6 +58,11 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
  public:
   OriginTrialsComponentInstallerTest() = default;
 
+  OriginTrialsComponentInstallerTest(
+      const OriginTrialsComponentInstallerTest&) = delete;
+  OriginTrialsComponentInstallerTest& operator=(
+      const OriginTrialsComponentInstallerTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -149,9 +154,6 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ComponentInstallerPolicy> policy_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialsComponentInstallerTest);
 };
 
 TEST_F(OriginTrialsComponentInstallerTest,

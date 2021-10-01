@@ -83,6 +83,9 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
       FrameSource* frame_source,
       mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver);
 
+  VideoCaptureOverlay(const VideoCaptureOverlay&) = delete;
+  VideoCaptureOverlay& operator=(const VideoCaptureOverlay&) = delete;
+
   ~VideoCaptureOverlay() final;
 
   // mojom::FrameSinkVideoCaptureOverlay implementation:
@@ -118,6 +121,9 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
            const gfx::Size& size,
            const media::VideoPixelFormat format);
 
+    Sprite(const Sprite&) = delete;
+    Sprite& operator=(const Sprite&) = delete;
+
     const gfx::Size& size() const { return size_; }
     media::VideoPixelFormat format() const { return format_; }
 
@@ -151,8 +157,6 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
     // subsampled one minus alpha, U, V). For both formats, the color components
     // are premultiplied for more-efficient Blit()'s.
     std::unique_ptr<float[]> transformed_image_;
-
-    DISALLOW_COPY_AND_ASSIGN(Sprite);
   };
 
   // Computes the region of the source that, if changed, would require
@@ -175,8 +179,6 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   // The current Sprite. This is set to null whenever a settings change requires
   // a new Sprite to be generated from the |image_|.
   scoped_refptr<Sprite> sprite_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureOverlay);
 };
 
 }  // namespace viz

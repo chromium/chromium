@@ -49,6 +49,9 @@ class ClientCertRequest {
         cert_request_info_(cert_request_info),
         delegate_(std::move(delegate)) {}
 
+  ClientCertRequest(const ClientCertRequest&) = delete;
+  ClientCertRequest& operator=(const ClientCertRequest&) = delete;
+
   base::OnceClosure GetCancellationCallback() {
     return base::BindOnce(&ClientCertRequest::OnCancel,
                           weak_factory_.GetWeakPtr());
@@ -68,8 +71,6 @@ class ClientCertRequest {
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   std::unique_ptr<content::ClientCertificateDelegate> delegate_;
   base::WeakPtrFactory<ClientCertRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertRequest);
 };
 
 class SSLClientCertPendingRequests

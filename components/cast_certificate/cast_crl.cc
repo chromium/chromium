@@ -72,6 +72,9 @@ class CastCRLTrustStore {
                                                   CastCRLTrustStore>>::get();
   }
 
+  CastCRLTrustStore(const CastCRLTrustStore&) = delete;
+  CastCRLTrustStore& operator=(const CastCRLTrustStore&) = delete;
+
   static net::TrustStore& Get() { return GetInstance()->store_; }
 
  private:
@@ -89,7 +92,6 @@ class CastCRLTrustStore {
   }
 
   net::TrustStoreInMemory store_;
-  DISALLOW_COPY_AND_ASSIGN(CastCRLTrustStore);
 };
 
 // Converts a uint64_t unix timestamp to net::der::GeneralizedTime.

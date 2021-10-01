@@ -22,6 +22,9 @@ class FileDataSource final : public mojom::BundleDataSource {
         &base::DeletePointer<FileDataSource>, base::Unretained(this)));
   }
 
+  FileDataSource(const FileDataSource&) = delete;
+  FileDataSource& operator=(const FileDataSource&) = delete;
+
  private:
   // Implements mojom::BundleDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
@@ -37,8 +40,6 @@ class FileDataSource final : public mojom::BundleDataSource {
 
   mojo::Receiver<mojom::BundleDataSource> receiver_;
   base::File file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDataSource);
 };
 
 }  // namespace

@@ -20,6 +20,9 @@ class EulaAcceptedNotifierTest : public testing::Test,
   EulaAcceptedNotifierTest() : eula_accepted_called_(false) {
   }
 
+  EulaAcceptedNotifierTest(const EulaAcceptedNotifierTest&) = delete;
+  EulaAcceptedNotifierTest& operator=(const EulaAcceptedNotifierTest&) = delete;
+
   // testing::Test overrides.
   void SetUp() override {
     local_state_.registry()->RegisterBooleanPref(prefs::kEulaAccepted, false);
@@ -49,8 +52,6 @@ class EulaAcceptedNotifierTest : public testing::Test,
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<EulaAcceptedNotifier> notifier_;
   bool eula_accepted_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(EulaAcceptedNotifierTest);
 };
 
 TEST_F(EulaAcceptedNotifierTest, EulaAlreadyAccepted) {

@@ -67,6 +67,11 @@ class ClearPrimaryAccountTestObserver
     scoped_observation_.Observe(identity_manager);
   }
 
+  ClearPrimaryAccountTestObserver(const ClearPrimaryAccountTestObserver&) =
+      delete;
+  ClearPrimaryAccountTestObserver& operator=(
+      const ClearPrimaryAccountTestObserver&) = delete;
+
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
@@ -88,8 +93,6 @@ class ClearPrimaryAccountTestObserver
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClearPrimaryAccountTestObserver);
 };
 
 // Helper for testing of RevokeSyncConsent/ClearPrimaryAccount(). This function

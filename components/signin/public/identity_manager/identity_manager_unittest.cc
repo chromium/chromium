@@ -265,6 +265,10 @@ class TestIdentityManagerDiagnosticsObserver
 }  // namespace
 
 class IdentityManagerTest : public testing::Test {
+ public:
+  IdentityManagerTest(const IdentityManagerTest&) = delete;
+  IdentityManagerTest& operator=(const IdentityManagerTest&) = delete;
+
  protected:
   IdentityManagerTest()
       : signin_client_(&pref_service_, &test_url_loader_factory_) {
@@ -513,8 +517,6 @@ class IdentityManagerTest : public testing::Test {
   std::unique_ptr<TestIdentityManagerDiagnosticsObserver>
       identity_manager_diagnostics_observer_;
   CoreAccountId primary_account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerTest);
 };
 
 // Test that IdentityManager's constructor properly sets all passed parameters.

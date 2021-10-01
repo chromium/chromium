@@ -20,6 +20,10 @@ class MetricsService;
 // These methods are protected so each user has to inherit own program-specific
 // specialization and enable access there by declaring friends.
 class MetricsServiceAccessor {
+ public:
+  MetricsServiceAccessor(const MetricsServiceAccessor&) = delete;
+  MetricsServiceAccessor& operator=(const MetricsServiceAccessor&) = delete;
+
  protected:
   // Constructor declared as protected to enable inheritance. Descendants should
   // disallow instantiation.
@@ -52,9 +56,6 @@ class MetricsServiceAccessor {
   // forces non-official builds to look at the prefs value official builds look
   // at.
   static void SetForceIsMetricsReportingEnabledPrefLookup(bool value);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceAccessor);
 };
 
 }  // namespace metrics

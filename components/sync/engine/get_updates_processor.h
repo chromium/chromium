@@ -32,6 +32,10 @@ class GetUpdatesProcessor {
  public:
   explicit GetUpdatesProcessor(UpdateHandlerMap* update_handler_map,
                                const GetUpdatesDelegate& delegate);
+
+  GetUpdatesProcessor(const GetUpdatesProcessor&) = delete;
+  GetUpdatesProcessor& operator=(const GetUpdatesProcessor&) = delete;
+
   ~GetUpdatesProcessor();
 
   // Downloads and processes a batch of updates for the specified types.
@@ -88,8 +92,6 @@ class GetUpdatesProcessor {
   UpdateHandlerMap* update_handler_map_;
 
   const GetUpdatesDelegate& delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetUpdatesProcessor);
 };
 
 }  // namespace syncer

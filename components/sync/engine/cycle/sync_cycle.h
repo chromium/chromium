@@ -83,6 +83,10 @@ class SyncCycle {
   };
 
   SyncCycle(SyncCycleContext* context, Delegate* delegate);
+
+  SyncCycle(const SyncCycle&) = delete;
+  SyncCycle& operator=(const SyncCycle&) = delete;
+
   ~SyncCycle();
 
   // Builds a thread-safe and read-only copy of the current cycle state.
@@ -116,8 +120,6 @@ class SyncCycle {
 
   // Our controller for various status and error counters.
   std::unique_ptr<StatusController> status_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncCycle);
 };
 
 }  // namespace syncer

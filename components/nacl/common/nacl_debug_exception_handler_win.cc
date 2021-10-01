@@ -26,6 +26,9 @@ class DebugExceptionHandler : public base::PlatformThread::Delegate {
         task_runner_(task_runner),
         on_connected_(std::move(on_connected)) {}
 
+  DebugExceptionHandler(const DebugExceptionHandler&) = delete;
+  DebugExceptionHandler& operator=(const DebugExceptionHandler&) = delete;
+
   void ThreadMain() override {
     // In the Windows API, the set of processes being debugged is
     // thread-local, so we have to attach to the process (using
@@ -61,8 +64,6 @@ class DebugExceptionHandler : public base::PlatformThread::Delegate {
   std::string startup_info_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::RepeatingCallback<void(bool)> on_connected_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugExceptionHandler);
 };
 
 }  // namespace

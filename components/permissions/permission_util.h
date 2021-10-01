@@ -39,6 +39,10 @@ enum class PermissionAction {
 // A utility class for permissions.
 class PermissionUtil {
  public:
+  PermissionUtil() = delete;
+  PermissionUtil(const PermissionUtil&) = delete;
+  PermissionUtil& operator=(const PermissionUtil&) = delete;
+
   // Returns the permission string for the given permission.
   static std::string GetPermissionString(ContentSettingsType);
 
@@ -75,9 +79,6 @@ class PermissionUtil {
   static GURL GetLastCommittedOriginAsURL(content::WebContents* web_contents);
   static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionUtil);
 };
 
 }  // namespace permissions

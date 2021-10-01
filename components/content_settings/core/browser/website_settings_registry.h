@@ -55,6 +55,9 @@ class WebsiteSettingsRegistry {
 
   static WebsiteSettingsRegistry* GetInstance();
 
+  WebsiteSettingsRegistry(const WebsiteSettingsRegistry&) = delete;
+  WebsiteSettingsRegistry& operator=(const WebsiteSettingsRegistry&) = delete;
+
   // Reset the instance for use inside tests.
   void ResetForTest();
 
@@ -90,8 +93,6 @@ class WebsiteSettingsRegistry {
   void Init();
 
   Map website_settings_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebsiteSettingsRegistry);
 };
 
 }  // namespace content_settings

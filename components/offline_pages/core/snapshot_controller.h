@@ -64,6 +64,9 @@ class SnapshotController {
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       SnapshotController::Client* client);
 
+  SnapshotController(const SnapshotController&) = delete;
+  SnapshotController& operator=(const SnapshotController&) = delete;
+
   virtual ~SnapshotController();
 
   // Resets the 'session', returning controller to initial state.
@@ -105,8 +108,6 @@ class SnapshotController {
   PageQuality current_page_quality_ = PageQuality::POOR;
 
   base::WeakPtrFactory<SnapshotController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotController);
 };
 
 }  // namespace offline_pages

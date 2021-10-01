@@ -115,6 +115,10 @@ class MetricsLog {
              int session_id,
              LogType log_type,
              MetricsServiceClient* client);
+
+  MetricsLog(const MetricsLog&) = delete;
+  MetricsLog& operator=(const MetricsLog&) = delete;
+
   virtual ~MetricsLog();
 
   // Registers local state prefs used by this class.
@@ -245,8 +249,6 @@ class MetricsLog {
 
   // Optional metadata associated with the log.
   LogMetadata log_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsLog);
 };
 
 }  // namespace metrics

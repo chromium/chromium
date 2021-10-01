@@ -83,6 +83,9 @@ class HostContentSettingsMap : public content_settings::Observer,
                          bool store_last_modified,
                          bool restore_session);
 
+  HostContentSettingsMap(const HostContentSettingsMap&) = delete;
+  HostContentSettingsMap& operator=(const HostContentSettingsMap&) = delete;
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Adds a new provider for |type|. This should be used instead of
@@ -468,8 +471,6 @@ class HostContentSettingsMap : public content_settings::Observer,
   bool allow_invalid_secondary_pattern_for_testing_;
 
   base::WeakPtrFactory<HostContentSettingsMap> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMap);
 };
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_HOST_CONTENT_SETTINGS_MAP_H_

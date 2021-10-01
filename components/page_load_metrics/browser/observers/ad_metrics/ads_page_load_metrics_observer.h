@@ -95,6 +95,11 @@ class AdsPageLoadMetricsObserver
       const ApplicationLocaleGetter& application_local_getter,
       base::TickClock* clock = nullptr,
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
+
+  AdsPageLoadMetricsObserver(const AdsPageLoadMetricsObserver&) = delete;
+  AdsPageLoadMetricsObserver& operator=(const AdsPageLoadMetricsObserver&) =
+      delete;
+
   ~AdsPageLoadMetricsObserver() override;
 
   // PageLoadMetricsObserver
@@ -326,8 +331,6 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserver);
 };
 
 }  // namespace page_load_metrics

@@ -16,14 +16,16 @@ class OfflinePageNavigationUIData {
   OfflinePageNavigationUIData();
   explicit OfflinePageNavigationUIData(bool is_offline_page);
 
+  OfflinePageNavigationUIData(const OfflinePageNavigationUIData&) = delete;
+  OfflinePageNavigationUIData& operator=(const OfflinePageNavigationUIData&) =
+      delete;
+
   std::unique_ptr<OfflinePageNavigationUIData> DeepCopy() const;
 
   bool is_offline_page() const { return is_offline_page_; }
 
  private:
   bool is_offline_page_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageNavigationUIData);
 };
 
 }  // namespace offline_pages

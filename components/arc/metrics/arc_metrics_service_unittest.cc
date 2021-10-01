@@ -90,6 +90,10 @@ void VerifyAnr(const base::HistogramTester& tester,
 }
 
 class ArcMetricsServiceTest : public testing::Test {
+ public:
+  ArcMetricsServiceTest(const ArcMetricsServiceTest&) = delete;
+  ArcMetricsServiceTest& operator=(const ArcMetricsServiceTest&) = delete;
+
  protected:
   ArcMetricsServiceTest() {
     prefs::RegisterLocalStatePrefs(local_state_.registry());
@@ -163,8 +167,6 @@ class ArcMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMetricsServiceTest);
 };
 
 // Tests that ReportBootProgress() actually records UMA stats.

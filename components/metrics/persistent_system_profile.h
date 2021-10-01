@@ -150,13 +150,15 @@ class GlobalPersistentSystemProfile : public PersistentSystemProfile {
  public:
   static GlobalPersistentSystemProfile* GetInstance();
 
+  GlobalPersistentSystemProfile(const GlobalPersistentSystemProfile&) = delete;
+  GlobalPersistentSystemProfile& operator=(
+      const GlobalPersistentSystemProfile&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<GlobalPersistentSystemProfile>;
 
   GlobalPersistentSystemProfile() {}
   ~GlobalPersistentSystemProfile() {}
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalPersistentSystemProfile);
 };
 
 }  // namespace metrics

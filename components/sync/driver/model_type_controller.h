@@ -36,6 +36,10 @@ class ModelTypeController : public DataTypeController {
       ModelType type,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode);
+
+  ModelTypeController(const ModelTypeController&) = delete;
+  ModelTypeController& operator=(const ModelTypeController&) = delete;
+
   ~ModelTypeController() override;
 
   // DataTypeController implementation.
@@ -98,8 +102,6 @@ class ModelTypeController : public DataTypeController {
   // ClientTagBasedModelTypeProcessor callback and must temporarily own it until
   // Connect is called.
   std::unique_ptr<DataTypeActivationResponse> activation_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeController);
 };
 
 }  // namespace syncer

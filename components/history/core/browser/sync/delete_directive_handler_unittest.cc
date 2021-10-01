@@ -40,6 +40,10 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
  public:
   TestHistoryBackendDelegate() {}
 
+  TestHistoryBackendDelegate(const TestHistoryBackendDelegate&) = delete;
+  TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =
+      delete;
+
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override {}
   void SetInMemoryBackend(
@@ -57,9 +61,6 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
                                       const std::u16string& term) override {}
   void NotifyKeywordSearchTermDeleted(URLID url_id) override {}
   void DBLoaded() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestHistoryBackendDelegate);
 };
 
 void ScheduleDBTask(scoped_refptr<HistoryBackend> history_backend,

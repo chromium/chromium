@@ -52,6 +52,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
                        std::unique_ptr<NigoriStorage> storage,
                        const std::string& packed_explicit_passphrase_key,
                        const std::string& packed_keystore_keys);
+
+  NigoriSyncBridgeImpl(const NigoriSyncBridgeImpl&) = delete;
+  NigoriSyncBridgeImpl& operator=(const NigoriSyncBridgeImpl&) = delete;
+
   ~NigoriSyncBridgeImpl() override;
 
   // SyncEncryptionHandler implementation.
@@ -188,8 +192,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   const std::unique_ptr<BroadcastingObserver> broadcasting_observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NigoriSyncBridgeImpl);
 };
 
 }  // namespace syncer

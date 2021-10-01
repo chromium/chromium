@@ -37,14 +37,15 @@ class BarrierBuilder {
       : continuation_(
             base::MakeRefCounted<ContinuationRef>(std::move(continuation))) {}
 
+  BarrierBuilder(const BarrierBuilder&) = delete;
+  BarrierBuilder& operator=(const BarrierBuilder&) = delete;
+
   base::OnceClosure AddClosure() {
     return base::BindOnce([](scoped_refptr<ContinuationRef>) {}, continuation_);
   }
 
  private:
   const scoped_refptr<ContinuationRef> continuation_;
-
-  DISALLOW_COPY_AND_ASSIGN(BarrierBuilder);
 };
 
 template <typename T>

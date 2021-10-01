@@ -44,6 +44,9 @@ class WaylandClientTestHelper::WaylandWatcher
         &controller_, this);
   }
 
+  WaylandWatcher(const WaylandWatcher&) = delete;
+  WaylandWatcher& operator=(const WaylandWatcher&) = delete;
+
   // base::MessagePumpLibevent::FdWatcher:
   void OnFileCanReadWithoutBlocking(int fd) override {
     server_->Dispatch(base::TimeDelta());
@@ -54,8 +57,6 @@ class WaylandClientTestHelper::WaylandWatcher
  private:
   base::MessagePumpLibevent::FdWatchController controller_;
   exo::wayland::Server* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWatcher);
 };
 
 // static

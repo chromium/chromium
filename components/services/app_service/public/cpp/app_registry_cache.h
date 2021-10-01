@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  public:
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     // The apps::AppUpdate argument shouldn't be accessed after OnAppUpdate
     // returns.
     virtual void OnAppUpdate(const AppUpdate& update) = 0;
@@ -73,11 +76,13 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
    private:
     AppRegistryCache* cache_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   AppRegistryCache();
+
+  AppRegistryCache(const AppRegistryCache&) = delete;
+  AppRegistryCache& operator=(const AppRegistryCache&) = delete;
+
   ~AppRegistryCache();
 
   void AddObserver(Observer* observer);
@@ -224,8 +229,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // A sentinel value checking for a UAF in https://crbug.com/1237267. Should be
   // removed after https://crbug.com/1237267 is fixed.
   uint32_t uaf_sentinel_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppRegistryCache);
 };
 
 }  // namespace apps

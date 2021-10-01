@@ -137,6 +137,10 @@ class ArcBridgeService {
   };
 
   ArcBridgeService();
+
+  ArcBridgeService(const ArcBridgeService&) = delete;
+  ArcBridgeService& operator=(const ArcBridgeService&) = delete;
+
   ~ArcBridgeService();
 
   // Adds or removes observers.
@@ -417,7 +421,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::WakeLockInstance, mojom::WakeLockHost> wake_lock_;
   ConnectionHolder<mojom::WallpaperInstance, mojom::WallpaperHost> wallpaper_;
   ConnectionHolder<mojom::WebApkInstance> webapk_;
-  DISALLOW_COPY_AND_ASSIGN(ArcBridgeService);
 };
 
 }  // namespace arc

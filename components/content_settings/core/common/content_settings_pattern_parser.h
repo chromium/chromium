@@ -15,14 +15,15 @@ namespace content_settings {
 
 class PatternParser {
  public:
+  PatternParser() = delete;
+  PatternParser(const PatternParser&) = delete;
+  PatternParser& operator=(const PatternParser&) = delete;
+
   static void Parse(base::StringPiece pattern_spec,
                     ContentSettingsPattern::BuilderInterface* builder);
 
   static std::string ToString(
       const ContentSettingsPattern::PatternParts& parts);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PatternParser);
 };
 
 }  // namespace content_settings

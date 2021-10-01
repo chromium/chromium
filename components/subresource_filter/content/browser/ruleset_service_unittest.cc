@@ -194,6 +194,11 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
         best_effort_task_runner_(
             base::MakeRefCounted<base::TestSimpleTaskRunner>()) {}
 
+  SubresourceFilteringRulesetServiceTest(
+      const SubresourceFilteringRulesetServiceTest&) = delete;
+  SubresourceFilteringRulesetServiceTest& operator=(
+      const SubresourceFilteringRulesetServiceTest&) = delete;
+
  protected:
   void SetUp() override {
     IndexedRulesetVersion::RegisterPrefs(pref_service_.registry());
@@ -444,8 +449,6 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   TestRulesetPair test_ruleset_3_;
 
   std::unique_ptr<RulesetService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilteringRulesetServiceTest);
 };
 
 // Specialized test fixture for death tests. It exposes the temporary directory
@@ -458,6 +461,11 @@ class SubresourceFilteringRulesetServiceDeathTest
  public:
   SubresourceFilteringRulesetServiceDeathTest()
       : environment_(base::Environment::Create()) {}
+
+  SubresourceFilteringRulesetServiceDeathTest(
+      const SubresourceFilteringRulesetServiceDeathTest&) = delete;
+  SubresourceFilteringRulesetServiceDeathTest& operator=(
+      const SubresourceFilteringRulesetServiceDeathTest&) = delete;
 
  protected:
   void SetUpTempDir() override {
@@ -489,8 +497,6 @@ class SubresourceFilteringRulesetServiceDeathTest
 
   std::unique_ptr<base::Environment> environment_;
   base::FilePath inherited_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilteringRulesetServiceDeathTest);
 };
 
 // static

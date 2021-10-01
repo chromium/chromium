@@ -65,6 +65,11 @@ class PermissionAuditingDatabaseTest : public testing::Test {
   PermissionAuditingDatabaseTest()
       : test_sessions_(GeneratePermissionSessions()) {}
 
+  PermissionAuditingDatabaseTest(const PermissionAuditingDatabaseTest&) =
+      delete;
+  PermissionAuditingDatabaseTest& operator=(
+      const PermissionAuditingDatabaseTest&) = delete;
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
@@ -140,8 +145,6 @@ class PermissionAuditingDatabaseTest : public testing::Test {
 
   base::ScopedTempDir temp_directory_;
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionAuditingDatabaseTest);
 };
 
 TEST_F(PermissionAuditingDatabaseTest, IsUsageHistorySizeCorrect) {

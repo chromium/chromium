@@ -184,6 +184,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
               base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
                   read_error_callback,
               bool async);
+
+  PrefService(const PrefService&) = delete;
+  PrefService& operator=(const PrefService&) = delete;
+
   virtual ~PrefService();
 
   // Lands pending writes to disk. This should only be used if we need to save
@@ -493,8 +497,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefService);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_SERVICE_H_

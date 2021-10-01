@@ -87,6 +87,9 @@ class SyncQuery {
    public:
     explicit Fence(base::WeakPtr<SyncQuery> query) : query_(query) {}
 
+    Fence(const Fence&) = delete;
+    Fence& operator=(const Fence&) = delete;
+
     // ResourceFence implementation.
     void Set() override {
       DCHECK(query_);
@@ -98,8 +101,6 @@ class SyncQuery {
     ~Fence() override {}
 
     base::WeakPtr<SyncQuery> query_;
-
-    DISALLOW_COPY_AND_ASSIGN(Fence);
   };
 
   gpu::gles2::GLES2Interface* gl_;

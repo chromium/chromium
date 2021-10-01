@@ -220,6 +220,10 @@ gaia::ListedAccount ListedAccountFromCookieParams(
 }  // namespace
 
 class AccountReconcilorTest : public ::testing::Test {
+ public:
+  AccountReconcilorTest(const AccountReconcilorTest&) = delete;
+  AccountReconcilorTest& operator=(const AccountReconcilorTest&) = delete;
+
  protected:
   AccountReconcilorTest();
   ~AccountReconcilorTest() override;
@@ -275,8 +279,6 @@ class AccountReconcilorTest : public ::testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<MockAccountReconcilor> mock_reconcilor_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTest);
 };
 
 class AccountReconcilorMirrorTest : public AccountReconcilorTest {
@@ -285,8 +287,9 @@ class AccountReconcilorMirrorTest : public AccountReconcilorTest {
     SetAccountConsistency(signin::AccountConsistencyMethod::kMirror);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorMirrorTest);
+  AccountReconcilorMirrorTest(const AccountReconcilorMirrorTest&) = delete;
+  AccountReconcilorMirrorTest& operator=(const AccountReconcilorMirrorTest&) =
+      delete;
 };
 
 // For tests that must be run with multiple account consistency methods.
@@ -296,8 +299,10 @@ class AccountReconcilorMethodParamTest
  public:
   AccountReconcilorMethodParamTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorMethodParamTest);
+  AccountReconcilorMethodParamTest(const AccountReconcilorMethodParamTest&) =
+      delete;
+  AccountReconcilorMethodParamTest& operator=(
+      const AccountReconcilorMethodParamTest&) = delete;
 };
 
 INSTANTIATE_TEST_SUITE_P(Dice_Mirror,
@@ -873,8 +878,10 @@ class AccountReconcilorTestDiceMultilogin : public AccountReconcilorTestTable {
  public:
   AccountReconcilorTestDiceMultilogin() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestDiceMultilogin);
+  AccountReconcilorTestDiceMultilogin(
+      const AccountReconcilorTestDiceMultilogin&) = delete;
+  AccountReconcilorTestDiceMultilogin& operator=(
+      const AccountReconcilorTestDiceMultilogin&) = delete;
 };
 
 // Checks one row of the kDiceParams table above.
@@ -977,8 +984,9 @@ class AccountReconcilorDiceTest : public AccountReconcilorTest {
     SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorDiceTest);
+  AccountReconcilorDiceTest(const AccountReconcilorDiceTest&) = delete;
+  AccountReconcilorDiceTest& operator=(const AccountReconcilorDiceTest&) =
+      delete;
 };
 
 // Tests that the AccountReconcilor is always registered.
@@ -1319,8 +1327,10 @@ class AccountReconcilorTestMirrorMultilogin
  public:
   AccountReconcilorTestMirrorMultilogin() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestMirrorMultilogin);
+  AccountReconcilorTestMirrorMultilogin(
+      const AccountReconcilorTestMirrorMultilogin&) = delete;
+  AccountReconcilorTestMirrorMultilogin& operator=(
+      const AccountReconcilorTestMirrorMultilogin&) = delete;
 };
 
 // Checks one row of the kDiceParams table above.
@@ -1408,6 +1418,11 @@ class AccountReconcilorTestActiveDirectory : public AccountReconcilorTestTable {
  public:
   AccountReconcilorTestActiveDirectory() = default;
 
+  AccountReconcilorTestActiveDirectory(
+      const AccountReconcilorTestActiveDirectory&) = delete;
+  AccountReconcilorTestActiveDirectory& operator=(
+      const AccountReconcilorTestActiveDirectory&) = delete;
+
   void SetUp() override {
     SetAccountConsistency(signin::AccountConsistencyMethod::kMirror);
   }
@@ -1417,8 +1432,6 @@ class AccountReconcilorTestActiveDirectory : public AccountReconcilorTestTable {
       chromeos::StubInstallAttributes::CreateActiveDirectoryManaged(
           "realm.com",
           "device_id")};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestActiveDirectory);
 };
 
 // clang-format off
@@ -2566,6 +2579,11 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
         1 / AccountReconcilorThrottler::kRefillRequestsBucketRatePerMinute;
   }
 
+  AccountReconcilorThrottlerTest(const AccountReconcilorThrottlerTest&) =
+      delete;
+  AccountReconcilorThrottlerTest& operator=(
+      const AccountReconcilorThrottlerTest&) = delete;
+
   void ConsumeRequests(size_t number_of_requests,
                        const signin::MultiloginParameters& expected_params) {
     AccountReconcilor* reconcilor = GetMockReconcilor();
@@ -2604,7 +2622,6 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
 
  private:
   size_t minutes_to_refill_per_request_;
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorThrottlerTest);
 };
 
 TEST_F(AccountReconcilorThrottlerTest, RefillOneRequest) {

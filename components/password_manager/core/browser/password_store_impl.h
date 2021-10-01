@@ -45,6 +45,10 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       std::unique_ptr<LoginDatabase> login_db,
       std::unique_ptr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
           notifier);
+
+  PasswordStoreImpl(const PasswordStoreImpl&) = delete;
+  PasswordStoreImpl& operator=(const PasswordStoreImpl&) = delete;
+
   ~PasswordStoreImpl() override;
 
  protected:
@@ -220,8 +224,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   base::WeakPtrFactory<PasswordStoreImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreImpl);
 };
 
 }  // namespace password_manager

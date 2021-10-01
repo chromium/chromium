@@ -176,6 +176,10 @@ std::vector<AutofillProfile*> PersonalDataManagerMock::GetProfiles() const {
 // input format.
 class AutofillMergeTest : public DataDrivenTest,
                           public testing::TestWithParam<base::FilePath> {
+ public:
+  AutofillMergeTest(const AutofillMergeTest&) = delete;
+  AutofillMergeTest& operator=(const AutofillMergeTest&) = delete;
+
  protected:
   AutofillMergeTest();
   ~AutofillMergeTest() override;
@@ -202,8 +206,6 @@ class AutofillMergeTest : public DataDrivenTest,
 
  private:
   std::map<std::string, ServerFieldType> string_to_field_type_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillMergeTest);
 };
 
 AutofillMergeTest::AutofillMergeTest() : DataDrivenTest(GetTestDataDir()) {

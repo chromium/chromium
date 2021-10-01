@@ -17,6 +17,11 @@ class TestWebContentsModalDialogManagerDelegate
  public:
   TestWebContentsModalDialogManagerDelegate();
 
+  TestWebContentsModalDialogManagerDelegate(
+      const TestWebContentsModalDialogManagerDelegate&) = delete;
+  TestWebContentsModalDialogManagerDelegate& operator=(
+      const TestWebContentsModalDialogManagerDelegate&) = delete;
+
   // WebContentsModalDialogManagerDelegate overrides:
   void SetWebContentsBlocked(content::WebContents* web_contents,
                              bool blocked) override;
@@ -39,8 +44,6 @@ class TestWebContentsModalDialogManagerDelegate
   bool web_contents_visible_;
   bool web_contents_blocked_;
   WebContentsModalDialogHost* web_contents_modal_dialog_host_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsModalDialogManagerDelegate);
 };
 
 }  // namespace web_modal

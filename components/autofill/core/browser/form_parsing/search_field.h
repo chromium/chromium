@@ -29,6 +29,9 @@ class SearchField : public FormField {
                                           LogManager* log_manager);
   SearchField(const AutofillField* field);
 
+  SearchField(const SearchField&) = delete;
+  SearchField& operator=(const SearchField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
@@ -37,8 +40,6 @@ class SearchField : public FormField {
   FRIEND_TEST_ALL_PREFIXES(SearchFieldTest, ParseNonSearchTerm);
 
   const AutofillField* field_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchField);
 };
 
 }  // namespace autofill

@@ -33,6 +33,10 @@ namespace metrics {
 
 class NetworkMetricsProviderTest : public testing::Test {
  public:
+  NetworkMetricsProviderTest(const NetworkMetricsProviderTest&) = delete;
+  NetworkMetricsProviderTest& operator=(const NetworkMetricsProviderTest&) =
+      delete;
+
  protected:
   NetworkMetricsProviderTest()
       : task_environment_(MetricsTaskEnvironment::IO_MAINLOOP) {}
@@ -43,8 +47,6 @@ class NetworkMetricsProviderTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkMetricsProviderTest);
 };
 
 // Verifies that the effective connection type is correctly set.

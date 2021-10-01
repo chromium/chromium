@@ -35,6 +35,9 @@ class UIStringOverrider {
   UIStringOverrider(const uint32_t* resource_hashes,
                     const int* resource_indices,
                     size_t num_resources);
+
+  UIStringOverrider& operator=(const UIStringOverrider&) = delete;
+
   ~UIStringOverrider();
 
   // Returns the resource index corresponding to the given hash or -1 if no
@@ -45,8 +48,6 @@ class UIStringOverrider {
   const uint32_t* const resource_hashes_;
   const int* const resource_indices_;
   size_t const num_resources_;
-
-  DISALLOW_ASSIGN(UIStringOverrider);
 };
 
 }  // namespace variations

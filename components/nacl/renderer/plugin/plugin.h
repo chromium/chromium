@@ -46,6 +46,9 @@ class Plugin : public pp::Instance {
  public:
   explicit Plugin(PP_Instance instance);
 
+  Plugin(const Plugin&) = delete;
+  Plugin& operator=(const Plugin&) = delete;
+
   // ----- Methods inherited from pp::Instance:
 
   // Initializes this plugin with <embed/object ...> tag attribute count |argc|,
@@ -135,8 +138,6 @@ class Plugin : public pp::Instance {
   PP_NaClFileInfo nexe_file_info_;
 
   pp::UMAPrivate uma_interface_;
-
-  DISALLOW_COPY_AND_ASSIGN(Plugin);
 };
 
 }  // namespace plugin

@@ -20,6 +20,11 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceShutdownNotifierFactory
  public:
   KeyedServiceShutdownNotifier* Get(content::BrowserContext* context);
 
+  BrowserContextKeyedServiceShutdownNotifierFactory(
+      const BrowserContextKeyedServiceShutdownNotifierFactory&) = delete;
+  BrowserContextKeyedServiceShutdownNotifierFactory& operator=(
+      const BrowserContextKeyedServiceShutdownNotifierFactory&) = delete;
+
  protected:
   explicit BrowserContextKeyedServiceShutdownNotifierFactory(const char* name);
   ~BrowserContextKeyedServiceShutdownNotifierFactory() override;
@@ -29,8 +34,6 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceShutdownNotifierFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContextKeyedServiceShutdownNotifierFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_KEYED_SERVICE_SHUTDOWN_NOTIFIER_FACTORY_H_

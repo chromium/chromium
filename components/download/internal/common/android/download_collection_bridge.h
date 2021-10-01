@@ -21,6 +21,9 @@ namespace download {
 // download collection.
 class COMPONENTS_DOWNLOAD_EXPORT DownloadCollectionBridge {
  public:
+  DownloadCollectionBridge(const DownloadCollectionBridge&) = delete;
+  DownloadCollectionBridge& operator=(const DownloadCollectionBridge&) = delete;
+
   // Creates the intermediate URI for download to write to.
   // Called on non UI thread.
   static base::FilePath CreateIntermediateUriForPublish(
@@ -70,9 +73,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadCollectionBridge {
 
   // Gets the display name for a download.
   static base::FilePath GetDisplayName(const base::FilePath& download_uri);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadCollectionBridge);
 };
 
 }  // namespace download

@@ -29,11 +29,11 @@ class UserStreamDataSource : public crashpad::UserStreamDataSource {
  public:
   UserStreamDataSource() = default;
 
+  UserStreamDataSource(const UserStreamDataSource&) = delete;
+  UserStreamDataSource& operator=(const UserStreamDataSource&) = delete;
+
   std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
   ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserStreamDataSource);
 };
 
 }  // namespace gwp_asan

@@ -49,11 +49,14 @@ const int kNoTag = 0;
 class UpdateSpellcheckEnabled : public content::RenderFrameVisitor {
  public:
   explicit UpdateSpellcheckEnabled(bool enabled) : enabled_(enabled) {}
+
+  UpdateSpellcheckEnabled(const UpdateSpellcheckEnabled&) = delete;
+  UpdateSpellcheckEnabled& operator=(const UpdateSpellcheckEnabled&) = delete;
+
   bool Visit(content::RenderFrame* render_frame) override;
 
  private:
   bool enabled_;  // New spellcheck-enabled state.
-  DISALLOW_COPY_AND_ASSIGN(UpdateSpellcheckEnabled);
 };
 
 bool UpdateSpellcheckEnabled::Visit(content::RenderFrame* render_frame) {

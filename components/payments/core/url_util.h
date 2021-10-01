@@ -19,6 +19,10 @@ namespace payments {
 //  base::CommandLine::Init(0, nullptr);
 class UrlUtil {
  public:
+  UrlUtil() = delete;
+  UrlUtil(const UrlUtil&) = delete;
+  UrlUtil& operator=(const UrlUtil&) = delete;
+
   // Validation according to https://w3c.github.io/payment-method-id/#validation
   // with exceptions for local development.
   //
@@ -93,9 +97,6 @@ class UrlUtil {
   //
   // For example: "http://localhost:8080".
   static bool IsLocalDevelopmentUrl(const GURL& url);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UrlUtil);
 };
 
 }  // namespace payments

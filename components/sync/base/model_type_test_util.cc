@@ -20,6 +20,9 @@ class HasModelTypesMatcher : public ::testing::MatcherInterface<ModelTypeSet> {
   explicit HasModelTypesMatcher(ModelTypeSet expected_types)
       : expected_types_(expected_types) {}
 
+  HasModelTypesMatcher(const HasModelTypesMatcher&) = delete;
+  HasModelTypesMatcher& operator=(const HasModelTypesMatcher&) = delete;
+
   ~HasModelTypesMatcher() override = default;
 
   bool MatchAndExplain(
@@ -39,8 +42,6 @@ class HasModelTypesMatcher : public ::testing::MatcherInterface<ModelTypeSet> {
 
  private:
   const ModelTypeSet expected_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(HasModelTypesMatcher);
 };
 
 }  // namespace

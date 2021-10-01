@@ -43,6 +43,10 @@ class BackendMigrator {
                   DataTypeManager* manager,
                   const base::RepeatingClosure& reconfigure_callback,
                   const base::RepeatingClosure& migration_done_callback);
+
+  BackendMigrator(const BackendMigrator&) = delete;
+  BackendMigrator& operator=(const BackendMigrator&) = delete;
+
   virtual ~BackendMigrator();
 
   // Starts a sequence of events that will disable and reenable |types|.
@@ -88,8 +92,6 @@ class BackendMigrator {
   ModelTypeSet to_migrate_;
 
   base::WeakPtrFactory<BackendMigrator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackendMigrator);
 };
 
 }  // namespace syncer

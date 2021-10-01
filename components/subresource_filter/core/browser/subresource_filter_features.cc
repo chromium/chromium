@@ -39,6 +39,9 @@ class CommaSeparatedStrings {
                                        base::TRIM_WHITESPACE,
                                        base::SPLIT_WANT_NONEMPTY)) {}
 
+  CommaSeparatedStrings(const CommaSeparatedStrings&) = delete;
+  CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
+
   bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
     const auto predicate = [lowercase_key](base::StringPiece element) {
       return base::LowerCaseEqualsASCII(element, lowercase_key);
@@ -50,8 +53,6 @@ class CommaSeparatedStrings {
  private:
   const std::string backing_string_;
   const std::vector<base::StringPiece> pieces_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommaSeparatedStrings);
 };
 
 std::string TakeVariationParamOrReturnEmpty(

@@ -29,6 +29,9 @@ using SharedQuadStateList = cc::ListContainer<SharedQuadState>;
 // aggregated render passes.
 class VIZ_COMMON_EXPORT RenderPassInternal {
  public:
+  RenderPassInternal(const RenderPassInternal&) = delete;
+  RenderPassInternal& operator=(const RenderPassInternal&) = delete;
+
   SharedQuadState* CreateAndAppendSharedQuadState();
 
   // Replaces a quad in |quad_list| with a |SolidColorDrawQuad|.
@@ -90,9 +93,6 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   RenderPassInternal(size_t shared_quad_state_list_size, size_t quad_list_size);
 
   ~RenderPassInternal();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderPassInternal);
 };
 
 }  // namespace viz

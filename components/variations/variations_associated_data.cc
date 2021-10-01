@@ -30,6 +30,9 @@ class GroupMapAccessor {
     return base::Singleton<GroupMapAccessor>::get();
   }
 
+  GroupMapAccessor(const GroupMapAccessor&) = delete;
+  GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
+
   // Ensures that |group_identifier| is associated with only one non-trigger,
   // trigger, or signed-in key.
   void ValidateID(IDCollectionKey key,
@@ -111,8 +114,6 @@ class GroupMapAccessor {
 
   base::Lock lock_;
   std::vector<GroupToIDMap> group_to_id_maps_;
-
-  DISALLOW_COPY_AND_ASSIGN(GroupMapAccessor);
 };
 }  // namespace
 

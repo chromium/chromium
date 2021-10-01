@@ -71,6 +71,9 @@ class DOMAIN_RELIABILITY_EXPORT MockableTime {
     Timer();
   };
 
+  MockableTime(const MockableTime&) = delete;
+  MockableTime& operator=(const MockableTime&) = delete;
+
   virtual ~MockableTime();
 
   virtual base::Time Now() const = 0;
@@ -83,9 +86,6 @@ class DOMAIN_RELIABILITY_EXPORT MockableTime {
 
  protected:
   MockableTime();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockableTime);
 };
 
 // Implementation of MockableTime that passes through to

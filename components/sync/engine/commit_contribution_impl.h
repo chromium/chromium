@@ -49,6 +49,10 @@ class CommitContributionImpl : public CommitContribution {
       Cryptographer* cryptographer,
       PassphraseType passphrase_type,
       bool only_commit_specifics);
+
+  CommitContributionImpl(const CommitContributionImpl&) = delete;
+  CommitContributionImpl& operator=(const CommitContributionImpl&) = delete;
+
   ~CommitContributionImpl() override;
 
   // Implementation of CommitContribution
@@ -102,8 +106,6 @@ class CommitContributionImpl : public CommitContribution {
   // Don't send any metadata to server, only specifics. This is needed for
   // commit only types to save bandwidth.
   bool only_commit_specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitContributionImpl);
 };
 
 }  // namespace syncer

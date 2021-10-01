@@ -36,6 +36,9 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // factories with different type of context, or dependencies are safe to have.
   enum Type { BROWSER_CONTEXT, BROWSER_STATE, SIMPLE };
 
+  KeyedServiceBaseFactory(const KeyedServiceBaseFactory&) = delete;
+  KeyedServiceBaseFactory& operator=(const KeyedServiceBaseFactory&) = delete;
+
   // Returns our name.
   const char* name() const { return service_name_; }
 
@@ -123,8 +126,6 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // TODO(crbug.com/944906): Remove once there are no dependencies between
   // factories with different type of context, or dependencies are safe to have.
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyedServiceBaseFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_BASE_FACTORY_H_

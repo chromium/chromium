@@ -85,6 +85,9 @@ class SyncerTest : public testing::Test,
  protected:
   SyncerTest() = default;
 
+  SyncerTest(const SyncerTest&) = delete;
+  SyncerTest& operator=(const SyncerTest&) = delete;
+
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override {
     FAIL() << "Should not get silenced.";
@@ -261,9 +264,6 @@ class SyncerTest : public testing::Test,
   ModelTypeSet enabled_datatypes_;
   NudgeTracker nudge_tracker_;
   std::unique_ptr<MockDebugInfoGetter> debug_info_getter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncerTest);
 };
 
 TEST_F(SyncerTest, CommitFiltersThrottledEntries) {

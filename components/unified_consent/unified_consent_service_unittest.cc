@@ -28,6 +28,9 @@ class TestSyncService : public syncer::TestSyncService {
  public:
   TestSyncService() = default;
 
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   void AddObserver(syncer::SyncServiceObserver* observer) override {
     observer_ = observer;
   }
@@ -39,8 +42,6 @@ class TestSyncService : public syncer::TestSyncService {
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 }  // namespace

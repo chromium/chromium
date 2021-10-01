@@ -92,6 +92,10 @@ class FakeAppInstance : public mojom::AppInstance {
   };
 
   explicit FakeAppInstance(mojom::AppHost* app_host);
+
+  FakeAppInstance(const FakeAppInstance&) = delete;
+  FakeAppInstance& operator=(const FakeAppInstance&) = delete;
+
   ~FakeAppInstance() override;
 
   // mojom::AppInstance overrides:
@@ -316,8 +320,6 @@ class FakeAppInstance : public mojom::AppInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::AppHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppInstance);
 };
 
 }  // namespace arc

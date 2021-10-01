@@ -67,6 +67,9 @@ class PasswordStore : public PasswordStoreInterface {
 
   explicit PasswordStore(std::unique_ptr<PasswordStoreBackend> backend);
 
+  PasswordStore(const PasswordStore&) = delete;
+  PasswordStore& operator=(const PasswordStore&) = delete;
+
   // Always call this too on the UI thread.
   // TODO(crbug.bom/1218413): Move initialization into the core interface, too.
   bool Init(
@@ -199,8 +202,6 @@ class PasswordStore : public PasswordStoreInterface {
   PrefService* prefs_ = nullptr;
 
   InitStatus init_status_ = InitStatus::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStore);
 };
 
 }  // namespace password_manager

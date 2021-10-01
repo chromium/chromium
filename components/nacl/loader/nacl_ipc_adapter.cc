@@ -69,11 +69,12 @@ struct DescThunker {
       : adapter(adapter_arg) {
   }
 
+  DescThunker(const DescThunker&) = delete;
+  DescThunker& operator=(const DescThunker&) = delete;
+
   ~DescThunker() { adapter->CloseChannel(); }
 
   scoped_refptr<NaClIPCAdapter> adapter;
-
-  DISALLOW_COPY_AND_ASSIGN(DescThunker);
 };
 
 NaClIPCAdapter* ToAdapter(void* handle) {

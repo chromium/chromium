@@ -22,6 +22,9 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
 
   DefaultPrefStore();
 
+  DefaultPrefStore(const DefaultPrefStore&) = delete;
+  DefaultPrefStore& operator=(const DefaultPrefStore&) = delete;
+
   // PrefStore implementation:
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
@@ -47,8 +50,6 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   PrefValueMap prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_

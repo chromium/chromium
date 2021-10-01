@@ -222,6 +222,10 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
   explicit WaylandGamingSeatDelegate(wl_resource* gaming_seat_resource)
       : gaming_seat_resource_{gaming_seat_resource} {}
 
+  WaylandGamingSeatDelegate(const WaylandGamingSeatDelegate&) = delete;
+  WaylandGamingSeatDelegate& operator=(const WaylandGamingSeatDelegate&) =
+      delete;
+
   // Override from GamingSeatDelegate:
   void OnGamingSeatDestroying(GamingSeat*) override { delete this; }
   bool CanAcceptGamepadEventsForSurface(Surface* surface) const override {
@@ -257,8 +261,6 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
  private:
   // The gaming seat resource associated with the gaming seat.
   wl_resource* const gaming_seat_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandGamingSeatDelegate);
 };
 
 void gaming_seat_destroy(wl_client* client, wl_resource* resource) {

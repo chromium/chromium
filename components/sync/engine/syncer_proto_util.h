@@ -35,6 +35,9 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
 
 class SyncerProtoUtil {
  public:
+  SyncerProtoUtil(const SyncerProtoUtil&) = delete;
+  SyncerProtoUtil& operator=(const SyncerProtoUtil&) = delete;
+
   // Adds all fields that must be sent on every request, which includes store
   // birthday, protocol version, client chips, api keys, etc. |msg| must be not
   // null. Must be called before calling PostClientToServerMessage().
@@ -104,8 +107,6 @@ class SyncerProtoUtil {
   FRIEND_TEST_ALL_PREFIXES(SyncerProtoUtilTest, PostAndProcessHeaders);
   FRIEND_TEST_ALL_PREFIXES(SyncerProtoUtilTest, HandleThrottlingNoDatatypes);
   FRIEND_TEST_ALL_PREFIXES(SyncerProtoUtilTest, HandleThrottlingWithDatatypes);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncerProtoUtil);
 };
 
 }  // namespace syncer

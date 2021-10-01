@@ -45,6 +45,11 @@ class LevelDBWriteBatch;
 class TransactionalLevelDBTransaction
     : public base::RefCounted<TransactionalLevelDBTransaction> {
  public:
+  TransactionalLevelDBTransaction(const TransactionalLevelDBTransaction&) =
+      delete;
+  TransactionalLevelDBTransaction& operator=(
+      const TransactionalLevelDBTransaction&) = delete;
+
   leveldb::Status Put(const base::StringPiece& key,
                       std::string* value) WARN_UNUSED_RESULT;
 
@@ -135,8 +140,6 @@ class TransactionalLevelDBTransaction
   bool is_evicting_all_loaded_iterators_ = false;
 
   base::WeakPtrFactory<TransactionalLevelDBTransaction> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransactionalLevelDBTransaction);
 };
 
 // Reads go straight to the database, ignoring any writes cached in

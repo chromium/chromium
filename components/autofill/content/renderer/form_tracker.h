@@ -63,6 +63,10 @@ class FormTracker : public content::RenderFrameObserver {
   };
 
   FormTracker(content::RenderFrame* render_frame);
+
+  FormTracker(const FormTracker&) = delete;
+  FormTracker& operator=(const FormTracker&) = delete;
+
   ~FormTracker() override;
 
   void AddObserver(Observer* observer);
@@ -132,8 +136,6 @@ class FormTracker : public content::RenderFrameObserver {
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 
   base::WeakPtrFactory<FormTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FormTracker);
 };
 
 }  // namespace autofill

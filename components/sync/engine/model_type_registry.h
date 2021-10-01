@@ -39,6 +39,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   ModelTypeRegistry(NudgeHandler* nudge_handler,
                     CancelationSignal* cancelation_signal,
                     SyncEncryptionHandler* sync_encryption_handler);
+
+  ModelTypeRegistry(const ModelTypeRegistry&) = delete;
+  ModelTypeRegistry& operator=(const ModelTypeRegistry&) = delete;
+
   ~ModelTypeRegistry() override;
 
   // Implementation of ModelTypeConnector.
@@ -108,8 +112,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   SyncEncryptionHandler* const sync_encryption_handler_;
 
   base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeRegistry);
 };
 
 }  // namespace syncer

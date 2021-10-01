@@ -34,6 +34,10 @@ struct InstallableData {
                   const std::vector<SkBitmap>& screenshots,
                   bool valid_manifest,
                   bool has_worker);
+
+  InstallableData(const InstallableData&) = delete;
+  InstallableData& operator=(const InstallableData&) = delete;
+
   ~InstallableData();
 
   // Returns true if `errors` is empty or only has `WARN_NOT_OFFLINE_CAPABLE`.
@@ -92,9 +96,6 @@ struct InstallableData {
 
   // true if the site has a service worker with a fetch handler.
   const bool has_worker = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallableData);
 };
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;

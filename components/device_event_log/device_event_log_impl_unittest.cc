@@ -48,6 +48,9 @@ class DeviceEventLogTest : public testing::Test {
  public:
   DeviceEventLogTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
 
+  DeviceEventLogTest(const DeviceEventLogTest&) = delete;
+  DeviceEventLogTest& operator=(const DeviceEventLogTest&) = delete;
+
   void SetUp() override {
     impl_ =
         std::make_unique<DeviceEventLogImpl>(task_runner_, kDefaultMaxEvents);
@@ -129,9 +132,6 @@ class DeviceEventLogTest : public testing::Test {
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<DeviceEventLogImpl> impl_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventLogTest);
 };
 
 TEST_F(DeviceEventLogTest, TestNetworkEvents) {

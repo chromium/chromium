@@ -150,6 +150,10 @@ size_t GetNumberOffset(size_t index, const CreditCardTestCase& test) {
 }
 
 class AutofillFieldFillerTest : public testing::Test {
+ public:
+  AutofillFieldFillerTest(const AutofillFieldFillerTest&) = delete;
+  AutofillFieldFillerTest& operator=(const AutofillFieldFillerTest&) = delete;
+
  protected:
   AutofillFieldFillerTest()
       : credit_card_(test::GetCreditCard()), address_(test::GetFullProfile()) {
@@ -162,8 +166,6 @@ class AutofillFieldFillerTest : public testing::Test {
  private:
   CreditCard credit_card_;
   AutofillProfile address_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillFieldFillerTest);
 };
 
 TEST_F(AutofillFieldFillerTest, Type) {
@@ -917,14 +919,16 @@ class AutofillSelectWithStatesTest
     task_environment_.RunUntilIdle();
   }
 
+  AutofillSelectWithStatesTest(const AutofillSelectWithStatesTest&) = delete;
+  AutofillSelectWithStatesTest& operator=(const AutofillSelectWithStatesTest&) =
+      delete;
+
  protected:
   AddressNormalizer* normalizer() { return normalizer_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AddressNormalizerImpl> normalizer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillSelectWithStatesTest);
 };
 
 TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {

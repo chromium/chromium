@@ -40,6 +40,10 @@ const void* const kAllowlistKey = &kAllowlistKey;
 class AllowlistUrlSet : public base::SupportsUserData::Data {
  public:
   AllowlistUrlSet() {}
+
+  AllowlistUrlSet(const AllowlistUrlSet&) = delete;
+  AllowlistUrlSet& operator=(const AllowlistUrlSet&) = delete;
+
   bool Contains(const GURL& url, SBThreatType* threat_type) {
     auto found = map_.find(url);
     if (found == map_.end())
@@ -88,7 +92,6 @@ class AllowlistUrlSet : public base::SupportsUserData::Data {
   // in order to solve a problem where upon reloading an interstitial, a site
   // would be re-added to and removed from the allowlist in the wrong order.
   std::map<GURL, std::pair<SBThreatType, int>> pending_;
-  DISALLOW_COPY_AND_ASSIGN(AllowlistUrlSet);
 };
 
 // Returns the URL that should be used in a AllowlistUrlSet for the

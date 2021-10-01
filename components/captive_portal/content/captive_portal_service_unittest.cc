@@ -39,6 +39,9 @@ class CaptivePortalObserver {
             base::BindRepeating(&CaptivePortalObserver::Observe,
                                 base::Unretained(this)))) {}
 
+  CaptivePortalObserver(const CaptivePortalObserver&) = delete;
+  CaptivePortalObserver& operator=(const CaptivePortalObserver&) = delete;
+
   CaptivePortalResult captive_portal_result() const {
     return captive_portal_result_;
   }
@@ -60,8 +63,6 @@ class CaptivePortalObserver {
   CaptivePortalService* captive_portal_service_;
 
   base::CallbackListSubscription subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalObserver);
 };
 
 }  // namespace

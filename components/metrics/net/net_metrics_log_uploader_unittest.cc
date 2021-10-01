@@ -38,6 +38,10 @@ class NetMetricsLogUploaderTest : public testing::Test {
         }));
   }
 
+  NetMetricsLogUploaderTest(const NetMetricsLogUploaderTest&) = delete;
+  NetMetricsLogUploaderTest& operator=(const NetMetricsLogUploaderTest&) =
+      delete;
+
   void CreateAndOnUploadCompleteReuseUploader() {
     ReportingInfo reporting_info;
     reporting_info.set_attempt_count(10);
@@ -120,8 +124,6 @@ class NetMetricsLogUploaderTest : public testing::Test {
   base::RunLoop loop_;
   std::string upload_data_;
   net::HttpRequestHeaders headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetMetricsLogUploaderTest);
 };
 
 void CheckReportingInfoHeader(net::HttpRequestHeaders headers,

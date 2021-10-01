@@ -392,6 +392,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
         MutableProfileOAuth2TokenServiceDelegate* delegate)
         : delegate_(delegate) {}
 
+    TokenServiceForceRevokeObserver(const TokenServiceForceRevokeObserver&) =
+        delete;
+    TokenServiceForceRevokeObserver& operator=(
+        const TokenServiceForceRevokeObserver&) = delete;
+
     void OnRefreshTokenRevoked(const CoreAccountId& account_id) override {
       revoke_all_credentials_called_ = true;
       delegate_->RevokeAllCredentials();
@@ -399,8 +404,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
     MutableProfileOAuth2TokenServiceDelegate* delegate_;
     bool revoke_all_credentials_called_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenServiceForceRevokeObserver);
   };
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
@@ -1248,6 +1251,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
         MutableProfileOAuth2TokenServiceDelegate* delegate)
         : delegate_(delegate) {}
 
+    TokenServiceErrorObserver(const TokenServiceErrorObserver&) = delete;
+    TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
+        delete;
+
     void OnAuthErrorChanged(const CoreAccountId& account_id,
                             const GoogleServiceAuthError& auth_error) override {
       error_changed_ = true;
@@ -1260,8 +1267,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
 
     MutableProfileOAuth2TokenServiceDelegate* delegate_;
     bool error_changed_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenServiceErrorObserver);
   };
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
@@ -1322,6 +1327,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
         MutableProfileOAuth2TokenServiceDelegate* delegate)
         : delegate_(delegate) {}
 
+    TokenServiceErrorObserver(const TokenServiceErrorObserver&) = delete;
+    TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
+        delete;
+
     void OnAuthErrorChanged(const CoreAccountId& account_id,
                             const GoogleServiceAuthError& auth_error) override {
       error_changed_ = true;
@@ -1350,8 +1359,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     MutableProfileOAuth2TokenServiceDelegate* delegate_;
     bool error_changed_ = false;
     bool token_available_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenServiceErrorObserver);
   };
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);

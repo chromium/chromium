@@ -43,6 +43,9 @@ class TestAuraSurface : public AuraSurface {
   explicit TestAuraSurface(Surface* surface)
       : AuraSurface(surface, /*resource=*/nullptr) {}
 
+  TestAuraSurface(const TestAuraSurface&) = delete;
+  TestAuraSurface& operator=(const TestAuraSurface&) = delete;
+
   float last_sent_occlusion_fraction() const {
     return last_sent_occlusion_fraction_;
   }
@@ -67,8 +70,6 @@ class TestAuraSurface : public AuraSurface {
   aura::Window::OcclusionState last_sent_occlusion_state_ =
       aura::Window::OcclusionState::UNKNOWN;
   int num_occlusion_updates_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAuraSurface);
 };
 
 class MockSurfaceDelegate : public SurfaceDelegate {

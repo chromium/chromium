@@ -70,6 +70,9 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
   UploadList();
 
+  UploadList(const UploadList&) = delete;
+  UploadList& operator=(const UploadList&) = delete;
+
   // Starts loading the upload list. OnUploadListAvailable will be called when
   // loading is complete. If this is called twice, the second |callback| will
   // overwrite the previously supplied one, and the first will not be called.
@@ -126,8 +129,6 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
   base::OnceClosure clear_callback_;
 
   std::vector<UploadInfo> uploads_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadList);
 };
 
 #endif  // COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_H_

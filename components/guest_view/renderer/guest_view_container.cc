@@ -37,13 +37,15 @@ class GuestViewContainer::RenderFrameLifetimeObserver
   RenderFrameLifetimeObserver(GuestViewContainer* container,
                               content::RenderFrame* render_frame);
 
+  RenderFrameLifetimeObserver(const RenderFrameLifetimeObserver&) = delete;
+  RenderFrameLifetimeObserver& operator=(const RenderFrameLifetimeObserver&) =
+      delete;
+
   // content::RenderFrameObserver overrides.
   void OnDestruct() override;
 
  private:
   GuestViewContainer* container_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameLifetimeObserver);
 };
 
 GuestViewContainer::RenderFrameLifetimeObserver::RenderFrameLifetimeObserver(

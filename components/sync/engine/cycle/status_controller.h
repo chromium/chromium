@@ -25,6 +25,10 @@ namespace syncer {
 class StatusController {
  public:
   StatusController();
+
+  StatusController(const StatusController&) = delete;
+  StatusController& operator=(const StatusController&) = delete;
+
   ~StatusController();
 
   // The types included in the get updates client to server requests.
@@ -92,8 +96,6 @@ class StatusController {
   // If a poll was performed, the time it finished. Not set if not poll was
   // performed.
   base::Time poll_finish_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusController);
 };
 
 }  // namespace syncer

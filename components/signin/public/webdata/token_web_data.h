@@ -51,6 +51,9 @@ class TokenWebData : public WebDataServiceBase {
   TokenWebData(scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
                scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
 
+  TokenWebData(const TokenWebData&) = delete;
+  TokenWebData& operator=(const TokenWebData&) = delete;
+
   // Set a token to use for a specified service.
   void SetTokenForService(const std::string& service, const std::string& token);
 
@@ -71,8 +74,6 @@ class TokenWebData : public WebDataServiceBase {
 
  private:
   scoped_refptr<TokenWebDataBackend> token_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenWebData);
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_WEBDATA_TOKEN_WEB_DATA_H_

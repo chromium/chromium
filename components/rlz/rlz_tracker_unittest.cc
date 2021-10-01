@@ -42,6 +42,9 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
       : request_context_getter_(new net::TestURLRequestContextGetter(
             base::ThreadTaskRunnerHandle::Get())) {}
 
+  TestRLZTrackerDelegate(const TestRLZTrackerDelegate&) = delete;
+  TestRLZTrackerDelegate& operator=(const TestRLZTrackerDelegate&) = delete;
+
   void set_brand(const char* brand) { brand_override_ = brand; }
 
   void set_reactivation_brand(const char* reactivation_brand) {
@@ -115,8 +118,6 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
   std::string reactivation_brand_override_;
   base::OnceClosure on_omnibox_search_callback_;
   base::OnceClosure on_homepage_search_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRLZTrackerDelegate);
 };
 
 // Dummy RLZ string for the access points.

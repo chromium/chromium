@@ -72,6 +72,10 @@ class ArcSessionRunner : public ArcSession::Observer {
       base::RepeatingCallback<std::unique_ptr<ArcSession>()>;
 
   explicit ArcSessionRunner(const ArcSessionFactory& factory);
+
+  ArcSessionRunner(const ArcSessionRunner&) = delete;
+  ArcSessionRunner& operator=(const ArcSessionRunner&) = delete;
+
   ~ArcSessionRunner() override;
 
   // Add/Remove an observer.
@@ -183,8 +187,6 @@ class ArcSessionRunner : public ArcSession::Observer {
 
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionRunner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionRunner);
 };
 
 }  // namespace arc

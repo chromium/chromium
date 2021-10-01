@@ -23,6 +23,10 @@ class MediaStorageUtil {
  public:
   typedef std::set<std::string /*device id*/> DeviceIdSet;
 
+  MediaStorageUtil() = delete;
+  MediaStorageUtil(const MediaStorageUtil&) = delete;
+  MediaStorageUtil& operator=(const MediaStorageUtil&) = delete;
+
   // Check if the file system at the passed mount point looks like a media
   // device using the existence of DCIM directory.
   // Returns true if it looks like a media device, otherwise returns false.
@@ -53,9 +57,6 @@ class MediaStorageUtil {
   // Returns true if the |id| is both a removable device and also
   // currently attached.
   static bool IsRemovableStorageAttached(const std::string& id);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MediaStorageUtil);
 };
 
 }  // namespace storage_monitor

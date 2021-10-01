@@ -71,6 +71,11 @@ class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
   SubresourceFilterRulesetPublisherImplTest()
       : existing_renderer_(&browser_context_) {}
 
+  SubresourceFilterRulesetPublisherImplTest(
+      const SubresourceFilterRulesetPublisherImplTest&) = delete;
+  SubresourceFilterRulesetPublisherImplTest& operator=(
+      const SubresourceFilterRulesetPublisherImplTest&) = delete;
+
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
@@ -96,8 +101,6 @@ class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   NotifyingMockRenderProcessHost existing_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterRulesetPublisherImplTest);
 };
 
 class MockRulesetPublisherImpl : public RulesetPublisherImpl {

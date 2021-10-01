@@ -28,6 +28,11 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialsActiveGroupIdProvider
  public:
   static SyntheticTrialsActiveGroupIdProvider* GetInstance();
 
+  SyntheticTrialsActiveGroupIdProvider(
+      const SyntheticTrialsActiveGroupIdProvider&) = delete;
+  SyntheticTrialsActiveGroupIdProvider& operator=(
+      const SyntheticTrialsActiveGroupIdProvider&) = delete;
+
   // Populates |output| with currently active synthetic trial groups. |output|
   // cannot be nullptr.
   void GetActiveGroupIds(std::vector<ActiveGroupId>* output);
@@ -49,8 +54,6 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialsActiveGroupIdProvider
   std::vector<ActiveGroupId> synthetic_trials_;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTrialsActiveGroupIdProvider);
 };
 
 }  // namespace variations

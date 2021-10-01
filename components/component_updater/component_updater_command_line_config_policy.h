@@ -24,6 +24,11 @@ class ComponentUpdaterCommandLineConfigPolicy final
   explicit ComponentUpdaterCommandLineConfigPolicy(
       const base::CommandLine* cmdline);
 
+  ComponentUpdaterCommandLineConfigPolicy(
+      const ComponentUpdaterCommandLineConfigPolicy&) = delete;
+  ComponentUpdaterCommandLineConfigPolicy& operator=(
+      const ComponentUpdaterCommandLineConfigPolicy&) = delete;
+
   // update_client::CommandLineConfigPolicy overrides.
   bool BackgroundDownloadsEnabled() const override;
   bool DeltaUpdatesEnabled() const override;
@@ -45,8 +50,6 @@ class ComponentUpdaterCommandLineConfigPolicy final
   double initial_delay_ = 0;
 
   GURL url_source_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterCommandLineConfigPolicy);
 };
 
 }  // namespace component_updater

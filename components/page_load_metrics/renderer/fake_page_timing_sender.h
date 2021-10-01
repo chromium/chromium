@@ -126,7 +126,12 @@ class FakePageTimingSender : public PageTimingSender {
   };
 
   explicit FakePageTimingSender(PageTimingValidator* validator);
+
+  FakePageTimingSender(const FakePageTimingSender&) = delete;
+  FakePageTimingSender& operator=(const FakePageTimingSender&) = delete;
+
   ~FakePageTimingSender() override;
+
   void SendTiming(
       const mojom::PageLoadTimingPtr& timing,
       const mojom::FrameMetadataPtr& metadata,
@@ -143,7 +148,6 @@ class FakePageTimingSender : public PageTimingSender {
 
  private:
   PageTimingValidator* const validator_;
-  DISALLOW_COPY_AND_ASSIGN(FakePageTimingSender);
 };
 
 }  // namespace page_load_metrics

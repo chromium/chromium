@@ -23,6 +23,9 @@ namespace favicon {
 // subclassing FaviconDriver.
 class FaviconDriver {
  public:
+  FaviconDriver(const FaviconDriver&) = delete;
+  FaviconDriver& operator=(const FaviconDriver&) = delete;
+
   // Adds/Removes an observer.
   void AddObserver(FaviconDriverObserver* observer);
   void RemoveObserver(FaviconDriverObserver* observer);
@@ -58,8 +61,6 @@ class FaviconDriver {
 
  private:
   base::ObserverList<FaviconDriverObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconDriver);
 };
 
 }  // namespace favicon

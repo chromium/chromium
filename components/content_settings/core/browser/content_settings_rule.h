@@ -26,8 +26,13 @@ struct Rule {
        base::Value value,
        base::Time expiration,
        SessionModel session_model);
+
+  Rule(const Rule&) = delete;
+  Rule& operator=(const Rule&) = delete;
+
   Rule(Rule&& other);
   Rule& operator=(Rule&& other);
+
   ~Rule();
 
   ContentSettingsPattern primary_pattern;
@@ -35,8 +40,6 @@ struct Rule {
   base::Value value;
   base::Time expiration;
   SessionModel session_model;
-
-  DISALLOW_COPY_AND_ASSIGN(Rule);
 };
 
 class RuleIterator {

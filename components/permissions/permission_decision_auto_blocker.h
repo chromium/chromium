@@ -41,7 +41,14 @@ namespace permissions {
 // threshold.
 class PermissionDecisionAutoBlocker : public KeyedService {
  public:
+  PermissionDecisionAutoBlocker() = delete;
+
   explicit PermissionDecisionAutoBlocker(HostContentSettingsMap* settings_map);
+
+  PermissionDecisionAutoBlocker(const PermissionDecisionAutoBlocker&) = delete;
+  PermissionDecisionAutoBlocker& operator=(
+      const PermissionDecisionAutoBlocker&) = delete;
+
   ~PermissionDecisionAutoBlocker() override;
 
   // Checks the status of the content setting to determine if |request_origin|
@@ -144,8 +151,6 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   HostContentSettingsMap* settings_map_;
 
   base::Clock* clock_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionDecisionAutoBlocker);
 };
 
 }  // namespace permissions

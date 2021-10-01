@@ -79,6 +79,9 @@ class CryptoThreadPool {
     worker_thread_.StartWithOptions(std::move(options));
   }
 
+  CryptoThreadPool(const CryptoThreadPool&) = delete;
+  CryptoThreadPool& operator=(const CryptoThreadPool&) = delete;
+
   static bool PostTask(const base::Location& from_here, base::OnceClosure task);
 
  private:
@@ -88,8 +91,6 @@ class CryptoThreadPool {
   // the ThreadPool here and allowing multiple threads (SEQUENCED or even
   // PARALLEL ExecutionMode: http://crbug.com/623700).
   base::Thread worker_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptoThreadPool);
 };
 
 base::LazyInstance<CryptoThreadPool>::Leaky crypto_thread_pool =

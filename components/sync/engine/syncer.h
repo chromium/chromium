@@ -32,6 +32,10 @@ class SyncCycle;
 class Syncer {
  public:
   explicit Syncer(CancelationSignal* cancelation_signal);
+
+  Syncer(const Syncer&) = delete;
+  Syncer& operator=(const Syncer&) = delete;
+
   virtual ~Syncer();
 
   // Whether the syncer is in the middle of a sync cycle.
@@ -89,8 +93,6 @@ class Syncer {
 
   // Whether the syncer is in the middle of a sync attempt.
   bool is_syncing_;
-
-  DISALLOW_COPY_AND_ASSIGN(Syncer);
 };
 
 }  // namespace syncer

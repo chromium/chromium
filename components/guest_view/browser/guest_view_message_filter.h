@@ -31,6 +31,9 @@ class GuestViewManager;
 // the IO thread or the UI thread.
 class GuestViewMessageFilter : public content::BrowserMessageFilter {
  public:
+  GuestViewMessageFilter(const GuestViewMessageFilter&) = delete;
+  GuestViewMessageFilter& operator=(const GuestViewMessageFilter&) = delete;
+
   static void EnsureShutdownNotifierFactoryBuilt();
 
  protected:
@@ -78,8 +81,6 @@ class GuestViewMessageFilter : public content::BrowserMessageFilter {
   void OnBrowserContextShutdown();
 
   base::CallbackListSubscription browser_context_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewMessageFilter);
 };
 
 }  // namespace guest_view

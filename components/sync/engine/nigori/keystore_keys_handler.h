@@ -15,6 +15,10 @@ namespace syncer {
 class KeystoreKeysHandler {
  public:
   KeystoreKeysHandler() = default;
+
+  KeystoreKeysHandler(const KeystoreKeysHandler&) = delete;
+  KeystoreKeysHandler& operator=(const KeystoreKeysHandler&) = delete;
+
   virtual ~KeystoreKeysHandler() = default;
 
   // Whether a keystore key needs to be requested from the sync server.
@@ -24,9 +28,6 @@ class KeystoreKeysHandler {
   // Returns true on success, false otherwise.
   virtual bool SetKeystoreKeys(
       const std::vector<std::vector<uint8_t>>& keys) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeystoreKeysHandler);
 };
 
 }  // namespace syncer

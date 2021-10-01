@@ -106,6 +106,10 @@ class FakeTransport final : public media::cast::CastTransport {
 }  // namespace
 
 class RemotingSenderTest : public ::testing::Test {
+ public:
+  RemotingSenderTest(const RemotingSenderTest&) = delete;
+  RemotingSenderTest& operator=(const RemotingSenderTest&) = delete;
+
  protected:
   RemotingSenderTest()
       : cast_environment_(new media::cast::CastEnvironment(
@@ -260,8 +264,6 @@ class RemotingSenderTest : public ::testing::Test {
   mojo::ScopedDataPipeProducerHandle producer_end_;
   bool expecting_error_callback_run_;
   uint32_t receiver_ssrc_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingSenderTest);
 };
 
 TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {

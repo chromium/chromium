@@ -21,6 +21,10 @@ class BrowsingDataHelperCallback {
  public:
   BrowsingDataHelperCallback() {}
 
+  BrowsingDataHelperCallback(const BrowsingDataHelperCallback&) = delete;
+  BrowsingDataHelperCallback& operator=(const BrowsingDataHelperCallback&) =
+      delete;
+
   const std::list<T>& result() {
     run_loop_.Run();
     DCHECK(has_result_);
@@ -37,8 +41,6 @@ class BrowsingDataHelperCallback {
   base::RunLoop run_loop_;
   bool has_result_ = false;
   std::list<T> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataHelperCallback);
 };
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_HELPER_BROWSERTEST_H_

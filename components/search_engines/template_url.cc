@@ -151,6 +151,9 @@ class SearchTermLocation {
     }
   }
 
+  SearchTermLocation(const SearchTermLocation&) = delete;
+  SearchTermLocation& operator=(const SearchTermLocation&) = delete;
+
   bool found() const { return found_; }
   const std::string& key() const { return key_; }
   const std::string& value_prefix() const { return value_prefix_; }
@@ -173,8 +176,6 @@ class SearchTermLocation {
   std::string key_;
   std::string value_prefix_;
   std::string value_suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchTermLocation);
 };
 
 bool IsTemplateParameterString(const std::string& param) {

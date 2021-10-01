@@ -155,12 +155,16 @@ class TransactionalLevelDBDatabase
   struct DetachIteratorOnDestruct {
     DetachIteratorOnDestruct() = default;
     explicit DetachIteratorOnDestruct(TransactionalLevelDBIterator* it);
+
+    DetachIteratorOnDestruct(const DetachIteratorOnDestruct&) = delete;
+    DetachIteratorOnDestruct& operator=(const DetachIteratorOnDestruct&) =
+        delete;
+
     DetachIteratorOnDestruct(DetachIteratorOnDestruct&& that);
+
     ~DetachIteratorOnDestruct();
 
     TransactionalLevelDBIterator* it = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(DetachIteratorOnDestruct);
   };
   // Despite the type name, this object uses LRU eviction. Raw pointers are safe
   // here because the destructor of TransactionalLevelDBIterator removes itself

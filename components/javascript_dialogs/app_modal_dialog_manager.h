@@ -32,6 +32,9 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
 
   static AppModalDialogManager* GetInstance();
 
+  AppModalDialogManager(const AppModalDialogManager&) = delete;
+  AppModalDialogManager& operator=(const AppModalDialogManager&) = delete;
+
   // Sets the AppModalViewFactory used to create platform specific
   // dialog window instances.
   void SetNativeDialogFactory(AppModalViewFactory factory);
@@ -97,8 +100,6 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
 
   AppModalViewFactory view_factory_;
   std::unique_ptr<ExtensionsClient> extensions_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogManager);
 };
 
 }  // namespace javascript_dialogs

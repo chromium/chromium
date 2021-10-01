@@ -708,6 +708,11 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
 }
 
 class JpegEncodeAcceleratorTest : public ::testing::Test {
+ public:
+  JpegEncodeAcceleratorTest(const JpegEncodeAcceleratorTest&) = delete;
+  JpegEncodeAcceleratorTest& operator=(const JpegEncodeAcceleratorTest&) =
+      delete;
+
  protected:
   JpegEncodeAcceleratorTest() {}
 
@@ -723,9 +728,6 @@ class JpegEncodeAcceleratorTest : public ::testing::Test {
   // owned by JpegEncodeAcceleratorTestEnvironment.
   std::vector<TestImage*> test_aligned_images_;
   std::vector<TestImage*> test_unaligned_images_;
-
- protected:
-  DISALLOW_COPY_AND_ASSIGN(JpegEncodeAcceleratorTest);
 };
 
 void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,

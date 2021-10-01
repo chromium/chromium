@@ -44,6 +44,11 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
  public:
   HistogramFlattenerDeltaRecorder() {}
 
+  HistogramFlattenerDeltaRecorder(const HistogramFlattenerDeltaRecorder&) =
+      delete;
+  HistogramFlattenerDeltaRecorder& operator=(
+      const HistogramFlattenerDeltaRecorder&) = delete;
+
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
     // Only remember locally created histograms; they have exactly 2 chars.
@@ -57,12 +62,14 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
 
  private:
   std::vector<std::string> recorded_delta_histogram_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramFlattenerDeltaRecorder);
 };
 
 
 class FileMetricsProviderTest : public testing::TestWithParam<bool> {
+ public:
+  FileMetricsProviderTest(const FileMetricsProviderTest&) = delete;
+  FileMetricsProviderTest& operator=(const FileMetricsProviderTest&) = delete;
+
  protected:
   const size_t kSmallFileSize = 64 << 10;  // 64 KiB
   const size_t kLargeFileSize =  2 << 20;  //  2 MiB
@@ -265,8 +272,6 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
 
   const FileMetricsProvider::FilterAction* filter_actions_ = nullptr;
   size_t filter_actions_remaining_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FileMetricsProviderTest);
 };
 
 // Run all test cases with both small and large files.

@@ -24,6 +24,11 @@ class JniDistillabilityObserverWrapper
     : public DistillabilityObserver,
       public content::WebContentsUserData<JniDistillabilityObserverWrapper> {
  public:
+  JniDistillabilityObserverWrapper(const JniDistillabilityObserverWrapper&) =
+      delete;
+  JniDistillabilityObserverWrapper& operator=(
+      const JniDistillabilityObserverWrapper&) = delete;
+
   void SetCallback(JNIEnv* env, const JavaParamRef<jobject>& callback) {
     callback_ = ScopedJavaGlobalRef<jobject>(env, callback);
   }
@@ -40,8 +45,6 @@ class JniDistillabilityObserverWrapper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   ScopedJavaGlobalRef<jobject> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(JniDistillabilityObserverWrapper);
 };
 
 }  // namespace

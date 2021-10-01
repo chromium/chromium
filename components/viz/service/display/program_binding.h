@@ -187,6 +187,9 @@ class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
  public:
   Program() {}
 
+  Program(const Program&) = delete;
+  Program& operator=(const Program&) = delete;
+
   void Initialize(ContextProvider* context_provider, const ProgramKey& key) {
     // Set parameters that are common to all sub-classes.
     vertex_shader_.aa_mode_ = key.aa_mode_;
@@ -470,8 +473,6 @@ class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
 
   VertexShader vertex_shader_;
   FragmentShader fragment_shader_;
-
-  DISALLOW_COPY_AND_ASSIGN(Program);
 };
 
 }  // namespace viz

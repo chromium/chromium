@@ -150,9 +150,14 @@ struct DiceResponseParams {
   };
 
   DiceResponseParams();
-  ~DiceResponseParams();
+
+  DiceResponseParams(const DiceResponseParams&) = delete;
+  DiceResponseParams& operator=(const DiceResponseParams&) = delete;
+
   DiceResponseParams(DiceResponseParams&&);
   DiceResponseParams& operator=(DiceResponseParams&&);
+
+  ~DiceResponseParams();
 
   DiceAction user_intention = DiceAction::NONE;
 
@@ -164,9 +169,6 @@ struct DiceResponseParams {
 
   // Populated when |user_intention| is ENABLE_SYNC.
   std::unique_ptr<EnableSyncInfo> enable_sync_info;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiceResponseParams);
 };
 
 class RequestAdapter {
@@ -196,6 +198,9 @@ class RequestAdapter {
 // Base class for managing the signin headers (Dice and Chrome-Connected).
 class SigninHeaderHelper {
  public:
+  SigninHeaderHelper(const SigninHeaderHelper&) = delete;
+  SigninHeaderHelper& operator=(const SigninHeaderHelper&) = delete;
+
   // Appends or remove the header to a network request if necessary.
   // Returns whether the request has the request header.
   bool AppendOrRemoveRequestHeader(RequestAdapter* request,
@@ -223,9 +228,6 @@ class SigninHeaderHelper {
 
   // Returns whether the url is eligible for the request header.
   virtual bool IsUrlEligibleForRequestHeader(const GURL& url) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SigninHeaderHelper);
 };
 
 // Returns whether the url is eligible for account consistency on Google

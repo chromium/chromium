@@ -30,6 +30,11 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
  public:
   HistogramFlattenerDeltaRecorder() {}
 
+  HistogramFlattenerDeltaRecorder(const HistogramFlattenerDeltaRecorder&) =
+      delete;
+  HistogramFlattenerDeltaRecorder& operator=(
+      const HistogramFlattenerDeltaRecorder&) = delete;
+
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
     recorded_delta_histogram_names_.push_back(histogram.histogram_name());
@@ -41,13 +46,16 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
 
  private:
   std::vector<std::string> recorded_delta_histogram_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramFlattenerDeltaRecorder);
 };
 
 }  // namespace
 
 class SubprocessMetricsProviderTest : public testing::Test {
+ public:
+  SubprocessMetricsProviderTest(const SubprocessMetricsProviderTest&) = delete;
+  SubprocessMetricsProviderTest& operator=(
+      const SubprocessMetricsProviderTest&) = delete;
+
  protected:
   SubprocessMetricsProviderTest() {
     // MergeHistogramDeltas needs to be called beause it uses a histogram
@@ -114,8 +122,6 @@ class SubprocessMetricsProviderTest : public testing::Test {
 
   SubprocessMetricsProvider provider_;
   std::unique_ptr<base::StatisticsRecorder> test_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubprocessMetricsProviderTest);
 };
 
 TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {

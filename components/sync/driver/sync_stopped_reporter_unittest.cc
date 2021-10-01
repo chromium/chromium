@@ -33,6 +33,10 @@ const char kBirthday[] = "2263";
 const char kAuthHeaderPrefix[] = "Bearer ";
 
 class SyncStoppedReporterTest : public testing::Test {
+ public:
+  SyncStoppedReporterTest(const SyncStoppedReporterTest&) = delete;
+  SyncStoppedReporterTest& operator=(const SyncStoppedReporterTest&) = delete;
+
  protected:
   SyncStoppedReporterTest() = default;
   ~SyncStoppedReporterTest() override = default;
@@ -79,8 +83,6 @@ class SyncStoppedReporterTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   SyncStoppedReporter::Result request_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStoppedReporterTest);
 };
 
 // Test that the event URL gets constructed correctly.

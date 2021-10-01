@@ -66,6 +66,11 @@ class URLMatcherConditionFactoryMethods {
     factory_methods_[keys::kURLMatchesKey] = &F::CreateURLMatchesCondition;
   }
 
+  URLMatcherConditionFactoryMethods(const URLMatcherConditionFactoryMethods&) =
+      delete;
+  URLMatcherConditionFactoryMethods& operator=(
+      const URLMatcherConditionFactoryMethods&) = delete;
+
   // Returns whether a factory method for the specified |pattern_type| (e.g.
   // "host_suffix") is known.
   bool Contains(const std::string& pattern_type) const {
@@ -94,8 +99,6 @@ class URLMatcherConditionFactoryMethods {
   typedef std::map<std::string, FactoryMethod> FactoryMethods;
 
   FactoryMethods factory_methods_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLMatcherConditionFactoryMethods);
 };
 
 static base::LazyInstance<URLMatcherConditionFactoryMethods>::DestructorAtExit

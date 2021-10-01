@@ -28,6 +28,10 @@ class PendingLocalNigoriCommit {
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreReencryption();
 
   PendingLocalNigoriCommit() = default;
+
+  PendingLocalNigoriCommit(const PendingLocalNigoriCommit&) = delete;
+  PendingLocalNigoriCommit& operator=(const PendingLocalNigoriCommit&) = delete;
+
   virtual ~PendingLocalNigoriCommit() = default;
 
   // Attempts to modify |*state| to reflect the intended commit. Returns true if
@@ -45,9 +49,6 @@ class PendingLocalNigoriCommit {
   // Invoked when the change no longer applies or was aborted for a different
   // reason (e.g. sync disabled). |observer| must not be null.
   virtual void OnFailure(SyncEncryptionHandler::Observer* observer) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingLocalNigoriCommit);
 };
 
 }  // namespace syncer

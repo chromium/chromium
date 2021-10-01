@@ -54,12 +54,15 @@ class PasswordReuseDetectionManagerTest : public ::testing::Test {
  public:
   PasswordReuseDetectionManagerTest() = default;
 
+  PasswordReuseDetectionManagerTest(const PasswordReuseDetectionManagerTest&) =
+      delete;
+  PasswordReuseDetectionManagerTest& operator=(
+      const PasswordReuseDetectionManagerTest&) = delete;
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockPasswordManagerClient client_;
   MockPasswordReuseManager reuse_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseDetectionManagerTest);
 };
 
 // Verify that CheckReuse is called on each key pressed event with an argument

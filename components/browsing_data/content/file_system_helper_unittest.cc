@@ -67,6 +67,9 @@ class FileSystemHelperTest : public testing::Test {
         native_io_context);
   }
 
+  FileSystemHelperTest(const FileSystemHelperTest&) = delete;
+  FileSystemHelperTest& operator=(const FileSystemHelperTest&) = delete;
+
   // Blocks on the run_loop quits.
   void BlockUntilQuit(base::RunLoop* run_loop) {
     run_loop->Run();                  // Won't return until Quit().
@@ -181,9 +184,6 @@ class FileSystemHelperTest : public testing::Test {
 
   scoped_refptr<FileSystemHelper> helper_;
   scoped_refptr<CannedFileSystemHelper> canned_helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileSystemHelperTest);
 };
 
 // Verifies that the FileSystemHelper correctly finds the test file

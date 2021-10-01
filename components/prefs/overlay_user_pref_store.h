@@ -30,6 +30,9 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   OverlayUserPrefStore(PersistentPrefStore* ephemeral,
                        PersistentPrefStore* persistent);
 
+  OverlayUserPrefStore(const OverlayUserPrefStore&) = delete;
+  OverlayUserPrefStore& operator=(const OverlayUserPrefStore&) = delete;
+
   // Returns true if a value has been set for the |key| in this
   // OverlayUserPrefStore, i.e. if it potentially overrides a value
   // from the |persistent_user_pref_store_|.
@@ -92,8 +95,6 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   scoped_refptr<PersistentPrefStore> persistent_user_pref_store_;
   NamesSet persistent_names_set_;
   NamesSet written_ephemeral_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayUserPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_OVERLAY_USER_PREF_STORE_H_

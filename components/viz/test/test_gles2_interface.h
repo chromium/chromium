@@ -193,14 +193,15 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
  protected:
   struct Buffer {
     Buffer();
+
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+
     ~Buffer();
 
     GLenum target;
     std::unique_ptr<uint8_t[]> pixels;
     size_t size;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Buffer);
   };
 
   unsigned context_id_;

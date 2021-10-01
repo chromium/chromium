@@ -104,6 +104,12 @@ NSData* DecodedWebpImage() {
 namespace image_fetcher {
 
 class IOSImageDataFetcherWrapperTest : public PlatformTest {
+ public:
+  IOSImageDataFetcherWrapperTest(const IOSImageDataFetcherWrapperTest&) =
+      delete;
+  IOSImageDataFetcherWrapperTest& operator=(
+      const IOSImageDataFetcherWrapperTest&) = delete;
+
  protected:
   IOSImageDataFetcherWrapperTest()
       : callback_(^(NSData* data, const RequestMetadata&) {
@@ -134,9 +140,6 @@ class IOSImageDataFetcherWrapperTest : public PlatformTest {
   __strong NSData* result_data_ = nil;
   __strong UIImage* result_ = nil;
   bool called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IOSImageDataFetcherWrapperTest);
 };
 
 TEST_F(IOSImageDataFetcherWrapperTest, TestError) {

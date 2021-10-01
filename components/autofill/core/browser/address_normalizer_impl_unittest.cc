@@ -82,6 +82,9 @@ class TestAddressNormalizer : public AddressNormalizerImpl {
 
 class AddressNormalizerTest : public testing::Test {
  public:
+  AddressNormalizerTest(const AddressNormalizerTest&) = delete;
+  AddressNormalizerTest& operator=(const AddressNormalizerTest&) = delete;
+
   void OnAddressNormalized(bool success, const AutofillProfile& profile) {
     success_ = success;
     profile_ = profile;
@@ -114,8 +117,6 @@ class AddressNormalizerTest : public testing::Test {
   bool success_ = false;
   AutofillProfile profile_;
   TestAddressNormalizer normalizer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressNormalizerTest);
 };
 
 // Tests that the rules are loaded correctly for regions that are available.

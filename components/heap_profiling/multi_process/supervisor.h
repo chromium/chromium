@@ -31,6 +31,9 @@ class Supervisor {
  public:
   static Supervisor* GetInstance();
 
+  Supervisor(const Supervisor&) = delete;
+  Supervisor& operator=(const Supervisor&) = delete;
+
   // When this returns |false|, no method other than Start() or
   // SetClientConnectionManagerConstructor() can be called.
   bool HasStarted();
@@ -131,8 +134,6 @@ class Supervisor {
   ClientConnectionManagerConstructor constructor_ = nullptr;
 
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Supervisor);
 };
 
 }  // namespace heap_profiling

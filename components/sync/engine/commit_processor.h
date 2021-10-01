@@ -27,6 +27,10 @@ class CommitProcessor {
   // null and must outlive this object.
   CommitProcessor(ModelTypeSet commit_types,
                   CommitContributorMap* commit_contributor_map);
+
+  CommitProcessor(const CommitProcessor&) = delete;
+  CommitProcessor& operator=(const CommitProcessor&) = delete;
+
   ~CommitProcessor();
 
   // Gathers a set of contributions to be used to populate a commit message.
@@ -71,8 +75,6 @@ class CommitProcessor {
   // A map of 'commit contributors', one for each enabled type.
   CommitContributorMap* commit_contributor_map_;
   GatheringPhase phase_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitProcessor);
 };
 
 }  // namespace syncer

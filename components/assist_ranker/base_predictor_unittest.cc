@@ -106,6 +106,10 @@ std::unique_ptr<FakePredictor> FakePredictor::Create(
 }  // namespace
 
 class BasePredictorTest : public ::testing::Test {
+ public:
+  BasePredictorTest(const BasePredictorTest&) = delete;
+  BasePredictorTest& operator=(const BasePredictorTest&) = delete;
+
  protected:
   BasePredictorTest() = default;
 
@@ -124,8 +128,6 @@ class BasePredictorTest : public ::testing::Test {
 
   // Manages the enabling/disabling of features within the scope of a test.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePredictorTest);
 };
 
 void BasePredictorTest::SetUp() {

@@ -61,6 +61,9 @@ class ArcTimerStore {
  public:
   ArcTimerStore() = default;
 
+  ArcTimerStore(const ArcTimerStore&) = delete;
+  ArcTimerStore& operator=(const ArcTimerStore&) = delete;
+
   bool AddTimer(clockid_t clock_id, base::ScopedFD read_fd) {
     return arc_timers_.emplace(clock_id, std::move(read_fd)).second;
   }
@@ -82,8 +85,6 @@ class ArcTimerStore {
   // Map of a clock id to read fd that is signalled when the timer corresponding
   // the clock expires.
   std::map<clockid_t, base::ScopedFD> arc_timers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTimerStore);
 };
 
 class ArcTimerTest : public testing::Test {

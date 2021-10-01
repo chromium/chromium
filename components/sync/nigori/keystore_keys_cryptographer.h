@@ -32,6 +32,10 @@ class KeystoreKeysCryptographer {
   static std::unique_ptr<KeystoreKeysCryptographer> FromKeystoreKeys(
       const std::vector<std::string>& keystore_keys);
 
+  KeystoreKeysCryptographer(const KeystoreKeysCryptographer&) = delete;
+  KeystoreKeysCryptographer& operator=(const KeystoreKeysCryptographer&) =
+      delete;
+
   ~KeystoreKeysCryptographer();
 
   const std::vector<std::string>& keystore_keys() const {
@@ -70,8 +74,6 @@ class KeystoreKeysCryptographer {
 
   std::unique_ptr<CryptographerImpl> cryptographer_;
   std::vector<std::string> keystore_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeystoreKeysCryptographer);
 };
 
 }  // namespace syncer

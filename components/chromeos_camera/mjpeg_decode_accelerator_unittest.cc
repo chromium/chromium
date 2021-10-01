@@ -966,6 +966,11 @@ class ScopedJpegClient {
 };
 
 class MjpegDecodeAcceleratorTest : public ::testing::TestWithParam<bool> {
+ public:
+  MjpegDecodeAcceleratorTest(const MjpegDecodeAcceleratorTest&) = delete;
+  MjpegDecodeAcceleratorTest& operator=(const MjpegDecodeAcceleratorTest&) =
+      delete;
+
  protected:
   MjpegDecodeAcceleratorTest() = default;
 
@@ -974,9 +979,6 @@ class MjpegDecodeAcceleratorTest : public ::testing::TestWithParam<bool> {
                   size_t num_concurrent_decoders = 1);
   void PerfDecodeByJDA(int decode_times, const std::vector<DecodeTask>& tasks);
   void PerfDecodeBySW(int decode_times, const std::vector<DecodeTask>& tasks);
-
- protected:
-  DISALLOW_COPY_AND_ASSIGN(MjpegDecodeAcceleratorTest);
 };
 
 void MjpegDecodeAcceleratorTest::TestDecode(

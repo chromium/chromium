@@ -112,6 +112,9 @@ class SessionStore {
     SyncedSessionTracker* const session_tracker_;
   };
 
+  SessionStore(const SessionStore&) = delete;
+  SessionStore& operator=(const SessionStore&) = delete;
+
   ~SessionStore();
 
   const SessionInfo& local_session_info() const { return local_session_info_; }
@@ -169,8 +172,6 @@ class SessionStore {
   SyncedSessionTracker session_tracker_;
 
   base::WeakPtrFactory<SessionStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStore);
 };
 
 }  // namespace sync_sessions

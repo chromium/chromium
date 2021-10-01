@@ -282,6 +282,10 @@ void VerifyRequestFinishedInfoListener(
 // to add a RequestFinishedInfoListener.
 class UrlRequestTest : public ::testing::TestWithParam<
                            std::tuple<bool, RequestFinishedListenerType>> {
+ public:
+  UrlRequestTest(const UrlRequestTest&) = delete;
+  UrlRequestTest& operator=(const UrlRequestTest&) = delete;
+
  protected:
   UrlRequestTest() {}
   ~UrlRequestTest() override {}
@@ -494,9 +498,6 @@ class UrlRequestTest : public ::testing::TestWithParam<
   // CleanupRequestFinishedListener() and to allow tests that never run the
   // |request_finished_listener_| to be able to destroy it.
   Cronet_RequestFinishedInfoListenerPtr request_finished_listener_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UrlRequestTest);
 };
 
 const bool kDirectExecutorEnabled[]{true, false};

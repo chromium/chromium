@@ -83,6 +83,9 @@ class DefaultSearchManagerTest : public testing::Test {
  public:
   DefaultSearchManagerTest() {}
 
+  DefaultSearchManagerTest(const DefaultSearchManagerTest&) = delete;
+  DefaultSearchManagerTest& operator=(const DefaultSearchManagerTest&) = delete;
+
   void SetUp() override {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -98,8 +101,6 @@ class DefaultSearchManagerTest : public testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchManagerTest);
 };
 
 // Test that a TemplateURLData object is properly written and read from Prefs.

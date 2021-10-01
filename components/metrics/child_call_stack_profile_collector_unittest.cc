@@ -46,6 +46,11 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
       : receiver_impl_(
             new Receiver(collector_remote_.InitWithNewPipeAndPassReceiver())) {}
 
+  ChildCallStackProfileCollectorTest(
+      const ChildCallStackProfileCollectorTest&) = delete;
+  ChildCallStackProfileCollectorTest& operator=(
+      const ChildCallStackProfileCollectorTest&) = delete;
+
   void CollectEmptyProfile() {
     child_collector_.Collect(base::TimeTicks::Now(), SampledProfile());
   }
@@ -59,9 +64,6 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
   mojo::PendingRemote<mojom::CallStackProfileCollector> collector_remote_;
   std::unique_ptr<Receiver> receiver_impl_;
   ChildCallStackProfileCollector child_collector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChildCallStackProfileCollectorTest);
 };
 
 // Test the behavior when an interface is provided.

@@ -36,6 +36,10 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       scoped_refptr<WebDatabaseService> wdbs,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
+  PaymentManifestWebDataService(const PaymentManifestWebDataService&) = delete;
+  PaymentManifestWebDataService& operator=(
+      const PaymentManifestWebDataService&) = delete;
+
   // Adds the web app `manifest`.
   void AddPaymentWebAppManifest(std::vector<WebAppManifestSection> manifest);
 
@@ -117,8 +121,6 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
 
   std::map<WebDataServiceBase::Handle, base::OnceClosure>
       clearing_instruments_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestWebDataService);
 };
 
 }  // namespace payments

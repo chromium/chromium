@@ -30,6 +30,9 @@ class TextLogUploadList : public UploadList {
   // Creates a new upload list that parses the log at |upload_log_path|.
   explicit TextLogUploadList(const base::FilePath& upload_log_path);
 
+  TextLogUploadList(const TextLogUploadList&) = delete;
+  TextLogUploadList& operator=(const TextLogUploadList&) = delete;
+
   const base::FilePath& upload_log_path() const { return upload_log_path_; }
 
  protected:
@@ -46,8 +49,6 @@ class TextLogUploadList : public UploadList {
                        std::vector<UploadInfo>* uploads);
 
   const base::FilePath upload_log_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextLogUploadList);
 };
 
 #endif  // COMPONENTS_UPLOAD_LIST_TEXT_LOG_UPLOAD_LIST_H_

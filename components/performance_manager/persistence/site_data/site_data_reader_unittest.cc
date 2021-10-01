@@ -66,6 +66,10 @@ void InitializeSiteDataProto(SiteDataProto* site_data) {
 }  // namespace
 
 class SiteDataReaderTest : public ::testing::Test {
+ public:
+  SiteDataReaderTest(const SiteDataReaderTest&) = delete;
+  SiteDataReaderTest& operator=(const SiteDataReaderTest&) = delete;
+
  protected:
   // The constructors needs to call 'new' directly rather than using the
   // base::MakeRefCounted helper function because the constructor of
@@ -104,8 +108,6 @@ class SiteDataReaderTest : public ::testing::Test {
   std::unique_ptr<SiteDataReader> reader_;
 
   testing::NoopSiteDataStore data_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataReaderTest);
 };
 
 TEST_F(SiteDataReaderTest, TestAccessors) {

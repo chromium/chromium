@@ -150,19 +150,21 @@ class InstallableManager
 
   struct IconProperty {
     IconProperty();
+
+    // This class contains a std::unique_ptr and therefore must be move-only.
+    IconProperty(const IconProperty&) = delete;
+    IconProperty& operator=(const IconProperty&) = delete;
+
     IconProperty(IconProperty&& other);
-    ~IconProperty();
     IconProperty& operator=(IconProperty&& other);
+
+    ~IconProperty();
 
     InstallableStatusCode error;
     IconPurpose purpose;
     GURL url;
     std::unique_ptr<SkBitmap> icon;
     bool fetched;
-
-   private:
-    // This class contains a std::unique_ptr and therefore must be move-only.
-    DISALLOW_COPY_AND_ASSIGN(IconProperty);
   };
 
   // Returns true if an icon for the given usage is fetched successfully, or

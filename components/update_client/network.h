@@ -82,13 +82,13 @@ class NetworkFetcherFactory
  public:
   virtual std::unique_ptr<NetworkFetcher> Create() const = 0;
 
+  NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
+  NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
+
  protected:
   friend class base::RefCountedThreadSafe<NetworkFetcherFactory>;
   NetworkFetcherFactory() = default;
   virtual ~NetworkFetcherFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcherFactory);
 };
 
 }  // namespace update_client

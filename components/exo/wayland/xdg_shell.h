@@ -21,13 +21,14 @@ struct WaylandXdgShell {
   WaylandXdgShell(Display* display, SerialTracker* serial_tracker)
       : display(display), serial_tracker(serial_tracker) {}
 
+  WaylandXdgShell(const WaylandXdgShell&) = delete;
+  WaylandXdgShell& operator=(const WaylandXdgShell&) = delete;
+
   // Owned by WaylandServerController, which always outlives xdg_shell.
   Display* const display;
 
   // Owned by Server, which always outlives xdg_shell.
   SerialTracker* const serial_tracker;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandXdgShell);
 };
 
 void bind_xdg_shell(wl_client* client,

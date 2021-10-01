@@ -60,6 +60,9 @@ class MockDelegate : public InMemoryDownload::Delegate {
   MockDelegate(BlobContextGetter blob_context_getter)
       : blob_context_getter_(blob_context_getter) {}
 
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   void WaitForCompletion() {
     DCHECK(!run_loop_.running());
     run_loop_.Run();
@@ -81,8 +84,6 @@ class MockDelegate : public InMemoryDownload::Delegate {
  private:
   base::RunLoop run_loop_;
   BlobContextGetter blob_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 class InMemoryDownloadTest : public testing::Test {

@@ -76,6 +76,10 @@ class AppBannerSettingsHelper {
 
   static const char kInstantAppsKey[];
 
+  AppBannerSettingsHelper() = delete;
+  AppBannerSettingsHelper(const AppBannerSettingsHelper&) = delete;
+  AppBannerSettingsHelper& operator=(const AppBannerSettingsHelper&) = delete;
+
   // The content setting basically records a simplified subset of history.
   // For privacy reasons this needs to be cleared. The ClearHistoryForURLs
   // function removes any information from the banner content settings for the
@@ -183,16 +187,18 @@ class AppBannerSettingsHelper {
   // is restored when this object is destructed.
   class ScopedTriggerSettings {
    public:
+    ScopedTriggerSettings() = delete;
+
     ScopedTriggerSettings(unsigned int dismiss_days, unsigned int ignore_days);
+
+    ScopedTriggerSettings(const ScopedTriggerSettings&) = delete;
+    ScopedTriggerSettings& operator=(const ScopedTriggerSettings&) = delete;
+
     virtual ~ScopedTriggerSettings();
 
    private:
     unsigned int old_dismiss_, old_ignore_;
-    DISALLOW_IMPLICIT_CONSTRUCTORS(ScopedTriggerSettings);
   };
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AppBannerSettingsHelper);
 };
 
 }  // namespace webapps

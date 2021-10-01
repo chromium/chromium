@@ -28,6 +28,11 @@ class CardNameFixFlowControllerImplGenericTest {
  public:
   CardNameFixFlowControllerImplGenericTest() {}
 
+  CardNameFixFlowControllerImplGenericTest(
+      const CardNameFixFlowControllerImplGenericTest&) = delete;
+  CardNameFixFlowControllerImplGenericTest& operator=(
+      const CardNameFixFlowControllerImplGenericTest&) = delete;
+
   void ShowPromptWithInferredName() {
     inferred_name_ = u"John Doe";
     ShowPrompt();
@@ -60,8 +65,6 @@ class CardNameFixFlowControllerImplGenericTest {
             &CardNameFixFlowControllerImplGenericTest::OnNameAccepted,
             weak_ptr_factory_.GetWeakPtr()));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImplGenericTest);
 };
 
 class CardNameFixFlowControllerImplTest

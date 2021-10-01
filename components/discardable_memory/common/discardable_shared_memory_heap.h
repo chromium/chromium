@@ -73,6 +73,11 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   };
 
   DiscardableSharedMemoryHeap();
+
+  DiscardableSharedMemoryHeap(const DiscardableSharedMemoryHeap&) = delete;
+  DiscardableSharedMemoryHeap& operator=(const DiscardableSharedMemoryHeap&) =
+      delete;
+
   ~DiscardableSharedMemoryHeap();
 
   // Grow heap using |shared_memory| and return a span for this new memory.
@@ -208,8 +213,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   // is a free list of runs that consist of k blocks. The 256th entry is a
   // free list of runs that have length >= 256 blocks.
   base::LinkedList<Span> free_spans_[256];
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableSharedMemoryHeap);
 };
 
 }  // namespace discardable_memory

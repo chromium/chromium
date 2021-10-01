@@ -37,15 +37,16 @@ struct PwgHeaderInfo {
 
 class PwgEncoder {
  public:
+  PwgEncoder() = delete;
+  PwgEncoder(const PwgEncoder&) = delete;
+  PwgEncoder& operator=(const PwgEncoder&) = delete;
+
   static std::string GetDocumentHeader();
 
   // Given an image, create a PWG of the image and put the compressed image data
   // in the returned string, or return an empty string on failure.
   static std::string EncodePage(const BitmapImage& image,
                                 const PwgHeaderInfo& pwg_header_info);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PwgEncoder);
 };
 
 }  // namespace pwg_encoder

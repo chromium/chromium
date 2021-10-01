@@ -95,20 +95,26 @@ class PnaclTranslateThread {
    public:
     CompileThread(PnaclTranslateThread* obj)
       : base::SimpleThread("pnacl_compile"), pnacl_translate_thread_(obj) {}
+
+    CompileThread(const CompileThread&) = delete;
+    CompileThread& operator=(const CompileThread&) = delete;
+
    private:
     PnaclTranslateThread* pnacl_translate_thread_;
     void Run() override;
-    DISALLOW_COPY_AND_ASSIGN(CompileThread);
   };
 
   class LinkThread : public base::SimpleThread {
    public:
     LinkThread(PnaclTranslateThread* obj)
       : base::SimpleThread("pnacl_link"), pnacl_translate_thread_(obj) {}
+
+    LinkThread(const LinkThread&) = delete;
+    LinkThread& operator=(const LinkThread&) = delete;
+
    private:
     PnaclTranslateThread* pnacl_translate_thread_;
     void Run() override;
-    DISALLOW_COPY_AND_ASSIGN(LinkThread);
   };
 
   // Signal that Pnacl translation failed, from the translation thread only.

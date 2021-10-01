@@ -30,6 +30,9 @@ class GuestViewContainer {
  public:
   explicit GuestViewContainer(content::RenderFrame* render_frame);
 
+  GuestViewContainer(const GuestViewContainer&) = delete;
+  GuestViewContainer& operator=(const GuestViewContainer&) = delete;
+
   static GuestViewContainer* FromID(int element_instance_id);
 
   // IssueRequest queues up a |request| until the container is ready and
@@ -104,8 +107,6 @@ class GuestViewContainer {
   v8::Isolate* element_resize_isolate_;
 
   base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewContainer);
 };
 
 }  // namespace guest_view

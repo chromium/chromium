@@ -147,6 +147,10 @@ class SubresourceFilterAgentTest : public ::testing::Test {
  public:
   SubresourceFilterAgentTest() {}
 
+  SubresourceFilterAgentTest(const SubresourceFilterAgentTest&) = delete;
+  SubresourceFilterAgentTest& operator=(const SubresourceFilterAgentTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     ResetAgent(/*is_main_frame=*/true,
@@ -307,8 +311,6 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   UnverifiedRulesetDealer ruleset_dealer_;
 
   std::unique_ptr<SubresourceFilterAgentUnderTest> agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAgentTest);
 };
 
 TEST_F(SubresourceFilterAgentTest, RulesetUnset_RulesetNotAvailable) {

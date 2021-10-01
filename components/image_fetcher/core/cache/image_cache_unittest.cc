@@ -45,6 +45,11 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
  public:
   CachedImageFetcherImageCacheTest() {}
 
+  CachedImageFetcherImageCacheTest(const CachedImageFetcherImageCacheTest&) =
+      delete;
+  CachedImageFetcherImageCacheTest& operator=(
+      const CachedImageFetcherImageCacheTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void CreateImageCache() {
@@ -187,8 +192,6 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherImageCacheTest);
 };
 
 TEST_F(CachedImageFetcherImageCacheTest, HashUrlToKeyTest) {

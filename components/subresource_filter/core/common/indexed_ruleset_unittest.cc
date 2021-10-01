@@ -30,6 +30,11 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
  public:
   SubresourceFilterIndexedRulesetTest() { Reset(); }
 
+  SubresourceFilterIndexedRulesetTest(
+      const SubresourceFilterIndexedRulesetTest&) = delete;
+  SubresourceFilterIndexedRulesetTest& operator=(
+      const SubresourceFilterIndexedRulesetTest&) = delete;
+
  protected:
   LoadPolicy GetLoadPolicy(base::StringPiece url,
                            base::StringPiece document_origin = "",
@@ -98,9 +103,6 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   std::unique_ptr<RulesetIndexer> indexer_;
   std::unique_ptr<IndexedRulesetMatcher> matcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterIndexedRulesetTest);
 };
 
 TEST_F(SubresourceFilterIndexedRulesetTest, EmptyRuleset) {

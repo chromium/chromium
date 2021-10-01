@@ -40,6 +40,9 @@ class TestObserver : public mojom::VideoDetectorObserver {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   void Bind(mojo::PendingReceiver<mojom::VideoDetectorObserver> receiver) {
     receiver_.Bind(std::move(receiver));
   }
@@ -72,8 +75,6 @@ class TestObserver : public mojom::VideoDetectorObserver {
   base::circular_deque<bool> states_;
 
   mojo::Receiver<mojom::VideoDetectorObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace

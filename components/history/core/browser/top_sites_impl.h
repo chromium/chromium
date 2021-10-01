@@ -54,6 +54,9 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
                const PrepopulatedPageList& prepopulated_pages,
                const CanAddURLToHistoryFn& can_add_url_to_history);
 
+  TopSitesImpl(const TopSitesImpl&) = delete;
+  TopSitesImpl& operator=(const TopSitesImpl&) = delete;
+
   // Initializes TopSitesImpl.
   void Init(const base::FilePath& db_name);
 
@@ -211,8 +214,6 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
 
   base::ScopedObservation<HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesImpl);
 };
 
 }  // namespace history

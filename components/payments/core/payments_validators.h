@@ -14,6 +14,10 @@ namespace payments {
 
 class PaymentsValidators {
  public:
+  PaymentsValidators() = delete;
+  PaymentsValidators(const PaymentsValidators&) = delete;
+  PaymentsValidators& operator=(const PaymentsValidators&) = delete;
+
   // The most common identifiers are three-letter alphabetic codes as
   // defined by [ISO4217] (for example, "USD" for US Dollars).
   static bool IsValidCurrencyCodeFormat(const std::string& code,
@@ -47,9 +51,6 @@ class PaymentsValidators {
   static bool IsValidPaymentValidationErrorsFormat(
       const mojom::PaymentValidationErrorsPtr& errors,
       std::string* optional_error_message);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentsValidators);
 };
 
 }  // namespace payments

@@ -237,6 +237,9 @@ class CaptionButtonModel : public chromeos::CaptionButtonModel {
       : visible_button_mask_(visible_button_mask),
         enabled_button_mask_(enabled_button_mask) {}
 
+  CaptionButtonModel(const CaptionButtonModel&) = delete;
+  CaptionButtonModel& operator=(const CaptionButtonModel&) = delete;
+
   // Overridden from ash::CaptionButtonModel:
   bool IsVisible(views::CaptionButtonIcon icon) const override {
     return visible_button_mask_ & (1 << icon);
@@ -251,8 +254,6 @@ class CaptionButtonModel : public chromeos::CaptionButtonModel {
  private:
   uint32_t visible_button_mask_;
   uint32_t enabled_button_mask_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptionButtonModel);
 };
 
 // EventTargetingBlocker blocks the event targeting by setting NONE targeting

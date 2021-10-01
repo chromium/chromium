@@ -30,6 +30,9 @@ class MockTextInputDelegate : public TextInput::Delegate {
  public:
   MockTextInputDelegate() = default;
 
+  MockTextInputDelegate(const MockTextInputDelegate&) = delete;
+  MockTextInputDelegate& operator=(const MockTextInputDelegate&) = delete;
+
   // TextInput::Delegate:
   MOCK_METHOD0(Activated, void());
   MOCK_METHOD0(Deactivated, void());
@@ -48,9 +51,6 @@ class MockTextInputDelegate : public TextInput::Delegate {
                     const gfx::Range&,
                     const gfx::Range&,
                     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTextInputDelegate);
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -83,6 +83,9 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
 class TextInputTest : public test::ExoTestBase {
  public:
   TextInputTest() = default;
+
+  TextInputTest(const TextInputTest&) = delete;
+  TextInputTest& operator=(const TextInputTest&) = delete;
 
   void SetUp() override {
     test::ExoTestBase::SetUp();
@@ -145,8 +148,6 @@ class TextInputTest : public test::ExoTestBase {
   std::unique_ptr<Buffer> buffer_;
   std::unique_ptr<Surface> surface_;
   std::unique_ptr<ShellSurface> shell_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputTest);
 };
 
 TEST_F(TextInputTest, Activate) {

@@ -41,6 +41,9 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   explicit TestPasswordStore(password_manager::IsAccountStore is_account_store =
                                  password_manager::IsAccountStore(false));
 
+  TestPasswordStore(const TestPasswordStore&) = delete;
+  TestPasswordStore& operator=(const TestPasswordStore&) = delete;
+
   using PasswordMap = std::map<std::string /* signon_realm */,
                                std::vector<PasswordForm>,
                                std::less<>>;
@@ -122,8 +125,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
 
   // Number of calls of FillMatchingLogins() method.
   int fill_matching_logins_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPasswordStore);
 };
 
 }  // namespace password_manager

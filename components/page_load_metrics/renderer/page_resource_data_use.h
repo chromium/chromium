@@ -26,6 +26,9 @@ class PageResourceDataUse {
  public:
   PageResourceDataUse();
   PageResourceDataUse(const PageResourceDataUse& other);
+
+  PageResourceDataUse& operator=(const PageResourceDataUse&) = delete;
+
   ~PageResourceDataUse();
 
   void DidStartResponse(const GURL& response_url,
@@ -95,8 +98,6 @@ class PageResourceDataUse {
   url::Origin origin_;
 
   std::string mime_type_;
-
-  DISALLOW_ASSIGN(PageResourceDataUse);
 };
 
 }  // namespace page_load_metrics

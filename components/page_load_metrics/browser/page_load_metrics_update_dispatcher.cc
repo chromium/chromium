@@ -257,6 +257,9 @@ class PageLoadTimingMerger {
   explicit PageLoadTimingMerger(mojom::PageLoadTiming* target)
       : target_(target) {}
 
+  PageLoadTimingMerger(const PageLoadTimingMerger&) = delete;
+  PageLoadTimingMerger& operator=(const PageLoadTimingMerger&) = delete;
+
   // Merge timing values from |new_page_load_timing| into the target
   // PageLoadTiming;
   void Merge(base::TimeDelta navigation_start_offset,
@@ -429,8 +432,6 @@ class PageLoadTimingMerger {
 
   // Whether we merged a new value into |target_|.
   bool should_buffer_timing_update_callback_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadTimingMerger);
 };
 
 }  // namespace

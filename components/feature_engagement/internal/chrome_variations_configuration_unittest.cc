@@ -76,6 +76,11 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
               base::FeatureList::GetFieldTrial(kChromeTestFeatureQux));
   }
 
+  ChromeVariationsConfigurationTest(const ChromeVariationsConfigurationTest&) =
+      delete;
+  ChromeVariationsConfigurationTest& operator=(
+      const ChromeVariationsConfigurationTest&) = delete;
+
   void TearDown() override {
     // This is required to ensure each test can define its own params.
     base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
@@ -113,8 +118,6 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::map<std::string, base::FieldTrial*> trials_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVariationsConfigurationTest);
 };
 
 }  // namespace

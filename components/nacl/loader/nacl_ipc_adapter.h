@@ -114,6 +114,9 @@ class NaClIPCAdapter : public base::RefCountedThreadSafe<NaClIPCAdapter>,
   NaClIPCAdapter(std::unique_ptr<IPC::Channel> channel,
                  base::TaskRunner* runner);
 
+  NaClIPCAdapter(const NaClIPCAdapter&) = delete;
+  NaClIPCAdapter& operator=(const NaClIPCAdapter&) = delete;
+
   // Connect the channel. This must be called after the constructor that accepts
   // an IPC::ChannelHandle, and causes the Channel to be connected on the IO
   // thread.
@@ -225,8 +228,6 @@ class NaClIPCAdapter : public base::RefCountedThreadSafe<NaClIPCAdapter>,
 
   // To be accessed on the I/O thread (via task runner) only.
   IOThreadData io_thread_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClIPCAdapter);
 };
 
 // Export TranslatePepperFileReadWriteOpenFlags for testing.

@@ -66,6 +66,9 @@ class MockSuggestionsHandler
  public:
   MockSuggestionsHandler() {}
 
+  MockSuggestionsHandler(const MockSuggestionsHandler&) = delete;
+  MockSuggestionsHandler& operator=(const MockSuggestionsHandler&) = delete;
+
   MOCK_METHOD(void,
               OnSuggestionsReturned,
               (int query_id,
@@ -79,8 +82,6 @@ class MockSuggestionsHandler
 
  private:
   base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockSuggestionsHandler);
 };
 }  // namespace
 

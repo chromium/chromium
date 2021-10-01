@@ -137,14 +137,15 @@ class CronetEnvironment {
     CronetNetworkThread(const std::string& name,
                         cronet::CronetEnvironment* cronet_environment);
 
+    CronetNetworkThread(const CronetNetworkThread&) = delete;
+    CronetNetworkThread& operator=(const CronetNetworkThread&) = delete;
+
    protected:
     ~CronetNetworkThread() override;
     void CleanUp() override;
 
    private:
     cronet::CronetEnvironment* const cronet_environment_;
-
-    DISALLOW_COPY_AND_ASSIGN(CronetNetworkThread);
   };
 
   // Performs initialization tasks that must happen on the network thread.

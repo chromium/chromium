@@ -77,6 +77,10 @@ class AutofillProfileValidatorTest : public testing::Test {
             base::BindOnce(&AutofillProfileValidatorTest::OnValidated,
                            base::Unretained(this))) {}
 
+  AutofillProfileValidatorTest(const AutofillProfileValidatorTest&) = delete;
+  AutofillProfileValidatorTest& operator=(const AutofillProfileValidatorTest&) =
+      delete;
+
  protected:
   const std::unique_ptr<AutofillProfileValidator> validator_;
 
@@ -106,8 +110,6 @@ class AutofillProfileValidatorTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment scoped_task_scheduler;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileValidatorTest);
 };
 
 // Validate a valid profile, for which the rules are not loaded, yet.

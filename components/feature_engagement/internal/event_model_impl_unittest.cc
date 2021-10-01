@@ -71,6 +71,10 @@ class TestEventStorageValidator : public EventStorageValidator {
  public:
   TestEventStorageValidator() : should_store_(true) {}
 
+  TestEventStorageValidator(const TestEventStorageValidator&) = delete;
+  TestEventStorageValidator& operator=(const TestEventStorageValidator&) =
+      delete;
+
   bool ShouldStore(const std::string& event_name) const override {
     return should_store_;
   }
@@ -94,8 +98,6 @@ class TestEventStorageValidator : public EventStorageValidator {
  private:
   bool should_store_;
   std::map<std::string, uint32_t> max_keep_ages_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventStorageValidator);
 };
 
 // Creates a TestInMemoryEventStore containing three hard coded events.

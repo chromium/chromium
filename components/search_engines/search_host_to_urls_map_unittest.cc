@@ -21,14 +21,15 @@ class SearchHostToURLsMapTest : public testing::Test {
  public:
   SearchHostToURLsMapTest() {}
 
+  SearchHostToURLsMapTest(const SearchHostToURLsMapTest&) = delete;
+  SearchHostToURLsMapTest& operator=(const SearchHostToURLsMapTest&) = delete;
+
   void SetUp() override;
 
  protected:
   std::unique_ptr<SearchHostToURLsMap> provider_map_;
   TemplateURLService::OwnedTemplateURLVector template_urls_;
   std::string host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchHostToURLsMapTest);
 };
 
 void SearchHostToURLsMapTest::SetUp() {

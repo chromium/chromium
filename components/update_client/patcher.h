@@ -19,6 +19,9 @@ class Patcher : public base::RefCountedThreadSafe<Patcher> {
  public:
   using PatchCompleteCallback = base::OnceCallback<void(int result)>;
 
+  Patcher(const Patcher&) = delete;
+  Patcher& operator=(const Patcher&) = delete;
+
   virtual void PatchBsdiff(const base::FilePath& input_file,
                            const base::FilePath& patch_file,
                            const base::FilePath& destination,
@@ -33,22 +36,19 @@ class Patcher : public base::RefCountedThreadSafe<Patcher> {
   friend class base::RefCountedThreadSafe<Patcher>;
   Patcher() = default;
   virtual ~Patcher() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Patcher);
 };
 
 class PatcherFactory : public base::RefCountedThreadSafe<PatcherFactory> {
  public:
+  PatcherFactory(const PatcherFactory&) = delete;
+  PatcherFactory& operator=(const PatcherFactory&) = delete;
+
   virtual scoped_refptr<Patcher> Create() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<PatcherFactory>;
   PatcherFactory() = default;
   virtual ~PatcherFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PatcherFactory);
 };
 
 }  // namespace update_client

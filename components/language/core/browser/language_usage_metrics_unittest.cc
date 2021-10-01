@@ -30,6 +30,9 @@ class MetricsRecorder {
       base_samples_ = histogram->SnapshotSamples();
   }
 
+  MetricsRecorder(const MetricsRecorder&) = delete;
+  MetricsRecorder& operator=(const MetricsRecorder&) = delete;
+
   void CheckTotalCount(int count) {
     Snapshot();
     EXPECT_EQ(count, GetTotalCount());
@@ -69,8 +72,6 @@ class MetricsRecorder {
   std::string key_;
   std::unique_ptr<HistogramSamples> base_samples_;
   std::unique_ptr<HistogramSamples> samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRecorder);
 };
 
 void RecordPageLanguageVisits(UrlLanguageHistogram& language_histogram,

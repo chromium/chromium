@@ -33,6 +33,9 @@ class TemplateURLParser {
 
   using ParseCallback = base::OnceCallback<void(std::unique_ptr<TemplateURL>)>;
 
+  TemplateURLParser(const TemplateURLParser&) = delete;
+  TemplateURLParser& operator=(const TemplateURLParser&) = delete;
+
   // Decodes the chunk of data representing a TemplateURL, creates the
   // TemplateURL, and calls the |completion_callback| with the result. A null
   // value is provided if the data does not describe a valid TemplateURL, the
@@ -59,8 +62,6 @@ class TemplateURLParser {
  private:
   // No one should create one of these.
   TemplateURLParser();
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLParser);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PARSER_H_

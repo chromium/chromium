@@ -19,15 +19,15 @@ class AssistRankerService : public KeyedService {
  public:
   AssistRankerService() = default;
 
+  AssistRankerService(const AssistRankerService&) = delete;
+  AssistRankerService& operator=(const AssistRankerService&) = delete;
+
   // Returns a binary classification model given a PredictorConfig.
   // The predictor is instantiated the first time a predictor is fetched. The
   // next calls to fetch will return a pointer to the already instantiated
   // predictor.
   virtual base::WeakPtr<BinaryClassifierPredictor>
   FetchBinaryClassifierPredictor(const PredictorConfig& config) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistRankerService);
 };
 
 }  // namespace assist_ranker

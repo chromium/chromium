@@ -38,6 +38,11 @@ class PnaclTranslationResourceHost : public IPC::MessageFilter {
 
   explicit PnaclTranslationResourceHost(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  PnaclTranslationResourceHost(const PnaclTranslationResourceHost&) = delete;
+  PnaclTranslationResourceHost& operator=(const PnaclTranslationResourceHost&) =
+      delete;
+
   void RequestNexeFd(PP_Instance instance,
                      const nacl::PnaclCacheInfo& cache_info,
                      RequestNexeFdCallback callback);
@@ -72,7 +77,6 @@ class PnaclTranslationResourceHost : public IPC::MessageFilter {
   // Should be accessed on the io thread.
   IPC::Sender* sender_;
   CacheRequestInfoMap pending_cache_requests_;
-  DISALLOW_COPY_AND_ASSIGN(PnaclTranslationResourceHost);
 };
 
 #endif  // COMPONENTS_NACL_RENDERER_PNACL_TRANSLATION_RESOURCE_HOST_H_

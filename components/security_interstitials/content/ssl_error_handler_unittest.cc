@@ -169,6 +169,10 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
         has_blocked_interception_(false),
         legacy_tls_interstitial_shown_(false) {}
 
+  TestSSLErrorHandlerDelegate(const TestSSLErrorHandlerDelegate&) = delete;
+  TestSSLErrorHandlerDelegate& operator=(const TestSSLErrorHandlerDelegate&) =
+      delete;
+
   void SendSuggestedUrlCheckResult(
       const CommonNameMismatchHandler::SuggestedUrlCheckResult& result,
       const GURL& suggested_url) {
@@ -296,8 +300,6 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
   bool legacy_tls_interstitial_shown_;
   bool has_legacy_tls_;
   CommonNameMismatchHandler::CheckUrlCallback suggested_url_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSSLErrorHandlerDelegate);
 };
 
 }  // namespace
@@ -376,13 +378,16 @@ class SSLErrorHandlerNameMismatchNoSANTest
  public:
   SSLErrorHandlerNameMismatchNoSANTest() {}
 
+  SSLErrorHandlerNameMismatchNoSANTest(
+      const SSLErrorHandlerNameMismatchNoSANTest&) = delete;
+  SSLErrorHandlerNameMismatchNoSANTest& operator=(
+      const SSLErrorHandlerNameMismatchNoSANTest&) = delete;
+
  private:
   // Return a certificate that contains no SubjectAltName field.
   scoped_refptr<net::X509Certificate> GetCertificate() override {
     return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandlerNameMismatchNoSANTest);
 };
 
 // A class to test the captive portal certificate list feature. Creates an error
@@ -390,6 +395,10 @@ class SSLErrorHandlerNameMismatchNoSANTest
 // recreated by calling ResetErrorHandler() with an appropriate cert status.
 class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
  public:
+  SSLErrorAssistantProtoTest(const SSLErrorAssistantProtoTest&) = delete;
+  SSLErrorAssistantProtoTest& operator=(const SSLErrorAssistantProtoTest&) =
+      delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
@@ -621,8 +630,6 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<TestSSLErrorHandler> error_handler_;
   TestSSLErrorHandlerDelegate* delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistantProtoTest);
 };
 
 class SSLErrorHandlerDateInvalidTest
@@ -641,6 +648,11 @@ class SSLErrorHandlerDateInvalidTest
         false, 0.0,
         network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY);
   }
+
+  SSLErrorHandlerDateInvalidTest(const SSLErrorHandlerDateInvalidTest&) =
+      delete;
+  SSLErrorHandlerDateInvalidTest& operator=(
+      const SSLErrorHandlerDateInvalidTest&) = delete;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -737,8 +749,6 @@ class SSLErrorHandlerDateInvalidTest
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<network_time::NetworkTimeTracker> tracker_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandlerDateInvalidTest);
 };
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)

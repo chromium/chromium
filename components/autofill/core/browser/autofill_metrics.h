@@ -1107,13 +1107,22 @@ class AutofillMetrics {
   // nested.
   class UkmTimestampPin {
    public:
+    UkmTimestampPin() = delete;
+
     explicit UkmTimestampPin(FormInteractionsUkmLogger* logger);
+
+    UkmTimestampPin(const UkmTimestampPin&) = delete;
+    UkmTimestampPin& operator=(const UkmTimestampPin&) = delete;
+
     ~UkmTimestampPin();
 
    private:
     FormInteractionsUkmLogger* const logger_;
-    DISALLOW_IMPLICIT_CONSTRUCTORS(UkmTimestampPin);
   };
+
+  AutofillMetrics() = delete;
+  AutofillMetrics(const AutofillMetrics&) = delete;
+  AutofillMetrics& operator=(const AutofillMetrics&) = delete;
 
   // When the autofill-use-improved-label-disambiguation experiment is enabled
   // and suggestions are available, records if a LabelFormatter successfully
@@ -1733,8 +1742,6 @@ class AutofillMetrics {
 
  private:
   static void Log(AutocompleteEvent event);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AutofillMetrics);
 };
 
 #if defined(UNIT_TEST)

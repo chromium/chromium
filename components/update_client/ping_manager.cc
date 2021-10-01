@@ -36,7 +36,12 @@ const int kErrorNoUrl = -2;
 class PingSender : public base::RefCountedThreadSafe<PingSender> {
  public:
   using Callback = PingManager::Callback;
+
   explicit PingSender(scoped_refptr<Configurator> config);
+
+  PingSender(const PingSender&) = delete;
+  PingSender& operator=(const PingSender&) = delete;
+
   void SendPing(const Component& component, Callback callback);
 
  protected:
@@ -53,8 +58,6 @@ class PingSender : public base::RefCountedThreadSafe<PingSender> {
   const scoped_refptr<Configurator> config_;
   Callback callback_;
   std::unique_ptr<RequestSender> request_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingSender);
 };
 
 PingSender::PingSender(scoped_refptr<Configurator> config) : config_(config) {}

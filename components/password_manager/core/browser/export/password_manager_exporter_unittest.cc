@@ -55,6 +55,9 @@ class FakeCredentialProvider : public CredentialProviderInterface {
  public:
   FakeCredentialProvider() = default;
 
+  FakeCredentialProvider(const FakeCredentialProvider&) = delete;
+  FakeCredentialProvider& operator=(const FakeCredentialProvider&) = delete;
+
   void SetPasswordList(
       const std::vector<std::unique_ptr<PasswordForm>>& password_list) {
     password_list_.clear();
@@ -74,8 +77,6 @@ class FakeCredentialProvider : public CredentialProviderInterface {
 
  private:
   std::vector<std::unique_ptr<PasswordForm>> password_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCredentialProvider);
 };
 
 // Creates a hardcoded set of credentials for tests.

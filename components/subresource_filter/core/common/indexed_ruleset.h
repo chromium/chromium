@@ -107,6 +107,9 @@ class IndexedRulesetMatcher {
   // |size|.
   IndexedRulesetMatcher(const uint8_t* buffer, size_t size);
 
+  IndexedRulesetMatcher(const IndexedRulesetMatcher&) = delete;
+  IndexedRulesetMatcher& operator=(const IndexedRulesetMatcher&) = delete;
+
   // Returns whether the subset of subresource filtering rules specified by the
   // |activation_type| should be disabled for the |document| loaded from
   // |parent_document_origin|. Always returns false if |activation_type| ==
@@ -142,8 +145,6 @@ class IndexedRulesetMatcher {
   url_pattern_index::UrlPatternIndexMatcher blocklist_;
   url_pattern_index::UrlPatternIndexMatcher allowlist_;
   url_pattern_index::UrlPatternIndexMatcher deactivation_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedRulesetMatcher);
 };
 
 }  // namespace subresource_filter

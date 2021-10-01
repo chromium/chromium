@@ -44,6 +44,9 @@ class TestTaskRunner : public base::TestMockTimeTaskRunner {
     AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(1000));
   }
 
+  TestTaskRunner(const TestTaskRunner&) = delete;
+  TestTaskRunner& operator=(const TestTaskRunner&) = delete;
+
   void FastForwardTo(base::TimeTicks end_time) {
     base::TimeDelta offset = end_time - NowTicks();
     DCHECK_GE(offset, base::TimeDelta());
@@ -52,7 +55,6 @@ class TestTaskRunner : public base::TestMockTimeTaskRunner {
 
  private:
   ~TestTaskRunner() override = default;  // Ref-counted.
-  DISALLOW_COPY_AND_ASSIGN(TestTaskRunner);
 };
 
 // BackToBackBeginFrameSource testing

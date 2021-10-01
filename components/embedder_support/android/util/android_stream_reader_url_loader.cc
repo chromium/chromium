@@ -75,6 +75,9 @@ class InputStreamReaderWrapper
     DCHECK(input_stream_reader_);
   }
 
+  InputStreamReaderWrapper(const InputStreamReaderWrapper&) = delete;
+  InputStreamReaderWrapper& operator=(const InputStreamReaderWrapper&) = delete;
+
   InputStream* input_stream() { return input_stream_.get(); }
 
   int Seek(const net::HttpByteRange& byte_range) {
@@ -91,8 +94,6 @@ class InputStreamReaderWrapper
 
   std::unique_ptr<InputStream> input_stream_;
   std::unique_ptr<InputStreamReader> input_stream_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputStreamReaderWrapper);
 };
 
 bool AndroidStreamReaderURLLoader::ResponseDelegate::ShouldCacheResponse(

@@ -22,6 +22,11 @@ class FakeSafeBrowsingDatabaseManager
  public:
   FakeSafeBrowsingDatabaseManager();
 
+  FakeSafeBrowsingDatabaseManager(const FakeSafeBrowsingDatabaseManager&) =
+      delete;
+  FakeSafeBrowsingDatabaseManager& operator=(
+      const FakeSafeBrowsingDatabaseManager&) = delete;
+
   void AddBlocklistedUrl(const GURL& url,
                          safe_browsing::SBThreatType threat_type,
                          const safe_browsing::ThreatMetadata& metadata);
@@ -66,8 +71,6 @@ class FakeSafeBrowsingDatabaseManager
   bool synchronous_failure_ = false;
 
   base::WeakPtrFactory<FakeSafeBrowsingDatabaseManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
 };
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_FAKE_SAFE_BROWSING_DATABASE_MANAGER_H_

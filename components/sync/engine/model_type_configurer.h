@@ -23,9 +23,14 @@ class ModelTypeConfigurer {
   // Utility struct for holding ConfigureDataTypes options.
   struct ConfigureParams {
     ConfigureParams();
+
+    ConfigureParams(const ConfigureParams&) = delete;
+    ConfigureParams& operator=(const ConfigureParams&) = delete;
+
     ConfigureParams(ConfigureParams&& other);
-    ~ConfigureParams();
     ConfigureParams& operator=(ConfigureParams&& other);
+
+    ~ConfigureParams();
 
     ConfigureReason reason;
     ModelTypeSet to_download;
@@ -36,9 +41,6 @@ class ModelTypeConfigurer {
 
     // Whether full sync (or sync the feature) is enabled;
     bool is_sync_feature_enabled;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConfigureParams);
   };
 
   ModelTypeConfigurer();

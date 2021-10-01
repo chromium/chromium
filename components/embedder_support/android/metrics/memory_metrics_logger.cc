@@ -89,6 +89,9 @@ void RecordMemoryMetricsImpl(
 struct MemoryMetricsLogger::State : public base::RefCountedThreadSafe<State> {
   State() = default;
 
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
+
   // MemoryInstrumentation requires a SequencedTaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner;
 
@@ -98,8 +101,6 @@ struct MemoryMetricsLogger::State : public base::RefCountedThreadSafe<State> {
   friend class base::RefCountedThreadSafe<State>;
 
   ~State() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 MemoryMetricsLogger::MemoryMetricsLogger()

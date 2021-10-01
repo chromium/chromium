@@ -38,6 +38,9 @@ class UrlIndex : public HistoryBookmarkModel {
  public:
   explicit UrlIndex(std::unique_ptr<BookmarkNode> root);
 
+  UrlIndex(const UrlIndex&) = delete;
+  UrlIndex& operator=(const UrlIndex&) = delete;
+
   BookmarkNode* root() { return root_.get(); }
 
   // Adds |node| to |parent| at |index|.
@@ -115,8 +118,6 @@ class UrlIndex : public HistoryBookmarkModel {
   using NodesOrderedByUrlSet = std::multiset<BookmarkNode*, NodeUrlComparator>;
   NodesOrderedByUrlSet nodes_ordered_by_url_set_;
   mutable base::Lock url_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlIndex);
 };
 
 }  // namespace bookmarks

@@ -23,6 +23,9 @@ class MockCookieHelper : public CookieHelper {
  public:
   explicit MockCookieHelper(content::BrowserContext* browser_context);
 
+  MockCookieHelper(const MockCookieHelper&) = delete;
+  MockCookieHelper& operator=(const MockCookieHelper&) = delete;
+
   // CookieHelper methods.
   void StartFetching(FetchCallback callback) override;
   void DeleteCookie(const net::CanonicalCookie& cookie) override;
@@ -49,8 +52,6 @@ class MockCookieHelper : public CookieHelper {
 
   // Stores which cookies exist.
   std::map<const std::string, bool> cookies_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCookieHelper);
 };
 
 }  // namespace browsing_data

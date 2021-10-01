@@ -20,6 +20,9 @@ namespace wayland {
 struct WestonTestState {
   WestonTestState() {}
 
+  WestonTestState(const WestonTestState&) = delete;
+  WestonTestState& operator=(const WestonTestState&) = delete;
+
   bool left_button_pressed = false;
   bool middle_button_pressed = false;
   bool right_button_pressed = false;
@@ -28,8 +31,6 @@ struct WestonTestState {
   bool alt_pressed = false;
   bool shift_pressed = false;
   bool command_pressed = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WestonTestState);
 };
 
 constexpr uint32_t kWestonTestVersion = 1;

@@ -60,6 +60,10 @@ class NetworkMetricsProvider
                              network_connection_tracker_async_getter,
                          std::unique_ptr<NetworkQualityEstimatorProvider>
                              network_quality_estimator_provider = nullptr);
+
+  NetworkMetricsProvider(const NetworkMetricsProvider&) = delete;
+  NetworkMetricsProvider& operator=(const NetworkMetricsProvider&) = delete;
+
   ~NetworkMetricsProvider() override;
 
  private:
@@ -144,8 +148,6 @@ class NetworkMetricsProvider
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkMetricsProvider);
 };
 
 }  // namespace metrics

@@ -24,6 +24,12 @@ class SyncChangeProcessorWrapperForTest : public SyncChangeProcessor {
   explicit SyncChangeProcessorWrapperForTest(SyncChangeProcessor* wrapped);
   // Overload for SyncableService.
   explicit SyncChangeProcessorWrapperForTest(SyncableService* wrapped);
+
+  SyncChangeProcessorWrapperForTest(const SyncChangeProcessorWrapperForTest&) =
+      delete;
+  SyncChangeProcessorWrapperForTest& operator=(
+      const SyncChangeProcessorWrapperForTest&) = delete;
+
   ~SyncChangeProcessorWrapperForTest() override;
 
   // SyncChangeProcessor implementation.
@@ -36,8 +42,6 @@ class SyncChangeProcessorWrapperForTest : public SyncChangeProcessor {
       const base::Location& from_here,
       const SyncChangeList& change_list)>
       process_sync_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncChangeProcessorWrapperForTest);
 };
 
 }  // namespace syncer

@@ -50,10 +50,11 @@ const int kChannelId = 0;
 class CompleteHandler {
  public:
   CompleteHandler() {}
-  MOCK_METHOD1(Complete, void(int result));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompleteHandler);
+  CompleteHandler(const CompleteHandler&) = delete;
+  CompleteHandler& operator=(const CompleteHandler&) = delete;
+
+  MOCK_METHOD1(Complete, void(int result));
 };
 
 // Creates a CastMessage proto with the bare minimum required fields set.

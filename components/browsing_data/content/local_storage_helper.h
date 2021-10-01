@@ -37,6 +37,9 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
 
   explicit LocalStorageHelper(content::BrowserContext* context);
 
+  LocalStorageHelper(const LocalStorageHelper&) = delete;
+  LocalStorageHelper& operator=(const LocalStorageHelper&) = delete;
+
   // Starts the fetching process, which will notify its completion via
   // callback. This must be called only in the UI thread.
   virtual void StartFetching(FetchCallback callback);
@@ -52,9 +55,6 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
   virtual ~LocalStorageHelper();
 
   content::DOMStorageContext* dom_storage_context_;  // Owned by the context
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalStorageHelper);
 };
 
 // This class is a thin wrapper around LocalStorageHelper that does not fetch
@@ -63,6 +63,9 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
 class CannedLocalStorageHelper : public LocalStorageHelper {
  public:
   explicit CannedLocalStorageHelper(content::BrowserContext* context);
+
+  CannedLocalStorageHelper(const CannedLocalStorageHelper&) = delete;
+  CannedLocalStorageHelper& operator=(const CannedLocalStorageHelper&) = delete;
 
   // Add a local storage to the set of canned local storages that is returned
   // by this helper.
@@ -89,8 +92,6 @@ class CannedLocalStorageHelper : public LocalStorageHelper {
   ~CannedLocalStorageHelper() override;
 
   std::set<blink::StorageKey> pending_storage_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedLocalStorageHelper);
 };
 
 }  // namespace browsing_data

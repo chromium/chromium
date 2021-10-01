@@ -131,6 +131,9 @@ class OptionsEqMatcher : public MatcherInterface<const Options&> {
  public:
   explicit OptionsEqMatcher(const Options& expected) : expected_(expected) {}
 
+  OptionsEqMatcher(const OptionsEqMatcher&) = delete;
+  OptionsEqMatcher& operator=(const OptionsEqMatcher&) = delete;
+
   bool MatchAndExplain(const Options& actual,
                        MatchResultListener* listener) const override {
     return actual.comparator == expected_.comparator &&
@@ -160,8 +163,6 @@ class OptionsEqMatcher : public MatcherInterface<const Options&> {
 
  private:
   Options expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptionsEqMatcher);
 };
 
 Matcher<const Options&> OptionsEq(const Options& expected) {

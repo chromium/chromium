@@ -223,6 +223,11 @@ class FeatureConfigConditionValidatorTest : public ::testing::Test {
  public:
   FeatureConfigConditionValidatorTest() = default;
 
+  FeatureConfigConditionValidatorTest(
+      const FeatureConfigConditionValidatorTest&) = delete;
+  FeatureConfigConditionValidatorTest& operator=(
+      const FeatureConfigConditionValidatorTest&) = delete;
+
  protected:
   ConditionValidator::Result GetResultForDayAndEventWindow(
       Comparator comparator,
@@ -261,9 +266,6 @@ class FeatureConfigConditionValidatorTest : public ::testing::Test {
   TestDisplayLockController display_lock_controller_;
   FeatureConfigConditionValidator validator_;
   uint32_t current_day_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FeatureConfigConditionValidatorTest);
 };
 
 }  // namespace

@@ -109,6 +109,10 @@ class MockVideoCaptureObserver final
   explicit MockVideoCaptureObserver(
       mojo::PendingRemote<media::mojom::VideoCaptureHost> host)
       : host_(std::move(host)) {}
+
+  MockVideoCaptureObserver(const MockVideoCaptureObserver&) = delete;
+  MockVideoCaptureObserver& operator=(const MockVideoCaptureObserver&) = delete;
+
   MOCK_METHOD1(OnBufferCreatedCall, void(int buffer_id));
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override {
@@ -163,8 +167,6 @@ class MockVideoCaptureObserver final
   mojo::Receiver<media::mojom::VideoCaptureObserver> receiver_{this};
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
   base::flat_map<int, media::mojom::VideoFrameInfoPtr> frame_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockVideoCaptureObserver);
 };
 
 media::mojom::VideoFrameInfoPtr GetVideoFrameInfo() {

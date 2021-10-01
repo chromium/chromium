@@ -72,6 +72,9 @@ class UrlPattern {
   // The passed in |rule| must outlive the created instance.
   explicit UrlPattern(const flat::UrlRule& rule);
 
+  UrlPattern(const UrlPattern&) = delete;
+  UrlPattern& operator=(const UrlPattern&) = delete;
+
   ~UrlPattern();
 
   proto::UrlPatternType type() const { return type_; }
@@ -99,8 +102,6 @@ class UrlPattern {
   proto::AnchorType anchor_right_ = proto::ANCHOR_TYPE_NONE;
 
   MatchCase match_case_ = MatchCase::kTrue;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPattern);
 };
 
 // Allow pretty-printing URLPatterns when they are used in GTest assertions.

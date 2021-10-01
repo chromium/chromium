@@ -17,6 +17,12 @@ namespace viz {
 class FakeDelayBasedTimeSourceClient : public DelayBasedTimeSourceClient {
  public:
   FakeDelayBasedTimeSourceClient() : tick_called_(false) {}
+
+  FakeDelayBasedTimeSourceClient(const FakeDelayBasedTimeSourceClient&) =
+      delete;
+  FakeDelayBasedTimeSourceClient& operator=(
+      const FakeDelayBasedTimeSourceClient&) = delete;
+
   void Reset() { tick_called_ = false; }
   bool TickCalled() const { return tick_called_; }
 
@@ -25,9 +31,6 @@ class FakeDelayBasedTimeSourceClient : public DelayBasedTimeSourceClient {
 
  protected:
   bool tick_called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDelayBasedTimeSourceClient);
 };
 
 class FakeDelayBasedTimeSource : public DelayBasedTimeSource {

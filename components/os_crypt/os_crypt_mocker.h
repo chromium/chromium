@@ -12,6 +12,9 @@
 // services.
 class OSCryptMocker {
  public:
+  OSCryptMocker(const OSCryptMocker&) = delete;
+  OSCryptMocker& operator=(const OSCryptMocker&) = delete;
+
   // Inject mocking into OSCrypt.
   static void SetUp();
 
@@ -30,9 +33,6 @@ class OSCryptMocker {
 
   // Restore OSCrypt to its real behaviour.
   static void TearDown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptMocker);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_H_

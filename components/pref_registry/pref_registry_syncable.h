@@ -64,6 +64,9 @@ class PrefRegistrySyncable : public PrefRegistrySimple {
 
   PrefRegistrySyncable();
 
+  PrefRegistrySyncable(const PrefRegistrySyncable&) = delete;
+  PrefRegistrySyncable& operator=(const PrefRegistrySyncable&) = delete;
+
   // Exactly one callback can be set for the event of a syncable
   // preference being registered. It will be fired after the
   // registration has occurred.
@@ -85,8 +88,6 @@ class PrefRegistrySyncable : public PrefRegistrySimple {
                         uint32_t flags) override;
 
   SyncableRegistrationCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefRegistrySyncable);
 };
 
 }  // namespace user_prefs

@@ -44,6 +44,9 @@ class PrerenderHistograms {
   // NoStatePrefetchManager.
   PrerenderHistograms();
 
+  PrerenderHistograms(const PrerenderHistograms&) = delete;
+  PrerenderHistograms& operator=(const PrerenderHistograms&) = delete;
+
   // Return the string to use as a prefix for histograms depending on the origin
   // of the prerender.
   static std::string GetHistogramPrefix(Origin origin);
@@ -79,8 +82,6 @@ class PrerenderHistograms {
 
  private:
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderHistograms);
 };
 
 }  // namespace prerender

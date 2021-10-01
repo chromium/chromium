@@ -80,6 +80,11 @@ class MetricsWebContentsObserverTest
     previous_timing_ = timing.Clone();
   }
 
+  MetricsWebContentsObserverTest(const MetricsWebContentsObserverTest&) =
+      delete;
+  MetricsWebContentsObserverTest& operator=(
+      const MetricsWebContentsObserverTest&) = delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     original_browser_client_ =
@@ -253,8 +258,6 @@ class MetricsWebContentsObserverTest
   mojom::PageLoadTimingPtr previous_timing_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
   content::ContentBrowserClient* original_browser_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsWebContentsObserverTest);
 };
 
 TEST_F(MetricsWebContentsObserverTest, SuccessfulMainFrameNavigation) {

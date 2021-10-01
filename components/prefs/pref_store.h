@@ -40,6 +40,9 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
 
   PrefStore() {}
 
+  PrefStore(const PrefStore&) = delete;
+  PrefStore& operator=(const PrefStore&) = delete;
+
   // Add and remove observers.
   virtual void AddObserver(Observer* observer) {}
   virtual void RemoveObserver(Observer* observer) {}
@@ -60,9 +63,6 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
  protected:
   friend class base::RefCounted<PrefStore>;
   virtual ~PrefStore() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_STORE_H_

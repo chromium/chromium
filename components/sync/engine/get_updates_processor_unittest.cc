@@ -40,6 +40,9 @@ class GetUpdatesProcessorTest : public ::testing::Test {
  protected:
   GetUpdatesProcessorTest() : kTestStartTime(base::TimeTicks::Now()) {}
 
+  GetUpdatesProcessorTest(const GetUpdatesProcessorTest&) = delete;
+  GetUpdatesProcessorTest& operator=(const GetUpdatesProcessorTest&) = delete;
+
   void SetUp() override {
     AddUpdateHandler(AUTOFILL);
     AddUpdateHandler(BOOKMARKS);
@@ -91,8 +94,6 @@ class GetUpdatesProcessorTest : public ::testing::Test {
   std::set<std::unique_ptr<MockUpdateHandler>> update_handlers_;
   UpdateHandlerMap update_handler_map_;
   std::unique_ptr<GetUpdatesProcessor> get_updates_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetUpdatesProcessorTest);
 };
 
 // Basic test to make sure nudges are expressed properly in the request.

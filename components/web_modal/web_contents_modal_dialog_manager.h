@@ -58,6 +58,9 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
     explicit TestApi(WebContentsModalDialogManager* manager)
         : manager_(manager) {}
 
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     void CloseAllDialogs() { manager_->CloseAllDialogs(); }
     void WebContentsVisibilityChanged(content::Visibility visibility) {
       manager_->OnVisibilityChanged(visibility);
@@ -65,8 +68,6 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
 
    private:
     WebContentsModalDialogManager* manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   // Closes all WebContentsModalDialogs.

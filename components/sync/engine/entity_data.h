@@ -32,10 +32,13 @@ namespace syncer {
 struct EntityData {
  public:
   EntityData();
-  EntityData(EntityData&&);
-  ~EntityData();
 
+  EntityData& operator=(const EntityData&) = delete;
+
+  EntityData(EntityData&&);
   EntityData& operator=(EntityData&&);
+
+  ~EntityData();
 
   // Typically this is a server assigned sync ID, although for a local change
   // that represents a new entity this field might be either empty or contain
@@ -94,9 +97,6 @@ struct EntityData {
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
-
- private:
-  DISALLOW_ASSIGN(EntityData);
 };
 
 // gMock printer helper.

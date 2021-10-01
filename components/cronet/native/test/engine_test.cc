@@ -18,12 +18,13 @@ namespace {
 const char* kUserAgent = "EngineTest/1";
 
 class EngineTest : public ::testing::Test {
+ public:
+  EngineTest(const EngineTest&) = delete;
+  EngineTest& operator=(const EngineTest&) = delete;
+
  protected:
   EngineTest() = default;
   ~EngineTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EngineTest);
 };
 
 TEST_F(EngineTest, StartCronetEngine) {

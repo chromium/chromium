@@ -29,6 +29,9 @@ class KeepAliveRegistry {
  public:
   static KeepAliveRegistry* GetInstance();
 
+  KeepAliveRegistry(const KeepAliveRegistry&) = delete;
+  KeepAliveRegistry& operator=(const KeepAliveRegistry&) = delete;
+
   // Methods to query the state of the registry.
   bool IsKeepingAlive() const;
   bool IsKeepingAliveOnlyByBrowserOrigin() const;
@@ -98,8 +101,6 @@ class KeepAliveRegistry {
   bool is_shutting_down_ = false;
 
   base::ObserverList<KeepAliveStateObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveRegistry);
 };
 
 #endif  // COMPONENTS_KEEP_ALIVE_REGISTRY_KEEP_ALIVE_REGISTRY_H_

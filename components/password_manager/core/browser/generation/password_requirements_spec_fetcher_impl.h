@@ -72,6 +72,10 @@ class PasswordRequirementsSpecFetcherImpl
   // for a file with a specific hash prefix.
   struct LookupInFlight {
     LookupInFlight();
+
+    LookupInFlight(const LookupInFlight&) = delete;
+    LookupInFlight& operator=(const LookupInFlight&) = delete;
+
     ~LookupInFlight();
 
     // Callbacks to be called if the network request resolves or is aborted.
@@ -86,9 +90,6 @@ class PasswordRequirementsSpecFetcherImpl
 
     // Time when the network request is started.
     base::TimeTicks start_of_request;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LookupInFlight);
   };
 
   // These are the two ways how a network request can end. The functions remove

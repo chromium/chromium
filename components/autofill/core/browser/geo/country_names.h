@@ -30,6 +30,9 @@ class CountryNames {
   // is expensive.
   static CountryNames* GetInstance();
 
+  CountryNames(const CountryNames&) = delete;
+  CountryNames& operator=(const CountryNames&) = delete;
+
   // Tells CountryNames, what is the application locale. Only the first supplied
   // value is used, further calls result in no changes.  Call this on the UI
   // thread, before first using CountryNames. |locale| must not be empty.
@@ -97,8 +100,6 @@ class CountryNames {
 
   // A lock for accessing and manipulating the localization cache.
   base::Lock localized_country_names_cache_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountryNames);
 };
 
 }  // namespace autofill

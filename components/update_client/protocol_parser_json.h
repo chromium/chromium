@@ -18,11 +18,12 @@ class ProtocolParserJSON final : public ProtocolParser {
  public:
   ProtocolParserJSON() = default;
 
+  ProtocolParserJSON(const ProtocolParserJSON&) = delete;
+  ProtocolParserJSON& operator=(const ProtocolParserJSON&) = delete;
+
  private:
   // Overrides for ProtocolParser.
   bool DoParse(const std::string& response_json, Results* results) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolParserJSON);
 };
 
 }  // namespace update_client

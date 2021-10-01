@@ -23,6 +23,9 @@ class URLRequestContext;
 
 class PROXY_CONFIG_EXPORT ProxyServiceFactory {
  public:
+  ProxyServiceFactory(const ProxyServiceFactory&) = delete;
+  ProxyServiceFactory& operator=(const ProxyServiceFactory&) = delete;
+
   // Creates a ProxyConfigService that delivers the system preferences.
   static std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
       PrefProxyConfigTracker* tracker);
@@ -45,9 +48,6 @@ class PROXY_CONFIG_EXPORT ProxyServiceFactory {
       net::NetworkDelegate* network_delegate,
       std::unique_ptr<net::ProxyConfigService> proxy_config_service,
       bool quick_check_enabled);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyServiceFactory);
 };
 
 #endif  // COMPONENTS_PROXY_CONFIG_IOS_PROXY_SERVICE_FACTORY_H_

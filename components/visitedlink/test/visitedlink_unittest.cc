@@ -556,6 +556,9 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
         completely_reset_event_count_(0),
         new_table_count_(0) {}
 
+  VisitCountingContext(const VisitCountingContext&) = delete;
+  VisitCountingContext& operator=(const VisitCountingContext&) = delete;
+
   void Bind(mojo::ScopedMessagePipeHandle handle) {
     receiver_.Add(this,
                   mojo::PendingReceiver<mojom::VisitedLinkNotificationSink>(
@@ -616,8 +619,6 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
 
   base::OnceClosure quit_closure_;
   mojo::ReceiverSet<mojom::VisitedLinkNotificationSink> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisitCountingContext);
 };
 
 // Stub out as little as possible, borrowing from RenderProcessHost.
@@ -653,6 +654,12 @@ class VisitedLinkRenderProcessHostFactory
     : public content::RenderProcessHostFactory {
  public:
   VisitedLinkRenderProcessHostFactory() : context_(new VisitCountingContext) {}
+
+  VisitedLinkRenderProcessHostFactory(
+      const VisitedLinkRenderProcessHostFactory&) = delete;
+  VisitedLinkRenderProcessHostFactory& operator=(
+      const VisitedLinkRenderProcessHostFactory&) = delete;
+
   content::RenderProcessHost* CreateRenderProcessHost(
       content::BrowserContext* browser_context,
       content::SiteInstance* site_instance) override {
@@ -670,7 +677,6 @@ class VisitedLinkRenderProcessHostFactory
  private:
   std::list<std::unique_ptr<VisitRelayingRenderProcessHost>> processes_;
   std::unique_ptr<VisitCountingContext> context_;
-  DISALLOW_COPY_AND_ASSIGN(VisitedLinkRenderProcessHostFactory);
 };
 
 class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {

@@ -36,6 +36,10 @@ struct PendingWriteData {
       const base::android::JavaRef<jintArray>& jwrite_buffer_pos_list,
       const base::android::JavaRef<jintArray>& jwrite_buffer_limit_list,
       jboolean jwrite_end_of_stream);
+
+  PendingWriteData(const PendingWriteData&) = delete;
+  PendingWriteData& operator=(const PendingWriteData&) = delete;
+
   ~PendingWriteData();
 
   // Arguments passed in from Java. Retain a global ref so they won't get GC-ed
@@ -50,8 +54,6 @@ struct PendingWriteData {
   std::vector<scoped_refptr<net::IOBuffer>> write_buffer_list;
   // A list of the length of each IOBuffer in |write_buffer_list|.
   std::vector<int> write_buffer_len_list;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingWriteData);
 };
 
 // An adapter from Java BidirectionalStream object to net::BidirectionalStream.

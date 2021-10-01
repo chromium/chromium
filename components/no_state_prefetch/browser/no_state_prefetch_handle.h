@@ -37,6 +37,9 @@ class NoStatePrefetchHandle : public NoStatePrefetchContents::Observer {
     virtual ~Observer();
   };
 
+  NoStatePrefetchHandle(const NoStatePrefetchHandle&) = delete;
+  NoStatePrefetchHandle& operator=(const NoStatePrefetchHandle&) = delete;
+
   // Before calling the destructor, the caller must invalidate the handle by
   // calling either OnNavigateAway or OnCancel.
   ~NoStatePrefetchHandle() override;
@@ -85,8 +88,6 @@ class NoStatePrefetchHandle : public NoStatePrefetchContents::Observer {
 
   base::WeakPtr<NoStatePrefetchManager::NoStatePrefetchData> prefetch_data_;
   base::WeakPtrFactory<NoStatePrefetchHandle> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchHandle);
 };
 
 }  // namespace prerender

@@ -45,6 +45,10 @@ class TestSeatObserver : public SeatObserver {
 class TestDataSourceDelegate : public DataSourceDelegate {
  public:
   TestDataSourceDelegate() {}
+
+  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
+  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
+
   bool cancelled() const { return cancelled_; }
 
   // Overridden from DataSourceDelegate:
@@ -73,8 +77,6 @@ class TestDataSourceDelegate : public DataSourceDelegate {
  private:
   bool cancelled_ = false;
   absl::optional<std::vector<uint8_t>> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataSourceDelegate);
 };
 
 void RunReadingTask() {

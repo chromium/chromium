@@ -22,6 +22,9 @@ class WaylandTouchDelegate : public WaylandInputDelegate, public TouchDelegate {
   explicit WaylandTouchDelegate(wl_resource* touch_resource,
                                 SerialTracker* serial_tracker);
 
+  WaylandTouchDelegate(const WaylandTouchDelegate&) = delete;
+  WaylandTouchDelegate& operator=(const WaylandTouchDelegate&) = delete;
+
   // Overridden from TouchDelegate:
   void OnTouchDestroying(Touch* touch) override;
   bool CanAcceptTouchEventsForSurface(Surface* surface) const override;
@@ -46,8 +49,6 @@ class WaylandTouchDelegate : public WaylandInputDelegate, public TouchDelegate {
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTouchDelegate);
 };
 
 }  // namespace wayland

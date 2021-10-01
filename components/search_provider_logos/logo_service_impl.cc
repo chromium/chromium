@@ -55,6 +55,11 @@ const int kDecodeLogoTimeoutSeconds = 30;
 // out a better way, now that it isn't.
 class ImageDecodedHandlerWithTimeout {
  public:
+  ImageDecodedHandlerWithTimeout(const ImageDecodedHandlerWithTimeout&) =
+      delete;
+  ImageDecodedHandlerWithTimeout& operator=(
+      const ImageDecodedHandlerWithTimeout&) = delete;
+
   static base::OnceCallback<void(const gfx::Image&)> Wrap(
       base::OnceCallback<void(const SkBitmap&)> image_decoded_callback) {
     auto* handler =
@@ -80,8 +85,6 @@ class ImageDecodedHandlerWithTimeout {
 
   base::OnceCallback<void(const SkBitmap&)> image_decoded_callback_;
   base::WeakPtrFactory<ImageDecodedHandlerWithTimeout> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodedHandlerWithTimeout);
 };
 
 void ObserverOnLogoAvailable(LogoObserver* observer,

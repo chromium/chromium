@@ -139,15 +139,16 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
     std::array<GLuint, 3> yuv_readback_framebuffers = {0, 0, 0};
 
     ReusableThings();
+
+    ReusableThings(const ReusableThings&) = delete;
+    ReusableThings& operator=(const ReusableThings&) = delete;
+
     ~ReusableThings();
 
     // Frees all the GL objects and scalers. This is in-lieu of a ReusableThings
     // destructor because a valid GL context is required to free some of the
     // objects.
     void Free(gpu::gles2::GLES2Interface* gl);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ReusableThings);
   };
 
   // Manages the execution of one asynchronous framebuffer readback and contains

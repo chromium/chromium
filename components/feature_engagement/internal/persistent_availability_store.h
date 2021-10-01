@@ -34,6 +34,10 @@ class PersistentAvailabilityStore {
   using OnLoadedCallback = base::OnceCallback<
       void(bool success, std::unique_ptr<std::map<std::string, uint32_t>>)>;
 
+  PersistentAvailabilityStore(const PersistentAvailabilityStore&) = delete;
+  PersistentAvailabilityStore& operator=(const PersistentAvailabilityStore&) =
+      delete;
+
   // Loads the availability data, updates the DB with newly enabled features,
   // deletes features that are not enabled anymore, and asynchronously invokes
   // |on_loaded_callback| with the result. The result will mirror the content
@@ -52,8 +56,6 @@ class PersistentAvailabilityStore {
  private:
   PersistentAvailabilityStore() = default;
   ~PersistentAvailabilityStore() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentAvailabilityStore);
 };
 
 }  // namespace feature_engagement

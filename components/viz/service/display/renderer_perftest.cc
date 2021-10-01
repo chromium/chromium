@@ -75,6 +75,9 @@ class WaitForSwapDisplayClient : public DisplayClient {
  public:
   WaitForSwapDisplayClient() = default;
 
+  WaitForSwapDisplayClient(const WaitForSwapDisplayClient&) = delete;
+  WaitForSwapDisplayClient& operator=(const WaitForSwapDisplayClient&) = delete;
+
   void DisplayOutputSurfaceLost() override {}
   void DisplayWillDrawAndSwap(
       bool will_draw_and_swap,
@@ -103,8 +106,6 @@ class WaitForSwapDisplayClient : public DisplayClient {
 
  private:
   std::unique_ptr<base::RunLoop> loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForSwapDisplayClient);
 };
 
 std::unique_ptr<CompositorRenderPass> CreateTestRootRenderPass() {
@@ -238,6 +239,9 @@ class RendererPerfTest : public VizPerfTest {
                                                          &manager_,
                                                          kArbitraryFrameSinkId,
                                                          true /* is_root */)) {}
+
+  RendererPerfTest(const RendererPerfTest&) = delete;
+  RendererPerfTest& operator=(const RendererPerfTest&) = delete;
 
   // Overloaded for concrete RendererType below.
   std::unique_ptr<OutputSurface> CreateOutputSurface(
@@ -666,8 +670,6 @@ class RendererPerfTest : public VizPerfTest {
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::vector<TransferableResource> resource_list_;
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererPerfTest);
 };
 
 template <>

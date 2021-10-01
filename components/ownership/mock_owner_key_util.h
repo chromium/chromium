@@ -27,6 +27,9 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
  public:
   MockOwnerKeyUtil();
 
+  MockOwnerKeyUtil(const MockOwnerKeyUtil&) = delete;
+  MockOwnerKeyUtil& operator=(const MockOwnerKeyUtil&) = delete;
+
   // OwnerKeyUtil implementation:
   bool ImportPublicKey(std::vector<uint8_t>* output) override;
   crypto::ScopedSECKEYPrivateKey FindPrivateKeyInSlot(
@@ -52,8 +55,6 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
 
   std::vector<uint8_t> public_key_;
   crypto::ScopedSECKEYPrivateKey private_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockOwnerKeyUtil);
 };
 
 }  // namespace ownership

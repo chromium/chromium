@@ -12,6 +12,10 @@
 
 // Test of Cronet_Buffer interface.
 class Cronet_BufferTest : public ::testing::Test {
+ public:
+  Cronet_BufferTest(const Cronet_BufferTest&) = delete;
+  Cronet_BufferTest& operator=(const Cronet_BufferTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -25,9 +29,6 @@ class Cronet_BufferTest : public ::testing::Test {
   bool InitWithAlloc_called_ = false;
   bool GetSize_called_ = false;
   bool GetData_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferTest);
 };
 
 namespace {
@@ -90,6 +91,11 @@ TEST_F(Cronet_BufferTest, TestCreate) {
 
 // Test of Cronet_BufferCallback interface.
 class Cronet_BufferCallbackTest : public ::testing::Test {
+ public:
+  Cronet_BufferCallbackTest(const Cronet_BufferCallbackTest&) = delete;
+  Cronet_BufferCallbackTest& operator=(const Cronet_BufferCallbackTest&) =
+      delete;
+
  protected:
   void SetUp() override {}
 
@@ -100,9 +106,6 @@ class Cronet_BufferCallbackTest : public ::testing::Test {
 
  public:
   bool OnDestroy_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferCallbackTest);
 };
 
 namespace {
@@ -131,6 +134,10 @@ TEST_F(Cronet_BufferCallbackTest, TestCreate) {
 
 // Test of Cronet_Runnable interface.
 class Cronet_RunnableTest : public ::testing::Test {
+ public:
+  Cronet_RunnableTest(const Cronet_RunnableTest&) = delete;
+  Cronet_RunnableTest& operator=(const Cronet_RunnableTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -141,9 +148,6 @@ class Cronet_RunnableTest : public ::testing::Test {
 
  public:
   bool Run_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_RunnableTest);
 };
 
 namespace {
@@ -170,6 +174,10 @@ TEST_F(Cronet_RunnableTest, TestCreate) {
 
 // Test of Cronet_Executor interface.
 class Cronet_ExecutorTest : public ::testing::Test {
+ public:
+  Cronet_ExecutorTest(const Cronet_ExecutorTest&) = delete;
+  Cronet_ExecutorTest& operator=(const Cronet_ExecutorTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -180,9 +188,6 @@ class Cronet_ExecutorTest : public ::testing::Test {
 
  public:
   bool Execute_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_ExecutorTest);
 };
 
 namespace {
@@ -210,6 +215,10 @@ TEST_F(Cronet_ExecutorTest, TestCreate) {
 
 // Test of Cronet_Engine interface.
 class Cronet_EngineTest : public ::testing::Test {
+ public:
+  Cronet_EngineTest(const Cronet_EngineTest&) = delete;
+  Cronet_EngineTest& operator=(const Cronet_EngineTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -227,9 +236,6 @@ class Cronet_EngineTest : public ::testing::Test {
   bool GetDefaultUserAgent_called_ = false;
   bool AddRequestFinishedListener_called_ = false;
   bool RemoveRequestFinishedListener_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_EngineTest);
 };
 
 namespace {
@@ -338,6 +344,12 @@ TEST_F(Cronet_EngineTest, TestCreate) {
 
 // Test of Cronet_UrlRequestStatusListener interface.
 class Cronet_UrlRequestStatusListenerTest : public ::testing::Test {
+ public:
+  Cronet_UrlRequestStatusListenerTest(
+      const Cronet_UrlRequestStatusListenerTest&) = delete;
+  Cronet_UrlRequestStatusListenerTest& operator=(
+      const Cronet_UrlRequestStatusListenerTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -348,9 +360,6 @@ class Cronet_UrlRequestStatusListenerTest : public ::testing::Test {
 
  public:
   bool OnStatus_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestStatusListenerTest);
 };
 
 namespace {
@@ -383,6 +392,11 @@ TEST_F(Cronet_UrlRequestStatusListenerTest, TestCreate) {
 
 // Test of Cronet_UrlRequestCallback interface.
 class Cronet_UrlRequestCallbackTest : public ::testing::Test {
+ public:
+  Cronet_UrlRequestCallbackTest(const Cronet_UrlRequestCallbackTest&) = delete;
+  Cronet_UrlRequestCallbackTest& operator=(
+      const Cronet_UrlRequestCallbackTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -398,9 +412,6 @@ class Cronet_UrlRequestCallbackTest : public ::testing::Test {
   bool OnSucceeded_called_ = false;
   bool OnFailed_called_ = false;
   bool OnCanceled_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestCallbackTest);
 };
 
 namespace {
@@ -498,6 +509,11 @@ TEST_F(Cronet_UrlRequestCallbackTest, TestCreate) {
 
 // Test of Cronet_UploadDataSink interface.
 class Cronet_UploadDataSinkTest : public ::testing::Test {
+ public:
+  Cronet_UploadDataSinkTest(const Cronet_UploadDataSinkTest&) = delete;
+  Cronet_UploadDataSinkTest& operator=(const Cronet_UploadDataSinkTest&) =
+      delete;
+
  protected:
   void SetUp() override {}
 
@@ -511,9 +527,6 @@ class Cronet_UploadDataSinkTest : public ::testing::Test {
   bool OnReadError_called_ = false;
   bool OnRewindSucceeded_called_ = false;
   bool OnRewindError_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UploadDataSinkTest);
 };
 
 namespace {
@@ -577,6 +590,11 @@ TEST_F(Cronet_UploadDataSinkTest, TestCreate) {
 
 // Test of Cronet_UploadDataProvider interface.
 class Cronet_UploadDataProviderTest : public ::testing::Test {
+ public:
+  Cronet_UploadDataProviderTest(const Cronet_UploadDataProviderTest&) = delete;
+  Cronet_UploadDataProviderTest& operator=(
+      const Cronet_UploadDataProviderTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -590,9 +608,6 @@ class Cronet_UploadDataProviderTest : public ::testing::Test {
   bool Read_called_ = false;
   bool Rewind_called_ = false;
   bool Close_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UploadDataProviderTest);
 };
 
 namespace {
@@ -659,6 +674,10 @@ TEST_F(Cronet_UploadDataProviderTest, TestCreate) {
 
 // Test of Cronet_UrlRequest interface.
 class Cronet_UrlRequestTest : public ::testing::Test {
+ public:
+  Cronet_UrlRequestTest(const Cronet_UrlRequestTest&) = delete;
+  Cronet_UrlRequestTest& operator=(const Cronet_UrlRequestTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -675,9 +694,6 @@ class Cronet_UrlRequestTest : public ::testing::Test {
   bool Cancel_called_ = false;
   bool IsDone_called_ = false;
   bool GetStatus_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestTest);
 };
 
 namespace {
@@ -785,6 +801,12 @@ TEST_F(Cronet_UrlRequestTest, TestCreate) {
 
 // Test of Cronet_RequestFinishedInfoListener interface.
 class Cronet_RequestFinishedInfoListenerTest : public ::testing::Test {
+ public:
+  Cronet_RequestFinishedInfoListenerTest(
+      const Cronet_RequestFinishedInfoListenerTest&) = delete;
+  Cronet_RequestFinishedInfoListenerTest& operator=(
+      const Cronet_RequestFinishedInfoListenerTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -795,9 +817,6 @@ class Cronet_RequestFinishedInfoListenerTest : public ::testing::Test {
 
  public:
   bool OnRequestFinished_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_RequestFinishedInfoListenerTest);
 };
 
 namespace {

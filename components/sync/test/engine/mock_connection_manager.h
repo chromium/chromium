@@ -49,6 +49,10 @@ class MockConnectionManager : public ServerConnectionManager {
   };
 
   MockConnectionManager();
+
+  MockConnectionManager(const MockConnectionManager&) = delete;
+  MockConnectionManager& operator=(const MockConnectionManager&) = delete;
+
   ~MockConnectionManager() override;
 
   // Overridden ServerConnectionManager functions.
@@ -359,8 +363,6 @@ class MockConnectionManager : public ServerConnectionManager {
   std::string next_token_;
 
   std::vector<sync_pb::ClientToServerMessage> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConnectionManager);
 };
 
 }  // namespace syncer

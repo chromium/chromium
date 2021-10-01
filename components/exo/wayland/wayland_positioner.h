@@ -33,6 +33,9 @@ class WaylandPositioner {
 
   WaylandPositioner(Version v) : version_(v) {}
 
+  WaylandPositioner(const WaylandPositioner&) = delete;
+  WaylandPositioner& operator=(const WaylandPositioner&) = delete;
+
   // Calculate and return bounds from current state.
   Result CalculateBounds(const gfx::Rect& work_area) const;
 
@@ -72,8 +75,6 @@ class WaylandPositioner {
   // resizing) for the placement of the window relative to the |anchor_rect_|.
   // See zxdg_positioner.set_offset() for more details.
   gfx::Vector2d offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPositioner);
 };
 
 }  // namespace wayland

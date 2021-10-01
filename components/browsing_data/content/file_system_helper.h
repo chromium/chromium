@@ -145,6 +145,9 @@ class CannedFileSystemHelper : public FileSystemHelper {
       const std::vector<storage::FileSystemType>& additional_types,
       content::NativeIOContext* native_io_context);
 
+  CannedFileSystemHelper(const CannedFileSystemHelper&) = delete;
+  CannedFileSystemHelper& operator=(const CannedFileSystemHelper&) = delete;
+
   // Manually adds a filesystem to the set of canned file systems that this
   // helper returns via StartFetching.
   void Add(const url::Origin& origin);
@@ -170,8 +173,6 @@ class CannedFileSystemHelper : public FileSystemHelper {
 
   // Holds the current list of filesystems returned to the client.
   std::set<url::Origin> pending_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedFileSystemHelper);
 };
 
 }  // namespace browsing_data

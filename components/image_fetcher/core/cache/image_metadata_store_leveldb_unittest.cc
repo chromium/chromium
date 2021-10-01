@@ -35,6 +35,11 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
  public:
   CachedImageFetcherImageMetadataStoreLevelDBTest() : db_(nullptr) {}
 
+  CachedImageFetcherImageMetadataStoreLevelDBTest(
+      const CachedImageFetcherImageMetadataStoreLevelDBTest&) = delete;
+  CachedImageFetcherImageMetadataStoreLevelDBTest& operator=(
+      const CachedImageFetcherImageMetadataStoreLevelDBTest&) = delete;
+
   void CreateDatabase() {
     // Reset everything.
     db_ = nullptr;
@@ -152,8 +157,6 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherImageMetadataStoreLevelDBTest);
 };
 
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, Initialize) {

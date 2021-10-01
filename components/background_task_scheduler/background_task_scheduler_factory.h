@@ -29,6 +29,11 @@ class BackgroundTaskSchedulerFactory : public SimpleKeyedServiceFactory {
   // Returns the BackgroundTaskScheuler associated with |key|.
   static BackgroundTaskScheduler* GetForKey(SimpleFactoryKey* key);
 
+  BackgroundTaskSchedulerFactory(const BackgroundTaskSchedulerFactory&) =
+      delete;
+  BackgroundTaskSchedulerFactory& operator=(
+      const BackgroundTaskSchedulerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BackgroundTaskSchedulerFactory>;
 
@@ -39,8 +44,6 @@ class BackgroundTaskSchedulerFactory : public SimpleKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskSchedulerFactory);
 };
 
 }  // namespace background_task

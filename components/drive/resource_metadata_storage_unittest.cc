@@ -45,6 +45,11 @@ struct DestroyHelperForTests {
 }  // namespace
 
 class ResourceMetadataStorageTest : public testing::Test {
+ public:
+  ResourceMetadataStorageTest(const ResourceMetadataStorageTest&) = delete;
+  ResourceMetadataStorageTest& operator=(const ResourceMetadataStorageTest&) =
+      delete;
+
  protected:
   ResourceMetadataStorageTest() = default;
   ~ResourceMetadataStorageTest() override = default;
@@ -96,8 +101,6 @@ class ResourceMetadataStorageTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ResourceMetadataStorage, DestroyHelperForTests> storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceMetadataStorageTest);
 };
 
 TEST_F(ResourceMetadataStorageTest, LargestChangestamp) {

@@ -100,6 +100,9 @@ class WebDataRequestManager
  public:
   WebDataRequestManager();
 
+  WebDataRequestManager(const WebDataRequestManager&) = delete;
+  WebDataRequestManager& operator=(const WebDataRequestManager&) = delete;
+
   // Factory function to create a new WebDataRequest.
   // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
   // outlive the WebDataRequestManager.
@@ -129,8 +132,6 @@ class WebDataRequestManager
   WebDataServiceBase::Handle next_request_handle_;
 
   std::map<WebDataServiceBase::Handle, WebDataRequest*> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataRequestManager);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATA_REQUEST_MANAGER_H__

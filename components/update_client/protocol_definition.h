@@ -35,16 +35,18 @@ struct HW {
 
 struct OS {
   OS();
+
+  OS(const OS&) = delete;
+  OS& operator=(const OS&) = delete;
+
   OS(OS&&);
+
   ~OS();
 
   std::string platform;
   std::string version;
   std::string service_pack;
   std::string arch;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OS);
 };
 
 struct Updater {
@@ -89,7 +91,12 @@ struct Ping {
 
 struct App {
   App();
+
+  App(const App&) = delete;
+  App& operator=(const App&) = delete;
+
   App(App&&);
+
   ~App();
 
   std::string app_id;
@@ -118,14 +125,16 @@ struct App {
 
   // Progress/result pings.
   absl::optional<std::vector<base::Value>> events;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(App);
 };
 
 struct Request {
   Request();
+
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
+
   Request(Request&&);
+
   ~Request();
 
   std::string protocol_version;
@@ -169,9 +178,6 @@ struct Request {
   absl::optional<Updater> updater;
 
   std::vector<App> apps;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 }  // namespace protocol_request

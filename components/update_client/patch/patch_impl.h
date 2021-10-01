@@ -18,7 +18,11 @@ class PatchChromiumFactory : public PatcherFactory {
  public:
   using Callback =
       base::RepeatingCallback<mojo::PendingRemote<patch::mojom::FilePatcher>()>;
+
   explicit PatchChromiumFactory(Callback callback);
+
+  PatchChromiumFactory(const PatchChromiumFactory&) = delete;
+  PatchChromiumFactory& operator=(const PatchChromiumFactory&) = delete;
 
   scoped_refptr<Patcher> Create() const override;
 
@@ -27,8 +31,6 @@ class PatchChromiumFactory : public PatcherFactory {
 
  private:
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchChromiumFactory);
 };
 
 }  // namespace update_client

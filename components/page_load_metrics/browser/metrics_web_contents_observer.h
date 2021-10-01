@@ -103,6 +103,11 @@ class MetricsWebContentsObserver
   static MetricsWebContentsObserver* CreateForWebContents(
       content::WebContents* web_contents,
       std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface);
+
+  MetricsWebContentsObserver(const MetricsWebContentsObserver&) = delete;
+  MetricsWebContentsObserver& operator=(const MetricsWebContentsObserver&) =
+      delete;
+
   ~MetricsWebContentsObserver() override;
 
   // Binds a Mojo receiver to the instance associated with the RenderFrameHost.
@@ -361,8 +366,6 @@ class MetricsWebContentsObserver
   bool web_contents_will_soon_be_destroyed_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsWebContentsObserver);
 };
 
 }  // namespace page_load_metrics

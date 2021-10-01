@@ -73,11 +73,11 @@ class BadLoginDatabase : public LoginDatabase {
  public:
   BadLoginDatabase() : LoginDatabase(base::FilePath(), IsAccountStore(false)) {}
 
+  BadLoginDatabase(const BadLoginDatabase&) = delete;
+  BadLoginDatabase& operator=(const BadLoginDatabase&) = delete;
+
   // LoginDatabase:
   bool Init() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BadLoginDatabase);
 };
 
 PasswordFormData CreateTestPasswordFormData() {

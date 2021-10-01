@@ -61,6 +61,10 @@ class StoringInitializedCallback {
  public:
   StoringInitializedCallback() : invoked_(false), success_(false) {}
 
+  StoringInitializedCallback(const StoringInitializedCallback&) = delete;
+  StoringInitializedCallback& operator=(const StoringInitializedCallback&) =
+      delete;
+
   void OnInitialized(bool success) {
     DCHECK(!invoked_);
     invoked_ = true;
@@ -74,8 +78,6 @@ class StoringInitializedCallback {
  private:
   bool invoked_;
   bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoringInitializedCallback);
 };
 
 // An InMemoryEventStore that is able to fake successful and unsuccessful
@@ -84,6 +86,10 @@ class TestTrackerInMemoryEventStore : public InMemoryEventStore {
  public:
   explicit TestTrackerInMemoryEventStore(bool load_should_succeed)
       : load_should_succeed_(load_should_succeed) {}
+
+  TestTrackerInMemoryEventStore(const TestTrackerInMemoryEventStore&) = delete;
+  TestTrackerInMemoryEventStore& operator=(
+      const TestTrackerInMemoryEventStore&) = delete;
 
   void Load(OnLoadedCallback callback) override {
     HandleLoadResult(std::move(callback), load_should_succeed_);
@@ -101,8 +107,6 @@ class TestTrackerInMemoryEventStore : public InMemoryEventStore {
   bool load_should_succeed_;
 
   std::map<std::string, Event> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrackerInMemoryEventStore);
 };
 
 class StoreEverythingEventStorageValidator : public EventStorageValidator {
@@ -199,6 +203,9 @@ class TestTrackerDisplayLockController : public DisplayLockController {
 class TrackerImplTest : public ::testing::Test {
  public:
   TrackerImplTest() = default;
+
+  TrackerImplTest(const TrackerImplTest&) = delete;
+  TrackerImplTest& operator=(const TrackerImplTest&) = delete;
 
   void SetUp() override {
     std::unique_ptr<EditableConfiguration> configuration =
@@ -434,9 +441,6 @@ class TrackerImplTest : public ::testing::Test {
   TestTrackerDisplayLockController* display_lock_controller_;
   Configuration* configuration_;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrackerImplTest);
 };
 
 // A top-level test class where the store fails to initialize.
@@ -444,14 +448,16 @@ class FailingStoreInitTrackerImplTest : public TrackerImplTest {
  public:
   FailingStoreInitTrackerImplTest() = default;
 
+  FailingStoreInitTrackerImplTest(const FailingStoreInitTrackerImplTest&) =
+      delete;
+  FailingStoreInitTrackerImplTest& operator=(
+      const FailingStoreInitTrackerImplTest&) = delete;
+
  protected:
   std::unique_ptr<TestTrackerInMemoryEventStore> CreateEventStore() override {
     // Returns a EventStore that will fail to initialize.
     return std::make_unique<TestTrackerInMemoryEventStore>(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FailingStoreInitTrackerImplTest);
 };
 
 // A top-level test class where the AvailabilityModel fails to initialize.
@@ -459,11 +465,13 @@ class FailingAvailabilityModelInitTrackerImplTest : public TrackerImplTest {
  public:
   FailingAvailabilityModelInitTrackerImplTest() = default;
 
+  FailingAvailabilityModelInitTrackerImplTest(
+      const FailingAvailabilityModelInitTrackerImplTest&) = delete;
+  FailingAvailabilityModelInitTrackerImplTest& operator=(
+      const FailingAvailabilityModelInitTrackerImplTest&) = delete;
+
  protected:
   bool ShouldAvailabilityStoreBeReady() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FailingAvailabilityModelInitTrackerImplTest);
 };
 
 }  // namespace

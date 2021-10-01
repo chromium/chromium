@@ -49,6 +49,9 @@ class SurfaceObserverForTest : public SurfaceObserver {
  public:
   SurfaceObserverForTest() = default;
 
+  SurfaceObserverForTest(const SurfaceObserverForTest&) = delete;
+  SurfaceObserverForTest& operator=(const SurfaceObserverForTest&) = delete;
+
   void OnSurfaceDestroying(Surface* surface) override {}
 
   void OnWindowOcclusionChanged(Surface* surface) override {
@@ -59,8 +62,6 @@ class SurfaceObserverForTest : public SurfaceObserver {
 
  private:
   int num_occlusion_changes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceObserverForTest);
 };
 
 class SurfaceTest : public test::ExoTestBase,

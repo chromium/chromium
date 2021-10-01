@@ -347,6 +347,9 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
                          std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
                          std::unique_ptr<URLMatcherPortFilter> port_filter);
 
+  URLMatcherConditionSet(const URLMatcherConditionSet&) = delete;
+  URLMatcherConditionSet& operator=(const URLMatcherConditionSet&) = delete;
+
   ID id() const { return id_; }
   const Conditions& conditions() const { return conditions_; }
   const QueryConditions& query_conditions() const { return query_conditions_; }
@@ -366,8 +369,6 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
   QueryConditions query_conditions_;
   std::unique_ptr<URLMatcherSchemeFilter> scheme_filter_;
   std::unique_ptr<URLMatcherPortFilter> port_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLMatcherConditionSet);
 };
 
 // This class allows matching one URL against a large set of

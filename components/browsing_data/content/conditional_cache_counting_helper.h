@@ -18,14 +18,14 @@ namespace browsing_data {
 // Helper to count the size of the http cache data from a StoragePartition.
 class ConditionalCacheCountingHelper {
  public:
+  // Returns if this value is an upper estimate and the number bytes in the
+  // selected range.
+  typedef base::OnceCallback<void(bool, int64_t)> CacheCountCallback;
+
   ConditionalCacheCountingHelper(const ConditionalCacheCountingHelper&) =
       delete;
   ConditionalCacheCountingHelper& operator=(
       const ConditionalCacheCountingHelper&) = delete;
-
-  // Returns if this value is an upper estimate and the number bytes in the
-  // selected range.
-  typedef base::OnceCallback<void(bool, int64_t)> CacheCountCallback;
 
   // Counts the cache entries according to the specified time range.
   // Must be called on the UI thread.

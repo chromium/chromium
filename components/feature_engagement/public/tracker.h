@@ -110,6 +110,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider);
 
+  Tracker(const Tracker&) = delete;
+  Tracker& operator=(const Tracker&) = delete;
+
   // Must be called whenever an event happens.
   virtual void NotifyEvent(const std::string& event) = 0;
 
@@ -202,9 +205,6 @@ class Tracker : public KeyedService, public base::SupportsUserData {
 
  protected:
   Tracker() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Tracker);
 };
 
 }  // namespace feature_engagement

@@ -49,6 +49,11 @@ class DomainDiversityReporterTest : public testing::Test {
 
   DomainDiversityReporterTest()
       : test_clock_(base::subtle::TimeNowIgnoringOverride()) {}
+
+  DomainDiversityReporterTest(const DomainDiversityReporterTest&) = delete;
+  DomainDiversityReporterTest& operator=(const DomainDiversityReporterTest&) =
+      delete;
+
   ~DomainDiversityReporterTest() override = default;
 
   void SetUp() override {
@@ -121,7 +126,6 @@ class DomainDiversityReporterTest : public testing::Test {
 
   // The mock clock used by DomainDiversity internally.
   TestClock test_clock_;
-  DISALLOW_COPY_AND_ASSIGN(DomainDiversityReporterTest);
 };
 
 TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {

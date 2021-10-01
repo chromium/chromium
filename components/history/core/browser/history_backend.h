@@ -201,6 +201,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                  std::unique_ptr<HistoryBackendClient> backend_client,
                  scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  HistoryBackend(const HistoryBackend&) = delete;
+  HistoryBackend& operator=(const HistoryBackend&) = delete;
+
   // Must be called after creation but before any objects are created. If this
   // fails, all other functions will fail as well. (Since this runs on another
   // thread, we don't bother returning failure.)
@@ -857,8 +860,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // HistoryBackend::Init is called. Defined after observers_ because
   // it unregisters itself as observer during destruction.
   std::unique_ptr<TypedURLSyncBridge> typed_url_sync_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackend);
 };
 
 }  // namespace history

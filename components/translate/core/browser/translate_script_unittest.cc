@@ -33,6 +33,9 @@ class TranslateScriptTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
+  TranslateScriptTest(const TranslateScriptTest&) = delete;
+  TranslateScriptTest& operator=(const TranslateScriptTest&) = delete;
+
  protected:
   void SetUp() override {
     script_ = std::make_unique<TranslateScript>();
@@ -78,8 +81,6 @@ class TranslateScriptTest : public testing::Test {
   // Factory to create programmatic URL loaders.
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateScriptTest);
 };
 
 TEST_F(TranslateScriptTest, CheckScriptParameters) {

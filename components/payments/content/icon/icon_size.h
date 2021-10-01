@@ -14,12 +14,13 @@ namespace payments {
 // screen resolution (32 * device_scale_factor).
 class IconSizeCalculator final {
  public:
+  IconSizeCalculator() = delete;
+  IconSizeCalculator(const IconSizeCalculator&) = delete;
+  IconSizeCalculator& operator=(const IconSizeCalculator&) = delete;
+
   static int IdealIconHeight(gfx::NativeView view);
   static int MinimumIconHeight();
   static constexpr int kPaymentAppDeviceIndependentIdealIconHeight = 32;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(IconSizeCalculator);
 };
 
 }  // namespace payments

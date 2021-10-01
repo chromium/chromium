@@ -25,6 +25,9 @@ class URLIteratorFromURLs : public visitedlink::VisitedLinkWriter::URLIterator {
   explicit URLIteratorFromURLs(const std::vector<GURL>& urls)
       : itr_(urls.begin()), end_(urls.end()) {}
 
+  URLIteratorFromURLs(const URLIteratorFromURLs&) = delete;
+  URLIteratorFromURLs& operator=(const URLIteratorFromURLs&) = delete;
+
   // visitedlink::VisitedLinkWriter::URLIterator implementation.
   const GURL& NextURL() override { return *(itr_++); }
   bool HasNextURL() const override { return itr_ != end_; }
@@ -32,8 +35,6 @@ class URLIteratorFromURLs : public visitedlink::VisitedLinkWriter::URLIterator {
  private:
   std::vector<GURL>::const_iterator itr_;
   std::vector<GURL>::const_iterator end_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLIteratorFromURLs);
 };
 
 // IterateUrlsDBTask bridge HistoryBackend::URLEnumerator to

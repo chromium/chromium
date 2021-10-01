@@ -94,6 +94,10 @@ class CustomLinksManagerImplTest : public testing::Test {
     CustomLinksManagerImpl::RegisterProfilePrefs(prefs_.registry());
   }
 
+  CustomLinksManagerImplTest(const CustomLinksManagerImplTest&) = delete;
+  CustomLinksManagerImplTest& operator=(const CustomLinksManagerImplTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     history_service_ = history::CreateHistoryService(scoped_temp_dir_.GetPath(),
@@ -108,8 +112,6 @@ class CustomLinksManagerImplTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<CustomLinksManagerImpl> custom_links_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksManagerImplTest);
 };
 
 TEST_F(CustomLinksManagerImplTest, InitializeOnlyOnce) {

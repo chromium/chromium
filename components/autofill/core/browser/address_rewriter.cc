@@ -83,6 +83,9 @@ class Cache {
   // Return the singleton instance of the cache.
   static Cache* GetInstance() { return base::Singleton<Cache>::get(); }
 
+  Cache(const Cache&) = delete;
+  Cache& operator=(const Cache&) = delete;
+
   // If the rules for |region| have already been compiled and cached, return a
   // pointer to them. Otherwise, find the rules for |region| (returning nullptr
   // if there are no such rules exist), compile them, cache them, and return a
@@ -135,7 +138,6 @@ class Cache {
   CompiledRuleCache data_;
 
   friend struct base::DefaultSingletonTraits<Cache>;
-  DISALLOW_COPY_AND_ASSIGN(Cache);
 };
 
 }  // namespace

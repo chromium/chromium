@@ -54,6 +54,11 @@ class WaylandNotificationShellNotification {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  WaylandNotificationShellNotification(
+      const WaylandNotificationShellNotification&) = delete;
+  WaylandNotificationShellNotification& operator=(
+      const WaylandNotificationShellNotification&) = delete;
+
   void Close() { notification_->Close(); }
 
  private:
@@ -73,8 +78,6 @@ class WaylandNotificationShellNotification {
 
   base::WeakPtrFactory<WaylandNotificationShellNotification> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandNotificationShellNotification);
 };
 
 void notification_destroy(wl_client* client, wl_resource* resource) {

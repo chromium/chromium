@@ -332,6 +332,9 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
       const base::RepeatingClosure& post_passphrase_accepted_cb)
       : post_passphrase_accepted_cb_(post_passphrase_accepted_cb) {}
 
+  BroadcastingObserver(const BroadcastingObserver&) = delete;
+  BroadcastingObserver& operator=(const BroadcastingObserver&) = delete;
+
   ~BroadcastingObserver() override = default;
 
   void AddObserver(SyncEncryptionHandler::Observer* observer) {
@@ -405,8 +408,6 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   base::ObserverList<SyncEncryptionHandler::Observer>::Unchecked observers_;
 
   const base::RepeatingClosure post_passphrase_accepted_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(BroadcastingObserver);
 };
 
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(

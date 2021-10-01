@@ -179,6 +179,9 @@ class RLZTracker::WrapperURLLoaderFactory
       : url_loader_factory_(std::move(url_loader_factory)),
         main_thread_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+  WrapperURLLoaderFactory(const WrapperURLLoaderFactory&) = delete;
+  WrapperURLLoaderFactory& operator=(const WrapperURLLoaderFactory&) = delete;
+
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       int32_t request_id,
@@ -210,8 +213,6 @@ class RLZTracker::WrapperURLLoaderFactory
 
   // Runner for RLZ main thread tasks.
   scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperURLLoaderFactory);
 };
 
 // static

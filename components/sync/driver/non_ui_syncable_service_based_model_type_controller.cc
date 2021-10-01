@@ -45,6 +45,9 @@ class BridgeBuilder {
                        std::move(syncable_service_provider), dump_stack));
   }
 
+  BridgeBuilder(const BridgeBuilder&) = delete;
+  BridgeBuilder& operator=(const BridgeBuilder&) = delete;
+
   ~BridgeBuilder() { DCHECK(task_runner_->RunsTasksInCurrentSequence()); }
 
   // Indirectly called for each operation by ProxyModelTypeControllerDelegate.
@@ -77,8 +80,6 @@ class BridgeBuilder {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<ModelTypeSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(BridgeBuilder);
 };
 
 // This is a slightly adapted version of base::OnTaskRunnerDeleter: The one

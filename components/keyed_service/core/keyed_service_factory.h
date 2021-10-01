@@ -26,6 +26,10 @@ class KeyedService;
 // implementors must explicitly state which services are depended on.
 class KEYED_SERVICE_EXPORT KeyedServiceFactory
     : public KeyedServiceBaseFactory {
+ public:
+  KeyedServiceFactory(const KeyedServiceFactory&) = delete;
+  KeyedServiceFactory& operator=(const KeyedServiceFactory&) = delete;
+
  protected:
   KeyedServiceFactory(const char* name, DependencyManager* manager, Type type);
   ~KeyedServiceFactory() override;
@@ -87,8 +91,6 @@ class KEYED_SERVICE_EXPORT KeyedServiceFactory
 
   // The mapping between a context and its overridden TestingFactory.
   std::map<void*, TestingFactory> testing_factories_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyedServiceFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_FACTORY_H_

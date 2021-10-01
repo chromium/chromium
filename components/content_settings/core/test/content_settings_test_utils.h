@@ -16,6 +16,10 @@ namespace content_settings {
 
 class TestUtils {
  public:
+  TestUtils() = delete;
+  TestUtils(const TestUtils&) = delete;
+  TestUtils& operator=(const TestUtils&) = delete;
+
   // The following two functions return the content setting (represented as
   // Value or directly the ContentSetting enum) from |provider| for the
   // given |content_type|. The returned content
@@ -50,9 +54,6 @@ class TestUtils {
       HostContentSettingsMap* map,
       std::unique_ptr<content_settings::ObservableProvider> provider,
       HostContentSettingsMap::ProviderType type);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TestUtils);
 };
 
 }  // namespace content_settings

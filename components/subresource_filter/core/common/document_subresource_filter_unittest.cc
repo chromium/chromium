@@ -41,6 +41,10 @@ class DocumentSubresourceFilterTest : public ::testing::Test {
  public:
   DocumentSubresourceFilterTest() {}
 
+  DocumentSubresourceFilterTest(const DocumentSubresourceFilterTest&) = delete;
+  DocumentSubresourceFilterTest& operator=(
+      const DocumentSubresourceFilterTest&) = delete;
+
  protected:
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(
@@ -61,8 +65,6 @@ class DocumentSubresourceFilterTest : public ::testing::Test {
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   scoped_refptr<const MemoryMappedRuleset> ruleset_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentSubresourceFilterTest);
 };
 
 TEST_F(DocumentSubresourceFilterTest, DryRun) {

@@ -17,6 +17,10 @@ class UrlLanguageHistogram;
 // Methods to record language usage as UMA histograms.
 class LanguageUsageMetrics {
  public:
+  LanguageUsageMetrics() = delete;
+  LanguageUsageMetrics(const LanguageUsageMetrics&) = delete;
+  LanguageUsageMetrics& operator=(const LanguageUsageMetrics&) = delete;
+
   // Records accept languages as a UMA histogram. |accept_languages| is a
   // case-insensitive comma-separated list of languages/locales of either xx,
   // xx-YY, or xx_YY format where xx is iso-639 language code and YY is iso-3166
@@ -48,8 +52,6 @@ class LanguageUsageMetrics {
   static int ToLanguageCodeHash(base::StringPiece locale);
 
  private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LanguageUsageMetrics);
-
   // Parses |accept_languages| and returns a set of language codes in
   // |languages|.
   static void ParseAcceptLanguages(base::StringPiece accept_languages,

@@ -320,6 +320,9 @@ class BookmarkModelTest : public testing::Test,
     ClearCounts();
   }
 
+  BookmarkModelTest(const BookmarkModelTest&) = delete;
+  BookmarkModelTest& operator=(const BookmarkModelTest&) = delete;
+
   void BookmarkModelLoaded(BookmarkModel* model, bool ids_reassigned) override {
     // We never load from the db, so that this should never get invoked.
     NOTREACHED();
@@ -504,8 +507,6 @@ class BookmarkModelTest : public testing::Test,
   int before_remove_all_count_;
   int grouped_changes_beginning_count_;
   int grouped_changes_ended_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelTest);
 };
 
 TEST_F(BookmarkModelTest, InitialState) {
@@ -1643,6 +1644,9 @@ class BookmarkModelFaviconTest : public testing::Test,
     model_->AddObserver(this);
   }
 
+  BookmarkModelFaviconTest(const BookmarkModelFaviconTest&) = delete;
+  BookmarkModelFaviconTest& operator=(const BookmarkModelFaviconTest&) = delete;
+
   // Emulates the favicon getting asynchronously loaded. In production, the
   // favicon is asynchronously loaded when BookmarkModel::GetFavicon() is
   // called.
@@ -1704,9 +1708,6 @@ class BookmarkModelFaviconTest : public testing::Test,
 
   std::unique_ptr<BookmarkModel> model_;
   std::vector<const BookmarkNode*> updated_nodes_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelFaviconTest);
 };
 
 // Test that BookmarkModel::OnFaviconsChanged() sends a notification that the

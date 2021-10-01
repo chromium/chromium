@@ -60,6 +60,9 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
  public:
   TestDataDeviceDelegate() {}
 
+  TestDataDeviceDelegate(const TestDataDeviceDelegate&) = delete;
+  TestDataDeviceDelegate& operator=(const TestDataDeviceDelegate&) = delete;
+
   size_t PopEvents(std::vector<DataEvent>* out) {
     out->swap(events_);
     events_.clear();
@@ -108,13 +111,15 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   std::unique_ptr<DataOffer> data_offer_;
   Surface* entered_surface_ = nullptr;
   bool can_accept_data_events_for_surface_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataDeviceDelegate);
 };
 
 class TestSeat : public Seat {
  public:
   TestSeat() : Seat(std::make_unique<TestDataExchangeDelegate>()) {}
+
+  TestSeat(const TestSeat&) = delete;
+  TestSeat& operator=(const TestSeat&) = delete;
+
   void set_focused_surface(Surface* surface) { surface_ = surface; }
 
   // Overriden from Seat:
@@ -122,8 +127,6 @@ class TestSeat : public Seat {
 
  private:
   Surface* surface_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSeat);
 };
 
 class DataDeviceTest : public test::ExoTestBase {

@@ -26,6 +26,10 @@
 
 // Test of {{interface_name}} interface.
 class {{test_class_name}}Test : public ::testing::Test {
+ public:
+  {{test_class_name}}Test(const {{test_class_name}}Test&) = delete;
+  {{test_class_name}}Test& operator=(const {{test_class_name}}Test&) = delete;
+
  protected:
   void SetUp() override {
   }
@@ -40,9 +44,6 @@ class {{test_class_name}}Test : public ::testing::Test {
 {%- for method in interface.methods -%}
   bool {{method.name}}_called_ = false;
 {%- endfor %}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN({{test_class_name}}Test);
 };
 
 namespace {

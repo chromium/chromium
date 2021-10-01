@@ -28,6 +28,10 @@ class CanMakePaymentQueryFactory : public BrowserContextKeyedServiceFactory {
   static CanMakePaymentQueryFactory* GetInstance();
   CanMakePaymentQuery* GetForContext(content::BrowserContext* context);
 
+  CanMakePaymentQueryFactory(const CanMakePaymentQueryFactory&) = delete;
+  CanMakePaymentQueryFactory& operator=(const CanMakePaymentQueryFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<CanMakePaymentQueryFactory>;
 
@@ -39,8 +43,6 @@ class CanMakePaymentQueryFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CanMakePaymentQueryFactory);
 };
 
 }  // namespace payments

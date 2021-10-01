@@ -50,6 +50,8 @@ class QUIRKS_EXPORT QuirksManager {
   // Delegate class, so implementation can access browser functionality.
   class Delegate {
    public:
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     // Provides Chrome API key for quirks server.
@@ -61,9 +63,6 @@ class QUIRKS_EXPORT QuirksManager {
 
     // Whether downloads are allowed by enterprise device policy.
     virtual bool DevicePolicyEnabled() const = 0;
-
-   private:
-    DISALLOW_ASSIGN(Delegate);
   };
 
   static void Initialize(
@@ -73,6 +72,9 @@ class QUIRKS_EXPORT QuirksManager {
   static void Shutdown();
   static QuirksManager* Get();
   static bool HasInstance();
+
+  QuirksManager(const QuirksManager&) = delete;
+  QuirksManager& operator=(const QuirksManager&) = delete;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -137,8 +139,6 @@ class QUIRKS_EXPORT QuirksManager {
 
   // Factory for callbacks.
   base::WeakPtrFactory<QuirksManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuirksManager);
 };
 
 }  // namespace quirks

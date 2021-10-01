@@ -42,6 +42,9 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  bool has_email);
 
+  FeedbackReport(const FeedbackReport&) = delete;
+  FeedbackReport& operator=(const FeedbackReport&) = delete;
+
   // The ID of the product specific data for the crash report IDs as stored by
   // the feedback server.
   static const char kCrashReportIdsKey[];
@@ -86,8 +89,6 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   std::unique_ptr<std::string> data_;
 
   scoped_refptr<base::SequencedTaskRunner> reports_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackReport);
 };
 
 }  // namespace feedback

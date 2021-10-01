@@ -175,6 +175,9 @@ class TypedNodeBase : public NodeBase {
 
   TypedNodeBase() : NodeBase(NodeImplClass::Type()) {}
 
+  TypedNodeBase(const TypedNodeBase&) = delete;
+  TypedNodeBase& operator=(const TypedNodeBase&) = delete;
+
   // Helper functions for casting from NodeBase to a concrete node type. This
   // CHECKs that the cast is valid.
   static const NodeImplClass* FromNodeBase(const NodeBase* node) {
@@ -207,9 +210,6 @@ class TypedNodeBase : public NodeBase {
   const Node* ToNode() const override {
     return static_cast<const NodeImplClass*>(this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TypedNodeBase);
 };
 
 }  // namespace performance_manager

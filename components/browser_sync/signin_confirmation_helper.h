@@ -30,6 +30,9 @@ class SigninConfirmationHelper {
   SigninConfirmationHelper(history::HistoryService* history_service,
                            base::OnceCallback<void(bool)> return_result);
 
+  SigninConfirmationHelper(const SigninConfirmationHelper&) = delete;
+  SigninConfirmationHelper& operator=(const SigninConfirmationHelper&) = delete;
+
   // This helper checks if there are history entries in the history service.
   void CheckHasHistory(int max_entries);
 
@@ -64,8 +67,6 @@ class SigninConfirmationHelper {
 
   // Callback to pass the result back to the caller.
   base::OnceCallback<void(bool)> return_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninConfirmationHelper);
 };
 
 }  // namespace browser_sync

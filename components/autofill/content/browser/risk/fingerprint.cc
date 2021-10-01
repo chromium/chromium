@@ -196,6 +196,9 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
       const base::TimeDelta& timeout,
       base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
 
+  FingerprintDataLoader(const FingerprintDataLoader&) = delete;
+  FingerprintDataLoader& operator=(const FingerprintDataLoader&) = delete;
+
  private:
   ~FingerprintDataLoader() override {}
 
@@ -255,8 +258,6 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   // For invalidating asynchronous callbacks that might arrive after |this|
   // instance is destroyed.
   base::WeakPtrFactory<FingerprintDataLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintDataLoader);
 };
 
 FingerprintDataLoader::FingerprintDataLoader(

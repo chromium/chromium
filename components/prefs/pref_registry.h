@@ -57,6 +57,9 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
 
   PrefRegistry();
 
+  PrefRegistry(const PrefRegistry&) = delete;
+  PrefRegistry& operator=(const PrefRegistry&) = delete;
+
   // Retrieve the set of registration flags for the given preference. The return
   // value is a bitmask of PrefRegistrationFlags.
   uint32_t GetRegistrationFlags(const std::string& pref_name) const;
@@ -107,9 +110,6 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   PrefRegistrationFlagsMap registration_flags_;
 
   std::set<std::string> foreign_pref_keys_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefRegistry);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_REGISTRY_H_

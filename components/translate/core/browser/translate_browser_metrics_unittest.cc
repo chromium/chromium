@@ -28,6 +28,9 @@ class MetricsRecorder {
       base_samples_ = histogram->SnapshotSamples();
   }
 
+  MetricsRecorder(const MetricsRecorder&) = delete;
+  MetricsRecorder& operator=(const MetricsRecorder&) = delete;
+
   void CheckInitiationStatus(
       int expected_disabled_by_prefs,
       int expected_disabled_by_config,
@@ -256,8 +259,6 @@ class MetricsRecorder {
   std::string key_;
   std::unique_ptr<HistogramSamples> base_samples_;
   std::unique_ptr<HistogramSamples> samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRecorder);
 };
 
 TEST(TranslateBrowserMetricsTest, ReportInitiationStatus) {

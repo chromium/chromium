@@ -163,6 +163,10 @@ enum class ServiceWorkerOfflineCapability {
 
 class InstallableMetrics {
  public:
+  InstallableMetrics() = delete;
+  InstallableMetrics(const InstallableMetrics&) = delete;
+  InstallableMetrics& operator=(const InstallableMetrics&) = delete;
+
   // Records |source| in the Webapp.Install.InstallEvent histogram.
   // IsReportableInstallSource(|source|) must be true.
   static void TrackInstallEvent(WebappInstallSource source);
@@ -197,9 +201,6 @@ class InstallableMetrics {
 
   // Records |source| in the Webapp.Install.UninstallEvent histogram.
   static void TrackUninstallEvent(WebappUninstallSource source);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InstallableMetrics);
 };
 
 }  // namespace webapps

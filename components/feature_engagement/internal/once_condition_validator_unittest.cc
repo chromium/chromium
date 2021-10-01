@@ -82,15 +82,16 @@ class OnceConditionValidatorTest : public ::testing::Test {
     event_model_.SetIsReady(true);
   }
 
+  OnceConditionValidatorTest(const OnceConditionValidatorTest&) = delete;
+  OnceConditionValidatorTest& operator=(const OnceConditionValidatorTest&) =
+      delete;
+
  protected:
   EditableConfiguration configuration_;
   OnceTestEventModel event_model_;
   NeverAvailabilityModel availability_model_;
   NoopDisplayLockController display_lock_controller_;
   OnceConditionValidator validator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OnceConditionValidatorTest);
 };
 
 }  // namespace

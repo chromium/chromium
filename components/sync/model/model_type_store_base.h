@@ -35,6 +35,10 @@ class ModelTypeStoreBase {
     static std::unique_ptr<MetadataChangeList> CreateMetadataChangeList();
 
     WriteBatch();
+
+    WriteBatch(const WriteBatch&) = delete;
+    WriteBatch& operator=(const WriteBatch&) = delete;
+
     virtual ~WriteBatch();
 
     // Write the given |value| for data with |id|.
@@ -52,19 +56,17 @@ class ModelTypeStoreBase {
     // TODO(mastiz): Revisit whether the last requirement above can be removed
     // and make this API more type-safe.
     void TakeMetadataChangesFrom(std::unique_ptr<MetadataChangeList> mcl);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(WriteBatch);
   };
 
   using RecordList = std::vector<Record>;
   using IdList = std::vector<std::string>;
 
+  ModelTypeStoreBase(const ModelTypeStoreBase&) = delete;
+  ModelTypeStoreBase& operator=(const ModelTypeStoreBase&) = delete;
+
  protected:
   ModelTypeStoreBase();
   virtual ~ModelTypeStoreBase();
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeStoreBase);
 };
 
 }  // namespace syncer

@@ -45,9 +45,14 @@ struct StartParams {
   };
 
   StartParams();
-  ~StartParams();
+
+  StartParams(const StartParams&) = delete;
+  StartParams& operator=(const StartParams&) = delete;
+
   StartParams(StartParams&& other);
   StartParams& operator=(StartParams&& other);
+
+  ~StartParams();
 
   bool native_bridge_experiment = false;
   int lcd_density = -1;
@@ -94,9 +99,6 @@ struct StartParams {
 
   // Flag to enable notification refresh.
   bool enable_notifications_refresh = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StartParams);
 };
 
 }  // namespace arc

@@ -29,6 +29,9 @@ class PatchParams : public base::RefCounted<PatchParams> {
       : file_patcher_(std::move(file_patcher)),
         callback_(std::move(callback)) {}
 
+  PatchParams(const PatchParams&) = delete;
+  PatchParams& operator=(const PatchParams&) = delete;
+
   mojo::Remote<mojom::FilePatcher>& file_patcher() { return file_patcher_; }
 
   PatchCallback TakeCallback() { return std::move(callback_); }
@@ -43,8 +46,6 @@ class PatchParams : public base::RefCounted<PatchParams> {
   mojo::Remote<mojom::FilePatcher> file_patcher_;
 
   PatchCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchParams);
 };
 
 void PatchDone(scoped_refptr<PatchParams> params, int result) {

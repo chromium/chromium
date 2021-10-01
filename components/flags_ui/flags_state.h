@@ -85,6 +85,10 @@ class FlagsState {
   // The delegate may be nullptr.
   FlagsState(base::span<const FeatureEntry> feature_entries,
              Delegate* delegate);
+
+  FlagsState(const FlagsState&) = delete;
+  FlagsState& operator=(const FlagsState&) = delete;
+
   ~FlagsState();
 
   // Reads the state from |flags_storage| and adds the command line flags
@@ -261,8 +265,6 @@ class FlagsState {
   // Delegate used for embedders to control display and application of flags.
   // May be null.
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsState);
 };
 
 }  // namespace flags_ui

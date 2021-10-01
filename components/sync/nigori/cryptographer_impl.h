@@ -40,6 +40,8 @@ class CryptographerImpl : public Cryptographer {
   static std::unique_ptr<CryptographerImpl> FromProto(
       const sync_pb::CryptographerData& proto);
 
+  CryptographerImpl& operator=(const CryptographerImpl&) = delete;
+
   ~CryptographerImpl() override;
 
   // Serialization.
@@ -109,8 +111,6 @@ class CryptographerImpl : public Cryptographer {
   // must correspond to a key within |key_bag_|. May be empty even if |key_bag_|
   // is not.
   std::string default_encryption_key_name_;
-
-  DISALLOW_ASSIGN(CryptographerImpl);
 };
 
 }  // namespace syncer

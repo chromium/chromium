@@ -25,13 +25,19 @@ class NetworkStatusListener {
     // Called when the network type is changed.
     virtual void OnNetworkChanged(network::mojom::ConnectionType type) = 0;
 
+    Observer() = default;
+
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
-    Observer() = default;
 
    protected:
     virtual ~Observer() {}
   };
+
+  NetworkStatusListener(const NetworkStatusListener&) = delete;
+  NetworkStatusListener& operator=(const NetworkStatusListener&) = delete;
+
+  virtual ~NetworkStatusListener();
 
   // Starts to listen to network changes.
   virtual void Start(Observer* observer) = 0;
@@ -41,8 +47,6 @@ class NetworkStatusListener {
 
   // Gets the current connection type.
   virtual network::mojom::ConnectionType GetConnectionType() = 0;
-
-  virtual ~NetworkStatusListener();
 
  protected:
   NetworkStatusListener();
@@ -54,9 +58,6 @@ class NetworkStatusListener {
   // The current network status.
   network::mojom::ConnectionType connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStatusListener);
 };
 
 }  // namespace download

@@ -22,6 +22,9 @@ class MockLocalStorageHelper : public browsing_data::LocalStorageHelper {
  public:
   explicit MockLocalStorageHelper(content::BrowserContext* context);
 
+  MockLocalStorageHelper(const MockLocalStorageHelper&) = delete;
+  MockLocalStorageHelper& operator=(const MockLocalStorageHelper&) = delete;
+
   // browsing_data::LocalStorageHelper implementation.
   void StartFetching(FetchCallback callback) override;
   void DeleteStorageKey(const blink::StorageKey& storage_key,
@@ -54,8 +57,6 @@ class MockLocalStorageHelper : public browsing_data::LocalStorageHelper {
   std::map<const blink::StorageKey, bool> storage_keys_;
 
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLocalStorageHelper);
 };
 
 }  // namespace browsing_data

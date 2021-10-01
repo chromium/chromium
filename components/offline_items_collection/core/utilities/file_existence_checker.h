@@ -33,6 +33,9 @@ class FileExistenceChecker {
   template <typename T>
   using ResultCallback = base::OnceCallback<void(FileWithIdCollection<T>)>;
 
+  FileExistenceChecker(const FileExistenceChecker&) = delete;
+  FileExistenceChecker& operator=(const FileExistenceChecker&) = delete;
+
   // Checks which of the provided |items_to_check| don't point to existing
   // files.
   template <typename T>
@@ -58,8 +61,6 @@ class FileExistenceChecker {
     }
     return missing_items;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FileExistenceChecker);
 };
 
 }  // namespace offline_items_collection

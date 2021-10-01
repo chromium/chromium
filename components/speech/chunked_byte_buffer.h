@@ -57,14 +57,15 @@ class ChunkedByteBuffer {
  private:
   struct Chunk {
     Chunk();
+
+    Chunk(const Chunk&) = delete;
+    Chunk& operator=(const Chunk&) = delete;
+
     ~Chunk();
 
     std::vector<uint8_t> header;
     std::unique_ptr<std::vector<uint8_t>> content;
     size_t ExpectedContentLength() const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Chunk);
   };
 
   std::vector<std::unique_ptr<Chunk>> chunks_;

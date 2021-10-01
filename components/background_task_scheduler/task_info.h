@@ -53,6 +53,10 @@ struct TaskInfo {
   // Warning: This functionality might get removed, check with OWNERS before
   // using this in new code: //components/background_task_scheduler/OWNERS.
   TaskInfo(int task_id, const ExactInfo& timing_info);
+
+  TaskInfo(const TaskInfo&) = delete;
+  TaskInfo& operator=(const TaskInfo&) = delete;
+
   ~TaskInfo();
 
   // A Java counterpart will be generated for this enum.
@@ -77,8 +81,6 @@ struct TaskInfo {
   absl::optional<PeriodicInfo> periodic_info;
   absl::optional<OneOffInfo> one_off_info;
   absl::optional<ExactInfo> exact_info;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskInfo);
 };
 
 }  // namespace background_task

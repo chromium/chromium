@@ -31,6 +31,10 @@ class KEYED_SERVICE_EXPORT BrowserStateDependencyManager
  public:
   static BrowserStateDependencyManager* GetInstance();
 
+  BrowserStateDependencyManager(const BrowserStateDependencyManager&) = delete;
+  BrowserStateDependencyManager& operator=(
+      const BrowserStateDependencyManager&) = delete;
+
   // Registers context-specific preferences for all services via |registry|.
   void RegisterBrowserStatePrefsForServices(
       user_prefs::PrefRegistrySyncable* registry);
@@ -77,8 +81,6 @@ class KEYED_SERVICE_EXPORT BrowserStateDependencyManager
   // DependencyManager:
   void DumpContextDependencies(void* context) const final;
 #endif  // NDEBUG
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserStateDependencyManager);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_DEPENDENCY_MANAGER_H_

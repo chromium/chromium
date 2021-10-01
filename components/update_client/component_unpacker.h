@@ -94,6 +94,9 @@ class ComponentUnpacker : public base::RefCountedThreadSafe<ComponentUnpacker> {
                     scoped_refptr<Patcher> patcher,
                     crx_file::VerifierFormat crx_format);
 
+  ComponentUnpacker(const ComponentUnpacker&) = delete;
+  ComponentUnpacker& operator=(const ComponentUnpacker&) = delete;
+
   // Begins the actual unpacking of the files. May invoke a patcher and the
   // component installer if the package is a differential update.
   // Calls |callback| with the result.
@@ -140,8 +143,6 @@ class ComponentUnpacker : public base::RefCountedThreadSafe<ComponentUnpacker> {
   UnpackerError error_;
   int extended_error_;
   std::string public_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUnpacker);
 };
 
 }  // namespace update_client

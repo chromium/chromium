@@ -17,6 +17,9 @@ class HttpAuthObserver {
  public:
   HttpAuthObserver() = default;
 
+  HttpAuthObserver(const HttpAuthObserver&) = delete;
+  HttpAuthObserver& operator=(const HttpAuthObserver&) = delete;
+
   // Called by the model when |credentials| has been identified as a match for
   // the pending login prompt. Checks that the realm matches, and passes
   // |credentials| to OnAutofillDataAvailableInternal.
@@ -27,9 +30,6 @@ class HttpAuthObserver {
 
  protected:
   virtual ~HttpAuthObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthObserver);
 };
 
 }  // namespace password_manager

@@ -90,6 +90,9 @@ class ResourceMetadataStorage {
   ResourceMetadataStorage(const base::FilePath& directory_path,
                           base::SequencedTaskRunner* blocking_task_runner);
 
+  ResourceMetadataStorage(const ResourceMetadataStorage&) = delete;
+  ResourceMetadataStorage& operator=(const ResourceMetadataStorage&) = delete;
+
   const base::FilePath& directory_path() const { return directory_path_; }
 
   // Returns true when cache entries were not loaded to the DB during
@@ -172,8 +175,6 @@ class ResourceMetadataStorage {
   std::unique_ptr<leveldb::DB> resource_map_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceMetadataStorage);
 };
 
 }  // namespace internal

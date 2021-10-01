@@ -27,6 +27,9 @@ class DnsQueueSequentialTester {
                            int32_t read_counter = 0,
                            int32_t write_counter = 0);
 
+  DnsQueueSequentialTester(const DnsQueueSequentialTester&) = delete;
+  DnsQueueSequentialTester& operator=(const DnsQueueSequentialTester&) = delete;
+
   // Return of false means buffer was full, or would not take entry.
   bool Push(void);  // Push the string value of next number.
 
@@ -37,7 +40,6 @@ class DnsQueueSequentialTester {
   DnsQueue* buffer_;
   int32_t read_counter_;   // expected value of next read string.
   int32_t write_counter_;  // Numerical value to write next string.
-  DISALLOW_COPY_AND_ASSIGN(DnsQueueSequentialTester);
 };
 
 DnsQueueSequentialTester::DnsQueueSequentialTester(DnsQueue& buffer,

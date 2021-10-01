@@ -178,6 +178,9 @@ class InputReader {
  public:
   explicit InputReader(base::span<const uint8_t> buf) : buf_(buf) {}
 
+  InputReader(const InputReader&) = delete;
+  InputReader& operator=(const InputReader&) = delete;
+
   uint64_t CurrentOffset() const { return current_offset_; }
   size_t Size() const { return buf_.size(); }
 
@@ -274,8 +277,6 @@ class InputReader {
 
   base::span<const uint8_t> buf_;
   uint64_t current_offset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InputReader);
 };
 
 GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {

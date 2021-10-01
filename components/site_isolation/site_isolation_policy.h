@@ -30,6 +30,10 @@ namespace site_isolation {
 // These methods can be called from any thread.
 class SiteIsolationPolicy {
  public:
+  SiteIsolationPolicy() = delete;
+  SiteIsolationPolicy(const SiteIsolationPolicy&) = delete;
+  SiteIsolationPolicy& operator=(const SiteIsolationPolicy&) = delete;
+
   // Returns true if the site isolation mode for isolating sites where users
   // enter passwords is enabled.
   static bool IsIsolationForPasswordSitesEnabled();
@@ -94,8 +98,6 @@ class SiteIsolationPolicy {
   static void PersistWebTriggeredIsolatedOrigin(
       content::BrowserContext* context,
       const url::Origin& origin);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SiteIsolationPolicy);
 };
 
 }  // namespace site_isolation

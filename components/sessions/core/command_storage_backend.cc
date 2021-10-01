@@ -65,6 +65,9 @@ class SessionFileReader {
   typedef sessions::SessionCommand::id_type id_type;
   typedef sessions::SessionCommand::size_type size_type;
 
+  SessionFileReader(const SessionFileReader&) = delete;
+  SessionFileReader& operator=(const SessionFileReader&) = delete;
+
   // Returns true if the header is valid. If false, the file does not contain
   // a valid sessions file.
   static bool IsHeaderValid(const base::FilePath& path,
@@ -183,8 +186,6 @@ class SessionFileReader {
   // The version the file was written with. Should only be used if
   // IsHeaderValid() returns true.
   int32_t version_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionFileReader);
 };
 
 CommandStorageBackend::ReadCommandsResult SessionFileReader::Read() {

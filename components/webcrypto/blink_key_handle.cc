@@ -55,14 +55,14 @@ class SymKey : public Key {
  public:
   explicit SymKey(const CryptoData& raw_key_data) : Key(raw_key_data) {}
 
+  SymKey(const SymKey&) = delete;
+  SymKey& operator=(const SymKey&) = delete;
+
   SymKey* AsSymKey() override { return this; }
 
   const std::vector<uint8_t>& raw_key_data() const {
     return serialized_key_data();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SymKey);
 };
 
 class AsymKey : public Key {
@@ -72,6 +72,9 @@ class AsymKey : public Key {
           const std::vector<uint8_t>& serialized_key_data)
       : Key(CryptoData(serialized_key_data)), pkey_(std::move(pkey)) {}
 
+  AsymKey(const AsymKey&) = delete;
+  AsymKey& operator=(const AsymKey&) = delete;
+
   AsymKey* AsAsymKey() override { return this; }
 
   // The caller should NOT mutate this EVP_PKEY.
@@ -79,8 +82,6 @@ class AsymKey : public Key {
 
  private:
   bssl::UniquePtr<EVP_PKEY> pkey_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsymKey);
 };
 
 Key* GetKey(const blink::WebCryptoKey& key) {

@@ -116,6 +116,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     remote_endpoint_ = navigation_handle->GetSocketAddress();
   }
 
+  ShouldClassifyUrlRequest(const ShouldClassifyUrlRequest&) = delete;
+  ShouldClassifyUrlRequest& operator=(const ShouldClassifyUrlRequest&) = delete;
+
   void Start() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -333,8 +336,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   ClientSideDetectionHost* host_;
 
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShouldClassifyUrlRequest);
 };
 
 // static

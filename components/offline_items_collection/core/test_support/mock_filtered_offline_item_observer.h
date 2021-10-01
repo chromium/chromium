@@ -40,12 +40,15 @@ class MockFilteredOfflineItemObserver {
     FilteredOfflineItemObserver* observer_;
   };
 
+  MockFilteredOfflineItemObserver(const MockFilteredOfflineItemObserver&) =
+      delete;
+  MockFilteredOfflineItemObserver& operator=(
+      const MockFilteredOfflineItemObserver&) = delete;
+
  private:
   // Do not allow instantiation.
   MockFilteredOfflineItemObserver() = default;
   ~MockFilteredOfflineItemObserver() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFilteredOfflineItemObserver);
 };
 
 }  // namespace offline_items_collection

@@ -46,6 +46,9 @@ class TestFacetManagerNotifier {
         task_runner_(task_runner),
         facet_manager_(nullptr) {}
 
+  TestFacetManagerNotifier(const TestFacetManagerNotifier&) = delete;
+  TestFacetManagerNotifier& operator=(const TestFacetManagerNotifier&) = delete;
+
   void Notify(base::Time time) {
     base::TimeDelta delay = time - task_runner_->Now();
     if (accuracy_ == NotificationAccuracy::TOO_LATE) {
@@ -75,8 +78,6 @@ class TestFacetManagerNotifier {
   const base::TimeDelta too_late_delay_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   FacetManager* facet_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFacetManagerNotifier);
 };
 
 // Stub/mock implementation for FacetManagerHost.
@@ -84,6 +85,9 @@ class MockFacetManagerHost : public FacetManagerHost {
  public:
   explicit MockFacetManagerHost(TestFacetManagerNotifier* notifier)
       : notifier_(notifier) {}
+
+  MockFacetManagerHost(const MockFacetManagerHost&) = delete;
+  MockFacetManagerHost& operator=(const MockFacetManagerHost&) = delete;
 
   // Sets the |facet_uri| that will be expected to appear in calls coming from
   // the FacetManager under test.
@@ -143,8 +147,6 @@ class MockFacetManagerHost : public FacetManagerHost {
   FacetURI expected_facet_uri_;
   AffiliatedFacetsWithUpdateTime fake_database_content_;
   bool signaled_need_network_request_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFacetManagerHost);
 };
 
 const bool kFalseTrue[] = {false, true};
@@ -222,6 +224,9 @@ class FacetManagerTest : public testing::Test {
         main_task_runner_(new base::TestMockTimeTaskRunner),
         facet_manager_notifier_(main_task_runner_, GetShortTestPeriod()),
         facet_manager_host_(&facet_manager_notifier_) {}
+
+  FacetManagerTest(const FacetManagerTest&) = delete;
+  FacetManagerTest& operator=(const FacetManagerTest&) = delete;
 
  protected:
   struct ExpectedFetchDetails {
@@ -418,8 +423,6 @@ class FacetManagerTest : public testing::Test {
 
   std::unique_ptr<FacetManager> facet_manager_;
   base::Time facet_manager_creation_;
-
-  DISALLOW_COPY_AND_ASSIGN(FacetManagerTest);
 };
 
 // Tests ----------------------------------------------------------------------

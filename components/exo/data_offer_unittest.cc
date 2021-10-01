@@ -41,6 +41,9 @@ class TestDataOfferDelegate : public DataOfferDelegate {
  public:
   TestDataOfferDelegate() {}
 
+  TestDataOfferDelegate(const TestDataOfferDelegate&) = delete;
+  TestDataOfferDelegate& operator=(const TestDataOfferDelegate&) = delete;
+
   // Called at the top of the data device's destructor, to give observers a
   // chance to remove themselves.
   void OnDataOfferDestroying(DataOffer* offer) override {}
@@ -69,8 +72,6 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   base::flat_set<std::string> mime_types_;
   base::flat_set<DndAction> source_actions_;
   DndAction dnd_action_ = DndAction::kNone;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataOfferDelegate);
 };
 
 class TestDataTransferPolicyController : ui::DataTransferPolicyController {

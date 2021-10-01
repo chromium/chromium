@@ -23,6 +23,9 @@ class TestMetricsProvider : public MetricsProvider {
         provide_stability_metrics_called_(false),
         provide_system_profile_metrics_called_(false) {}
 
+  TestMetricsProvider(const TestMetricsProvider&) = delete;
+  TestMetricsProvider& operator=(const TestMetricsProvider&) = delete;
+
   // MetricsProvider:
   void Init() override;
   void OnRecordingDisabled() override;
@@ -60,8 +63,6 @@ class TestMetricsProvider : public MetricsProvider {
   bool provide_initial_stability_metrics_called_;
   bool provide_stability_metrics_called_;
   bool provide_system_profile_metrics_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsProvider);
 };
 
 }  // namespace metrics

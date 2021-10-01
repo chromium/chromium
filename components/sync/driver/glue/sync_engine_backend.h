@@ -63,6 +63,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
                     const base::FilePath& sync_data_folder,
                     const base::WeakPtr<SyncEngineImpl>& host);
 
+  SyncEngineBackend(const SyncEngineBackend&) = delete;
+  SyncEngineBackend& operator=(const SyncEngineBackend&) = delete;
+
   // SyncManager::Observer implementation.  The Backend just acts like an air
   // traffic controller here, forwarding incoming messages to appropriate
   // landing threads.
@@ -217,8 +220,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncEngineBackend> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineBackend);
 };
 
 }  // namespace syncer

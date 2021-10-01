@@ -55,6 +55,10 @@ class PnaclTranslationCacheEntry
       net::DrainableIOBuffer* write_nexe,
       CompletionOnceCallback callback);
 
+  PnaclTranslationCacheEntry(const PnaclTranslationCacheEntry&) = delete;
+  PnaclTranslationCacheEntry& operator=(const PnaclTranslationCacheEntry&) =
+      delete;
+
   void Start();
 
   // Writes:                                ---
@@ -112,7 +116,6 @@ class PnaclTranslationCacheEntry
   CompletionOnceCallback write_callback_;
   scoped_refptr<net::DrainableIOBuffer> io_buf_;
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(PnaclTranslationCacheEntry);
 };
 
 // static

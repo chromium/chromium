@@ -234,6 +234,9 @@ class GaiaCookieManagerService
   GaiaCookieManagerService(ProfileOAuth2TokenService* token_service,
                            SigninClient* signin_client);
 
+  GaiaCookieManagerService(const GaiaCookieManagerService&) = delete;
+  GaiaCookieManagerService& operator=(const GaiaCookieManagerService&) = delete;
+
   ~GaiaCookieManagerService() override;
 
   void InitCookieListener();
@@ -447,8 +450,6 @@ class GaiaCookieManagerService
   bool list_accounts_stale_;
 
   base::WeakPtrFactory<GaiaCookieManagerService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaCookieManagerService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_COOKIE_MANAGER_SERVICE_H_

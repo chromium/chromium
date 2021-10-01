@@ -44,6 +44,11 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
       OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<ModelTypeChangeProcessor> change_processor,
       SyncableService* syncable_service);
+
+  SyncableServiceBasedBridge(const SyncableServiceBasedBridge&) = delete;
+  SyncableServiceBasedBridge& operator=(const SyncableServiceBasedBridge&) =
+      delete;
+
   ~SyncableServiceBasedBridge() override;
 
   // ModelTypeSyncBridge implementation.
@@ -110,8 +115,6 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncableServiceBasedBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableServiceBasedBridge);
 };
 
 }  // namespace syncer

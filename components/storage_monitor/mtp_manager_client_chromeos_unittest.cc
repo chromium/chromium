@@ -80,6 +80,10 @@ class FakeMtpManagerClientChromeOS : public MtpManagerClientChromeOS {
                                device::mojom::MtpManager* mtp_manager)
       : MtpManagerClientChromeOS(receiver, mtp_manager) {}
 
+  FakeMtpManagerClientChromeOS(const FakeMtpManagerClientChromeOS&) = delete;
+  FakeMtpManagerClientChromeOS& operator=(const FakeMtpManagerClientChromeOS&) =
+      delete;
+
   // Notifies MtpManagerClientChromeOS about the attachment of MTP storage
   // device given the |storage_name|.
   void MtpStorageAttached(const std::string& storage_name) {
@@ -96,9 +100,6 @@ class FakeMtpManagerClientChromeOS : public MtpManagerClientChromeOS {
     StorageDetached(storage_name);
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeMtpManagerClientChromeOS);
 };
 
 }  // namespace

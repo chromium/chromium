@@ -254,9 +254,14 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Metadata for a CompositorFrameSink.
   struct FrameSinkData {
     explicit FrameSinkData(bool report_activation);
+
+    FrameSinkData(const FrameSinkData&) = delete;
+    FrameSinkData& operator=(const FrameSinkData&) = delete;
+
     FrameSinkData(FrameSinkData&& other);
-    ~FrameSinkData();
     FrameSinkData& operator=(FrameSinkData&& other);
+
+    ~FrameSinkData();
 
     // A label to identify frame sink.
     std::string debug_label;
@@ -264,25 +269,24 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     // Indicates whether the client wishes to receive FirstSurfaceActivation
     // notification.
     bool report_activation;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FrameSinkData);
   };
 
   // BeginFrameSource routing information for a FrameSinkId.
   struct FrameSinkSourceMapping {
     FrameSinkSourceMapping();
+
+    FrameSinkSourceMapping(const FrameSinkSourceMapping&) = delete;
+    FrameSinkSourceMapping& operator=(const FrameSinkSourceMapping&) = delete;
+
     FrameSinkSourceMapping(FrameSinkSourceMapping&& other);
-    ~FrameSinkSourceMapping();
     FrameSinkSourceMapping& operator=(FrameSinkSourceMapping&& other);
+
+    ~FrameSinkSourceMapping();
 
     // The currently assigned begin frame source for this client.
     BeginFrameSource* source = nullptr;
     // This represents a dag of parent -> children mapping.
     base::flat_set<FrameSinkId> children;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FrameSinkSourceMapping);
   };
 
   void RecursivelyAttachBeginFrameSource(const FrameSinkId& frame_sink_id,

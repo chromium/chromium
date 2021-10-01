@@ -26,6 +26,9 @@ class FixedAccountManager {
     return base::Singleton<FixedAccountManager>::get();
   }
 
+  FixedAccountManager(const FixedAccountManager&) = delete;
+  FixedAccountManager& operator=(const FixedAccountManager&) = delete;
+
   const AccountId& stub_account_id() const { return stub_account_id_; }
   const AccountId& stub_ad_account_id() const { return stub_ad_account_id_; }
   const AccountId& signin_account_id() const { return signin_account_id_; }
@@ -47,8 +50,6 @@ class FixedAccountManager {
   const AccountId guest_account_id_ =
       AccountId::FromUserEmail(user_manager::kGuestUserName);
   const AccountId demo_account_id_ = AccountId::FromUserEmail(kDemoUserName);
-
-  DISALLOW_COPY_AND_ASSIGN(FixedAccountManager);
 };
 
 }  // namespace

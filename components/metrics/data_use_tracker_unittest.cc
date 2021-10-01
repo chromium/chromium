@@ -22,18 +22,21 @@ class TestDataUsePrefService : public TestingPrefServiceSimple {
  public:
   TestDataUsePrefService() { DataUseTracker::RegisterPrefs(registry()); }
 
+  TestDataUsePrefService(const TestDataUsePrefService&) = delete;
+  TestDataUsePrefService& operator=(const TestDataUsePrefService&) = delete;
+
   void ClearDataUsePrefs() {
     ClearPref(metrics::prefs::kUserCellDataUse);
     ClearPref(metrics::prefs::kUmaCellDataUse);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDataUsePrefService);
 };
 
 class FakeDataUseTracker : public DataUseTracker {
  public:
   FakeDataUseTracker(PrefService* local_state) : DataUseTracker(local_state) {}
+
+  FakeDataUseTracker(const FakeDataUseTracker&) = delete;
+  FakeDataUseTracker& operator=(const FakeDataUseTracker&) = delete;
 
   bool GetUmaWeeklyQuota(int* uma_weekly_quota_bytes) const override {
     *uma_weekly_quota_bytes = 200;
@@ -54,9 +57,6 @@ class FakeDataUseTracker : public DataUseTracker {
   std::string GetCurrentMeasurementDateAsString() const override {
     return kTodayStr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDataUseTracker);
 };
 
 // Sets up data usage prefs with mock values so that UMA traffic is above the

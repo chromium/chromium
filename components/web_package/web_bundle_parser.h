@@ -38,6 +38,9 @@ class WebBundleParser : public mojom::WebBundleParser {
     explicit SharedBundleDataSource(
         mojo::PendingRemote<mojom::BundleDataSource> pending_data_source);
 
+    SharedBundleDataSource(const SharedBundleDataSource&) = delete;
+    SharedBundleDataSource& operator=(const SharedBundleDataSource&) = delete;
+
     void AddObserver(Observer* observer);
     void RemoveObserver(Observer* observer);
 
@@ -54,8 +57,6 @@ class WebBundleParser : public mojom::WebBundleParser {
 
     mojo::Remote<mojom::BundleDataSource> data_source_;
     base::flat_set<Observer*> observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(SharedBundleDataSource);
   };
 
   // mojom::WebBundleParser implementation.
