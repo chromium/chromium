@@ -13,8 +13,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 namespace password_manager {
@@ -45,7 +45,7 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
 
   // The |password_store| must outlive |this|. Both arguments must be non-NULL,
   // except in tests which do not Initialize() the object.
-  AffiliatedMatchHelper(PasswordStore* password_store,
+  AffiliatedMatchHelper(PasswordStoreInterface* password_store,
                         AffiliationService* affiliation_service);
   AffiliatedMatchHelper(const AffiliatedMatchHelper&) = delete;
   AffiliatedMatchHelper& operator=(const AffiliatedMatchHelper&) = delete;
@@ -101,7 +101,7 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  PasswordStore* const password_store_;
+  PasswordStoreInterface* const password_store_;
 
   AffiliationService* affiliation_service_;
 

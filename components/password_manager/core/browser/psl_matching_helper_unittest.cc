@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

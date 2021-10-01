@@ -133,7 +133,7 @@ class IOSChromePasswordCheckManager
 
   // Handle to the password store, powering both |saved_passwords_presenter_|
   // and |insecure_credentials_manager_|.
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
   // Used by |insecure_credentials_manager_| to obtain the list of saved
   // passwords.

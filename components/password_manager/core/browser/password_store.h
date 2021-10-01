@@ -203,16 +203,6 @@ class PasswordStore : public PasswordStoreInterface {
   DISALLOW_COPY_AND_ASSIGN(PasswordStore);
 };
 
-// For testing only.
-#if defined(UNIT_TEST)
-inline std::ostream& operator<<(std::ostream& os,
-                                const PasswordFormDigest& digest) {
-  return os << "PasswordFormDigest(scheme: " << digest.scheme
-            << ", signon_realm: " << digest.signon_realm
-            << ", url: " << digest.url << ")";
-}
-#endif
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_H_

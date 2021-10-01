@@ -10,7 +10,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "content/public/browser/browser_context.h"
 
 using password_manager::FieldInfoManager;
@@ -41,6 +41,6 @@ FieldInfoManagerFactory::~FieldInfoManagerFactory() = default;
 KeyedService* FieldInfoManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  return new FieldInfoManagerImpl(PasswordStoreFactory::GetForProfile(
+  return new FieldInfoManagerImpl(PasswordStoreFactory::GetInterfaceForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS));
 }
