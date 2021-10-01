@@ -12,14 +12,8 @@ import sys
 
 
 def get_archive_name(archive_prefix):
-  supported_release = 'xenial'
-  release = subprocess.check_output(['lsb_release', '-cs']).strip()
-  if release != supported_release:
-    print('WARNING: unsupported distro. You need to run a Trusty Docker '
-          'image. Please see '
-          'https://www.chromium.org/developers/testing/memorysanitizer/')
-
-  return '%s-%s.tgz' % (archive_prefix, supported_release)
+  release = 'xenial'
+  return '%s-%s.tgz' % (archive_prefix, release)
 
 
 def main(archive_prefix, archive_dir, target_dir, stamp_dir=None):
