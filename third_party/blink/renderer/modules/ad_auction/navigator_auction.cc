@@ -114,7 +114,7 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
         "owner '%s' for AuctionAdInterestGroup with name '%s' match frame "
         "origin '%s'.",
         input.owner().Utf8().c_str(), input.name().Utf8().c_str(),
-        owner->ToString().Utf8().c_str()));
+        execution_context.GetSecurityOrigin()->ToRawString().Utf8().c_str()));
     return false;
   }
 
