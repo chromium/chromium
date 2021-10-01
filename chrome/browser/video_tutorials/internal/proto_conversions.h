@@ -10,25 +10,14 @@
 
 namespace video_tutorials {
 
-using TutorialProto = video_tutorials::proto::VideoTutorial;
-using TutorialGroupProto = video_tutorials::proto::VideoTutorialGroup;
-using ServerResponseProto = video_tutorials::proto::ServerResponse;
+FeatureType ToFeatureType(proto::FeatureType type);
+proto::FeatureType FromFeatureType(FeatureType type);
 
-// Convert in-memory struct Tutorial to proto::VideoTutorial.
-void TutorialToProto(Tutorial* tutorial, TutorialProto* proto);
+void TutorialFromProto(const proto::VideoTutorial* proto, Tutorial* tutorial);
 
-// Convert proto::VideoTutorial to in-memory struct Tutorial.
-void TutorialFromProto(TutorialProto* proto, Tutorial* tutorial);
-
-// Convert in-memory struct TutorialGroup to proto::VideoTutorialGroup.
-void TutorialGroupToProto(TutorialGroup* group, TutorialGroupProto* proto);
-
-// Convert proto::VideoTutorialGroup to in-memory struct TutorialGroup.
-void TutorialGroupFromProto(TutorialGroupProto* proto, TutorialGroup* group);
-
-// Convert proto::ServerResponse to a list of TutorialGroups.
-void TutorialGroupsFromServerResponseProto(ServerResponseProto* proto,
-                                           std::vector<TutorialGroup>* groups);
+// Convert proto::VideoTutorialGroup to in-memory std::vector<Tutorial>.
+std::vector<Tutorial> TutorialsFromProto(
+    const proto::VideoTutorialGroup* proto);
 
 }  // namespace video_tutorials
 

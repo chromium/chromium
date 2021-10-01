@@ -102,6 +102,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "SignalDatabase";
     case ProtoDbType::SIGNAL_STORAGE_CONFIG_DATABASE:
       return "SignalStorageConfigDatabase";
+    case ProtoDbType::VIDEO_TUTORIALS_V2_DATABASE:
+      return "VideoTutorialsV2Database";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();

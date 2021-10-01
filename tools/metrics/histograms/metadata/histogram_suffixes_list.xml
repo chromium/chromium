@@ -7457,7 +7457,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="UsageStatsWebsiteEvent"
       label="UsageStats database for WebsiteEvents."/>
   <suffix name="VideoDecodeStatsDB" label="Database for video decode stats"/>
-  <suffix name="VideoTutorialsDatabase" label="Database for video tutorials."/>
+  <suffix name="VideoTutorialsDatabase"
+      label="Database for video tutorials (deprecated)."/>
+  <suffix name="VideoTutorialsV2Database"
+      label="Database for video tutorials."/>
   <affected-histogram name="LevelDB.ApproximateMemoryUse"/>
   <affected-histogram name="LevelDB.ApproximateMemTableMemoryUse"/>
   <affected-histogram name="LevelDB.Open"/>

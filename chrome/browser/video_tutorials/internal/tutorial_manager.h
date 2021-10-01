@@ -10,6 +10,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace video_tutorials {
+namespace proto {
+class VideoTutorialGroups;
+}  // namespace proto
 
 // Responsible for serving video tutorials and coordinating access with the
 // network fetcher and the storage layer.
@@ -19,8 +22,12 @@ class TutorialManager {
   using MultipleItemCallback = base::OnceCallback<void(std::vector<Tutorial>)>;
   using SingleItemCallback = base::OnceCallback<void(absl::optional<Tutorial>)>;
 
-  // Loads video tutorials. Must be called again if the locale was changed by
-  // the user.
+  // Called to return the list of video tutorials in the user's preferred
+  // language. Must be invoked after preferred language is changed. If preferred
+  // language is not set, it returns the tutorials in the first available
+  // language.
+  // This method also loads the data from DB for the first time. Hence every
+  // other method must be invoked after a call to this one.
   virtual void GetTutorials(MultipleItemCallback callback) = 0;
 
   // Called to retrieve the tutorial associated with |feature_type|.
@@ -28,7 +35,7 @@ class TutorialManager {
                            SingleItemCallback callback) = 0;
 
   // Returns a list of languages for which video tutorials are available.
-  virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
+  virtual std::vector<std::string> GetSupportedLanguages() = 0;
 
   // Returns a list of languages in which a given tutorial is available.
   virtual const std::vector<std::string>& GetAvailableLanguagesForTutorial(
@@ -45,7 +52,7 @@ class TutorialManager {
   // Saves a fresh set of video tutorials into database. Called after a network
   // fetch.
   virtual void SaveGroups(
-      std::unique_ptr<std::vector<TutorialGroup>> groups) = 0;
+      std::unique_ptr<proto::VideoTutorialGroups> groups) = 0;
 
   virtual ~TutorialManager() = default;
 

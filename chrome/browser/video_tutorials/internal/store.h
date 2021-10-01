@@ -15,29 +15,21 @@
 
 namespace video_tutorials {
 
-// Interface of video tutorials collection store.
+// Interface of video tutorials metadata store.
 template <typename T>
 class Store {
  public:
   using Entries = std::unique_ptr<std::vector<T>>;
-  using SuccessCallback = base::OnceCallback<void(bool)>;
-  using LoadEntriesCallback = base::OnceCallback<void(bool, Entries)>;
+  using LoadCallback = base::OnceCallback<void(bool, std::unique_ptr<T>)>;
   using UpdateCallback = base::OnceCallback<void(bool)>;
 
-  // Initialize the db and load entries into memory.
-  virtual void Initialize(SuccessCallback callback) = 0;
+  // Initializes and loads the one and only database entry into memory. If
+  // invoked for the second time, it will skip initialization and proceeds with
+  // the load step.
+  virtual void InitAndLoad(LoadCallback callback) = 0;
 
-  // Load entries with the given keys into memory. If |keys| is empty, load all
-  // the entries.
-  virtual void LoadEntries(const std::vector<std::string>& keys,
-                           LoadEntriesCallback callback) = 0;
-
-  // Batch update call with ability to update and remove multiple
-  // entries.
-  virtual void UpdateAll(
-      const std::vector<std::pair<std::string, T>>& key_entry_pairs,
-      const std::vector<std::string>& keys_to_delete,
-      UpdateCallback callback) = 0;
+  // Updates the one and only database entry.
+  virtual void Update(const T& entry, UpdateCallback callback) = 0;
 
   Store() = default;
   virtual ~Store() = default;

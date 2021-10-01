@@ -5,61 +5,43 @@
 #ifndef CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_STORE_H_
 #define CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_STORE_H_
 
-#include <map>
 #include <memory>
-#include <string>
 #include <utility>
-#include <vector>
 
-#include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/video_tutorials/internal/proto_conversions.h"
 #include "chrome/browser/video_tutorials/internal/store.h"
-#include "chrome/browser/video_tutorials/internal/tutorial_group.h"
 #include "components/leveldb_proto/public/proto_database.h"
-
-namespace leveldb_proto {
-
-void DataToProto(video_tutorials::TutorialGroup* data,
-                 video_tutorials::proto::VideoTutorialGroup* proto);
-void ProtoToData(video_tutorials::proto::VideoTutorialGroup* proto,
-                 video_tutorials::TutorialGroup* data);
-
-}  // namespace leveldb_proto
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace video_tutorials {
-// Persist layer of video tutorial groups.
-class TutorialStore : public Store<TutorialGroup> {
+// Persistence layer for storing the video tutorial metadata.
+class TutorialStore : public Store<proto::VideoTutorialGroups> {
  public:
-  using TutorialProtoDb = std::unique_ptr<
-      leveldb_proto::ProtoDatabase<video_tutorials::proto::VideoTutorialGroup,
-                                   TutorialGroup>>;
+  using TutorialProtoDb = std::unique_ptr<leveldb_proto::ProtoDatabase<
+      video_tutorials::proto::VideoTutorialGroups>>;
   explicit TutorialStore(TutorialProtoDb db);
   ~TutorialStore() override;
 
   TutorialStore(const TutorialStore& other) = delete;
   TutorialStore& operator=(const TutorialStore& other) = delete;
 
+  // Store implementation.
+  void InitAndLoad(LoadCallback callback) override;
+  void Update(const proto::VideoTutorialGroups& entry,
+              UpdateCallback callback) override;
+
  private:
-  using KeyEntryVector = std::vector<std::pair<std::string, TutorialGroup>>;
-  using KeyVector = std::vector<std::string>;
-  using EntryVector = std::vector<TutorialGroup>;
-
-  // Store<TutorialGroup> implementation.
-  void Initialize(SuccessCallback callback) override;
-  void LoadEntries(const std::vector<std::string>& keys,
-                   LoadEntriesCallback callback) override;
-  void UpdateAll(
-      const std::vector<std::pair<std::string, TutorialGroup>>& key_entry_pairs,
-      const std::vector<std::string>& keys_to_delete,
-      UpdateCallback callback) override;
-
-  // Called when db is initialized.
-  void OnDbInitialized(SuccessCallback callback,
+  // Called when the db is initialized.
+  void OnDbInitialized(LoadCallback callback,
                        leveldb_proto::Enums::InitStatus status);
 
+  // The underlying database.
   TutorialProtoDb db_;
+
+  // The database initialization status.
+  absl::optional<bool> init_success_;
 
   base::WeakPtrFactory<TutorialStore> weak_ptr_factory_{this};
 };

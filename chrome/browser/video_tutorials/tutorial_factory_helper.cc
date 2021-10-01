@@ -40,10 +40,9 @@ std::unique_ptr<VideoTutorialService> CreateVideoTutorialService(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   base::FilePath database_dir = storage_dir.Append(kVideoTutorialsDbName);
   auto tutorial_db =
-      db_provider
-          ->GetDB<video_tutorials::proto::VideoTutorialGroup, TutorialGroup>(
-              leveldb_proto::ProtoDbType::VIDEO_TUTORIALS_DATABASE,
-              database_dir, task_runner);
+      db_provider->GetDB<video_tutorials::proto::VideoTutorialGroups>(
+          leveldb_proto::ProtoDbType::VIDEO_TUTORIALS_V2_DATABASE, database_dir,
+          task_runner);
   auto tutorial_store = std::make_unique<TutorialStore>(std::move(tutorial_db));
   auto tutorial_manager = std::make_unique<TutorialManagerImpl>(
       std::move(tutorial_store), pref_service);
