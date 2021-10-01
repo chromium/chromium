@@ -55,6 +55,7 @@ const debug_suites_list = [
   'ReimagingDeviceInformationPageTest',
   'ReimagingProvisioningPageTest',
   'ShimlessRMAAppTest',
+  'WrapupFinalizePageTest',
   'WrapupRepairCompletePageTest',
   'WrapupRestockPageTest',
   'WrapupWaitForManualWpEnablePageTest',

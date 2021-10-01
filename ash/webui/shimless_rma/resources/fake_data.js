@@ -113,6 +113,12 @@ export const fakeStates = [
   },
   // TODO(gavindodd): RmaState.kWaitForManualWPEnable
   {
+    state: RmaState.kFinalize,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
     state: RmaState.kRepairComplete,
     canCancel: true,
     canGoBack: true,

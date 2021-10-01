@@ -19,6 +19,7 @@ import './reimaging_device_information_page.js';
 import './reimaging_firmware_update_page.js';
 import './reimaging_provisioning_page.js';
 import './shimless_rma_shared_css.js';
+import './wrapup_finalize_page.js';
 import './wrapup_repair_complete_page.js';
 import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
@@ -186,6 +187,12 @@ const StateComponentMapping = {
     componentIs: 'wrapup-restock-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
+  },
+  [RmaState.kFinalize]: {
+    componentIs: 'wrapup-finalize-page',
+    buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },

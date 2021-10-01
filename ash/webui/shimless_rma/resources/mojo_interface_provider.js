@@ -50,7 +50,6 @@ function setupFakeShimlessRmaService_() {
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
   service.automaticallyTriggerDisableWriteProtectionObservation();
-  service.automaticallyTriggerProvisioningObservation();
   service.automaticallyTriggerCalibrationObservation();
 
   service.setGetRsuDisableWriteProtectChallengeResult('###challenge-code###')
@@ -67,6 +66,9 @@ function setupFakeShimlessRmaService_() {
   service.setGetCalibrationSetupInstructionsResult(
       CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface);
   service.setGetCalibrationComponentListResult(fakeCalibrationComponents);
+
+  service.automaticallyTriggerProvisioningObservation();
+  service.automaticallyTriggerFinalizationObservation();
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);

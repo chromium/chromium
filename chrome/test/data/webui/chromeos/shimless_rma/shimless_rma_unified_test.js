@@ -20,6 +20,7 @@ import {reimagingDeviceInformationPageTest} from './reimaging_device_information
 import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
 import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
+import {wrapupFinalizePageTest} from './wrapup_finalize_page_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
 import {wrapupRestockPageTest} from './wrapup_restock_page_test.js';
 import {wrapupWaitForManualWpEnablePageTest} from './wrapup_wait_for_manual_wp_enable_page_test.js';
@@ -57,6 +58,7 @@ runSuite(
     'ReimagingDeviceInformationPageTest', reimagingDeviceInformationPageTest);
 runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
+runSuite('WrapupFinalizePageTest', wrapupFinalizePageTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);
 runSuite('WrapupRestockPageTest', wrapupRestockPageTest);
 runSuite(
