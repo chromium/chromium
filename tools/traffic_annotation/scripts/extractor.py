@@ -259,7 +259,7 @@ def may_contain_annotations(file_path: Path) -> bool:
   This runs much faster than extract_annotations(), and is meant for
   pre-filtering. If this returns True, then |file_path| *might* contain
   annotations. Call extract_annotations() to know for sure."""
-  return bool(PREFILTER_REGEX.search(file_path.read_text()))
+  return bool(PREFILTER_REGEX.search(file_path.read_text(encoding="utf-8")))
 
 
 def extract_annotations(file_path: Path) -> List[Annotation]:
