@@ -147,7 +147,7 @@ void CreateMediaDrmStorage(
           : base::BindRepeating(&CreateOriginId);
 
   // The object will be deleted on connection error, or when the frame navigates
-  // away. See DocumentServiceBase for details.
+  // away. See DocumentService for details.
   new cdm::MediaDrmStorageImpl(
       render_frame_host, pref_service, get_origin_id_cb,
       base::BindRepeating(&AllowEmptyOriginId, render_frame_host),

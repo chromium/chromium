@@ -71,7 +71,7 @@ struct Referrer;
 // - Classes that have a 1:1 relationship with one RenderFrameHost can often
 //   use `RenderDocumentHostUserData` instead.
 // - Mojo interface implementations that have a 1 RenderFrameHost to many
-//   instances relationship can often use `DocumentServiceBase`  instead.
+//   instances relationship can often use `DocumentService` instead.
 //
 // These helpers can help avoid memory safety bugs, such as retaining a pointer
 // to a deleted RenderFrameHost, or other security issues, such as origin

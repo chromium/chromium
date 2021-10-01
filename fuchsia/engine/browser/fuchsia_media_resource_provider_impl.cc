@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "fuchsia/engine/browser/frame_impl.h"
@@ -28,7 +28,7 @@ void FuchsiaMediaResourceProviderImpl::Bind(
 FuchsiaMediaResourceProviderImpl::FuchsiaMediaResourceProviderImpl(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 FuchsiaMediaResourceProviderImpl::~FuchsiaMediaResourceProviderImpl() = default;
 

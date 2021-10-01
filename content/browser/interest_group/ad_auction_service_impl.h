@@ -11,7 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -29,7 +29,7 @@ class RenderFrameHostImpl;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
-    : public DocumentServiceBase<blink::mojom::AdAuctionService>,
+    : public DocumentService<blink::mojom::AdAuctionService>,
       public AuctionRunner::Delegate {
  public:
   // Factory method for creating an instance of this interface that is
@@ -51,17 +51,17 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
   RenderFrameHostImpl* GetFrame() override;
 
-  using DocumentServiceBase::origin;
-  using DocumentServiceBase::render_frame_host;
+  using DocumentService::origin;
+  using DocumentService::render_frame_host;
 
  private:
-  // `render_frame_host` must not be null, and DocumentServiceBase guarantees
+  // `render_frame_host` must not be null, and DocumentService guarantees
   // `this` will not outlive the `render_frame_host`.
   AdAuctionServiceImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver);
 
-  // `this` can only be destroyed by DocumentServiceBase.
+  // `this` can only be destroyed by DocumentService.
   ~AdAuctionServiceImpl() override;
 
   // Deletes `auction`.
@@ -84,7 +84,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
 
   // To avoid race conditions associated with top frame navigations (mentioned
-  // in document_service_base.h), we need to save the values of the main frame
+  // in document_service.h), we need to save the values of the main frame
   // URL and origin in the constructor.
   const url::Origin main_frame_origin_;
   const GURL main_frame_url_;

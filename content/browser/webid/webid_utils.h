@@ -15,7 +15,7 @@ class RenderFrameHost;
 // frame tree. Returns false if not.
 // |origin| is provided because it is not considered safe to use
 // host->GetLastCommittedOrigin() at some times, so
-// DocumentServiceBase::origin() should be used to obtain the frame's origin.
+// DocumentService::origin() should be used to obtain the frame's origin.
 bool IsSameOriginWithAncestors(RenderFrameHost* host,
                                const url::Origin& origin);
 

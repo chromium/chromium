@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
@@ -31,7 +31,7 @@ class RenderFrameHost;
 // PluginPrivateFileSystem for backwards compatibility with CDMs running
 // as a pepper plugin.
 class CONTENT_EXPORT CdmStorageImpl final
-    : public content::DocumentServiceBase<media::mojom::CdmStorage> {
+    : public content::DocumentService<media::mojom::CdmStorage> {
  public:
 
   // Check if |cdm_file_system_id| is valid.

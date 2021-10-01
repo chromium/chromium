@@ -112,7 +112,7 @@ void ClipboardHostImpl::IsPasteContentAllowedRequest::InvokeCallbacks() {
 ClipboardHostImpl::ClipboardHostImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {
+    : DocumentService(render_frame_host, std::move(receiver)) {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste,
       render_frame_host->GetBrowserContext()->IsOffTheRecord()
@@ -125,7 +125,7 @@ void ClipboardHostImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new ClipboardHostImpl(render_frame_host, std::move(receiver));
 }
 

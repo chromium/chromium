@@ -5,14 +5,14 @@
 #ifndef CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_SERVICE_IMPL_H_
 
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom.h"
 
 namespace content {
 
 class WakeLockServiceImpl final
-    : public DocumentServiceBase<blink::mojom::WakeLockService> {
+    : public DocumentService<blink::mojom::WakeLockService> {
  public:
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::WakeLockService>);

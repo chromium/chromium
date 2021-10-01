@@ -314,7 +314,7 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
   ui::Clipboard* const clipboard_;
-  // `FakeClipboardHostImpl` is a `DocumentServiceBase` and manages its own
+  // `FakeClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
   FakeClipboardHostImpl* fake_clipboard_host_impl_;
 };

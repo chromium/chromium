@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_RENDERER_HOST_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_RENDERER_HOST_H_
 
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_provider.mojom.h"
 
 namespace content {
@@ -15,7 +15,7 @@ class RenderFrameHost;
 namespace web_app {
 
 class SubAppsRendererHost
-    : public content::DocumentServiceBase<blink::mojom::SubAppsProvider> {
+    : public content::DocumentService<blink::mojom::SubAppsProvider> {
  public:
   SubAppsRendererHost(const SubAppsRendererHost&) = delete;
   SubAppsRendererHost& operator=(const SubAppsRendererHost&) = delete;

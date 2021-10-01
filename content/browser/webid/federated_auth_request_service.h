@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
@@ -21,12 +21,12 @@ class FederatedAuthRequestImpl;
 // fulfill WebID-related requests.
 //
 // In practice, it is owned and managed by a RenderFrameHost. It accomplishes
-// that via subclassing DocumentServiceBase, which observes the lifecycle of a
+// that via subclassing DocumentService, which observes the lifecycle of a
 // RenderFrameHost and manages its own memory.
 // Create() creates a self-managed instance of FederatedAuthRequestService and
 // binds it to the receiver.
 class CONTENT_EXPORT FederatedAuthRequestService
-    : public DocumentServiceBase<blink::mojom::FederatedAuthRequest> {
+    : public DocumentService<blink::mojom::FederatedAuthRequest> {
  public:
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);

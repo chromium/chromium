@@ -134,7 +134,7 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
 AdAuctionServiceImpl::AdAuctionServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       main_frame_origin_(
           render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
       main_frame_url_(
@@ -144,9 +144,8 @@ AdAuctionServiceImpl::~AdAuctionServiceImpl() {
   while (!auctions_.empty()) {
     // Need to fail all auctions rather than just deleting them, to ensure Mojo
     // callbacks from the renderers are invoked. Uninvoked Mojo callbacks may
-    // not be destroyed before the Mojo pipe is, and the parent
-    // DocumentServiceBase class owns the pipe, so it may still be open at this
-    // point.
+    // not be destroyed before the Mojo pipe is, and the parent DocumentService
+    // class owns the pipe, so it may still be open at this point.
     (*auctions_.begin())->FailAuction(AuctionRunner::AuctionResult::kAborted);
   }
 }
@@ -158,7 +157,7 @@ void AdAuctionServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of `render_frame_host` and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new AdAuctionServiceImpl(render_frame_host, std::move(receiver));
 }
 

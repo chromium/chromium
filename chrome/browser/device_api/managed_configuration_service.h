@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_SERVICE_H_
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
 
 class ManagedConfigurationServiceImpl
-    : public content::DocumentServiceBase<
+    : public content::DocumentService<
           blink::mojom::ManagedConfigurationService>,
       public ManagedConfigurationAPI::Observer {
  public:

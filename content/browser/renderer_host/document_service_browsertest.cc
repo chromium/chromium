@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "content/browser/renderer_host/document_service_base_echo_impl.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/browser/renderer_host/document_service_echo_impl.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -24,10 +24,10 @@
 
 namespace content {
 
-class DocumentServiceBaseBrowserTest : public ContentBrowserTest {
+class DocumentServiceBrowserTest : public ContentBrowserTest {
  public:
-  DocumentServiceBaseBrowserTest() = default;
-  ~DocumentServiceBaseBrowserTest() override = default;
+  DocumentServiceBrowserTest() = default;
+  ~DocumentServiceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -41,18 +41,18 @@ class DocumentServiceBaseBrowserTest : public ContentBrowserTest {
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
-class DocumentServiceBasePrerenderingBrowserTest
-    : public DocumentServiceBaseBrowserTest {
+class DocumentServicePrerenderingBrowserTest
+    : public DocumentServiceBrowserTest {
  public:
-  DocumentServiceBasePrerenderingBrowserTest()
+  DocumentServicePrerenderingBrowserTest()
       : prerender_helper_(base::BindRepeating(
-            &DocumentServiceBasePrerenderingBrowserTest::web_contents,
+            &DocumentServicePrerenderingBrowserTest::web_contents,
             base::Unretained(this))) {}
-  ~DocumentServiceBasePrerenderingBrowserTest() override = default;
+  ~DocumentServicePrerenderingBrowserTest() override = default;
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
-    DocumentServiceBaseBrowserTest::SetUp();
+    DocumentServiceBrowserTest::SetUp();
   }
 
   test::PrerenderTestHelper* prerender_helper() { return &prerender_helper_; }
@@ -61,8 +61,8 @@ class DocumentServiceBasePrerenderingBrowserTest
   test::PrerenderTestHelper prerender_helper_;
 };
 
-// Tests that DocumentServiceBase is not destroyed on prerendering activation.
-IN_PROC_BROWSER_TEST_F(DocumentServiceBasePrerenderingBrowserTest,
+// Tests that DocumentService is not destroyed on prerendering activation.
+IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
                        NotClosedInPrerenderingActivation) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
@@ -80,13 +80,13 @@ IN_PROC_BROWSER_TEST_F(DocumentServiceBasePrerenderingBrowserTest,
 
   mojo::Remote<mojom::Echo> echo_remote;
   bool echo_deleted = false;
-  new DocumentServiceBaseEchoImpl(
+  new DocumentServiceEchoImpl(
       prerendered_frame_host, echo_remote.BindNewPipeAndPassReceiver(),
       base::BindOnce([](bool* deleted) { *deleted = true; }, &echo_deleted));
 
   // Activate the prerendered page.
   prerender_helper()->NavigatePrimaryPage(kPrerenderingUrl);
-  // DocumentServiceBase should not be destroyed.
+  // DocumentService should not be destroyed.
   EXPECT_FALSE(echo_deleted);
 
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -94,24 +94,22 @@ IN_PROC_BROWSER_TEST_F(DocumentServiceBasePrerenderingBrowserTest,
   EXPECT_TRUE(echo_deleted);
 }
 
-class DocumentServiceBaseBFCacheBrowserTest
-    : public DocumentServiceBaseBrowserTest {
+class DocumentServiceBFCacheBrowserTest : public DocumentServiceBrowserTest {
  public:
-  DocumentServiceBaseBFCacheBrowserTest() {
+  DocumentServiceBFCacheBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"enable_same_site", "true"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
-  ~DocumentServiceBaseBFCacheBrowserTest() override = default;
+  ~DocumentServiceBFCacheBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DocumentServiceBaseBFCacheBrowserTest,
-                       DocumentServiceBase) {
+IN_PROC_BROWSER_TEST_F(DocumentServiceBFCacheBrowserTest, DocumentService) {
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
@@ -123,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(DocumentServiceBaseBFCacheBrowserTest,
 
   mojo::Remote<mojom::Echo> echo_remote;
   bool echo_deleted = false;
-  new DocumentServiceBaseEchoImpl(
+  new DocumentServiceEchoImpl(
       rfh_a, echo_remote.BindNewPipeAndPassReceiver(),
       base::BindOnce([](bool* deleted) { *deleted = true; }, &echo_deleted));
 

@@ -153,7 +153,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/disallow_activation_reason.h"
-#include "content/public/browser/document_service_base_internal.h"
+#include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_type.h"
@@ -1523,12 +1523,12 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   if (was_created)
     delegate_->RenderFrameDeleted(this);
 
-  // Resetting `document_associated_data_` destroys live `DocumentServiceBase`
-  // and `RenderDocumentHostUserData` instances. It is important for them to be
+  // Resetting `document_associated_data_` destroys live `DocumentService` and
+  // `RenderDocumentHostUserData` instances. It is important for them to be
   // destroyed before the body of the `RenderFrameHostImpl` destructor
   // completes. Among other things, this ensures that any `SafeRef`s from
-  // `DocumentServiceBase` and `RenderFrameHostUserData` subclasses are still
-  // valid when their destructors run.
+  // `DocumentService` and `RenderFrameHostUserData` subclasses are still valid
+  // when their destructors run.
   document_associated_data_.reset();
 
   // Ensure that the render process host has been notified that all audio
@@ -5215,14 +5215,14 @@ void RenderFrameHostImpl::EnforceInsecureNavigationsSet(
 }
 
 void RenderFrameHostImpl::AddDocumentService(
-    DocumentServiceBaseInternal* document_service,
-    base::PassKey<DocumentServiceBaseInternal>) {
+    internal::DocumentServiceBase* document_service,
+    base::PassKey<internal::DocumentServiceBase>) {
   document_associated_data_->services.push_back(document_service);
 }
 
 void RenderFrameHostImpl::RemoveDocumentService(
-    DocumentServiceBaseInternal* document_service,
-    base::PassKey<DocumentServiceBaseInternal>) {
+    internal::DocumentServiceBase* document_service,
+    base::PassKey<internal::DocumentServiceBase>) {
   base::Erase(document_associated_data_->services, document_service);
 }
 
@@ -12619,7 +12619,7 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
 
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
   while (!services.empty()) {
-    // DocumentServiceBaseInternal unregisters itself at destruction time.
+    // DocumentServiceBase unregisters itself at destruction time.
     delete services.back();
   }
 }

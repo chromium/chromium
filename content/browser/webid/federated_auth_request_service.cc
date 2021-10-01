@@ -21,7 +21,7 @@ void FederatedAuthRequestService::Create(
   // the mojo method is invoked, causing the promise to be rejected.
   // https://crbug.com/1141125
   // It is safe to access host->GetLastCommittedOrigin during construction
-  // but DocumentServiceBase::origin() should be used thereafter.
+  // but DocumentService::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
         "navigator.id.get cannot be invoked from within cross-origin iframes.");
@@ -37,7 +37,7 @@ void FederatedAuthRequestService::Create(
 FederatedAuthRequestService::FederatedAuthRequestService(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
-    : DocumentServiceBase(host, std::move(receiver)) {
+    : DocumentService(host, std::move(receiver)) {
   impl_ = std::make_unique<FederatedAuthRequestImpl>(
       host, host->GetLastCommittedOrigin());
 }

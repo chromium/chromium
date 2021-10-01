@@ -77,7 +77,7 @@ CdmStorageImpl::CdmStorageImpl(
     const std::string& cdm_file_system_id,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     mojo::PendingReceiver<media::mojom::CdmStorage> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       cdm_file_system_id_(cdm_file_system_id),
       file_system_context_(std::move(file_system_context)),
       child_process_id_(render_frame_host->GetProcess()->GetID()) {}

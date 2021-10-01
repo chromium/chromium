@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -18,7 +18,7 @@ namespace content {
 FlocServiceImpl::FlocServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::FlocService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 // static
 void FlocServiceImpl::CreateMojoService(
@@ -27,7 +27,7 @@ void FlocServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new FlocServiceImpl(render_frame_host, std::move(receiver));
 }
 

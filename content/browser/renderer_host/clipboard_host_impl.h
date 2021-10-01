@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,7 +36,7 @@ namespace content {
 class ClipboardHostImplTest;
 
 class CONTENT_EXPORT ClipboardHostImpl
-    : public DocumentServiceBase<blink::mojom::ClipboardHost> {
+    : public DocumentService<blink::mojom::ClipboardHost> {
  public:
   ~ClipboardHostImpl() override;
 

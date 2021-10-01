@@ -47,7 +47,7 @@ bool IsPrerendering(content::RenderFrameHost* render_frame_host) {
 NavigationPredictor::NavigationPredictor(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<AnchorElementMetricsHost> receiver)
-    : content::DocumentServiceBase<blink::mojom::AnchorElementMetricsHost>(
+    : content::DocumentService<blink::mojom::AnchorElementMetricsHost>(
           render_frame_host,
           std::move(receiver)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -86,7 +86,7 @@ void NavigationPredictor::Create(
   }
 
   // The object is bound to the lifetime of the |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new NavigationPredictor(render_frame_host, std::move(receiver));
 }
 

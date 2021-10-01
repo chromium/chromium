@@ -39,7 +39,7 @@ void EyeDropperChooserImpl::Create(
 EyeDropperChooserImpl::EyeDropperChooserImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::EyeDropperChooser> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 EyeDropperChooserImpl::~EyeDropperChooserImpl() {
   if (callback_)

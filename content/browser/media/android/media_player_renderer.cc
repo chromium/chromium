@@ -36,7 +36,7 @@ MediaPlayerRenderer::MediaPlayerRenderer(
     RenderFrameHostImpl* rfh,
     mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
     mojo::PendingRemote<ClientExtension> client_extension_remote)
-    : DocumentServiceBase(rfh, std::move(renderer_extension_receiver)),
+    : DocumentService(rfh, std::move(renderer_extension_receiver)),
       client_extension_(std::move(client_extension_remote)),
       has_error_(false),
       volume_(kDefaultVolume) {

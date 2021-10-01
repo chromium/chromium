@@ -52,7 +52,7 @@ class ApplicationMediaInfoManagerTest
   mojo::Remote<::media::mojom::CastApplicationMediaInfoManager>
       application_media_info_manager_remote_;
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
-  // `ApplicationMediaInfoManager` is a `DocumentServiceBase` and manages its
+  // `ApplicationMediaInfoManager` is a `DocumentService` and manages its
   // own lifetime.
   ApplicationMediaInfoManager* application_media_info_manager_;
   bool started_;

@@ -40,7 +40,7 @@ void LogKeyboardLockMethodCalled(KeyboardLockMethods method) {
 KeyboardLockServiceImpl::KeyboardLockServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       render_frame_host_(static_cast<RenderFrameHostImpl*>(render_frame_host)) {
   DCHECK(render_frame_host_);
 }
@@ -52,7 +52,7 @@ void KeyboardLockServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new KeyboardLockServiceImpl(render_frame_host, std::move(receiver));
 }
 

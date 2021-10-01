@@ -418,7 +418,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
   FederatedAuthRequestImpl& CreateAuthRequest(const GURL& provider) {
     provider_ = provider;
-    // `FederatedAuthRequestService` derives from `DocumentServiceBase` and
+    // `FederatedAuthRequestService` derives from `DocumentService` and
     // controls its own lifetime.
     auth_request_service_ = new FederatedAuthRequestService(
         main_rfh(), request_remote_.BindNewPipeAndPassReceiver());

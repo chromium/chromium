@@ -7,7 +7,7 @@
 
 #include <lib/fidl/cpp/interface_handle.h>
 
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
 
 namespace content {
@@ -15,7 +15,7 @@ class RenderFrameHost;
 }  // namespace content
 
 class FuchsiaMediaResourceProviderImpl final
-    : public content::DocumentServiceBase<
+    : public content::DocumentService<
           media::mojom::FuchsiaMediaResourceProvider> {
  public:
   ~FuchsiaMediaResourceProviderImpl() override;

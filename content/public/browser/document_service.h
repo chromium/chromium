@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_BASE_H_
-#define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_BASE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_H_
+#define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_H_
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_checker.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base_internal.h"
+#include "content/public/browser/document_service_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/origin.h"
@@ -26,18 +26,18 @@ namespace content {
 // permission check using the wrong origin.
 //
 // Like C++ implementations owned by mojo::MakeStrongReceiver<T>(...), a
-// subclass of DocumentServiceBase<Interface> will delete itself when the
+// subclass of DocumentService<Interface> will delete itself when the
 // corresponding message pipe is disconnected by setting a disconnect handler on
 // the mojo::Receiver<T>.
 //
-// In addition, a subclass of DocumentServiceBase<Interface> will also track
+// In addition, a subclass of DocumentService<Interface> will also track
 // the lifetime of the current document of the supplied RenderFrameHost and
 // delete itself:
 //
 // - if the RenderFrameHost is deleted (for example, the <iframe> element the
 //   RenderFrameHost represents is removed from the DOM) or
 // - if the RenderFrameHost commits a cross-document navigation. Specifically,
-//   DocumentServiceBase instances (and RenderDocumentHostUserData instances)
+//   DocumentService instances (and RenderDocumentHostUserData instances)
 //   are deleted with the same timing, before the last committed origin and
 //   URL have been updated.
 //
@@ -46,7 +46,7 @@ namespace content {
 // directly via a RenderFrameHost pointer, or indirectly, via the
 // RenderFrameHost routing ID, should strongly consider:
 //
-// - `DocumentServiceBase` when there may be multiple instances per
+// - `DocumentService` when there may be multiple instances per
 //   RenderFrameHost.
 // - `RenderDocumentHostUserData` when there should only be a single instance
 //   per RenderFrameHost.
@@ -54,22 +54,19 @@ namespace content {
 // There are very few circumstances where a Mojo interface needs to be reused
 // after a cross-document navigation.
 template <typename Interface>
-class DocumentServiceBase : public Interface,
-                            public DocumentServiceBaseInternal {
+class DocumentService : public Interface, public internal::DocumentServiceBase {
  public:
-  DocumentServiceBase(RenderFrameHost* render_frame_host,
-                      mojo::PendingReceiver<Interface> pending_receiver)
-      : DocumentServiceBaseInternal(render_frame_host),
+  DocumentService(RenderFrameHost* render_frame_host,
+                  mojo::PendingReceiver<Interface> pending_receiver)
+      : DocumentServiceBase(render_frame_host),
         receiver_(this, std::move(pending_receiver)) {
     // |this| owns |receiver_|, so unretained is safe.
     receiver_.set_disconnect_handler(base::BindOnce(
-        [](DocumentServiceBaseInternal* document_service) {
-          delete document_service;
-        },
+        [](DocumentServiceBase* document_service) { delete document_service; },
         base::Unretained(this)));
   }
 
-  ~DocumentServiceBase() override = default;
+  ~DocumentService() override = default;
 
  protected:
   // `this` is promptly deleted if `render_frame_host_` commits a cross-document
@@ -81,7 +78,7 @@ class DocumentServiceBase : public Interface,
 
   // Returns the RenderFrameHost tracked by this object. Guaranteed to never be
   // null.
-  using DocumentServiceBaseInternal::render_frame_host;
+  using DocumentServiceBase::render_frame_host;
 
   // Subclasses can use this to check thread safety.
   // For example: DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -93,4 +90,4 @@ class DocumentServiceBase : public Interface,
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_BASE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_H_

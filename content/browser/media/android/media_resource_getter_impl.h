@@ -73,7 +73,7 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
 
   // Render frame is used to check policy/permissions. This class is destroyed
   // along with the RenderFrameHost, as the owner of this class is-a
-  // DocumentServiceBase.
+  // DocumentService.
   RenderFrameHostImpl* const render_frame_host_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

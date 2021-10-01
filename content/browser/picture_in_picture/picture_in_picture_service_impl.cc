@@ -61,7 +61,7 @@ void PictureInPictureServiceImpl::StartSession(
 PictureInPictureServiceImpl::PictureInPictureServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
   // If the service is destroyed because the frame was destroyed, the session

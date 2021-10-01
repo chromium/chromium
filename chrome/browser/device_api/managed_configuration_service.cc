@@ -28,14 +28,14 @@ void ManagedConfigurationServiceImpl::Create(
   }
 
   // The object is bound to the lifetime of |host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new ManagedConfigurationServiceImpl(host, std::move(receiver));
 }
 
 ManagedConfigurationServiceImpl::ManagedConfigurationServiceImpl(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver)
-    : DocumentServiceBase(host, std::move(receiver)), host_(host) {
+    : DocumentService(host, std::move(receiver)), host_(host) {
   managed_configuration_api()->AddObserver(this);
 }
 

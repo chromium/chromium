@@ -36,7 +36,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -5943,13 +5943,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 class DestructorLifetimeDocumentService
     // The interface in question doesn't really matter here, so just pick a
     // generic one with an easy interface to stub.
-    : public DocumentServiceBase<blink::mojom::BrowserInterfaceBroker> {
+    : public DocumentService<blink::mojom::BrowserInterfaceBroker> {
  public:
   DestructorLifetimeDocumentService(
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver,
       bool& was_destroyed)
-      : DocumentServiceBase(render_frame_host, std::move(receiver)),
+      : DocumentService(render_frame_host, std::move(receiver)),
         render_frame_host_(render_frame_host->GetWeakPtr()),
         was_destroyed_(was_destroyed) {}
 
@@ -5999,7 +5999,7 @@ RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(
     DestructorLifetimeRenderDocumentHostUserData)
 
 // Tests that when RenderFrameHostImpl is destroyed, destructors of
-// commonly-used extension points (currently DocumentServiceBase and
+// commonly-used extension points (currently DocumentService and
 // RenderDocumentHostUserData) run while RenderFrameHostImpl is still in a
 // reasonable state.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, DestructorLifetime) {

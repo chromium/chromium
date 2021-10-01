@@ -17,7 +17,7 @@
 #include "content/browser/sms/sms_queue.h"
 #include "content/browser/sms/user_consent_handler.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 #include "url/origin.h"
@@ -30,11 +30,11 @@ class SmsFetcher;
 // WebOTPService handles mojo connections from the renderer, observing the
 // incoming SMS messages from an SmsFetcher. In practice, it is owned and
 // managed by a RenderFrameHost. It accomplishes that via subclassing
-// DocumentServiceBase, which observes the lifecycle of a RenderFrameHost and
+// DocumentService, which observes the lifecycle of a RenderFrameHost and
 // manages it own memory. Create() creates a self-managed instance of
 // WebOTPService and binds it to the request.
 class CONTENT_EXPORT WebOTPService
-    : public DocumentServiceBase<blink::mojom::WebOTPService>,
+    : public DocumentService<blink::mojom::WebOTPService>,
       public SmsFetcher::Subscriber {
  public:
   // Return value indicates success. Creation can fail if origin requirements

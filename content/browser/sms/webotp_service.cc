@@ -123,7 +123,7 @@ WebOTPService::WebOTPService(
     const OriginList& origin_list,
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
-    : DocumentServiceBase(host, std::move(receiver)),
+    : DocumentService(host, std::move(receiver)),
       fetcher_(fetcher),
       origin_list_(origin_list),
       timeout_timer_(FROM_HERE,

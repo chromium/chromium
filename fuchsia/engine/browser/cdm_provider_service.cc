@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -25,7 +25,7 @@
 namespace {
 
 class CdmProviderImpl final
-    : public content::DocumentServiceBase<media::mojom::FuchsiaCdmProvider> {
+    : public content::DocumentService<media::mojom::FuchsiaCdmProvider> {
  public:
   CdmProviderImpl(
       media::FuchsiaCdmManager* cdm_manager,
@@ -50,7 +50,7 @@ CdmProviderImpl::CdmProviderImpl(
     media::FuchsiaCdmManager* cdm_manager,
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::FuchsiaCdmProvider> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       cdm_manager_(cdm_manager) {
   DCHECK(cdm_manager_);
 }

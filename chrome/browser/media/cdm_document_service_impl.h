@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/cdm_document_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -28,7 +28,7 @@
 // UI thread because PlatformVerificationFlow and the pref service lives on the
 // UI thread.
 class CdmDocumentServiceImpl final
-    : public content::DocumentServiceBase<media::mojom::CdmDocumentService> {
+    : public content::DocumentService<media::mojom::CdmDocumentService> {
  public:
   static void Create(
       content::RenderFrameHost* render_frame_host,
@@ -60,7 +60,7 @@ class CdmDocumentServiceImpl final
 #endif  // defined(OS_WIN)
 
  private:
-  // |this| can only be destructed as a DocumentServiceBase.
+  // |this| can only be destructed as a DocumentService.
   ~CdmDocumentServiceImpl() final;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

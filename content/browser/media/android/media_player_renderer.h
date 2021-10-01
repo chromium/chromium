@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "media/base/android/media_player_bridge.h"
 #include "media/base/media_log.h"
@@ -36,7 +36,7 @@ class MediaPlayerRendererWebContentsObserver;
 // living in WMPI in the Renderer process.
 class CONTENT_EXPORT MediaPlayerRenderer
     : public media::Renderer,
-      public DocumentServiceBase<media::mojom::MediaPlayerRendererExtension>,
+      public DocumentService<media::mojom::MediaPlayerRendererExtension>,
       public media::MediaPlayerBridge::Client {
  public:
   using RendererExtension = media::mojom::MediaPlayerRendererExtension;
