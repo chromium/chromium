@@ -59,6 +59,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -138,6 +139,14 @@ class CONTENT_EXPORT SaveFileManager
   // When the user cancels the saving, we need to remove all remaining saved
   // files of this page saving job from save_file_map_.
   void RemoveSavedFileFromFileMap(const std::vector<SaveItemId>& save_item_ids);
+
+  // Returns a map of current on-disk paths to their final paths for the given
+  // ids in `save_file_map_` by running `callback` on the UI thread.
+  void GetSaveFilePaths(
+      const std::vector<std::pair<SaveItemId, base::FilePath>>&
+          ids_and_final_paths,
+      base::OnceCallback<void(base::flat_map<base::FilePath, base::FilePath>)>
+          callback);
 
  private:
   friend class base::RefCountedThreadSafe<SaveFileManager>;

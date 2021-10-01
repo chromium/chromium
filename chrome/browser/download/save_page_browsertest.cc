@@ -1567,4 +1567,113 @@ INSTANTIATE_TEST_SUITE_P(SaveAsMhtml,
                          SavePageOriginalVsSavedComparisonTest,
                          ::testing::Values(content::SAVE_PAGE_TYPE_AS_MHTML));
 
+class BlockingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
+ public:
+  explicit BlockingDownloadManagerDelegate(Profile* profile)
+      : ChromeDownloadManagerDelegate(profile) {}
+  ~BlockingDownloadManagerDelegate() override = default;
+
+  void CheckSavePackageAllowed(
+      download::DownloadItem* download_item,
+      base::flat_map<base::FilePath, base::FilePath> save_package_files,
+      content::SavePackageAllowedCallback callback) override {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      for (const auto& tmp_path_and_final_path : save_package_files) {
+        // Every intermediate path in `save_package_files` should exist when
+        // this function is called.
+        EXPECT_TRUE(base::PathExists(tmp_path_and_final_path.first));
+
+        // We don't know what exact temporary path the file has, but it
+        // shouldn't be the same as its final one.
+        EXPECT_NE(tmp_path_and_final_path.first,
+                  tmp_path_and_final_path.second);
+
+        save_package_final_paths_.insert(tmp_path_and_final_path.second);
+      }
+    }
+
+    std::move(callback).Run(false);
+  }
+
+  void ValidateSavePackageFiles(base::flat_set<base::FilePath> expected_paths) {
+    EXPECT_EQ(expected_paths.size(), save_package_final_paths_.size());
+
+    for (const base::FilePath& expected_path : expected_paths) {
+      EXPECT_TRUE(save_package_final_paths_.contains(expected_path));
+    }
+  }
+
+ private:
+  base::flat_set<base::FilePath> save_package_final_paths_;
+};
+
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveOnlyHTMLBlocked) {
+  GURL url = NavigateToMockURL("a");
+
+  auto blocking_delegate =
+      std::make_unique<BlockingDownloadManagerDelegate>(browser()->profile());
+  blocking_delegate->GetDownloadIdReceiverCallback().Run(
+      download::DownloadItem::kInvalidId + 1);
+  DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+      ->SetDownloadManagerDelegateForTesting(std::move(blocking_delegate));
+  auto* delegate = static_cast<BlockingDownloadManagerDelegate*>(
+      DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetDownloadManagerDelegate());
+
+  base::FilePath full_file_name, dir;
+  GetDestinationPaths("a", &full_file_name, &dir,
+                      content::SAVE_PAGE_TYPE_AS_ONLY_HTML);
+  base::RunLoop run_loop;
+  content::SavePackageFinishedObserver observer(
+      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+  ASSERT_TRUE(GetCurrentTab(browser())->SavePage(
+      full_file_name, dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
+
+  run_loop.Run();
+  ASSERT_FALSE(HasFailure());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::PathExists(full_file_name));
+  EXPECT_FALSE(base::PathExists(dir));
+
+  delegate->ValidateSavePackageFiles({full_file_name});
+}
+
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTMLBlocked) {
+  GURL url = NavigateToMockURL("b");
+
+  auto blocking_delegate =
+      std::make_unique<BlockingDownloadManagerDelegate>(browser()->profile());
+  blocking_delegate->GetDownloadIdReceiverCallback().Run(
+      download::DownloadItem::kInvalidId + 1);
+  DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+      ->SetDownloadManagerDelegateForTesting(std::move(blocking_delegate));
+  auto* delegate = static_cast<BlockingDownloadManagerDelegate*>(
+      DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetDownloadManagerDelegate());
+
+  base::FilePath full_file_name, dir;
+  GetDestinationPaths("b", &full_file_name, &dir,
+                      content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
+  base::RunLoop run_loop;
+  content::SavePackageFinishedObserver observer(
+      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+  ASSERT_TRUE(GetCurrentTab(browser())->SavePage(
+      full_file_name, dir, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML));
+
+  run_loop.Run();
+  ASSERT_FALSE(HasFailure());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::PathExists(full_file_name));
+  EXPECT_FALSE(base::PathExists(dir));
+
+  delegate->ValidateSavePackageFiles({
+      full_file_name,
+      dir.AppendASCII("1.png"),
+      dir.AppendASCII("1.css"),
+  });
+}
+
 }  // namespace

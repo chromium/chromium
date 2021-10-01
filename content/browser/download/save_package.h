@@ -186,6 +186,15 @@ class CONTENT_EXPORT SavePackage
   void Stop(bool cancel_download_item);
   void CheckFinish();
 
+  // Callback used to check if renaming is allowed once paths to saved filed
+  // have been obtained from `file_manager`.
+  void CheckRenameAllowedForPaths(
+      base::flat_map<base::FilePath, base::FilePath> tmp_paths_to_final_paths);
+
+  // Called by CheckRenameAllowedForPaths after checking if the final renaming
+  // step should happen or not.
+  void RenameIfAllowed(bool allowed);
+
   // Clears the associated page.
   void ClearPage();
 

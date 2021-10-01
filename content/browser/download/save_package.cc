@@ -702,6 +702,44 @@ void SavePackage::CheckFinish() {
   if (in_process_count() || finished_)
     return;
 
+  DownloadManagerDelegate* delegate = download_manager_->GetDelegate();
+  if (delegate) {
+    std::vector<std::pair<SaveItemId, base::FilePath>> ids_and_final_paths(
+        saved_success_items_.size());
+    for (const auto& it : saved_success_items_)
+      ids_and_final_paths.emplace_back(it.first, it.second->full_path());
+
+    download::GetDownloadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SaveFileManager::GetSaveFilePaths, file_manager_,
+                       std::move(ids_and_final_paths),
+                       base::BindOnce(&SavePackage::CheckRenameAllowedForPaths,
+                                      AsWeakPtr())));
+  } else {
+    RenameIfAllowed(true);
+  }
+}
+
+void SavePackage::CheckRenameAllowedForPaths(
+    base::flat_map<base::FilePath, base::FilePath> tmp_paths_to_final_paths) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  DownloadManagerDelegate* delegate = download_manager_->GetDelegate();
+  if (delegate) {
+    delegate->CheckSavePackageAllowed(
+        download_, std::move(tmp_paths_to_final_paths),
+        base::BindOnce(&SavePackage::RenameIfAllowed, AsWeakPtr()));
+  } else {
+    RenameIfAllowed(true);
+  }
+}
+
+void SavePackage::RenameIfAllowed(bool allowed) {
+  if (!allowed) {
+    Cancel(true);
+    return;
+  }
+
   base::FilePath dir = (save_type_ == SAVE_PAGE_TYPE_AS_COMPLETE_HTML &&
                         saved_success_items_.size() > 1) ?
                         saved_main_directory_path_ : base::FilePath();

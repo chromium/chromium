@@ -592,4 +592,26 @@ void SaveFileManager::RemoveSavedFileFromFileMap(
   }
 }
 
+void SaveFileManager::GetSaveFilePaths(
+    const std::vector<std::pair<SaveItemId, base::FilePath>>&
+        ids_and_final_paths,
+    base::OnceCallback<void(base::flat_map<base::FilePath, base::FilePath>)>
+        callback) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  base::flat_map<base::FilePath, base::FilePath> tmp_paths_and_final_paths;
+
+  for (const auto& id_and_final_path : ids_and_final_paths) {
+    auto it = save_file_map_.find(id_and_final_path.first);
+    if (it != save_file_map_.end() && !it->second->FullPath().empty() &&
+        !id_and_final_path.second.empty()) {
+      tmp_paths_and_final_paths.insert(
+          {it->second->FullPath(), id_and_final_path.second});
+    }
+  }
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                std::move(tmp_paths_and_final_paths)));
+}
+
 }  // namespace content
