@@ -73,19 +73,8 @@ const base::Feature kBackgroundFetch{"BackgroundFetch",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable using the BackForwardCache.
-// BackForwardCache is enabled only on Android for the moment, as some
-// desktop-specific features (including extensions) are not compatible with
-// bfcache yet.
-//
-// Tracking bug for enabling bfcache on desktop: https://crbug.com/1171298.
-const base::Feature kBackForwardCache {
-  "BackForwardCache",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kBackForwardCache{"BackForwardCache",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable same-site back-forward cache for trybots. This is here because of
 // https://crbug.com/1211818 and should only used for trybots. For normal use
