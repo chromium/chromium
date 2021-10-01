@@ -393,14 +393,13 @@ chrome.tabs.getCurrent(function(tab) {
 
         // Checks headers passed to onHeadersReceived and onResponseStarted.
         async function headersInOnHeadersReceived() {
-          // TODO(crbug.com/1240935): Have the server respond with
-          // "foo:bar" header and observe it in onHeadersReceived.
-          const url = `https://localhost:${testWebTransportPort}/echo`;
+          const url = `https://localhost:${testWebTransportPort}/echo?` +
+              'set-header=foo:baz';
           let isOnHeadersReceivedCalled = false;
           const onHeadersReceived = callbackPass((details) => {
             const headers = details.responseHeaders;
-            chrome.test.assertEq([], headers);
-            headers.push({name: 'foo', value: 'bar'});
+            chrome.test.assertEq([{name: 'foo', value: 'baz'}], headers);
+            headers[0].value = 'bar';
             isOnHeadersReceivedCalled = true;
 
             return {responseHeaders: headers};
