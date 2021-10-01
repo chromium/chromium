@@ -575,13 +575,6 @@ void WASAPIAudioInputStream::Stop() {
       __func__, min_timestamp_diff_.InMillisecondsF(),
       max_timestamp_diff_.InMillisecondsF());
 
-  const bool monotonic_timestamps =
-      min_timestamp_diff_ >= base::TimeDelta::FromMicroseconds(1);
-  base::UmaHistogramBoolean("Media.Audio.Capture.Win.MonotonicTimestamps",
-                            monotonic_timestamps);
-  SendLogMessage("%s => (Media.Audio.Capture.Win.MonotonicTimestamps=%s)",
-                 __func__, monotonic_timestamps ? "true" : "false");
-
   started_ = false;
   sink_ = nullptr;
 }
@@ -1645,14 +1638,9 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
                              num_data_discontinuity_warnings_);
   SendLogMessage("%s => (discontinuity warnings=[%" PRIu64 "])", __func__,
                  num_data_discontinuity_warnings_);
-  base::UmaHistogramCounts1M("Media.Audio.Capture.Win.TimestampErrors",
-                             num_timestamp_errors_);
   SendLogMessage("%s => (timstamp errors=[%" PRIu64 "])", __func__,
                  num_timestamp_errors_);
   if (num_timestamp_errors_ > 0) {
-    base::UmaHistogramLongTimes(
-        "Media.Audio.Capture.Win.TimeUntilFirstTimestampError",
-        time_until_first_timestamp_error_);
     SendLogMessage("%s => (time until first timestamp error=[%" PRId64 " ms])",
                    __func__,
                    time_until_first_timestamp_error_.InMilliseconds());

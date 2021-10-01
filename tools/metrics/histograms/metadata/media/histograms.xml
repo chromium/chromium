@@ -337,7 +337,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Glitches" units="glitches"
-    expires_after="2021-10-08">
+    expires_after="2022-10-08">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -374,6 +374,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Audio.Capture.Win.MonotonicTimestamps"
     enum="BooleanSuccess" expires_after="2021-10-08">
+  <obsolete>
+    Removed as of 2021-09-30.
+  </obsolete>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -396,6 +399,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Audio.Capture.Win.TimestampErrors" units="errors"
     expires_after="2021-10-08">
+  <obsolete>
+    Removed as of 2021-09-30.
+  </obsolete>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -409,6 +415,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Audio.Capture.Win.TimeUntilFirstTimestampError"
     units="ms" expires_after="2021-10-08">
+  <obsolete>
+    Removed as of 2021-09-30.
+  </obsolete>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
