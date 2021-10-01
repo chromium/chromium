@@ -19,7 +19,7 @@ class AccountKeyFilter {
  public:
   explicit AccountKeyFilter(const NotDiscoverableAdvertisement& advertisement);
   AccountKeyFilter(const std::vector<uint8_t>& account_key_filter_bytes,
-                   uint8_t salt);
+                   const std::vector<uint8_t>& salt_values);
   AccountKeyFilter(const AccountKeyFilter&);
   AccountKeyFilter& operator=(AccountKeyFilter&&);
   ~AccountKeyFilter();
@@ -31,7 +31,7 @@ class AccountKeyFilter {
 
  private:
   std::vector<uint8_t> bit_sets_;
-  uint8_t salt_;
+  std::vector<uint8_t> salt_values_;
 };
 
 }  // namespace quick_pair

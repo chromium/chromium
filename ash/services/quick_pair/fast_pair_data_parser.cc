@@ -198,9 +198,7 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
   } else {
     std::move(callback).Run(NotDiscoverableAdvertisement(
         std::move(account_key_filter_bytes), show_ui, salt_bytes[0],
-        battery_bytes.size() == 3
-            ? BatteryNotification::FromBytes(battery_bytes, show_ui_for_battery)
-            : absl::nullopt));
+        BatteryNotification::FromBytes(battery_bytes, show_ui_for_battery)));
   }
 }
 

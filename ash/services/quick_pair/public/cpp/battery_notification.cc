@@ -52,6 +52,17 @@ absl::optional<BatteryInfo> BatteryInfo::FromByte(uint8_t byte) {
   }
 }
 
+uint8_t BatteryInfo::ToByte() const {
+  // Battery value is in the form 0bSVVVVVVV.
+  // S = charinging (0b1) or not (0b0).
+  // V = value, Ranges from 0-100, or 1111111 if unknown.
+  if (!percentage) {
+    return is_charging ? 0b11111111 : 0b01111111;
+  } else {
+    return percentage.value() | (is_charging ? 0b10000000 : 0);
+  }
+}
+
 BatteryNotification::BatteryNotification() = default;
 
 BatteryNotification::BatteryNotification(bool show_ui,

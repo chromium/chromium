@@ -18,12 +18,32 @@ constexpr int kBitsInByte = 8;
 
 AccountKeyFilter::AccountKeyFilter(
     const NotDiscoverableAdvertisement& advertisement)
-    : AccountKeyFilter(advertisement.account_key_filter, advertisement.salt) {}
+    : bit_sets_(advertisement.account_key_filter) {
+  salt_values_.push_back(advertisement.salt);
+
+  // If the advertisement contains battery information, then that information
+  // was also appended to the account keys to generate the filter. We need to
+  // do the same when checking for matches, so save the values in salt_values_
+  // for that purpose later.
+  if (advertisement.battery_notification) {
+    salt_values_.push_back(
+        advertisement.battery_notification->show_ui ? 0b00110011 : 0b00110100);
+
+    salt_values_.push_back(
+        advertisement.battery_notification->left_bud_info.ToByte());
+
+    salt_values_.push_back(
+        advertisement.battery_notification->right_bud_info.ToByte());
+
+    salt_values_.push_back(
+        advertisement.battery_notification->case_info.ToByte());
+  }
+}
 
 AccountKeyFilter::AccountKeyFilter(
     const std::vector<uint8_t>& account_key_filter_bytes,
-    uint8_t salt)
-    : bit_sets_(account_key_filter_bytes), salt_(salt) {}
+    const std::vector<uint8_t>& salt_values)
+    : bit_sets_(account_key_filter_bytes), salt_values_(salt_values) {}
 
 AccountKeyFilter::AccountKeyFilter(const AccountKeyFilter&) = default;
 AccountKeyFilter& AccountKeyFilter::operator=(AccountKeyFilter&&) = default;
@@ -37,12 +57,14 @@ bool AccountKeyFilter::Test(
   // We first need to append the salt value to the input (see
   // https://developers.google.com/nearby/fast-pair/spec#AccountKeyFilter).
   std::vector<uint8_t> data(account_key_bytes);
-  data.push_back(salt_);
+  for (auto& byte : salt_values_)
+    data.push_back(byte);
 
   std::array<uint8_t, 32> hashed = crypto::SHA256Hash(data);
 
-  // Iterate over the hashed input in 4 byte increments, combine those 4 bytes
-  // into an unsigned int and use it as the index into our |bit_sets_|.
+  // Iterate over the hashed input in 4 byte increments, combine those 4
+  // bytes into an unsigned int and use it as the index into our
+  // |bit_sets_|.
   for (size_t i = 0; i < hashed.size(); i += 4) {
     uint32_t hash = uint32_t{hashed[i]} << 24 | uint32_t{hashed[i + 1]} << 16 |
                     uint32_t{hashed[i + 2]} << 8 | hashed[i + 3];

@@ -27,6 +27,8 @@ struct BatteryInfo {
 
   static absl::optional<BatteryInfo> FromByte(uint8_t byte);
 
+  uint8_t ToByte() const;
+
   bool is_charging = false;
   absl::optional<int8_t> percentage;
 };
