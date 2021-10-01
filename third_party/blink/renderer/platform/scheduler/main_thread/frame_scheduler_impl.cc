@@ -481,7 +481,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kInternalInspector:
     // Navigation IPCs do not run using virtual time to avoid hanging.
     case TaskType::kInternalNavigationAssociatedUnfreezable:
-      return DoesNotUseVirtualTimeTaskQueueTraits();
+      return CanRunWhenVirtualTimePausedTaskQueueTraits();
     case TaskType::kInternalPostMessageForwarding:
       // postMessages to remote frames hop through the scheduler so that any
       // IPCs generated in the same task arrive first. These tasks must be
@@ -1461,7 +1461,7 @@ FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits() {
 }
 
 MainThreadTaskQueue::QueueTraits
-FrameSchedulerImpl::DoesNotUseVirtualTimeTaskQueueTraits() {
+FrameSchedulerImpl::CanRunWhenVirtualTimePausedTaskQueueTraits() {
   return QueueTraits().SetCanRunWhenVirtualTimePaused(true);
 }
 
