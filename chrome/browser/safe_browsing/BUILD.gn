@@ -153,7 +153,6 @@ static_library("safe_browsing") {
       "//components/permissions",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/browser:client_side_detection",
-      "//components/safe_browsing/content/browser:client_side_model_loader",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/content/browser/download:download_stats",

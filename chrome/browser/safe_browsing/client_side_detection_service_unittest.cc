@@ -24,7 +24,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
-#include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -92,18 +91,6 @@ class ClientSideDetectionServiceTest : public testing::Test {
     phishing_url_ = phishing_url;
     run_loop.Run();  // Waits until callback is called.
     return is_phishing_;
-  }
-
-  void SetModelFetchResponses() {
-    // Set reponses for both models.
-    test_url_loader_factory_.AddResponse(
-        ModelLoader::kClientModelUrlPrefix +
-            ModelLoader::FillInModelName(false, 0),
-        "bogusmodel");
-    test_url_loader_factory_.AddResponse(
-        ModelLoader::kClientModelUrlPrefix +
-            ModelLoader::FillInModelName(true, 0),
-        "bogusmodel");
   }
 
   void SetResponse(const GURL& url,
@@ -214,7 +201,6 @@ class ClientSideDetectionServiceTest : public testing::Test {
 
 
 TEST_F(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -228,7 +214,6 @@ TEST_F(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
 }
 
 TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
@@ -287,7 +272,6 @@ TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
 
 TEST_F(ClientSideDetectionServiceTest,
        SendClientReportPhishingRequestWithToken) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
@@ -315,7 +299,6 @@ TEST_F(ClientSideDetectionServiceTest,
 
 TEST_F(ClientSideDetectionServiceTest,
        SendClientReportPhishingRequestWithoutToken) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
@@ -341,7 +324,6 @@ TEST_F(ClientSideDetectionServiceTest,
 }
 
 TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
@@ -357,7 +339,6 @@ TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
 }
 
 TEST_F(ClientSideDetectionServiceTest, CacheTest) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
@@ -365,7 +346,6 @@ TEST_F(ClientSideDetectionServiceTest, CacheTest) {
 }
 
 TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
@@ -411,7 +391,6 @@ TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
 }
 
 TEST_F(ClientSideDetectionServiceTest, IsLocalResource) {
-  SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
