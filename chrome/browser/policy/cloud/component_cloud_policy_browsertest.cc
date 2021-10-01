@@ -257,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_FetchExtensionPolicy) {
 }
 
 // crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1254962): flaky on Mac builders
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_MAC)
 #define MAYBE_UpdateExtensionPolicy DISABLED_UpdateExtensionPolicy
 #else
 #define MAYBE_UpdateExtensionPolicy UpdateExtensionPolicy

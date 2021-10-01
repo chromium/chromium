@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -227,7 +228,14 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   ASSERT_EQ("fake_auth_code", robot_auth_code_);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, PolicyFetch) {
+// TODO(crbug.com/1254962): flaky on Mac builders
+#if defined(OS_MAC)
+#define MAYBE_PolicyFetch DISABLED_PolicyFetch
+#else
+#define MAYBE_PolicyFetch PolicyFetch
+#endif
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
+                       MAYBE_PolicyFetch) {
   PerformRegistration();
 
   base::RunLoop run_loop;
