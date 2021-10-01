@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_SERVICE_IMPL_H_
 #define CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_SERVICE_IMPL_H_
 
-#include "chrome/browser/video_tutorials/video_tutorial_service.h"
+#include <deque>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/video_tutorials/internal/tutorial_fetcher.h"
 #include "chrome/browser/video_tutorials/internal/tutorial_manager.h"
+#include "chrome/browser/video_tutorials/video_tutorial_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace video_tutorials {
@@ -37,6 +39,10 @@ class TutorialServiceImpl : public VideoTutorialService {
   void StartFetchIfNecessary();
   void OnFetchFinished(bool success,
                        std::unique_ptr<std::string> response_body);
+  void OnManagerInitialized(bool success);
+  void OnAcceptLanguagesChanged();
+  void MaybeCacheApiCall(base::OnceClosure api_call);
+  void FlushCachedApiCalls();
 
   // Manages in memory tutorial metadata and coordinates with TutorialStore.
   std::unique_ptr<TutorialManager> tutorial_manager_;
@@ -46,6 +52,12 @@ class TutorialServiceImpl : public VideoTutorialService {
 
   // PrefService.
   PrefService* pref_service_;
+
+  // Listens to accept languages changes.
+  PrefChangeRegistrar pref_change_registrar_;
+
+  // Cached API calls before initialization.
+  std::deque<base::OnceClosure> cached_api_calls_;
 
   base::WeakPtrFactory<TutorialServiceImpl> weak_ptr_factory_{this};
 };
