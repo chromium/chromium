@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h"
 
 #include "base/logging.h"
 
@@ -73,6 +74,7 @@ void CleanupManager::InitializeCleanupHandlers() {
   cleanup_handlers_.emplace_back(std::make_unique<OpenWindowsCleanupHandler>());
   cleanup_handlers_.emplace_back(std::make_unique<FilesCleanupHandler>());
   cleanup_handlers_.emplace_back(std::make_unique<ClipboardCleanupHandler>());
+  cleanup_handlers_.emplace_back(std::make_unique<PrintJobsCleanupHandler>());
 }
 
 void CleanupManager::OnCleanupHandlerDone(
