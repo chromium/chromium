@@ -19,6 +19,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_browser_proxy",
     ":diagnostics_card",
     ":diagnostics_card_frame",
+    ":diagnostics_network_icon",
     ":diagnostics_sticky_banner",
     ":diagnostics_types",
     ":diagnostics_utils",
@@ -136,6 +137,12 @@ js_library("diagnostics_card_frame") {
 
 js_library("diagnostics_types") {
   deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_js_library_for_compile" ]
+}
+
+js_library("diagnostics_network_icon") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("diagnostics_sticky_banner") {
@@ -409,6 +416,7 @@ html_to_js("web_components") {
     "diagnostics_card.js",
     "diagnostics_card_frame.js",
     "diagnostics_fonts_css.js",
+    "diagnostics_network_icon.js",
     "diagnostics_sticky_banner.js",
     "diagnostics_shared_css.js",
     "ethernet_info.js",

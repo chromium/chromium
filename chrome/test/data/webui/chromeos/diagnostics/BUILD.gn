@@ -118,6 +118,15 @@ js_library("diagnostics_app_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("diagnostics_network_icon_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_network_icon",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("diagnostics_sticky_banner_test") {
   deps = [
     "../..:chai_assert",

@@ -85,6 +85,7 @@ const debug_suites_list = [
   'ConnectivityCard',
   'CpuCard',
   'DataPoint',
+  'DiagnosticsNetworkIcon',
   'DiagnosticsStickyBanner',
   'DiagnosticsUtils',
   'EthernetInfo',
