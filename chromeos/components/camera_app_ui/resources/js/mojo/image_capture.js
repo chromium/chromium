@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {
-  Effect,
+  Effect,  // eslint-disable-line no-unused-vars
 } from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
 
 import {bitmapToJpegBlob} from '../util.js';
@@ -11,23 +11,6 @@ import {WaitableEvent} from '../waitable_event.js';
 
 import {DeviceOperator} from './device_operator.js';
 import {closeEndpoint} from './util.js';
-
-/**
- * Extended PhotoCapabilities type used by Chrome OS HAL3 VCD.
- * @extends {PhotoCapabilities}
- * @record
- */
-export class CrosPhotoCapabilities {
-  /**
-   * @public
-   */
-  constructor() {
-    /**
-     * @type {!Array<string>}
-     */
-    this.supportedEffects;
-  }
-}
 
 /**
  * Creates the wrapper of JS image-capture and Mojo image-capture.
@@ -55,26 +38,11 @@ export class CrosImageCapture {
 
   /**
    * Gets the photo capabilities with the available options/effects.
-   * @return {!Promise<!PhotoCapabilities|!CrosPhotoCapabilities>} Promise
+   * @return {!Promise<!PhotoCapabilities>} Promise
    *     for the result.
    */
   async getPhotoCapabilities() {
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (!deviceOperator) {
-      return this.capture_.getPhotoCapabilities();
-    }
-
-    const supportedEffects = [Effect.NO_EFFECT];
-    const isPortraitModeSupported =
-        await deviceOperator.isPortraitModeSupported(this.deviceId_);
-    if (isPortraitModeSupported) {
-      supportedEffects.push(Effect.PORTRAIT_MODE);
-    }
-    const baseCapabilities = await this.capture_.getPhotoCapabilities();
-
-    const extendedCapabilities = /** @type{!CrosPhotoCapabilities} */ (
-        Object.assign({}, baseCapabilities, {supportedEffects}));
-    return extendedCapabilities;
+    return this.capture_.getPhotoCapabilities();
   }
 
   /**
