@@ -103,6 +103,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::mojom::InstallReason InstallReason() const;
   bool InstallReasonChanged() const;
 
+  apps::mojom::InstallSource InstallSource() const;
+  bool InstallSourceChanged() const;
+
   apps::mojom::OptionalBool InstalledInternally() const;
 
   apps::mojom::OptionalBool IsPlatformApp() const;

@@ -98,6 +98,9 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->install_reason != apps::mojom::InstallReason::kUnknown) {
     state->install_reason = delta->install_reason;
   }
+  if (delta->install_source != apps::mojom::InstallSource::kUnknown) {
+    state->install_source = delta->install_source;
+  }
   if (delta->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
     state->is_platform_app = delta->is_platform_app;
   }
@@ -352,6 +355,23 @@ bool AppUpdate::InstallReasonChanged() const {
   return delta_ &&
          (delta_->install_reason != apps::mojom::InstallReason::kUnknown) &&
          (!state_ || (delta_->install_reason != state_->install_reason));
+}
+
+apps::mojom::InstallSource AppUpdate::InstallSource() const {
+  if (delta_ &&
+      (delta_->install_source != apps::mojom::InstallSource::kUnknown)) {
+    return delta_->install_source;
+  }
+  if (state_) {
+    return state_->install_source;
+  }
+  return apps::mojom::InstallSource::kUnknown;
+}
+
+bool AppUpdate::InstallSourceChanged() const {
+  return delta_ &&
+         (delta_->install_source != apps::mojom::InstallSource::kUnknown) &&
+         (!state_ || (delta_->install_source != state_->install_source));
 }
 
 apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
