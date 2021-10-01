@@ -62,6 +62,11 @@ crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1
 
 crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
 
+crbug.com/1255211 [ chromeos ] WebCodecs_copyTo_camera [ Skip ]
+crbug.com/1255211 [ chromeos ] WebCodecs_DrawImage_camera [ Skip ]
+crbug.com/1255211 [ chromeos ] WebCodecs_TexImage2d_camera [ Skip ]
+crbug.com/1255211 [ chromeos ] WebCodecs_Encode_camera_* [ Skip ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
