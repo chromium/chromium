@@ -1682,6 +1682,11 @@ public class ContextualSearchManager
         if (isSearchPanelShowing()) {
             if (selectionValid) {
                 mSearchPanel.setSearchTerm(selection);
+                // If we have a literal search request we should update that too.
+                if (mSearchRequest != null) {
+                    mSearchRequest = new ContextualSearchRequest(
+                            selection, mPolicy.shouldPrefetchSearchResult());
+                }
                 mIsRelatedSearchesSerp = false;
                 ensureCaption();
             } else {
