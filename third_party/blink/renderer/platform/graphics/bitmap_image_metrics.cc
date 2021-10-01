@@ -19,6 +19,12 @@
 
 namespace blink {
 
+namespace {
+constexpr base::HistogramBase::Sample kImageAreaHistogramMin = 1;
+constexpr base::HistogramBase::Sample kImageAreaHistogramMax = 8192 * 8192;
+constexpr int32_t kImageAreaHistogramBucketCount = 100;
+}  // namespace
+
 BitmapImageMetrics::DecodedImageType
 BitmapImageMetrics::StringToDecodedImageType(const String& type) {
   if (type == "jpg")
@@ -42,6 +48,84 @@ BitmapImageMetrics::StringToDecodedImageType(const String& type) {
     return BitmapImageMetrics::DecodedImageType::kJXL;
 #endif
   return BitmapImageMetrics::DecodedImageType::kUnknown;
+}
+
+void BitmapImageMetrics::CountDecodedImageFrameTime(
+    const String& type,
+    base::TimeDelta elapsed,
+    uint64_t original_frame_rect_area,
+    bool first) {
+  BitmapImageMetrics::DecodedImageType dit = StringToDecodedImageType(type);
+  switch (dit) {
+    case BitmapImageMetrics::DecodedImageType::kUnknown:
+      // No-op.
+      break;
+    case BitmapImageMetrics::DecodedImageType::kJPEG:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Jpeg.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Jpeg.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kPNG:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Png.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Png.FirstDecode.Time",
+                            elapsed);
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(
+            CustomCountHistogram, image_area_histogram,
+            ("Blink.ImageDecoders.Png.FirstDecode.Area", kImageAreaHistogramMin,
+             kImageAreaHistogramMax, kImageAreaHistogramBucketCount));
+        // A base::HistogramBase::Sample may not fit |size.Area()|. Hence the
+        // use of saturated_cast.
+        image_area_histogram.Count(
+            base::saturated_cast<base::HistogramBase::Sample>(
+                original_frame_rect_area));
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kGIF:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Gif.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Gif.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kWebP:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.WebP.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.WebP.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kICO:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Ico.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Ico.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kBMP:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Bmp.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Bmp.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kAVIF:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Avif.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Avif.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+    case BitmapImageMetrics::DecodedImageType::kJXL:
+      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Jxl.EveryDecode.Time", elapsed);
+      if (first) {
+        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Jxl.FirstDecode.Time",
+                            elapsed);
+      }
+      break;
+  }
 }
 
 void BitmapImageMetrics::CountDecodedImageType(const String& type) {
@@ -88,8 +172,8 @@ void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,
 void BitmapImageMetrics::CountJpegArea(const IntSize& size) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, image_area_histogram,
-      ("Blink.ImageDecoders.Jpeg.Area", 1 /* min */, 8192 * 8192 /* max */,
-       100 /* bucket_count */));
+      ("Blink.ImageDecoders.Jpeg.Area", kImageAreaHistogramMin,
+       kImageAreaHistogramMax, kImageAreaHistogramBucketCount));
   // A base::HistogramBase::Sample may not fit |size.Area()|. Hence the use of
   // saturated_cast.
   image_area_histogram.Count(

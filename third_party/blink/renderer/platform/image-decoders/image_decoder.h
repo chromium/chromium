@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -612,6 +613,10 @@ class PLATFORM_EXPORT ImageDecoder {
 
   bool source_to_target_color_transform_needs_update_ = false;
   std::unique_ptr<ColorProfileTransform> source_to_target_color_transform_;
+
+  wtf_size_t metrics_frame_index_ = kNotFound;
+  base::TimeDelta metrics_time_delta_;
+  bool metrics_first_ = true;
 };
 
 }  // namespace blink

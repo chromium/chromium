@@ -1018,7 +1018,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Blink.DecodedImageType" enum="DecodedImageType"
     expires_after="2022-02-20">
   <owner>urvang@chromium.org</owner>
-  <summary>Image codec inferred during decode.</summary>
+  <summary>
+    Image codec inferred during decode. The histogram is incremented when enough
+    of the image has been downloaded to infer its width and height. Animated
+    images are counted only once, regardless of how many frames there are.
+  </summary>
 </histogram>
 
 <histogram base="true" name="Blink.DisplayLockIntersectionObserver.UpdateTime"
@@ -1758,6 +1762,71 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     hardware decode accelerator). When the color space is YCbCr, the chroma
     subsampling is also recorded.
   </summary>
+</histogram>
+
+<histogram name="Blink.ImageDecoders.Png.FirstDecode.Area" units="pixels"
+    expires_after="2022-06-30">
+  <owner>nigeltao@chromium.org</owner>
+  <owner>scroggo@google.com</owner>
+  <summary>
+    Number of pixels in a completely decoded PNG image frame.
+    &quot;Complete&quot; and &quot;First&quot; mean the same things as for the
+    Blink.ImageDecoders.Png.FirstDecode.Time histogram.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ImageDecoders.{Type}.{Index}Decode.Time" units="ms"
+    expires_after="2022-06-30">
+  <owner>nigeltao@chromium.org</owner>
+  <owner>scroggo@google.com</owner>
+  <summary>
+    Time taken to completely decode an image frame of the {Type} file format.
+    This includes time spent in codec implementations but excludes time spent
+    waiting for the network or file cache to deliver the source bytes.
+
+    For incremental decoding, e.g. the source bytes involve multiple network
+    events, only the final event (producing a complete image frame) triggers a
+    histogram record, but that record holds the total time spent on that frame.
+
+    Incomplete (partially decoded) image frames (e.g. navigating away from the
+    web page before any of its images fully loaded) are not recorded here, but
+    they still might be recorded in the separate Blink.DecodedImageType
+    histogram if the partial decoding was able to determine width and height.
+
+    An image's frames may be decoded more than once. If so, {Index}
+    distinguishes whether every decode of every frame is tracked or just the
+    first (not repeated) decode of the first (not later) frame.
+
+    For an example of repeated (not first) decodes, when switching between tabs
+    or scrolling a web page, a previously decoded frame may be discarded so that
+    the backing memory can be re-used elsewhere. When that image comes back into
+    view, its frame may need decoding again.
+
+    For an example of later (not first) frames, animated images may produce
+    multiple frames from a single img tag. Looping animations may be able to
+    cache all of the decoded frames after the first playthrough but, if too big
+    to cache, playing the loop continually may keep adding Every histogram
+    records as uncached frames are repeatedly decoded.
+
+    The Every {Index} correlates more with &quot;how much CPU time (which
+    correlates with battery consumption) is spent overall in {Type}
+    decoding&quot;. The First {Index} correlates more with &quot;how long until
+    First Contentful Paint&quot;.
+  </summary>
+  <token key="Type">
+    <variant name="Avif"/>
+    <variant name="Bmp"/>
+    <variant name="Gif"/>
+    <variant name="Ico"/>
+    <variant name="Jpeg"/>
+    <variant name="Jxl"/>
+    <variant name="Png"/>
+    <variant name="WebP"/>
+  </token>
+  <token key="Index">
+    <variant name="Every"/>
+    <variant name="First"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
