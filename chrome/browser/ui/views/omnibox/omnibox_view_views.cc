@@ -689,7 +689,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
   if (!model()->PopupIsOpen())
     return false;
 
-  model()->PopupStepSelection(event.IsShiftDown()
+  model()->StepPopupSelection(event.IsShiftDown()
                                   ? OmniboxPopupSelection::kBackward
                                   : OmniboxPopupSelection::kForward,
                               OmniboxPopupSelection::kStateOrLine);

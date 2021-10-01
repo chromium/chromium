@@ -7,11 +7,13 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -433,13 +435,6 @@ class OmniboxEditModel {
   // will reset the popup to the initial state.
   void ResetPopupToInitialState();
 
-  // Applies the next popup selection as provided by GetNextSelection.
-  // Stepping the popup model selection gives special consideration for
-  // keyword mode state maintained in the edit model.
-  OmniboxPopupSelection PopupStepSelection(
-      OmniboxPopupSelection::Direction direction,
-      OmniboxPopupSelection::Step step);
-
   // Gets popup's current selection.
   OmniboxPopupSelection GetPopupSelection() const;
 
@@ -454,8 +449,8 @@ class OmniboxEditModel {
                          bool force_update_ui = false);
 
   // Changes the popup selection to the next available selection.
-  // Stepping the popup model selection gives special consideration for
-  // keyword mode state maintained in the edit model.
+  // Stepping the popup selection gives special consideration for
+  // keyword mode state.
   OmniboxPopupSelection StepPopupSelection(
       OmniboxPopupSelection::Direction direction,
       OmniboxPopupSelection::Step step);
@@ -539,6 +534,14 @@ class OmniboxEditModel {
                        // with ctrl-l or copying the selected text with ctrl-c.
   };
 
+  std::vector<OmniboxPopupSelection> GetAllAvailablePopupSelectionsSorted(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step) const;
+
+  OmniboxPopupSelection GetNextPopupSelection(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step) const;
+
   // Returns true if a query to an autocomplete provider is currently
   // in progress.  This logic should in the future live in
   // AutocompleteController but resides here for now.  This method is used by
@@ -599,7 +602,9 @@ class OmniboxEditModel {
   // the view.
   void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
 
-  std::unique_ptr<OmniboxPopupModel> popup_model_;
+  // This is an event handler that notifies the popup view of match icon
+  // changes.
+  void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon);
 
   // NOTE: |client_| must outlive |omnibox_controller_|, as the latter has a
   // reference to the former.
@@ -756,6 +761,25 @@ class OmniboxEditModel {
   // autocomplete query is started after a tab switch, it is possible for this
   // |input_| to differ from the one currently stored in AutocompleteController.
   AutocompleteInput input_;
+
+  // Rich suggestion bitmaps for popup.
+  std::map<int, SkBitmap> rich_suggestion_bitmaps_;
+
+  // The popup view is nullptr when there's no popup, and is non-null when
+  // a popup view exists (i.e. between calls to `set_popup_view`).
+  OmniboxPopupView* popup_view_ = nullptr;
+
+  // The current popup selection; set to normal kNoMatch when there's no popup.
+  OmniboxPopupSelection popup_selection_ =
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
+                            OmniboxPopupSelection::NORMAL);
+
+  // When a result changes, this informs of the URL in the previously selected
+  // suggestion whose tab switch button was focused, so that we may compare
+  // if equal.
+  GURL old_focused_url_;
+
+  base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_H_
