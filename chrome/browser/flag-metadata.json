@@ -1427,7 +1427,7 @@
   {
     "name": "enable-autofill-account-wallet-storage",
     "owners": [ "treib", "jsaul@google.com", "butter-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "enable-autofill-credit-card-ablation-experiment",
@@ -1453,24 +1453,9 @@
     "expiry_milestone": 96
   },
   {
-    "name": "enable-autofill-infobar-account-indication-footer-for-single-account-users",
-    "owners": [ "mdjones", "treib"],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "enable-autofill-infobar-account-indication-footer-for-sync-users",
-    "owners": [ "mdjones", "treib"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
     "expiry_milestone": 99
-  },
-  {
-    "name": "enable-autofill-password-account-indicator-footer",
-    "owners": [ "mdjones", "treib"],
-    "expiry_milestone": 95
   },
   {
     "name": "enable-autofill-refresh-style",
@@ -1480,7 +1465,7 @@
   {
     "name": "enable-autofill-save-card-info-bar-account-indication-footer",
     "owners": [ "mdjones", "treib"],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "enable-autofill-upi-vpa",
@@ -5488,11 +5473,6 @@
   {
     "name": "wake-on-wifi-allowed",
     "owners": [ "yenlinlai", "chromeos-wifi-team" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "wallet-requires-first-sync-setup",
-    "owners": [ "treib", "butter-team@google.com" ],
     "expiry_milestone": 95
   },
   {
