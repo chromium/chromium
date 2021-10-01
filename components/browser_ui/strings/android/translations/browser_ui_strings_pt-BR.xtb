@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1446450296470737166">Permitir controle total de dispositivos MIDI</translation>
+<translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1647582022260550163">Tem certeza de que quer redefinir as permissões e apagar os cookies e dados do site?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Permitidos, exceto de terceiros</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1994173015038366702">URL do site</translation>
-<translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2030769033451695672">Toque para voltar para <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7846621471902887024">Sua conta será desconectada de todos os sites.</translation>
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
-<translation id="7940722705963108451">Lembrar</translation>
 <translation id="7986741934819883144">Selecione um contato</translation>
+<translation id="7993619969781047893">Os recursos de alguns sites podem apresentar falhas</translation>
 <translation id="7999064672810608036">Você quer mesmo apagar todos os dados locais, inclusive os cookies, e redefinir todas as permissões para este website?</translation>
 <translation id="8007176423574883786">Desativado neste dispositivo</translation>
 <translation id="802154636333426148">Falha no download</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="813082847718468539">Visualizar informações do site</translation>
 <translation id="8131740175452115882">Confirmar</translation>
-<translation id="8154912474061769055">Os recursos de vários sites podem não funcionar</translation>
 <translation id="8197286292360124385">Permitida: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8206354486702514201">Esta configuração é aplicada por seu administrador.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Limpar entrada</translation>
 <translation id="868929229000858085">Pesquisar seus contatos</translation>
 <translation id="8702612070107455751">Todos os dados off-line serão removidos.</translation>
-<translation id="8712637175834984815">Entendi</translation>
 <translation id="8719283222052720129">Ative a permissão para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>

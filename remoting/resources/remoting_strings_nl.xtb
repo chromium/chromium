@@ -79,7 +79,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="4512952200932940229">Copyright 2021 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Verbinding met client verbroken: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> is niet goed ingesteld. Kies een andere standaardbrowser en activeer URL-doorschakeling opnieuw.</translation>
 <translation id="4635770493235256822">Externe apparaten</translation>
 <translation id="4660011489602794167">Toetsenbord tonen</translation>
 <translation id="4703799847237267011">Je Chromoting-sessie is beëindigd.</translation>
@@ -110,7 +109,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="5750083143895808682">Ingelogd als <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Opnieuw verbinding maken</translation>
 <translation id="5810269635982033450">Scherm werkt als een trackpad</translation>
-<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> heeft toegang gevraagd om je scherm te zien en je toetsenbord en muis te bedienen. Druk op <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> als je dit verzoek niet verwacht. Selecteer anders <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> om de verbinding toe te staan als je zover bent.</translation>
 <translation id="5823658491130719298">Ga naar de computer waarvoor je externe toegang wilt hebben. Open Chrome en ga naar <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Weergaveopties</translation>
 <translation id="6033507038939587647">Toetsenbordopties</translation>
@@ -132,6 +130,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6963936880795878952">Verbindingen met de externe computer zijn tijdelijk geblokkeerd omdat iemand heeft geprobeerd met een ongeldige pincode verbinding te maken met de computer. Probeer het later opnieuw.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitzetten? Als je van gedachten verandert, moet je naar die computer gaan om de verbindingen weer aan te zetten.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> heeft toegang gevraagd om je computer te zien en te beheren. Druk op <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> als je deze persoon niet kent of als je wijzigingen wilt aanbrengen voordat je begint met delen.  Anders kies je <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> om de verbinding toe te staan.</translation>
 <translation id="7019153418965365059">Onbekende hostfout: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Externe support</translation>
 <translation id="7026930240735156896">Volg de instructies om je computer in te stellen voor externe toegang</translation>
@@ -170,7 +169,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 Als je dit recht wilt verlenen, klik je hieronder op '<ph name="BUTTON_NAME" />' om het voorkeurenvenster voor toegankelijkheid te openen. Vink daarna '<ph name="SERVICE_SCRIPT_NAME" />' aan.
 
 Als '<ph name="SERVICE_SCRIPT_NAME" />' al is aangevinkt, moet je dit uitvinken en vervolgens weer aanvinken.</translation>
-<translation id="8305209735512572429">Proces voor externe webverificatie</translation>
 <translation id="8383794970363966105">Als je Chromoting wilt gebruiken, moet je een Google-account aan je apparaat toevoegen</translation>
 <translation id="8386846956409881180">Host is geconfigureerd met ongeldige OAuth-inloggegevens.</translation>
 <translation id="8397385476380433240">Verleen rechten aan <ph name="PRODUCT_NAME" /></translation>

@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Ukážka nie je k dispozícii</translation>
 <translation id="1812302367230252929">Amharská klávesnica (prepis)</translation>
 <translation id="1813278315230285598">Služby</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" /> Upozornenie: <ph name="END_BOLD" /> Tieto súbory sú dočasné a kvôli uvoľneniu miesta na disku môžu byť automaticky odstránené. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučniak</translation>
 <translation id="183183971458492120">Načítavajú sa informácie…</translation>
 <translation id="1834290891154666894">Neplatný vstup zhody alternatívneho názvu subjektu</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Francúzska (Kanada) klávesnica</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, pripojenie</translation>
 <translation id="3003633581067744647">Prepnúť na zobrazenie miniatúr</translation>
-<translation id="3016566519832145558">Upozornenie: Tieto súbory sú dočasné a môžu byť automaticky odstránené na uvoľnenie priestoru na disku.</translation>
 <translation id="3029114385395636667">Ak chcete, aby boli Dokumenty, Tabuľky a Prezentácie k dispozícii offline, zapnite Dokumenty Google offline.</translation>
 <translation id="303198083543495566">Geografia</translation>
 <translation id="3047197340186497470">Čínska klávesnica Dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Prejsť na adresu drive.google.com...</translation>
 <translation id="3553048479571901246">Ak chcete otvoriť súbory pomocou aplikácie <ph name="APP_NAME" />, najprv ich skopírujte do priečinka so súbormi systému Windows.</translation>
 <translation id="3556731189587832921">Anglická (US) klávesnica s medzinárodným rozložením klávesov (PC)</translation>
-<translation id="3567221313191587603">Vyberte súbor a zapnite <ph name="OFFLINE_CHECKBOX_NAME" />, čím získate prístup k svojim súborom v režime offline.</translation>
 <translation id="357479282490346887">Litovčina</translation>
 <translation id="3592251141500063301">Súbor <ph name="FILE_NAME" /> sa nepodarilo sprístupniť offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Inštaluje sa mobilný profil. Sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Česká klávesnica s rozložením Qwerty</translation>
 <translation id="4656293982926141856">Tento počítač</translation>
-<translation id="4656777537938206294">Sprístupnite súbory offline</translation>
 <translation id="4669606053856530811">Členovia zdroja <ph name="SOURCE_NAME" /> stratia prístup, pokiaľ s nimi tieto položky nezačnete zdieľať.</translation>
 <translation id="4690246192099372265">Švédčina</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -582,7 +580,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6146563240635539929">Videá</translation>
 <translation id="6150853954427645995">Ak chcete tento súbor uložiť na použitie offline, prejdite online, kliknite na súbor pravým tlačidlom a vyberte možnosť <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Motýle</translation>
-<translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">Maďarská klávesnica</translation>
 <translation id="6189412234224385711">Otvoriť pomocou rozšírenia <ph name="EXTENSION_NAME" /></translation>
@@ -933,7 +930,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="943972244133411984">Upravil(a):</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="947144732524271678">Bol vybraný rozsah <ph name="ENTRY_COUNT" /> položiek od <ph name="FROM_ENTRY_NAME" /> do <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">Angličtina (Južná Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Chcete ho nahradiť?</translation>
 <translation id="992401651319295351">Zostáva vám tento počet pokusov: <ph name="RETRIES" />. Túto sieť budete môcť používať, až keď nastavíte nový PIN.</translation>

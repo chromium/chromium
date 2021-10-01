@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
 <translation id="1446450296470737166">允許完整控制 MIDI 裝置</translation>
+<translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1647582022260550163">確定要重設權限，並且清除 Cookie 和網站資料嗎？</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">允許 (第三方網站除外)</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1994173015038366702">網站網址</translation>
-<translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
 <translation id="2025115093177348061">擴增實境</translation>
 <translation id="2030769033451695672">輕觸即可返回 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">復原</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">全部取消選取</translation>
 <translation id="7846621471902887024">系統會將你登出所有網站。</translation>
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
-<translation id="7940722705963108451">提醒我</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
+<translation id="7993619969781047893">某些網站的功能可能無法正常運作</translation>
 <translation id="7999064672810608036">確定要刪除這個網站儲存的所有本機資料 (包括 Cookie 在內)，並重設這個網站的所有權限嗎？</translation>
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
 <translation id="802154636333426148">下載失敗</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">已設為靜音</translation>
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8131740175452115882">確認</translation>
-<translation id="8154912474061769055">許多網站的功能可能無法運作</translation>
 <translation id="8197286292360124385">已允許「<ph name="PERMISSION_1" />」</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="868929229000858085">搜尋聯絡人</translation>
 <translation id="8702612070107455751">所有離線資料都將遭到清除。</translation>
-<translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8719283222052720129">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>

@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1467231725790366244">ຖອດສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
 <translation id="1473110567575736769">ໂມງນັບຖອຍຫຼັງ 3 ວິນາທີ</translation>
+<translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
 <translation id="1545749641540134597">ສະແກນລະຫັດ QR</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">ປົກ​ກະ​ຕິ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ບໍ່ໄດ້ບັນທຶກຫຍັງໄວ້</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ເປີດໃຊ້ຢູ່</translation>
 <translation id="2144806332417375165">ຄ່າພາຣາມີເຕີວິດີໂອແບບກຳນົດເອງ</translation>
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
+<translation id="2268107369530950373">ສະຫຼັບໄປໃຊ້ໂໝດຕົວສະແກນ</translation>
 <translation id="229579744168541441">ສົ່ງອອກໄປໃສ່ດິສກ໌</translation>
 <translation id="2320741269052147773">ເລືອນໄປຊ້າຍ</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="2501853267655415902">ຢຸດການບັນທຶກແລ້ວ</translation>
 <translation id="2501953888035679275">ຖ່າຍຮູບ ແລະ ບັນທຶກວິດີໂອດ້ວຍກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
-<translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2549985041256363841">ເລີ່ມການບັນທຶກ</translation>
 <translation id="2599796128805996109">ກ້ອງຫຼັງ</translation>
 <translation id="2879583609344924966">ສຽບສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">ຄວາມລະອຽດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="3260401663013584785">ບໍ່ສາມາດກວດພົບເອກະສານໄດ້</translation>
 <translation id="3448774564454087943">ບໍ່ໄດ້ບັນທຶກວິດີໂອເນື່ອງຈາກມັນສັ້ນເກີນໄປ</translation>
-<translation id="346539236881580388">ຖ່າຍໃໝ່</translation>
 <translation id="3517926952904427380">ບໍ່ສາມາດຖ່າຍຮູບບຸກຄົນໄດ້</translation>
 <translation id="3569311554794739032">ທ່ານຕ້ອງການລຶບ <ph name="FILE" /> ອອກແທ້ບໍ?</translation>
-<translation id="3573890771273113519">ສະຫຼັບໄປໂໝດສະແກນ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
 <translation id="3838931309141338733">ສະແກນບາໂຄດ</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">ຕອນນີ້ສາມາດສະແກນເອກະສານໄດ້ແລ້ວ</translation>
 <translation id="5268823927180092501">ເປີດການນຳໃຊ້ໂໝດເອກະສານຢູ່ກ້ອງຖ່າຍຮູບທັງໝົດ</translation>
 <translation id="5444515100983837161">ວາງຂອບທັງໝົດຂອງເອກະສານໄວ້ພາຍໃນເຟຣມ. ການສະແກນເຮັດວຽກໄດ້ດີທີ່ສຸດຫາກເອກະສານ ແລະ ພື້ນຫຼັງເປັນຄົນລະສີກັນ.</translation>
-<translation id="5588258280684580073">ເປີດການນຳໃຊ້ການບັນທຶກ GIF</translation>
 <translation id="5671277269877808209">ສີ່ຫຼ່ຽມ</translation>
-<translation id="5746169159649715125">ບັນທຶກເປັນ PDF</translation>
 <translation id="5753488212459587150">ເປີດການນຳໃຊ້ໂໝດຜູ້ຊ່ຽວຊານ</translation>
 <translation id="5759254179196327752">ສະແກນເອກະສານ</translation>
 <translation id="5775960006311140197">ໂໝດຜູ້ຊ່ຽວຊານ</translation>
@@ -100,20 +95,17 @@
 <translation id="7243947652761655814">ຄວາມລະອຽດຂອງວິດີໂອ</translation>
 <translation id="7337660886763914220">ຂໍ້ຜິດພາດຂອງໄຟລ໌ລະບົບ.</translation>
 <translation id="7450541714075000668">ສຳເນົາຂໍ້ຄວາມແລ້ວ</translation>
-<translation id="7488619942230388918">ບັນທຶກວິດີໂອ GIF</translation>
 <translation id="7557677699350329807">ປ່ຽນເປັນກ້ອງຖັດໄປ</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
 <translation id="7608223098072244877">4 ຄູນ 4</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">ບັນທຶກວິດີໂອປົກກະຕິ</translation>
 <translation id="7983668134180549431">ກວດພົບຂໍ້ຄວາມ.</translation>
 <translation id="8067883171444229417">ຫຼິ້ນວິດີໂອ</translation>
 <translation id="8120146556401698679">ເລື່ອນ ອຽງ ຊູມ</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8145038249676204903">ປ່ຽນເປັນຖ່າຍຮູບ</translation>
-<translation id="8167081290930651932">ບັນທຶກເປັນຮູບພາບ</translation>
 <translation id="8239780215768881278">ຖ່າຍພາບວິດີໂອໄວ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8425673304802773841">ອຽງລົງ</translation>
@@ -127,6 +119,5 @@
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="9045010116236796332">ວາງຂອບທັງໝົດຂອງເອກະສານໄວ້ພາຍໃນເຟຣມ</translation>
 <translation id="9045155556724273246">10 ວິນາທີ</translation>
-<translation id="906331135292332864">ກຳລັງປະມວນຜົນຮູບ...</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 </translationbundle>

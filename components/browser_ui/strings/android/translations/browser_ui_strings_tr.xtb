@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">İndirme işlemi duraklatıldı</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1446450296470737166">MIDI cihazlarının tam denetimine izin verme</translation>
+<translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1647582022260550163">İzinleri sıfırlayıp çerezleri ve site verilerini temizlemek istediğinizden emin misiniz?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Üçüncü taraf hariç izin verildi</translation>
 <translation id="1989112275319619282">Göz at</translation>
 <translation id="1994173015038366702">Site URL'si</translation>
-<translation id="2004697686368036666">Bazı sitelerdeki özellikler çalışmayabilir</translation>
 <translation id="2025115093177348061">Artırılmış gerçeklik</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> sekmesine dönmek için dokunun</translation>
 <translation id="2079545284768500474">Geri al</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7846621471902887024">Tüm sitelerdeki oturumunuz kapatılacak.</translation>
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
-<translation id="7940722705963108451">Bana hatırlat</translation>
 <translation id="7986741934819883144">Kişi seçin</translation>
+<translation id="7993619969781047893">Bazı sitelerdeki özellikler çalışmayabilir</translation>
 <translation id="7999064672810608036">Bu web sitesine ilişkin çerezler dahil tüm yerel verileri temizlemek ve bu sitenin tüm izinlerini sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Ses kapatıldı</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
 <translation id="8131740175452115882">Onayla</translation>
-<translation id="8154912474061769055">Çoğu sitedeki özellikler çalışmayabilir</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> için izin verildi</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8206354486702514201">Bu seçenek, yöneticiniz tarafınızdan denetleniyor.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Girişi temizle</translation>
 <translation id="868929229000858085">Kişilerinizde arama yapın</translation>
 <translation id="8702612070107455751">Tüm çevrimdışı veriler temizlenecek.</translation>
-<translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ında <ph name="APP_NAME" /> için izni açın.</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8730621377337864115">Bitti</translation>

@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Download er sat på pause</translation>
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
 <translation id="1446450296470737166">Tillad fuld kontrol over MIDI-enheder</translation>
+<translation id="1509960214886564027">Funktioner på mange websites virker muligvis ikke</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1647582022260550163">Er du sikker på, at du vil nulstille tilladelser og rydde cookies og websitedata?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Tilladt, undtagen tredjepartscookies</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="1994173015038366702">Webadresse</translation>
-<translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Tryk for at vende tilbage til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Fortryd</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Annuller valg</translation>
 <translation id="7846621471902887024">Du bliver logget ud af alle websites.</translation>
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
-<translation id="7940722705963108451">Påmind mig</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
+<translation id="7993619969781047893">Funktioner på visse websites fungerer muligvis ikke</translation>
 <translation id="7999064672810608036">Er du sikker på, at du vil slette alle lokale data, herunder cookies, og nulstille alle tilladelser for dette website?</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Websites, hvor lyden er slået fra</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8131740175452115882">Bekræft</translation>
-<translation id="8154912474061769055">Funktionerne på mange websites virker muligvis ikke</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8206354486702514201">Denne indstilling håndhæves af din administrator.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="868929229000858085">Søg blandt dine kontakter</translation>
 <translation id="8702612070107455751">Alle offlinedata ryddes.</translation>
-<translation id="8712637175834984815">Forstået</translation>
 <translation id="8719283222052720129">Aktivér tilladelse for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>

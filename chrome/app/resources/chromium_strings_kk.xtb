@@ -36,7 +36,6 @@
 <translation id="2343156876103232566">Нөмірді осы жерден Android телефонына жіберу үшін екі құрылғыда да Chromium браузеріне кіріңіз.</translation>
 <translation id="2347108572062610441">Бұл кеңейтім Chromium браузерін іске қосқан кезде көрсетілетін бетті өзгертті.</translation>
 <translation id="2396765026452590966">«<ph name="EXTENSION_NAME" />» кеңейтімі Chromium браузерін іске қосқан кезде көрсетілетін бетті өзгертті.</translation>
-<translation id="2401032172288869980">Chromium бұл сайт үшін камера мен микрофонды пайдалануға рұқсат сұрайды.</translation>
 <translation id="2483889755041906834">Chromium аясында</translation>
 <translation id="2485422356828889247">Жою</translation>
 <translation id="2535480412977113886">Chromium OS деректеріңізді синхрондай алмайды, себебі аккаунтыңызға кіру мәліметтері ескірген.</translation>
@@ -154,7 +153,6 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS операциялық жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқасында қолжетімді болды.</translation>
 <translation id="5862307444128926510">Chromium жүйесіне қош келдіңіз</translation>
-<translation id="5883558403894052917">Chromium бұл элементтерде зиянды бағдарлама бар екенін анықтады:</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Желіге кіру</translation>
 <translation id="5987687638152509985">Chromium браузерін жаңартып, синхрондауды бастаңыз</translation>
@@ -172,7 +170,6 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> құрылғысындағы Chromium браузеріне кіргеніңізді тексеріп, қайта жіберіп көріңіз.</translation>
 <translation id="6212496753309875659">Бұл компьютерде жаңа Chromium нұсқасы бұрыннан бар. Бағдарламалық жасақтама жұмыс істемесе, Chromium жойып, әрекетті қайталап көріңіз.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium браузері қазір қайта іске қосылады}=1{Chromium браузері 1 секундтан кейін қайта іске қосылады}other{Chromium браузері # секундтан кейін қайта іске қосылады}}</translation>
-<translation id="6241367896540709610">Chromium файлдарды жүктеп алу үшін жадты пайдалануға рұқсат сұрайды.</translation>
 <translation id="6248213926982192922">Әдепкі браузер ретінде Chromium орнату</translation>
 <translation id="6266342355635466082">Chromium жаңа нұсқалардың бар-жоғын тексере алмайды. Интернет байланысын тексеріп көріңіз.</translation>
 <translation id="6268381023930128611">Chromium жүйесінен шығасыз ба?</translation>
@@ -193,9 +190,7 @@
 <translation id="6570579332384693436">Емле қателерін түзету үшін Chromium браузері мәтін жолына терілген сөздерді Google-ға жібереді</translation>
 <translation id="6598877126913850652">Chromium хабарландыру параметрлері бөліміне өту</translation>
 <translation id="6613594504749178791">Өзгертулеріңіз Chromium келесі рет қайта іске қосылғанда күшіне енеді.</translation>
-<translation id="665732753414869868">Chromium айналаңыздың 3D картасын жасау үшін камераны пайдалануға рұқсат сұрайды.</translation>
 <translation id="6676384891291319759">Интернетке кіру</translation>
-<translation id="6709350901466051922">Chromium бұл сайт үшін микрофонды пайдалануға рұқсат сұрайды.</translation>
 <translation id="6717134281241384636">Профиліңізді пайдалану мүмкін емес, себебі ол жаңарақ Chromium нұсқасынан.
 
 Кейбір мүмкіндіктер қолжетімсіз болуы мүмкін. Басқа профиль каталогін көрсетіңіз немесе жаңарақ Chromium нұсқасын пайдаланыңыз.</translation>
@@ -207,7 +202,6 @@
 <translation id="6847869444787758381">Құпия сөздеріңіз ұрланған жағдайда, Chromium бұл туралы хабарлайды.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium браузеріне көшірілген)</translation>
-<translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтімінде зиянды бағдарлама бар екенін анықтады.</translation>
 <translation id="6893813176749746474">Chromium жаңартылды, бірақ оны кемінде 30 күн пайдаланбадыңыз.</translation>
 <translation id="691026815377248078">Жұптауды жалғастыру үшін Chromium-ге Bluetooth-ты пайдалану рұқсаты керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Сілтемені Chromium инкогнито терезесінде ашу</translation>
@@ -215,7 +209,6 @@
 <translation id="6990124437352146030">Chromium браузеріне бұл сайтта микрофонды пайдалану үшін рұқсат керек</translation>
 <translation id="705851970750939768">Chromium жаңарту</translation>
 <translation id="7067091210845072982">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі.</translation>
-<translation id="718435575166326686">Chromium бұл сайт үшін камераны пайдалануға рұқсат сұрайды.</translation>
 <translation id="7196312274710523067">Chromium браузері қосылмады. Қайталап көріңіз.</translation>
 <translation id="7197677400338048821">Chromium сіздің құпия сөздеріңізді тексере алмай жатыр. 24 сағаттан кейін қайталап көріңіз.</translation>
 <translation id="7223968959479464213">Тапсырмалар реттегіші – Chromium</translation>
@@ -239,6 +232,10 @@ Chromium параметрлеріңізді қалпына келтіре алм
       Chromium операциялық жүйесінің параметрлері<ph name="LINK_END" /> бөлімінен қараңыз.</translation>
 <translation id="761356813943268536">Chromium камераңыз бен микрофоныңызды пайдалануда.</translation>
 <translation id="7617377681829253106">Chromium жақсара түсті</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Орнатуды бастамас бұрын, деректеріңіздің сақтық көшірмесі жасалғанына көз жеткізіңіз. Chromium OS-ті орнату кезінде қатты дискідегі барлық дерек қайта жазылады.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google компаниясы орнату кезінде жоғалған деректерге жауапты емес және Chromium OS-тің сертификатталмаған құрылғы модельдерінде жұмыс істейтініне кепілдік бермейді. Сертификатталған модельдер туралы толығырақ ақпарат алу үшін [TBD] сайтына кіріңіз.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chromium OS-ті орнату және деректерді тазарту туралы толығырақ ақпарат: [TBD URL].<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Жалғастыруға дайын болсаңыз, "Chromium OS-ті орнату" түймесін басыңыз және орнату жөніндегі қарапайым қадамдарды орындаңыз. Компьютеріңізге өзгерістер енгізбей тұрып, орнатуды растау үшін тағы бір мүмкіндік беріледі.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium әдепкі браузеріңіз емес</translation>
 <translation id="7689606757190482937">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіріңіз</translation>
 <translation id="7729447699958282447">Chromium деректеріңізді синхрондай алмады, себебі синхрондау функциясы доменіңіз үшін қолжетімді емес.</translation>
@@ -253,7 +250,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7975919845073681630">Бұл – Chromium браузерінің қайта орнатылған нұсқасы және әдепкі браузер бола алмайды.</translation>
 <translation id="8013436988911883588">Chromium браузерінің кіру рұқсаты болса, веб-сайттар сізден кіру рұқсатын сұрайды.</translation>
 <translation id="8045118833343856403">Мына аккаунттар бірде-бір Chromium профиліне кірмеген. Аккаунтты басқа профильде қолданғыңыз келсе, алдымен сол профильді өшіріп тастаңыз.</translation>
-<translation id="8105840573057009683">Chromium бұл сайт үшін локацияны пайдалануға рұқсат сұрайды.</translation>
 <translation id="81770708095080097">Бұл файл қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="8248265253516264921">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі. Бұл функцияны кез келген уақытта параметрлерден өшіріп қоюға болады.</translation>
 <translation id="8266560134891435528">Аккаунтқа кірмегендіктен, Chromium сіздің құпия сөздеріңізді тексере алмайды.</translation>

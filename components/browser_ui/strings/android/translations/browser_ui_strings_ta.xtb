@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">பதிவிறக்கம் இடைநிறுத்தப்பட்டது</translation>
 <translation id="1415402041810619267">URL துண்டிக்கப்பட்டது</translation>
 <translation id="1446450296470737166">MIDI சாதனங்களுக்கு முழுக் கட்டுப்பாட்டை அனுமதி</translation>
+<translation id="1509960214886564027">பெரும்பாலான தளங்களிலுள்ள அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
 <translation id="1647582022260550163">அனுமதிகளை மீட்டமைத்து, குக்கீகளையும் தளத் தரவையும் அழிக்க விரும்புகிறீர்களா?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">அனுமதிக்கப்பட்டது, மூன்றாம் தரப்பைத் தவிர</translation>
 <translation id="1989112275319619282">உலாவு</translation>
 <translation id="1994173015038366702">தள URL</translation>
-<translation id="2004697686368036666">சில தளங்களில் உள்ள அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
 <translation id="2025115093177348061">ஆக்மென்ட்டட் ரியாலிட்டி</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" />க்குச் செல்ல, தட்டவும்</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
 <translation id="7846621471902887024">அனைத்துத் தளங்களிலிருந்தும் வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="7882806643839505685">குறிப்பிட்ட தளத்திற்கு ஒலியை அனுமதி</translation>
-<translation id="7940722705963108451">எனக்கு நினைவூட்டு</translation>
 <translation id="7986741934819883144">தொடர்பைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="7993619969781047893">சில தளங்களிலுள்ள அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
 <translation id="7999064672810608036">இந்த இணையதளத்தின் குக்கீகள் உட்பட எல்லா அகத் தரவையும் அழித்து, அதன் எல்லா அனுமதிகளையும் மீட்டமைக்கவா?</translation>
 <translation id="8007176423574883786">இந்தச் சாதனத்திற்கு முடக்கப்பட்டுள்ளது</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">ஒலியடக்கியவை</translation>
 <translation id="813082847718468539">தள விவரங்களைக் காண்க</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
-<translation id="8154912474061769055">பல தளங்களில் உள்ள குறிப்பிட்ட அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />க்கான அனுமதி வழங்கப்பட்டது</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8206354486702514201">இந்த அமைப்பு உங்கள் நிர்வாகியால் செயலாக்கப்பட்டுள்ளது.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">உள்ளீட்டை அழி</translation>
 <translation id="868929229000858085">உங்கள் தொடர்புகளில் தேடுக</translation>
 <translation id="8702612070107455751">அனைத்து ஆஃப்லைன் தரவும் அழிக்கப்படும்.</translation>
-<translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> <ph name="APP_NAME" /> ஆப்ஸுக்கான அனுமதியை இயக்கவும்.</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>

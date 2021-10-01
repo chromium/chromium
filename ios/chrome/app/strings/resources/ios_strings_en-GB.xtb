@@ -116,7 +116,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
-<translation id="2080769225927880590">Sign in with a valid account</translation>
 <translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
@@ -230,7 +229,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3184767182050912705">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3224641773458703735">To export passwords, you must first set a passcode on your device.</translation>
-<translation id="3230318355092723906">When sync is off, you can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
@@ -357,7 +355,6 @@ Follow the steps below:</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4620246317052452550">Pages That You've Read</translation>
-<translation id="4620888520263267479">Show link previews</translation>
 <translation id="4630540211544979320">Translate pages</translation>
 <translation id="4634124774493850572">Use password</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -455,7 +452,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
-<translation id="560322036295180549">Turned off by your organisation</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="5631164295104953411">Add payment method</translation>
@@ -471,8 +467,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
 <translation id="5738887413654608789">This lets you discover relevant web pages based on your surroundings.</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
-<translation id="575902488528307720">Search for image</translation>
-<translation id="5781453543752460388">Add to Photos</translation>
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5812974770859303494">Add to…</translation>
@@ -510,7 +504,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6042308850641462728">More</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
-<translation id="6064824697233747382">Your organisation requires you to turn off sync.</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
 <translation id="60829778314739003">Accept and continue</translation>
 <translation id="6084848228346514841">Select tabs</translation>
@@ -526,7 +519,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6189413832092199491">Unread</translation>
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
-<translation id="6207754106943147310"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Never translate</translation>
 <translation id="6223816392543092032">Get your bookmarks, history, passwords and other settings on all your devices.</translation>
 <translation id="6232329973559504466">Incognito search</translation>
@@ -611,7 +603,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6801927553864092214">To browse privately, open an Incognito tab</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
-<translation id="681450999322335505">Your organisation turned off sync.</translation>
 <translation id="6830804042318138535">Read more</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
@@ -637,6 +628,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent tabs</translation>
 <translation id="7006788746334555276">Content Settings</translation>
+<translation id="7015203776128479407">Initial sync setup was not finished. Sync is off.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7062545763355031412">Accept and switch accounts</translation>
@@ -659,12 +651,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7291368939935408496">Preparing Passwords…</translation>
+<translation id="7293171162284876153">To start sync, turn on 'Sync your Chrome data'.</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
 <translation id="7319242366286515846">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7346909386216857016">OK, got it</translation>
-<translation id="7347393021726115275">You can only sign in with accounts that are approved by your administrator. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">Options to save card</translation>
 <translation id="7348502496356775519">Bookmark</translation>
 <translation id="7353432112255316844">Verify that it's you</translation>
@@ -715,7 +707,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="7859704718976024901">Browsing history</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
-<translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export Passwords…</translation>
 <translation id="794799177247607889">Stop logging</translation>
@@ -725,7 +716,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 
 Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="7971521879845308059">Block Pop-ups</translation>
-<translation id="797413074872316787">To sync and personalise across devices, turn on sync.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
@@ -742,16 +732,14 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8076014560081431679">Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
-<translation id="8103864314410529527">Your organisation limits what you can sync. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
+<translation id="8131740175452115882">Confirm</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Translate page</translation>
 <translation id="8205564605687841303">Cancel</translation>
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
-<translation id="8228176677386827255">Your device is managed. You can only sign in with your organisation's account.</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8271720166617117963">Accept and sign in</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
@@ -773,6 +761,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="8490978609246021741">Save changes</translation>
+<translation id="8495097701594799854">Turned off by your organisation.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850600235656508448">Open in Incognito</translation>
 <translation id="8517375800490286174">Open-Source Licences</translation>

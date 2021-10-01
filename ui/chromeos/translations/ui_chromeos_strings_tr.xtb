@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Önizleme yok</translation>
 <translation id="1812302367230252929">Amharca Harf Çevirisi</translation>
 <translation id="1813278315230285598">Hizmetler</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Dikkat:<ph name="END_BOLD" />  Bu dosyalar geçicidir ve disk alanından kazanmak için otomatik olarak silinebilir. <ph name="BEGIN_LINK" />Daha Fazla Bilgi Edinin<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguen</translation>
 <translation id="183183971458492120">Bilgiler yükleniyor...</translation>
 <translation id="1834290891154666894">Alternatif konu adı eşleşme girişi geçersiz</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Fransızca (Kanada)</translation>
 <translation id="3003189754374775221">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="3003633581067744647">Küçük resim görünümüne geç</translation>
-<translation id="3016566519832145558">Dikkat: Bu dosyalar geçici olup diskte yer açmak için otomatik olarak silinebilir.</translation>
 <translation id="3029114385395636667">Dokümanlar, E-Tablolar ve Slaytlar'ı çevrimdışı kullanılabilir hale getirmek için Google Dokümanlar Offline özelliğini etkinleştirin.</translation>
 <translation id="303198083543495566">Coğrafya</translation>
 <translation id="3047197340186497470">Çince Dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.com'a git...</translation>
 <translation id="3553048479571901246">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne kopyalayın.</translation>
 <translation id="3556731189587832921">Uluslararası PC klavye ile İngilizce (ABD)</translation>
-<translation id="3567221313191587603">Çevrimdışıyken erişebilmek istediğiniz dosyaları seçip <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini etkinleştirin.</translation>
 <translation id="357479282490346887">Litvanca</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> dosyası, çevrimdışı kullanılabilir hale getirilemedi</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Mobil profil, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> ağ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> yükleniyor</translation>
 <translation id="4646813851450205600">Çekçe Qwerty klavye</translation>
 <translation id="4656293982926141856">Bu bilgisayar</translation>
-<translation id="4656777537938206294">Dosyaları çevrimdışı kullanıma sunma</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" kaynağının üyeleri, bu öğeler kendileriyle paylaşılmadığı sürece erişimi kaybedecektir.</translation>
 <translation id="4690246192099372265">İsveççe</translation>
 <translation id="4693155481716051732">Suşi</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">Videolar</translation>
 <translation id="6150853954427645995">Bu dosyayı çevrimdışı kullanım için kaydetmek üzere tekrar çevrimiçi olun, dosyayı sağ tıklayın ve <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini belirleyin.</translation>
 <translation id="6164412158936057769">Kelebekler</translation>
-<translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6187719147498869044">Macarca</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ile aç</translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">Değiştiren:</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> arasında <ph name="ENTRY_COUNT" /> giriş seçildi.</translation>
-<translation id="965477715979482472">İngilizce (Güney Afrika)</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı bir dosya zaten var. Değiştirmek istiyor musunuz?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> deneme hakkınız kaldı. Yeni bir PIN oluşturana kadar bu ağı kullanamazsınız.</translation>

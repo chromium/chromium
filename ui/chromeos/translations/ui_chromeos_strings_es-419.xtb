@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Sin vista previa disponible</translation>
 <translation id="1812302367230252929">Amárico (transliteración)</translation>
 <translation id="1813278315230285598">Servicios</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Precaución:<ph name="END_BOLD" /> Estos archivos son temporales y pueden eliminarse automáticamente para liberar espacio en el disco. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="183183971458492120">Cargando información…</translation>
 <translation id="1834290891154666894">La entrada de la coincidencia del nombre alternativo del sujeto no es válida</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Francés (Canadá)</translation>
 <translation id="3003189754374775221">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
 <translation id="3003633581067744647">Cambiar a la vista en miniatura</translation>
-<translation id="3016566519832145558">Precaución: Estos archivos son temporales y es posible que se borren automáticamente para liberar espacio en el disco.</translation>
 <translation id="3029114385395636667">Habilita Documentos de Google sin conexión para poder acceder a Documentos, Hojas de cálculo y Presentaciones sin conexión.</translation>
 <translation id="303198083543495566">Geografía</translation>
 <translation id="3047197340186497470">Chino (Dayi)</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Ir a drive.google.com</translation>
 <translation id="3553048479571901246">Para abrir archivos con <ph name="APP_NAME" />, primero debes copiarlos a la carpeta de archivos de Windows.</translation>
 <translation id="3556731189587832921">Inglés (EE.UU.) con teclado internacional para PC</translation>
-<translation id="3567221313191587603">Selecciona un archivo y activa la opción <ph name="OFFLINE_CHECKBOX_NAME" /> para permitir el acceso sin conexión a los archivos.</translation>
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3592251141500063301">No se pudo hacer que el archivo <ph name="FILE_NAME" /> esté disponible sin conexión.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Se está instalando el perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo con teclado Qwerty</translation>
 <translation id="4656293982926141856">Esta computadora</translation>
-<translation id="4656777537938206294">Haz que los archivos estén disponibles sin conexión</translation>
 <translation id="4669606053856530811">Los miembros de "<ph name="SOURCE_NAME" />" ya no tendrán acceso a estos elementos, a menos que se los comparta con ellos.</translation>
 <translation id="4690246192099372265">Sueco</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">Videos</translation>
 <translation id="6150853954427645995">Para guardar este archivo para su uso sin conexión, conéctate nuevamente, haz clic con el botón secundario en el archivo y selecciona la opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Mariposas</translation>
-<translation id="6165508094623778733">Más información</translation>
 <translation id="6170470584681422115">Sándwich</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6189412234224385711">Abrir con <ph name="EXTENSION_NAME" /></translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947144732524271678">Se seleccionó un rango de <ph name="ENTRY_COUNT" /> entradas de <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">Inglés (Sudáfrica)</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="988685240266037636">Ya existe un archivo con el nombre "<ph name="FILE_NAME" />". ¿Quieres reemplazarlo?</translation>
 <translation id="992401651319295351">Te quedan <ph name="RETRIES" /> intentos. Para usar esta red, deberás configurar un nuevo PIN.</translation>

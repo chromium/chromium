@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1446450296470737166">Control complet dispozitive MIDI</translation>
+<translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1647582022260550163">Sigur vrei să resetezi permisiunile și să ștergi cookie-urile și datele privind site-ul?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Permise, cu excepția celor terță parte</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="1994173015038366702">Adresa URL a site-ului</translation>
-<translation id="2004697686368036666">Este posibil ca funcțiile din anumite site-uri să nu funcționeze</translation>
 <translation id="2025115093177348061">Realitate augmentată</translation>
 <translation id="2030769033451695672">Atinge pentru a reveni la <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anulează</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Anulează selecția</translation>
 <translation id="7846621471902887024">Te vei deconecta de la toate site-urile.</translation>
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
-<translation id="7940722705963108451">Reamintește-mi</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
+<translation id="7993619969781047893">Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte</translation>
 <translation id="7999064672810608036">Sigur dorești să ștergi toate datele locale, inclusiv cookie-urile pentru acest site și să îi resetezi permisiunile?</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8131740175452115882">Confirmați</translation>
-<translation id="8154912474061769055">Este posibil ca funcțiile de pe mai multe site-uri să nu funcționeze</translation>
 <translation id="8197286292360124385">Se permite <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="868929229000858085">Caută în agendă</translation>
 <translation id="8702612070107455751">Toate datele offline vor fi șterse.</translation>
-<translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8719283222052720129">Activează permisiunea pentru <ph name="APP_NAME" /> în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8730621377337864115">Terminat</translation>

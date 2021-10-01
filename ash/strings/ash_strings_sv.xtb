@@ -24,7 +24,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1119348796022671382">I färgläget med tema används färger från bakgrunden till att lätt färgsätta gränssnittet.</translation>
 <translation id="112308213915226829">Dölj hyllan automatiskt</translation>
 <translation id="1148499908455722006">Öppna dialogrutan med information om <ph name="USER_NAME" /></translation>
-<translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1165712434476988950">Enheten måste startas om för att uppdateringen ska tillämpas.</translation>
 <translation id="1175572348579024023">Rulla</translation>
@@ -64,7 +63,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
-<translation id="1364382257761975320">Använd ditt fingeravtryck om du vill låsa upp Chromebook</translation>
 <translation id="1383597849754832576">Det gick inte att ladda ned röstfilerna. Försök igen senare.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1391102559483454063">På</translation>
@@ -104,7 +102,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1698760176351776263">IPv6-adress: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Skrivbord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nätverksinställningar</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Live Caption är aktiverat.</translation>
 <translation id="1720011244392820496">Aktivera wifi-synkronisering</translation>
 <translation id="1743570585616704562">Identifierades inte</translation>
@@ -162,7 +159,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
-<translation id="2148716181193084225">Idag</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
 <translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
@@ -187,12 +183,10 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsätt</translation>
-<translation id="2367186422933365202">Det går inte att logga in på Chromebook</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
 <translation id="2390318262976603432">Inställningar av språkkod</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
-<translation id="2402411679569069051">Använd ditt fingeravtryck eller lås upp telefonen om du vill låsa upp Chromebook</translation>
 <translation id="2405664212338326887">Inte ansluten</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2412593942846481727">Det finns en uppdatering</translation>
@@ -293,7 +287,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3226991577105957773">och <ph name="COUNT" /> till</translation>
 <translation id="324366796737464147">Brusreducering</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
-<translation id="3252248118006571685">Aktivera Bluetooth på telefonen om du vill låsa upp Chromebook</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3289674678944039601">Laddas via adapter</translation>
@@ -327,7 +320,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3477079411857374384">Ctrl-Skift-Mellanslag</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definition</translation>
-<translation id="3509391053705095206">Det gick inte att hitta telefonen. Kontrollera att Bluetooth har aktiverats på telefonen.</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Ansluten till <ph name="NUM_DEVICES" /> enheter</translation>
@@ -359,11 +351,9 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Läser in...</translation>
-<translation id="3708186454126126312">Tidigare anslutna enheter</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
 <translation id="3713734891607377840">Öppna när nedladdningen är klar</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
-<translation id="3744282433224562605">Ange lösenordet om du vill låsa upp Chromebook</translation>
 <translation id="3771549900096082774">Högkontrastläge</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
 <translation id="3779139509281456663">Ansluter <ph name="NAME" /></translation>
@@ -416,7 +406,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4129129681837227511">Lås upp enheten för att ändra inställningen för aviseringar på låsskärmen</translation>
 <translation id="4146833061457621061">Spela upp musik</translation>
 <translation id="4157822100366708405">Inställningar för mörkt tema</translation>
-<translation id="4173958948577803258">T</translation>
+<translation id="4170634509222878053"><ph name="TITLE" /> – <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4195877955194704651">Knapp för Automatiska klick</translation>
 <translation id="4197790712631116042">Av</translation>
@@ -474,7 +464,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4485060137115666462">Assistenten visar information om det som är markerat när du högerklickar eller trycker länge på det, t.ex. en definition, översättning eller en omräkning till en annan enhet.</translation>
 <translation id="4505050298327493054">Aktiv arbetsyta.</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4518404433291145981">Du måste först låsa upp telefonen om du vill låsa upp Chromebook</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
 <translation id="4538824937723742295">Ta en skärmbild av hela skärmen</translation>
@@ -501,6 +490,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
 <translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
+<translation id="4705716602320768426">Skicka feedback</translation>
 <translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
@@ -558,13 +548,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
-<translation id="5147567197700016471">Olåst</translation>
 <translation id="5155897006997040331">Läshastighet</translation>
 <translation id="5166918508782100047">Inställningar för snabbinfo</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
-<translation id="5199367439331364630">Ange lösenordet om du vill logga in på Chromebook</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 avisering till}other{# aviseringar till}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="5208059991603368177">På</translation>
@@ -582,10 +570,8 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5313326810920013265">Bluetooth-inställningar</translation>
 <translation id="5314219114274263156">En skärminspelning har tagits</translation>
-<translation id="5319712128756744240">Koppla en ny enhet</translation>
 <translation id="5322611492012084517">Det gick inte att hitta telefonen</translation>
 <translation id="5329548388331921293">Ansluter …</translation>
-<translation id="5330201449517439522">Tryck eller klicka för att öppna</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5379115545237091094">För många försök</translation>
@@ -643,7 +629,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
-<translation id="584525477304726060">Tryck och håll kvar för att maximera</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5867217927013474703">Nätverksinformation samlas in</translation>
@@ -749,7 +734,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6667908387435388584">Anslut till telefonens surfzon, stäng av ljudet på och hitta din enhet, samt visa de senaste Chrome-flikarna som öppnats på telefonen</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
-<translation id="6671661918848783005">Det går inte att låsa upp Chromebook</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
@@ -760,7 +744,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6751052314767925245">Har ställts in som obligatorisk av administratören</translation>
 <translation id="6751826523481687655">Prestandaspårning har aktiverats</translation>
 <translation id="6752912906630585008">Skrivbordet <ph name="REMOVED_DESK" /> har tagits bort och slagits samman med skrivbordet <ph name="RECEIVE_DESK" /></translation>
-<translation id="6754441615189976839">L</translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6790428901817661496">Spela</translation>
@@ -781,8 +764,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6910714959251846841">Den här uppdateringen kräver att en Powerwash görs av enheten. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6921188888306725546">Förbättrade kortkommandon</translation>
-<translation id="6929655271276551705">Datuminställningar</translation>
-<translation id="6931576957638141829">Spara i</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
@@ -800,7 +781,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Komprimera statusfält</translation>
 <translation id="7045595904618419789">Starta förstoringsglaset</translation>
-<translation id="7055381872777910864">O</translation>
 <translation id="7055910611768509537">E-pennan har inte använts på över en vecka.</translation>
 <translation id="7066646422045619941">Det här nätverket har inaktiverats av administratören.</translation>
 <translation id="7067196344162293536">Rotera automatiskt</translation>
@@ -869,7 +849,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7579778809502851308">Skärmbild</translation>
 <translation id="7590883480672980941">Inmatningsinställningar</translation>
 <translation id="7593891976182323525">Sök eller Skift</translation>
-<translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Visa alla aviseringar</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7618774594543487847">Neutralt</translation>
@@ -919,7 +898,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="79341161159229895">Kontot hanteras av <ph name="FIRST_PARENT_EMAIL" /> och <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tryck på <ph name="SHORTCUT_KEY_NAME" /> + V för att visa urklipp De senaste fem objekten du har kopierat sparas i urklipp.</translation>
 <translation id="7955885781510802139">Högkontrastläge</translation>
-<translation id="7968693143708939792">Välj mapp …</translation>
 <translation id="7977927628060636163">Söker efter mobilnätverk …</translation>
 <translation id="7980780401175799550">Testa nya sätt att navigera i Chrome OS</translation>
 <translation id="7982789257301363584">Nätverk</translation>
@@ -1028,7 +1006,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8818320199597151042">Tar bort profilen. Vänta några minuter.</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>

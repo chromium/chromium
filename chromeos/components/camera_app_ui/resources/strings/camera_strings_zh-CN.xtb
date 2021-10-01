@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
+<translation id="1478594628797167447">扫描器</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">正常</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">未记录任何数据</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">自定义视频参数</translation>
 <translation id="2175927920773552910">二维码</translation>
+<translation id="2268107369530950373">切换到扫描仪模式</translation>
 <translation id="229579744168541441">导出到磁盘</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">已停止录制</translation>
 <translation id="2501953888035679275">使用相机拍照和录制视频。</translation>
-<translation id="2517472476991765520">扫描</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2599796128805996109">后置摄像头</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">摄像头分辨率</translation>
 <translation id="3260401663013584785">检测不到文件</translation>
 <translation id="3448774564454087943">未能保存此视频，因为它太短了</translation>
-<translation id="346539236881580388">重拍</translation>
 <translation id="3517926952904427380">无法拍摄纵向照片</translation>
 <translation id="3569311554794739032">确定要移除“<ph name="FILE" />”吗？</translation>
-<translation id="3573890771273113519">切换到扫描模式</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3838931309141338733">扫描条形码</translation>
 <translation id="3892148308691398805">复制文字</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">文件扫描功能现已推出</translation>
 <translation id="5268823927180092501">为所有摄像头启用文档模式</translation>
 <translation id="5444515100983837161">请将文件的各个边置于框内。当文件的颜色与背景的颜色不同时，扫描效果最佳。</translation>
-<translation id="5588258280684580073">启用 GIF 录制</translation>
 <translation id="5671277269877808209">方形</translation>
-<translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
 <translation id="5759254179196327752">扫描文件</translation>
 <translation id="5775960006311140197">专家模式</translation>
@@ -100,20 +95,17 @@
 <translation id="7243947652761655814">视频分辨率</translation>
 <translation id="7337660886763914220">文件系统出错。</translation>
 <translation id="7450541714075000668">文本已复制</translation>
-<translation id="7488619942230388918">录制 GIF 视频</translation>
 <translation id="7557677699350329807">切换到下一个摄像头</translation>
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">录制一般视频</translation>
 <translation id="7983668134180549431">检测到文字。</translation>
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8120146556401698679">平移，倾斜，缩放</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8145038249676204903">切换到拍照模式</translation>
-<translation id="8167081290930651932">另存为照片</translation>
 <translation id="8239780215768881278">拍摄视频快照</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8425673304802773841">向下倾斜</translation>
@@ -127,6 +119,5 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="9045010116236796332">请将文件的各个边置于框内</translation>
 <translation id="9045155556724273246">10 秒</translation>
-<translation id="906331135292332864">正在处理图片…</translation>
 <translation id="945522503751344254">发送反馈</translation>
 </translationbundle>

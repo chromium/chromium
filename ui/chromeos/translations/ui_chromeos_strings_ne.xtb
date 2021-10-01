@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">कुनै पूर्वावलोकन उपलब्ध छैन</translation>
 <translation id="1812302367230252929">अम्हारिक लिपि रूपान्तरण</translation>
 <translation id="1813278315230285598">सेवाहरू</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />होसियार:<ph name="END_BOLD" />  यी फाइलहरू अस्थायी हुन् र डिस्कमा ठाउँ खालि गर्न स्वचालित रूपमा हटाइन सकिन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेन्गुइन</translation>
 <translation id="183183971458492120">जानकारी लोड गर्दै...</translation>
 <translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">फ्रान्सेली (क्यानाडा)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट गर्नुहोस्</translation>
 <translation id="3003633581067744647">थम्बनेल दृश्यमा बदल्नुहोस्‌</translation>
-<translation id="3016566519832145558">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारणमा ठाउँ खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।</translation>
 <translation id="3029114385395636667">डकुमेन्ट, पाना तथा स्लाइडहरू अफलाइन हेर्न तथा प्रयोग गर्नका निम्ति 'Google कागजात अफलाइन' अन गर्नुहोस्।</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3047197340186497470">चिनियाँ दायी</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.com मा जानुहोस् ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नुहोस्।</translation>
 <translation id="3556731189587832921">अङ्ग्रेजी (सं. रा. अमेरिकी) अन्तर्राष्ट्रिय PC किबोर्ड</translation>
-<translation id="3567221313191587603">तपाईं आफ्ना फाइल इन्टरनेट नभएका बेलामा पनि प्रयोग गर्न चाहनुहुन्छ भने उक्त फाइल चयन गर्नुहोस् र <ph name="OFFLINE_CHECKBOX_NAME" /> टगल गरी अन गर्नुहोस्।</translation>
 <translation id="357479282490346887">लिथुएनियन</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि डाउनलोड गर्न सकिएन</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_PROVIDER_NAME" /> ले उपलब्ध गराएको <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क हो।</translation>
 <translation id="4646813851450205600">चेक Qwerty किबोर्ड</translation>
 <translation id="4656293982926141856">यो कम्प्युटर</translation>
-<translation id="4656777537938206294">फाइलहरू अफलाइन उपलब्ध गराउनुहोस्</translation>
 <translation id="4669606053856530811">यी वस्तुहरूलाई '<ph name="SOURCE_NAME" />' का सदस्यहरूसँग आदान प्रदान नगरेसम्म तिनीहरू ले यी वस्तुहरूमाथिको पहुँच गुमाउनुहुनेछन्।</translation>
 <translation id="4690246192099372265">&amp;#2360;&amp;#2381;&amp;#2357;&amp;#2367;&amp;#2337;&amp;#2367;&amp;#2358;</translation>
 <translation id="4693155481716051732">सुसी</translation>
@@ -581,7 +579,6 @@
 <translation id="6146563240635539929">भिडियोहरू</translation>
 <translation id="6150853954427645995">यो फाइल अफलाइन प्रयोगको लागि, अनलाइनमा फिर्ता जानुहोस्, फाइल दायाँ क्लिक गर्नुहोस्, र <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्प चयन गर्नुहोस्।</translation>
 <translation id="6164412158936057769">पुतलीहरू</translation>
-<translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6187719147498869044">हङ्गेरियाली</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> मार्फत खोल्नुहोस्</translation>
@@ -932,7 +929,6 @@
 <translation id="943972244133411984">निम्नद्वारा परिमार्जित</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> देखि <ph name="TO_ENTRY_NAME" /> सम्मका <ph name="ENTRY_COUNT" /> प्रविष्टिहरू चयन गरिए।</translation>
-<translation id="965477715979482472">अङ्ग्रेजी (दक्षिण अफ्रिका)</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। तपाईं यसलाई प्रतिस्थापन गर्न चाहनुहुन्छ?</translation>
 <translation id="992401651319295351">तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ। नयाँ PIN सेटअप गरेपछि मात्र तपाईं यो नेटवर्क प्रयोग गर्न सक्नुहुन्छ।</translation>

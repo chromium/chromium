@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Transferência interrompida</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1446450296470737166">Perm. controlo total dispo. MIDI</translation>
+<translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1647582022260550163">Tem a certeza de que pretende repor as autorizações e limpar os cookies e os dados de sites?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Permitidos, exceto de terceiros</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1994173015038366702">URL do site</translation>
-<translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2030769033451695672">Toque para voltar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anular</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7846621471902887024">A sua sessão terminará em todos os sites.</translation>
 <translation id="7882806643839505685">Permita a reprodução de som de um site específico.</translation>
-<translation id="7940722705963108451">Lembrar-me</translation>
 <translation id="7986741934819883144">Selecionar um contacto</translation>
+<translation id="7993619969781047893">As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="7999064672810608036">Tem a certeza de que pretende limpar todos os dados locais, incluindo cookies, e repor todas as autorizações para este Website?</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8131740175452115882">Confirmar</translation>
-<translation id="8154912474061769055">As funcionalidades em muitos sites podem não funcionar</translation>
 <translation id="8197286292360124385">Autorização de <ph name="PERMISSION_1" />.</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8206354486702514201">Esta definição é aplicada pelo gestor.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Limpar texto</translation>
 <translation id="868929229000858085">Pesquise os seus contactos</translation>
 <translation id="8702612070107455751">Todos os dados offline serão limpos.</translation>
-<translation id="8712637175834984815">Entendido</translation>
 <translation id="8719283222052720129">Ative a autorização para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>

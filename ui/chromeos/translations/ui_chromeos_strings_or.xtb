@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">କୌଣସି ପୂର୍ବାବଲୋକନ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1812302367230252929">ଆମହାରିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="1813278315230285598">ସେବା</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ସତର୍କତା:<ph name="END_BOLD" />  ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କ‌ରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ହୁଏତ ସ୍ୱଚାଳିତ ରୂପେ ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ପେଙ୍ଗୁଇନ୍‍</translation>
 <translation id="183183971458492120">ସୂଚନା ଲୋଡ୍ ହେଉଛି..</translation>
 <translation id="1834290891154666894">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ ହେଉଥିବା ଏଣ୍ଟ୍ରି ଅବୈଧ ଅଟେ</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">ଫରାସୀ (କାନାଡ଼ା)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3003633581067744647">ଥମ୍ବନେଲ୍ ଭ୍ୟୁକୁ ସ୍ବିଚ୍ କରନ୍ତୁ</translation>
-<translation id="3016566519832145558">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ସ୍ପେସ୍ ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।</translation>
 <translation id="3029114385395636667">Docs, Sheets ଏବଂ Slidesକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିବା ପାଇଁ Google Docs ଅଫଲାଇନକୁ ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="303198083543495566">ଭୌଗଳିକ</translation>
 <translation id="3047197340186497470">ଚାଇନିଜ୍ ଡାୟି</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.comକୁ ଯାଆନ୍ତୁ …</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3556731189587832921">ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
-<translation id="3567221313191587603">ଏକ ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଆକ୍ସେସ୍ କରିବା ପାଇଁ <ph name="OFFLINE_CHECKBOX_NAME" />ର ଟୋଗଲ୍ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର ନେଟୱାର୍କ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ଇନଷ୍ଟଲ୍ କରାଯାଉଛି</translation>
 <translation id="4646813851450205600">Qwerty କୀବୋର୍ଡ ସହ ଚେକ୍</translation>
 <translation id="4656293982926141856">ଏହି କମ୍ପ୍ୟୁଟର୍</translation>
-<translation id="4656777537938206294">ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାନ୍ତୁ</translation>
 <translation id="4669606053856530811"><ph name="SOURCE_NAME" />ର ସଦସ୍ୟମାନେ ସେପର୍ଯ୍ୟନ୍ତ ଆକ୍ସେସ୍ ହରାଇବେ ଯେପର୍ଯ୍ୟନ୍ତ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକୁ ସେମାନଙ୍କ ସହିତ ସେୟାର୍‌ କରାଯାଇ ନାହିଁ।</translation>
 <translation id="4690246192099372265">ସ୍ୱିଡିଶ୍</translation>
 <translation id="4693155481716051732">ସୁଶି</translation>
@@ -576,7 +574,6 @@
 <translation id="6146563240635539929">ଭିଡିଓଗୁଡ଼ିକ</translation>
 <translation id="6150853954427645995">ଅଫ୍‌ଲାଇନ୍‌ ବ୍ୟବହାର ପାଇଁ ଏହି ଫାଇଲ୍‌ ସେଭ୍‌ କରିବାକୁ, ଅନ୍‌ଲାଇନ୍‌କୁ ଫେରନ୍ତୁ, ଫାଇଲ୍‌ରେ ରାଇଟ୍‍-କ୍ଲିକ୍‌ କରନ୍ତୁ ଏବଂ <ph name="OFFLINE_CHECKBOX_NAME" />ର ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6164412158936057769">ବଟର୍‌ଫ୍ଲାଇସ୍</translation>
-<translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6170470584681422115">ସାଣ୍ଡୱିଚ୍</translation>
 <translation id="6187719147498869044">ହଙ୍ଗେରୀୟ</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ମାଧ୍ୟମରେ ଖୋଲନ୍ତୁ</translation>
@@ -927,7 +924,6 @@
 <translation id="943972244133411984">ଏହାଙ୍କ ଦ୍ୱାରା ସଂଶୋଧନ କରାଗଲା</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
-<translation id="965477715979482472">ଇଂରାଜୀ (ଦକ୍ଷିଣ ଆଫ୍ରିକା)</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="992401651319295351">ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି। ଆପଣ ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>

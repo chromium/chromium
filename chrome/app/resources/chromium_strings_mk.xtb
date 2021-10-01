@@ -36,7 +36,6 @@
 <translation id="2343156876103232566">За да испратите број оттука до телефонот со Android, најавете се на Chromium на двата уреда.</translation>
 <translation id="2347108572062610441">Екстензијата ја смени страницата што се прикажува кога го стартувате Chromium.</translation>
 <translation id="2396765026452590966">Екстензијата „<ph name="EXTENSION_NAME" />“ ја смени страницата што се прикажува кога го стартувате Chromium.</translation>
-<translation id="2401032172288869980">На Chromium му треба дозволи за камерата и микрофонот за сајтов</translation>
 <translation id="2483889755041906834">Во Chromium</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2535480412977113886">Chromium OS не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
@@ -154,7 +153,6 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
-<translation id="5883558403894052917">Chromium откри дека овие ставки содржат злонамерен софтвер:</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Мрежно најавување</translation>
 <translation id="5987687638152509985">Ажурирајте го Chromium за да започнете со синхронизирање</translation>
@@ -172,7 +170,6 @@
 <translation id="6183079672144801177">Проверете дали сте најавени на Chromium на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="6212496753309875659">Овој компјутер веќе има најнова верзија на Chromium. Доколку софтверот не работи, деинсталирајте го Chromium и обидете се повторно.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ќе се рестартира сега}=1{Chromium ќе се рестартира по 1 секунда}one{Chromium ќе се рестартира по # секунда}other{Chromium ќе се рестартира по # секунди}}</translation>
-<translation id="6241367896540709610">На Chromium му треба дозвола за пристап до капацитетот за да презема датотеки</translation>
 <translation id="6248213926982192922">Постави го Chromium за стандарден прелистувач</translation>
 <translation id="6266342355635466082">Chromium не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
@@ -193,9 +190,7 @@
 <translation id="6570579332384693436">За поправка на печатните грешки, Chromium го испраќа текстот што го пишувате во текстуалните полиња до Google</translation>
 <translation id="6598877126913850652">Одете во поставките за известувања на Chromium</translation>
 <translation id="6613594504749178791">Промените ќе стапат на сила следниот пат кога ќе го стартувате Chromium повторно.</translation>
-<translation id="665732753414869868">На Chromium му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
-<translation id="6709350901466051922">На Chromium му треба дозвола за микрофонот за сајтов</translation>
 <translation id="6717134281241384636">Вашиот профил не може да се користи бидејќи тој е од понова верзија на Chromium.
 
 Некои функции може да бидат недостапни. Наведете друг директориум на профил или користете понова верзија на Chromium.</translation>
@@ -207,7 +202,6 @@
 <translation id="6847869444787758381">Chromium ве известува дали вашите лозинки се компромитирани</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирана во Chromium)</translation>
-<translation id="6873893289264747459">Chromium откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
 <translation id="6893813176749746474">Chromium се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
 <translation id="691026815377248078">Chromium бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -216,7 +210,6 @@
 <translation id="6990124437352146030">На Chromium му треба дозвола за да пристапи до микрофонот за сајтов</translation>
 <translation id="705851970750939768">Ажурирај го Chromium</translation>
 <translation id="7067091210845072982">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
-<translation id="718435575166326686">На Chromium му треба дозвола за камерата за сајтов</translation>
 <translation id="7196312274710523067">Не може да се стартува Chromium. Обидете се повторно.</translation>
 <translation id="7197677400338048821">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
 <translation id="7223968959479464213">Управник со задачи - Chromium</translation>
@@ -240,6 +233,10 @@ Chromium не може да ги обнови вашите поставки.</tr
     поставките за Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium ги користи фотоапаратот и микрофонот.</translation>
 <translation id="7617377681829253106">Chromium е подобрен</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Пред да започнеме, погрижете се дека имате ажурен бекап од вашите податоци. Инсталирањето на Chromium OS ќе ги презапише сите податоци на вашиот хард диск.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google не е одговорен за загуба на податоци и не гарантира дека Chromium OS ќе функционира на несертифицирани модели. Одете на [TBD] за да дознаете повеќе за сертифицираните модели.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Дознајте повеќе за инсталирањето на Chromium OS и бришењето на податоците: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Доколку сте подготвени да продолжите, кликнете „Инсталирај Chromium OS“ и ќе ве водиме низ процесот на инсталирање во само неколку лесни чекори. Ќе имате уште една можност да потврдите пред да извршиме промени на вашиот компјутер.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium не е вашиот стандарден прелистувач</translation>
 <translation id="7689606757190482937">Синхронизирајте го и персонализирајте го Chromium на сите ваши уреди</translation>
 <translation id="7729447699958282447">Chromium не може да ги синхронизира вашите податоци затоа што Синхронизација не е достапна на вашиот домен.</translation>
@@ -254,7 +251,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7975919845073681630">Ова е второстепена инсталација на Chromium и затоа не може да биде стандарден прелистувач.</translation>
 <translation id="8013436988911883588">Ако Chromium има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="8045118833343856403">Следниве сметки не се најавени на ниту еден профил на Chromium. Ако сакате да користите сметка на друг профил, прво отстранете го профилот.</translation>
-<translation id="8105840573057009683">На Chromium му треба дозвола за локација за сајтов</translation>
 <translation id="81770708095080097">Датотекава е опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="8266560134891435528">Chromium не може да ги провери вашите лозинки бидејќи не сте најавени</translation>

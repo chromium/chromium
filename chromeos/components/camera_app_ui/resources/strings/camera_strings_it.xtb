@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
 <translation id="1473110567575736769">Timer di 3 secondi</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Normale</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nessun dato registrato</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176">Fotocamera <ph name="CAMERA" /> attiva</translation>
 <translation id="2144806332417375165">Parametri video personalizzati</translation>
 <translation id="2175927920773552910">Codice QR</translation>
+<translation id="2268107369530950373">Passa alla modalità Scanner</translation>
 <translation id="229579744168541441">Esporta su disco</translation>
 <translation id="2320741269052147773">Esegui una panoramica a sinistra</translation>
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2501853267655415902">Registrazione interrotta</translation>
 <translation id="2501953888035679275">Realizza foto e video con la tua fotocamera.</translation>
-<translation id="2517472476991765520">Scansiona</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
 <translation id="2599796128805996109">Fotocamera posteriore</translation>
 <translation id="2879583609344924966">Videocamera <ph name="CAMERA" /> collegata.</translation>
@@ -46,10 +45,8 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="3259149966178251584">Risoluzione della fotocamera</translation>
 <translation id="3260401663013584785">Impossibile rilevare un documento</translation>
 <translation id="3448774564454087943">Video non salvato perché è troppo breve</translation>
-<translation id="346539236881580388">Nuovo scatto</translation>
 <translation id="3517926952904427380">Impossibile scattare foto verticale</translation>
 <translation id="3569311554794739032">Vuoi rimuovere <ph name="FILE" />?</translation>
-<translation id="3573890771273113519">Passa alla modalità di scansione</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scansiona il codice a barre</translation>
 <translation id="3892148308691398805">Copia testo</translation>
@@ -72,9 +69,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="520537883758714667">Ora è disponibile la scansione di documenti</translation>
 <translation id="5268823927180092501">Abilita la modalità documento per tutte le fotocamere</translation>
 <translation id="5444515100983837161">Posiziona i bordi del documento all'interno dell'inquadratura. La qualità della scansione è migliore se il documento e lo sfondo sono di colori diversi.</translation>
-<translation id="5588258280684580073">Attiva registrazione GIF</translation>
 <translation id="5671277269877808209">Quadrato</translation>
-<translation id="5746169159649715125">Salva come PDF</translation>
 <translation id="5753488212459587150">Attiva modalità Esperto</translation>
 <translation id="5759254179196327752">Esegui la scansione del documento</translation>
 <translation id="5775960006311140197">Modalità Esperto</translation>
@@ -100,20 +95,17 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7243947652761655814">Risoluzione video</translation>
 <translation id="7337660886763914220">Errori del file system.</translation>
 <translation id="7450541714075000668">Testo copiato</translation>
-<translation id="7488619942230388918">Registra video GIF</translation>
 <translation id="7557677699350329807">Passa alla fotocamera successiva</translation>
 <translation id="7607002721634913082">In pausa</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">Registra video normale</translation>
 <translation id="7983668134180549431">Testo rilevato.</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
 <translation id="8120146556401698679">Panoramica Inclinazione Zoom</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8145038249676204903">Passa alla modalità foto</translation>
-<translation id="8167081290930651932">Salva come foto</translation>
 <translation id="8239780215768881278">Scatta istantanea video</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8425673304802773841">Inclinazione verso il basso</translation>
@@ -127,6 +119,5 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
 <translation id="9045010116236796332">Posiziona i bordi del documento all'interno dell'inquadratura</translation>
 <translation id="9045155556724273246">10 secondi</translation>
-<translation id="906331135292332864">Elaborazione dell'immagine in corso…</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 </translationbundle>

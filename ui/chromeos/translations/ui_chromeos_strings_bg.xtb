@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Няма налична визуализация</translation>
 <translation id="1812302367230252929">Амхарски (транслитерация)</translation>
 <translation id="1813278315230285598">Услуги</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информацията се зарежда...</translation>
 <translation id="1834290891154666894">Невалиден запис в списъка със съответствия на алтернативното име на субекта</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Френски (Канада)</translation>
 <translation id="3003189754374775221">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="3003633581067744647">Превключване към изглед с миниизображения</translation>
-<translation id="3016566519832145558">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.</translation>
 <translation id="3029114385395636667">Активирайте Google Документи офлайн, за да може файловете на Документи, Таблици и Презентации да бъдат налице офлайн.</translation>
 <translation id="303198083543495566">Географско положение</translation>
 <translation id="3047197340186497470">Китайски (даи)</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Към drive.google.com...</translation>
 <translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
 <translation id="3556731189587832921">Английски (САЩ) с международна клавиатура (PC)</translation>
-<translation id="3567221313191587603">Изберете файл и включете „<ph name="OFFLINE_CHECKBOX_NAME" />“, за да бъде достъпен офлайн.</translation>
 <translation id="357479282490346887">литовски</translation>
 <translation id="3592251141500063301">Файлът „<ph name="FILE_NAME" />“ не е налице офлайн</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Мобилният потребителски профил се инсталира, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чешки с клавиатура QWERTY</translation>
 <translation id="4656293982926141856">Този компютър</translation>
-<translation id="4656777537938206294">Осигуряване на офлайн достъп до файловете</translation>
 <translation id="4669606053856530811">Членовете на „<ph name="SOURCE_NAME" />“ ще загубят достъп, ако тези елементи не са споделени с тях.</translation>
 <translation id="4690246192099372265">шведски</translation>
 <translation id="4693155481716051732">Суши</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">Видеоклипове</translation>
 <translation id="6150853954427645995">За да запазите този файл за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху него и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="6164412158936057769">Пеперуди</translation>
-<translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170470584681422115">Сандвич</translation>
 <translation id="6187719147498869044">Унгарски</translation>
 <translation id="6189412234224385711">Отваряне с/ъс <ph name="EXTENSION_NAME" /></translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">Променено от</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="947144732524271678">Избрахте <ph name="ENTRY_COUNT" /> елемента – от <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">английски (Южна Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Вече съществува файл с име „<ph name="FILE_NAME" />“. Искате ли да го замените?</translation>
 <translation id="992401651319295351">Остават ви <ph name="RETRIES" /> опита. Няма да можете да използвате тази мрежа, докато не настроите нов ПИН код.</translation>

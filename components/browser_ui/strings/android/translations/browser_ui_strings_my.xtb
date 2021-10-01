@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">ဒေါင်းလုဒ်လုပ်မှု ဆိုင်းငံ့ထားသည်</translation>
 <translation id="1415402041810619267">URL ကို ဖြတ်လိုက်သည်</translation>
 <translation id="1446450296470737166">MIDI ကိရိယာများအား အပြည့်အဝ ထိန်းချုပ်ခွင့် ပြုရန်</translation>
+<translation id="1509960214886564027">ဝဘ်ဆိုက်အတော်များများရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်သည်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
 <translation id="1647582022260550163">ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်ပြီး ကွတ်ကီးများနှင့် ဝဘ်ဆိုက်ဒေတာကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">ခွင့်ပြုထားသည်၊ တတိယပါတီမှ လွဲ၍</translation>
 <translation id="1989112275319619282">ကြည့်ရန်</translation>
 <translation id="1994173015038366702">ဆိုက် URL</translation>
-<translation id="2004697686368036666">ဝဘ်ဆိုက်အချို့ရှိ ဝန်ဆောင်မှုများ အလုပ်မလုပ်နိုင်လောက်ပါ</translation>
 <translation id="2025115093177348061">လွန်ကဲပကတိအသွင်</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> သို့ပြန်သွားရန် တို့ပါ</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">ရွေးချယ်ထားသောဖိုင်များကို ပြန်ဖျက်ပါ</translation>
 <translation id="7846621471902887024">ဝဘ်ဆိုက်အားလုံးမှ သင် ထွက်သွားပါမည်။</translation>
 <translation id="7882806643839505685">ဝဘ်ဆိုက်တစ်ခုအတွက် အသံဖွင့်ခွင့်ပြုသည်။</translation>
-<translation id="7940722705963108451">သတိပေးရန်</translation>
 <translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
+<translation id="7993619969781047893">အချို့ဝဘ်ဆိုက်များပေါ်ရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်ပါသည်</translation>
 <translation id="7999064672810608036">ကွက်ကီးများအပါအဝင်၊ အတွင်းရှိ ဒေတာများအားလုံး ရှင်းလင်းကာ၊ ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုချက်များအားလုံးအား ပြန်လည်သတ်မှတ်လိုသည်မှာ သေချာပါသလား?</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">ဖျောက်ထားသည်</translation>
 <translation id="813082847718468539">ဆိုက် အချက်အလက်များကို ကြည့်ရန်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
-<translation id="8154912474061769055">ဝဘ်ဆိုက်များစွာရှိ ဝန်ဆောင်မှုများ အလုပ်မလုပ်နိုင်လောက်ပါ</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ခွင့်ပြုထားသည်</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8206354486702514201">ဤဆက်တင်အား သင့်ကြီးကြပ်သူမှ တွန်းအားပေးထားခြင်း ဖြစ်သည်။</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">ထည့်သွင်းမှု ရှင်းရန်</translation>
 <translation id="868929229000858085">သင်၏အဆက်အသွယ်များကို ရှာရန်</translation>
 <translation id="8702612070107455751">အော့ဖ်လိုင်းဒေတာ မှန်သမျှကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
-<translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်ကို ဖွင့်ပါ။</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>

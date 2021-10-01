@@ -66,7 +66,6 @@
 <translation id="133801305381959373">다음 수정 가능한 텍스트 입력란이 없습니다</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">팁</translation>
-<translation id="1354356357730355833">복사</translation>
 <translation id="135978014023467274">ChromeVox 63으로 업데이트되었습니다.</translation>
 <translation id="1360699455582016846">라우팅 키 <ph name="ROUTING_KEY_NUMBER" /> 아래에서 항목을 클릭합니다.</translation>
 <translation id="1377925789329510816">마지막 제목입니다. Search+H를 눌러 이 페이지의 첫 번째 제목으로 이동하거나 Search+Shift+H를 눌러 두 번째 제목으로 이동하세요.</translation>
@@ -353,7 +352,6 @@
 <translation id="3286372614333682499">세로 모드</translation>
 <translation id="3286390186030710347">슬라이더</translation>
 <translation id="3300348286427369683">서식 있는 텍스트가 지원됩니다. 이제 ChromeVox에서 이동 명령어, 점자 커서 라우팅, 선택 등의 서식 있는 텍스트 입력란이 지원됩니다.</translation>
-<translation id="3300733168898541351">실행취소</translation>
 <translation id="3307886118343381874">표의 마지막으로 이동</translation>
 <translation id="3312997241656799641">다음 방문한 링크</translation>
 <translation id="3313245066383501820">ChromeVox 특수키</translation>
@@ -374,7 +372,6 @@
 <translation id="3406283310380167331">양식 목록 표시</translation>
 <translation id="3414400929511680526">앨리스 블루</translation>
 <translation id="3418936350470374046">아래에 셀이 없습니다</translation>
-<translation id="3419269701801640163">붙여넣기</translation>
 <translation id="3435494200763325275">탭 탐색(계속)</translation>
 <translation id="344800400831402066">페루</translation>
 <translation id="3457000393508828486">부분적으로 누름</translation>
@@ -455,7 +452,6 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">아래로 스크롤</translation>
 <translation id="4035381225449278841">봄</translation>
-<translation id="4038098586530338813">다시 실행</translation>
 <translation id="4047216625641135770">표시</translation>
 <translation id="4047910800766704982">기기가 인터넷에 연결되면 사람처럼 자연스러운 음성을 사용할 수 있습니다. 텍스트가 Google로 전송되어 처리됩니다. 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="4053520724192563562">라임 그린</translation>
@@ -606,13 +602,11 @@
 <translation id="5138912041966667164">미디엄 슬레이트 블루</translation>
 <translation id="5140016802771803559">레베카 퍼플</translation>
 <translation id="5142101052131610456">모든 과정</translation>
-<translation id="5152605892605507188">오른쪽으로 이동</translation>
 <translation id="5158275234811857234">표지</translation>
 <translation id="516076699907426116">계속하려면 터치로 탐색하여 다음 과정 버튼을 찾으세요. 그런 다음 두 번 탭하여 계속하세요.</translation>
 <translation id="5170206230005240598">점자 캡션을 사용 설정했습니다</translation>
 <translation id="5183440668879371625">점자 이전 행으로 이동</translation>
 <translation id="5189244881767082992">행</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> 입력</translation>
 <translation id="5263034204789987535">콘실크</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">종료</translation>
@@ -750,7 +744,6 @@
 <translation id="6142308968191113180">제목 4</translation>
 <translation id="6150023170003443621">옐로우 그린</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />행 <ph name="TABLECELLCOLUMNINDEX" />열</translation>
-<translation id="6159796324830296161">왼쪽으로 이동</translation>
 <translation id="6164829606128959761">미터</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166362019018438352">점자 캡션을 사용 중지했습니다</translation>
@@ -840,7 +833,6 @@
 <translation id="6910211073230771657">삭제됨</translation>
 <translation id="6910969481785184048">사용, 사용 중지 및 중지</translation>
 <translation id="6919104639734799681">표 목록 표시</translation>
-<translation id="692135145298539227">삭제</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6949846980769640811">미디엄 아쿠아 마린</translation>
 <translation id="6951482098621102657">다음 수준 5 제목이 없습니다</translation>
@@ -920,6 +912,7 @@
 <translation id="7439060726180460871">디렉터리</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">자연 음성을 사용하시겠습니까?</translation>
+<translation id="7484805699335881122">요소 유형을 말하거나 인용, 삭제, 굵게 표시되거나 괄호에 묶이거나 대문자로 된 텍스트를 말할 때는 음높이를 변경합니다.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">다음 섹션으로 이동합니다. 섹션으로는 상태 표시줄, 런처 등이 있습니다.</translation>
 <translation id="7505149250476994901">문자 전에 "대문자"라고 말하기</translation>
@@ -1132,7 +1125,6 @@
 <translation id="9077305471618729969">라이트 씨 그린</translation>
 <translation id="9080299285199342830">끝으로 이동</translation>
 <translation id="9089864840575085222">순환 입력 에코</translation>
-<translation id="9099429023611373837">잘라내기</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{퍼센트 기호}other{퍼센트 기호 #개}}</translation>

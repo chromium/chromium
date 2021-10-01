@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1446450296470737166">Omogući potpuni nadzor za MIDI</translation>
+<translation id="1509960214886564027">Značajke na mnogim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1647582022260550163">Jeste li sigurni da želite poništiti dopuštenja i izbrisati kolačiće i podatke web-lokacije?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Dopušteno, osim treće strane</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1994173015038366702">URL web-lokacije</translation>
-<translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
 <translation id="2025115093177348061">Proširena stvarnost</translation>
 <translation id="2030769033451695672">Dodirnite da biste se vratili na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Poništi</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Poništi odabir</translation>
 <translation id="7846621471902887024">Odjavit ćete se sa svih web-lokacija.</translation>
 <translation id="7882806643839505685">Dopuštanje zvuka za određenu web-lokaciju.</translation>
-<translation id="7940722705963108451">Podsjeti me</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
+<translation id="7993619969781047893">Značajke na nekim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="7999064672810608036">Jeste li sigurni da želite izbrisati sve lokalne podatke, uključujući kolačiće, i poništiti sva dopuštenja za ovu web-lokaciju?</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Bez zvuka</translation>
 <translation id="813082847718468539">Prikaz informacija o web-mjestu</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
-<translation id="8154912474061769055">Značajke na mnogim web-lokacijama možda neće funkcionirati</translation>
 <translation id="8197286292360124385">Odobreno je dopuštenje <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8206354486702514201">Ovu postavku nametnuo je vaš administrator.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="868929229000858085">Pretraživanje kontakata</translation>
 <translation id="8702612070107455751">Izbrisat će se svi izvanmrežni podaci.</translation>
-<translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8719283222052720129">Uključite dopuštenje za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>

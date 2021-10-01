@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Download paused</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
+<translation id="1509960214886564027">Features on many sites may break</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1647582022260550163">Are you sure that you want to reset permissions, and clear cookies and site data?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Allowed, except third-party</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="1994173015038366702">Site URL</translation>
-<translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Tap to return to <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Cancel selection</translation>
 <translation id="7846621471902887024">You'll be signed out of all sites.</translation>
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
-<translation id="7940722705963108451">Remind me</translation>
 <translation id="7986741934819883144">Select a contact</translation>
+<translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="7999064672810608036">Are you sure that you want to clear all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Muted</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
-<translation id="8154912474061769055">Features on many sites may not work</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> allowed</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="868929229000858085">Search your contacts</translation>
 <translation id="8702612070107455751">Any offline data will be cleared.</translation>
-<translation id="8712637175834984815">Got it</translation>
 <translation id="8719283222052720129">Turn on permission for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>

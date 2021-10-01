@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />-г салгасан байна.</translation>
 <translation id="1473110567575736769">3 секундийн цаг тоологч</translation>
+<translation id="1478594628797167447">Скан хийгч</translation>
 <translation id="1545749641540134597">QR кодыг скан хийх</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Бичсэн зүйл алга</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> идэвхтэй байна</translation>
 <translation id="2144806332417375165">Захиалгат видеоны параметр</translation>
 <translation id="2175927920773552910">QR код</translation>
+<translation id="2268107369530950373">Сканнерын горим руу сэлгэх</translation>
 <translation id="229579744168541441">Диск рүү экспорт хийх</translation>
 <translation id="2320741269052147773">Зүүн тийш чиглүүлэх</translation>
 <translation id="2501278716633472235">Буцаах</translation>
 <translation id="2501853267655415902">Бичлэгийг зогсоосон</translation>
 <translation id="2501953888035679275">Камераараа зураг авч, видео хийгээрэй.</translation>
-<translation id="2517472476991765520">Шалгах</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
 <translation id="2599796128805996109">Арын камер</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />-г залгасан байна.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">Камерын нягтрал</translation>
 <translation id="3260401663013584785">Документыг илрүүлж чадсангүй</translation>
 <translation id="3448774564454087943">Видеог хэт богино байсны улмаас хадгалаагүй</translation>
-<translation id="346539236881580388">Дахин авах</translation>
 <translation id="3517926952904427380">Хөрөг зураг авах боломжгүй байна</translation>
 <translation id="3569311554794739032">Та <ph name="FILE" />-г устгахдаа итгэлтэй байна уу?</translation>
-<translation id="3573890771273113519">Скан хийх горим руу сэлгэх</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Баркодыг скан хийх</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">Одоо документ скан хийх боломжтой боллоо</translation>
 <translation id="5268823927180092501">Бүх камерт документын горимыг идэвхжүүлэх</translation>
 <translation id="5444515100983837161">Документын бүх ирмэгийг хүрээнд байрлуулна уу. Документ болон дэвсгэр өөр өөр өнгөтэй тохиолдолд илүү сайн скан хийнэ.</translation>
-<translation id="5588258280684580073">GIF бичлэгийг идэвхжүүлэх</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>
-<translation id="5746169159649715125">PDF хэлбэрээр хадгалах</translation>
 <translation id="5753488212459587150">Мэргэжилтний горимыг идэвхжүүлэх</translation>
 <translation id="5759254179196327752">Документыг скан хийх</translation>
 <translation id="5775960006311140197">Мэргэжилтэн горим</translation>
@@ -100,20 +95,17 @@
 <translation id="7243947652761655814">Видео нягтрал</translation>
 <translation id="7337660886763914220">Файлын системийн алдаа гарлаа.</translation>
 <translation id="7450541714075000668">Текстийг хуулсан</translation>
-<translation id="7488619942230388918">GIF видео бичих</translation>
 <translation id="7557677699350329807">Дараагийн камер руу сэлгэх</translation>
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7608223098072244877">4-г харьцах нь 4</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">Энгийн видео бичих</translation>
 <translation id="7983668134180549431">Текст илэрсэн.</translation>
 <translation id="8067883171444229417">Видео тоглуулах</translation>
 <translation id="8120146556401698679">Чиглүүлэгч хазайлгалт томруулалт</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8145038249676204903">Зураг авах руу сэлгэх</translation>
-<translation id="8167081290930651932">Зургаар хадгалах</translation>
 <translation id="8239780215768881278">Видео агшин зураг авах</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8425673304802773841">Доош хазайлгах</translation>
@@ -127,6 +119,5 @@
 <translation id="8903921497873541725">Томруулж харах</translation>
 <translation id="9045010116236796332">Документын бүх ирмэгийг хүрээнд байрлуулна уу</translation>
 <translation id="9045155556724273246">10 секунд</translation>
-<translation id="906331135292332864">Зургийг боловсруулж байна...</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 </translationbundle>

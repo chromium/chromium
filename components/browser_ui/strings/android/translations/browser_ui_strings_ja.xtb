@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
+<translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1647582022260550163">権限をリセットし、Cookie とサイトデータを削除してもよろしいですか？</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">サードパーティを除いて許可する</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
-<translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2025115093177348061">拡張現実（AR）</translation>
 <translation id="2030769033451695672">タップして <ph name="URL_OF_THE_CURRENT_TAB" /> に戻る</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7846621471902887024">すべてのサイトからログアウトします。</translation>
 <translation id="7882806643839505685">特定のサイトに対して音声の再生を許可します。</translation>
-<translation id="7940722705963108451">リマインダーの設定</translation>
 <translation id="7986741934819883144">連絡先の選択</translation>
+<translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="7999064672810608036">すべてのローカルデータ（Cookie を含む）を削除して、このウェブサイトに指定したすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">ミュート中</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
 <translation id="8131740175452115882">確認</translation>
-<translation id="8154912474061769055">多くのサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />を許可</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8206354486702514201">この設定は管理者によって制御されています。</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="868929229000858085">連絡先を検索</translation>
 <translation id="8702612070107455751">オフライン データも削除されます。</translation>
-<translation id="8712637175834984815">閉じる</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8730621377337864115">完了</translation>

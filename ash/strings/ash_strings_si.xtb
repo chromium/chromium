@@ -24,7 +24,6 @@
 <translation id="1119348796022671382">තේමා වර්ණ ප්‍රකාරය අතුරු මුහුණත ළාවට වර්ණ ගැන්වීම සඳහා ඔබේ වෝල්ලපේපරයෙන් නිස්සාරණය කළ වර්ණ භාවිත කරයි.</translation>
 <translation id="112308213915226829">ස්වයං සැඟවුම් රාක්කය</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
-<translation id="1150989369772528668">දින දර්ශනය</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
 <translation id="1165712434476988950">යාවත්කාලීනය යෙදීම සඳහා උපාංග නැවත ආරම්භ කිරීම අවශ්‍ය වේ.</translation>
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
@@ -64,7 +63,6 @@
 <translation id="1341651618736211726">පිටාරය</translation>
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1351937230027495976">මෙනුව හකුළන්න</translation>
-<translation id="1364382257761975320">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ ඇඟිලි සලකුණ භාවිත කරන්න</translation>
 <translation id="1383597849754832576">කථන ගොනු බාගැනීමට නොහැකිය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1391102559483454063">සක්‍රියයි</translation>
@@ -104,7 +102,6 @@
 <translation id="1698760176351776263">IPv6 ලිපිනය: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">මේසය: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ජාල සැකසීම්</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">සජීවී සිරස්තල ක්‍රියාත්මකයි.</translation>
 <translation id="1720011244392820496">Wi-Fi සමමුහුර්තකරණය ක්‍රියාත්මක කරන්න</translation>
 <translation id="1743570585616704562">හඳුනා නොගන්නා ලදී</translation>
@@ -162,7 +159,6 @@
 <translation id="2127372758936585790">බලය අඩු චාජරයකි</translation>
 <translation id="2132302418721800944">පූර්ණ තිරය පටිගත කරන්න</translation>
 <translation id="2135456203358955318">ඈඳන ලද විශාලකය</translation>
-<translation id="2148716181193084225">අද</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
 <translation id="2170530631236737939">දළ විශ්ලේෂණයෙන් පිටවීමට ඇඟිලි තුනකින් පහළට ස්වයිප් කරන්න</translation>
 <translation id="2208323208084708176">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරය</translation>
@@ -187,12 +183,10 @@
 <translation id="2352467521400612932">පන්හිඳ සැකසීම්</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> සක්‍රීය කරමින්</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
-<translation id="2367186422933365202">ඔබගේ Chromebook වෙත පිරීමට නොහැකිය</translation>
 <translation id="2369165858548251131">චීන භාෂාවෙන් "Hello"</translation>
 <translation id="2390318262976603432">පෙදෙසි සැකසීම්</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">මාධ්‍ය පාලන</translation>
-<translation id="2402411679569069051">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ ඇඟිලි සලකුණ භාවිත කරන්න හෝ ඔබගේ දුරකථනය අගුලු හරින්න</translation>
 <translation id="2405664212338326887">සම්බන්ධ නැත</translation>
 <translation id="2408955596600435184">ඔබගේ PIN එක ඇතුළු කරන්න</translation>
 <translation id="2412593942846481727">යාවත්කාලීනයක් ඇත</translation>
@@ -293,7 +287,6 @@
 <translation id="3226991577105957773">තවත් +<ph name="COUNT" /></translation>
 <translation id="324366796737464147">අනවශ්‍ය ශබ්ද ඉවත් කිරීම</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> කවුළුව <ph name="ACTIVE_DESK" /> මේසයෙන් <ph name="TARGET_DESK" /> මේසයට ගියා</translation>
-<translation id="3252248118006571685">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාත්මක කරන්න</translation>
 <translation id="3255483164551725916">ඔබට කළ හැක්කේ කුමක්ද?</translation>
 <translation id="3269597722229482060">දකුණු ක්ලික් කිරීම</translation>
 <translation id="3289674678944039601">ඇඩැප්ටරය හරහා ආරෝපණය වෙමින්</translation>
@@ -327,7 +320,6 @@
 <translation id="3477079411857374384">පාලනය-Shift-ඉඩ</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
-<translation id="3509391053705095206">ඔබගේ දුරකථනය සොයා ගත නොහැකිය. ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාත්මක බව සහතික කර ගන්න.</translation>
 <translation id="3510164367642747937">මූසිකයේ කර්සරය ඉස්මතු කරන්න</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> විසින් ගිණුම කළමනාකරණය කරයි</translation>
 <translation id="353086728817903341">උපාංග <ph name="NUM_DEVICES" />කට සම්බන්ධ විය</translation>
@@ -359,11 +351,9 @@
 <translation id="3702846122927433391">නයිජීරියාවේ ජනගහනය</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">පූරණය වේ...</translation>
-<translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
 <translation id="371370241367527062">ඉදිරිපස මයික්‍රෆෝනය</translation>
 <translation id="3713734891607377840">සම්පූර්ණ විට විවෘත කරන්න</translation>
 <translation id="3742055079367172538">තිර ඡායාව ගැනිණි</translation>
-<translation id="3744282433224562605">ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න</translation>
 <translation id="3771549900096082774">අධි අසමානතා ප්‍රකාරය</translation>
 <translation id="3773700760453577392">පරිපාලකයෙකු විසින් <ph name="USER_EMAIL" /> සඳහා බහු පුරනයට ඉඩ දී නොමැත. සියලු පරිශීලකයින් ඉදිරියට යෑමට වරනය විය යුතුයි.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> සම්බන්ධ වෙමින්</translation>
@@ -416,7 +406,7 @@
 <translation id="4129129681837227511">ඔබේ අඟුලු තිරයේ දැනුම්දීම් බැලීමට, සැකසීම් වෙනස් කිරීමට අඟුලු අරින්න</translation>
 <translation id="4146833061457621061">සංගීතය වාදනය කරන්න</translation>
 <translation id="4157822100366708405">අඳුරු තේමා සැකසීම්</translation>
-<translation id="4173958948577803258">බ්‍ර</translation>
+<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">භාෂා</translation>
 <translation id="4195877955194704651">ස්වයංක්‍රීය ක්ලික් බොත්තම</translation>
 <translation id="4197790712631116042">අක්‍රියයි</translation>
@@ -474,7 +464,6 @@
 <translation id="4485060137115666462">දකුණු-ක්ලික් කිරීමකින් හෝ දිගු එබුමකින් සහායක ඔබගේ තේරීම සඳහා අර්ථ දැක්වීම, පරිවර්තනය හෝ ඒකක පරිවර්තනය වැනි තොරතුරු පෙන්වයි.</translation>
 <translation id="4505050298327493054">ක්‍රියාකාරී මේසය.</translation>
 <translation id="4513946894732546136">ප්‍රතිපෝෂණ</translation>
-<translation id="4518404433291145981">ඔබගේ Chromebook අගුලු හැරීමට, පළමුව ඔබගේ දුරකථනය අගුලු හරින්න</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth උපාංගය යුගල වඊමට අවසර ඉල්ලයි.</translation>
 <translation id="453661520163887813">පිරෙන තෙක් <ph name="TIME" /></translation>
 <translation id="4538824937723742295">පූර්ණ තිරයේ තිර රුවක් ගන්න</translation>
@@ -501,6 +490,7 @@
 <translation id="4665114317261903604">බාධා නොකරන්න ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">මාපිය කේතය සමඟ උපාංගය අඟුලු අරින්න</translation>
 <translation id="4702647871202761252">පෞද්ගලිකත්ව තිරය අක්‍රියයි</translation>
+<translation id="4705716602320768426">ප්‍රතිපෝෂණය ගොනු කරන්න</translation>
 <translation id="4706121060329443414">බාගැනීම පසුව උත්සාහ කරනු ඇත. දැනට සැකසීම සඳහා කථනය Google වෙත යවනු ඇත.</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4734965478015604180">තිරස්</translation>
@@ -558,13 +548,11 @@
 <translation id="5078796286268621944">වැරදි PIN</translation>
 <translation id="5083553833479578423">තව සහායක අංග අගුලු හරින්න</translation>
 <translation id="5136175204352732067">වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත</translation>
-<translation id="5147567197700016471">අගුලු හැර ඇත</translation>
 <translation id="5155897006997040331">කියවීමේ වේගය</translation>
 <translation id="5166918508782100047">ඉක්මන් පිළිතුරු සැකසීම්</translation>
 <translation id="5168181903108465623">විකාශ උපාංග ලබා ගත හැකිය</translation>
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5176318573511391780">අර්ධ තිරය පටිගත කරන්න</translation>
-<translation id="5199367439331364630">ඔබගේ Chromebook වෙත පිරීමට, මුරපදය ඇතුළු කරන්න</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{වෙනත් දැනුම්දීම් 1}one{වෙනත් දැනුම්දීම් #}other{වෙනත් දැනුම්දීම් #}}</translation>
 <translation id="5207949376430453814">පෙළ කාකපාදය උද්දීපනය කරන්න</translation>
 <translation id="5208059991603368177">ක්‍රියාත්මකයි</translation>
@@ -582,10 +570,8 @@
 <translation id="5308380583665731573">සම්බන්ධ කරන්න</translation>
 <translation id="5313326810920013265">බ්ලූටූත් සැකසීම්</translation>
 <translation id="5314219114274263156">තිර පිටපත් කිරීමක් ගන්නා ලදි</translation>
-<translation id="5319712128756744240">නව උපාංගය යුගල කරන්න</translation>
 <translation id="5322611492012084517">ඔබගේ දුරකථනය සොයා ගත නොහැකිය</translation>
 <translation id="5329548388331921293">සබැඳෙමින්...</translation>
-<translation id="5330201449517439522">පිවිසීමට තට්ටු කරන්න හෝ ක්ලික් කරන්න</translation>
 <translation id="5331975486040154427">USB-C උපාංගය (වම්පස පසු තොට)</translation>
 <translation id="5352250171825660495">අඳුරු තේමාව ක්‍රියාත්මකයි</translation>
 <translation id="5379115545237091094">උත්සාහයන් විශාල ප්‍රමාණයකි</translation>
@@ -643,7 +629,6 @@
 <translation id="5825969630400862129">සම්බන්ධිත උපාංග සැකසීම්</translation>
 <translation id="583281660410589416">නොදනී</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /> නවත්වන්න</translation>
-<translation id="584525477304726060">විශාල කිරීමට අල්ලාගෙන සිටින්න</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
 <translation id="5867217927013474703">ජාල තොරතුරු රැස් කරමින්</translation>
@@ -749,7 +734,6 @@
 <translation id="6667908387435388584">ඔබගේ දුරකථනයේ හොට්ස්පොට් වෙත සම්බන්ධ වන්න, නිශ්ශබ්ද කරන්න සහ ඔබගේ උපාංගය සොයා ගන්න සහ ඔබගේ දුරකථනයේ විවෘත කර ඇති මෑත Chrome ටැබ් බලන්න</translation>
 <translation id="6670153871843998651">3 වෙනි මේසය</translation>
 <translation id="6671495933530132209">රූපය පිටපත් කරන්න</translation>
-<translation id="6671661918848783005">ඔබගේ Chromebook අගුලු හැරීමට නොහැකිය</translation>
 <translation id="6692996468359469499">ඔබේ තේරීමට අදාළ තොරතුරු ලබා ගන්න</translation>
 <translation id="6696025732084565524">ඔබේ ගැලවීමට හැකි යතුරු පුවරුවට අවදානම් යාවත්කාලීනයක් අවශ්‍යයි</translation>
 <translation id="6700713906295497288">IME මෙනු බොත්තම</translation>
@@ -760,7 +744,6 @@
 <translation id="6751052314767925245">ඔබේ පරිපාලකයා විසින් බලාත්මක කෙරේ</translation>
 <translation id="6751826523481687655">කාර්ය සාධන අනුරේඛනය ක්‍රියාත්මකයි</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>
-<translation id="6754441615189976839">සෙ</translation>
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
@@ -781,8 +764,6 @@
 <translation id="6910714959251846841">මෙම යාවත්කාලීන කිරීම සඳහා ඔබේ උපාංගය බල ගැන්වීම අවශ්‍යය. <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන නවතම තොරතුරු දැන ගන්න.</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="6921188888306725546">යතුරුපුවරු කෙටිමං වැඩි දියුණු කර ඇත</translation>
-<translation id="6929655271276551705">දින සැකසීම්</translation>
-<translation id="6931576957638141829">සුරකින්නේ</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6961121602502368900">කාර්යාල පැතිකඩෙහි දුරකථනය නිහඬ කිරීම ලබා ගත නොහැකිය</translation>
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
@@ -800,7 +781,6 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google සහායක</translation>
 <translation id="7042322267639375032">තත්ත්ව ප්‍රදේශය හකුළන්න</translation>
 <translation id="7045595904618419789">විශාලකය අරඹන්න</translation>
-<translation id="7055381872777910864">බ</translation>
 <translation id="7055910611768509537">සතියකට වඩා වැඩි කාලයක් තුළ පන්හිඳ භාවිත කර නැත</translation>
 <translation id="7066646422045619941">මෙම ජාලය ඔබේ පරිපාලක විසින් අබල කෙරේ.</translation>
 <translation id="7067196344162293536">ස්වයං කරකැවීම</translation>
@@ -869,7 +849,6 @@
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>
 <translation id="7590883480672980941">ආදාන සැකසීම්</translation>
 <translation id="7593891976182323525">Search හෝ Shift</translation>
-<translation id="7595633564847427181">ස</translation>
 <translation id="7600875258240007829">සියලු දැනුම්දීම් බලන්න</translation>
 <translation id="7607002721634913082">අත්හිටුවන ලදි</translation>
 <translation id="7618774594543487847">උදාසීන</translation>
@@ -919,7 +898,6 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> සහ <ph name="SECOND_PARENT_EMAIL" /> විසින් ගිණුම කළමනාකරණය කරයි</translation>
 <translation id="793716872548410480">ඔබගේ පසුරු පුවරුව බැලීමට <ph name="SHORTCUT_KEY_NAME" /> + V ඔබන්න. ඔබ පිටපත් කළ අවසන් අයිතම 5 ඔබගේ පසුරු පුවරුවට සුරකිනු ඇත.</translation>
 <translation id="7955885781510802139">අධි අසමානතා ප්‍රකාරය</translation>
-<translation id="7968693143708939792">ෆෝල්ඩරය තෝරන්න...</translation>
 <translation id="7977927628060636163">ජංගම ජාල සඳහා සොයමින්...</translation>
 <translation id="7980780401175799550">Chrome OS මත සංචලන කිරීමට නව මාර්ග උත්සාහ කරන්න</translation>
 <translation id="7982789257301363584">ජාලය</translation>
@@ -1028,7 +1006,6 @@
 <translation id="8818320199597151042">පැතිකඩ ඉවත් කරමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="8825863694328519386">ආපසු යාමට වමින් ස්වයිප් කරන්න</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8834539327799336565">දැනට සම්බන්ධ වී ඇත</translation>
 <translation id="8841375032071747811">ආපසු බොත්තම</translation>
 <translation id="8843682306134542540">කරකැවීමේ අගුල මාරු කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

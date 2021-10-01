@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Priekšskatījums nav pieejams</translation>
 <translation id="1812302367230252929">Amharu, transliterācija</translation>
 <translation id="1813278315230285598">Pakalpojumi</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Uzmanību!<ph name="END_BOLD" /> Šie ir pagaidu faili un var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvīns</translation>
 <translation id="183183971458492120">Notiek informācijas ielāde...</translation>
 <translation id="1834290891154666894">Nederīgs subjekta alternatīvā nosaukuma atbilstības ieraksts.</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Franču (Kanāda)</translation>
 <translation id="3003189754374775221">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, savienojums</translation>
 <translation id="3003633581067744647">Pārslēgties uz sīktēlu skatījumu</translation>
-<translation id="3016566519832145558">Uzmanību! Šie ir pagaidu faili, kas var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā.</translation>
 <translation id="3029114385395636667">Iespējojiet paplašinājumu Google dokumenti bezsaistē, lai Dokumentu, Izklājlapu un Prezentāciju faili būtu pieejami bezsaistē.</translation>
 <translation id="303198083543495566">Ģeogrāfiskie dati</translation>
 <translation id="3047197340186497470">Ķīniešu, Dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Doties uz drive.google.com...</translation>
 <translation id="3553048479571901246">Lai atvērtu failus, izmantojot lietotni <ph name="APP_NAME" />, vispirms kopējiet tos uz Windows failu mapi.</translation>
 <translation id="3556731189587832921">Angļu (ASV), ar starptautisko datora tastatūru</translation>
-<translation id="3567221313191587603">Atlasiet failu un ieslēdziet opciju “<ph name="OFFLINE_CHECKBOX_NAME" />”, lai varētu piekļūt saviem failiem bezsaistē.</translation>
 <translation id="357479282490346887">Lietuviešu valoda</translation>
 <translation id="3592251141500063301">Nevarēja padarīt failu “<ph name="FILE_NAME" />” pieejamu bezsaistē.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Notiek mobilo sakaru profila instalēšana, <ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Čehu, ar Qwerty tastatūru</translation>
 <translation id="4656293982926141856">Šajā datorā</translation>
-<translation id="4656777537938206294">Padariet failus pieejamus bezsaistē</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” dalībnieki zaudēs piekļuvi šiem vienumiem, ja tie netiks kopīgoti ar viņiem.</translation>
 <translation id="4690246192099372265">Zviedru valoda</translation>
 <translation id="4693155481716051732">Suši</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">Videoklipi</translation>
 <translation id="6150853954427645995">Lai saglabātu šo failu izmantošanai bezsaistē, aktivizējiet tiešsaistes režīmu, ar peles labo pogu noklikšķiniet uz faila un atlasiet opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Tauriņi</translation>
-<translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6170470584681422115">Sviestmaize</translation>
 <translation id="6187719147498869044">Ungāru</translation>
 <translation id="6189412234224385711">Atvērt ar paplašinājumu <ph name="EXTENSION_NAME" /></translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">Pārveidoja</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="947144732524271678">Atlasīts diapazons (<ph name="ENTRY_COUNT" /> vienumi) no “<ph name="FROM_ENTRY_NAME" />” līdz “<ph name="TO_ENTRY_NAME" />”.</translation>
-<translation id="965477715979482472">Angļu (Dienvidāfrika)</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="988685240266037636">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Vai vēlaties to aizstāt?</translation>
 <translation id="992401651319295351">Atlikuši <ph name="RETRIES" /> mēģinājumi. Šo tīklu nevarēsiet lietot, kamēr netiks iestatīts jauns PIN.</translation>

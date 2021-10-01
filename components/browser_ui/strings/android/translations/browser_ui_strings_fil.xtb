@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Na-pause ang pag-download</translation>
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1446450296470737166">Payagan ganap na kontrol sa MIDI device</translation>
+<translation id="1509960214886564027">Posibleng masira ang mga feature sa maraming site</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1647582022260550163">Sigurado ka bang gusto mong i-reset ang mga pahintulot, at i-clear ang cookies at data ng site?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Pinapayagan, maliban ang third-party</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="1994173015038366702">URL ng site</translation>
-<translation id="2004697686368036666">Posibleng hindi gumana ang mga feature sa ilang site</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Mag-tap para bumalik sa <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">I-undo</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
 <translation id="7846621471902887024">Masa-sign out ka sa lahat ng site.</translation>
 <translation id="7882806643839505685">Payagan ang tunog para sa isang partikular na site.</translation>
-<translation id="7940722705963108451">Ipaalala sa akin</translation>
 <translation id="7986741934819883144">Pumili ng contact</translation>
+<translation id="7993619969781047893">Posibleng masira ang mga feature sa ilang site</translation>
 <translation id="7999064672810608036">Sigurado ka bang gusto mong i-clear ang lahat ng lokal na data, kasama ang cookies, at i-reset ang lahat ng pahintulot para sa website na ito?</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Naka-mute</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
-<translation id="8154912474061769055">Posibleng hindi gumana ang mga feature sa maraming site</translation>
 <translation id="8197286292360124385">Pinapayagan ang <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206354486702514201">Ipinapatupad ng iyong administrator ang setting na ito.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="868929229000858085">Maghanap sa iyong mga contact</translation>
 <translation id="8702612070107455751">Maki-clear ang anumang offline na data.</translation>
-<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8719283222052720129">I-on ang pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8730621377337864115">Tapos na</translation>

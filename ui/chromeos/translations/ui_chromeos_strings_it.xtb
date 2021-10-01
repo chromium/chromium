@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Anteprima non disponibile</translation>
 <translation id="1812302367230252929">Traslitterazione amarico</translation>
 <translation id="1813278315230285598">Servizi</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Attenzione.<ph name="END_BOLD" /> Questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguino</translation>
 <translation id="183183971458492120">Caricamento delle informazioni…</translation>
 <translation id="1834290891154666894">Voce corrispondenza nome alternativo del soggetto non valida</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Francese (Canada)</translation>
 <translation id="3003189754374775221">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="3003633581067744647">Passa alla visualizzazione miniatura</translation>
-<translation id="3016566519832145558">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.</translation>
 <translation id="3029114385395636667">Attiva Documenti Google offline per rendere disponibili offline documenti, fogli e presentazioni.</translation>
 <translation id="303198083543495566">Area geografica</translation>
 <translation id="3047197340186497470">Cinese Dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Vai all'indirizzo drive.google.com...</translation>
 <translation id="3553048479571901246">Per aprire file con l'app <ph name="APP_NAME" />, devi prima copiarli nella cartella File di Windows.</translation>
 <translation id="3556731189587832921">Inglese (USA) con tastiera PC internazionale</translation>
-<translation id="3567221313191587603">Seleziona un file e attiva l'opzione <ph name="OFFLINE_CHECKBOX_NAME" /> per avere accesso offline ai tuoi file.</translation>
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3592251141500063301">Impossibile rendere disponibile offline il file <ph name="FILE_NAME" /></translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Ceco con tastiera Qwerty</translation>
 <translation id="4656293982926141856">Questo computer</translation>
-<translation id="4656777537938206294">Rendi i file disponibili offline</translation>
 <translation id="4669606053856530811">I membri di "<ph name="SOURCE_NAME" />" non avranno più accesso, a meno che questi elementi vengano condivisi con loro.</translation>
 <translation id="4690246192099372265">Svedese</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -581,7 +579,6 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Se desideri salvare il file per l'utilizzo offline, torna in linea, fai clic con il pulsante destro del mouse sul file e seleziona l'opzione <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Farfalle</translation>
-<translation id="6165508094623778733">Ulteriori informazioni</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Ungherese</translation>
 <translation id="6189412234224385711">Apri con l'estensione <ph name="EXTENSION_NAME" /></translation>
@@ -932,7 +929,6 @@
 <translation id="943972244133411984">Modificato da</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="947144732524271678">È stato selezionato un intervallo di <ph name="ENTRY_COUNT" /> elementi da <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">Inglese (Sudafrica)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Esiste già un file chiamato "<ph name="FILE_NAME" />". Vuoi sostituirlo?</translation>
 <translation id="992401651319295351">Hai ancora <ph name="RETRIES" /> tentativi a disposizione. Non potrai utilizzare questa rete finché non configuri un nuovo PIN.</translation>

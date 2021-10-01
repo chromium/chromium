@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">බාගැනීම විරාමයි</translation>
 <translation id="1415402041810619267">URL කපන ලදි</translation>
 <translation id="1446450296470737166">MIDI උපාංගවල සම්පූර්ණ පාලනයට ඉඩ දෙන්න</translation>
+<translation id="1509960214886564027">බොහෝ වෙබ් අඩවි මත විශේෂාංග කැඩී ගිය හැක</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
 <translation id="1647582022260550163">ඔබට අවසර යළි සැකසීමට සහ කුකී සහ අඩවි දත්ත ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">අනුමතයි, තෙවන පාර්ශව හැර</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
 <translation id="1994173015038366702">අඩවි URL</translation>
-<translation id="2004697686368036666">සමහර අඩවිවල විශේෂාංග ක්‍රියා නොකළ හැකිය</translation>
 <translation id="2025115093177348061">ආවර්ධිත යථාර්ථය</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> වෙත ආපසු යාමට තට්ටු කරන්න</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">තේරීම අවලංගු කරන්න</translation>
 <translation id="7846621471902887024">ඔබ සියලුම වෙබ් අඩවිවලින් වරනු ලැබේ.</translation>
 <translation id="7882806643839505685">නිශ්චිත අඩවියක් සඳහා ශබ්දයට ඉඩ දෙන්න.</translation>
-<translation id="7940722705963108451">මට සිහිකැඳවන්න</translation>
 <translation id="7986741934819883144">සම්බන්ධතාවක් තෝරාගන්න</translation>
+<translation id="7993619969781047893">සමහර වෙබ් අඩවි මත විශේෂාංග කැඩී ගිය හැක</translation>
 <translation id="7999064672810608036">කුකීස් ඇතුළු සියලු පෙදෙසි දත්ත හිස් කිරීමට අවශ්‍ය යැයි සහ මෙම වෙබ් අඩවිය සඳහා සියලු අවසර නැවත සැකසිය යුතු යැයි ඔබට විශ්වාස ද?</translation>
 <translation id="8007176423574883786">මෙම උපාංගය සඳහා ක්‍රියාවිරහිත කරන ලදී.</translation>
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">නිහඬයි</translation>
 <translation id="813082847718468539">අඩවි තොරතුරු පෙන්වන්න</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
-<translation id="8154912474061769055">බොහෝ අඩවිවල විශේෂාංග ක්‍රියා නොකළ හැකිය</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ඉඩ දෙන ලදි</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="8206354486702514201">මෙම සැකසුම පරිපාලකයා විසින් බලකර ඇත.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">ආදානය හිස් කරන්න</translation>
 <translation id="868929229000858085">ඔබේ සම්බන්ධතා සොයන්න</translation>
 <translation id="8702612070107455751">නොබැඳි දත්ත කිසිවක් හිස් කෙරේ.</translation>
-<translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" /> සඳහා අවසරය <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ ක්‍රියාත්මක කරන්න.</translation>
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>
 <translation id="8730621377337864115">අවසන්</translation>

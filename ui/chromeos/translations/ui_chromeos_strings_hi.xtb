@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
 <translation id="1813278315230285598">सेवाएं</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />चेतावनी:<ph name="END_BOLD" />  ये फ़ाइलें अस्‍थायी हैं और डि‍स्‍क का स्थान खाली करने के लि‍ए अपने आप हटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
 <translation id="1834290891154666894">विषय के दूसरे नाम से मिलती-जुलती एंट्री अमान्य है</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">फ़्रेंच (कनाडा)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="3003633581067744647">थंबनेल व्यू में स्विच करें</translation>
-<translation id="3016566519832145558">चेतावनी: ये फ़ाइलें अस्थायी हैं और डिस्क की जगह खाली करने के लिए, ऑटोमैटिकली मिटाई जा सकती हैं.</translation>
 <translation id="3029114385395636667">Docs, Sheets, और Slides का ऑफ़लाइन इस्तेमाल करने के लिए, 'Google Docs ऑफ़लाइन' को चालू करें.</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3047197340186497470">चाइनीज़ डाई</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.com पर जाएं...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> में फ़ाइलें खोलने के लिए, पहले उन्हें Windows के फ़ाइल फ़ोल्डर में कॉपी करें.</translation>
 <translation id="3556731189587832921">इंटरनैशनल पीसी कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
-<translation id="3567221313191587603">फ़ाइल चुनें और उसे बिना इंटरनेट के ऐक्सेस करने के लिए, <ph name="OFFLINE_CHECKBOX_NAME" /> के टॉगल को चालू करें.</translation>
 <translation id="357479282490346887">लिथुआनियाई</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> को ऑफ़लाइन मोड में इस्तेमाल करने के लिए डाउनलोड नहीं किया जा सका</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">मोबाइल प्रोफ़ाइल को इंस्टॉल किया जा रहा है. यह <ph name="NETWORK_PROVIDER_NAME" /> के <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="4646813851450205600">क्वर्टी कीबोर्ड के साथ चेक</translation>
 <translation id="4656293982926141856">यह कंप्यूटर</translation>
-<translation id="4656777537938206294">फ़ाइलों को ऑफ़लाइन उपलब्ध कराएं</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' के सदस्यों को तब तक एक्सेस नहीं मिलेगा जब तक कि ये आइटम उनके साथ शेयर नहीं किए जाते.</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
 <translation id="4693155481716051732">सुशी</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">वीडियो</translation>
 <translation id="6150853954427645995">इस फ़ाइल को ऑफ़लाइन देखने को सेव करने के लिए, फिर से ऑनलाइन होकर, फ़ाइल पर राइट-क्‍लिक करें और <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्‍प को चुनें.</translation>
 <translation id="6164412158936057769">तितलियां</translation>
-<translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> से खोलें</translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">बदलाव करने वाले</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> से <ph name="TO_ENTRY_NAME" /> तक की <ph name="ENTRY_COUNT" /> एंट्री को चुना गया.</translation>
-<translation id="965477715979482472">अंग्रेज़ी (दक्षिण अफ़्रीका)</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" की एक फ़ाइल पहले से मौजूद है. क्या आप उसे बदलना चाहते हैं?</translation>
 <translation id="992401651319295351">आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं. नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे.</translation>

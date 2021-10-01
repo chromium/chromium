@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> está desenchufada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
+<translation id="1478594628797167447">Escáner</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Modo normal</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">No se ha grabado nada</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> activa</translation>
 <translation id="2144806332417375165">Parámetros de vídeo personalizados</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2268107369530950373">Cambiar al modo escáner</translation>
 <translation id="229579744168541441">Exportar a disco</translation>
 <translation id="2320741269052147773">Mover a la izquierda</translation>
 <translation id="2501278716633472235">Volver</translation>
 <translation id="2501853267655415902">Grabación detenida</translation>
 <translation id="2501953888035679275">Haz fotos y graba vídeos con la cámara.</translation>
-<translation id="2517472476991765520">Escanear</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
 <translation id="2599796128805996109">Cámara trasera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> está enchufada.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">Resolución de la cámara</translation>
 <translation id="3260401663013584785">No se ha podido detectar un documento</translation>
 <translation id="3448774564454087943">El vídeo no se ha guardado porque es demasiado corto</translation>
-<translation id="346539236881580388">Repetir foto</translation>
 <translation id="3517926952904427380">No se ha podido hacer una foto vertical</translation>
 <translation id="3569311554794739032">¿Seguro que quieres eliminar <ph name="FILE" />?</translation>
-<translation id="3573890771273113519">Cambiar al modo escáner</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">La función para escanear documentos ya está disponible</translation>
 <translation id="5268823927180092501">Habilitar modo de documento en todas las cámaras</translation>
 <translation id="5444515100983837161">Coloca todos los bordes del documento dentro del marco. Los documentos se escanean mejor si su color y el color de fondo son diferentes.</translation>
-<translation id="5588258280684580073">Habilitar grabación de GIF</translation>
 <translation id="5671277269877808209">Cuadrado</translation>
-<translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5753488212459587150">Habilitar modo experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>
 <translation id="5775960006311140197">Modo experto</translation>
@@ -100,20 +95,17 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="7243947652761655814">Resolución de vídeo</translation>
 <translation id="7337660886763914220">Errores del sistema de archivos.</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
-<translation id="7488619942230388918">Grabar vídeo GIF</translation>
 <translation id="7557677699350329807">Cambiar a la siguiente cámara</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608223098072244877">Cuatro por cuatro</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">Grabar vídeo normal</translation>
 <translation id="7983668134180549431">Texto detectado.</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
 <translation id="8120146556401698679">Panorámica, inclinación y zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar al modo de cámara de fotos</translation>
-<translation id="8167081290930651932">Guardar como foto</translation>
 <translation id="8239780215768881278">Hacer una captura de vídeo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>
@@ -127,6 +119,5 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="9045010116236796332">Coloca todos los bordes del documento dentro del marco</translation>
 <translation id="9045155556724273246">10 segundos</translation>
-<translation id="906331135292332864">Procesando imagen...</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 </translationbundle>

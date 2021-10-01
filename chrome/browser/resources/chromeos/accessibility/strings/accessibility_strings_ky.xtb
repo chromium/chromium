@@ -66,7 +66,6 @@
 <translation id="133801305381959373">Кийинки түзөтүлүүчү текст талаасы жок</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Кеңеш</translation>
-<translation id="1354356357730355833">көчүрүү</translation>
 <translation id="135978014023467274">ChromeVox 63 – эң акыркы версиясы орнотулду!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> багыттоо баскычынын астындагы нерсени чыкылдатыңыз</translation>
 <translation id="1377925789329510816">Бул эң акыркы тема. Бул барактагы биринчи темага өтүү үчүн Search+H баскычтарын же экинчи темага өтүү үчүн Search+Shift+H баскычтарын басыңыз.</translation>
@@ -353,7 +352,6 @@
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3286390186030710347">Слайдер</translation>
 <translation id="3300348286427369683">Rich text колдоого алынды. Эми ChromeVox rich text талааларын, анын ичинде секиртүү буйруктарын, Брайль курсорун иштетүүнү, тандоону жана башкаларды колдоого алат.</translation>
-<translation id="3300733168898541351">артка кайтаруу</translation>
 <translation id="3307886118343381874">Жадыбалдын аягына өтүү</translation>
 <translation id="3312997241656799641">Кийинки каралган шилтеме.</translation>
 <translation id="3313245066383501820">ChromeVox өзгөртүү баскычы</translation>
@@ -374,7 +372,6 @@
 <translation id="3406283310380167331">Көрсөтүү формаларынын тизмеси</translation>
 <translation id="3414400929511680526">Мала көк</translation>
 <translation id="3418936350470374046">Төмөндө уяча жок</translation>
-<translation id="3419269701801640163">чаптоо</translation>
 <translation id="3435494200763325275">Өтмөктөргө өтүү: уландысы</translation>
 <translation id="344800400831402066">Ач күрөң</translation>
 <translation id="3457000393508828486">Жарым-жартылай басылды</translation>
@@ -455,7 +452,6 @@
 <translation id="4006140876663370126">срт</translation>
 <translation id="4021716437419160885">Ылдый сыдыруу</translation>
 <translation id="4035381225449278841">Жаз</translation>
-<translation id="4038098586530338813">кайталоо</translation>
 <translation id="4047216625641135770">Белги</translation>
 <translation id="4047910800766704982">Түзмөгүңүздө Интернет байланышы болгон учурда кадимки адамдын же адамдын үнүнө окшош үндү колдоно алсыз. Текст иштетүү үчүн Google'га жөнөтүлөт. Буну Жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="4053520724192563562">Ачык саргылтым жашыл</translation>
@@ -606,13 +602,11 @@
 <translation id="5138912041966667164">Орточо көгүш боз</translation>
 <translation id="5140016802771803559">Кочкул кызгылт көгүш</translation>
 <translation id="5142101052131610456">Бардык сабактар</translation>
-<translation id="5152605892605507188">оңго жылдыруу</translation>
 <translation id="5158275234811857234">Мукаба</translation>
 <translation id="516076699907426116">Улантуу үчүн аудиокөмөктүн жардамы менен "Кийинки" баскычын табыңыз. Баскычты эки жолу басыңыз.</translation>
 <translation id="5170206230005240598">Брайл коштомо жазуулары иштетилди</translation>
 <translation id="5183440668879371625">Брайлдын мурунку сабы</translation>
 <translation id="5189244881767082992">Сап</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> деп териңиз</translation>
 <translation id="5263034204789987535">Мала сары</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Бүтүрүү</translation>
@@ -750,7 +744,6 @@
 <translation id="6142308968191113180">4-баш аты</translation>
 <translation id="6150023170003443621">Саргылт жашыл</translation>
 <translation id="6158882249329863701">сап <ph name="TABLECELLROWINDEX" /> тилке <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">солго жылдыруу</translation>
 <translation id="6164829606128959761">ченегич</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6166362019018438352">Брайл коштомо жазуулары өчүрүлгөн</translation>
@@ -840,7 +833,6 @@
 <translation id="6910211073230771657">Жок кылынды</translation>
 <translation id="6910969481785184048">Күйгүзүү, өчүрүү жана токтотуу</translation>
 <translation id="6919104639734799681">Жадыбалдар тизмесин көрсөтүү</translation>
-<translation id="692135145298539227">жок кылуу</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
 <translation id="6949846980769640811">Орточо аквамарин ыраңы</translation>
 <translation id="6951482098621102657">Кийинки 5-деңгээлдин башкы аталышы жок</translation>
@@ -921,6 +913,7 @@
 <translation id="7439060726180460871">Каталог</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Кадимки адамдын үнү колдонулсунбу?</translation>
+<translation id="7484805699335881122">Элементтердин түрлөрүн, ошондой эле цитатага алынган, өчүрүлгөн, жоон шрифт менен жазылган, кашаага алынган же баш тамга менен башталган тексттерди айтууда тону өзгөртүлсүн.</translation>
 <translation id="7491962110804786152">өтмөк</translation>
 <translation id="7492497529767769458">Кийинки бөлүмгө өтүү. Мисалы, Абал түпкүчү жана Жүргүзгүч.</translation>
 <translation id="7505149250476994901">Тамгага чейин "баш тамга" деп айтыңыз</translation>
@@ -1133,7 +1126,6 @@
 <translation id="9077305471618729969">Деңиздей мала жашыл</translation>
 <translation id="9080299285199342830">Аягына өтүү</translation>
 <translation id="9089864840575085222">Терүү жаңырыгынын мерчими</translation>
-<translation id="9099429023611373837">кесүү</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{пайыз}other{# пайыз белгиси}}</translation>

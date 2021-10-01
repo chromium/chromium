@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">无法预览</translation>
 <translation id="1812302367230252929">阿姆哈拉语音译</translation>
 <translation id="1813278315230285598">服务</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告<ph name="END_BOLD" />：这些文件是临时文件，系统可能会自动删除这些文件以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鹅</translation>
 <translation id="183183971458492120">正在加载信息…</translation>
 <translation id="1834290891154666894">主题备用名称的匹配条目无效</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">法语（加拿大）</translation>
 <translation id="3003189754374775221">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="3003633581067744647">切换到缩略图视图</translation>
-<translation id="3016566519832145558">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。</translation>
 <translation id="3029114385395636667">若要离线使用 Google 文档、表格及幻灯片，请启用 Google 文档的离线功能。</translation>
 <translation id="303198083543495566">地理位置</translation>
 <translation id="3047197340186497470">中文大易</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">转到 drive.google.com...</translation>
 <translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
-<translation id="3567221313191587603">如果想在离线状态下使用您的文件，请先选择相应文件，然后将“<ph name="OFFLINE_CHECKBOX_NAME" />”所对应的切换开关上的滑块滑至开启位置。</translation>
 <translation id="357479282490346887">立陶宛语</translation>
 <translation id="3592251141500063301">无法将文件“<ph name="FILE_NAME" />”设为“可离线使用”</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="4646813851450205600">捷克语 Qwerty 键盘</translation>
 <translation id="4656293982926141856">此计算机</translation>
-<translation id="4656777537938206294">将文件设为“可离线使用”</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />”的成员将不再能够访问这些内容（除非与他们共享了这些内容）。</translation>
 <translation id="4690246192099372265">瑞典语</translation>
 <translation id="4693155481716051732">寿司</translation>
@@ -577,7 +575,6 @@
 <translation id="6146563240635539929">视频</translation>
 <translation id="6150853954427645995">要保存此文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
-<translation id="6165508094623778733">了解详情</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6187719147498869044">匈牙利语</translation>
 <translation id="6189412234224385711">使用“<ph name="EXTENSION_NAME" />”打开</translation>
@@ -928,7 +925,6 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947144732524271678">已选择从<ph name="FROM_ENTRY_NAME" />到<ph name="TO_ENTRY_NAME" />的 <ph name="ENTRY_COUNT" /> 个条目。</translation>
-<translation id="965477715979482472">英语（南非）</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="988685240266037636">已有名为“<ph name="FILE_NAME" />”的文件。要覆盖它吗？</translation>
 <translation id="992401651319295351">您还有 <ph name="RETRIES" /> 次尝试机会。在设置新 PIN 码之前，您将无法使用此网络。</translation>

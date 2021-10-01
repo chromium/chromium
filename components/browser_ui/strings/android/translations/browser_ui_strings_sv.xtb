@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1446450296470737166">Tillåt fullst. kontroll av MIDI</translation>
+<translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1647582022260550163">Vill du återställa behörigheter och rensa cookies och webbplatsdata?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Tillåts, men inte från tredje part</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="1994173015038366702">Webbadress</translation>
-<translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="2025115093177348061">Förstärkt verklighet</translation>
 <translation id="2030769033451695672">Återgå till <ph name="URL_OF_THE_CURRENT_TAB" /> genom att trycka här</translation>
 <translation id="2079545284768500474">Ångra</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Rensa val</translation>
 <translation id="7846621471902887024">Du loggas ut från alla webbplatser.</translation>
 <translation id="7882806643839505685">Tillåt ljud för en webbplats.</translation>
-<translation id="7940722705963108451">Påminn mig</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
+<translation id="7993619969781047893">Funktioner kan sluta att fungera på vissa webbplatser</translation>
 <translation id="7999064672810608036">Vill du ta bort all lokal data för webbplatsen, inklusive cookies, och återställa alla behörigheter för den?</translation>
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
-<translation id="8154912474061769055">Många webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> tillåts</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8206354486702514201">Administratören har gjort den här inställningen obligatorisk.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="868929229000858085">Sök bland kontakterna</translation>
 <translation id="8702612070107455751">All offlinedata raderas.</translation>
-<translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8719283222052720129">Aktivera behörigheten för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>

@@ -8,7 +8,6 @@
 <translation id="1378979118429748177">Տեղեկացեք, երբ գների իջեցում լինի</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
-<translation id="2118649612461486615">Տեղեկություններ խանութի մասին</translation>
 <translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Հեռացնել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը խմբից։}one{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը խմբից։}other{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները խմբից։}}</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
@@ -51,16 +50,13 @@
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
-<translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="6510648526783655549">Փակել ներդիրների հատվածը</translation>
-<translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
 <translation id="6840760312327750441">Ներդիրները խմբավորելու համար հպեք ներդիրին և պահեք։ Ապա այն քաշեք մյուս ներդիրի վրա։</translation>
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
 <translation id="7151209024774799310">Հեռացնել ներդիները խմբից</translation>
 <translation id="7204204600596740190">Մի քանի ներդիրի ընտրության ռեժիմ</translation>
-<translation id="7326879924029668159">Դիտեք վերադարձման կանոնները և այլ տեղեկություններ</translation>
 <translation id="7352298686197644113">Տեսեք, թե ձեր բացված ներդիրներում որ ապրանքն ունի ամենացածր գինը</translation>
 <translation id="753732157349120914">Ներդիրների փոխանջատիչ</translation>
 <translation id="7559245342362162951">Ցուցադրել խմբի ներդիրները լիաէկրան ցանցի ռեժիմում</translation>

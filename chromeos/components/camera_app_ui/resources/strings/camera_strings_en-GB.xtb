@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Print</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
 <translation id="1473110567575736769">Three seconds timer</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nothing recorded</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> active</translation>
 <translation id="2144806332417375165">Custom video parameters</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2268107369530950373">Switch to scanner mode</translation>
 <translation id="229579744168541441">Export to disk</translation>
 <translation id="2320741269052147773">Pan left</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2501853267655415902">Recording stopped</translation>
 <translation id="2501953888035679275">Take photos and record videos with your camera.</translation>
-<translation id="2517472476991765520">Scan</translation>
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="2599796128805996109">Back camera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">Camera resolution</translation>
 <translation id="3260401663013584785">Couldn't detect a document</translation>
 <translation id="3448774564454087943">Video hasn't been saved as it's too short</translation>
-<translation id="346539236881580388">Retake</translation>
 <translation id="3517926952904427380">Unable to take portrait photo</translation>
 <translation id="3569311554794739032">Do you really want to remove <ph name="FILE" />?</translation>
-<translation id="3573890771273113519">Switch to scan mode</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan barcode</translation>
 <translation id="3892148308691398805">Copy text</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">Document scanning now available</translation>
 <translation id="5268823927180092501">Enable document mode on all cameras</translation>
 <translation id="5444515100983837161">Place all edges of the document within the frame. Scanning works best if the document and background are different colours.</translation>
-<translation id="5588258280684580073">Enable GIF recording</translation>
 <translation id="5671277269877808209">Square</translation>
-<translation id="5746169159649715125">Save as PDF</translation>
 <translation id="5753488212459587150">Enable expert mode</translation>
 <translation id="5759254179196327752">Scan document</translation>
 <translation id="5775960006311140197">Expert mode</translation>
@@ -100,20 +95,17 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="7243947652761655814">Video resolution</translation>
 <translation id="7337660886763914220">File system errors.</translation>
 <translation id="7450541714075000668">Text copied</translation>
-<translation id="7488619942230388918">Record GIF video</translation>
 <translation id="7557677699350329807">Switch to next camera</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">Record normal video</translation>
 <translation id="7983668134180549431">Text detected.</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8120146556401698679">Pan tilt zoom</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8145038249676204903">Switch to take photo</translation>
-<translation id="8167081290930651932">Save as photo</translation>
 <translation id="8239780215768881278">Take video snapshot</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8425673304802773841">Tilt down</translation>
@@ -127,6 +119,5 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="9045010116236796332">Place all edges of the document within the frame</translation>
 <translation id="9045155556724273246">10 seconds</translation>
-<translation id="906331135292332864">Processing image…</translation>
 <translation id="945522503751344254">Send feedback</translation>
 </translationbundle>

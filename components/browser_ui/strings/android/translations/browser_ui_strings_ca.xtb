@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1446450296470737166">Permet control total disp. MIDI</translation>
+<translation id="1509960214886564027">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1647582022260550163">Confirmes que vols restablir els permisos i esborrar les galetes i les dades del lloc web?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Permeses, excepte les de tercers</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="1994173015038366702">URL del lloc web</translation>
-<translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
 <translation id="2030769033451695672">Toca per tornar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfés</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
 <translation id="7846621471902887024">Se't tancarà la sessió de tots els llocs web.</translation>
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
-<translation id="7940722705963108451">Recorda-m'ho</translation>
 <translation id="7986741934819883144">Selecciona un contacte</translation>
+<translation id="7993619969781047893">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="7999064672810608036">Confirmes que vols esborrar d'aquest lloc web totes les dades locals, incloses les galetes, i restablir-ne tots els permisos?</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
 <translation id="802154636333426148">Error de baixada</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
 <translation id="8131740175452115882">Confirma</translation>
-<translation id="8154912474061769055">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="8197286292360124385">S'ha permès <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="868929229000858085">Cerca als contactes</translation>
 <translation id="8702612070107455751">S'esborraran totes les dades sense connexió.</translation>
-<translation id="8712637175834984815">Entesos</translation>
 <translation id="8719283222052720129">Activa el permís per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8730621377337864115">Fet</translation>

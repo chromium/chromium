@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Download onderbroken</translation>
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1446450296470737166">Volledig beheer van MIDI-apparaten toestaan</translation>
+<translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1647582022260550163">Weet je zeker dat je de rechten wilt resetten en de cookies en sitegegevens wilt wissen?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Toegestaan, behalve van derden</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="1994173015038366702">Site-URL</translation>
-<translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Tik om terug te gaan naar <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7846621471902887024">Je wordt uitgelogd van alle sites.</translation>
 <translation id="7882806643839505685">Geluid toestaan voor een specifieke site.</translation>
-<translation id="7940722705963108451">Herinner me eraan</translation>
 <translation id="7986741934819883144">Een contact selecteren</translation>
+<translation id="7993619969781047893">Functies op bepaalde sites werken mogelijk niet meer</translation>
 <translation id="7999064672810608036">Weet je zeker dat je alle gegevens, inclusief cookies, voor deze website wilt wissen en alle rechten opnieuw wilt instellen?</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Geluid uit</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
-<translation id="8154912474061769055">Functies op veel sites werken misschien niet</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> toegestaan</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8206354486702514201">Deze instelling wordt door je beheerder afgedwongen.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="868929229000858085">Zoek in je contacten</translation>
 <translation id="8702612070107455751">Alle offline gegevens worden gewist.</translation>
-<translation id="8712637175834984815">Begrepen</translation>
 <translation id="8719283222052720129">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8730621377337864115">Klaar</translation>

@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">بارگیری موقتاً متوقف شد</translation>
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
 <translation id="1446450296470737166">‏اجازه کنترل کامل دستگاه‌های MIDI</translation>
+<translation id="1509960214886564027">ویژگی‌های بسیاری از سایت‌ها ممکن است درست کار نکنند</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1647582022260550163">مطمئنید می‌خواهید اجازه‌ها را بازنشانی کنید و کوکی‌ها و داده‌های سایت را پاک کنید؟</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">مجاز، به غیر از طرف ثالث</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
 <translation id="1994173015038366702">نشانی وب سایت</translation>
-<translation id="2004697686368036666">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند</translation>
 <translation id="2025115093177348061">واقعیت افزوده</translation>
 <translation id="2030769033451695672">برای برگشتن به <ph name="URL_OF_THE_CURRENT_TAB" /> ضربه بزنید</translation>
 <translation id="2079545284768500474">لغو</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">لغو انتخاب</translation>
 <translation id="7846621471902887024">از سیستم همه سایت‌ها خارج خواهید شد.</translation>
 <translation id="7882806643839505685">پخش صدا برای سایت خاصی مجاز شود.</translation>
-<translation id="7940722705963108451">به من یادآوری شود</translation>
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
+<translation id="7993619969781047893">ویژگی‌های بعضی از سایت‌ها ممکن است درست کار نکنند</translation>
 <translation id="7999064672810608036">مطمئنید که می‌خواهید تمام داده‌های محلی، شامل کوکی‌ها را حذف کنید و تمام مجوزهای این وب‌سایت را بازنشانی کنید؟</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">صامت‌شده</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>
-<translation id="8154912474061769055">ممکن است ویژگی‌های بسیاری از سایت‌ها کار نکند</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> مجاز است</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8206354486702514201">این تنظیم توسط سرپرست شما اجباری شده است.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
 <translation id="868929229000858085">جستجوی مخاطبین</translation>
 <translation id="8702612070107455751">همه داده‌های آفلاین پاک خواهند شد.</translation>
-<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8719283222052720129">‏اجازه <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8730621377337864115">تمام</translation>

@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">کوئی پیش منظر دستیاب نہیں ہے</translation>
 <translation id="1812302367230252929">امہاری نقل حرفی</translation>
 <translation id="1813278315230285598">سروسز</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />احتیاط:<ph name="END_BOLD" />  یہ فائلیں عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">پینگوئن</translation>
 <translation id="183183971458492120">معلومات لوڈ ہو رہی ہے…</translation>
 <translation id="1834290891154666894">موضوع کے متبادل نام سے مماثل اندراج غلط ہے</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">فرانسیسی (کینیڈا)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، منسلک کریں</translation>
 <translation id="3003633581067744647">تھمب نیل منظر پر سوئچ کریں</translation>
-<translation id="3016566519832145558">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔</translation>
 <translation id="3029114385395636667">‏Docs، Sheets اور Slides کو آف لائن دستیاب بنانے کیلئے Google Docs آف لائن کو فعال کریں۔</translation>
 <translation id="303198083543495566">جغرافیہ</translation>
 <translation id="3047197340186497470">‏چینی Dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">‏drive.google.com پر جائیں…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں کاپی کریں۔</translation>
 <translation id="3556731189587832921">‏بین الاقوامی PC کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
-<translation id="3567221313191587603">فائل منتخب کریں اور اپنی فائلز تک آف لائن رسائی کی خاطر <ph name="OFFLINE_CHECKBOX_NAME" /> کو آن پر ٹوگل کریں۔</translation>
 <translation id="357479282490346887">لتھُواینین</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> کو آف لائن دستیاب نہیں بنایا جا سکا</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">موبائل کی پروفائل انسٹال ہو رہی ہے، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">‏Qwerty کی بورڈ کے ساتھ چیک زبان</translation>
 <translation id="4656293982926141856">اس کمپیوٹر پر</translation>
-<translation id="4656777537938206294">فائلز کو آف لائن دستیاب کرائیں</translation>
 <translation id="4669606053856530811">جب تک ان آئٹمز کا ان کے ساتھ اشتراک نہیں کیا جاتا ہے، <ph name="SOURCE_NAME" /> کے اراکین کی رسائی منقطع ہو جائے گي۔</translation>
 <translation id="4690246192099372265">سويڈش</translation>
 <translation id="4693155481716051732">سشی</translation>
@@ -581,7 +579,6 @@
 <translation id="6146563240635539929">ویڈیوز</translation>
 <translation id="6150853954427645995">آف لائن استعمال کیلئے یہ فائل محفوظ کرنے کیلئے، پھر سے آن لائن ہوں، فائل پر دایاں کلک کریں اور <ph name="OFFLINE_CHECKBOX_NAME" /> اختیار منتخب کریں۔</translation>
 <translation id="6164412158936057769">تتلیاں</translation>
-<translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
 <translation id="6187719147498869044">ہنگریائی</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> کے ساتھ کھولیں</translation>
@@ -932,7 +929,6 @@
 <translation id="943972244133411984">ترمیم کنندہ</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> سے <ph name="TO_ENTRY_NAME" /> تک <ph name="ENTRY_COUNT" /> اندراجات کی رینج کا انتخاب کیا گیا۔</translation>
-<translation id="965477715979482472">انگریزی (جنوبی افریقہ)</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ کیا آپ اسے تبدیل کرنا چاہتے ہیں؟</translation>
 <translation id="992401651319295351">‏آپ کے پاس <ph name="RETRIES" /> کوششیں بچی ہیں۔ جب تک آپ نیا PIN سیٹ اپ نہیں کرتے ہیں تب تک آپ اس نیٹ ورک کا استعمال نہیں کر سکیں گے۔</translation>

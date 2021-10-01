@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Попередній перегляд недоступний</translation>
 <translation id="1812302367230252929">Амхарська, транслітерація</translation>
 <translation id="1813278315230285598">Служби</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага:<ph name="END_BOLD" /> ці файли тимчасові, і можуть автоматично видалятися, щоб звільнити місце на диску. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Завантаження інформації…</translation>
 <translation id="1834290891154666894">Недійсний запис збігу з альтернативною назвою суб’єкта</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Французька (Канада)</translation>
 <translation id="3003189754374775221">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, підключитися</translation>
 <translation id="3003633581067744647">Зменшене зображення</translation>
-<translation id="3016566519832145558">Зверніть увагу: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.</translation>
 <translation id="3029114385395636667">Увімкніть Google Документи офлайн, щоб переглядати Документи, Таблиці й Презентації без підключення до Інтернету.</translation>
 <translation id="303198083543495566">Координати</translation>
 <translation id="3047197340186497470">Китайська, даї</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Перейти на drive.google.com...</translation>
 <translation id="3553048479571901246">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу скопіюйте їх у папку з файлами в ОС Windows.</translation>
 <translation id="3556731189587832921">Англійська (США), міжнародна розкладка для ПК</translation>
-<translation id="3567221313191587603">Виберіть файл і ввімкніть опцію "<ph name="OFFLINE_CHECKBOX_NAME" />", щоб мати доступ у режимі офлайн.</translation>
 <translation id="357479282490346887">Литовська</translation>
 <translation id="3592251141500063301">Не вдалося завантажити файл "<ph name="FILE_NAME" />" для доступу офлайн</translation>
 <translation id="3601151620448429694">"<ph name="NETWORK_NAME" />" · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" />; оператор: <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чеська, розкладка Qwerty</translation>
 <translation id="4656293982926141856">На цьому комп’ютері</translation>
-<translation id="4656777537938206294">Можливість роботи з файлами без підключення до Інтернету</translation>
 <translation id="4669606053856530811">Учасники, які мають доступ до розташування "<ph name="SOURCE_NAME" />", втратять доступ до елементів, якими з ними не поділилися.</translation>
 <translation id="4690246192099372265">Шведська</translation>
 <translation id="4693155481716051732">Суші</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">Відео</translation>
 <translation id="6150853954427645995">Щоб зберегти цей файл для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файл правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Метелики</translation>
-<translation id="6165508094623778733">Докладніше</translation>
 <translation id="6170470584681422115">Сендвіч</translation>
 <translation id="6187719147498869044">Угорська</translation>
 <translation id="6189412234224385711">Відкрити за допомогою розширення "<ph name="EXTENSION_NAME" />"</translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">Змінено користувачем</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="947144732524271678">Вибрано елементи (<ph name="ENTRY_COUNT" />): від <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">Англійська (Південна Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Замінити його?</translation>
 <translation id="992401651319295351">Залишилося спроб: <ph name="RETRIES" />. Ви не зможете користуватися цією мережею, доки не налаштуєте новий PIN-код.</translation>

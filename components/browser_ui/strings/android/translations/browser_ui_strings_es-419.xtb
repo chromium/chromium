@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Descarga detenida</translation>
 <translation id="1415402041810619267">URL acortada</translation>
 <translation id="1446450296470737166">Control de dispositivos MIDI</translation>
+<translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1647582022260550163">¿Confirmas que quieres restablecer los permisos y borrar las cookies y los datos de sitios?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Permitidas, salvo de terceros</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
-<translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="2025115093177348061">Realidad aumentada</translation>
 <translation id="2030769033451695672">Presiona para volver a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Cancelar la selección</translation>
 <translation id="7846621471902887024">Saldrás de todos los sitios.</translation>
 <translation id="7882806643839505685">Habilitar el sonido de un sitio específico</translation>
-<translation id="7940722705963108451">Recordarme</translation>
 <translation id="7986741934819883144">Seleccionar un contacto</translation>
+<translation id="7993619969781047893">Es posible que las características de algunos sitios no funcionen de forma correcta</translation>
 <translation id="7999064672810608036">¿Quieres eliminar todos los datos locales de este sitio web, incluidas las cookies, y restablecer todos los permisos?</translation>
 <translation id="8007176423574883786">Desactivado para este dispositivo</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="813082847718468539">Consulta la información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
-<translation id="8154912474061769055">Es posible que algunas funciones no puedan utilizarse en muchos sitios.</translation>
 <translation id="8197286292360124385">Permitido: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8206354486702514201">El administrador controla esta configuración.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="868929229000858085">Busca entre tus contactos</translation>
 <translation id="8702612070107455751">Se borrarán los datos sin conexión.</translation>
-<translation id="8712637175834984815">Entendido</translation>
 <translation id="8719283222052720129">Activa el permiso para <ph name="APP_NAME" /> en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8730621377337864115">Listo</translation>

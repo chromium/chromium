@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1467231725790366244">Устройството <ph name="CAMERA" /> е изключено.</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
+<translation id="1478594628797167447">Скенер</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Нормално</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Нищо не е записано</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
 <translation id="2144806332417375165">Персонализирани параметри на видеото</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
+<translation id="2268107369530950373">Превключване към режима за сканиране</translation>
 <translation id="229579744168541441">Експортиране към диска</translation>
 <translation id="2320741269052147773">Панорамно придвижване наляво</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Записването спря</translation>
 <translation id="2501953888035679275">Правете снимки и записвайте видеоклипове с камерата си.</translation>
-<translation id="2517472476991765520">Сканиране</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2599796128805996109">Задна камера</translation>
 <translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">Разделителна способност на камерата</translation>
 <translation id="3260401663013584785">Не бе открит документ</translation>
 <translation id="3448774564454087943">Видеоклипът не е запазен, тъй като е прекалено кратък</translation>
-<translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
-<translation id="3573890771273113519">Превключване към режима на сканиране</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">Функцията за сканиране на документи вече е налице</translation>
 <translation id="5268823927180092501">Активиране на режима за документи за всички камери</translation>
 <translation id="5444515100983837161">Поставете документа изцяло в рамката. Функцията работи най-добре, ако документът и фонът са с различни цветове.</translation>
-<translation id="5588258280684580073">Активиране на функцията за записване на GIF</translation>
 <translation id="5671277269877808209">Квадрат</translation>
-<translation id="5746169159649715125">Запазване като PDF файл</translation>
 <translation id="5753488212459587150">Активиране на експертния режим</translation>
 <translation id="5759254179196327752">Сканиране на документи</translation>
 <translation id="5775960006311140197">Експертен режим</translation>
@@ -100,20 +95,17 @@
 <translation id="7243947652761655814">Разделителна способност за видеоклиповете</translation>
 <translation id="7337660886763914220">Грешки във файловата система.</translation>
 <translation id="7450541714075000668">Текстът е копиран</translation>
-<translation id="7488619942230388918">Записване на GIF</translation>
 <translation id="7557677699350329807">Превключване към следващата камера</translation>
 <translation id="7607002721634913082">На пауза</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7670511624014457267">60 кдр/сек</translation>
-<translation id="7726641833034062494">Записване на обикновен видеоклип</translation>
 <translation id="7983668134180549431">Разпознат е текст.</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
 <translation id="8120146556401698679">Панорамно придвижване, накланяне и промяна на мащаба</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>
-<translation id="8167081290930651932">Запазване като снимка</translation>
 <translation id="8239780215768881278">Моментна снимка от видеоклипа</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8425673304802773841">Накланяне надолу</translation>
@@ -127,6 +119,5 @@
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="9045010116236796332">Поставете документа изцяло в рамката</translation>
 <translation id="9045155556724273246">10 секунди</translation>
-<translation id="906331135292332864">Изображението се обработва...</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 </translationbundle>

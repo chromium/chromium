@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">已暂停下载</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1446450296470737166">允许全面控制 MIDI 设备</translation>
+<translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1647582022260550163">确定要重置权限并清除 Cookie 和网站数据吗？</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">允许（第三方除外）</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1994173015038366702">网站网址</translation>
-<translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2025115093177348061">增强现实</translation>
 <translation id="2030769033451695672">点按即可返回到 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -132,7 +132,7 @@
 <translation id="4670064810192446073">虚拟实境</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
-<translation id="4883854917563148705">无法重置托管设置</translation>
+<translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟实境设备和数据（推荐）</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7846621471902887024">您将会自动退出所有网站。</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
-<translation id="7940722705963108451">提醒我</translation>
 <translation id="7986741934819883144">选择联系人</translation>
+<translation id="7993619969781047893">某些网站上的功能可能会无法正常运作</translation>
 <translation id="7999064672810608036">确定要清除该网站的所有本地数据（包括 Cookie）并重置该网站的所有权限吗？</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
 <translation id="802154636333426148">下载失败</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">已静音</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
-<translation id="8154912474061769055">很多网站上的功能可能无法正常运行</translation>
 <translation id="8197286292360124385">已授予“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="868929229000858085">搜索联系人</translation>
 <translation id="8702612070107455751">所有离线数据都会被清除。</translation>
-<translation id="8712637175834984815">知道了</translation>
 <translation id="8719283222052720129">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这项权限。</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>

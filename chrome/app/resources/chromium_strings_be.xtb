@@ -36,7 +36,6 @@
 <translation id="2343156876103232566">Каб адпраўляць нумары з гэтай прылады на свой тэлефон Android, увайдзіце ў Chromium на абедзвюх прыладах.</translation>
 <translation id="2347108572062610441">Гэта пашырэнне змяніла старонку, якая паказваецца пры запуску Chromium.</translation>
 <translation id="2396765026452590966">Пашырэнне "<ph name="EXTENSION_NAME" />" змяніла старонку, якая паказваецца пры запуску Chromium.</translation>
-<translation id="2401032172288869980">Chromium запытвае дазвол на доступ да камеры і мікрафона для гэтага сайта</translation>
 <translation id="2483889755041906834">У Chromium</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2535480412977113886">Сінхранізаваць даныя ў сістэме Chromium OS не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>
@@ -154,7 +153,6 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />Асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5862307444128926510">Вас вітае Chromium</translation>
-<translation id="5883558403894052917">Браўзер Chromium выявіў, што наступныя элементы змяшчаюць шкоднае ПЗ:</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Уваход у сетку</translation>
 <translation id="5987687638152509985">Абнавіце Chromium, каб пачаць сінхранізацыю</translation>
@@ -172,7 +170,6 @@
 <translation id="6183079672144801177">Упэўніцеся, што вы ўвайшлі ў Chromium на прыладзе "<ph name="TARGET_DEVICE_NAME" />", а затым паспрабуйце ажыццявіць адпраўку яшчэ раз.</translation>
 <translation id="6212496753309875659">На гэтым камп'ютары ўжо ўсталявана навейшая версія Chromium. Калі праграма не працуе, выдаліце Chromium і паўтарыце спробу.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Перазапуск Chromium адбудзецца зараз}=1{Chromium будзе перазапушчаны праз 1 секунду}one{Chromium будзе перазапушчаны праз # секунду}few{Chromium будзе перазапушчаны праз # секунды}many{Chromium будзе перазапушчаны праз # секунд}other{Chromium будзе перазапушчаны праз # секунды}}</translation>
-<translation id="6241367896540709610">Для спампоўвання файлаў браўзеру Chromium патрабуецца дазвол на доступ да сховішча</translation>
 <translation id="6248213926982192922">Зрабіць Chromium стандартным браўзерам</translation>
 <translation id="6266342355635466082">Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="6268381023930128611">Выйсці з уліковага запісу ў браўзеры Chromium?</translation>
@@ -193,9 +190,7 @@
 <translation id="6570579332384693436">Для выпраўлення арфаграфічных памылак Chromium адпраўляе ў Google тэкст, які вы набіраеце ў тэкставых палях</translation>
 <translation id="6598877126913850652">Перайсці ў налады апавяшчэнняў Chromium</translation>
 <translation id="6613594504749178791">Змены ўступяць у сілу пасля перазапуску Chromium.</translation>
-<translation id="665732753414869868">Каб стварыць 3D-карту наваколля, Chromium запытвае дазвол на доступ да камеры</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
-<translation id="6709350901466051922">Chromium запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>
 <translation id="6717134281241384636">Ваш профіль нельга выкарыстоўваць, бо ён з навейшай версіі Chromium.
 
 Некаторыя функцыі могуць быць недаступныя. Укажыце іншы каталог профілю або выкарыстайце навейшую версію Chromium.</translation>
@@ -207,7 +202,6 @@
 <translation id="6847869444787758381">Chromium апавяшчае вас у выпадку ўзлому вашых пароляў</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скапіравана ў Chromium)</translation>
-<translation id="6873893289264747459">Браўзер Chromium выявіў, што пашырэнне "<ph name="EXTENSION_NAME" />" змяшчае шкоднае ПЗ</translation>
 <translation id="6893813176749746474">Chromium быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>
 <translation id="691026815377248078">Каб працягнуць спалучэнне, Chromium патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Адкрыць спасылку ў акне інко&amp;гніта ў Chromium</translation>
@@ -215,7 +209,6 @@
 <translation id="6990124437352146030">Chromium запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>
 <translation id="705851970750939768">Абнавіць Chromium</translation>
 <translation id="7067091210845072982">Калі відарыс не мае прыдатнага апісання, Chromium паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google.</translation>
-<translation id="718435575166326686">Chromium запытвае дазвол на доступ да камеры для гэтага сайта</translation>
 <translation id="7196312274710523067">Не атрымалася запусціць Chromium. Паўтарыце спробу.</translation>
 <translation id="7197677400338048821">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу праз 24 гадзіны.</translation>
 <translation id="7223968959479464213">Менеджар заданняў – Chromium</translation>
@@ -239,6 +232,10 @@
       налады Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium выкарыстоўвае камеру і мікрафон.</translation>
 <translation id="7617377681829253106">Chromium стаў яшчэ лепшым</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Перад усталяваннем упэўніцеся, што вы маеце актуальную рэзервовую копію сваіх даных. Пры ўсталяванні Chromium OS усе даныя на цвёрдым дыску будуць перазапісаны.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Кампанія Google не нясе адказнасці за страту даных пры ўсталяванні і не гарантуе, што Chrome OS будзе працаваць на несертыфікаваных мадэлях прылад. Каб даведацца больш пра сертыфікаваныя мадэлі, наведайце старонку [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Даведацца больш пра ўсталяванне Chromium OS і выдаленне даных можна на старонцы [TBD URL].<ph name="END_PARAGRAPH3" />
+<ph name="BEGIN_PARAGRAPH4" />Калі вы гатовыя працягнуць, націсніце "Усталяваць Chromium OS" і выконвайце інструкцыі на экране. Перш чым уносіць змяненні на вашым камп'ютары, мы запытаем у вас пацвярджэнне.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium не з'яўляецца стандартным браўзерам</translation>
 <translation id="7689606757190482937">Сінхранізуйце і персаналізуйце Chromium на сваіх прыладах</translation>
 <translation id="7729447699958282447">Браўзеру Chromium не ўдалося сінхранізаваць даныя: для вашага дамена сінхранізацыя недаступная.</translation>
@@ -253,7 +250,6 @@
 <translation id="7975919845073681630">Гэта другасны ўсталяваны экзэмпляр Chromium – яго нельга зрабіць стандартным браўзерам.</translation>
 <translation id="8013436988911883588">Як толькі Chromium атрымае дазвол, вэб-сайты змогуць запытваць у вас доступ.</translation>
 <translation id="8045118833343856403">Наступныя ўліковыя запісы не выкарыстаны для ўваходу ні ў адзін з профіляў Chromium. Калі вы хочаце выкарыстоўваць адзін з гэтых уліковых запісаў у новым профілі, неабходна спачатку выдаліць існуючы профіль.</translation>
-<translation id="8105840573057009683">Chromium запытвае дазвол на вызначэнне месцазнаходжання для гэтага сайта</translation>
 <translation id="81770708095080097">Файл небяспечны, таму Chromium заблакіраваў яго.</translation>
 <translation id="8248265253516264921">Калі відарыс не мае прыдатнага апісання, Chromium паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>
 <translation id="8266560134891435528">Chromium не можа праверыць вашы паролі, пакуль вы не ўвойдзеце ва ўліковы запіс</translation>

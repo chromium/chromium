@@ -66,7 +66,6 @@
 <translation id="133801305381959373">কোনও পরবর্তী এডিট করার মতো টেক্সট ফিল্ড নেই</translation>
 <translation id="1342835525016946179">নিবন্ধ</translation>
 <translation id="1346059596910821859">টিপ</translation>
-<translation id="1354356357730355833">কপি করুন</translation>
 <translation id="135978014023467274">আপনার ChormeVox, ChromeVox 63 তে আপগ্রেড করা হয়েছে!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> নম্বর রাউটিং কী-এর আইটেমে ক্লিক করুন</translation>
 <translation id="1377925789329510816">এটিই সর্বশেষ শিরোনাম। প্রথম শিরোনামে ফিরে যেতে সার্চ+H টিপুন, অথবা এই পৃষ্ঠার দ্বিতীয় শিরোনামে যেতে সার্চ+Shift+H টিপুন।</translation>
@@ -353,7 +352,6 @@
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
 <translation id="3286390186030710347">স্লাইডার</translation>
 <translation id="3300348286427369683">রিচ টেক্সট ব্যবহার করা যাবে। ChromeVox এ এখন রিচ টেক্সট ফিল্ড ব্যবহার করা যাবে, যাতে জাম্প কমান্ড, ব্রেল কারসর রুটিং, বেছে নেওয়া এবং আরও অনেক কিছু রয়েছে।</translation>
-<translation id="3300733168898541351">আগের অবস্থায় ফিরে যান</translation>
 <translation id="3307886118343381874">সারণীর শেষে যান</translation>
 <translation id="3312997241656799641">পরবর্তী ঘুরে দেখা লিঙ্ক</translation>
 <translation id="3313245066383501820">ChromeVox মডিফায়ার কী</translation>
@@ -374,7 +372,6 @@
 <translation id="3406283310380167331">ফর্ম তালিকা দেখান</translation>
 <translation id="3414400929511680526">অ্যালিস নীল</translation>
 <translation id="3418936350470374046">নিচে কোনও কক্ষ নেই</translation>
-<translation id="3419269701801640163">পেস্ট করুন</translation>
 <translation id="3435494200763325275">'ট্যাব নেভিগেশন' চলছে</translation>
 <translation id="344800400831402066">পেরু কমলা</translation>
 <translation id="3457000393508828486">আংশিক টেপা</translation>
@@ -455,7 +452,6 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">নিচের দিকে স্ক্রল করুন</translation>
 <translation id="4035381225449278841">বসন্তকাল</translation>
-<translation id="4038098586530338813">আবার করুন</translation>
 <translation id="4047216625641135770">চিহ্নিত</translation>
 <translation id="4047910800766704982">আপনার ডিভাইস অনলাইন থাকার সময় আপনি স্বাভাবিক, মানুষের মতো ভয়েস ব্যবহার করতে পারেন। প্রসেস করার জন্য টেক্সটি Google-এ পাঠানো হবে। সেটিংস থেকে যেকোনও সময় এটি বন্ধ করতে পারবেন।</translation>
 <translation id="4053520724192563562">পাতিলেবুর সবুজ</translation>
@@ -606,13 +602,11 @@
 <translation id="5138912041966667164">মাঝারি স্লেট নীল</translation>
 <translation id="5140016802771803559">রেবেকা বেগুনী</translation>
 <translation id="5142101052131610456">সব পাঠ</translation>
-<translation id="5152605892605507188">ডানদিকে সরান</translation>
 <translation id="5158275234811857234">কভার</translation>
 <translation id="516076699907426116">'টাচের মাধ্যমে এক্সপ্লোর করুন' সুবিধা ব্যবহার করে পরবর্তী ধাপের বোতাম দেখুন ও চালিয়ে যান। তারপর চালিয়ে যাতে ডবল ট্যাপ করুন।</translation>
 <translation id="5170206230005240598">ব্রেইল ক্যাপশনগুলি চালু করা হয়েছে</translation>
 <translation id="5183440668879371625">ব্রেইল পূর্ববর্তী লাইন</translation>
 <translation id="5189244881767082992">লাইন</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> টাইপ করুন</translation>
 <translation id="5263034204789987535">কর্নসিল্ক</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">শেষ</translation>
@@ -750,7 +744,6 @@
 <translation id="6142308968191113180">শিরোলেখ ৪</translation>
 <translation id="6150023170003443621">হলদে সবুজ</translation>
 <translation id="6158882249329863701">সারি <ph name="TABLECELLROWINDEX" /> কলাম <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">বাঁদিকে সরান</translation>
 <translation id="6164829606128959761">মিটার</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166362019018438352">ব্রেইল ক্যাপশনগুলি বন্ধ করা হয়েছে</translation>
@@ -840,7 +833,6 @@
 <translation id="6910211073230771657">মোছা হয়েছে</translation>
 <translation id="6910969481785184048">চালু, বন্ধ, এবং থামানো</translation>
 <translation id="6919104639734799681">সারণী তালিকা দেখান</translation>
-<translation id="692135145298539227">মুছুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6949846980769640811">মাঝারি সবুজাভ নীল</translation>
 <translation id="6951482098621102657">কোনও পরবর্তী লেভেল ৫ শিরোনাম নেই</translation>
@@ -921,6 +913,7 @@
 <translation id="7439060726180460871">ডিরেক্টরি</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">স্বাভাবিক ভয়েস ব্যবহার করবেন?</translation>
+<translation id="7484805699335881122">আপনার কথোপকথন টাইপ, কোট, মুছে ফেলা, মোটা করে লেখা, প্রথম ব্র্যাকেটে লেখা বা শব্দের প্রথম অক্ষর বড় হাতে লেখার সময় স্বরের নিক্ষেপ পরিবর্তন করুন।</translation>
 <translation id="7491962110804786152">ট্যাব</translation>
 <translation id="7492497529767769458">পরের বিভাগে যান। যেমন স্ট্যাটাস ট্রে ও লঞ্চার।</translation>
 <translation id="7505149250476994901">অক্ষর লেখার আগে "বড় হাতের অক্ষর" বলুন</translation>
@@ -1133,7 +1126,6 @@
 <translation id="9077305471618729969">হালকা নীলাভ সবুজ</translation>
 <translation id="9080299285199342830">টেক্সট এলিমেন্টের শেষে নিয়ে যান</translation>
 <translation id="9089864840575085222">আবর্ত টাইপিং ইকো</translation>
-<translation id="9099429023611373837">কাট করুন</translation>
 <translation id="9108370397979208512">গণিত</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{শতাংশ}one{#টি শতাংশ চিহ্ন}other{#টি শতাংশ চিহ্ন}}</translation>

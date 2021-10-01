@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Ingen tilgængelig forhåndsvisning</translation>
 <translation id="1812302367230252929">Amharisk translitteration</translation>
 <translation id="1813278315230285598">Tjenester</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Advarsel!<ph name="END_BOLD" /> Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Indlæser oplysninger...</translation>
 <translation id="1834290891154666894">Ugyldig indtastning for match af alternativt emnenavn</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Fransk (Canada)</translation>
 <translation id="3003189754374775221">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
 <translation id="3003633581067744647">Skift til miniaturevisning</translation>
-<translation id="3016566519832145558">Advarsel! Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads.</translation>
 <translation id="3029114385395636667">Aktivér Google Docs Offline for at gøre Docs, Sheets og Slides tilgængelige offline.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">Kinesisk dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Gå til drive.google.com...</translation>
 <translation id="3553048479571901246">Hvis du vil åbne filer med <ph name="APP_NAME" />, skal du først kopiere dem til mappen med Windows-filer.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internationalt computertastatur</translation>
-<translation id="3567221313191587603">Vælg en fil, og aktivér <ph name="OFFLINE_CHECKBOX_NAME" /> for at give offlineadgang til dine filer.</translation>
 <translation id="357479282490346887">Litauisk</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> kunne ikke gøres tilgængelig offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tjekkisk med Qwerty-tastatur</translation>
 <translation id="4656293982926141856">Denne computer</translation>
-<translation id="4656777537938206294">Gør filer tilgængelige offline</translation>
 <translation id="4669606053856530811">Medlemmer af "<ph name="SOURCE_NAME" />" mister adgang, medmindre disse elementer deles med dem.</translation>
 <translation id="4690246192099372265">Svensk</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">Videoer</translation>
 <translation id="6150853954427645995">Hvis du vil gemme denne fil til offlinebrug, skal du gå online igen, højreklikke på filerne og vælge indstillingen <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Sommerfugle</translation>
-<translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
 <translation id="6189412234224385711">Åbn med <ph name="EXTENSION_NAME" /></translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">Ændret af</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Valgte et interval med <ph name="ENTRY_COUNT" /> elementer fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">Engelsk (Sydafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vil du erstatte den?</translation>
 <translation id="992401651319295351">Du har <ph name="RETRIES" /> forsøg tilbage. Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode.</translation>

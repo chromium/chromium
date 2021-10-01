@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Pausatu da deskarga</translation>
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1446450296470737166">Onartu MIDI gailuen kontrol osoa</translation>
+<translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Ziur baimenak berrezarri nahi dituzula, eta cookieak eta webguneetako datuak garbitu?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Onartuta, hirugarrenenak izan ezik</translation>
 <translation id="1989112275319619282">Arakatu</translation>
 <translation id="1994173015038366702">Webgunearen URLa</translation>
-<translation id="2004697686368036666">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2025115093177348061">Errealitate areagotua</translation>
 <translation id="2030769033451695672">Sakatu hau <ph name="URL_OF_THE_CURRENT_TAB" /> webgunera itzultzeko</translation>
 <translation id="2079545284768500474">Desegin</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7846621471902887024">Webgune guztietan amaituko da saioa.</translation>
 <translation id="7882806643839505685">Baimendu webgune jakin baten audioa.</translation>
-<translation id="7940722705963108451">Gogorarazi</translation>
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
+<translation id="7993619969781047893">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="7999064672810608036">Ziur webgune honek gailuan ezarritako datu guztiak (cookieak barne) ezabatu eta baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Audioa desaktibatuta</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8131740175452115882">Berretsi</translation>
-<translation id="8154912474061769055">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="8197286292360124385">Baimena eman zaio honi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8206354486702514201">Administratzaileak betearazten du ezarpena.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="868929229000858085">Bilatu kontaktuak</translation>
 <translation id="8702612070107455751">Garbitu egingo dira konexiorik gabe gordetako datu guztiak.</translation>
-<translation id="8712637175834984815">Ados</translation>
 <translation id="8719283222052720129">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimena <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8730621377337864115">Eginda</translation>

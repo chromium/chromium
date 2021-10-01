@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Heç bir önizləmə əlçatan deyil</translation>
 <translation id="1812302367230252929">Amhar dilində Transliterasiya</translation>
 <translation id="1813278315230285598">Xidmətlər</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Xəbərdarlıq:<ph name="END_BOLD" />  Bu fayllar müvəqqətidir və diskdə yer boşaltmaq üçün avtomatik silinə bilər.  <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinqvin</translation>
 <translation id="183183971458492120">İnfo yüklənir...</translation>
 <translation id="1834290891154666894">Subyektin alternativ adının uyğunluğu yanlış daxil edilib</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Fransız (Kanada)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="3003633581067744647">Eskiz görünüşünə keçin</translation>
-<translation id="3016566519832145558">Xəbərdarlıq: Bu fayllar müvəqqətidir və diskdə yer boşaltmaq üçün avtomatik silinə bilər.</translation>
 <translation id="3029114385395636667">Sənəd, Cədvəl və Slaydın oflayn əlçatan olması üçün Google Oflayn Sənədi aktiv edin.</translation>
 <translation id="303198083543495566">Coğrafiya</translation>
 <translation id="3047197340186497470">Çin dili (Dayi)</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.com saytına keçin...</translation>
 <translation id="3553048479571901246">Faylları <ph name="APP_NAME" /> ilə açmaq üçün əvvəlcə onları Windows fayllar qovluğuna kopyalayın.</translation>
 <translation id="3556731189587832921">Beynəlxalq kompüter klaviaturası ilə İngilis dili (ABŞ)</translation>
-<translation id="3567221313191587603">Fayl seçin və fayllarınıza oflayn giriş üçün <ph name="OFFLINE_CHECKBOX_NAME" /> seçimini aktiv edin.</translation>
 <translation id="357479282490346887">Litva</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> faylını oflayn əlçatan etmək mümkün olmadı</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty klaviaturası ilə Çex dili</translation>
 <translation id="4656293982926141856">Bu kompüter</translation>
-<translation id="4656777537938206294">Faylları oflayn əlçatan edin</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" bu element onlarla paylaşılmadığı halda, daxil ola bilməyəcəklər.</translation>
 <translation id="4690246192099372265">İsveç</translation>
 <translation id="4693155481716051732">Suşi</translation>
@@ -581,7 +579,6 @@
 <translation id="6146563240635539929">Videolar</translation>
 <translation id="6150853954427645995">Bu faylı oflayn istifadəyə saxlamaq üçün onlayn olun, fayla sağ klik edin və <ph name="OFFLINE_CHECKBOX_NAME" /> variantını seçin.</translation>
 <translation id="6164412158936057769">Kəpənəklər</translation>
-<translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6187719147498869044">Macar</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ilə açın</translation>
@@ -930,7 +927,6 @@
 <translation id="943972244133411984">Düzəliş edib:</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> aralığında <ph name="ENTRY_COUNT" /> fayl seçildi.</translation>
-<translation id="965477715979482472">İngilis (Cənubi Afrika)</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı qovluq artıq mövcuddur. Onu əvəz etmək istəyirsiniz?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> cəhdiniz qalıb. Yeni bir PİN ayarlayana qədər bu şəbəkədən istifadə edə bilməyəcəksiniz.</translation>

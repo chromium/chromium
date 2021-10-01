@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Изтеглянето е на пауза</translation>
 <translation id="1415402041810619267">URL адресът е съкратен</translation>
 <translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
+<translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1647582022260550163">Наистина ли искате да нулирате разрешенията и да изчистите „бисквитките“ и данните за сайта?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Разрешено, но не и за трети страни</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="1994173015038366702">URL адрес на сайт</translation>
-<translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
 <translation id="2025115093177348061">Обогатена реалност</translation>
 <translation id="2030769033451695672">Докоснете, за да се върнете към <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Отмяна</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Анулиране на избора</translation>
 <translation id="7846621471902887024">Ще излезете от профила си във всички сайтове.</translation>
 <translation id="7882806643839505685">Разрешаване на звука за конкретен сайт.</translation>
-<translation id="7940722705963108451">Напомняне</translation>
 <translation id="7986741934819883144">Изберете контакт</translation>
+<translation id="7993619969781047893">Функциите в някои сайтове може да не работят правилно</translation>
 <translation id="7999064672810608036">Наистина ли искате да изчистите всички локални данни, включително „бисквитките“, и да нулирате всички разрешения за този уебсайт?</translation>
 <translation id="8007176423574883786">Изключено за това устройство</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
-<translation id="8154912474061769055">Функциите в много сайтове може да не работят</translation>
 <translation id="8197286292360124385">Достъпът до <ph name="PERMISSION_1" /> е разрешен</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
 <translation id="868929229000858085">Търсене в контактите ви</translation>
 <translation id="8702612070107455751">Всички офлайн данни ще бъдат изчистени.</translation>
-<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8719283222052720129">Включете разрешението за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8730621377337864115">Готово</translation>

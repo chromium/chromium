@@ -66,7 +66,6 @@
 <translation id="133801305381959373">Não existe nenhum campo de texto editável seguinte.</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Gorjeta</translation>
-<translation id="1354356357730355833">copiar</translation>
 <translation id="135978014023467274">O seu ChromeVox foi atualizado para a versão 63.</translation>
 <translation id="1360699455582016846">Clique no item sob a chave de encaminhamento <ph name="ROUTING_KEY_NUMBER" />.</translation>
 <translation id="1377925789329510816">Este é o último cabeçalho. Prima Pesquisar + H para moldar até ao primeiro cabeçalho ou Pesquisar + Shift + H para aceder ao segundo cabeçalho nesta página.</translation>
@@ -353,7 +352,6 @@
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3286390186030710347">Controlo de deslize</translation>
 <translation id="3300348286427369683">Suporte de texto formatado. Agora, o ChromeVox é compatível com campos de texto formatado, incluindo comandos de avanço, encaminhamento do cursor braille, seleção e muito mais.</translation>
-<translation id="3300733168898541351">anular</translation>
 <translation id="3307886118343381874">Ir para o fim da tabela</translation>
 <translation id="3312997241656799641">Link visitado seguinte</translation>
 <translation id="3313245066383501820">Tecla de modificação do ChromeVox</translation>
@@ -374,7 +372,6 @@
 <translation id="3406283310380167331">Mostrar lista de formulários</translation>
 <translation id="3414400929511680526">Azul alice</translation>
 <translation id="3418936350470374046">Não existe nenhuma célula abaixo.</translation>
-<translation id="3419269701801640163">colar</translation>
 <translation id="3435494200763325275">Navegação com a tecla Tab continuada</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Parcialmente premido</translation>
@@ -455,7 +452,6 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Deslocar para baixo</translation>
 <translation id="4035381225449278841">Primavera</translation>
-<translation id="4038098586530338813">refazer</translation>
 <translation id="4047216625641135770">Mark</translation>
 <translation id="4047910800766704982">Pode utilizar uma voz natural e semelhante à de um ser humano quando o dispositivo está online. O texto será enviado para a Google para processamento. Pode desativar esta funcionalidade em qualquer altura nas Definições.</translation>
 <translation id="4053520724192563562">Verde-lima</translation>
@@ -606,13 +602,11 @@
 <translation id="5138912041966667164">Azul-ardósia médio</translation>
 <translation id="5140016802771803559">Azul magenta escuro</translation>
 <translation id="5142101052131610456">Todas as aulas</translation>
-<translation id="5152605892605507188">mover para a direita</translation>
 <translation id="5158275234811857234">Capa</translation>
 <translation id="516076699907426116">Para continuar, explore através do toque para encontrar o botão Aula seguinte. Em seguida, toque duas vezes para continuar.</translation>
 <translation id="5170206230005240598">Legendas braille ativadas.</translation>
 <translation id="5183440668879371625">Linha braille anterior</translation>
 <translation id="5189244881767082992">Linha</translation>
-<translation id="5234747236692380506">escrever <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Milho claro</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Sair</translation>
@@ -750,7 +744,6 @@
 <translation id="6142308968191113180">Titulo 4</translation>
 <translation id="6150023170003443621">Verde-amarelado</translation>
 <translation id="6158882249329863701">linha <ph name="TABLECELLROWINDEX" />, coluna <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">mover para a esquerda</translation>
 <translation id="6164829606128959761">contador</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166362019018438352">Legendas braille desativadas.</translation>
@@ -840,7 +833,6 @@
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6910969481785184048">Ativar, desativar e parar</translation>
 <translation id="6919104639734799681">Mostrar lista de tabelas</translation>
-<translation id="692135145298539227">eliminar, delete</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6949846980769640811">Verde-azulado médio</translation>
 <translation id="6951482098621102657">Não existe nenhum cabeçalho de nível 5 seguinte.</translation>
@@ -921,6 +913,7 @@
 <translation id="7439060726180460871">Diretório</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Pretende utilizar a voz natural?</translation>
+<translation id="7484805699335881122">Altere o tom ao dizer tipos de elementos e texto citado, eliminado, a negrito, entre parênteses ou em maiúsculas.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Avance para a secção seguinte. Os exemplos incluem o tabuleiro de estado e o Launcher.</translation>
 <translation id="7505149250476994901">Diga "cap" antes da letra.</translation>
@@ -1133,7 +1126,6 @@
 <translation id="9077305471618729969">Verde marinho claro</translation>
 <translation id="9080299285199342830">Avançar para o fim</translation>
 <translation id="9089864840575085222">Eco da digitação de ciclo</translation>
-<translation id="9099429023611373837">cortar</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{percentagem}other{# sinais de percentagem}}</translation>

@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Η λήψη διακόπηκε προσωρινά.</translation>
 <translation id="1415402041810619267">Περικομμένο URL</translation>
 <translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
+<translation id="1509960214886564027">Μπορεί να παρουσιαστούν προβλήματα στις λειτουργίες πολλών ιστοτόπων.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1647582022260550163">Είστε βέβαιοι ότι θέλετε να επαναφέρετε τις άδειες και να διαγράψετε τα cookie και τα δεδομένα ιστοτόπου;</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Να επιτρέπονται, εκτός από τα cookie τρίτου μέρους</translation>
 <translation id="1989112275319619282">Περιήγηση</translation>
 <translation id="1994173015038366702">URL ιστότοπου</translation>
-<translation id="2004697686368036666">Ορισμένες λειτουργίες κάποιων ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
 <translation id="2025115093177348061">Επαυξημένη πραγματικότητα</translation>
 <translation id="2030769033451695672">Πατήστε για επιστροφή σε <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7846621471902887024">Θα αποσυνδεθείτε από όλους τους ιστοτόπους.</translation>
 <translation id="7882806643839505685">Να επιτρέπεται ο ήχος για έναν συγκεκριμένο ιστότοπο.</translation>
-<translation id="7940722705963108451">Υπενθύμιση</translation>
 <translation id="7986741934819883144">Επιλογή επαφής</translation>
+<translation id="7993619969781047893">Μπορεί να παρουσιαστούν προβλήματα στις λειτουργίες ορισμένων ιστοτόπων.</translation>
 <translation id="7999064672810608036">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα δεδομένα γι' αυτόν τον ιστότοπο, όπως τα cookie, και να επαναφέρετε όλα τα δικαιώματά του;</translation>
 <translation id="8007176423574883786">Έχει απενεργοποιηθεί για αυτήν τη συσκευή</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="813082847718468539">Προβολή πληροφοριών τοποθεσίας</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
-<translation id="8154912474061769055">Ορισμένες λειτουργίες πολλών ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
 <translation id="8197286292360124385">H άδεια <ph name="PERMISSION_1" /> επιτράπηκε.</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Διαγραφή καταχώρισης</translation>
 <translation id="868929229000858085">Αναζήτηση στις επαφές σας</translation>
 <translation id="8702612070107455751">Όλα τα δεδομένα εκτός σύνδεσης θα διαγραφούν.</translation>
-<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8719283222052720129">Ενεργοποιήστε την άδεια για την εφαρμογή <ph name="APP_NAME" /> στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>

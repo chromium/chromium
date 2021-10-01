@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Muat turun dijeda</translation>
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1446450296470737166">Benarkan kawalan penuh peranti MIDI</translation>
+<translation id="1509960214886564027">Ciri pada banyak tapak mungkin rosak</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1647582022260550163">Adakah anda pasti mahu menetapkan semula kebenaran dan mengosongkan kuki serta data laman?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Dibenarkan, kecuali pihak ketiga</translation>
 <translation id="1989112275319619282">Semak Imbas</translation>
 <translation id="1994173015038366702">URL tapak</translation>
-<translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
 <translation id="2025115093177348061">Realiti tambahan</translation>
 <translation id="2030769033451695672">Ketik untuk kembali kepada <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Buat asal</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7846621471902887024">Anda akan dilog keluar daripada semua tapak.</translation>
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
-<translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
+<translation id="7993619969781047893">Ciri pada sesetengah tapak mungkin rosak</translation>
 <translation id="7999064672810608036">Anda pasti ingin mengosongkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk tapak web ini?</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
 <translation id="8131740175452115882">Sahkan</translation>
-<translation id="8154912474061769055">Ciri pada banyak laman mungkin tidak berfungsi</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> dibenarkan</translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8206354486702514201">Tetapan ini dikuatkuasakan oleh pentadbir anda.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="868929229000858085">Cari dalam kenalan anda</translation>
 <translation id="8702612070107455751">Sebarang data luar talian akan dipadamkan.</translation>
-<translation id="8712637175834984815">Faham</translation>
 <translation id="8719283222052720129">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>

@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
 <translation id="1415402041810619267">URL छोटो बनाइयो</translation>
 <translation id="1446450296470737166">MIDI डिभाइसहरूको पूर्ण नियन्त्रणलाई अनुमति दिनुहोस्</translation>
+<translation id="1509960214886564027">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1647582022260550163">तपाईं साँच्चिकै अनुमतिहरू रिसेट गर्न र कुकी तथा साइटसम्बन्धी डेटा मेटाउन चाहनुहुन्छ?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">अनुमति छ, तेस्रो-पक्ष बाहेकलाई</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
 <translation id="1994173015038366702">साइट URL</translation>
-<translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="2025115093177348061">अग्मेन्टेड रियालिटी</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> मा फर्कन ट्याप गर्नुहोस्</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">चयन रद्द गर्नुहोस्</translation>
 <translation id="7846621471902887024">तपाईं सबै साइटहरूबाट साइन आउट हुनु हुने छ।</translation>
 <translation id="7882806643839505685">निश्चित साइटको ध्वनिलाई अनुमति दिनुहोस्‌।</translation>
-<translation id="7940722705963108451">मलाई स्मरण गराइयोस्</translation>
 <translation id="7986741934819883144">कुनै सम्पर्क ठेगाना चयन गर्नुहोस्</translation>
+<translation id="7993619969781047893">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="7999064672810608036">के तपाईं कुकीहरू सहित सबै स्थानीय डेटा खाली गर्न चाहनुहुन्छ, र यो वेबसाइटको लागि सबै अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
 <translation id="8007176423574883786">यस डिभाइसका लागि बन्द गरियो।</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">म्युट गरियो</translation>
 <translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
-<translation id="8154912474061769055">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">आगत मेटाउनुहोस्</translation>
 <translation id="868929229000858085">आफ्ना सम्पर्कहरू खोज्नुहोस्</translation>
 <translation id="8702612070107455751">सबै अफलाइन डेटा हटाइने छ।</translation>
-<translation id="8712637175834984815">भयो</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई <ph name="APP_NAME" /> लाई अनुमति दिनुहोस्।</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>

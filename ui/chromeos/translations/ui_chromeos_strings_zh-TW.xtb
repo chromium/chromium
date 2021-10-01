@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
 <translation id="1813278315230285598">服務</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告：<ph name="END_BOLD" />這些是暫存檔案，系統可能會自動將其刪除，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資訊...</translation>
 <translation id="1834290891154666894">主體替代名稱比對項目無效</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">法文 (加拿大)</translation>
 <translation id="3003189754374775221">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，連線</translation>
 <translation id="3003633581067744647">切換為縮圖檢視</translation>
-<translation id="3016566519832145558">注意：這些是暫存檔案，系統可能會自動將其刪除，以釋出磁碟空間。</translation>
 <translation id="3029114385395636667">啟用 Google 文件離線版，即可離線使用文件、試算表和簡報。</translation>
 <translation id="303198083543495566">地理位置</translation>
 <translation id="3047197340186497470">中文 (大易)</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">前往 drive.google.com...</translation>
 <translation id="3553048479571901246">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製到 Windows 檔案資料夾。</translation>
 <translation id="3556731189587832921">英文 (美國) 搭配國際 PC 鍵盤</translation>
-<translation id="3567221313191587603">如要將檔案設為可離線使用，請選取該檔案，然後將 <ph name="OFFLINE_CHECKBOX_NAME" /> 改為勾選狀態。</translation>
 <translation id="357479282490346887">立陶宛文</translation>
 <translation id="3592251141500063301">無法將「<ph name="FILE_NAME" />」設為可離線使用</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">正在安裝行動裝置設定檔，第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">捷克文搭配 Qwerty 鍵盤</translation>
 <translation id="4656293982926141856">這台電腦</translation>
-<translation id="4656777537938206294">將檔案設為可離線使用</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」的成員將失去存取權，除非有人與他們共用這些項目。</translation>
 <translation id="4690246192099372265">瑞典文</translation>
 <translation id="4693155481716051732">壽司</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">影片</translation>
 <translation id="6150853954427645995">如要儲存這個檔案以供離線使用，請重新上網，在檔案上按一下滑鼠右鍵，然後選取 [<ph name="OFFLINE_CHECKBOX_NAME" />] 選項。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
-<translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6187719147498869044">匈牙利文</translation>
 <translation id="6189412234224385711">使用「<ph name="EXTENSION_NAME" />」開啟</translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="947144732524271678">已選取「<ph name="FROM_ENTRY_NAME" />」至「<ph name="TO_ENTRY_NAME" />」範圍內的 <ph name="ENTRY_COUNT" /> 個項目。</translation>
-<translation id="965477715979482472">英文 (南非)</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="988685240266037636">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，你要取代這個檔案嗎？</translation>
 <translation id="992401651319295351">你還有 <ph name="RETRIES" /> 次重試機會。你必須設定新的 PIN 碼才能使用這個網路。</translation>

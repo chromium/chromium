@@ -66,7 +66,6 @@
 <translation id="133801305381959373">Nėra kito redaguotino teksto lauko</translation>
 <translation id="1342835525016946179">artikelis</translation>
 <translation id="1346059596910821859">Arbatpinigiai</translation>
-<translation id="1354356357730355833">kopijuoti</translation>
 <translation id="135978014023467274">Atnaujinta į 63 versijos „ChromeVox“!</translation>
 <translation id="1360699455582016846">Spustelėkite <ph name="ROUTING_KEY_NUMBER" /> maršruto parinkimo klavišo elementą</translation>
 <translation id="1377925789329510816">Tai yra paskutinė antraštė. Paspauskite „Search“ + H, kad pereitumėte į pirmą antraštę, arba „Search“ + „Shift“ + H, kad pereitumėte į antrą antraštę šiame puslapyje.</translation>
@@ -353,7 +352,6 @@
 <translation id="3286372614333682499">stačia</translation>
 <translation id="3286390186030710347">Šliaužiklis</translation>
 <translation id="3300348286427369683">Raiškiojo teksto palaikymas. „ChromeVox“ dabar palaiko raiškiojo teksto laukus, įskaitant perėjimo komandas, Brailio žymeklio nukreipimą, pasirinkimą ir daugiau.</translation>
-<translation id="3300733168898541351">anuliuoti</translation>
 <translation id="3307886118343381874">Eiti į lentelės pabaigą</translation>
 <translation id="3312997241656799641">Kita aplankyta nuoroda</translation>
 <translation id="3313245066383501820">„ChromeVox“ modifikavimo klavišas</translation>
@@ -374,7 +372,6 @@
 <translation id="3406283310380167331">Rodyti formų sąrašą</translation>
 <translation id="3414400929511680526">Labai šviesi mėlyna spalva</translation>
 <translation id="3418936350470374046">Nėra langelio žemiau</translation>
-<translation id="3419269701801640163">įklijuoti</translation>
 <translation id="3435494200763325275">Skirtukų naršymas (tęsinys)</translation>
 <translation id="344800400831402066">Rusva spalva</translation>
 <translation id="3457000393508828486">Iš dalies paspausta</translation>
@@ -455,7 +452,6 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Slinkti į apačią</translation>
 <translation id="4035381225449278841">Pavasaris</translation>
-<translation id="4038098586530338813">grąžinti</translation>
 <translation id="4047216625641135770">Žymėjimas</translation>
 <translation id="4047910800766704982">Galite naudoti natūralų, į žmogaus panašų balsą, kai įrenginys prijungtas prie interneto. Tekstas bus išsiųstas apdoroti sistemai „Google“. Galite tai bet kuriuo metu išjungti skiltyje „Nustatymai“.</translation>
 <translation id="4053520724192563562">Ryškiai žalia spalva</translation>
@@ -606,13 +602,11 @@
 <translation id="5138912041966667164">Vidutinio ryškumo mėlyna spalva su pilkšvu atspalviu</translation>
 <translation id="5140016802771803559">Sodriai violetinė spalva</translation>
 <translation id="5142101052131610456">Visos pamokos</translation>
-<translation id="5152605892605507188">perkelti dešinėn</translation>
 <translation id="5158275234811857234">Viršelis</translation>
 <translation id="516076699907426116">Jei norite tęsti, naršykite paliesdami, kad surastumėte mygtuką „Kita pamoka“. Tada dukart palieskite, jei norite tęsti.</translation>
 <translation id="5170206230005240598">Brailio rašto antraštės įgalintos</translation>
 <translation id="5183440668879371625">Ankstesnė Brailio rašmenų eilutė</translation>
 <translation id="5189244881767082992">Linija</translation>
-<translation id="5234747236692380506">įvesti tekstą „<ph name="TEXT" />“</translation>
 <translation id="5263034204789987535">Šviesiai gelsva spalva</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Baigti</translation>
@@ -750,7 +744,6 @@
 <translation id="6142308968191113180">4 antraštė</translation>
 <translation id="6150023170003443621">Gelsvai žalia spalva</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" /> eilutė, <ph name="TABLECELLCOLUMNINDEX" /> stulpelis</translation>
-<translation id="6159796324830296161">perkelti kairėn</translation>
 <translation id="6164829606128959761">matuoklis</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6166362019018438352">Brailio rašmenų antraštės išjungtos</translation>
@@ -840,7 +833,6 @@
 <translation id="6910211073230771657">Ištrintas</translation>
 <translation id="6910969481785184048">Įjungimas, išjungimas ir sustabdymas</translation>
 <translation id="6919104639734799681">Rodyti lentelių sąrašą</translation>
-<translation id="692135145298539227">ištrinti</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6949846980769640811">Vidutinio ryškumo žalsvai melsva spalva</translation>
 <translation id="6951482098621102657">Nėra kitos 5 lygio antraštės</translation>
@@ -921,6 +913,7 @@
 <translation id="7439060726180460871">Katalogas</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Naudoti natūralų balsą?</translation>
+<translation id="7484805699335881122">Keisti toną, kai ištariami elementų tipai ir kai tekstas cituojamas, ištrinamas, paryškinamas, rašomas skliausteliuose arba didžiosiomis raidėmis.</translation>
 <translation id="7491962110804786152">Tabuliavimo klavišas</translation>
 <translation id="7492497529767769458">Pereiti į kitą skiltį. Pavyzdžiai apima būsenos dėklą ir paleidimo priemonę.</translation>
 <translation id="7505149250476994901">Prieš raidę pasakykite „cap“ (didžioji raidė)</translation>
@@ -1133,7 +1126,6 @@
 <translation id="9077305471618729969">Melsvai žalsva spalva</translation>
 <translation id="9080299285199342830">Pereiti į pabaigą</translation>
 <translation id="9089864840575085222">Ciklo įvedimo aidas</translation>
-<translation id="9099429023611373837">iškirpti</translation>
 <translation id="9108370397979208512">matematika</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{procento ženklas}one{# procento ženklas}few{# procento ženklai}many{# percent signs}other{# procento ženklų}}</translation>

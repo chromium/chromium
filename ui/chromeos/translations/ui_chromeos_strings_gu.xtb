@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
 <translation id="1812302367230252929">એમ્હારિક લિપ્યંતર</translation>
 <translation id="1813278315230285598">સેવાઓ</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ચેતવણી:<ph name="END_BOLD" />  આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક સ્થાન ખાલી કરવા માટે ઑટોમૅટિક રીતે કાઢી નાખવામાં આવે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">પેન્ગ્વિન</translation>
 <translation id="183183971458492120">માહિતી લોડ કરી રહ્યું છે...</translation>
 <translation id="1834290891154666894">વિષયના વૈકલ્પિક નામના મેળની અમાન્ય એન્ટ્રી</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">ફ્રેન્ચ (કેનેડા)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, કનેક્ટ કરો</translation>
 <translation id="3003633581067744647">થંબનેલ દૃશ્ય પર સ્વિચ કરો</translation>
-<translation id="3016566519832145558">ચેતવણી: આ ફાઇલો હંગામી છે અને ડિસ્ક પર સ્પેસ ખાલી કરવા માટે તેમને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે તેવું બની શકે છે.</translation>
 <translation id="3029114385395636667">Google Docs ઑફલાઇનની સુવિધા ચાલુ કરો જેથી Docs, Sheets અને Slides ઑફલાઇન ઉપલબ્ધ રહી શકે.</translation>
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.com પર જાઓ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
 <translation id="3556731189587832921">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
-<translation id="3567221313191587603">ફાઇલ પસંદ કરો અને તમારી ફાઇલોને ઑફલાઇન ઍક્સેસ કરવા માટે, <ph name="OFFLINE_CHECKBOX_NAME" />ને ટૉગલ કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="357479282490346887">લિથુનિયન</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી શકાતી નથી</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">મોબાઇલ પ્રોફાઇલ ઇન્સ્ટૉલ કરી રહ્યાં છીએ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક</translation>
 <translation id="4646813851450205600">ચેક, Qwerty કીબોર્ડ સાથે</translation>
 <translation id="4656293982926141856">આ કમ્પ્યુટર</translation>
-<translation id="4656777537938206294">ફાઇલોને ઑફલાઇન ઉપલબ્ધ કરાવો</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />'ના સભ્યો ઍક્સેસ ગુમાવશે સિવાય કે આ આઇટમને તેમની સાથે શેર કરવામાં ન આવી હોય.</translation>
 <translation id="4690246192099372265">સ્વીડિશ</translation>
 <translation id="4693155481716051732">સુશી - માછલીની એક જાપાની વાનગી</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">વીડિયો</translation>
 <translation id="6150853954427645995">આ ફાઇલને ઑફલાઇન ઉપયોગ માટે સાચવવા, પાછા ઓનલાઇન થાઓ, ફાઇલને રાઇટ-ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
 <translation id="6164412158936057769">પતંગિયાઓ</translation>
-<translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6170470584681422115">સેન્ડવિચ</translation>
 <translation id="6187719147498869044">હંગેરિયન</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> સાથે ખોલો</translation>
@@ -931,7 +928,6 @@
 <translation id="943972244133411984">ફેરફાર કરનાર</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> થી <ph name="TO_ENTRY_NAME" /> સુધીની <ph name="ENTRY_COUNT" /> એન્ટ્રીની શ્રેણી પસંદ કરી.</translation>
-<translation id="965477715979482472">અંગ્રેજી (દક્ષિણ આફ્રિકા)</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. શું તમે તેને બદલવા માગો છો?</translation>
 <translation id="992401651319295351">તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે. જ્યાં સુધી તમે નવો પિન સેટઅપ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં.</translation>

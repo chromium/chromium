@@ -66,7 +66,6 @@
 <translation id="133801305381959373">Der er ikke flere redigerbare tekstfelter</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Tip</translation>
-<translation id="1354356357730355833">kopiér</translation>
 <translation id="135978014023467274">Du har opdateret til ChromeVox 63</translation>
 <translation id="1360699455582016846">Klik på elementet under routing-tasten <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Dette er den sidste overskrift. Tryk på søgetasten+H for at gå til den første overskrift, eller tryk på søgetasten+Shift+H for at gå til den anden overskrift på siden.</translation>
@@ -353,7 +352,6 @@
 <translation id="3286372614333682499">stående</translation>
 <translation id="3286390186030710347">Skyder</translation>
 <translation id="3300348286427369683">Understøttelse af RTF. ChromeVox understøtter nu RTF-felter, bl.a. hoppekommandoer, markørstyring til brailletekst, valg og meget mere.</translation>
-<translation id="3300733168898541351">fortryd</translation>
 <translation id="3307886118343381874">Gå til slutningen af ​​tabellen</translation>
 <translation id="3312997241656799641">Næste besøgte link</translation>
 <translation id="3313245066383501820">Ændringstasten til ChromeVox</translation>
@@ -374,7 +372,6 @@
 <translation id="3406283310380167331">Vis formularliste</translation>
 <translation id="3414400929511680526">Lyseblå</translation>
 <translation id="3418936350470374046">Der er ingen celle nedenfor</translation>
-<translation id="3419269701801640163">sæt ind</translation>
 <translation id="3435494200763325275">Fanenavigation fortsat</translation>
 <translation id="344800400831402066">Orangebrun</translation>
 <translation id="3457000393508828486">Delvist trykket ned</translation>
@@ -455,7 +452,6 @@
 <translation id="4006140876663370126">bidl</translation>
 <translation id="4021716437419160885">Rul ned</translation>
 <translation id="4035381225449278841">Forår</translation>
-<translation id="4038098586530338813">annuller fortryd</translation>
 <translation id="4047216625641135770">Marker</translation>
 <translation id="4047910800766704982">Du kan bruge en naturlig, menneskelig stemme, når din enhed er online. Tekst sendes til behandling hos Google. Du kan til enhver tid deaktivere dette i Indstillinger.</translation>
 <translation id="4053520724192563562">Limegrøn</translation>
@@ -606,13 +602,11 @@
 <translation id="5138912041966667164">Mellemlys skiferblå</translation>
 <translation id="5140016802771803559">Lilla</translation>
 <translation id="5142101052131610456">Alle lektioner</translation>
-<translation id="5152605892605507188">gå til højre</translation>
 <translation id="5158275234811857234">Forside</translation>
 <translation id="516076699907426116">Hvis du vil fortsætte, skal du bruge Tryk for at høre for at finde knappen til næste lektion. Tryk derefter to gange for at fortsætte.</translation>
 <translation id="5170206230005240598">Brailletekst er aktiveret</translation>
 <translation id="5183440668879371625">Braille forrige linje</translation>
 <translation id="5189244881767082992">Linje</translation>
-<translation id="5234747236692380506">skriv <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Majshår</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Afslut</translation>
@@ -750,7 +744,6 @@
 <translation id="6142308968191113180">Overskrift 4</translation>
 <translation id="6150023170003443621">Gulgrøn</translation>
 <translation id="6158882249329863701">række <ph name="TABLECELLROWINDEX" /> kolonne <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">gå til venstre</translation>
 <translation id="6164829606128959761">måler</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6166362019018438352">Brailletekst er deaktiveret</translation>
@@ -840,7 +833,6 @@
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6910969481785184048">Til, Fra, og Afbryd</translation>
 <translation id="6919104639734799681">Vis tabelliste</translation>
-<translation id="692135145298539227">slet</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6949846980769640811">Akvamarinblå</translation>
 <translation id="6951482098621102657">Der er ikke flere niveau 5-overskrifter</translation>
@@ -921,6 +913,7 @@
 <translation id="7439060726180460871">Mappe</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Vil du bruge en naturlig stemme?</translation>
+<translation id="7484805699335881122">Brug et andet toneleje, når der oplæses elementtyper, citeret tekst og slettet tekst samt tekst i parentes, med fed skrift eller med store bogstaver.</translation>
 <translation id="7491962110804786152">fane</translation>
 <translation id="7492497529767769458">Gå til næste sektion. Det kan f.eks. være statusbakken eller Appliste.</translation>
 <translation id="7505149250476994901">Sig "stort" før bogstav</translation>
@@ -1133,7 +1126,6 @@
 <translation id="9077305471618729969">Lys havgrøn</translation>
 <translation id="9080299285199342830">Gå til slutningen</translation>
 <translation id="9089864840575085222">Cyklus for ekko ved indtastning</translation>
-<translation id="9099429023611373837">klip</translation>
 <translation id="9108370397979208512">matematik</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{procent}one{# procenttegn}other{# procenttegn}}</translation>

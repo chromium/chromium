@@ -79,7 +79,6 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. సర్వ హక్కులు కేటాయించబడ్డాయి.</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="4563926062592110512">ఈ క్లయింట్ డిస్‌కనెక్ట్ చేయబడ్డారు: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> సరిగ్గా కాన్ఫిగర్ చేయబడలేదు. దయచేసి వేరొక ఆటోమేటిక్ వెబ్ బ్రౌజర్‌ను ఎంచుకోండి, ఆపై మళ్లీ URL ఫార్వార్డింగ్‌ను ఎనేబుల్ చేయండి.</translation>
 <translation id="4635770493235256822">రిమోట్ పరికరాలు</translation>
 <translation id="4660011489602794167">కీబోర్డ్‌ను చూపు</translation>
 <translation id="4703799847237267011">మీ Chromoting సెషన్ ముగిసింది.</translation>
@@ -110,7 +109,6 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> వలె సైన్ ఇన్ చేశారు.</translation>
 <translation id="579702532610384533">మళ్ళీ కనెక్ట్ చేయి</translation>
 <translation id="5810269635982033450">స్క్రీన్ ట్రాక్‌ప్యాడ్ లాగా పని చేస్తుంది</translation>
-<translation id="5823554426827907568">మీ స్క్రీన్‌ను చూడడానికి, ఇంకా మీ కీబోర్డ్, మౌస్‌ను కంట్రోల్ చేయడానికి కావాల్సిన యాక్సెస్ కోసం <ph name="CLIENT_USERNAME" /> రిక్వెస్ట్ చేశారు. మీరు ఈ రిక్వెస్ట్ కోసం వేచి ఉండకూదనుకుంటే "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />"ను నొక్కండి. లేకపోతే, కనెక్షన్ సిద్ధంగా ఉన్నప్పుడు దానిని అనుమతించడానికి "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />"ను ఎంచుకోండి.</translation>
 <translation id="5823658491130719298">మీరు రిమోట్‌గా యాక్సెస్ చేయాలనుకుంటున్న కంప్యూటర్‌లో Chromeను తెరిచి, <ph name="INSTALLATION_LINK" />ను సందర్శించండి</translation>
 <translation id="5841343754884244200">ప్రదర్శన ఎంపికలు</translation>
 <translation id="6033507038939587647">కీబోర్డ్ ఎంపికలు</translation>
@@ -132,6 +130,7 @@
 <translation id="6963936880795878952">ఒకరు చెల్లని PINతో రిమోట్ కంప్యూటర్‌కు కనెక్ట్ చేయడానికి ప్రయత్నిస్తున్నందున, దీనికి కనెక్షన్‌లు తాత్కాలికంగా బ్లాక్ చేయబడ్డాయి. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6985691951107243942">మీరు <ph name="HOSTNAME" />కు రిమోట్ కనెక్షన్‌లను ఖచ్చితంగా నిలిపివేయాలనుకుంటున్నారా? మీరు మీ మనస్సు మార్చుకుంటే, కనెక్షన్‌లను పునఃప్రారంభించడానికి మీరు ఆ కంప్యూటర్‌ను సందర్శించాలి.</translation>
+<translation id="6998890551706945177">మీ కంప్యూటర్‌ను చూడటానికి, కంట్రోల్ చేయడానికి కావాల్సిన యాక్సెస్ కోసం <ph name="CLIENT_USERNAME" /> రిక్వెస్ట్ చేశారు. మీకు ఈ వ్యక్తి తెలియకపోతే లేదా షేర్ చేయడానికి ముందు ఏవైనా మార్పులు చేయాల్సి వస్తే "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />"ను నొక్కండి.  లేకపోతే, కనెక్షన్‌ను అనుమతించడానికి."<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />"ను ఎంచుకోండి.</translation>
 <translation id="7019153418965365059">తెలియని హోస్ట్ ఎర్రర్: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">రిమోట్ సహాయం</translation>
 <translation id="7026930240735156896">మీ కంప్యూటర్‌ను రిమోట్ యాక్సెస్ కోసం సెటప్ చేయడానికి సూచనలను పాటించండి</translation>
@@ -170,7 +169,6 @@
 ఈ అనుమతిని మంజూరు చేయడానికి, కింది '<ph name="BUTTON_NAME" />' బటన్‌ను క్లిక్ చేయండి. ఆపై, తెరవబడే ‘యాక్సెసిబిలిటీ’ ప్రాధాన్యతల పేన్‌లో '<ph name="SERVICE_SCRIPT_NAME" />' ఎంపికకు పక్కన ఉండే బాక్స్‌ను ఎంచుకోండి.
 
 ఒకవేళ '<ph name="SERVICE_SCRIPT_NAME" />'ను ఇప్పటికే ఎంచుకుని ఉంటే, దాని ఎంపికను తీసివేసి, మళ్లీ ఎంచుకోండి.</translation>
-<translation id="8305209735512572429">వెబ్ ప్రామాణీకరణ రిమోటింగ్ ప్రాసెస్</translation>
 <translation id="8383794970363966105">Chromoting ఉపయోగించడానికి, మీ పరికరానికి Google ఖాతాను జోడించాలి.</translation>
 <translation id="8386846956409881180">హోస్ట్ చెల్లని OAuth ఆధారాలతో కాన్ఫిగర్ చేయబడింది.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />కు అనుమతి మంజూరు చేయండి</translation>

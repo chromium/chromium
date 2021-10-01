@@ -34,7 +34,6 @@
 <translation id="2343156876103232566">Щоб надіслати номер на телефон Android, увійдіть у Chromium на обох пристроях.</translation>
 <translation id="2347108572062610441">Це розширення змінило сторінку, яка відкривається під час запуску Chromium.</translation>
 <translation id="2396765026452590966">Розширення "<ph name="EXTENSION_NAME" />" змінило сторінку, яка відкривається під час запуску Chromium.</translation>
-<translation id="2401032172288869980">Веб-переглядачу Chromium потрібен доступ до камери та мікрофона для цього сайту</translation>
 <translation id="2483889755041906834">У Chromium</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2535480412977113886">ОС Chromium не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
@@ -152,7 +151,6 @@
 <translation id="5820394555380036790">ОС Chromium</translation>
 <translation id="5854740544000584380">ОС Chromium і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
-<translation id="5883558403894052917">Веб-переглядач Chromium виявив, що наведені нижче елементи містять зловмисне програмне забезпечення.</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вхід у мережу</translation>
 <translation id="5987687638152509985">Щоб почати синхронізацію, оновіть Chromium</translation>
@@ -170,7 +168,6 @@
 <translation id="6183079672144801177">Переконайтеся, що ви ввійшли в Chromium на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
 <translation id="6212496753309875659">На цьому комп’ютері вже встановлено новішу версію Chromium. Якщо програмне забезпечення не працює, видаліть Chromium і повторіть спробу.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапуститься зараз}=1{Chromium перезапуститься через 1 секунду}one{Chromium перезапуститься через # секунду}few{Chromium перезапуститься через # секунди}many{Chromium перезапуститься через # секунд}other{Chromium перезапуститься через # секунди}}</translation>
-<translation id="6241367896540709610">Веб-переглядачу Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="6248213926982192922">Зробити Chromium переглядачем за умовчанням</translation>
 <translation id="6266342355635466082">Chromium не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>
@@ -191,9 +188,7 @@
 <translation id="6570579332384693436">Щоб виправляти орфографічні помилки, Chromium надсилає введений текст у Google</translation>
 <translation id="6598877126913850652">Перейти до налаштувань сповіщень Chromium</translation>
 <translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>
-<translation id="665732753414869868">Веб-переглядачу Chromium потрібен доступ до камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
-<translation id="6709350901466051922">Веб-переглядачу Chromium потрібен доступ до мікрофона для цього сайту</translation>
 <translation id="6717134281241384636">Ваш профіль не можна використовувати, оскільки він створений у новішій версії Chromium.
 
 Деякі функції можуть бути недоступними. Укажіть інший каталог профілю або скористайтеся новішою версією Chromium.</translation>
@@ -205,7 +200,6 @@
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>
-<translation id="6873893289264747459">Веб-переглядач Chromium виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
 <translation id="6893813176749746474">Chromium оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
 <translation id="691026815377248078">Щоб продовжити підключення, надайте веб-переглядачу Chromium
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -214,7 +208,6 @@
 <translation id="6990124437352146030">Chromium потрібен дозвіл на використання мікрофона, щоб надати цьому сайту доступ до нього</translation>
 <translation id="705851970750939768">Оновити Chromium</translation>
 <translation id="7067091210845072982">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google.</translation>
-<translation id="718435575166326686">Веб-переглядачу Chromium потрібен доступ до камери для цього сайту</translation>
 <translation id="7196312274710523067">Не вдалося запустити Chromium. Повторіть спробу.</translation>
 <translation id="7197677400338048821">Chromium не може перевірити паролі. Повторіть спробу через 24 години.</translation>
 <translation id="7223968959479464213">Диспетчер завдань – Chromium</translation>
@@ -238,6 +231,10 @@ Chromium не може відновити ваші налаштування.</tr
       налаштуваннях ОС Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium використовує вашу камеру та мікрофон.</translation>
 <translation id="7617377681829253106">Chromium став ще кращим</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Перш ніж почати, переконайтеся, що у вас є актуальна резервна копія ваших даних. Під час встановлення Chromium OS буде перезаписано всі дані на жорсткому диску.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Компанія Google не несе відповідальності за втрату даних і не гарантує, що Chromium OS працюватиме на несертифікованих моделях. Докладніше про сертифіковані моделі можна дізнатися на сайті [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Докладніше про встановлення Chromium OS і видалення всіх даних на пристрої: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Якщо ви готові продовжити, натисніть "Установити Chromium OS", і ми надамо вам прості вказівки. У вас буде ще одна можливість підтвердити своє рішення, перш ніж на комп’ютері буде внесено зміни.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium не є вашим веб-переглядачем за умовчанням</translation>
 <translation id="7689606757190482937">Синхронізуйте та персоналізуйте роботу Chromium на всіх своїх пристроях</translation>
 <translation id="7729447699958282447">Chromium не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
@@ -252,7 +249,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7975919845073681630">Це додаткове встановлення Chromium. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
 <translation id="8013436988911883588">Коли Chromium отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.</translation>
 <translation id="8045118833343856403">Користувачі зазначених облікових записів не ввійшли в профілі Chromium. Якщо ви хочете скористатись обліковим записом в іншому профілі, спершу вилучіть цей профіль.</translation>
-<translation id="8105840573057009683">Веб-переглядачу Chromium потрібен дозвіл на доступ до геоданих для цього сайту</translation>
 <translation id="81770708095080097">Цей файл небезпечний, тому Chromium заблокував його.</translation>
 <translation id="8248265253516264921">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="8266560134891435528">Chromium не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>

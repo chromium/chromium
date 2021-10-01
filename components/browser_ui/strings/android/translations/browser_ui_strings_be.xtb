@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Спампоўка прыпынена</translation>
 <translation id="1415402041810619267">URL-адрас абрэзаны</translation>
 <translation id="1446450296470737166">Дазв. поўны кантроль MIDI-прылад</translation>
+<translation id="1509960214886564027">Функцыі на многіх сайтах могуць перастаць працаваць</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1647582022260550163">Вы ўпэўненыя, што хочаце скінуць дазволы, выдаліць файлы cookie і іншыя даныя сайта?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Дазволены, за выключэннем старонніх</translation>
 <translation id="1989112275319619282">Агляд</translation>
 <translation id="1994173015038366702">URL-адрас сайта</translation>
-<translation id="2004697686368036666">На некаторых сайтах можа не працаваць частка функцый</translation>
 <translation id="2025115093177348061">Дапоўненая рэальнасць</translation>
 <translation id="2030769033451695672">Націсніце, каб вярнуцца на ўкладку <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Адрабіць</translation>
@@ -76,7 +76,7 @@
 <translation id="2903493209154104877">Адрасы</translation>
 <translation id="2910701580606108292">Пытаць, перш чым дазволіць прайграванне абароненага змесціва на сайтах</translation>
 <translation id="2913331724188855103">Дазволіць сайтам захоўваць і чытаць даныя файлаў cookie (рэкамендуецца)</translation>
-<translation id="2932883381142163287">Паскардзіцца</translation>
+<translation id="2932883381142163287">Паскардзіцца на парушэнне</translation>
 <translation id="2968755619301702150">Звесткі пра сертыфікат</translation>
 <translation id="300526633675317032">Гэта вызваліць <ph name="SIZE_IN_KB" /> у сховішчы вэб-сайтаў.</translation>
 <translation id="3008272652534848354">Скінуць дазволы</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7846621471902887024">Будзе выкананы выхад з усіх сайтаў.</translation>
 <translation id="7882806643839505685">Дазвол гуку на канкрэтным сайце.</translation>
-<translation id="7940722705963108451">Нагадаць</translation>
 <translation id="7986741934819883144">Выберыце кантакт</translation>
+<translation id="7993619969781047893">Функцыі на некаторых сайтах могуць перастаць працаваць</translation>
 <translation id="7999064672810608036">Вы сапраўды хочаце ачысціць усе лакальныя даныя, у тым ліку файлы cookie, і скінуць усе дазволы для гэтага вэб-сайта?</translation>
 <translation id="8007176423574883786">Выключана для гэтай прылады</translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Без гуку</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
-<translation id="8154912474061769055">На многіх сайтах можа не працаваць частка функцый</translation>
 <translation id="8197286292360124385">Дазволена: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8206354486702514201">Гэтай наладай кіруе адміністратар.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Ачысціць поле ўводу</translation>
 <translation id="868929229000858085">Пошук у кантактах</translation>
 <translation id="8702612070107455751">Усе пазасеткавыя даныя будуць выдалены.</translation>
-<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8719283222052720129">Уключыце для праграмы "<ph name="APP_NAME" />" дазвол у <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8730621377337864115">Гатова</translation>

@@ -66,7 +66,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="133801305381959373">Düzenlenebilir sonraki metin alanı yok</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">İpucu</translation>
-<translation id="1354356357730355833">kopyala</translation>
 <translation id="135978014023467274">ChromeVox 63 sürümüne güncellendi!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> yönlendirme tuşunun altındaki öğeyi tıklayın</translation>
 <translation id="1377925789329510816">Bu son başlık. Bu sayfadaki ilk başlığa dönmek için Ara+H tuşlarına ya da ikinci başlığa gitmek için Ara+Üst Karakter+H tuşlarına basın.</translation>
@@ -353,7 +352,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3286372614333682499">dikey</translation>
 <translation id="3286390186030710347">Kaydırma çubuğu</translation>
 <translation id="3300348286427369683">Zengin metin desteği. ChromeVox artık atlama komutları, braille imleç yönlendirmesi, seçim ve daha birçok zengin metin alanlarını destekliyor.</translation>
-<translation id="3300733168898541351">geri al</translation>
 <translation id="3307886118343381874">Tablonun sonuna git</translation>
 <translation id="3312997241656799641">Ziyaret edilmiş olan sonraki bağlantı</translation>
 <translation id="3313245066383501820">ChromeVox değiştirici tuşu</translation>
@@ -374,7 +372,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3406283310380167331">Form listesini göster</translation>
 <translation id="3414400929511680526">Alice Mavisi</translation>
 <translation id="3418936350470374046">Aşağıda hücre yok</translation>
-<translation id="3419269701801640163">yapıştır</translation>
 <translation id="3435494200763325275">Sekmede Gezinmenin Devamı</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Kısmen basıldı</translation>
@@ -455,7 +452,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Aşağı kaydır</translation>
 <translation id="4035381225449278841">İlkbahar</translation>
-<translation id="4038098586530338813">yeniden yap</translation>
 <translation id="4047216625641135770">İşaretle</translation>
 <translation id="4047910800766704982">Cihazınız internete bağlıyken insan sesine benzeyen doğal bir ses kullanabilirsiniz. Metin, işlenmek üzere Google'a gönderilecek. Bu özelliği dilediğiniz zaman Ayarlar'da devre dışı bırakabilirsiniz.</translation>
 <translation id="4053520724192563562">Misket Limonu Yeşili</translation>
@@ -606,13 +602,11 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5138912041966667164">Orta Ton Kurşun Mavisi</translation>
 <translation id="5140016802771803559">Mor</translation>
 <translation id="5142101052131610456">Tüm dersler</translation>
-<translation id="5152605892605507188">sağa git</translation>
 <translation id="5158275234811857234">Kapak</translation>
 <translation id="516076699907426116">Devam etmek için, Dokunarak keşfet özelliğini kullanıp Sonraki ders düğmesini bulun. Ardından devam etmek için iki kez dokunun.</translation>
 <translation id="5170206230005240598">Braille altyazıları etkinleştirildi</translation>
 <translation id="5183440668879371625">Braille önceki Satır</translation>
 <translation id="5189244881767082992">Satır</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> yaz</translation>
 <translation id="5263034204789987535">Mısır Püskülü</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Son</translation>
@@ -750,7 +744,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6142308968191113180">Başlık 4</translation>
 <translation id="6150023170003443621">Sarıya Dönük Yeşil</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />. satır, <ph name="TABLECELLCOLUMNINDEX" />. sütun</translation>
-<translation id="6159796324830296161">sola git</translation>
 <translation id="6164829606128959761">ölçüm aracı</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6166362019018438352">Braille altyazıları devre dışı bırakıldı</translation>
@@ -840,7 +833,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6910211073230771657">Silindi</translation>
 <translation id="6910969481785184048">Açma, Kapatma ve Durdurma</translation>
 <translation id="6919104639734799681">Tablo listesini göster</translation>
-<translation id="692135145298539227">sil</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6949846980769640811">Orta Ton Mavimsi Yeşil</translation>
 <translation id="6951482098621102657">Sonraki 5. düzey başlık yok</translation>
@@ -920,6 +912,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7439060726180460871">Dizin</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Doğal ses kullanılsın mı?</translation>
+<translation id="7484805699335881122">Öğe türlerini ve alıntılanan, silinen, kalın harfli yapılan, parantez içine alınan veya büyük harfli yapılan metni seslendirirken ses tonunu değiştirin.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Sonraki bölüme git. Örneğin, Durum Tepsisi ve Başlatıcı.</translation>
 <translation id="7505149250476994901">Harften önce "büyük harf" olduğunu söyleyin</translation>
@@ -1132,7 +1125,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="9077305471618729969">Açık Deniz Yeşili</translation>
 <translation id="9080299285199342830">Sona atla</translation>
 <translation id="9089864840575085222">Yazma yansıtmayı döngüsel yap</translation>
-<translation id="9099429023611373837">kes</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{yüzde işareti}other{# yüzde işareti}}</translation>

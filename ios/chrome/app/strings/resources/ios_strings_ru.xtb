@@ -116,7 +116,6 @@
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
-<translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
 <translation id="209018056901015185">Версия для ПК</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -230,7 +229,6 @@
 <translation id="3184767182050912705">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
-<translation id="3230318355092723906">Когда синхронизация отключена, на этом устройстве по-прежнему доступны закладки, история, пароли и другие настройки. Однако никакие изменения не будут сохраняться в вашем аккаунте.</translation>
 <translation id="3240426699337459095">Готово</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> из <ph name="NUM_SUGGESTIONS" /></translation>
@@ -357,7 +355,6 @@
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4620246317052452550">Прочитанные</translation>
-<translation id="4620888520263267479">Предпросмотр ссылок</translation>
 <translation id="4630540211544979320">Переводить страницы</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
 <translation id="4636930964841734540">Информация</translation>
@@ -455,7 +452,6 @@
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5580834567471114021">Добавить в список для чтения?</translation>
 <translation id="5592679540098330836">Включить синхронизацию для пользователя <ph name="NAME" /></translation>
-<translation id="560322036295180549">Функция отключена вашей организацией</translation>
 <translation id="5614553682702429503">Сохранение пароля</translation>
 <translation id="5626245204502895507">Не удалось скачать файлы.</translation>
 <translation id="5631164295104953411">Добавить способ оплаты</translation>
@@ -471,8 +467,6 @@
 <translation id="5737974891429562743">Данные для входа в аккаунт устарели. Чтобы начать синхронизацию, обновите их.</translation>
 <translation id="5738887413654608789">Вы сможете узнавать о сайтах, связанных с объектами вокруг вас.</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
-<translation id="575902488528307720">Найти изображение</translation>
-<translation id="5781453543752460388">Добавить в Фото</translation>
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5812974770859303494">Добавить…</translation>
@@ -510,7 +504,6 @@
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
-<translation id="6064824697233747382">Согласно правилам вашей организации, необходимо отключить синхронизацию.</translation>
 <translation id="6066301408025741299">Нажмите, чтобы отменить загрузку</translation>
 <translation id="60829778314739003">Принять и продолжить</translation>
 <translation id="6084848228346514841">Выберите вкладки</translation>
@@ -526,7 +519,6 @@
 <translation id="6189413832092199491">Непрочитанные</translation>
 <translation id="6196207969502475924">Голосовой поиск</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрыть {COUNT} вкладку}one{Закрыть {COUNT} вкладку}few{Закрыть {COUNT} вкладки}many{Закрыть {COUNT} вкладок}other{Закрыть {COUNT} вкладки}}</translation>
-<translation id="6207754106943147310">Узнайте, <ph name="BEGIN_LINK" />какие данные можно синхронизировать<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Никогда не переводить</translation>
 <translation id="6223816392543092032">Синхронизировать закладки, историю, пароли и другие настройки на всех ваших устройствах</translation>
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
@@ -611,7 +603,6 @@
 <translation id="6801927553864092214">Чтобы посмотреть сайт анонимно, откройте вкладку в режиме инкогнито.</translation>
 <translation id="6807889908376551050">Показать все…</translation>
 <translation id="681368974849482173">Сохранено</translation>
-<translation id="681450999322335505">Ваша организация отключила синхронизацию</translation>
 <translation id="6830804042318138535">Узнать больше</translation>
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>
@@ -637,6 +628,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7006788746334555276">Настройки контента</translation>
+<translation id="7015203776128479407">Первоначальная настройка синхронизации не завершена. Синхронизация выключена.</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7062545763355031412">Принять и переключиться</translation>
@@ -659,12 +651,12 @@
 <translation id="7265758999917665941">Никогда для этого сайта</translation>
 <translation id="7272437679830969316">Не удалось пройти проверку. Пароль не скопирован.</translation>
 <translation id="7291368939935408496">Подготовка паролей…</translation>
+<translation id="7293171162284876153">Чтобы начать ее, нажмите "Синхронизировать данные Chrome".</translation>
 <translation id="7313347584264171202">Здесь вы найдете свои вкладки инкогнито</translation>
 <translation id="7319242366286515846">Продолжая, вы принимаете <ph name="BEGIN_LINK" />Условия использования<ph name="END_LINK" />.</translation>
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
 <translation id="7346909386216857016">ОК</translation>
-<translation id="7347393021726115275">Вы можете входить только с аккаунтами, одобренными администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">Параметры сохранения карты</translation>
 <translation id="7348502496356775519">Закладка</translation>
 <translation id="7353432112255316844">Подтвердить личность</translation>
@@ -715,7 +707,6 @@
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
 <translation id="7859704718976024901">История браузера</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
-<translation id="7911190106180361398">Синхронизация всех данных запрещена организацией</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспорт паролей...</translation>
 <translation id="794799177247607889">Остановить запись журнала</translation>
@@ -725,7 +716,6 @@
 
 Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы.</translation>
 <translation id="7971521879845308059">Блок. вспл. окна</translation>
-<translation id="797413074872316787">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7993619969781047893">Некоторые функции на сайтах могут работать некорректно</translation>
 <translation id="800361585186029508">Введенные URL будут открываться в Google Chrome.</translation>
@@ -742,16 +732,14 @@
 <translation id="8076014560081431679">Настройки сайтов не изменятся, поэтому данные о вашей работе в Интернете сохранятся. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Эту настройку может изменить администратор. Нажмите дважды, чтобы узнать больше.</translation>
 <translation id="8080028325999236607">Закрыть все вкладки</translation>
-<translation id="8103864314410529527">Ваша организация разрешила синхронизировать не все данные. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Отключить</translation>
 <translation id="8114753159095730575">Файл доступен для скачивания. Параметры указаны в нижней части экрана.</translation>
+<translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8156478151976189188">Синхронизация паролей не работает</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Перевести страницу</translation>
 <translation id="8205564605687841303">Отмена</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
 <translation id="8225985093977202398">Файлы, сохраненные в кеше</translation>
-<translation id="8228176677386827255">Этим устройством управляет организация, поэтому вы можете выполнить вход только с корпоративным аккаунтом.</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8271720166617117963">Принять и войти</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>
@@ -773,6 +761,7 @@
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
 <translation id="8490978609246021741">Сохранить изменения</translation>
+<translation id="8495097701594799854">Функция отключена вашей организацией.</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="850600235656508448">Открыть в режиме инкогнито</translation>
 <translation id="8517375800490286174">Лицензии открытого ПО</translation>

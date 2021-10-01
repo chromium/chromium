@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1446450296470737166">MIDI-seadm. täieliku juht. lub.</translation>
+<translation id="1509960214886564027">Paljude saitide funktsioonid ei pruugi töötada</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1647582022260550163">Kas olete kindel, et soovite load lähtestada ning küpsisefailid ja saidi andmed kustutada?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Lubatud, välja arvatud kolmanda osapoole küpsised</translation>
 <translation id="1989112275319619282">Sirvi</translation>
 <translation id="1994173015038366702">Saidi URL</translation>
-<translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
 <translation id="2025115093177348061">Liitreaalsus</translation>
 <translation id="2030769033451695672">Puudutage vahelehele <ph name="URL_OF_THE_CURRENT_TAB" /> naasmiseks</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Tühista valik</translation>
 <translation id="7846621471902887024">Teid logitakse kõikidelt saitidelt välja.</translation>
 <translation id="7882806643839505685">Konkreetse saidi heli lubamine.</translation>
-<translation id="7940722705963108451">Tuleta mulle meelde</translation>
 <translation id="7986741934819883144">Kontakti valimine</translation>
+<translation id="7993619969781047893">Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="7999064672810608036">Kas soovite kindlasti kustutada kõik kohalikud andmed (sh küpsised) ja lähtestada kõik selle veebisaidi load?</translation>
 <translation id="8007176423574883786">Selle seadme puhul on välja lülitatud</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Vaigistatud</translation>
 <translation id="813082847718468539">Kuvab saidi teabe</translation>
 <translation id="8131740175452115882">Kinnita</translation>
-<translation id="8154912474061769055">Funktsioonid ei pruugi paljudel saitidel toimida</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> on lubatud</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8206354486702514201">Selle seade jõustas teie administraator.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="868929229000858085">Otsige kontaktide hulgast</translation>
 <translation id="8702612070107455751">Kõik võrguühenduseta andmed kustutatakse.</translation>
-<translation id="8712637175834984815">Selge</translation>
 <translation id="8719283222052720129">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse luba rakendusele <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>

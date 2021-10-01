@@ -7,11 +7,9 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall rilevato</translation>
 <translation id="1075811647922107217">Dimensioni pagina</translation>
-<translation id="1119447706177454957">Errore interno</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
-<translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1204296502688602597">Latenza DNS</translation>
 <translation id="123124571410524056">Portale sospetto</translation>
@@ -35,7 +33,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestisce questo utente e potrebbe gestire le impostazioni e monitorare l'attività utente da remoto.</translation>
 <translation id="150962533380566081">PUK non valido.</translation>
 <translation id="1510238584712386396">Avvio app</translation>
-<translation id="155865706765934889">Touchpad</translation>
+<translation id="1600964289716072707">Posiziona sullo scanner un'altra pagina e seleziona Scansiona per aggiungerla.</translation>
 <translation id="1621067168122174824">Esegui test ricarica</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641857168437328880">Alimentatore di documenti (solo fronte)</translation>
@@ -46,23 +44,19 @@
 <translation id="1706391837335750954">Resolver DNS presente</translation>
 <translation id="1715359911173058521">Si è verificato un problema di collegamento con lo scanner. Controlla la rete o la connessione USB e riprova.</translation>
 <translation id="1717874160321062422">Dispositivo gestito da <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
-<translation id="1726100011689679555">Server dei nomi</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annullamento scansione…</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
-<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
 <translation id="1930797645656624981">Servizio metodo di immissione di Chrome OS</translation>
 <translation id="1947737735496445907">Stampato</translation>
-<translation id="197386857804679933">Apri le Impostazioni per ricollegarti</translation>
 <translation id="1979103255016296513">Modifica della password scaduta</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connettività</translation>
 <translation id="2008685064673031089">Prime search</translation>
-<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB disponibili su <ph name="TOTAL_MEMORY" /></translation>
@@ -77,9 +71,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2364498172489649528">Superato</translation>
-<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
-<translation id="2407209115954268704">Stato di blocco della SIM</translation>
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -96,23 +88,19 @@
 <translation id="2783010256799387990">SUPERATO</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">App</translation>
-<translation id="2860473693272905224">Posiziona un'altra pagina sullo scanner</translation>
+<translation id="2862104018715411648">Posiziona il documento sullo scanner e seleziona Scansiona per iniziare</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Test non riuscito</translation>
 <translation id="3083667275341675831">Diagnostica della connettività</translation>
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dati mobili</translation>
-<translation id="3156846309055100599">Scansione pagina <ph name="PAGE_NUMBER" /> in corso…</translation>
 <translation id="315738237743207937">Captive portal rilevato</translation>
-<translation id="3170673040743561620">Posiziona il documento sullo scanner</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
@@ -134,13 +122,13 @@
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3540383942695635079">Indirizzo MAC</translation>
-<translation id="3565064564551103223">IP consentiti</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
 <translation id="3582041541988388905">Nessuna connessione <ph name="NETWORK_NAME" /> rilevata</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scansiona di nuovo la pagina}=1{Scansiona di nuovo pagina {PAGE_NUMBER}}other{Scansiona di nuovo pagina {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -158,7 +146,6 @@
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
 <translation id="4034824040120875894">Stampante</translation>
-<translation id="409427325554347132">Salva dettagli del test</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
@@ -167,8 +154,6 @@
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
 <translation id="4244962993387259361">Ti servono almeno 500 MB di spazio libero per eseguire un test di memoria. Per liberare spazio, vai a Impostazioni &gt; Gestione dello spazio di archiviazione.</translation>
-<translation id="4258281355379922695">Latenza HTTP</translation>
-<translation id="4271957103967917607">Visualizza a schermo intero</translation>
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
@@ -178,6 +163,7 @@
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
 <translation id="4431821876790500265">Visualizza rapporto</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Rimuovi pagina}=1{Rimuovi pagina {PAGE_NUMBER}}other{Rimuovi pagina {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Vecchia password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Salva scansioni in</translation>
@@ -188,13 +174,12 @@
 <translation id="4536864596629708641">Configurazione IP</translation>
 <translation id="4548483925627140043">segnale non trovato</translation>
 <translation id="455835558791489930">Batteria da <ph name="CHARGE_VALUE" /> mAh</translation>
-<translation id="4561801978359312462">SIM sbloccata</translation>
 <translation id="4562494484721939086">Nessun servizio</translation>
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
-<translation id="463791356324567266">Annullamento scansione in corso…</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
+<translation id="4652335678334611408">Salva log sessione</translation>
 <translation id="4654549501020883054">Cambia ogni giorno</translation>
 <translation id="4665014895760275686">Produttore</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>
@@ -211,7 +196,6 @@
 <translation id="4813345808229079766">Connessione</translation>
 <translation id="4832079907277790330">Seleziona cartella nell'app File…</translation>
 <translation id="4835901797422965222">Nessuna rete attiva</translation>
-<translation id="484790837831576105">(Android) risoluzione DNS</translation>
 <translation id="4848429997038228357">IN ESECUZIONE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
 <translation id="4880328057631981605">Nome punto di accesso</translation>
@@ -220,6 +204,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Operazione interrotta - Carta esaurita</translation>
+<translation id="491836528011451486">Posiziona il documento sullo scanner e seleziona Ripeti scansione per scansionarlo e sostituire la pagina <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Ricarica del <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
@@ -228,9 +213,7 @@
 <translation id="4999333166442584738">Nascondi rapporto</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5049856988445523908">SIM bloccata (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome del gruppo</translation>
-<translation id="5051044138948155788">Questa è l'unica pagina. Si aprirà la schermata iniziale della scansione.</translation>
 <translation id="5088172560898466307">Nome host del server</translation>
 <translation id="5089810972385038852">Stato</translation>
 <translation id="5142961317498132443">Autenticazione</translation>
@@ -239,7 +222,6 @@
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
 Prova a toccare il microfono per chiedermi qualcosa.</translation>
-<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -266,20 +248,16 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossibile completare la scansione</translation>
-<translation id="5502931783115429516">Android non funziona</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5578519639599103840">Scansiona di nuovo</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famiglia</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Stato portale</translation>
-<translation id="5784136236926853061">Latenza HTTP elevata</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5849570051105887917">Codice del provider principale</translation>
-<translation id="5860033963881614850">Off</translation>
 <translation id="5866840822086176774">Molto forte</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5916084858004523819">Non consentito</translation>
@@ -294,7 +272,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6050189528197190982">Scala di grigi</translation>
 <translation id="6058625436358447366">Per terminare, inserisci la password vecchia e quella nuova</translation>
 <translation id="6061772781719867950">Richieste HTTPS non riuscite</translation>
-<translation id="6075872808778243331">(Android) Latenza HTTP</translation>
 <translation id="6104112872696127344">La scansione è stata annullata</translation>
 <translation id="6106186594183574873">Per terminare, inserisci la vecchia password</translation>
 <translation id="6108689792487843350">gateway non raggiungibile</translation>
@@ -304,7 +281,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
-<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
 <translation id="6191293864534840972">formato dei server dei nomi non valido</translation>
 <translation id="6223752125779001553">Nessuno scanner disponibile</translation>
@@ -314,12 +290,10 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
-<translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">L'alimentatore di documenti dello scanner è inceppato. Controlla l'alimentatore e riprova.</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Accettabile</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}}other{Scansionare di nuovo pagina {PAGE_NUMBER}}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
@@ -328,7 +302,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
-<translation id="6566314079205407217">Scansione di più pagine</translation>
 <translation id="6574762126505704998">Riempi</translation>
 <translation id="6575134580692778371">Non configurata</translation>
 <translation id="6596816719288285829">Indirizzo IP</translation>
@@ -338,7 +311,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6704062477274546131">Risoluzione DNS</translation>
-<translation id="6714650824879092633">La rete <ph name="NETWORK_NAME" /> è stata disattivata</translation>
 <translation id="6747215703636344499">Operazione interrotta - Vassoio di uscita pieno</translation>
 <translation id="6756731097889387912">Impossibile annullare la scansione</translation>
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
@@ -348,12 +320,10 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
 <translation id="6957231940976260713">Nome servizio</translation>
-<translation id="6961170852793647506">Per iniziare, posiziona il documento sullo scanner</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="6982876849933694860">Per configurare una nuova connessione, vai alle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7040230719604914234">Operatore</translation>
-<translation id="7058278511608979688">Termina e salva</translation>
 <translation id="7059230779847288458">In carica, <ph name="TIME_VALUE" /> al completamento della ricarica</translation>
 <translation id="708426984172631313">INTERROTTO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -366,15 +336,14 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
+<translation id="7257889006063274246">Vuoi rimuovere la pagina <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Raccolte di sfondi</translation>
 <translation id="7302860742311162920">ICCID</translation>
-<translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
@@ -382,7 +351,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7490813197707563893">Indirizzo MAC</translation>
 <translation id="7497215489070763236">Certificato CA del server</translation>
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
-<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Routine diagnostiche</translation>
 <translation id="7561454561030345039">Questa azione è gestita dall'amministratore</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -395,33 +363,28 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Conteggio dei cicli</translation>
-<translation id="7747039790905080783">Chiave precondivisa</translation>
 <translation id="7762130827864645708">La password è stata modificata. Usa la nuova password d'ora in poi.</translation>
 <translation id="7763470514545477072">Corrispondenza suffisso di dominio</translation>
 <translation id="7769672763586021400">ID modello</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7835501727204647447">Installa CloudReady</translation>
-<translation id="7846634333498149051">Tastiera</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo di provider</translation>
-<translation id="7882501334836096755">Chiave pubblica</translation>
 <translation id="7895471513946376273">Scopri gli strumenti di disegno e design</translation>
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
-<translation id="7943235353293548836">Intervallo keepalive persistente</translation>
 <translation id="7960831585769876809">Temperatura</translation>
-<translation id="7978412674231730200">Chiave privata</translation>
 <translation id="7994702968232966508">Metodo EAP</translation>
 <translation id="8020238979854764615">Si è verificato un errore. Riprova scegliendo altre immagini.</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="808894953321890993">Cambia password</translation>
-<translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Richiedi contatori di traffico</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
+<translation id="8214184102975786227">Scansiona più pagine creando un solo PDF</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
 <translation id="8246209727385807362">Operatore sconosciuto</translation>
 <translation id="8286154143153872371">Connettiti a una rete e ricarica la pagina per visualizzare lo sfondo.</translation>
@@ -458,7 +421,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8726019395068607495">Operazione interrotta - Sportello aperto</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8747900814994928677">Conferma modifica</translation>
-<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8798441408945964110">Nome provider</translation>
@@ -473,9 +435,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> di <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Operazione non riuscita - Vassoio mancante</translation>
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
-<translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
-<translation id="8936793075252196307">Indirizzo IP client</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scansiona}=1{Scansiona pagina {NUMBER_OF_PAGES}}other{Scansiona pagina {NUMBER_OF_PAGES}}}</translation>
@@ -488,11 +448,9 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Sblocca</translation>
-<translation id="9126720536733509015">Salva più pagine in un unico PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>
-<translation id="917720651393141712">Test</translation>
 <translation id="9190063653747922532">L2TP/IPSec + chiave precondivisa</translation>
 <translation id="9211490828691860325">Tutte le scrivanie</translation>
 <translation id="939519157834106403">SSID</translation>

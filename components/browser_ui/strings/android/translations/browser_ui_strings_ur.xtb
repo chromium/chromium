@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
+<translation id="1509960214886564027">بہت سی سائٹس پر خصوصیات میں خلل ہو سکتا ہے</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1647582022260550163">کیا آپ واقعی اجازتوں کو ری سیٹ کرنا اور کوکیز اور سائٹ ڈیٹا کو صاف کرنا چاہتے ہیں؟</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">اجازت یافتہ، سوائے فریق ثالث</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
-<translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="2025115093177348061">افزودہ حقیقت</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> پر واپس جانے کے لیے تھپتھپائیں</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>
 <translation id="7846621471902887024">آپ سبھی سائٹس سے سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="7882806643839505685">کسی مخصوص سائٹ کیلئے آواز کی اجازت دیں۔</translation>
-<translation id="7940722705963108451">مجھے یاد دلائیں</translation>
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
+<translation id="7993619969781047893">کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="7999064672810608036">کیا آپ واقعی کوکیز سمیت سبھی مقامی ڈيٹا صاف کرنا اور اس ویب سائٹ کیلئے سبھی اجازتیں دوبارہ ترتیب دینا چاہتے ہیں؟</translation>
 <translation id="8007176423574883786">اس آلے کیلئے آف کر دیا گیا</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">‏خاموش کردہ</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
-<translation id="8154912474061769055">ہوسکتا ہے کہ بہت سی سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> کی اجازت دی گئی</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8206354486702514201">اس ترتیب کو آپ کے منتظم نے نافذ کیا ہے۔</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
 <translation id="868929229000858085">اپنے رابطوں کو تلاش کریں</translation>
 <translation id="8702612070107455751">تمام آف لائن ڈیٹا حذف ہو جائے گا۔</translation>
-<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8719283222052720129">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازت آن کریں۔</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

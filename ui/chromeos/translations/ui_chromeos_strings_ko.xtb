@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">미리보기 없음</translation>
 <translation id="1812302367230252929">암하라어(음역)</translation>
 <translation id="1813278315230285598">서비스</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />주의:<ph name="END_BOLD" /> 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="183183971458492120">정보 로드 중...</translation>
 <translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">프랑스어(캐나다)</translation>
 <translation id="3003189754374775221">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="3003633581067744647">썸네일 이미지 보기로 전환</translation>
-<translation id="3016566519832145558">주의: 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다.</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slides를 오프라인에서 사용할 수 있도록 Google Docs 오프라인을 사용 설정하세요.</translation>
 <translation id="303198083543495566">위치</translation>
 <translation id="3047197340186497470">중국어(대이수입법)</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">drive.google.com 사이트로 이동...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더에 복사하세요.</translation>
 <translation id="3556731189587832921">영어(미국, 국제 PC 키보드)</translation>
-<translation id="3567221313191587603">파일을 선택하고 <ph name="OFFLINE_CHECKBOX_NAME" />으로 전환하여 파일에 오프라인으로 액세스하세요.</translation>
 <translation id="357479282490346887">리투아니아어</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정할 수 없습니다.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">체코어(쿼티 키보드)</translation>
 <translation id="4656293982926141856">이 컴퓨터</translation>
-<translation id="4656777537938206294">파일을 오프라인에서 사용할 수 있도록 설정</translation>
 <translation id="4669606053856530811">이 항목을 '<ph name="SOURCE_NAME" />'의 멤버와 공유하지 않으면 이 팀의 멤버가 항목에 더 이상 액세스할 수 없게 됩니다.</translation>
 <translation id="4690246192099372265">스웨덴어</translation>
 <translation id="4693155481716051732">초밥</translation>
@@ -582,7 +580,6 @@
 <translation id="6146563240635539929">동영상</translation>
 <translation id="6150853954427645995">오프라인에서 사용하기 위해 이 파일을 저장하려면 온라인으로 돌아가서 마우스 오른쪽 버튼으로 파일을 클릭한 다음 <ph name="OFFLINE_CHECKBOX_NAME" /> 옵션을 선택하세요.</translation>
 <translation id="6164412158936057769">나비</translation>
-<translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6187719147498869044">헝가리어</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" />(으)로 열기</translation>
@@ -933,7 +930,6 @@
 <translation id="943972244133411984">수정한 사용자</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />부터 <ph name="TO_ENTRY_NAME" />까지 <ph name="ENTRY_COUNT" />개를 선택했습니다.</translation>
-<translation id="965477715979482472">영어(남아프리카공화국)</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="988685240266037636">이름이 '<ph name="FILE_NAME" />'인 파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>
 <translation id="992401651319295351">기회가 <ph name="RETRIES" />번 남았습니다. 새 PIN을 설정할 때까지 이 네트워크를 사용할 수 없습니다.</translation>

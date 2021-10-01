@@ -79,7 +79,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="4512952200932940229">Bản quyền 2021 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4563926062592110512">Ứng dụng khách đã ngắt kết nối: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> không được thiết lập chính xác. Vui lòng chọn một trình duyệt web mặc định khác, sau đó bật lại tính năng chuyển tiếp URL.</translation>
 <translation id="4635770493235256822">Thiết bị từ xa</translation>
 <translation id="4660011489602794167">Hiện bàn phím</translation>
 <translation id="4703799847237267011">Phiên Kết nối từ xa trên Chrome của bạn đã kết thúc.</translation>
@@ -110,7 +109,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="5750083143895808682">Đã đăng nhập bằng địa chỉ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Kết nối lại</translation>
 <translation id="5810269635982033450">Màn hình đóng vai trò như bàn di chuột</translation>
-<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> đã yêu cầu quyền truy cập để xem màn hình và điều khiển bàn phím cũng như chuột của bạn. Hãy nhấn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' nếu bạn không biết yêu cầu này. Nếu bạn có biết, hãy chọn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' để cho phép kết nối khi đã sẵn sàng.</translation>
 <translation id="5823658491130719298">Trên máy tính mà bạn muốn truy cập từ xa, hãy mở Chrome và truy cập vào <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Tùy chọn hiển thị</translation>
 <translation id="6033507038939587647">Tùy chọn bàn phím</translation>
@@ -132,6 +130,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="6963936880795878952">Kết nối với máy tính từ xa tạm thời bị chặn vì ai đó đang cố gắng kết nối với máy tính đó bằng mã PIN không hợp lệ. Vui lòng thử lại sau.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Bạn có chắc chắn muốn tắt kết nối từ xa với <ph name="HOSTNAME" /> không? Nếu bạn thay đổi ý định, bạn cần truy cập vào máy tính đó để bật lại kết nối.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> đã yêu cầu quyền truy cập để xem và điều khiển máy tính của bạn. Hãy nhấn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' nếu bạn không biết người này hoặc nếu bạn cần thực hiện bất kỳ thay đổi nào trước khi chia sẻ.  Nếu không, hãy chọn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' để cho phép kết nối.</translation>
 <translation id="7019153418965365059">Lỗi máy chủ không xác định: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Hỗ trợ từ xa</translation>
 <translation id="7026930240735156896">Hãy làm theo hướng dẫn thiết lập máy tính của bạn để truy cập từ xa</translation>
@@ -170,7 +169,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 Để cấp quyền này, hãy nhấp vào nút '<ph name="BUTTON_NAME" />' bên dưới để mở ngăn tùy chọn 'Hỗ trợ tiếp cận' rồi đánh dấu vào hộp bên cạnh '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Nếu đã đánh dấu vào hộp '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ đánh dấu rồi đánh dấu lại vào hộp này.</translation>
-<translation id="8305209735512572429">Xử lý từ xa quá trình xác thực web</translation>
 <translation id="8383794970363966105">Để sử dụng Kết nối từ xa trên Chrome, bạn cần thêm một tài khoản Google cho thiết bị của mình.</translation>
 <translation id="8386846956409881180">Máy chủ được định cấu hình bằng thông tin xác thực OAuth không hợp lệ.</translation>
 <translation id="8397385476380433240">Cấp quyền cho <ph name="PRODUCT_NAME" /></translation>

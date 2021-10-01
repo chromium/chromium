@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojena.</translation>
 <translation id="1473110567575736769">3sekundový časovač</translation>
+<translation id="1478594628797167447">Skener</translation>
 <translation id="1545749641540134597">Naskenovat QR kód</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Normální</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Nic nebylo zaznamenáno</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176">Aktivní: <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Vlastní parametry videa</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2268107369530950373">Přepnout na režim skeneru</translation>
 <translation id="229579744168541441">Exportovat na disk</translation>
 <translation id="2320741269052147773">Posunout doleva</translation>
 <translation id="2501278716633472235">Zpět</translation>
 <translation id="2501853267655415902">Nahrávání bylo zastaveno</translation>
 <translation id="2501953888035679275">Foťte a nahrávejte videa pomocí fotoaparátu.</translation>
-<translation id="2517472476991765520">Naskenovat</translation>
 <translation id="2549985041256363841">Zahájit nahrávání</translation>
 <translation id="2599796128805996109">Zadní fotoaparát</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je připojena.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">Rozlišení fotoaparátu</translation>
 <translation id="3260401663013584785">Dokument nelze rozpoznat</translation>
 <translation id="3448774564454087943">Video se neuložilo, protože je moc krátké</translation>
-<translation id="346539236881580388">Pořídit další</translation>
 <translation id="3517926952904427380">Portrétovou fotku nelze pořídit</translation>
 <translation id="3569311554794739032">Opravdu soubor <ph name="FILE" /> chcete odstranit?</translation>
-<translation id="3573890771273113519">Přepnout na režim skenování</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovat čárový kód</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">Nově je k dispozici skenování dokumentů</translation>
 <translation id="5268823927180092501">Aktivovat režim dokumentu na všech fotoaparátech</translation>
 <translation id="5444515100983837161">Umístěte všechny okraje dokumentu do rámečku. Skenování funguje nejlépe, když se barva dokumentu liší od barvy pozadí.</translation>
-<translation id="5588258280684580073">Povolit nahrávání GIF</translation>
 <translation id="5671277269877808209">Čtverec</translation>
-<translation id="5746169159649715125">Uložit jako PDF</translation>
 <translation id="5753488212459587150">Aktivovat režim pro experty</translation>
 <translation id="5759254179196327752">Naskenovat dokument</translation>
 <translation id="5775960006311140197">Režim pro experty</translation>
@@ -100,20 +95,17 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7243947652761655814">Rozlišení videa</translation>
 <translation id="7337660886763914220">Chyby systému souborů.</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
-<translation id="7488619942230388918">Nahrát video GIF</translation>
 <translation id="7557677699350329807">Přepnout na další fotoaparát</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7608223098072244877">4 krát 4</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7670511624014457267">60 snímků/s</translation>
-<translation id="7726641833034062494">Nahrát běžné video</translation>
 <translation id="7983668134180549431">Byl zjištěn text.</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8120146556401698679">Posunutí, náklon, přiblížení</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8145038249676204903">Přepnout na focení</translation>
-<translation id="8167081290930651932">Uložit jako fotku</translation>
 <translation id="8239780215768881278">Pořídit snímek videa</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8425673304802773841">Naklonit dolů</translation>
@@ -127,6 +119,5 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8903921497873541725">Přiblížit</translation>
 <translation id="9045010116236796332">Umístěte všechny okraje dokumentu do rámečku.</translation>
 <translation id="9045155556724273246">10 sekund</translation>
-<translation id="906331135292332864">Zpracování obrázku…</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 </translationbundle>

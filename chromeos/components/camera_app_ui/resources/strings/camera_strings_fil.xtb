@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Walang na-record</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Mga custom na parameter ng video</translation>
 <translation id="2175927920773552910">QR Code</translation>
+<translation id="2268107369530950373">Lumipat sa scanner mode</translation>
 <translation id="229579744168541441">I-export sa disk</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2501853267655415902">Itinigil ang pag-record</translation>
 <translation id="2501953888035679275">Kumuha ng mga larawan at mag-record ng mga video gamit ang iyong camera.</translation>
-<translation id="2517472476991765520">I-scan</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="2599796128805996109">Camera sa likod</translation>
 <translation id="2879583609344924966">Nakasaksak ang <ph name="CAMERA" />.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">Resolution ng camera</translation>
 <translation id="3260401663013584785">Walang ma-detect na dokumento</translation>
 <translation id="3448774564454087943">Hindi na-save ang video dahil masyado itong maikli</translation>
-<translation id="346539236881580388">Kunan ulit</translation>
 <translation id="3517926952904427380">Hindi makakuha ng portrait na larawan</translation>
 <translation id="3569311554794739032">Gusto mo ba talagang alisin ang <ph name="FILE" />?</translation>
-<translation id="3573890771273113519">Lumipat sa scan mode</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">I-scan ang barcode</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">Available na ang pag-scan ng dokumento</translation>
 <translation id="5268823927180092501">I-enable ang document mode sa lahat ng camera</translation>
 <translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
-<translation id="5588258280684580073">I-enable ang pag-record ng GIF</translation>
 <translation id="5671277269877808209">Parisukat</translation>
-<translation id="5746169159649715125">I-save bilang PDF</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>
 <translation id="5759254179196327752">I-scan ang dokumento</translation>
 <translation id="5775960006311140197">Expert mode</translation>
@@ -100,20 +95,17 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7243947652761655814">Resolution ng video</translation>
 <translation id="7337660886763914220">Mga error sa file system.</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
-<translation id="7488619942230388918">Mag-record ng GIF na video</translation>
 <translation id="7557677699350329807">Lumipat sa susunod na camera</translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">Mag-record ng karaniwang video</translation>
 <translation id="7983668134180549431">Na-detect na text.</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
 <translation id="8120146556401698679">I-pan i-tilt i-zoom</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
-<translation id="8167081290930651932">I-save bilang Larawan</translation>
 <translation id="8239780215768881278">Kumuha ng video snapshot</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8425673304802773841">I-tilt pababa</translation>
@@ -127,6 +119,5 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8903921497873541725">Mag-zoom in</translation>
 <translation id="9045010116236796332">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento</translation>
 <translation id="9045155556724273246">10 segundo</translation>
-<translation id="906331135292332864">Pinoproseso ang larawan...</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 </translationbundle>

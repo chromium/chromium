@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
+<translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1647582022260550163">Разрешения будут сброшены, а файлы cookie и другие данные этого сайта – удалены.</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Разрешено, кроме сторонних сайтов</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="1994173015038366702">Адрес сайта</translation>
-<translation id="2004697686368036666">Функции некоторых сайтов могут стать недоступными</translation>
 <translation id="2025115093177348061">Дополненная реальность</translation>
 <translation id="2030769033451695672">Нажмите, чтобы вернуться на страницу <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7846621471902887024">Вы выйдете из аккаунта на всех сайтах.</translation>
 <translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
-<translation id="7940722705963108451">Напомнить</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
+<translation id="7993619969781047893">Некоторые функции на сайтах могут работать некорректно</translation>
 <translation id="7999064672810608036">Вы уверены, что хотите удалить все данные этого веб-сайта, включая файлы cookie, и сбросить заданные разрешения?</translation>
 <translation id="8007176423574883786">Отключено для этого устройства</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
-<translation id="8154912474061769055">Функции многих сайтов могут стать недоступными</translation>
 <translation id="8197286292360124385">Разрешено: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Очистить</translation>
 <translation id="868929229000858085">Поиск контактов</translation>
 <translation id="8702612070107455751">Все офлайн-данные будут удалены.</translation>
-<translation id="8712637175834984815">Готово</translation>
 <translation id="8719283222052720129">Предоставьте приложению "<ph name="APP_NAME" />" разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>

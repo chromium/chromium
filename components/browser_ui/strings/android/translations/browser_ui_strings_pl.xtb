@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
+<translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
 <translation id="1620510694547887537">Aparat</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Czy na pewno chcesz zresetować uprawnienia oraz wyczyścić pliki cookie i dane witryn?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Dozwolone, z wyjątkiem witryn innych firm</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1994173015038366702">URL strony</translation>
-<translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2025115093177348061">Rzeczywistość rozszerzona</translation>
 <translation id="2030769033451695672">Kliknij, by wrócić na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Cofnij</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7846621471902887024">Wylogujemy Cię ze wszystkich stron.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
-<translation id="7940722705963108451">Przypomnij mi</translation>
 <translation id="7986741934819883144">Wybierz kontakt</translation>
+<translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="7999064672810608036">Na pewno chcesz usunąć wszystkie dane lokalne (w tym pliki cookie) i zresetować uprawnienia tej witryny?</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
-<translation id="8154912474061769055">W wielu witrynach mogą nie działać funkcje</translation>
 <translation id="8197286292360124385">Dozwolone: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="868929229000858085">Wyszukaj w kontaktach</translation>
 <translation id="8702612070107455751">Wszystkie dane offline zostaną wyczyszczone.</translation>
-<translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8719283222052720129">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienie w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>

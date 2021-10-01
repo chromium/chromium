@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
 <translation id="1446450296470737166">Laat vol MIDI-toestelbeheer toe</translation>
+<translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1647582022260550163">Is jy seker jy wil toestemmings terugstel en webkoekies en werfdata uitvee?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Toegelaat, buiten van derde party af</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="1994173015038366702">Werf-URL</translation>
-<translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2025115093177348061">Aangevulde realiteit</translation>
 <translation id="2030769033451695672">Tik om na <ph name="URL_OF_THE_CURRENT_TAB" /> terug te keer</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7846621471902887024">Jy sal op alle werwe afgemeld word.</translation>
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
-<translation id="7940722705963108451">Herinner my</translation>
 <translation id="7986741934819883144">Kies 'n kontak</translation>
+<translation id="7993619969781047893">Kenmerke op sommige werwe kan breek</translation>
 <translation id="7999064672810608036">Is jy seker dat jy alle plaaslike data, insluitend webkoekies, wil uitvee en alle toestemmings vir hierdie webwerf wil terugstel?</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Gedemp</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8131740175452115882">Bevestig</translation>
-<translation id="8154912474061769055">Kenmerke op baie werwe sal dalk nie werk nie</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> word toegelaat</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8206354486702514201">Hierdie instelling word deur jou administrateur afgedwing.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="868929229000858085">Deursoek jou kontakte</translation>
 <translation id="8702612070107455751">Enige vanlyn data sal uitgevee word.</translation>
-<translation id="8712637175834984815">Het dit</translation>
 <translation id="8719283222052720129">Skakel toestemming vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>

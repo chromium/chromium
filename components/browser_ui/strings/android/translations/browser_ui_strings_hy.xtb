@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Ներբեռնումը դադարեցվել է</translation>
 <translation id="1415402041810619267">URL-ը կրճատվել է</translation>
 <translation id="1446450296470737166">Տրամադրել ամբողջական հսկողություն MIDI սարքերի նկատմամբ</translation>
+<translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1647582022260550163">Իսկապե՞ս ուզում եք վերակայել թույլտվությունները և մաքրել քուքիներն ու մյուս տվյալները։</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Թույլատրված է, բացի երրորդ կողմի cookie ֆայլերից</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="1994173015038366702">Կայքի URL</translation>
-<translation id="2004697686368036666">Որոշ կայքերում գործառույթները կարող են չաշխատել</translation>
 <translation id="2025115093177348061">Լրացված իրականություն</translation>
 <translation id="2030769033451695672">Հպեք՝ <ph name="URL_OF_THE_CURRENT_TAB" /> վերադառնալու համար</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
 <translation id="7846621471902887024">Դուք դուրս կգաք բոլոր կայքերից։</translation>
 <translation id="7882806643839505685">Թույլատրել ձայնը առանձին կայքերում</translation>
-<translation id="7940722705963108451">Հիշեցնել ինձ</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
+<translation id="7993619969781047893">Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="7999064672810608036">Համոզվա՞ծ եք, որ ուզում եք մաքրել բոլոր տեղային տվյալները, այդ թվում նաև քուքիները, և զրոյացնել այս կայքի թույլտվությունները:</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Անջատած ձայնով կայքեր</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
-<translation id="8154912474061769055">Շատ կայքերում գործառույթները կարող են չաշխատել</translation>
 <translation id="8197286292360124385">Թույլատրված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8206354486702514201">Այս կարգավորումը պարտադրված է ձեր ադմինիստրատորի կողմից:</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Մաքրել ներածումը</translation>
 <translation id="868929229000858085">Որոնեք կոնտակտներ</translation>
 <translation id="8702612070107455751">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն։</translation>
-<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8719283222052720129">Միացնել <ph name="APP_NAME" />-ի թույլտվությունը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

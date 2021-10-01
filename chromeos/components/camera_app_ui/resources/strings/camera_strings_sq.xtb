@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> është shkëputur.</translation>
 <translation id="1473110567575736769">Kohëmatësi me 3 sekonda</translation>
+<translation id="1478594628797167447">Skaner</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nuk u regjistrua asgjë</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktive</translation>
 <translation id="2144806332417375165">Personalizo parametrat e videos</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2268107369530950373">Kalo në modalitetin e skanerit</translation>
 <translation id="229579744168541441">Eksporto në disk</translation>
 <translation id="2320741269052147773">Zgjero majtas</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2501853267655415902">Regjistrimi ndaloi</translation>
 <translation id="2501953888035679275">Nxirr fotografi dhe regjistro video me kamerën tënde.</translation>
-<translation id="2517472476991765520">Skano</translation>
 <translation id="2549985041256363841">Nis regjistrimin</translation>
 <translation id="2599796128805996109">Kamera e pasme</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
@@ -46,10 +45,8 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="3259149966178251584">Rezolucioni i kamerës</translation>
 <translation id="3260401663013584785">Nuk mund të zbulohej një dokument</translation>
 <translation id="3448774564454087943">Videoja nuk është ruajtur duke qenë se është shumë e shkurtër</translation>
-<translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3517926952904427380">Nuk mund të nxjerrësh një fotografi portret</translation>
 <translation id="3569311554794739032">Vërtet dëshiron të heqësh <ph name="FILE" />?</translation>
-<translation id="3573890771273113519">Kalo te modaliteti i skanimit</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skano bardkodin</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
@@ -72,9 +69,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="520537883758714667">Skanimi i dokumenteve ofrohet tani</translation>
 <translation id="5268823927180092501">Aktivizo modalitetin e dokumenteve në të gjitha kamerat</translation>
 <translation id="5444515100983837161">Vendos të gjitha anët e dokumentit brenda kuadrit Skanimi funksionon më mirë nëse dokumenti dhe sfondi kanë ngjyra të ndryshme.</translation>
-<translation id="5588258280684580073">Aktivizo regjistrimin për GIF</translation>
 <translation id="5671277269877808209">Katror</translation>
-<translation id="5746169159649715125">Ruaj si PDF</translation>
 <translation id="5753488212459587150">Aktivizo modalitetin e ekspertit</translation>
 <translation id="5759254179196327752">Skano dokumentin</translation>
 <translation id="5775960006311140197">Modaliteti i ekspertëve</translation>
@@ -100,20 +95,17 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="7243947652761655814">Rezolucioni i videos</translation>
 <translation id="7337660886763914220">Gabimet e sistemit të skedarëve.</translation>
 <translation id="7450541714075000668">Teksti u kopjua</translation>
-<translation id="7488619942230388918">Regjistro video GIF</translation>
 <translation id="7557677699350329807">Kalo te kamera tjetër</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7608223098072244877">4 me 4</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">Regjistro video normale</translation>
 <translation id="7983668134180549431">U zbulua një tekst.</translation>
 <translation id="8067883171444229417">Luaj videon</translation>
 <translation id="8120146556401698679">Zmadhim me anim të zgjerimit</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
-<translation id="8167081290930651932">Ruaje si fotografi</translation>
 <translation id="8239780215768881278">Shkrep një pamje të çastit të videos</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8425673304802773841">Ano për poshtë</translation>
@@ -127,6 +119,5 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="9045010116236796332">Vendos të gjitha anët e dokumentit brenda kuadrit</translation>
 <translation id="9045155556724273246">10 sekonda</translation>
-<translation id="906331135292332864">Po përpunon imazhin…</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 </translationbundle>

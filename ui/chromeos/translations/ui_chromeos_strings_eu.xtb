@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Ez dago aurrebistarik</translation>
 <translation id="1812302367230252929">Amhareraren transliterazioa</translation>
 <translation id="1813278315230285598">Zerbitzuak</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Kontuz:<ph name="END_BOLD" />  fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguinoa</translation>
 <translation id="183183971458492120">Informazioa kargatzen…</translation>
 <translation id="1834290891154666894">Gaiaren ordezko izenaren bat-etortzearen sarrera ez da zuzena</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Frantsesa (Kanada)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="NETWORK_PROVIDER_NAME" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="3003633581067744647">Aldatu irudi txikien ikuspegira</translation>
-<translation id="3016566519832145558">Kontuz: fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.</translation>
 <translation id="3029114385395636667">Dokumentuak, Kalkulu-orriak eta Aurkezpenak konexiorik gabe erabili ahal izateko, gaitu Google Dokumentuak konexiorik gabe erabiltzeko luzapena.</translation>
 <translation id="303198083543495566">Geografia</translation>
 <translation id="3047197340186497470">Txinatarra (dayi)</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Joan drive.google.com webgunera…</translation>
 <translation id="3553048479571901246">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik kopia itzazu Windows-eko fitxategien karpetan.</translation>
 <translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailurako)</translation>
-<translation id="3567221313191587603">Hautatu fitxategi bat eta markatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera konexiorik gabe ere erabilgarri eduki dezazun.</translation>
 <translation id="357479282490346887">Lituaniarra</translation>
 <translation id="3592251141500063301">Ezin izan da deskargatu <ph name="FILE_NAME" /> konexiorik gabe erabiltzeko</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Txekiarra, QWERTY teklatuarekin</translation>
 <translation id="4656293982926141856">Ordenagailu hau</translation>
-<translation id="4656777537938206294">Jarri fitxategiak konexiorik gabe erabilgarri</translation>
 <translation id="4669606053856530811">Haiekin partekatu ezean, fitxategietarako sarbidea galduko dute "<ph name="SOURCE_NAME" />" unitateko kideek.</translation>
 <translation id="4690246192099372265">Suediarra</translation>
 <translation id="4693155481716051732">Sushia</translation>
@@ -581,7 +579,6 @@
 <translation id="6146563240635539929">Bideoak</translation>
 <translation id="6150853954427645995">Fitxategia gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategiaren gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="6164412158936057769">Tximeletak</translation>
-<translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6170470584681422115">Ogitartekoa</translation>
 <translation id="6187719147498869044">Hungariarra</translation>
 <translation id="6189412234224385711">Ireki <ph name="EXTENSION_NAME" /> luzapenarekin</translation>
@@ -932,7 +929,6 @@
 <translation id="943972244133411984">Aldaketaren egilea:</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947144732524271678">Hautatu da <ph name="ENTRY_COUNT" /> sarrerako barruti bat, <ph name="FROM_ENTRY_NAME" /> sarreratik <ph name="TO_ENTRY_NAME" /> sarrerara.</translation>
-<translation id="965477715979482472">Ingelesa (Hegoafrika)</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="988685240266037636">Badago "<ph name="FILE_NAME" />" izeneko fitxategi bat. Ordeztu egin nahi duzu?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> saiakera gelditzen zaizkizu. Ezingo duzu erabili sarea beste PIN bat konfiguratzen duzun arte.</translation>

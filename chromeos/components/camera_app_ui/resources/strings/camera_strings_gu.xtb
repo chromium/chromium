@@ -8,9 +8,8 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> અનપ્લગ કરેલું છે.</translation>
 <translation id="1473110567575736769">3 સેકન્ડનું ટાઇમર</translation>
+<translation id="1478594628797167447">સ્કૅનર</translation>
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
-<translation id="1560052704389894104">GIF</translation>
-<translation id="1588438908519853928">સામાન્ય</translation>
 <translation id="1620510694547887537">કૅમેરો</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">કંઈ રેકોર્ડ થયું નથી</translation>
@@ -25,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> સક્રિય</translation>
 <translation id="2144806332417375165">કસ્ટમ વીડિયો પેરામીટર</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
+<translation id="2268107369530950373">સ્કૅનર મોડ પર સ્વિચ કરો</translation>
 <translation id="229579744168541441">ડિસ્કમાં નિકાસ કરો</translation>
 <translation id="2320741269052147773">ડાબે બાજુએ ફેરવો</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2501853267655415902">રેકોર્ડિંગ બંધ કર્યું</translation>
 <translation id="2501953888035679275">તમારા કૅમેરા વડે ફોટા લો અને વીડિયો રેકોર્ડ કરો.</translation>
-<translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
 <translation id="2599796128805996109">પાછળનો કૅમેરા</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> પ્લગ-ઇન કરેલું છે.</translation>
@@ -46,10 +45,8 @@
 <translation id="3259149966178251584">કૅમેરાનું રિઝોલ્યુશન</translation>
 <translation id="3260401663013584785">કોઈ દસ્તાવેજની ભાળ મળી શકી નથી</translation>
 <translation id="3448774564454087943">વીડિયો ખૂબ જ ટૂંકો હોવાથી તે સાચવવામાં આવ્યો નથી</translation>
-<translation id="346539236881580388">ફરીથી લો</translation>
 <translation id="3517926952904427380">પોર્ટ્રેટ ફોટો લઈ શકાતો નથી</translation>
 <translation id="3569311554794739032">શું તમે ખરેખર <ph name="FILE" />ને કાઢી નાખવા માગો છો?</translation>
-<translation id="3573890771273113519">સ્કૅન મોડ પર સ્વિચ કરો</translation>
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3838931309141338733">બારકોડ સ્કૅન કરો</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
@@ -72,9 +69,7 @@
 <translation id="520537883758714667">દસ્તાવેજ સ્કૅન કરવાની સુવિધા હવે ઉપલબ્ધ છે</translation>
 <translation id="5268823927180092501">બધા કૅમેરામાં 'દસ્તાવેજ મોડ' ચાલુ કરો</translation>
 <translation id="5444515100983837161">દસ્તાવેજના બધા ખૂણાઓને ફ્રેમની અંદર રાખો. જો દસ્તાવેજ અને બૅકગ્રાઉન્ડ અલગ-અલગ રંગોના હોય, તો સ્કૅન શ્રેષ્ઠ રીતે કામ કરે છે.</translation>
-<translation id="5588258280684580073">GIF રેકોર્ડિંગ ચાલુ કરો</translation>
 <translation id="5671277269877808209">ચોરસ</translation>
-<translation id="5746169159649715125">PDF તરીકે સાચવો</translation>
 <translation id="5753488212459587150">નિષ્ણાત મોડ ચાલુ કરો</translation>
 <translation id="5759254179196327752">દસ્તાવેજને સ્કૅન કરો</translation>
 <translation id="5775960006311140197">નિષ્ણાત મોડ</translation>
@@ -100,20 +95,17 @@
 <translation id="7243947652761655814">વીડિયો રિઝોલ્યુશન</translation>
 <translation id="7337660886763914220">ફાઇલ સિસ્ટમની ભૂલો.</translation>
 <translation id="7450541714075000668">ટેક્સ્ટ કૉપિ કરી</translation>
-<translation id="7488619942230388918">GIF વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7557677699350329807">આગલા કૅમેરા પર સ્વિચ કરો</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7608223098072244877">4 બાય 4</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7726641833034062494">સામાન્ય વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7983668134180549431">ટેક્સ્ટની જાણકારી મળી.</translation>
 <translation id="8067883171444229417">વીડિયો ચલાવો</translation>
 <translation id="8120146556401698679">ફેરવો ટિલ્ટ કરો નાનું-મોટું કરો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8145038249676204903">ફોટો લેવા માટે સ્વિચ કરો</translation>
-<translation id="8167081290930651932">ફોટો તરીકે સાચવો</translation>
 <translation id="8239780215768881278">વીડિયો સ્નૅપશૉટ લો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8425673304802773841">નીચે ટિલ્ટ કરો</translation>
@@ -127,6 +119,5 @@
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
 <translation id="9045010116236796332">દસ્તાવેજના બધા ખૂણાઓને ફ્રેમની અંદર રાખો</translation>
 <translation id="9045155556724273246">10 સેકન્ડ</translation>
-<translation id="906331135292332864">છબી પર પ્રક્રિયા કરી રહ્યાં છીએ…</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 </translationbundle>

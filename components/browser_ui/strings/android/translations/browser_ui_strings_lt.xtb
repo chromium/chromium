@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
 <translation id="1446450296470737166">Leisti visiškai valdyti MIDI įr.</translation>
+<translation id="1509960214886564027">Funkcijos gali neveikti daugybėje svetainių.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1647582022260550163">Ar tikrai norite nustatyti leidimus iš naujo ir išvalyti slapukus bei svetainių duomenis?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Leidžiama (išskyrus trečiąsias šalis)</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="1994173015038366702">Svetainės URL</translation>
-<translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="2025115093177348061">Išplėstoji realybė</translation>
 <translation id="2030769033451695672">Palieskite, kad grįžtumėte į <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
 <translation id="7846621471902887024">Būsite atjungti nuo visų svetainių.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
-<translation id="7940722705963108451">Priminti</translation>
 <translation id="7986741934819883144">Pasirinkite kontaktą</translation>
+<translation id="7993619969781047893">Funkcijos gali neveikti tam tikrose svetainėse</translation>
 <translation id="7999064672810608036">Ar tikrai norite išvalyti visus šios svetainės vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus leidimus?</translation>
 <translation id="8007176423574883786">Išjungta šiame įrenginyje</translation>
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Išjungta</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
-<translation id="8154912474061769055">Funkcijos gali neveikti daugybėje svetainių</translation>
 <translation id="8197286292360124385">Leidžiama: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8206354486702514201">Šį nustatymą vykdo jūsų administratorius.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="868929229000858085">Ieškokite savo kontaktuose</translation>
 <translation id="8702612070107455751">Visi neprisijungus pasiekiami duomenys bus išvalyti.</translation>
-<translation id="8712637175834984815">Supratau</translation>
 <translation id="8719283222052720129">Įjunkite „<ph name="APP_NAME" />“ leidimą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8730621377337864115">Atlikta</translation>

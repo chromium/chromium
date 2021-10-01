@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
 <translation id="1446450296470737166">‏السماح بالتحكم الكامل لأجهزة MIDI</translation>
+<translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1647582022260550163">هل تريد فعلاً إعادة ضبط الأذونات ومحو ملفات تعريف الارتباط وبيانات الموقع الإلكتروني؟</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">مسموح باستثناء الجهات الخارجية</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
-<translation id="2004697686368036666">قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="2025115093177348061">الواقع المعزّز</translation>
 <translation id="2030769033451695672">يُرجى النقر للرجوع إلى <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7846621471902887024">سيتم تسجيل خروجك من جميع المواقع الإلكترونية.</translation>
 <translation id="7882806643839505685">السماح بتشغيل الصوت لموقع معين.</translation>
-<translation id="7940722705963108451">تذكير</translation>
 <translation id="7986741934819883144">اختيار جهة اتصال</translation>
+<translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="7999064672810608036">هل أنت متأكّد أنك تريد محو كل البيانات المحلية، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط كافة الأذونات لهذا الموقع الإلكتروني؟</translation>
 <translation id="8007176423574883786">تم إيقافه لهذا الجهاز</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">المواقع الإلكترونية التي تم كتم الصوت فيها</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
 <translation id="8131740175452115882">التأكيد</translation>
-<translation id="8154912474061769055">قد لا تعمل الميزات على العديد من المواقع الإلكترونية.</translation>
 <translation id="8197286292360124385">تم السماح بالوصول إلى <ph name="PERMISSION_1" />.</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">محو الإرسال</translation>
 <translation id="868929229000858085">البحث في جهات الاتصال</translation>
 <translation id="8702612070107455751">سيتم محو أي بيانات متوفّرة بلا اتصال بالإنترنت.</translation>
-<translation id="8712637175834984815">تم</translation>
 <translation id="8719283222052720129">‏فعِّل الإذن لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8730621377337864115">تم</translation>

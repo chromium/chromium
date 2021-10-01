@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">Download dijeda</translation>
 <translation id="1415402041810619267">URL dipotong</translation>
 <translation id="1446450296470737166">Izinkan kontrol penuh perangkat MIDI</translation>
+<translation id="1509960214886564027">Fitur di banyak situs mungkin error</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1647582022260550163">Yakin ingin mereset izin, serta menghapus cookie dan data situs?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">Diizinkan, kecuali pihak ketiga</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="1994173015038366702">URL situs</translation>
-<translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Ketuk untuk kembali ke <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Urungkan</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7846621471902887024">Anda akan logout dari semua situs.</translation>
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
-<translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7986741934819883144">Pilih kontak</translation>
+<translation id="7993619969781047893">Fitur pada beberapa situs mungkin error</translation>
 <translation id="7999064672810608036">Yakin ingin menghapus semua data lokal, termasuk cookie, dan menyetel ulang semua izin untuk situs web ini?</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
 <translation id="802154636333426148">Download gagal</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">Dinonaktifkan</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
-<translation id="8154912474061769055">Fitur tertentu di banyak situs mungkin tidak berfungsi</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> diizinkan</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8206354486702514201">Setelan ini diberlakukan oleh administrator Anda.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">Hapus masukan</translation>
 <translation id="868929229000858085">Telusuri kontak Anda</translation>
 <translation id="8702612070107455751">Semua data offline akan dihapus.</translation>
-<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8719283222052720129">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>

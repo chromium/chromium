@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Geen voorskou beskikbaar nie</translation>
 <translation id="1812302367230252929">Amhaarse transliterasie</translation>
 <translation id="1813278315230285598">Dienste</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Wees versigtig:<ph name="END_BOLD" /> Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pikkewyn</translation>
 <translation id="183183971458492120">Laai tans inligting …</translation>
 <translation id="1834290891154666894">Ongeldige passinginskrywing vir onderwerp se alternatiewe naam</translation>
@@ -223,8 +224,7 @@
 <translation id="2994669386200004489">Kon nie <ph name="FILE_NAME" /> rugsteun nie</translation>
 <translation id="299638574917407533">Frans (Kanada)</translation>
 <translation id="3003189754374775221">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, koppel</translation>
-<translation id="3003633581067744647">Skakel oor na kleinkiekie-aansig</translation>
-<translation id="3016566519832145558">Wees versigtig: Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak.</translation>
+<translation id="3003633581067744647">Skakel oor na miniprent-aansig</translation>
 <translation id="3029114385395636667">Aktiveer Google Vanlyn Dokumente om Dokumente, Blaaie en Skyfies vanlyn beskikbaar te maak.</translation>
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3047197340186497470">Chinees-Dayi</translation>
@@ -287,7 +287,6 @@
 <translation id="3549797760399244642">Gaan na drive.google.com …</translation>
 <translation id="3553048479571901246">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe kopieer.</translation>
 <translation id="3556731189587832921">Engels (VSA) met internasionale rekenaarsleutelbord</translation>
-<translation id="3567221313191587603">Kies 'n lêer en wissel <ph name="OFFLINE_CHECKBOX_NAME" /> na aan vir vanlyn toegang tot jou lêers.</translation>
 <translation id="357479282490346887">Litaus</translation>
 <translation id="3592251141500063301">Kon nie <ph name="FILE_NAME" /> vanlyn beskikbaar maak nie</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -398,7 +397,6 @@
 <translation id="4642769377300286600">Installeer tans mobiele profiel, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tsjeggies met Qwerty-sleutelbord</translation>
 <translation id="4656293982926141856">Hierdie rekenaar</translation>
-<translation id="4656777537938206294">Maak lêers vanlyn beskikbaar</translation>
 <translation id="4669606053856530811">Lede van "<ph name="SOURCE_NAME" />" sal toegang verloor tensy hierdie items met hulle gedeel word.</translation>
 <translation id="4690246192099372265">Sweeds</translation>
 <translation id="4693155481716051732">Soesji</translation>
@@ -475,7 +473,7 @@
 <translation id="5163869187418756376">Deling het misluk. Gaan jou verbinding na en probeer later weer.</translation>
 <translation id="516592729076796170">VSA-programmeerder-Dvorak</translation>
 <translation id="5170477580121653719">Google Drive-spasie oor: <ph name="SPACE_AVAILABLE" />.</translation>
-<translation id="5177526793333269655">Kleinkiekie-aansig</translation>
+<translation id="5177526793333269655">Miniprent-aansig</translation>
 <translation id="5194713942430106590">Kies om die kolom in stygende volgorde te rangskik.</translation>
 <translation id="5211614973734216083">Faroëes</translation>
 <translation id="5218183485292899140">Switserse Frans</translation>
@@ -581,7 +579,6 @@
 <translation id="6146563240635539929">Video's</translation>
 <translation id="6150853954427645995">Om hierdie lêer te stoor om vanlyn te gebruik, gaan weer aanlyn, regsklik die lêer, en kies die <ph name="OFFLINE_CHECKBOX_NAME" />-opsie.</translation>
 <translation id="6164412158936057769">Skoenlappers</translation>
-<translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6170470584681422115">Toebroodjie</translation>
 <translation id="6187719147498869044">Hongaars</translation>
 <translation id="6189412234224385711">Maak oop met <ph name="EXTENSION_NAME" /></translation>
@@ -932,7 +929,6 @@
 <translation id="943972244133411984">Gewysig deur</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="947144732524271678">Kies 'n reeks van <ph name="ENTRY_COUNT" /> inskrywings van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="965477715979482472">Engels (Suid-Afrika)</translation>
 <translation id="981121421437150478">Vanlyn</translation>
 <translation id="988685240266037636">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Wil jy dit vervang?</translation>
 <translation id="992401651319295351">Jy het <ph name="RETRIES" /> pogings oor. Jy sal nie hierdie netwerk kan gebruik voordat jy 'n nuwe PIN opgestel het nie.</translation>

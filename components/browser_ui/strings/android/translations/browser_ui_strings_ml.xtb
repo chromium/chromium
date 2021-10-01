@@ -18,6 +18,7 @@
 <translation id="1384959399684842514">ഡൗൺലോഡ് താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="1415402041810619267">URL ചുരുക്കി</translation>
 <translation id="1446450296470737166">MIDI ഉപകരണങ്ങളുടെ പൂർണ്ണ നിയന്ത്രണം അനുവദിക്കുക</translation>
+<translation id="1509960214886564027">നിരവധി സൈറ്റുകളിലെ ഫീച്ചറുകൾക്ക് പ്രവർത്തനം നടത്താനായേക്കില്ല</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1647582022260550163">അനുമതികൾ റീസെറ്റ് ചെയ്യണമെന്നും കുക്കികളും സൈറ്റ് ഡാറ്റയും മായ്ക്കണമെന്നും നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
@@ -36,7 +37,6 @@
 <translation id="1984937141057606926">മൂന്നാം കക്ഷി ഒഴികെയുള്ളവയെ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="1989112275319619282">ബ്രൗസ് ചെയ്യുക</translation>
 <translation id="1994173015038366702">സൈറ്റ് URL</translation>
-<translation id="2004697686368036666">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾ പ്രവർത്തിച്ചേക്കില്ല</translation>
 <translation id="2025115093177348061">അനുബന്ധയാഥാർത്ഥ്യം</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> എന്നതിലേക്ക് മടങ്ങാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
@@ -258,8 +258,8 @@
 <translation id="7846076177841592234">തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക</translation>
 <translation id="7846621471902887024">എല്ലാ സൈറ്റുകളിൽ നിന്നും നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും.</translation>
 <translation id="7882806643839505685">ഒരു പ്രത്യേക സൈറ്റിനായി ശബ്‌ദം അനുവദിക്കുക.</translation>
-<translation id="7940722705963108451">എന്നെ ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="7986741934819883144">ഒരു കോൺടാക്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="7993619969781047893">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾക്ക് പ്രവർത്തനം നടത്താനായേക്കില്ല</translation>
 <translation id="7999064672810608036">കുക്കികൾ ഉൾപ്പെടെ എല്ലാ പ്രാദേശിക വിവരവും മായ്‌ച്ച് ഈ വെബ്‌സൈറ്റിനായുള്ള എല്ലാ അനുമതികളും റീസെറ്റ് ചെയ്യാൻ താൽപ്പര്യമുണ്ടോ?</translation>
 <translation id="8007176423574883786">ഈ ഉപകരണത്തിനായി ഓഫാക്കി</translation>
 <translation id="802154636333426148">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
@@ -269,7 +269,6 @@
 <translation id="8116925261070264013">മ്യൂട്ടുചെയ്‌തു</translation>
 <translation id="813082847718468539">സൈറ്റ് വിവരങ്ങള്‍ കാണുക</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
-<translation id="8154912474061769055">നിരവധി സൈറ്റുകളിലെ ഫീച്ചറുകൾ പ്രവർത്തിച്ചേക്കില്ല</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> അനുവദിച്ചു</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8206354486702514201">ഈ ക്രമീകരണം നിങ്ങളുടെ അഡ്‌മിനി‌സ്‌ട്രേറ്റർ നടപ്പിലാക്കിയതാണ്.</translation>
@@ -296,7 +295,6 @@
 <translation id="8676374126336081632">ഇൻപുട്ട് മായ്‌ക്കുക</translation>
 <translation id="868929229000858085">നിങ്ങളുടെ കോൺടാക്‌റ്റുകൾ തിരയുക</translation>
 <translation id="8702612070107455751">എല്ലാ ഓഫ്‍ലൈൻ ഡാറ്റയും മായ്‌ക്കും.</translation>
-<translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> <ph name="APP_NAME" /> ആപ്പിനായി അനുമതി ഓണാക്കുക.</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>

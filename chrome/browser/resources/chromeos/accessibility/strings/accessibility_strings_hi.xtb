@@ -66,7 +66,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="133801305381959373">बदलाव करने लायक कोई अगला टेक्स्ट फ़ील्ड नहीं है</translation>
 <translation id="1342835525016946179">लेख</translation>
 <translation id="1346059596910821859">सलाह</translation>
-<translation id="1354356357730355833">कॉपी करें</translation>
 <translation id="135978014023467274">आपको ChromeVox 63 में अपडेट किया गया है!</translation>
 <translation id="1360699455582016846">रूटिंग कुंजी <ph name="ROUTING_KEY_NUMBER" /> में आइटम पर क्लिक करें</translation>
 <translation id="1377925789329510816">यह आखिरी शीर्षक है. पहले शीर्षक पर जाने के लिए Search+H दबाएं या इस पेज के दूसरे शीर्षक पर जाने के लिए Search+Shift+H दबाएं.</translation>
@@ -353,7 +352,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3286390186030710347">स्लाइडर</translation>
 <translation id="3300348286427369683">रिच टेक्स्ट के साथ काम करता है. अब ChromeVox रिच टेक्स्ट वाली फ़ील्ड के साथ काम करता है जिसमें कहीं भी सीधे पहुंचाने के निर्देश, ब्रेल कर्सर की रूटिंग, चुनना वगैरह शामिल हैं.</translation>
-<translation id="3300733168898541351">पहले जैसा करें</translation>
 <translation id="3307886118343381874">टेबल के अंत में जाएं</translation>
 <translation id="3312997241656799641">देखा गया अगला लिंक</translation>
 <translation id="3313245066383501820">ChromeVox बदलने वाली की</translation>
@@ -374,7 +372,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3406283310380167331">फ़ॉर्म सूची दिखाएं</translation>
 <translation id="3414400929511680526">एलिस जैसा नीला रंग</translation>
 <translation id="3418936350470374046">नीचे कोई सेल नहीं है</translation>
-<translation id="3419269701801640163">चिपकाएं</translation>
 <translation id="3435494200763325275">टैब नेविगेशन (जारी है)</translation>
 <translation id="344800400831402066">हल्का भूरा</translation>
 <translation id="3457000393508828486">आंशिक रूप से दबाया गया</translation>
@@ -455,7 +452,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">नीचे स्क्रोल करें</translation>
 <translation id="4035381225449278841">वसंत</translation>
-<translation id="4038098586530338813">फिर से करें</translation>
 <translation id="4047216625641135770">मार्क</translation>
 <translation id="4047910800766704982">जब आपका डिवाइस इंटरनेट से जुड़ा हो, तो आप अच्छी क्वालिटी वाली, इंसानों जैसी आवाज़ इस्तेमाल कर सकते हैं. टेक्स्ट को प्रोसेस के लिए Google के पास भेजा जाएगा. आप सेटिंग में जाकर, किसी भी समय यह सुविधा बंद कर सकते हैं.</translation>
 <translation id="4053520724192563562">नींबू जैसा हरा</translation>
@@ -606,13 +602,11 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5138912041966667164">मध्यम स्लेटी नीला</translation>
 <translation id="5140016802771803559">रेबेका जामुनी रंग</translation>
 <translation id="5142101052131610456">सभी लेसन पर जाएं</translation>
-<translation id="5152605892605507188">दाईं ओर ले जाएं</translation>
 <translation id="5158275234811857234">कवर</translation>
 <translation id="516076699907426116">जारी रखने के लिए, अगले लेसन का बटन ढूंढने के लिए छूकर, उससे जुड़ी जानकारी सुनें. इसके बाद, जारी रखने के लिए दो बार टैप करें.</translation>
 <translation id="5170206230005240598">ब्रेल कैप्शन चालू किए गए</translation>
 <translation id="5183440668879371625">पिछली पंक्ति को ब्रेल में लिखें</translation>
 <translation id="5189244881767082992">पंक्ति</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> टाइप करें</translation>
 <translation id="5263034204789987535">सुनहरा</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">खत्म</translation>
@@ -750,7 +744,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6142308968191113180">शीर्षक 4</translation>
 <translation id="6150023170003443621">पीला हरा</translation>
 <translation id="6158882249329863701">पंक्ति <ph name="TABLECELLROWINDEX" /> कॉलम <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">बाईं ओर ले जाएं</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6166362019018438352">ब्रेल कैप्शन बंद किए गए</translation>
@@ -840,7 +833,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6910211073230771657">हटाया गया</translation>
 <translation id="6910969481785184048">चालू करें, बंद करें और रोकें</translation>
 <translation id="6919104639734799681">तालिकाओं की सूची दिखाएं</translation>
-<translation id="692135145298539227">हटाएं</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6949846980769640811">मध्यम समुद्री हरा</translation>
 <translation id="6951482098621102657">आगे कोई लेवल 5 शीर्षक नहीं है</translation>
@@ -920,6 +912,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7439060726180460871">निर्देशिका</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">क्या आप अच्छी क्वालिटी वाली आवाज़ इस्तेमाल करना चाहते हैं?</translation>
+<translation id="7484805699335881122">अलग-अलग तरह के एलिमेंट के अलावा, कोट किए गए, मिटाए गए, बोल्ड किए गए, ब्रैकेट में लिखे गए या बड़े अक्षरों में लिखे गए टेक्स्ट बोलते समय आवाज़ की रफ़्तार (पिच) बदलें.</translation>
 <translation id="7491962110804786152">टैब</translation>
 <translation id="7492497529767769458">अगले सेक्शन पर जाएं. जैसे कि स्टेटस ट्रे और लॉन्चर.</translation>
 <translation id="7505149250476994901">अक्षर से पहले "बड़ा" कहें</translation>
@@ -1132,7 +1125,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="9077305471618729969">हल्का समुद्री हरा</translation>
 <translation id="9080299285199342830">सीधे आखिरी हिस्से पर जाएं</translation>
 <translation id="9089864840575085222">टाइपिंग इको को चक्रित करें</translation>
-<translation id="9099429023611373837">चुने गए टेक्स्ट को कट करें</translation>
 <translation id="9108370397979208512">गणित</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{प्रतिशत}one{# प्रतिशत चिह्न}other{# प्रतिशत चिह्न}}</translation>
