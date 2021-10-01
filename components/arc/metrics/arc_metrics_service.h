@@ -128,6 +128,8 @@ class ArcMetricsService : public KeyedService,
                                 uint32_t number_of_failures) override;
   void ReportPerAppFixupMetrics(base::TimeDelta duration,
                                 uint32_t number_of_directories) override;
+  void ReportMainAccountHashMigrationMetrics(
+      mojom::MainAccountHashMigrationStatus status) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

@@ -505,6 +505,11 @@ void ArcMetricsService::ReportPerAppFixupMetrics(
                                  kUmaFixupDirectoriesCountMin,
                                  kUmaFixupDirectoriesCountMax, kUmaNumBuckets);
 }
+void ArcMetricsService::ReportMainAccountHashMigrationMetrics(
+    mojom::MainAccountHashMigrationStatus status) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  UMA_HISTOGRAM_ENUMERATION("Arc.Auth.MainAccountHashMigration.Status", status);
+}
 
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,

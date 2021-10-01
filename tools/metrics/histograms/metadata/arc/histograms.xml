@@ -393,6 +393,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Arc.Auth.MainAccountHashMigration.Status"
+    enum="ArcMainAccountHashMigrationStatus" expires_after="2021-12-31">
+  <owner>vsomani@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Contains the status of the main account hash migration resolution. We record
+    this metric when migrating the main account hash from java hashcode to use a
+    cryptographic hash. This is done at the bootup time.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Auth.MainAccountResolution.Status{ArcUserTypes}"
     enum="ArcAuthMainAccountResolutionStatus" expires_after="2022-07-04">
   <owner>mhasank@google.com</owner>

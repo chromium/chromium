@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module arc.mojom;
 
@@ -241,7 +241,32 @@ enum LowLatencyStylusLibApiId {
   kGLInkOverlaySetViewMatrix = 4,
 };
 
-// Next method ID: 17
+// Status for migration of the main account hash code from v2 to v3.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum MainAccountHashMigrationStatus {
+  // Hash code migration not required.
+  kHashCodeMigrationNotRequired = 0,
+
+  // Hash code migration successful.
+  kHashCodeMigrationSuccessful = 1,
+
+  // Hash code migration failed.
+  kHashCodeMigrationFailed = 2,
+
+  // Hash code migration failed due to multiple acc hash matching.
+  kHashCodeMigrationFailedDueToMultipleAccounts = 3,
+
+  // Hash code migration failed due to multiple acc hash matching.
+  kHashCodeMigrationFailedDueToNoMatchingAccount = 4,
+
+  // NOTE: If you add any entries to this enum, you must also update the
+  // corresponding UMA ArcMainAccountHashMigrationStatus at
+  // tools/metrics/histograms/enums.xml.
+};
+
+// Next method ID: 18
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -307,6 +332,10 @@ interface MetricsHost {
   [MinVersion=13] ReportDnsQueryResult@16(
       ArcDnsQuery query,
       bool success);
+
+  // Reports main account hash migration status.
+  [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
+      MainAccountHashMigrationStatus status);
 };
 
 // Next method ID: 3
