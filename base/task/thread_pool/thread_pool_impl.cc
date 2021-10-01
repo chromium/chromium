@@ -354,6 +354,12 @@ void ThreadPoolImpl::Shutdown() {
   // tasks run with a normal thread priority.
   UpdateCanRunPolicy();
 
+  // Ensures that there are enough background worker to run BLOCK_SHUTDOWN
+  // tasks.
+  foreground_thread_group_->OnShutdownStarted();
+  if (background_thread_group_)
+    background_thread_group_->OnShutdownStarted();
+
   task_tracker_->CompleteShutdown();
 }
 

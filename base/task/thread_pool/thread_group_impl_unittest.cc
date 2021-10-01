@@ -1064,11 +1064,13 @@ class ThreadGroupImplBlockingTest
   // Saturates the thread group with a task that waits for other tasks without
   // entering a ScopedBlockingCall, then exits.
   void SaturateWithBusyTasks(
-      TaskPriority priority = TaskPriority::USER_BLOCKING) {
+      TaskPriority priority = TaskPriority::USER_BLOCKING,
+      TaskShutdownBehavior shutdown_behavior =
+          TaskShutdownBehavior::SKIP_ON_SHUTDOWN) {
     TestWaitableEvent threads_running;
 
     const scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
-        {MayBlock(), WithBaseSyncPrimitives(), priority},
+        {MayBlock(), WithBaseSyncPrimitives(), priority, shutdown_behavior},
         &mock_pooled_task_runner_delegate_);
 
     RepeatingClosure threads_running_barrier = BarrierClosure(
@@ -1080,36 +1082,6 @@ class ThreadGroupImplBlockingTest
           FROM_HERE, BindLambdaForTesting([this, &threads_running_barrier]() {
             threads_running_barrier.Run();
             busy_threads_continue_.Wait();
-          }));
-    }
-    threads_running.Wait();
-  }
-
-  void SaturateWithBusyBlockingTasks(
-      const NestedBlockingType& nested_blocking_type,
-      TaskPriority priority = TaskPriority::USER_BLOCKING) {
-    TestWaitableEvent threads_running;
-
-    const scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
-        {MayBlock(), WithBaseSyncPrimitives(), priority},
-        &mock_pooled_task_runner_delegate_);
-
-    RepeatingClosure threads_running_barrier = BarrierClosure(
-        kMaxTasks,
-        BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
-
-    for (size_t i = 0; i < kMaxTasks; ++i) {
-      task_runner->PostTask(
-          FROM_HERE, BindLambdaForTesting([this, &threads_running_barrier,
-                                           nested_blocking_type]() {
-            threads_running_barrier.Run();
-            bool done = false;
-            while (!done) {
-              NestedScopedBlockingCall nested_scoped_blocking_call(
-                  nested_blocking_type);
-              done = blocking_threads_continue_.TimedWait(
-                  TimeDelta::FromMilliseconds(100));
-            }
           }));
     }
     threads_running.Wait();
@@ -1159,25 +1131,6 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblocked) {
   ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
 
   SaturateWithBlockingTasks(GetParam());
-
-  // Forces |kMaxTasks| extra workers to be instantiated by posting tasks. This
-  // should not block forever.
-  SaturateWithBusyTasks();
-
-  EXPECT_EQ(thread_group_->NumberOfWorkersForTesting(), 2 * kMaxTasks);
-
-  UnblockBusyTasks();
-  UnblockBlockingTasks();
-  task_tracker_.FlushForTesting();
-  EXPECT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
-}
-
-TEST_P(ThreadGroupImplBlockingTest, ThreadBusyBlockedUnblocked) {
-  CreateAndStartThreadGroup();
-
-  ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
-
-  SaturateWithBusyBlockingTasks(GetParam());
 
   // Forces |kMaxTasks| extra workers to be instantiated by posting tasks. This
   // should not block forever.
@@ -1575,6 +1528,31 @@ TEST_F(ThreadGroupImplBlockingTest, MayBlockIncreaseCapacityNestedWillBlock) {
   can_return.Signal();
   task_tracker_.FlushForTesting();
   EXPECT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
+}
+
+// Verify that OnShutdownStarted() causes max tasks to increase and creates a
+// worker if needed. Also verify that UnblockBusyTasks() decreases max tasks
+// after an increase.
+TEST_F(ThreadGroupImplBlockingTest, ThreadBusyShutdown) {
+  CreateAndStartThreadGroup();
+  ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
+
+  SaturateWithBusyTasks(TaskPriority::BEST_EFFORT,
+                        TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN);
+  thread_group_->OnShutdownStarted();
+
+  // Forces |kMaxTasks| extra workers to be instantiated by posting tasks. This
+  // should not block forever.
+  SaturateWithBusyTasks(TaskPriority::BEST_EFFORT,
+                        TaskShutdownBehavior::BLOCK_SHUTDOWN);
+
+  EXPECT_EQ(thread_group_->NumberOfWorkersForTesting(), 2 * kMaxTasks);
+
+  UnblockBusyTasks();
+  task_tracker_.FlushForTesting();
+  thread_group_->JoinForTesting();
+  EXPECT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
+  thread_group_.reset();
 }
 
 class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,

@@ -29,6 +29,7 @@ class BASE_EXPORT ThreadGroupNative : public ThreadGroup {
   void JoinForTesting() override;
   size_t GetMaxConcurrentNonBlockedTasksDeprecated() const override;
   void DidUpdateCanRunPolicy() override;
+  void OnShutdownStarted() override;
 
  protected:
   ThreadGroupNative(TrackedRef<TaskTracker> task_tracker,

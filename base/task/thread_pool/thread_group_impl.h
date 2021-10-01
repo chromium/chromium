@@ -96,6 +96,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   void JoinForTesting() override;
   size_t GetMaxConcurrentNonBlockedTasksDeprecated() const override;
   void DidUpdateCanRunPolicy() override;
+  void OnShutdownStarted() override;
 
   const HistogramBase* num_tasks_before_detach_histogram() const {
     return num_tasks_before_detach_histogram_;
@@ -280,6 +281,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   // All workers owned by this thread group.
   std::vector<scoped_refptr<WorkerThread>> workers_ GUARDED_BY(lock_);
+
+  bool shutdown_started_ GUARDED_BY(lock_) = false;
 
   // Maximum number of tasks of any priority / BEST_EFFORT priority that can run
   // concurrently in this thread group.
