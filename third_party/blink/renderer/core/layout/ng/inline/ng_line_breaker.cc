@@ -486,9 +486,6 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   const NGInlineItemResults& item_results = line_info->Results();
   DCHECK(item_results.IsEmpty());
 
-  if (is_svg_text_)
-    line_info->MutableResults()->ReserveCapacity(text_content_.length());
-
   if (item_index_) {
     // We're past the first line
     previous_line_had_forced_break_ = is_after_forced_break_;
