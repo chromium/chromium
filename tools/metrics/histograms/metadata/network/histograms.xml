@@ -2965,7 +2965,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NetworkService.CorsForcedOffForIsolatedWorldOrigin"
-    enum="BooleanForceDisabled" expires_after="2021-10-10">
+    enum="BooleanForceDisabled" expires_after="2021-09-30">
+  <obsolete>
+    Removed in September 2021.
+  </obsolete>
   <owner>lukasza@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>

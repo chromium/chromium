@@ -725,13 +725,6 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
                                          status.error_code);
   }
 
-  // TODO(crbug.com/1152550): Remove this histogram after platform apps no
-  // longer require relaxing CORB/CORS in their content scripts.
-  if (status.error_code == net::OK) {
-    UMA_HISTOGRAM_BOOLEAN("NetworkService.CorsForcedOffForIsolatedWorldOrigin",
-                          has_cors_been_affected_by_isolated_world_origin_);
-  }
-
   if (devtools_observer_ && status.cors_error_status) {
     devtools_observer_->OnCorsError(request_.devtools_request_id,
                                     request_.request_initiator, request_.url,
@@ -760,11 +753,8 @@ void CorsURLLoader::SetCorsFlagIfNeeded() {
     return;
   }
 
-  if (HasSpecialAccessToDestination()) {
-    has_cors_been_affected_by_isolated_world_origin_ =
-        request_.isolated_world_origin.has_value();
+  if (HasSpecialAccessToDestination())
     return;
-  }
 
   fetch_cors_flag_ = true;
 }

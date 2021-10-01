@@ -2010,20 +2010,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
   std::string web_view_navigation_script =
       content::JsReplace(kWebViewNavigationScriptTemplate, guest_url);
   {
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::HistogramTester histograms;
-
     content::DOMMessageQueue queue;
     content::ExecuteScriptAsync(app_contents, web_view_navigation_script);
     std::string fetch_result = PopString(&queue);
 
     // Verify that no CORB or CORS blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
-
-    // Verify UMA histograms.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    histograms.ExpectBucketCount(
-        "NetworkService.CorsForcedOffForIsolatedWorldOrigin", true, 1);
   }
 }
 

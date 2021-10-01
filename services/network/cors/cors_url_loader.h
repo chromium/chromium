@@ -200,7 +200,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   net::IsolationInfo isolation_info_;
 
-  bool has_cors_been_affected_by_isolated_world_origin_ = false;
   bool has_authorization_covered_by_wildcard_ = false;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
