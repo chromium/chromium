@@ -54,7 +54,6 @@ queries of the bots and see, for example, which GPUs are available.
 
 The waterfall bots run tests on a single GPU type in order to make it easier to
 see regressions or flakiness that affect only a certain type of GPU.
-'Mac FYI GPU ASAN Release' is an exception, running both on Intel and AMD GPUs.
 
 The tryservers like `win10_chromium_x64_rel_ng` which include GPU tests, on the other
 hand, run tests on more than one GPU type. As of this writing, the Windows

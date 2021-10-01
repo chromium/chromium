@@ -4455,18 +4455,6 @@
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
-      'Mac FYI GPU ASAN Release': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_mini_intel_gpu_stable_dimension_set',
-          'mac_retina_amd_gpu_stable_dimension_set',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-        },
-      },
       'Mac FYI Release (Apple M1)': {
         'os_type': 'mac',
         'browser_config': 'release',

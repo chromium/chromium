@@ -1397,28 +1397,12 @@
       },
     },
   },
-  'context_lost_passthrough_tests': {
-    'modifications': {
-      'Mac FYI GPU ASAN Release': {
-        'args': [
-          '--is-asan',
-        ]
-      },
-    },
-  },
   'context_lost_validating_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
     'remove_from': [
       'Android FYI Release (Pixel 2)',
     ],
-    'modifications': {
-      'Mac FYI GPU ASAN Release': {
-        'args': [
-          '--is-asan',
-        ]
-      },
-    },
   },
   'crashpad_tests': {
     'remove_from': [
@@ -1734,9 +1718,6 @@
   },
   'info_collection_tests': {
     'remove_from': [
-      # The Mac ASAN swarming bot runs tests on two different GPU
-      # types, so we can't have one expected vendor ID / device ID.
-      'Mac FYI GPU ASAN Release',
       'Android V8 FYI Release (Nexus 5X)',
       'Linux V8 FYI Release (NVIDIA)',
       'Linux V8 FYI Release - pointer compression (NVIDIA)',
@@ -3177,11 +3158,6 @@
       'ChromeOS FYI Release (kevin)': {
         'experiment_percentage': 100,
       },
-      'Mac FYI GPU ASAN Release': {
-        'args': [
-          '--is-asan',
-        ]
-      },
     },
   },
   'webgl_conformance_gl_passthrough_tests': {
@@ -3204,15 +3180,6 @@
       # constrained. crbug.com/950690
       'Mac FYI Retina Debug (NVIDIA)',
     ],
-  },
-  'webgl_conformance_validating_tests': {
-    'modifications': {
-      'Mac FYI GPU ASAN Release': {
-        'args': [
-          '--is-asan',
-        ]
-      },
-    },
   },
   'webgpu_blink_web_tests': {
     'modifications': {

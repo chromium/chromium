@@ -489,7 +489,6 @@
       'GPU FYI XR Win x64 Builder': 'gpu_fyi_tests_release_trybot',
       'Linux FYI GPU TSAN Release': 'gpu_fyi_tests_release_trybot_tsan',
       'Linux FYI SkiaRenderer Dawn Release (Intel HD 630)': 'gpu_tests_sk_dawn_release_trybot',
-      'Mac FYI GPU ASAN Release': 'gpu_fyi_tests_release_trybot_asan',
       'Optional Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
       'Optional Android Release (Pixel 4)': 'gpu_tests_android_release_trybot',
       'Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)': 'gpu_tests_sk_dawn_release_trybot',
@@ -1097,7 +1096,6 @@
       'gpu-fyi-try-mac-amd-retina-exp': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-mac-amd-retina-rel': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64',
-      'gpu-fyi-try-mac-asan': 'gpu_fyi_tests_release_trybot_asan',
       'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot',
       'gpu-fyi-try-mac-intel-exp': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-mac-intel-rel': 'gpu_fyi_tests_release_trybot',
@@ -2192,10 +2190,6 @@
 
     'gpu_fyi_tests_release_trybot_arm64': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'arm64', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_asan': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'asan', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_fuchsia': [
