@@ -29,7 +29,9 @@ struct ShapeResultView::RunInfoPart {
         start_index_(start_index),
         offset_(offset),
         num_characters_(num_characters),
-        width_(width) {}
+        width_(width) {
+    CHECK_GT(num_characters, 0u);
+  }
 
   using const_iterator = const HarfBuzzRunGlyphData*;
   const_iterator begin() const { return range_.begin; }
@@ -420,7 +422,7 @@ scoped_refptr<ShapeResultView> ShapeResultView::Create(
     for (auto& segment : base::Reversed(segments))
       part = out->PopulateRunInfoParts(segment, part);
   }
-  DCHECK_EQ(part, out->Parts().data() + out->num_parts_);
+  CHECK_EQ(part, out->Parts().data() + out->num_parts_);
 
   return base::AdoptRef(out);
 }
@@ -459,7 +461,7 @@ scoped_refptr<ShapeResultView> ShapeResultView::Create(
   const Segment segment = {result, 0, std::numeric_limits<unsigned>::max()};
   RunInfoPart* const part =
       out->PopulateRunInfoParts(segment, out->Parts().data());
-  DCHECK_EQ(part, out->Parts().data() + out->num_parts_);
+  CHECK_EQ(part, out->Parts().data() + out->num_parts_);
   return base::AdoptRef(out);
 }
 
