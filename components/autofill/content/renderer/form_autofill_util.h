@@ -342,18 +342,14 @@ blink::WebFormElement FindFormByUniqueRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id);
 
-// Returns the form control element by unique renderer id. Returns the null
-// element if there is no element with the |queried_form_control| renderer id.
-blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
-    const blink::WebDocument& doc,
-    FieldRendererId queried_form_control);
-
-// Returns the unowned form control element by unique renderer id. Returns the
+// Returns the form control element by unique renderer id. It searches the
+// |form_to_be_searched| if specified, otherwise the whole document. Returns the
 // null element if there is no element with the |queried_form_control| renderer
 // id.
-blink::WebFormControlElement FindUnownedFormControlElementByUniqueRendererId(
+blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
     const blink::WebDocument& doc,
-    FieldRendererId queried_form_control);
+    FieldRendererId queried_form_control,
+    absl::optional<FormRendererId> form_to_be_searched = absl::nullopt);
 
 // Note: The vector-based API of the following two functions is a tax for
 // limiting the frequency and duration of retrieving a lot of DOM elements.

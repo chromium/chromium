@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase_set.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -89,7 +90,6 @@ namespace autofill {
 
 using form_util::ExtractMask;
 using form_util::FindFormAndFieldForFormControlElement;
-using form_util::FindUnownedFormControlElementByUniqueRendererId;
 using form_util::IsOwnedByFrame;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
@@ -1163,16 +1163,14 @@ void AutofillAgent::OnProvisionallySaveForm(
       // Remove visible elements.
       WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
       if (!doc.IsNull()) {
-        for (auto it = formless_elements_user_edited_.begin();
-             it != formless_elements_user_edited_.end();) {
-          WebFormControlElement field =
-              FindUnownedFormControlElementByUniqueRendererId(doc, *it);
-          if (!field.IsNull() && form_util::IsWebElementVisible(field)) {
-            it = formless_elements_user_edited_.erase(it);
-          } else {
-            ++it;
-          }
-        }
+        base::EraseIf(
+            formless_elements_user_edited_,
+            [&doc](const FieldRendererId field_id) {
+              WebFormControlElement field =
+                  form_util::FindFormControlElementByUniqueRendererId(
+                      doc, field_id, /*form_to_be_searched =*/FormRendererId());
+              return !field.IsNull() && form_util::IsWebElementVisible(field);
+            });
       }
       formless_elements_user_edited_.insert(
           FieldRendererId(element.UniqueRendererFormControlId()));

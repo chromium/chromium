@@ -82,7 +82,6 @@ namespace autofill {
 using form_util::FindFormByUniqueRendererId;
 using form_util::FindFormControlElementByUniqueRendererId;
 using form_util::FindFormControlElementsByUniqueRendererId;
-using form_util::FindUnownedFormControlElementByUniqueRendererId;
 using form_util::GetFieldRendererId;
 using form_util::GetFormRendererId;
 using form_util::IsWebElementVisible;
@@ -1100,8 +1099,9 @@ void PasswordAutofillAgent::FireSubmissionIfFormDisappear(
                 FindFormByUniqueRendererId(doc, last_updated_form_renderer_id_))
                .IsNull()) {
         fields = form.GetFormControlElements().ReleaseVector();
-      } else if (!(field = FindUnownedFormControlElementByUniqueRendererId(
-                       doc, last_updated_field_renderer_id_))
+      } else if (!(field = FindFormControlElementByUniqueRendererId(
+                       doc, last_updated_field_renderer_id_,
+                       /*form_to_be_searched =*/FormRendererId()))
                       .IsNull()) {
         fields = {field};
       }

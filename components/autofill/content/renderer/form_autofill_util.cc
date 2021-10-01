@@ -2466,7 +2466,8 @@ WebFormElement FindFormByUniqueRendererId(const WebDocument& doc,
 
 WebFormControlElement FindFormControlElementByUniqueRendererId(
     const WebDocument& doc,
-    FieldRendererId queried_form_control) {
+    FieldRendererId queried_form_control,
+    absl::optional<FormRendererId> form_to_be_searched /*= absl::nullopt*/) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FindFormControlElementByUniqueRendererIdDuration");
 
@@ -2478,12 +2479,29 @@ WebFormControlElement FindFormControlElementByUniqueRendererId(
       return it != fields.end() ? *it : WebFormControlElement();
     };
 
-    for (const WebFormElement& form : doc.Forms()) {
-      auto element = FindField(form.GetFormControlElements());
-      if (!element.IsNull())
-        return element;
+    auto IsCandidate = [&form_to_be_searched](
+                           const FormRendererId& expected_form_renderer_id) {
+      return !form_to_be_searched.has_value() ||
+             form_to_be_searched.value() == expected_form_renderer_id;
+    };
+
+    if (IsCandidate(FormRendererId())) {
+      // Search the unowned form.
+      WebFormControlElement e = FindField(doc.UnassociatedFormControls());
+      if (form_to_be_searched == FormRendererId() || !e.IsNull())
+        return e;
     }
-    return FindField(doc.UnassociatedFormControls());
+    for (const WebFormElement& form : doc.Forms()) {
+      // If the |form_to_be_searched| is specified, skip this form if it is not
+      // the right one.
+      if (!IsCandidate(GetFormRendererId(form))) {
+        continue;
+      }
+      WebFormControlElement e = FindField(form.GetFormControlElements());
+      if (form_to_be_searched == GetFormRendererId(form) || !e.IsNull())
+        return e;
+    }
+    return WebFormControlElement();
   } else {
     WebElementCollection elements = doc.All();
 
@@ -2497,22 +2515,6 @@ WebFormControlElement FindFormControlElementByUniqueRendererId(
     }
     return WebFormControlElement();
   }
-}
-
-WebFormControlElement FindUnownedFormControlElementByUniqueRendererId(
-    const WebDocument& doc,
-    FieldRendererId queried_form_control) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUseUnassociatedListedElements)) {
-    return FindFormControlElementByUniqueRendererId(doc, queried_form_control);
-  }
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Autofill.FindFormControlElementByUniqueRendererIdDuration");
-  const WebVector<WebFormControlElement>& fields =
-      doc.UnassociatedFormControls();
-  auto it =
-      base::ranges::find(fields, queried_form_control, GetFieldRendererId);
-  return it != fields.end() ? *it : WebFormControlElement();
 }
 
 std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
