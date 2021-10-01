@@ -112,6 +112,7 @@ if (is_win || is_mac) {
       "splash_screen.h",
       "tag.cc",
       "tag.h",
+      "update_block_check.h",
       "update_service.cc",
       "update_service.h",
       "update_service_impl.cc",
@@ -199,6 +200,7 @@ if (is_win || is_mac) {
         "prefs_mac.mm",
         "service_factory_mac.mm",
         "setup_mac.mm",
+        "update_block_check_mac.cc",
         "util_mac.mm",
       ]
 
@@ -240,6 +242,7 @@ if (is_win || is_mac) {
         "prefs_win.cc",
         "service_factory_win.cc",
         "setup_win.cc",
+        "update_block_check_win.cc",
         "util_win.cc",
         "win/action_handler.cc",
         "win/install_progress_observer.cc",
