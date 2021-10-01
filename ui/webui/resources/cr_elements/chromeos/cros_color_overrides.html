@@ -32,6 +32,14 @@ To get Chrome OS System Colors, an element must:
         --cr-toggle-unchecked-ripple-color:
             var(--cros-toggle-ripple-color-inactive);
       }
+
+      :host-context([cros]) .primary-toggle {
+        color: var(--cros-text-color-secondary);
+      }
+
+      :host-context([cros]) .primary-toggle[checked] {
+        color: var(--cros-text-color-prominent);
+      }
     </style>
   </template>
 </dom-module>
