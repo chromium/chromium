@@ -25,6 +25,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/storage_policy_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
@@ -100,6 +102,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   void OpenLocalStorage(
       const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
       ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       mojo::ReportBadMessageCallback bad_message_callback);
@@ -109,6 +112,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver);
   void BindStorageArea(
       const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
       ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
@@ -156,6 +160,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   bool IsRequestValid(
       const StorageType type,
       const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
       ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       mojo::ReportBadMessageCallback bad_message_callback);
 

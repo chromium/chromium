@@ -26,6 +26,7 @@
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -240,11 +241,12 @@ void DOMStorageContextWrapper::Flush() {
 
 void DOMStorageContextWrapper::OpenLocalStorage(
     const blink::StorageKey& storage_key,
+    absl::optional<blink::LocalFrameToken> local_frame_token,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
   if (!IsRequestValid(StorageType::kLocalStorage, storage_key,
-                      std::move(security_policy_handle),
+                      local_frame_token, std::move(security_policy_handle),
                       std::move(bad_message_callback))) {
     return;
   }
@@ -268,12 +270,13 @@ void DOMStorageContextWrapper::BindNamespace(
 
 void DOMStorageContextWrapper::BindStorageArea(
     const blink::StorageKey& storage_key,
+    absl::optional<blink::LocalFrameToken> local_frame_token,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
   if (!IsRequestValid(StorageType::kSessionStorage, storage_key,
-                      std::move(security_policy_handle),
+                      local_frame_token, std::move(security_policy_handle),
                       std::move(bad_message_callback))) {
     return;
   }
@@ -285,10 +288,22 @@ void DOMStorageContextWrapper::BindStorageArea(
 bool DOMStorageContextWrapper::IsRequestValid(
     const StorageType type,
     const blink::StorageKey& storage_key,
+    absl::optional<blink::LocalFrameToken> local_frame_token,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
   const std::string type_string =
       type == StorageType::kLocalStorage ? "localStorage" : "sessionStorage";
+  if (local_frame_token) {
+    RenderFrameHostImpl* host = RenderFrameHostImpl::FromFrameToken(
+        security_policy_handle.child_id(), *local_frame_token);
+    // TODO(https://crbug.com/1212808): This should cause a fatal if the
+    // load failed because the request was cross-process.
+    if (!host) {
+      return false;
+    }
+    // TODO(https://crbug.com/1212808): We should check if the storage key on
+    // the host matches the one sent via IPC.
+  }
   // TODO(https://crbug.com/1199077): Pass the real StorageKey when
   // ChildProcessSecurityPolicyImpl is converted.
   if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {

@@ -259,6 +259,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // AddFutureIsolatedOrigins and AddIsolatedOriginForBrowsingInstance).
     bool CanAccessDataForOrigin(const url::Origin& origin);
 
+    // Returns the original `child_id` used to create the handle.
+    int child_id() { return child_id_; }
+
    private:
     friend class ChildProcessSecurityPolicyImpl;
     // |child_id| - The ID of the process that this Handle is being created

@@ -284,6 +284,13 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
   ContentBrowserClient* old_browser_client_;
 };
 
+TEST_F(ChildProcessSecurityPolicyTest, ChildID) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->AddForTesting(kRendererID, browser_context());
+  auto handle = p->CreateHandle(kRendererID);
+  EXPECT_EQ(handle.child_id(), kRendererID);
+}
 
 TEST_F(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =

@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
 
@@ -93,7 +94,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
 TEST_F(DOMStorageContextWrapperTest,
        OpenLocalStorageProcessLockedToOtherStorageKey) {
   mojo::Remote<blink::mojom::StorageArea> area;
-  context_->OpenLocalStorage(test_storage_key2_,
+  context_->OpenLocalStorage(test_storage_key2_, absl::nullopt,
                              area.BindNewPipeAndPassReceiver(),
                              CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
                              MakeBadMessageCallback());
@@ -101,17 +102,43 @@ TEST_F(DOMStorageContextWrapperTest,
   EXPECT_EQ(bad_message_, "Access denied for localStorage request");
 }
 
+// Tries to open a local storage area with a process that is locked to a
+// different LocalFrameToken and verifies there isn't a bad message callback.
+TEST_F(DOMStorageContextWrapperTest,
+       OpenLocalStorageProcessLockedToOtherLocalFrameToken) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->OpenLocalStorage(test_storage_key2_, blink::LocalFrameToken(),
+                             area.BindNewPipeAndPassReceiver(),
+                             CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                             MakeBadMessageCallback());
+  EXPECT_FALSE(bad_message_called_);
+}
+
 // Tries to open a session storage area with a process that is locked to a
 // different StorageKey and verifies the bad message callback.
 TEST_F(DOMStorageContextWrapperTest,
        BindStorageAreaProcessLockedToOtherStorageKey) {
   mojo::Remote<blink::mojom::StorageArea> area;
-  context_->BindStorageArea(test_storage_key2_, test_namespace_id_,
+  context_->BindStorageArea(test_storage_key2_, absl::nullopt,
+                            test_namespace_id_,
                             area.BindNewPipeAndPassReceiver(),
                             CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
                             MakeBadMessageCallback());
   EXPECT_TRUE(bad_message_called_);
   EXPECT_EQ(bad_message_, "Access denied for sessionStorage request");
+}
+
+// Tries to open a session storage area with a process that is locked to a
+// different LocalFrameToken and verifies there isn't a bad message callback.
+TEST_F(DOMStorageContextWrapperTest,
+       BindStorageAreaProcessLockedToOtherLocalFrameToken) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->BindStorageArea(test_storage_key2_, blink::LocalFrameToken(),
+                            test_namespace_id_,
+                            area.BindNewPipeAndPassReceiver(),
+                            CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                            MakeBadMessageCallback());
+  EXPECT_FALSE(bad_message_called_);
 }
 
 }  // namespace content

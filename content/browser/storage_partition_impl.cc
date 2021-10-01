@@ -1674,12 +1674,14 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
 
 void StoragePartitionImpl::OpenLocalStorage(
     const blink::StorageKey& storage_key,
+    const blink::LocalFrameToken& local_frame_token,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->OpenLocalStorage(
-      storage_key, std::move(receiver), std::move(security_policy_handle),
+      storage_key, local_frame_token, std::move(receiver),
+      std::move(security_policy_handle),
       dom_storage_receivers_.GetBadMessageCallback());
 }
 
@@ -1694,13 +1696,14 @@ void StoragePartitionImpl::BindSessionStorageNamespace(
 
 void StoragePartitionImpl::BindSessionStorageArea(
     const blink::StorageKey& storage_key,
+    const blink::LocalFrameToken& local_frame_token,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->BindStorageArea(
-      storage_key, namespace_id, std::move(receiver),
+      storage_key, local_frame_token, namespace_id, std::move(receiver),
       std::move(security_policy_handle),
       dom_storage_receivers_.GetBadMessageCallback());
 }
@@ -2831,8 +2834,9 @@ void StoragePartitionImpl::OpenLocalStorageForProcess(
   DCHECK(initialized_);
   auto handle =
       ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
-  dom_storage_context_->OpenLocalStorage(storage_key, std::move(receiver),
-                                         std::move(handle), base::DoNothing());
+  dom_storage_context_->OpenLocalStorage(storage_key, absl::nullopt,
+                                         std::move(receiver), std::move(handle),
+                                         base::DoNothing());
 }
 
 void StoragePartitionImpl::BindSessionStorageAreaForProcess(
@@ -2843,9 +2847,9 @@ void StoragePartitionImpl::BindSessionStorageAreaForProcess(
   DCHECK(initialized_);
   auto handle =
       ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
-  dom_storage_context_->BindStorageArea(storage_key, namespace_id,
-                                        std::move(receiver), std::move(handle),
-                                        base::DoNothing());
+  dom_storage_context_->BindStorageArea(storage_key, absl::nullopt,
+                                        namespace_id, std::move(receiver),
+                                        std::move(handle), base::DoNothing());
 }
 
 void StoragePartitionImpl::

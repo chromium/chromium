@@ -222,13 +222,11 @@ void StorageNamespace::BindStorageArea(
     mojo::PendingReceiver<mojom::blink::StorageArea> receiver) {
   if (IsSessionStorage()) {
     controller_->dom_storage()->BindSessionStorageArea(
-        local_dom_window.GetStorageKey(),
-        // TODO(https://crbug.com/1212808): add local_frame_token
+        local_dom_window.GetStorageKey(), local_dom_window.GetLocalFrameToken(),
         namespace_id_, std::move(receiver));
   } else {
     controller_->dom_storage()->OpenLocalStorage(
-        local_dom_window.GetStorageKey(),
-        // TODO(https://crbug.com/1212808): add local_frame_token
+        local_dom_window.GetStorageKey(), local_dom_window.GetLocalFrameToken(),
         std::move(receiver));
   }
 }
