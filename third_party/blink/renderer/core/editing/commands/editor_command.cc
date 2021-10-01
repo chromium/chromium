@@ -2039,6 +2039,11 @@ bool EditorCommand::IsTextInsertion() const {
   return command_ && command_->is_text_insertion;
 }
 
+bool EditorCommand::IsValueInterpretedAsHTML() const {
+  return IsSupported() &&
+         command_->command_type == EditingCommandType::kInsertHTML;
+}
+
 int EditorCommand::IdForHistogram() const {
   return IsSupported() ? static_cast<int>(command_->command_type) : 0;
 }

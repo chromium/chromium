@@ -68,6 +68,14 @@ CORE_EXPORT String GetStringForScriptExecution(String,
                                                ScriptElementBase::Type,
                                                ExecutionContext*);
 
+// Functionally equivalent to TrustedTypesCheckForHTML(const String&, ...),
+// but with separate enable flag and use counter, to ensure this won't break
+// existing sites before enabling it in full.
+CORE_EXPORT String TrustedTypesCheckForExecCommand(String,
+                                                   const ExecutionContext*,
+                                                   ExceptionState&)
+    WARN_UNUSED_RESULT;
+
 // Determine whether a Trusted Types check is needed in this execution context.
 //
 // Note: All methods above handle this internally and will return success if a

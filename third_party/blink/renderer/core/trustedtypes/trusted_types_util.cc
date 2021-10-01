@@ -596,4 +596,11 @@ String TrustedTypesCheckForJavascriptURLinNavigation(
       kNavigateToJavascriptURL, kNavigateToJavascriptURLAndDefaultPolicyFailed);
 }
 
+String TrustedTypesCheckForExecCommand(
+    String html,
+    const ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
+  return TrustedTypesCheckForHTML(html, execution_context, exception_state);
+}
+
 }  // namespace blink
