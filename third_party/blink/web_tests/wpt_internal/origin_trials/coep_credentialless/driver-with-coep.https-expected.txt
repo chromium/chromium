@@ -6,7 +6,7 @@ PASS environment="service_worker" origin_trial="enabled"
 FAIL environment="service_worker" origin_trial="disabled" assert_equals: expected (string) "cookie" but got (undefined) undefined
 PASS environment="dedicated_worker" origin_trial="enabled"
 FAIL environment="dedicated_worker" origin_trial="disabled" assert_equals: expected (string) "blocked" but got (undefined) undefined
-FAIL environment="shared_worker" origin_trial="enabled" assert_equals: expected (undefined) undefined but got (string) "cookie"
-PASS environment="shared_worker" origin_trial="disabled"
+PASS environment="shared_worker" origin_trial="enabled"
+FAIL environment="shared_worker" origin_trial="disabled" assert_equals: expected (string) "cookie" but got (undefined) undefined
 Harness: the test ran to completion.
 

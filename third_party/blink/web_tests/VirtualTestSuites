@@ -505,11 +505,10 @@
              "--enable-blink-features=CorsRFC1918"]
   },
   {
-    "prefix": "coep-for-shared-worker",
+    "prefix": "without-coep-for-shared-worker",
     "bases": ["external/wpt/html/cross-origin-embedder-policy"],
-    "args": ["--enable-features=COEPForSharedWorker"]
+    "args": ["--disable-features=COEPForSharedWorker"]
   },
-
   {
     "prefix": "direct-sockets",
     "bases": ["external/wpt/raw-sockets"],

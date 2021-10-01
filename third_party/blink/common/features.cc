@@ -26,7 +26,7 @@ const base::Feature kBlockingDownloadsInAdFrameWithoutUserActivation{
 
 // Support COEP on SharedWorker.
 const base::Feature kCOEPForSharedWorker{"COEPForSharedWorker",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCOLRV1Fonts{"COLRV1Fonts",
                                  base::FEATURE_DISABLED_BY_DEFAULT};

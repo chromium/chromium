@@ -226,8 +226,9 @@ TEST_F(SharedWorkerHostTest, Normal) {
     base::RunLoop().RunUntilIdle();
 
     // The client should be connected.
-    EXPECT_TRUE(
-        client.CheckReceivedOnConnected({} /* expected_used_features */));
+    EXPECT_TRUE(client.CheckReceivedOnConnected({
+        blink::mojom::WebFeature::kCoepNoneSharedWorker,
+    }));
 
     // Close the client. The host should detect that there are no clients left
     // and ask the worker to terminate.
