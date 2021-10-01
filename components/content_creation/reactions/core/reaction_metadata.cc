@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/content_creation/reactions/core/reaction_metadata.h"
+
+namespace content_creation {
+
+ReactionMetadata::ReactionMetadata(ReactionType type,
+                                   const std::string& localized_name,
+                                   const std::string& thumbnail_url,
+                                   const std::string& asset_url)
+    : type_(type),
+      localized_name_(localized_name),
+      thumbnail_url_(thumbnail_url),
+      asset_url_(asset_url) {}
+
+ReactionMetadata::~ReactionMetadata() = default;
+
+}  // namespace content_creation

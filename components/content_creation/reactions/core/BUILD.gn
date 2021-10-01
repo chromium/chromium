@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("core") {
+  sources = [
+    "reaction_metadata.cc",
+    "reaction_metadata.h",
+  ]
+
+  deps = [ ":reaction_types" ]
+}
+
 static_library("features") {
   sources = [
     "reactions_features.cc",
@@ -9,4 +22,17 @@ static_library("features") {
   ]
 
   deps = [ "//base" ]
+}
+
+static_library("reaction_types") {
+  sources = [ "reaction_types.h" ]
+
+  deps = []
+}
+
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ "//components/content_creation/reactions/android:*" ]
+    sources = [ "reaction_types.h" ]
+  }
 }

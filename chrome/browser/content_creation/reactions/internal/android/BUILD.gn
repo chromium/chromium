@@ -27,6 +27,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
   ]
+
   resources_package =
       "org.chromium.chrome.browser.content_creation.reactions.internal"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

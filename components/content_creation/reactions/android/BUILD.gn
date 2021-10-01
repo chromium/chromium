@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/components/content_creation/reactions/ReactionMetadata.java" ]
+
+  deps = [ ":reaction_types_java" ]
+
+  resources_package = "org.chromium.components.content_creation.reactions"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("reaction_types_java") {
+  srcjar_deps =
+      [ "//components/content_creation/reactions/core:java_enum_srcjar" ]
+
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
