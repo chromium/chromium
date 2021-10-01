@@ -39,13 +39,17 @@ class RenderProcessHost;
 // created via the RenderDocumentHostUserData static factories, as these
 // instances are deleted when a new document is commited.
 class CONTENT_EXPORT PermissionServiceContext
-    : public RenderDocumentHostUserData<PermissionServiceContext>,
-      public RenderProcessHostObserver {
+    : public RenderProcessHostObserver {
  public:
   explicit PermissionServiceContext(RenderProcessHost* render_process_host);
   PermissionServiceContext(const PermissionServiceContext&) = delete;
   PermissionServiceContext& operator=(const PermissionServiceContext&) = delete;
   ~PermissionServiceContext() override;
+
+  // Return PermissionServiceContext associated with the current document in the
+  // given RenderFrameHost, lazily creatin gone, if needed.
+  static PermissionServiceContext* GetForCurrentDocument(
+      RenderFrameHost* render_frame_host);
 
   void CreateService(
       mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
@@ -79,8 +83,8 @@ class CONTENT_EXPORT PermissionServiceContext
 
  private:
   class PermissionSubscription;
-  friend class RenderDocumentHostUserData<PermissionServiceContext>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  struct DocumentPermissionServiceContextHolder;
+
   // Use RenderDocumentHostUserData static methods to create instances attached
   // to a RenderFrameHost.
   explicit PermissionServiceContext(RenderFrameHost* render_frame_host);

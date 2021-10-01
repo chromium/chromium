@@ -9618,7 +9618,7 @@ void RenderFrameHostImpl::CreateBucketManagerHost(
 
 void RenderFrameHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
-  PermissionServiceContext::GetOrCreateForCurrentDocument(this)->CreateService(
+  PermissionServiceContext::GetForCurrentDocument(this)->CreateService(
       std::move(receiver));
 }
 
