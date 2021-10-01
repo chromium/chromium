@@ -1839,11 +1839,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "enable-experimental-accessibility-labels",
-    "owners": [ "dmazzoni", "mschillaci" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 98

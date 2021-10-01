@@ -21,7 +21,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/common/content_features.h"
 #include "google_apis/google_api_keys.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/image_annotation/image_annotation_service.h"
@@ -181,10 +180,6 @@ void AccessibilityLabelsService::InitOffTheRecordPrefs(
 }
 
 void AccessibilityLabelsService::Init() {
-  // Hidden behind a feature flag.
-  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
-    return;
-
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
 #if !defined(OS_ANDROID)
@@ -207,10 +202,6 @@ void AccessibilityLabelsService::Init() {
 ui::AXMode AccessibilityLabelsService::GetAXMode() {
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-
-  // Hidden behind a feature flag.
-  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
-    return ax_mode;
 
 #if !defined(OS_ANDROID)
   ax_mode.set_mode(ui::AXMode::kLabelImages,

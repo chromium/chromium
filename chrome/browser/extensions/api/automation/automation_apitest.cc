@@ -26,7 +26,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/api/automation_internal.h"
@@ -81,12 +80,6 @@ class AutomationApiTest : public ExtensionApiTest {
   }
 
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityLabels);
-    ExtensionApiTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");

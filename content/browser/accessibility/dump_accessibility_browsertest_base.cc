@@ -120,13 +120,6 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
 
   enabled_features->emplace_back(blink::features::kPortals);
-
-  // TODO(dmazzoni): DumpAccessibilityTree expectations are based on the
-  // assumption that the accessibility labels feature is off. (There are
-  // also several tests that explicitly enable the feature.) It'd be better
-  // if DumpAccessibilityTree tests assumed that the feature is on by
-  // default instead.  http://crbug.com/940330
-  disabled_features->emplace_back(features::kExperimentalAccessibilityLabels);
 }
 
 std::string

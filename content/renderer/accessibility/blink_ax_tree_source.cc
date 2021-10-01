@@ -887,9 +887,6 @@ void BlinkAXTreeSource::TruncateAndAddStringAttribute(
 
 void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
                                             ui::AXNodeData* dst) const {
-  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
-    return;
-
   // Reject ignored objects
   if (src.AccessibilityIsIgnored()) {
     return;

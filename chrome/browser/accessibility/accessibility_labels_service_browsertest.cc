@@ -13,7 +13,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -31,12 +30,6 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
       const AccessibilityLabelsBrowserTest&) = delete;
 
   // InProcessBrowserTest overrides:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityLabels);
-    InProcessBrowserTest::SetUp();
-  }
-
   void TearDownOnMainThread() override { EnableScreenReader(false); }
 
   void EnableScreenReader(bool enabled) {
@@ -54,9 +47,6 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Changing the kAccessibilityImageLabelsEnabled pref should affect the

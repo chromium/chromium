@@ -233,7 +233,6 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         std::vector<base::Feature>{
             features::kEnableAccessibilityExposeHTMLElement,
-            features::kExperimentalAccessibilityLabels,
             features::kAugmentExistingImageLabels},
         std::vector<base::Feature>{});
     InProcessBrowserTest::SetUp();

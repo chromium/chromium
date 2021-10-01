@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -163,8 +162,7 @@ public class ImageDescriptionsController {
     }
 
     public boolean shouldShowImageDescriptionsMenuItem() {
-        return ContentFeatureList.isEnabled(ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS)
-                && ChromeAccessibilityUtil.get().isTouchExplorationEnabled();
+        return ChromeAccessibilityUtil.get().isTouchExplorationEnabled();
     }
 
     public boolean imageDescriptionsEnabled(Profile profile) {

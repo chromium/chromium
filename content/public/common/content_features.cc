@@ -303,11 +303,6 @@ const base::Feature kEnumerateDevicesHideDeviceIDs {
 #endif
 };
 
-// When a screen reader is detected, allow users the option of letting
-// Google provide descriptions for unlabeled images.
-const base::Feature kExperimentalAccessibilityLabels{
-    "ExperimentalAccessibilityLabels", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Content counterpart of ExperimentalContentSecurityPolicyFeatures in
 // third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
 // experimental Content Security Policy features ('navigate-to' and

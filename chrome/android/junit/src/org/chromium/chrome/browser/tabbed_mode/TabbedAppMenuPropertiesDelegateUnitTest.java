@@ -69,9 +69,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.webapps.AppBannerManager;
-import org.chromium.content.browser.ContentFeatureListImpl;
-import org.chromium.content.browser.ContentFeatureListImplJni;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -142,8 +139,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private DataReductionProxySettings.Natives mDataReductionJniMock;
     @Mock
-    private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
-    @Mock
     private WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     @Mock
     private ModalDialogManager mDialogManager;
@@ -203,10 +198,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(DataReductionProxySettingsJni.TEST_HOOKS, mDataReductionJniMock);
         when(mDataReductionJniMock.isDataReductionProxyEnabled(anyLong(), any())).thenReturn(false);
-        jniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
-        when(mContentFeatureListJniMock.isEnabled(
-                     ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
-                .thenReturn(false);
         jniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);

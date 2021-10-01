@@ -16,7 +16,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,11 +33,6 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   AccessibilityLabelsMenuObserverTest();
 
   // InProcessBrowserTest overrides:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityLabels);
-    InProcessBrowserTest::SetUp();
-  }
   void SetUpOnMainThread() override { Reset(false); }
   void TearDownOnMainThread() override {
     observer_.reset();
@@ -67,7 +61,6 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   AccessibilityLabelsMenuObserver* observer() { return observer_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AccessibilityLabelsMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };

@@ -1267,12 +1267,6 @@ const char kEvDetailsInPageInfoName[] = "EV certificate details in Page Info.";
 const char kEvDetailsInPageInfoDescription[] =
     "Shows the EV certificate details in the Page Info bubble.";
 
-const char kExperimentalAccessibilityLabelsName[] =
-    "Experimental Accessibility Labels";
-const char kExperimentalAccessibilityLabelsDescription[] =
-    "Enables experimental accessibility labels feature. Note that this only "
-    "enables the feature, and enabling the service is a profile preference.";
-
 const char kExperimentalWebPlatformFeaturesName[] =
     "Experimental Web Platform features";
 const char kExperimentalWebPlatformFeaturesDescription[] =

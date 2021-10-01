@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "content/common/render_accessibility.mojom-test-utils.h"
 #include "content/common/render_accessibility.mojom.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/fake_pepper_plugin_instance.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
@@ -1250,8 +1249,6 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityLabels);
     RenderAccessibilityImplTest::SetUp();
     // TODO(nektar): Add the ability to test the AX action that labels images
     // only once.

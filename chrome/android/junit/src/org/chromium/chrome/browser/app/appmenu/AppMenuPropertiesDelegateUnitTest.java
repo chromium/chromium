@@ -63,9 +63,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
-import org.chromium.content.browser.ContentFeatureListImpl;
-import org.chromium.content.browser.ContentFeatureListImplJni;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
@@ -110,8 +107,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock
-    private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
-    @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
     @Mock
     private Profile mProfile;
@@ -154,7 +149,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         mMenuUiState = new MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
 
-        mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
@@ -473,9 +467,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .getAddToHomeScreenTitle(mTab);
 
         // Ensure the get image descriptions option is shown as needed
-        when(mContentFeatureListJniMock.isEnabled(
-                     ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
-                .thenReturn(true);
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
 

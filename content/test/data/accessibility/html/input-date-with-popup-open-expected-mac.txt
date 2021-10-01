@@ -18,9 +18,9 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++++++++++AXStaticText AXRoleDescription='text' AXValue='September 2008'
 ++++++++++++++++++AXGroup AXRoleDescription='group'
 ++++++++++++++AXButton AXDescription='Show previous month' AXRoleDescription='button'
-++++++++++++++++AXGroup AXRoleDescription='group'
+++++++++++++++++AXGroup
 ++++++++++++++AXButton AXDescription='Show next month' AXRoleDescription='button'
-++++++++++++++++AXGroup AXRoleDescription='group'
+++++++++++++++++AXGroup
 ++++++++++++++AXTable AXRoleDescription='table'
 ++++++++++++++++AXGroup AXRoleDescription='group'
 ++++++++++++++++++AXGroup AXRoleDescription='group'

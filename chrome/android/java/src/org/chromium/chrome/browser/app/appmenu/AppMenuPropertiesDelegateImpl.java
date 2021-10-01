@@ -401,8 +401,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         menu.findItem(R.id.paint_preview_show_id)
                 .setVisible(shouldShowPaintPreview(isChromeScheme, currentTab, isIncognito));
 
-        // Enable image descriptions if the feature flag is enabled, and if a screen reader
-        // is currently running.
+        // Enable image descriptions if touch exploration is currently enabled.
         if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
             menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
 
