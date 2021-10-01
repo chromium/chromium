@@ -482,9 +482,6 @@ DownloadProtectionService::IdentifyReferrerChain(
 
   SessionID download_tab_id =
       sessions::SessionTabHelper::IdForTab(web_contents);
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.ReferrerHasInvalidTabID.DownloadAttribution",
-      !download_tab_id.is_valid());
   // We look for the referrer chain that leads to the download url first.
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(web_contents)
@@ -543,9 +540,6 @@ DownloadProtectionService::IdentifyReferrerChain(
       std::make_unique<ReferrerChain>();
 
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(item.web_contents);
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.ReferrerHasInvalidTabID.NativeFileSystemWriteAttribution",
-      !tab_id.is_valid());
 
   GURL tab_url = item.web_contents->GetVisibleURL();
 
@@ -591,9 +585,6 @@ void DownloadProtectionService::AddReferrerChainToPPAPIClientDownloadRequest(
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.ReferrerHasInvalidTabID.DownloadAttribution",
-      !tab_id.is_valid());
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(web_contents)
           ->IdentifyReferrerChainByHostingPage(
