@@ -22,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -47,6 +48,9 @@ constexpr int kVerticalPaddingBetweenSections = 16;
 // The horizontal interior margin for the apps page container - i.e. the margin
 // between the apps page bounds and the page content.
 constexpr int kHorizontalInteriorMargin = 20;
+
+// Insets for the separator between the continue section and apps.
+constexpr gfx::Insets kSeparatorInsets(0, 12);
 
 }  // namespace
 
@@ -99,6 +103,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // Horizontal separator.
   auto* separator =
       scroll_contents->AddChildView(std::make_unique<views::Separator>());
+  separator->SetBorder(views::CreateEmptyBorder(kSeparatorInsets));
   separator->SetColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kSeparatorColor));
 
