@@ -161,6 +161,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PrintPreview.PrintDocumentSize.HTML" units="KB"
     expires_after="2021-03-07">
+  <obsolete>
+    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
+  </obsolete>
   <owner>thestig@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <summary>
@@ -170,6 +173,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PrintPreview.PrintDocumentSize.PDF" units="KB"
     expires_after="2020-12-31">
+  <obsolete>
+    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
+  </obsolete>
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>

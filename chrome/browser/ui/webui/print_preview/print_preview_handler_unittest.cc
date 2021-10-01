@@ -182,8 +182,6 @@ void CheckHistograms(const base::HistogramTester& histograms,
   // Only one PrintPreview.UserAction bucket should have been populated.
   histograms.ExpectTotalCount("PrintPreview.UserAction", 1);
 
-  histograms.ExpectTotalCount("PrintPreview.PrintDocumentSize.HTML", 1);
-  histograms.ExpectTotalCount("PrintPreview.PrintDocumentSize.PDF", 0);
   histograms.ExpectBucketCount("PrintPreview.PrintDocumentType",
                                PrintDocumentTypeBuckets::kHtmlDocument, 1);
   histograms.ExpectBucketCount("PrintPreview.PrintDocumentType",

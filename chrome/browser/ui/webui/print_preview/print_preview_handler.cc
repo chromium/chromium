@@ -811,9 +811,7 @@ void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
     PrintDocumentTypeBuckets doc_type =
         is_pdf ? PrintDocumentTypeBuckets::kPdfDocument
                : PrintDocumentTypeBuckets::kHtmlDocument;
-    size_t average_page_size_in_kb = data->size() / page_count;
-    average_page_size_in_kb /= 1024;
-    ReportPrintDocumentTypeAndSizeHistograms(doc_type, average_page_size_in_kb);
+    ReportPrintDocumentTypeHistograms(doc_type);
   }
   ReportUserActionHistogram(user_action);
 
