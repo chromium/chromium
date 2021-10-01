@@ -106,14 +106,18 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ(2u, actual_memories.size());
   EXPECT_EQ("Title 1", actual_memories.at(0)->title);
   EXPECT_EQ("key1", actual_memories.at(0)->id);
-  EXPECT_EQ("https://photos.google.com/memory/featured/key1/photo/coverKey1",
-            actual_memories.at(0)->item_url);
+  EXPECT_EQ(
+      "https://photos.google.com/memory/featured/key1/photo/"
+      "coverKey1?referrer=CHROME_NTP",
+      actual_memories.at(0)->item_url);
   EXPECT_EQ("https://photos.google.com/img/coverKey1?access_token=foo",
             actual_memories.at(0)->cover_url);
   EXPECT_EQ("Title 2", actual_memories.at(1)->title);
   EXPECT_EQ("key2", actual_memories.at(1)->id);
-  EXPECT_EQ("https://photos.google.com/memory/featured/key2/photo/coverKey2",
-            actual_memories.at(1)->item_url);
+  EXPECT_EQ(
+      "https://photos.google.com/memory/featured/key2/photo/"
+      "coverKey2?referrer=CHROME_NTP",
+      actual_memories.at(1)->item_url);
   EXPECT_EQ("https://photos.google.com/img/coverKey2?access_token=foo",
             actual_memories.at(1)->cover_url);
 }

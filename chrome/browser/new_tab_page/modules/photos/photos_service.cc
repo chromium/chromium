@@ -226,8 +226,9 @@ void PhotosService::OnJsonParsed(
     auto mojo_memory = photos::mojom::Memory::New();
     mojo_memory->id = *memory_id;
     mojo_memory->title = *title;
-    mojo_memory->item_url = GURL("https://photos.google.com/memory/featured/" +
-                                 *memory_id + "/photo/" + *cover_id);
+    mojo_memory->item_url =
+        GURL("https://photos.google.com/memory/featured/" + *memory_id +
+             "/photo/" + *cover_id + "?referrer=CHROME_NTP");
     mojo_memory->cover_url = GURL(*cover_url + "?access_token=" + token);
 
     memory_list.push_back(std::move(mojo_memory));
