@@ -119,8 +119,6 @@ class ManifestUpdateTask final
   void OnAllIconsRead(IconsMap downloaded_icons_map,
                       IconBitmaps disk_icon_bitmaps);
   void OnPostAppIdentityUpdateCheck(
-      IconsMap downloaded_icons_map,
-      IconBitmaps disk_icon_bitmaps,
       AppIdentityUpdate app_identity_update_allowed);
   IconDiff IsUpdateNeededForIconContents(
       const IconBitmaps& disk_icon_bitmaps) const;

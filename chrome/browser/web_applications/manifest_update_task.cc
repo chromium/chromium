@@ -256,7 +256,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   if (web_application_info_->display_override != app->display_mode_override())
     return true;
 
-  // Allow app icon updating for certain apps, or if the existing icons are
+  // Allow app icon updating for certain apps, if the existing icons are
   // empty - this means the app icon download during install failed.
   if (AllowUnpromptedIconUpdate(app_id_, registrar_) &&
       web_application_info_->manifest_icons != app->manifest_icons()) {
@@ -367,56 +367,72 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 
   PopulateOtherIcons(&web_application_info_.value(), downloaded_icons_map);
 
-  if (!AllowUnpromptedNameUpdate(app_id_, registrar_) &&
-      !AllowUnpromptedIconUpdate(app_id_, registrar_) &&
-      base::FeatureList::IsEnabled(features::kPwaUpdateDialogForNameAndIcon)) {
-    // This call populates the |web_application_info_| with all icon bitmap
-    // data.
-    // If this data does not match what we already have on disk, then an update
-    // is necessary.
-    // TODO(https://crbug.com/1184911): Reuse this data in the web app install
-    // task.
-    PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
-    IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
-    std::u16string old_title =
-        base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
-    std::u16string new_title = web_application_info_->title;
-    bool title_change = old_title != new_title;
+  // This call populates the |web_application_info_| with all icon bitmap
+  // data.
+  // If this data does not match what we already have on disk, then an update
+  // is necessary.
+  // TODO(https://crbug.com/1184911): Reuse this data in the web app install
+  // task.
+  PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
 
-    if (title_change || icon_diff.changes_detected) {
-      SkBitmap* before_icon = nullptr;
-      SkBitmap* after_icon = nullptr;
-      if (icon_diff.changes_detected) {
-        before_icon = &icon_diff.before;
-        after_icon = &icon_diff.after;
-      } else {
-        auto it = disk_icon_bitmaps.any.find(web_app::kWebAppIconSmall);
-        if (it != disk_icon_bitmaps.any.end()) {
-          before_icon = &it->second;
-          after_icon = &it->second;
-        }
-      }
+  IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
+  std::u16string old_title =
+      base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
+  std::u16string new_title = web_application_info_->title;
+  bool title_change = old_title != new_title;
 
-      if (before_icon != nullptr && after_icon != nullptr) {
-        ui_manager_.ShowWebAppIdentityUpdateDialog(
-            app_id_, title_change, icon_diff.changes_detected, old_title,
-            new_title, *before_icon, *after_icon, web_contents,
-            base::BindOnce(&ManifestUpdateTask::OnPostAppIdentityUpdateCheck,
-                           AsWeakPtr(), std::move(downloaded_icons_map),
-                           std::move(disk_icon_bitmaps)));
-        return;
+  bool show_dialog_for_name_update =
+      title_change & !AllowUnpromptedNameUpdate(app_id_, registrar_);
+  bool show_dialog_for_icon_update =
+      icon_diff.changes_detected &
+      !AllowUnpromptedIconUpdate(app_id_, registrar_);
+
+  // Note: If icon and name changes are to be actually used later and not
+  // overridden, then OnPostAppIdentityUpdateCheck must be called with
+  // |AppIdentityUpdate::kAllowed| so |app_identity_update_allowed_| is true.
+  if (show_dialog_for_name_update || show_dialog_for_icon_update) {
+    // An identity update with a confirmation dialog is needed. See if it is
+    // available and show it -- or if not, abort the update.
+    if (!base::FeatureList::IsEnabled(
+            features::kPwaUpdateDialogForNameAndIcon)) {
+      OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
+      return;
+    }
+
+    SkBitmap* before_icon = nullptr;
+    SkBitmap* after_icon = nullptr;
+    if (icon_diff.changes_detected) {
+      before_icon = &icon_diff.before;
+      after_icon = &icon_diff.after;
+    } else {
+      auto it = disk_icon_bitmaps.any.find(web_app::kWebAppIconSmall);
+      if (it != disk_icon_bitmaps.any.end()) {
+        before_icon = &it->second;
+        after_icon = &it->second;
       }
     }
+
+    if (before_icon != nullptr && after_icon != nullptr) {
+      ui_manager_.ShowWebAppIdentityUpdateDialog(
+          app_id_, title_change, icon_diff.changes_detected, old_title,
+          new_title, *before_icon, *after_icon, web_contents,
+          base::BindOnce(&ManifestUpdateTask::OnPostAppIdentityUpdateCheck,
+                         AsWeakPtr()));
+      return;
+    }
+  } else if (title_change || icon_diff.changes_detected) {
+    // An identity update has been detected, but we've already determined it
+    // doesn't require the confirmation dialog, so the change can be allowed.
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kAllowed);
+    return;
   }
 
-  // App Identity Warning dialog was not needed, proceed with update check.
-  OnPostAppIdentityUpdateCheck(downloaded_icons_map, disk_icon_bitmaps,
-                               AppIdentityUpdate::kSkipped);
+  // No identity change is happening (or we couldn't get the image diffs), so
+  // skip the check.
+  OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
 }
 
 void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
-    IconsMap downloaded_icons_map,
-    IconBitmaps disk_icon_bitmaps,
     AppIdentityUpdate app_identity_update_allowed) {
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
   app_identity_update_allowed_ =
@@ -424,22 +440,6 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
   if (app_identity_update_allowed_) {
     UpdateAfterWindowsClose();
     return;
-  }
-
-  // Allow app icon updating for certain apps, or if the existing icons are
-  // empty - this means the app icon download during install failed.
-  if (AllowUnpromptedIconUpdate(app_id_, registrar_)) {
-    // This call populates the |web_application_info_| with all icon bitmap
-    // data. If this data does not match what we already have on disk, then an
-    // update is necessary.
-    // TODO(https://crbug.com/1184911): Reuse this data in the web app install
-    // task.
-    PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
-    // TODO: compare in a BEST_EFFORT blocking PostTaskAndReply.
-    if (IsUpdateNeededForIconContents(disk_icon_bitmaps).changes_detected) {
-      UpdateAfterWindowsClose();
-      return;
-    }
   }
 
   icon_manager_.ReadAllShortcutsMenuIcons(
