@@ -1710,7 +1710,18 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
         ],
       },
-      'content_browsertests': {},
+      'content_browsertests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter',
+          '--',
+          '--disable-gpu',
+          '--headless',
+          '--ozone-platform=headless',
+        ],
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'unit_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',

@@ -1147,8 +1147,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'android-lollipop-arm-rel', # crbug.com/1133002
       'android-marshmallow-arm64-rel', # http://crbug.com/1060245#c30: due to low utility and capacity.
-      'fuchsia-fyi-arm64-rel',  # https://crbug.com/1164534
-      'fuchsia-fyi-x64-rel',  # https://crbug.com/1164534
     ],
     'modifications': {
       'Cast Audio Linux': {

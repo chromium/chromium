@@ -122,6 +122,7 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/android.lollipop_tablet_tester.content_browsertests.filter",
     "//testing/buildbot/filters/cast-linux.content_browsertests.filter",
     "//testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
+    "//testing/buildbot/filters/fuchsia.content_browsertests.filter",
     "//testing/buildbot/filters/gpu.skiarenderer_vulkan_content_browsertests.filter",
     "//testing/buildbot/filters/linux-lacros.content_browsertests.filter",
     "//testing/buildbot/filters/site_isolation_android.content_browsertests.filter",
