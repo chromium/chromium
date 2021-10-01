@@ -140,7 +140,7 @@
                   '|components/arc/ime/'
     },
     'arc_kiosk': {
-      'filepath': 'chrome/browser/chromeos/app_mode/arc/'\
+      'filepath': 'chrome/browser/ash/app_mode/arc/'\
                   '|components/arc/kiosk/'\
                   '|arc_kiosk'
     },
@@ -863,6 +863,7 @@
       'filepath': 'chrome/browser/resources/settings/chromeos/os_printing_page/'\
                   '|chrome/test/data/webui/settings/cups_printer_page_tests.js'\
                   '|chrome/browser/ui/webui/settings/chromeos/cups_printers_handler'\
+                  '|chrome/browser/ash/printing/'\
                   '|chrome/browser/chromeos/printing/'\
                   '|printing/',
     },
@@ -1297,7 +1298,7 @@
       'filepath': 'base/metrics/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/metrics/'\
                   '|chrome/browser/metrics/'\
-                  '|chrome/browser/chromeos/external_metrics'\
+                  '|chrome/browser/ash/external_metrics'\
                   '|chrome/browser/extensions/api/metrics_private/'\
                   '|chrome/browser/ui/webui/metrics_handler'\
                   '|chromecast/browser/metrics/'\
@@ -1855,7 +1856,6 @@
     'textinput_chromeos': {
       'filepath': 'chrome/browser/ash/input_method/'\
                   '|chrome/browser/chromeos/extensions/input_method'\
-                  '|chrome/browser/chromeos/status/input_method'\
                   '|chrome/browser/extensions/api/input_ime'\
                   '|chrome/browser/resources/keyboard'\
                   'chromeos/.*(language|keyboard)'\
@@ -2067,12 +2067,7 @@
       'filepath': 'third_party/blink/web_tests/external/wpt/tools/',
     },
     'x11': {
-      'filepath': 'content/browser/renderer_host/backing_store_x\.' \
-                  '|chrome/browser/chromeos/system_key_event_listener\.' \
-                  '|chrome/browser/chromeos/'\
-                  'xinput_hierarchy_changed_event_listener\.' \
-                  '|chrome/browser/chromeos/wm_' \
-                  '|ui/base/x/'
+      'filepath': 'ui/base/x/'
     },
     'zlib': {
       'filepath': 'third_party/zlib'
