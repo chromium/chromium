@@ -148,6 +148,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
@@ -363,6 +364,11 @@ static bool IsSingleProcess() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSingleProcess);
 }
+
+// Whether to initialize the font manager when the renderer starts on a
+// background thread.
+const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -738,6 +744,11 @@ void RenderThreadImpl::Init() {
 
   variations_observer_ = std::make_unique<VariationsRenderThreadObserver>();
   AddObserver(variations_observer_.get());
+
+  if (base::FeatureList::IsEnabled(kFontManagerEarlyInit)) {
+    base::ThreadPool::PostTask(FROM_HERE,
+                               base::BindOnce([] { SkFontMgr::RefDefault(); }));
+  }
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
