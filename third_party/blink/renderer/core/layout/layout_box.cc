@@ -792,6 +792,13 @@ bool GridStyleChanged(const ComputedStyle* old_style,
              current_style.HasOutOfFlowPosition();
 }
 
+bool AlignmentChanged(const ComputedStyle* old_style,
+                      const ComputedStyle& current_style) {
+  return old_style->AlignSelfPosition() != current_style.AlignSelfPosition() ||
+         old_style->JustifySelfPosition() !=
+             current_style.JustifySelfPosition();
+}
+
 }  // namespace
 
 void LayoutBox::UpdateGridPositionAfterStyleChange(
@@ -801,11 +808,14 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   if (!old_style)
     return;
 
-  if (Parent() && Parent()->IsLayoutGrid() &&
+  LayoutObject* parent = Parent();
+  const bool was_out_of_flow = old_style->HasOutOfFlowPosition();
+  const bool is_out_of_flow = StyleRef().HasOutOfFlowPosition();
+  if (parent && parent->IsLayoutGrid() &&
       GridStyleChanged(old_style, StyleRef())) {
     // Positioned items don't participate on the layout of the grid,
     // so we don't need to mark the grid as dirty if they change positions.
-    if (old_style->HasOutOfFlowPosition() && StyleRef().HasOutOfFlowPosition())
+    if (was_out_of_flow && is_out_of_flow)
       return;
 
     // It should be possible to not dirty the grid in some cases (like moving an
@@ -816,21 +826,37 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   }
 
   LayoutBlock* containing_block = ContainingBlock();
-  if (containing_block && containing_block->IsLayoutNGGrid() &&
+  if ((containing_block && containing_block->IsLayoutNGGrid()) &&
       GridStyleChanged(old_style, StyleRef())) {
     // Out-of-flow items do not impact grid placement.
     // TODO(kschmi): Scope this so that it only dirties the grid when track
     // sizing depends on grid item sizes.
-    if (!old_style->HasOutOfFlowPosition() ||
-        !StyleRef().HasOutOfFlowPosition()) {
+    if (!was_out_of_flow || !is_out_of_flow)
       containing_block->SetGridPlacementDirty(true);
-    }
 
     // For out-of-flow elements with grid container as containing block, we need
     // to run the entire algorithm to place and size them correctly. As a
     // result, we trigger a full layout for GridNG.
-    containing_block->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
-                                     kMarkContainerChain);
+    if (is_out_of_flow) {
+      containing_block->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
+                                       kMarkContainerChain);
+    }
+  }
+
+  // GridNG computes static positions for out-of-flow elements at layout time,
+  // with alignment offsets baked in. So if alignment changes, we need to
+  // schedule a layout.
+  if (is_out_of_flow && AlignmentChanged(old_style, StyleRef())) {
+    LayoutObject* grid_ng_ancestor = nullptr;
+    if (containing_block && containing_block->IsLayoutNGGrid())
+      grid_ng_ancestor = containing_block;
+    else if (parent && parent->IsLayoutNGGrid())
+      grid_ng_ancestor = parent;
+
+    if (grid_ng_ancestor) {
+      grid_ng_ancestor->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
+                                       kMarkContainerChain);
+    }
   }
 }
 
