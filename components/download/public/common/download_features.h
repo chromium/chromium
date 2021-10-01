@@ -76,6 +76,9 @@ COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kAllowFileBufferSizeControl;
 
+// Whether to allow scanning save packages before saving them to disk.
+COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kAllowSavePackageScanning;
+
 }  // namespace features
 
 namespace switches {

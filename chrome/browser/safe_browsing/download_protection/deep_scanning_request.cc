@@ -395,21 +395,21 @@ void DeepScanningRequest::StartSavePackageScan() {
       content::DownloadItemUtils::GetBrowserContext(item_));
   std::vector<FileOpeningJob::FileOpeningTask> tasks(pending_scan_requests_);
   size_t i = 0;
-  for (const auto& final_path_and_tmp_path : save_package_files_) {
+  for (const auto& tmp_path_and_final_path : save_package_files_) {
     auto request = std::make_unique<FileAnalysisRequest>(
-        analysis_settings_, final_path_and_tmp_path.second,
-        final_path_and_tmp_path.first.BaseName(), /*mimetype*/ "",
+        analysis_settings_, tmp_path_and_final_path.first,
+        tmp_path_and_final_path.second.BaseName(), /*mimetype*/ "",
         /* delay_opening_file */ true,
         base::BindOnce(&DeepScanningRequest::OnScanComplete,
                        weak_ptr_factory_.GetWeakPtr(),
-                       final_path_and_tmp_path.second));
-    request->set_filename(final_path_and_tmp_path.first.AsUTF8Unsafe());
+                       tmp_path_and_final_path.first));
+    request->set_filename(tmp_path_and_final_path.second.AsUTF8Unsafe());
 
     FileAnalysisRequest* request_raw = request.get();
-    PopulateRequest(request_raw, profile, final_path_and_tmp_path.second);
+    PopulateRequest(request_raw, profile, tmp_path_and_final_path.first);
     request_raw->GetRequestData(base::BindOnce(
         &DeepScanningRequest::OnGotRequestData, weak_ptr_factory_.GetWeakPtr(),
-        final_path_and_tmp_path.first, final_path_and_tmp_path.second,
+        tmp_path_and_final_path.second, tmp_path_and_final_path.first,
         std::move(request)));
     DCHECK_LT(i, tasks.size());
     tasks[i++].request = request_raw;
@@ -578,6 +578,10 @@ void DeepScanningRequest::OnScanComplete(
 
 void DeepScanningRequest::OnDownloadDestroyed(
     download::DownloadItem* download) {
+  if (download->IsSavePackageDownload()) {
+    enterprise_connectors::RunSavePackageScanningCallback(download, false);
+  }
+
   FinishRequest(DownloadCheckResult::UNKNOWN);
 }
 

@@ -187,7 +187,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // This list of observers of this request.
   base::ObserverList<Observer> observers_;
 
-  // Stores a mapping of final paths to temporary paths for save package files.
+  // Stores a mapping of temporary paths to final paths for save package files.
   // This is empty on non-page save scanning requests.
   base::flat_map<base::FilePath, base::FilePath> save_package_files_;
 

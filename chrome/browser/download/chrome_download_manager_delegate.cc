@@ -48,6 +48,8 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -382,6 +384,36 @@ void MaybeReportDangerousDownloadBlocked(
   }
 #endif
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+download::DownloadDangerType SavePackageDangerType(
+    safe_browsing::DownloadCheckResult result) {
+  switch (result) {
+    case safe_browsing::DownloadCheckResult::ASYNC_SCANNING:
+      return download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
+    case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+      return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING;
+    case safe_browsing::DownloadCheckResult::UNKNOWN:
+      // Failed scans with an unknown result should fail-open, so treat them as
+      // if they're not dangerous.
+      return download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+    case safe_browsing::DownloadCheckResult::DEEP_SCANNED_SAFE:
+      return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
+    case safe_browsing::DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
+    case safe_browsing::DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED;
+    case safe_browsing::DownloadCheckResult::BLOCKED_TOO_LARGE:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
+    case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+      return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
+
+    default:
+      NOTREACHED();
+      return download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+  }
+}
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 }  // namespace
 
@@ -1379,6 +1411,81 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
     state->CompleteDownload();
   }
 }
+
+void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
+    uint32_t download_id,
+    safe_browsing::DownloadCheckResult result) {
+  if (!download_manager_)
+    return;
+  DownloadItem* item = download_manager_->GetDownload(download_id);
+  if (!item || (item->GetState() != DownloadItem::IN_PROGRESS &&
+                item->GetDangerType() !=
+                    download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING)) {
+    return;
+  }
+
+  switch (result) {
+    // These results imply the scanning is either not done or that the Save
+    // Package being allowed/blocked depends on user action following a
+    // warning, so the callback doesn't need to run.
+    case safe_browsing::DownloadCheckResult::ASYNC_SCANNING:
+    case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+      break;
+
+    case safe_browsing::DownloadCheckResult::UNKNOWN:
+    case safe_browsing::DownloadCheckResult::DEEP_SCANNED_SAFE:
+      enterprise_connectors::RunSavePackageScanningCallback(item,
+                                                            /*allowed*/ true);
+      break;
+
+    case safe_browsing::DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+    case safe_browsing::DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+    case safe_browsing::DownloadCheckResult::BLOCKED_TOO_LARGE:
+    case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+      enterprise_connectors::RunSavePackageScanningCallback(item,
+                                                            /*allowed*/ false);
+      break;
+
+    default:
+      // These other results should never be returned, but if they are somehow
+      // then scanning policies are fail-open, so the save package should be
+      // allowed to complete.
+      NOTREACHED();
+      enterprise_connectors::RunSavePackageScanningCallback(item,
+                                                            /*allowed*/ true);
+      break;
+  }
+
+  // We only mark the content as being sensitive if the download's danger state
+  // has not been set yet.  We don't want to show two warnings.
+  if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT ||
+      item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+    download::DownloadDangerType danger_type = SavePackageDangerType(result);
+    if (item->GetState() == DownloadItem::COMPLETE &&
+        item->GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+      // If the save package was opened during async scanning, we override the
+      // danger type, since the user can no longer discard the download.
+      if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
+        item->OnAsyncScanningCompleted(
+            download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS);
+
+        // Because the file has been opened before the verdict was available,
+        // the reporter must be manually notified that it needs to record the
+        // bypass. This is because the bypass wasn't reported on open to avoid
+        // sending a bypass event for a non-dangerous/sensitive file.
+        GetDownloadProtectionService()->ReportDelayedBypassEvent(item,
+                                                                 danger_type);
+      } else {
+        item->OnAsyncScanningCompleted(danger_type);
+      }
+    }
+  }
+}
 #endif  // FULL_SAFE_BROWSING
 
 // content::NotificationObserver implementation.
@@ -1624,6 +1731,48 @@ ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
 #else
   return nullptr;
 #endif
+}
+
+void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
+    download::DownloadItem* download_item,
+    base::flat_map<base::FilePath, base::FilePath> save_package_files,
+    content::SavePackageAllowedCallback callback) {
+  DCHECK(download_item);
+  DCHECK(download_item->IsSavePackageDownload());
+
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_MAC)
+  if (!base::FeatureList::IsEnabled(
+          download::features::kAllowSavePackageScanning)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  absl::optional<enterprise_connectors::AnalysisSettings> settings =
+      safe_browsing::DeepScanningRequest::ShouldUploadBinary(download_item);
+
+  if (settings.has_value()) {
+    DownloadProtectionService* service = GetDownloadProtectionService();
+    // Save package never need malware scans, so exempt them from scanning if
+    // there are no other tags.
+    settings->tags.erase("malware");
+    if (!settings->tags.empty() && service) {
+      download_item->SetUserData(
+          enterprise_connectors::SavePackageScanningData::kKey,
+          std::make_unique<enterprise_connectors::SavePackageScanningData>(
+              std::move(callback)));
+
+      service->UploadSavePackageForDeepScanning(
+          download_item, std::move(save_package_files),
+          base::BindRepeating(
+              &ChromeDownloadManagerDelegate::CheckSavePackageScanningDone,
+              weak_ptr_factory_.GetWeakPtr(), download_item->GetId()),
+          std::move(settings.value()));
+      return;
+    }
+  }
+#endif
+  std::move(callback).Run(true);
 }
 
 void ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete(

@@ -12,6 +12,7 @@
 
 #include "base/supports_user_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -182,6 +183,23 @@ struct ScanResult : public base::SupportsUserData::Data {
 
   std::vector<FileMetadata> file_metadata;
 };
+
+// User data to persist a save package's final callback allowing/denying
+// completion. This is used since the callback can be called either when
+// scanning completes on a block/allow verdict, when the user cancels the scan,
+// or when the user bypasses scanning.
+struct SavePackageScanningData : public base::SupportsUserData::Data {
+  explicit SavePackageScanningData(
+      content::SavePackageAllowedCallback callback);
+  ~SavePackageScanningData() override;
+  static const char kKey[];
+
+  content::SavePackageAllowedCallback callback;
+};
+
+// Checks `item` for a SavePackageScanningData, and run it's callback with
+// `allowed` if there is one.
+void RunSavePackageScanningCallback(download::DownloadItem* item, bool allowed);
 
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);

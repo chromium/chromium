@@ -211,6 +211,15 @@ class DownloadProtectionService {
       DownloadCheckResult download_check_result,
       enterprise_connectors::AnalysisSettings analysis_settings);
 
+  // Uploads a save package `item` for deep scanning. `save_package_file`
+  // contains a mapping of on-disk files part of that save package to their
+  // final paths.
+  void UploadSavePackageForDeepScanning(
+      download::DownloadItem* item,
+      base::flat_map<base::FilePath, base::FilePath> save_package_files,
+      CheckDownloadRepeatingCallback callback,
+      enterprise_connectors::AnalysisSettings analysis_settings);
+
   // Returns all the currently active deep scanning requests.
   std::vector<DeepScanningRequest*> GetDeepScanningRequests();
 

@@ -79,6 +79,9 @@ const base::Feature kAllowFileBufferSizeControl{
 #endif
 };
 
+const base::Feature kAllowSavePackageScanning{
+    "AllowSavePackageScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 namespace switches {

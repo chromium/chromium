@@ -934,14 +934,14 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     base::flat_map<base::FilePath, base::FilePath> current_paths_to_final_paths;
-    current_paths_to_final_paths[item_.GetTargetFilePath()] =
-        item_.GetFullPath();
+    current_paths_to_final_paths[item_.GetFullPath()] =
+        item_.GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
     for (size_t i = 0; i < secondary_files_.size(); ++i) {
-      current_paths_to_final_paths[secondary_files_targets_[i]] =
-          secondary_files_[i];
+      current_paths_to_final_paths[secondary_files_[i]] =
+          secondary_files_targets_[i];
 
       enterprise_connectors::ContentAnalysisResponse response_copy = response;
       response.set_request_token(
@@ -989,14 +989,14 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     base::flat_map<base::FilePath, base::FilePath> current_paths_to_final_paths;
-    current_paths_to_final_paths[item_.GetTargetFilePath()] =
-        item_.GetFullPath();
+    current_paths_to_final_paths[item_.GetFullPath()] =
+        item_.GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
     for (size_t i = 0; i < secondary_files_.size(); ++i) {
-      current_paths_to_final_paths[secondary_files_targets_[i]] =
-          secondary_files_[i];
+      current_paths_to_final_paths[secondary_files_[i]] =
+          secondary_files_targets_[i];
 
       enterprise_connectors::ContentAnalysisResponse response_copy = response;
       response_copy.set_request_token(
@@ -1061,16 +1061,16 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     base::flat_map<base::FilePath, base::FilePath> current_paths_to_final_paths;
-    current_paths_to_final_paths[item_.GetTargetFilePath()] =
-        item_.GetFullPath();
+    current_paths_to_final_paths[item_.GetFullPath()] =
+        item_.GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
     std::vector<enterprise_connectors::ContentAnalysisResponse::Result>
         expected_dlp_verdicts;
     for (size_t i = 0; i < secondary_files_.size(); ++i) {
-      current_paths_to_final_paths[secondary_files_targets_[i]] =
-          secondary_files_[i];
+      current_paths_to_final_paths[secondary_files_[i]] =
+          secondary_files_targets_[i];
 
       enterprise_connectors::ContentAnalysisResponse response_copy = response;
       response_copy.set_request_token(

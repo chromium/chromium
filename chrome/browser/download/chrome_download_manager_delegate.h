@@ -138,6 +138,10 @@ class ChromeDownloadManagerDelegate
       override;
   std::unique_ptr<download::DownloadItemRenameHandler>
   GetRenameHandlerForDownload(download::DownloadItem* download_item) override;
+  void CheckSavePackageAllowed(
+      download::DownloadItem* download_item,
+      base::flat_map<base::FilePath, base::FilePath> save_package_files,
+      content::SavePackageAllowedCallback callback) override;
 
   // Opens a download using the platform handler. DownloadItem::OpenDownload,
   // which ends up being handled by OpenDownload(), will open a download in the
@@ -166,6 +170,10 @@ class ChromeDownloadManagerDelegate
   // Callback function after the DownloadProtectionService completes.
   void CheckClientDownloadDone(uint32_t download_id,
                                safe_browsing::DownloadCheckResult result);
+
+  // Callback function after scanning completes for a save package.
+  void CheckSavePackageScanningDone(uint32_t download_id,
+                                    safe_browsing::DownloadCheckResult result);
 
   base::WeakPtr<ChromeDownloadManagerDelegate> GetWeakPtr();
 

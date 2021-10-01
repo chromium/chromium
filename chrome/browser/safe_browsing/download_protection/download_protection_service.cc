@@ -683,6 +683,22 @@ void DownloadProtectionService::UploadForDeepScanning(
   insertion_result.first->second->Start();
 }
 
+void DownloadProtectionService::UploadSavePackageForDeepScanning(
+    download::DownloadItem* item,
+    base::flat_map<base::FilePath, base::FilePath> save_package_files,
+    CheckDownloadRepeatingCallback callback,
+    enterprise_connectors::AnalysisSettings analysis_settings) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto request = std::make_unique<DeepScanningRequest>(
+      item, DownloadCheckResult::UNKNOWN, callback, this,
+      std::move(analysis_settings), std::move(save_package_files));
+  DeepScanningRequest* request_raw = request.get();
+  auto insertion_result = deep_scanning_requests_.insert(
+      std::make_pair(request_raw, std::move(request)));
+  DCHECK(insertion_result.second);
+  insertion_result.first->second->Start();
+}
+
 std::vector<DeepScanningRequest*>
 DownloadProtectionService::GetDeepScanningRequests() {
   std::vector<DeepScanningRequest*> requests;
