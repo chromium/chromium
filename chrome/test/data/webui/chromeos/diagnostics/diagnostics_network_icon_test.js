@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {ConnectionStateType, CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
+import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeEthernetNetwork, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -41,7 +41,7 @@ export function diagnosticsNetworkIconTestSuite() {
     });
   });
 
-  test('NetworkToNetworkStateAdapter', () => {
+  test('NetworkToNetworkStateAdapter_NetworkType', () => {
     assertEquals(
         CrosNetworkType.kEthernet,
         networkToNetworkStateAdapter(fakeEthernetNetwork).type);
@@ -51,5 +51,29 @@ export function diagnosticsNetworkIconTestSuite() {
     assertEquals(
         CrosNetworkType.kCellular,
         networkToNetworkStateAdapter(fakeCellularNetwork).type);
+  });
+
+  test('NetworkToNetworkStateAdapterTypes_ConnectionState', () => {
+    assertEquals(
+        ConnectionStateType.kOnline,
+        networkToNetworkStateAdapter(fakeEthernetNetwork).connectionState);
+    assertEquals(
+        ConnectionStateType.kConnected,
+        networkToNetworkStateAdapter(fakeCellularNetwork).connectionState);
+    assertEquals(
+        ConnectionStateType.kPortal,
+        networkToNetworkStateAdapter(fakePortalWifiNetwork).connectionState);
+    assertEquals(
+        ConnectionStateType.kConnecting,
+        networkToNetworkStateAdapter(fakeConnectingEthernetNetwork)
+            .connectionState);
+    // NotConnected states: Disabled, NotConnected.
+    assertEquals(
+        ConnectionStateType.kNotConnected,
+        networkToNetworkStateAdapter(fakeWifiNetworkDisabled).connectionState);
+    assertEquals(
+        ConnectionStateType.kNotConnected,
+        networkToNetworkStateAdapter(fakeDisconnectedEthernetNetwork)
+            .connectionState);
   });
 }

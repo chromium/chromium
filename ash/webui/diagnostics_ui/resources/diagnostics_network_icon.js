@@ -8,10 +8,17 @@ import './diagnostics_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Network, NetworkType} from './diagnostics_types.js';
+import {Network, NetworkState, NetworkType} from './diagnostics_types.js';
 
 /**
- * Type alias for network_config NetworkType.
+ * Type alias for network_config ConnectionStateType enum.
+ * @typedef {chromeos.networkConfig.mojom.ConnectionStateType}
+ */
+export let ConnectionStateType =
+    chromeos.networkConfig.mojom.ConnectionStateType;
+
+/**
+ * Type alias for network_config NetworkType enum.
  * @typedef {chromeos.networkConfig.mojom.NetworkType}
  */
 export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
@@ -19,9 +26,35 @@ export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
 /**
  * Struct for minimal required network state required to display network-icon
  * element.
- * @typedef {{type: !CrosNetworkType}}
+ * @typedef {{
+ *    connectionState: !ConnectionStateType,
+ *    type: !CrosNetworkType,
+ *   }}
  */
 export let NetworkIconNetworkState;
+
+/**
+ * @param {!NetworkState} state
+ * @return {!ConnectionStateType}
+ */
+function convertNetworkStateToCrosNetworkState(state) {
+  switch (state) {
+    case NetworkState.kOnline:
+      return ConnectionStateType.kOnline;
+    case NetworkState.kConnected:
+      return ConnectionStateType.kConnected;
+    case NetworkState.kPortal:
+      return ConnectionStateType.kPortal;
+    case NetworkState.kConnecting:
+      return ConnectionStateType.kConnecting;
+    case NetworkState.kNotConnected:
+    // kDisabled is a device state which is merged with kNotConnected.
+    case NetworkState.kDisabled:
+      return ConnectionStateType.kNotConnected;
+    default:
+      assertNotReached();
+  }
+}
 
 /**
  * @param {!NetworkType} type
@@ -47,8 +80,8 @@ function convertNetworkTypeToCrosNetworkType(type) {
  */
 export function networkToNetworkStateAdapter(network) {
   const type = convertNetworkTypeToCrosNetworkType(network.type);
-
-  return {type};
+  const connectionState = convertNetworkStateToCrosNetworkState(network.state);
+  return {connectionState, type};
 }
 
 /**
