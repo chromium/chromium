@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/strings/grit/chromeos_strings.h",
   "+components",
   "+ui/base",
+  "+ui/chromeos/strings",
   "+ui/events/ozone",
   "+ui/gfx",
   "+ui/resources",

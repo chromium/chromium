@@ -23,12 +23,31 @@ export function diagnosticsNetworkIconTestSuite() {
     diagnosticsNetworkIconElement = null;
   });
 
-  /** @return {!Promise} */
-  function initializeDiagnosticsNetworkIcon() {
+  /** @return {!NetworkIconElement} */
+  function getNetworkIcon() {
+    assertTrue(!!diagnosticsNetworkIconElement);
+
+    return diagnosticsNetworkIconElement.shadowRoot.querySelector(
+        '#networkIcon');
+  }
+
+  /** @return {!HTMLElement} */
+  function getPrimaryIcon() {
+    assertTrue(!!diagnosticsNetworkIconElement);
+
+    return getNetworkIcon().shadowRoot.querySelector('#icon');
+  }
+
+  /**
+   * @param {!Network} network
+   * @return {!Promise}
+   */
+  function initializeDiagnosticsNetworkIcon(network) {
     assertFalse(!!diagnosticsNetworkIconElement);
 
     diagnosticsNetworkIconElement =
         document.createElement('diagnostics-network-icon');
+    diagnosticsNetworkIconElement.network = network;
     assertTrue(!!diagnosticsNetworkIconElement);
     document.body.appendChild(diagnosticsNetworkIconElement);
 
@@ -36,8 +55,9 @@ export function diagnosticsNetworkIconTestSuite() {
   }
 
   test('DiagnosticsNetworkIcon', () => {
-    return initializeDiagnosticsNetworkIcon().then(() => {
-      assertTrue(isVisible(diagnosticsNetworkIconElement));
+    return initializeDiagnosticsNetworkIcon(fakeEthernetNetwork).then(() => {
+      assertTrue(getPrimaryIcon().classList.contains('ethernet'));
+      assertTrue(isVisible(getPrimaryIcon()));
     });
   });
 

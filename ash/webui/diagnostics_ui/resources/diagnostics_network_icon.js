@@ -98,6 +98,28 @@ export class DiagnosticsNetworkIconElement extends PolymerElement {
   static get template() {
     return html`{__html_template__}`
   }
+
+  static get properties() {
+    return {
+      /** @type {!Network} */
+      network: {
+        type: Object,
+      },
+    };
+  }
+
+  /**
+   * @protected
+   * @return {?NetworkIconNetworkState}
+   */
+  computeNetworkState_() {
+    // Block should only be entered when element is being initialized.
+    if (!this.network) {
+      return null;
+    }
+
+    return networkToNetworkStateAdapter(this.network);
+  }
 }
 
 customElements.define(

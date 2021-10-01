@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
@@ -348,6 +349,9 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source.get());
+  // Add localized strings required for network-icon.
+  ui::network_element::AddLocalizedStrings(html_source.get());
+  ui::network_element::AddOncLocalizedStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 

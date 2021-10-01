@@ -1,5 +1,7 @@
 <style include="cr-shared-style diagnostics-shared">
 </style>
-<div id="iconContainer">
-  <network-icon></network-icon>
+<div id="iconContainer" hidden$="[[!network]]">
+  <network-icon id="networkIcon"
+      network-state="[[computeNetworkState_(network.*)]]">
+  </network-icon>
 </div>

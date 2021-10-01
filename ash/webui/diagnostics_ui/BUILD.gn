@@ -22,6 +22,7 @@ static_library("diagnostics_ui") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
+    "//ui/chromeos/strings:strings_provider",
     "//ui/resources",
     "//ui/web_dialogs",
   ]
