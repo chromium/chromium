@@ -41,13 +41,6 @@ bool ShouldShowPlayPauseButton(const HTMLVideoElement& element) {
          element.duration() != std::numeric_limits<double>::infinity();
 }
 
-bool IsVideoElement(const Element& element) {
-  if (!element.IsMediaElement())
-    return false;
-
-  return IsA<HTMLVideoElement>(static_cast<const HTMLMediaElement&>(element));
-}
-
 }  // namespace
 
 // static
@@ -93,7 +86,7 @@ PictureInPictureController::Status
 PictureInPictureControllerImpl::VerifyElementAndOptions(
     const HTMLElement& element,
     const PictureInPictureOptions* options) const {
-  if (!IsVideoElement(element) && options) {
+  if (!IsA<HTMLVideoElement>(element) && options) {
     // If either the width or height is present then we should make sure they
     // are both present and valid.
     if (options->hasWidth() || options->hasHeight()) {
@@ -121,11 +114,9 @@ PictureInPictureControllerImpl::IsElementAllowed(const HTMLElement& element,
   if (status != Status::kEnabled)
     return status;
 
-  if (!IsVideoElement(element))
+  const auto* video_element = DynamicTo<HTMLVideoElement>(element);
+  if (!video_element)
     return Status::kEnabled;
-
-  const HTMLVideoElement* video_element =
-      static_cast<const HTMLVideoElement*>(&element);
 
   if (video_element->getReadyState() == HTMLMediaElement::kHaveNothing)
     return Status::kMetadataNotLoaded;
@@ -143,15 +134,14 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     HTMLElement* element,
     PictureInPictureOptions* options,
     ScriptPromiseResolver* resolver) {
-  if (!IsVideoElement(*element)) {
+  auto* video_element = DynamicTo<HTMLVideoElement>(*element);
+  if (!video_element) {
     // TODO(https://crbug.com/953957): Support element level pip.
     if (resolver)
       resolver->Resolve();
 
     return;
   }
-
-  HTMLVideoElement* video_element = static_cast<HTMLVideoElement*>(element);
 
   DCHECK(video_element->GetWebMediaPlayer());
   DCHECK(!options);
