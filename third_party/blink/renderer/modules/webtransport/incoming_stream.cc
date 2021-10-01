@@ -202,7 +202,18 @@ void IncomingStream::ProcessClose() {
     CloseAbortAndReset();
   }
 
-  ErrorStreamAbortAndReset(CreateAbortException(IsLocalAbort(false)));
+  ScriptValue error;
+  {
+    ScriptState::Scope scope(script_state_);
+    DOMExceptionCode code = DOMExceptionCode::kNetworkError;
+    String message =
+        String::Format("The stream was aborted by the remote server");
+
+    error = ScriptValue(script_state_->GetIsolate(),
+                        V8ThrowDOMException::CreateOrEmpty(
+                            script_state_->GetIsolate(), code, message));
+  }
+  ErrorStreamAbortAndReset(error);
 }
 
 void IncomingStream::ReadFromPipeAndEnqueue() {
@@ -257,21 +268,6 @@ void IncomingStream::EnqueueBytes(const void* source, uint32_t byte_length) {
   auto* buffer =
       DOMUint8Array::Create(static_cast<const uint8_t*>(source), byte_length);
   controller_->Enqueue(buffer);
-}
-
-ScriptValue IncomingStream::CreateAbortException(IsLocalAbort is_local_abort) {
-  DVLOG(1) << "IncomingStream::CreateAbortException() this=" << this
-           << " is_local_abort=" << static_cast<bool>(is_local_abort);
-
-  DOMExceptionCode code = is_local_abort ? DOMExceptionCode::kAbortError
-                                         : DOMExceptionCode::kNetworkError;
-  String message =
-      String::Format("The stream was aborted %s",
-                     is_local_abort ? "locally" : "by the remote server");
-
-  return ScriptValue(script_state_->GetIsolate(),
-                     V8ThrowDOMException::CreateOrEmpty(
-                         script_state_->GetIsolate(), code, message));
 }
 
 void IncomingStream::CloseAbortAndReset() {

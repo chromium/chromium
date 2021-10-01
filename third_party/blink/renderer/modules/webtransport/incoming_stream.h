@@ -79,8 +79,6 @@ class MODULES_EXPORT IncomingStream final
  private:
   class UnderlyingSource;
 
-  using IsLocalAbort = base::StrongAlias<class IsLocalAbortTag, bool>;
-
   // Called when |data_pipe_| becomes readable or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
 
@@ -100,11 +98,6 @@ class MODULES_EXPORT IncomingStream final
 
   // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
   void EnqueueBytes(const void* source, uint32_t byte_length);
-
-  // Creates a DOMException indicating that the stream has been aborted.
-  // If IsLocalAbort it true it will indicate a locally-initiated abort,
-  // otherwise it will indicate a server--initiated abort.
-  ScriptValue CreateAbortException(IsLocalAbort);
 
   // Closes |readable_|, and resets |data_pipe_|.
   void CloseAbortAndReset();
