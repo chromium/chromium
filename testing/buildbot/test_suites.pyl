@@ -6268,6 +6268,14 @@
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
+    'gpu_angle_mac_passthrough_telemetry_tests': [
+      'gpu_info_collection_telemetry_tests',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
+    ],
+
     'gpu_angle_mac_telemetry_tests': [
       'gpu_info_collection_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
@@ -6347,6 +6355,12 @@
       'gpu_webgl_conformance_telemetry_tests',
     ],
 
+    'gpu_common_gl_passthrough_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+    ],
+
     'gpu_common_linux_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
@@ -6410,16 +6424,16 @@
       'gpu_webgpu_integration_partial_backend_validation_isolated_scripts',
     ],
 
-    'gpu_desktop_linux_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_desktop_specific_gtests',
-    ],
-
     'gpu_desktop_mac_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
+      'gpu_desktop_specific_gtests',
+    ],
+
+    'gpu_desktop_passthrough_gtests': [
+      'gpu_angle_unit_gtests',
+      'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
     ],
 
@@ -6549,6 +6563,14 @@
       'gpu_swiftshader_gtests',
     ],
 
+    'gpu_fyi_mac_debug_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_validating_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_validating_telemetry_tests',
+    ],
+
     'gpu_fyi_mac_optional_gtests': [
       'gpu_angle_end2end_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
@@ -6599,6 +6621,17 @@
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+    ],
+
+    'gpu_fyi_optional_mac_passthrough_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_webcodecs_telemetry_test',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
     ],
 
     'gpu_fyi_optional_mac_telemetry_tests': [

@@ -3146,8 +3146,6 @@
       # The Mac NVIDIA Retina bots don't have the capacity to run
       # this test suite on mac_optional_gpu_tests_rel.
       'Optional Mac Retina Release (NVIDIA)',
-      # Only run passthrough on Mac AMD due to capacity http://crbug.com/1236796
-      'Optional Mac Retina Release (AMD)',
     ],
     'modifications': {
       # This VM configuration is known to be significantly slower than other

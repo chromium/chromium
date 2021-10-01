@@ -1269,7 +1269,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_common_gtests_passthrough',
-          'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_angle_mac_passthrough_telemetry_tests',
         },
       },
       'mac-angle-chromium-builder': {},
@@ -2121,7 +2121,7 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -2143,9 +2143,11 @@
           'limited_capacity_bot',
           'mac_retina_amd_gpu_experimental',
         ],
+        # Currently the experimental driver is identical to the stable
+        # driver. If it's upgraded, change these test_suites to be the same as
+        # 'Dawn Mac x64 Release (AMD)'.
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Dawn Mac x64 Experimental Release (Intel)': {
@@ -2167,7 +2169,7 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -3854,7 +3856,7 @@
           'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_linux_gtests',
+          'gtest_tests': 'gpu_desktop_passthrough_gtests',
           'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
         },
       },
@@ -3865,7 +3867,7 @@
           'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_linux_gtests',
+          'gtest_tests': 'gpu_desktop_passthrough_gtests',
           'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
         },
       },
@@ -3899,8 +3901,8 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gtest_tests': 'gpu_desktop_passthrough_gtests',
+          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_telemetry_tests',
         },
       },
       'Mac Retina Release (AMD)': {
@@ -3910,8 +3912,8 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gtest_tests': 'gpu_desktop_passthrough_gtests',
+          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_telemetry_tests',
           'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
         },
       },
@@ -4392,9 +4394,7 @@
         # driver. If it's upgraded, change these test_suites to be the same as
         # 'Mac FYI Retina Release (AMD)'.
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Mac FYI Experimental Retina Release (NVIDIA)': {
@@ -4467,7 +4467,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_debug_telemetry_tests',
         },
       },
       'Mac FYI Retina Debug (NVIDIA)': {
@@ -4589,7 +4589,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_optional_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_optional_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_optional_mac_passthrough_telemetry_tests',
         },
       },
       'Optional Mac Retina Release (NVIDIA)': {
@@ -5552,7 +5552,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          'mac_retina_amd_gpu_stable',
+          'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_swangle_telemetry_tests',
