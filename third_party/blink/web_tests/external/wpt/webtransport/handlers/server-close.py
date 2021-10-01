@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 from urllib.parse import urlsplit, parse_qsl
 
 
