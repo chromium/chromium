@@ -609,6 +609,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       const base::FilePath& path);
   static std::tuple<int64_t, int64_t> GetVolumeInfo(const base::FilePath& path);
 
+  bool is_db_disabled_for_testing() { return db_disabled_; }
+
   const bool is_incognito_;
   const base::FilePath profile_path_;
 

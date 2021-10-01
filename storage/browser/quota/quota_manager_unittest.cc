@@ -608,7 +608,9 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->SetQuotaChangeCallbackForTesting(std::move(cb));
   }
 
-  bool is_db_disabled() { return quota_manager_impl_->db_disabled_; }
+  bool is_db_disabled() {
+    return quota_manager_impl_->is_db_disabled_for_testing();
+  }
 
   void disable_quota_database(bool disable) {
     quota_manager_impl_->database_->SetDisabledForTesting(disable);
@@ -642,11 +644,6 @@ class QuotaManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   QuotaErrorOr<BucketInfo> bucket_;
   QuotaErrorOr<std::set<StorageKey>> storage_keys_;
-
-  static std::vector<QuotaClientType> AllClients() {
-    // TODO(pwnall): Implement using something other than an empty vector?
-    return {};
-  }
 
  private:
   base::Time IncrementMockTime() {
@@ -1093,7 +1090,7 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
                            blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kAppcache,
+  CreateAndRegisterClient(kData3, QuotaClientType::kServiceWorkerCache,
                           {blink::mojom::StorageType::kTemporary});
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kPerm);
@@ -1102,7 +1099,7 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
   EXPECT_EQ(80, usage());
   usage_breakdown_expected.fileSystem = 80;
   usage_breakdown_expected.webSql = 0;
-  usage_breakdown_expected.appcache = 0;
+  usage_breakdown_expected.serviceWorkerCache = 0;
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
@@ -1111,7 +1108,7 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
   EXPECT_EQ(1 + 4 + 8, usage());
   usage_breakdown_expected.fileSystem = 1;
   usage_breakdown_expected.webSql = 4;
-  usage_breakdown_expected.appcache = 8;
+  usage_breakdown_expected.serviceWorkerCache = 8;
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://bar.com/"), kTemp);
@@ -1120,7 +1117,7 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
   EXPECT_EQ(0, usage());
   usage_breakdown_expected.fileSystem = 0;
   usage_breakdown_expected.webSql = 0;
-  usage_breakdown_expected.appcache = 0;
+  usage_breakdown_expected.serviceWorkerCache = 0;
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 }
 
@@ -2885,7 +2882,7 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
+  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
                           {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
@@ -2907,7 +2904,7 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kAppcache});
+  DeleteBucketData(foo_bucket, {QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   task_environment_.RunUntilIdle();
@@ -2941,7 +2938,7 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
+  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
                           {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
@@ -2958,7 +2955,7 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
-  DeleteHostData("foo.com", kTemp, {QuotaClientType::kAppcache});
+  DeleteHostData("foo.com", kTemp, {QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   task_environment_.RunUntilIdle();
@@ -2992,7 +2989,7 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
+  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
                           {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
@@ -3015,7 +3012,7 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 4 - 1, usage());
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kAppcache,
+  DeleteBucketData(foo_bucket, {QuotaClientType::kServiceWorkerCache,
                                 QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
@@ -3038,7 +3035,7 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
+  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
                           {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
@@ -3049,8 +3046,9 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
   task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
-  DeleteHostData("foo.com", kTemp,
-                 {QuotaClientType::kFileSystem, QuotaClientType::kAppcache});
+  DeleteHostData(
+      "foo.com", kTemp,
+      {QuotaClientType::kFileSystem, QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   task_environment_.RunUntilIdle();
