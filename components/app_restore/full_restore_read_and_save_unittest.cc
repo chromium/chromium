@@ -44,7 +44,8 @@ constexpr int32_t kActivationIndex1 = 100;
 constexpr int32_t kActivationIndex2 = 101;
 
 constexpr int32_t kArcSessionId1 = 1;
-constexpr int32_t kArcSessionId2 = kArcSessionIdOffsetForRestoredLaunching + 1;
+constexpr int32_t kArcSessionId2 =
+    app_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
 
 constexpr int32_t kArcTaskId1 = 666;
 constexpr int32_t kArcTaskId2 = 888;
@@ -69,7 +70,7 @@ class FullRestoreReadHandlerTestApi {
       const FullRestoreReadHandlerTestApi&) = delete;
   ~FullRestoreReadHandlerTestApi() = default;
 
-  const ArcReadHandler* GetArcReadHander() const {
+  const app_restore::ArcReadHandler* GetArcReadHander() const {
     DCHECK(read_handler_);
     return read_handler_->arc_read_handler_.get();
   }
@@ -757,13 +758,12 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
 
   // Before OnTaskCreated is called, return |kArcTaskId1| for |kArcSessionId2|
   // to simulate the ghost window property setting.
-  EXPECT_EQ(kArcTaskId1,
-            full_restore::GetArcRestoreWindowIdForSessionId(kArcSessionId2));
+  EXPECT_EQ(kArcTaskId1, GetArcRestoreWindowIdForSessionId(kArcSessionId2));
 
   // Before OnTaskCreated is called, return -1 to add the ARC app window to the
   // hidden container.
-  EXPECT_EQ(kParentToHiddenContainer,
-            full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
+  EXPECT_EQ(app_restore::kParentToHiddenContainer,
+            GetArcRestoreWindowIdForTaskId(kArcTaskId2));
 
   // Call OnTaskCreated to simulate that the ARC app with |kAppId| has been
   // launched, and the new task id |kArcTaskId2| has been created with

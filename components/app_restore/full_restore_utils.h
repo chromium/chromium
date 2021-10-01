@@ -24,7 +24,7 @@ namespace base {
 class FilePath;
 }
 
-namespace full_restore {
+namespace app_restore {
 
 // For ARC session id, 1 ~ 1000000000 is used as the window id for all new app
 // launching. 1000000001 - INT_MAX is used as the session id for all restored
@@ -38,6 +38,10 @@ constexpr int32_t kArcSessionIdOffsetForRestoredLaunching = 1000000000;
 // If the ARC task is not created when the window is initialized, set the
 // restore window id as -1, to add the ARC app window to the hidden container.
 constexpr int32_t kParentToHiddenContainer = -1;
+
+}  // namespace app_restore
+
+namespace full_restore {
 
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(APP_RESTORE)

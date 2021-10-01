@@ -54,7 +54,7 @@ void ArcShelfSpinnerItemController::ItemSelected(
     const ItemFilterPredicate& filter_predicate) {
   if (window_info_ &&
       window_info_->window_id >
-          full_restore::kArcSessionIdOffsetForRestoredLaunching) {
+          app_restore::kArcSessionIdOffsetForRestoredLaunching) {
     ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(observed_profile_)
         ->full_restore_arc_app_launch_handler()
         ->LaunchApp(app_id());
@@ -118,5 +118,5 @@ void ArcShelfSpinnerItemController::OnArcPlayStoreEnabledChanged(bool enabled) {
 bool ArcShelfSpinnerItemController::IsCreatedByFullRestore() {
   return window_info_ &&
          window_info_->window_id >
-             full_restore::kArcSessionIdOffsetForRestoredLaunching;
+             app_restore::kArcSessionIdOffsetForRestoredLaunching;
 }

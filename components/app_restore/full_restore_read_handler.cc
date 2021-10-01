@@ -51,7 +51,7 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
     if (!arc_read_handler_)
       return;
 
-    if (window_id == kParentToHiddenContainer ||
+    if (window_id == app_restore::kParentToHiddenContainer ||
         arc_read_handler_->HasRestoreData(window_id)) {
       observed_windows_.AddObservation(window);
       arc_read_handler_->AddArcWindowCandidate(window);
@@ -413,8 +413,8 @@ void FullRestoreReadHandler::OnGetRestoreData(
         // Only ARC app launch parameters have event_flag.
         if (data_it->second->event_flag.has_value()) {
           if (!arc_read_handler_) {
-            arc_read_handler_ =
-                std::make_unique<ArcReadHandler>(profile_path, this);
+            arc_read_handler_ = std::make_unique<app_restore::ArcReadHandler>(
+                profile_path, this);
           }
           arc_read_handler_->AddRestoreData(app_id, window_id);
         } else {

@@ -1481,7 +1481,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   VerifyObserver(window1, /*launch_count=*/0, /*init_count=*/1);
   VerifyWindowProperty(window1, kTaskId2,
-                       ::full_restore::kParentToHiddenContainer,
+                       ::app_restore::kParentToHiddenContainer,
                        /*hidden=*/true);
 
   // Simulate creating the task for the ARC app window.
@@ -1489,7 +1489,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   VerifyObserver(window1, /*launch_count=*/0, /*init_count=*/1);
   VerifyWindowProperty(window1, kTaskId2,
-                       ::full_restore::kParentToHiddenContainer,
+                       ::app_restore::kParentToHiddenContainer,
                        /*hidden=*/false);
 
   int32_t session_id3 = 2;
@@ -1564,7 +1564,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   app_host()->OnTaskDestroyed(kTaskId1);
 
   int32_t session_id2 =
-      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
+      ::app_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
 
   // Create some desks so we can test that the exo window is placed in the
   // correct desk container after the task is created.
@@ -1587,7 +1587,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
   VerifyWindowProperty(window, kTaskId2,
-                       ::full_restore::kParentToHiddenContainer,
+                       ::app_restore::kParentToHiddenContainer,
                        /*hidden=*/true);
 
   // Simulate creating the task for the restored window.
@@ -1875,9 +1875,9 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   ForceLaunchApp(app_id2, kTaskId2);
 
   int32_t session_id3 =
-      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
+      ::app_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
   int32_t session_id4 =
-      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 2;
+      ::app_restore::kArcSessionIdOffsetForRestoredLaunching + 2;
 
   // Create the window to simulate the restoration for the app1. The task id
   // needs to match the |window_app_id| arg of CreateExoWindow.
@@ -1886,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   window1 = widget1->GetNativeWindow();
 
   VerifyWindowProperty(window1, kTaskId3,
-                       ::full_restore::kParentToHiddenContainer,
+                       ::app_restore::kParentToHiddenContainer,
                        /*hidden=*/true);
   EXPECT_EQ(pre_restore_bounds_1, window1->GetBoundsInScreen());
 

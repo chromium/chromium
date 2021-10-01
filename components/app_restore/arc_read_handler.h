@@ -17,12 +17,13 @@ namespace aura {
 class Window;
 }
 
+namespace full_restore {
+class FullRestoreReadHandlerTestApi;
+}
+
 namespace app_restore {
 struct AppLaunchInfo;
 struct WindowInfo;
-}  // namespace app_restore
-
-namespace full_restore {
 
 // ArcReadHandler is a helper class for a Delegate to read the app and window
 // info of ARC apps, which have special cases, e.g. ARC task creation, ARC
@@ -37,14 +38,14 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
 
     // Gets the app launch information from `profile_path` for `app_id` and
     // `restore_window_id`.
-    virtual std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchInfo(
+    virtual std::unique_ptr<AppLaunchInfo> GetAppLaunchInfo(
         const base::FilePath& profile_path,
         const std::string& app_id,
         int32_t restore_window_id) = 0;
 
     // Gets the window information from `profile_path` for `app_id` and
     // `restore_window_id`.
-    virtual std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
+    virtual std::unique_ptr<WindowInfo> GetWindowInfo(
         const base::FilePath& profile_path,
         const std::string& app_id,
         int32_t restore_window_id) = 0;
@@ -59,7 +60,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
     // This is called from `GetWindowInfo()` when a full restore window is
     // created, or from `arc_read_handler_` when a task is ready for a full
     // restore window that has already been created.
-    virtual void ApplyProperties(app_restore::WindowInfo* window_info,
+    virtual void ApplyProperties(WindowInfo* window_info,
                                  ui::PropertyHandler* property_handler) = 0;
   };
 
@@ -92,13 +93,11 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
 
   // Gets the ARC app launch information from the full restore file for `app_id`
   // and `session_id`.
-  std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
-      const std::string& app_id,
-      int32_t session_id);
+  std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
+                                                     int32_t session_id);
 
   // Gets the window information for |restore_window_id|.
-  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
-      int32_t restore_window_id);
+  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
 
   // Returns the restore window id for the ARC app's |task_id|.
   int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
@@ -115,7 +114,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   void SetArcSessionIdForWindowId(int32_t session_id, int32_t window_id);
 
  private:
-  friend class FullRestoreReadHandlerTestApi;
+  friend class full_restore::FullRestoreReadHandlerTestApi;
 
   // Removes AppRestoreData for |restore_window_id|.
   void RemoveAppRestoreData(int32_t restore_window_id);
@@ -131,7 +130,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // is saved in the window property |kRestoreWindowIdKey|.
   std::map<int32_t, std::string> window_id_to_app_id_;
 
-  int32_t session_id_ = full_restore::kArcSessionIdOffsetForRestoredLaunching;
+  int32_t session_id_ = kArcSessionIdOffsetForRestoredLaunching;
 
   // The map from the arc session id to the window id.
   std::map<int32_t, int32_t> session_id_to_window_id_;
@@ -154,6 +153,6 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   Delegate* delegate_;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_ARC_READ_HANDLER_H_

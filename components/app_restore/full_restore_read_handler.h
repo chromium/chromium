@@ -49,7 +49,7 @@ class FullRestoreFileHandler;
 class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
     : public aura::EnvObserver,
       public aura::WindowObserver,
-      public ArcReadHandler::Delegate,
+      public app_restore::ArcReadHandler::Delegate,
       public app_restore::AppRestoreArcInfo::Observer {
  public:
   // The callback function to get the restore data when the reading operation is
@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override;
 
-  // ArcReadHandler::Delegate:
+  // app_restore::ArcReadHandler::Delegate:
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchInfo(
       const base::FilePath& profile_path,
       const std::string& app_id,
@@ -199,7 +199,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
-  std::unique_ptr<ArcReadHandler> arc_read_handler_;
+  std::unique_ptr<app_restore::ArcReadHandler> arc_read_handler_;
 
   // Records whether we need to check the restore data for the profile path. If
   // the profile path is recorded, we should check the restore data. Otherwise,

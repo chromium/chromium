@@ -379,7 +379,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     // App launched by user rather than full restore.
     if (window_info &&
         window_info->window_id <=
-            full_restore::kArcSessionIdOffsetForRestoredLaunching) {
+            app_restore::kArcSessionIdOffsetForRestoredLaunching) {
       arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
     }
 

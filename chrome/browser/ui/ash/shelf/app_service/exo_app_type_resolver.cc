@@ -77,7 +77,7 @@ void ExoAppTypeResolver::PopulateProperties(
   out_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
                                        restore_window_id);
 
-  if (restore_window_id == full_restore::kParentToHiddenContainer) {
+  if (restore_window_id == app_restore::kParentToHiddenContainer) {
     out_properties_container.SetProperty(
         app_restore::kParentToHiddenContainerKey, true);
   }

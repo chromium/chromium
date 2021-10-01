@@ -96,7 +96,7 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
     // Check `session_id` to see whether this is a ghost window.
     int32_t session_id =
         window->GetProperty(app_restore::kGhostWindowSessionIdKey);
-    if (session_id < kArcSessionIdOffsetForRestoredLaunching) {
+    if (session_id < app_restore::kArcSessionIdOffsetForRestoredLaunching) {
       // If the task hasn't been created, and this is not a ghost window, add
       // `window` to `arc_window_candidates_` to wait for the task to be
       // created.
@@ -234,7 +234,7 @@ void ArcSaveHandler::OnTaskThemeColorUpdated(int32_t task_id,
 }
 
 int32_t ArcSaveHandler::GetArcSessionId() {
-  if (session_id_ >= kArcSessionIdOffsetForRestoredLaunching) {
+  if (session_id_ >= app_restore::kArcSessionIdOffsetForRestoredLaunching) {
     LOG(WARNING) << "ARC session id is too large: " << session_id_;
     session_id_ = 0;
   }
