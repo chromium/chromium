@@ -1874,22 +1874,6 @@
             ]
         }
     ],
-    "ChromeSharingHubClankV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeShareScreenshot"
-                    ],
-                    "min_os_version": "5.1"
-                }
-            ]
-        }
-    ],
     "ChromeStart": [
         {
             "platforms": [

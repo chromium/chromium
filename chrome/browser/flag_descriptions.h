@@ -1724,9 +1724,6 @@ extern const char kContinuousSearchDescription[];
 extern const char kChromeShareLongScreenshotName[];
 extern const char kChromeShareLongScreenshotDescription[];
 
-extern const char kChromeShareScreenshotName[];
-extern const char kChromeShareScreenshotDescription[];
-
 extern const char kChromeSharingHubLaunchAdjacentName[];
 extern const char kChromeSharingHubLaunchAdjacentDescription[];
 
