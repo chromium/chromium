@@ -1811,6 +1811,9 @@ message Extension {
 
   // True if the extension comes from web store.
   optional bool from_webstore = 13;
+
+  // Manifest version of the extension.
+  optional int32 manifest_version = 14;
 }
 
 // Plugin information.
