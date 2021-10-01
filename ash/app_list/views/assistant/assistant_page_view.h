@@ -13,6 +13,8 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +28,8 @@ class ViewShadow;
 // The Assistant page for the app list.
 class ASH_EXPORT AssistantPageView : public AppListPage,
                                      public AssistantControllerObserver,
-                                     public AssistantUiModelObserver {
+                                     public AssistantUiModelObserver,
+                                     public TabletModeObserver {
  public:
   METADATA_HEADER(AssistantPageView);
 
@@ -74,11 +77,16 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
 
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+
   // views::View:
   void OnThemeChanged() override;
 
  private:
   void InitLayout();
+  void UpdateBackground(bool in_tablet_mode);
   void MaybeUpdateAppListState(int child_height);
 
   AssistantViewDelegate* const assistant_view_delegate_;
@@ -92,6 +100,8 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 };
 
 }  // namespace ash

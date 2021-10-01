@@ -26,6 +26,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -68,6 +69,11 @@ int GetPreferredHeightForAppListState(AppListView* app_list_view) {
     default:
       return kMinHeightDip;
   }
+}
+
+bool IsInTabletMode() {
+  // Shell might not has an instance in tests.
+  return Shell::HasInstance() && Shell::Get()->IsInTabletMode();
 }
 
 // AssistantPageViewLayout -----------------------------------------------------
@@ -152,6 +158,9 @@ AssistantPageView::AssistantPageView(
 
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->AddObserver(this);
+
+  if (Shell::HasInstance())  // Shell might not has an instance in tests.
+    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 AssistantPageView::~AssistantPageView() {
@@ -421,9 +430,52 @@ void AssistantPageView::OnUiVisibilityChanged(
   }
 }
 
+void AssistantPageView::OnTabletModeStarted() {
+  UpdateBackground(/*in_tablet_mode=*/true);
+}
+
+void AssistantPageView::OnTabletModeEnded() {
+  UpdateBackground(/*in_tablet_mode=*/false);
+}
+
 void AssistantPageView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
+  UpdateBackground(IsInTabletMode());
+}
+
+void AssistantPageView::InitLayout() {
+  // Use a solid color layer. The color is set in OnThemeChanged().
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  layer()->SetFillsBoundsOpaquely(false);
+
+  view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
+  view_shadow_->SetRoundedCornerRadius(
+      kSearchBoxBorderCornerRadiusSearchResult);
+
+  SetLayoutManager(std::make_unique<AssistantPageViewLayout>(this));
+
+  // |assistant_view_delegate_| could be nullptr in test.
+  if (!assistant_view_delegate_)
+    return;
+
+  assistant_main_view_ = AddChildView(
+      std::make_unique<AssistantMainView>(assistant_view_delegate_));
+}
+
+void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
+  // Blur
+  if (features::IsProductivityLauncherEnabled() ||
+      (in_tablet_mode && features::IsDarkLightModeEnabled() &&
+       features::IsBackgroundBlurEnabled())) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  } else {
+    layer()->SetBackgroundBlur(0.0f);
+    layer()->SetBackdropFilterQuality(0.0f);
+  }
+
+  // Color
   if (features::IsProductivityLauncherEnabled()) {
     layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80));
@@ -440,30 +492,6 @@ void AssistantPageView::OnThemeChanged() {
   } else {
     layer()->SetColor(SK_ColorWHITE);
   }
-}
-
-void AssistantPageView::InitLayout() {
-  // Use a solid color layer. The color is set in OnThemeChanged().
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
-
-  if (features::IsProductivityLauncherEnabled()) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  }
-
-  view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
-  view_shadow_->SetRoundedCornerRadius(
-      kSearchBoxBorderCornerRadiusSearchResult);
-
-  SetLayoutManager(std::make_unique<AssistantPageViewLayout>(this));
-
-  // |assistant_view_delegate_| could be nullptr in test.
-  if (!assistant_view_delegate_)
-    return;
-
-  assistant_main_view_ = AddChildView(
-      std::make_unique<AssistantMainView>(assistant_view_delegate_));
 }
 
 void AssistantPageView::MaybeUpdateAppListState(int child_height) {

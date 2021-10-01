@@ -940,6 +940,9 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
 
   ShowAssistantUi();
 
+  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
+  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
+
   const U8CPU opacity = static_cast<U8CPU>(AppListView::kAppListOpacity * 255);
 
   // We pass kShield80 to ColorProvider::GetShieldLayerColor. But it will be
@@ -957,6 +960,17 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
             SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
                             ColorProvider::ShieldLayerType::kShield80),
                         opacity));
+
+  // Simulate the case where tablet mode is enabled in the middle of a session.
+  SetTabletMode(true);
+
+  // Unlike with-blur case, it does not get a background blur if the blur flag
+  // is off. But it gets 0.95 opacity.
+  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
+                            ColorProvider::ShieldLayerType::kShield80),
+                        opacity));
 }
 
 TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
@@ -966,6 +980,8 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
   ASSERT_TRUE(features::IsBackgroundBlurEnabled());
 
   ShowAssistantUi();
+  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
+  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
 
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
             ColorProvider::Get()->GetShieldLayerColor(
@@ -977,6 +993,15 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
             ColorProvider::Get()->GetShieldLayerColor(
                 ColorProvider::ShieldLayerType::kShield80));
+
+  // Simulate the case where tablet mode is enabled in the middle of a session.
+  SetTabletMode(true);
+  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(),
+                  ColorProvider::kBackgroundBlurSigma);
+
+  // Confirm that background blur is removed if it leaves tablet mode.
+  SetTabletMode(false);
+  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
 }
 
 // ProductivityLauncher only uses AssistantPageView in tablet mode. Clamshell
