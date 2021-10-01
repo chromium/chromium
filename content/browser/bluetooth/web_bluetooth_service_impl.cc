@@ -172,7 +172,7 @@ bool IsValidRequestScanOptions(
 }  // namespace
 
 // Parameters for a call to RemoteCharacteristicStartNotifications. Used to
-// defer notification starts when one is currently running for the sasme
+// defer notification starts when one is currently running for the same
 // characteristic instance.
 struct WebBluetoothServiceImpl::DeferredStartNotificationData {
   DeferredStartNotificationData(
@@ -1726,7 +1726,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
     return;
   }
 
-  // If |watch_advertismeents_callbacks_and_clients_| has more than one entry,
+  // If |watch_advertisements_callbacks_and_clients_| has more than one entry,
   // then it means that a previous watch advertisements operation has already
   // started a discovery session, so the |callback| and |client| for this
   // operation needs to be stored until the start discovery operation is
@@ -1798,7 +1798,7 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForWatchAdvertisements(
 
   watch_advertisements_callbacks_and_clients_.clear();
 
-  // If a client was disconncted while a discovery session was being started,
+  // If a client was disconnected while a discovery session was being started,
   // then there may not be any valid clients, so discovery should be stopped.
   MaybeStopDiscovery();
 }
