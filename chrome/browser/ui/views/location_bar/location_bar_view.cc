@@ -613,7 +613,7 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (chip_ && !ShouldShowKeywordBubble()) {
+  if (chip_ && chip_->GetVisible() && !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, edge_padding, chip_);
   }
