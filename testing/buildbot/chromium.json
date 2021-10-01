@@ -80,6 +80,21 @@
     ],
     "scripts": []
   },
+  "mac-arm64-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "args": [
+          "mac-release/sizes"
+        ],
+        "name": "checkbins",
+        "script": "checkbins.py",
+        "swarming": {}
+      }
+    ]
+  },
   "mac-official": {
     "additional_compile_targets": [
       "all"

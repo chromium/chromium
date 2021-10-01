@@ -56,11 +56,12 @@
       'mac-archive-tagged': 'official_optimize_goma',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64',
       'mac-arm64-archive-dbg': 'debug_bot_arm64',
+      'mac-arm64-archive-tagged': 'arm64_official_optimize_goma',
       'mac-official': 'official_optimize_goma',
       'win32-official': 'x86_official_optimize_goma',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-dbg': 'debug_bot_x86',
-      'win32-archive-tagged': 'official_optimize_goma',
+      'win32-archive-tagged': 'x86_official_optimize_goma',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression',
       'win-archive-dbg': 'debug_bot',
       'win-archive-tagged': 'official_optimize_goma',
@@ -1667,6 +1668,10 @@
 
     'asan_clang_shared_v8_heap_minimal_symbols_release_tot': [
       'asan', 'clang_tot', 'shared', 'v8_heap', 'minimal_symbols', 'release',
+    ],
+
+    'arm64_official_optimize_goma': [
+      'arm64', 'official_optimize_goma',
     ],
 
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release': [

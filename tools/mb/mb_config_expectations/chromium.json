@@ -105,6 +105,13 @@
       "use_goma": true
     }
   },
+  "mac-arm64-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "mac-official": {
     "gn_args": {
       "is_official_build": true,
@@ -164,6 +171,7 @@
   "win32-archive-tagged": {
     "gn_args": {
       "is_official_build": true,
+      "target_cpu": "x86",
       "use_goma": true
     }
   },
