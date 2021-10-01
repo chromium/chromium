@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This enum lists eviction reasons from the renderer.
+enum RendererEvictionReason {
+  // JavaScript execution ocurrs.
+  kJavaScriptExecution,
+  // Datapipe for reading network requests has been passed as bytes consumer.
+  kNetworkRequestDatapipeDrainedAsBytesConsumer,
+  // Network request is redirected.
+  kNetworkRequestRedirected,
+  // Network request is open for too long.
+  kNetworkRequestTimeout,
+  // Network request buffers too much data.
+  kNetworkExceedsBufferLimit,
+};

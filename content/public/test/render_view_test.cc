@@ -52,7 +52,7 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"

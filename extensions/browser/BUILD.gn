@@ -577,7 +577,6 @@ source_set("browser_sources") {
     "//skia",
     "//skia/public/mojom",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/mojom/frame",
     "//third_party/flatbuffers:flatbuffers",
     "//third_party/re2",
     "//third_party/zlib/google:zip",

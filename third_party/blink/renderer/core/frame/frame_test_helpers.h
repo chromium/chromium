@@ -50,6 +50,7 @@
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"

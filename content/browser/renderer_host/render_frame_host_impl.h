@@ -114,6 +114,7 @@
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"

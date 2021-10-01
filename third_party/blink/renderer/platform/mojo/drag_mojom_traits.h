@@ -16,11 +16,12 @@
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/data_transfer/data_transfer.mojom-shared.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom-shared.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
-#include "third_party/blink/public/mojom/page/drag.mojom-shared.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/renderer/platform/mojo/kurl_mojom_traits.h"
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -32,8 +33,8 @@ class WebVector;
 namespace mojo {
 
 template <>
-struct StructTraits<blink::mojom::DragItemStringDataView,
-                    blink::WebDragData::Item> {
+struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemStringDataView,
+                                    blink::WebDragData::Item> {
   static WTF::String string_type(blink::WebDragData::Item item);
   static WTF::String string_data(const blink::WebDragData::Item& item);
   static WTF::String title(const blink::WebDragData::Item& item);
@@ -44,8 +45,8 @@ struct StructTraits<blink::mojom::DragItemStringDataView,
 };
 
 template <>
-struct StructTraits<blink::mojom::DataTransferFileDataView,
-                    blink::WebDragData::Item> {
+struct PLATFORM_EXPORT StructTraits<blink::mojom::DataTransferFileDataView,
+                                    blink::WebDragData::Item> {
   static base::FilePath path(const blink::WebDragData::Item& item);
   static base::FilePath display_name(const blink::WebDragData::Item& item);
   static mojo::PendingRemote<
@@ -56,8 +57,8 @@ struct StructTraits<blink::mojom::DataTransferFileDataView,
 };
 
 template <>
-struct StructTraits<blink::mojom::DragItemBinaryDataView,
-                    blink::WebDragData::Item> {
+struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemBinaryDataView,
+                                    blink::WebDragData::Item> {
   static mojo_base::BigBuffer data(const blink::WebDragData::Item& item);
   static blink::KURL source_url(const blink::WebDragData::Item& item);
   static base::FilePath filename_extension(
@@ -68,8 +69,9 @@ struct StructTraits<blink::mojom::DragItemBinaryDataView,
 };
 
 template <>
-struct StructTraits<blink::mojom::DragItemFileSystemFileDataView,
-                    blink::WebDragData::Item> {
+struct PLATFORM_EXPORT
+    StructTraits<blink::mojom::DragItemFileSystemFileDataView,
+                 blink::WebDragData::Item> {
   static blink::KURL url(const blink::WebDragData::Item& item);
   static int64_t size(const blink::WebDragData::Item& item);
   static WTF::String file_system_id(const blink::WebDragData::Item& item);
@@ -78,7 +80,8 @@ struct StructTraits<blink::mojom::DragItemFileSystemFileDataView,
 };
 
 template <>
-struct UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item> {
+struct PLATFORM_EXPORT
+    UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item> {
   static const blink::WebDragData::Item& string(
       const blink::WebDragData::Item& item) {
     return item;
@@ -102,7 +105,8 @@ struct UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item> {
 };
 
 template <>
-struct StructTraits<blink::mojom::DragDataDataView, blink::WebDragData> {
+struct PLATFORM_EXPORT
+    StructTraits<blink::mojom::DragDataDataView, blink::WebDragData> {
   static blink::WebVector<blink::WebDragData::Item> items(
       const blink::WebDragData& drag_data);
   static WTF::String file_system_id(const blink::WebDragData& drag_data);

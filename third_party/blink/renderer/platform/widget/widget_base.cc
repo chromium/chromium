@@ -28,7 +28,7 @@
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/visual_properties.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/platform.h"

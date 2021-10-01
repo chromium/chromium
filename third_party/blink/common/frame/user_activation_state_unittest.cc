@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/frame/user_activation_state.h"
-#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,8 +43,7 @@ TEST_F(UserActivationStateTest, ConsumptionTest) {
   EXPECT_FALSE(user_activation_state.ConsumeIfActive());
   EXPECT_FALSE(user_activation_state.ConsumeIfActive());
 
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
 
   // After activation, both sticky and transient bits are set, and consumption
   // attempt succeeds once.
@@ -64,8 +63,7 @@ TEST_F(UserActivationStateTest, ConsumptionTest) {
 TEST_F(UserActivationStateTest, ExpirationTest) {
   UserActivationState user_activation_state;
 
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
 
   // Right before activation expiry, both bits remain set.
   AdvanceClock(base::TimeDelta::FromMilliseconds(4995));
@@ -81,8 +79,7 @@ TEST_F(UserActivationStateTest, ExpirationTest) {
 TEST_F(UserActivationStateTest, ClearingTest) {
   UserActivationState user_activation_state;
 
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
 
   EXPECT_TRUE(user_activation_state.HasBeenActive());
   EXPECT_TRUE(user_activation_state.IsActive());
@@ -97,33 +94,27 @@ TEST_F(UserActivationStateTest, ConsumptionPlusExpirationTest) {
   UserActivationState user_activation_state;
 
   // An activation is consumable before expiry.
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   AdvanceClock(base::TimeDelta::FromMilliseconds(900));
   EXPECT_TRUE(user_activation_state.ConsumeIfActive());
 
   // An activation is not consumable after expiry.
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   AdvanceClock(base::TimeDelta::FromSeconds(5));
   EXPECT_FALSE(user_activation_state.ConsumeIfActive());
 
   // Consecutive activations within expiry is consumable only once.
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   AdvanceClock(base::TimeDelta::FromMilliseconds(900));
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   EXPECT_TRUE(user_activation_state.ConsumeIfActive());
   EXPECT_FALSE(user_activation_state.ConsumeIfActive());
 
   // Non-consecutive activations within expiry is consumable separately.
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   EXPECT_TRUE(user_activation_state.ConsumeIfActive());
   AdvanceClock(base::TimeDelta::FromSeconds(900));
-  user_activation_state.Activate(
-      mojom::blink::UserActivationNotificationType::kTest);
+  user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   EXPECT_TRUE(user_activation_state.ConsumeIfActive());
 }
 

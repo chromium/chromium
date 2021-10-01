@@ -35,7 +35,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/page/drag.mojom.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_type.h"

@@ -56,6 +56,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"

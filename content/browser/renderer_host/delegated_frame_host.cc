@@ -24,7 +24,7 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/dip_util.h"

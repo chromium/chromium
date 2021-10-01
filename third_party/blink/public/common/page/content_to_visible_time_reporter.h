@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
 namespace gfx {
 struct PresentationFeedback;

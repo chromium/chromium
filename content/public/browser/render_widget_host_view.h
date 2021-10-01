@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/screen_info.h"

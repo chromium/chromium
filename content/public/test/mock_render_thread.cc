@@ -26,6 +26,7 @@
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/web/web_script_controller.h"
 
 namespace content {

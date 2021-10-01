@@ -164,6 +164,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"

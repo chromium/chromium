@@ -38,7 +38,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"

@@ -48,7 +48,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-test-utils.h"
-#include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom-test-utils.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display_switches.h"

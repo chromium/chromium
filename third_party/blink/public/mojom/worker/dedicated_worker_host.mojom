@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/frame/lifecycle.mojom";
-
 // Each dedicated worker has a corresponding host that is implemented in
 // the browser process.
 interface DedicatedWorkerHost {

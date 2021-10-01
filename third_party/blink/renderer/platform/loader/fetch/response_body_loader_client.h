@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESPONSE_BODY_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESPONSE_BODY_LOADER_CLIENT_H_
 
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
-
 namespace blink {
 
 // A ResponseBodyLoaderClient receives signals for loading a response body.

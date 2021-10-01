@@ -10,7 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/blink/public/mojom/data_transfer/data_transfer.mojom-forward.h"
-#include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 
 namespace content {
 class FileSystemAccessManagerImpl;

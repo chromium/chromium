@@ -35,7 +35,7 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-forward.h"

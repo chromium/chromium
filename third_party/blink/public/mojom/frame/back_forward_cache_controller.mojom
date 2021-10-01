@@ -4,20 +4,8 @@
 
 module blink.mojom;
 
-// This enum lists eviction reasons from the renderer.
-enum RendererEvictionReason {
-  // JavaScript execution ocurrs.
-  kJavaScriptExecution,
-  // Datapipe for reading network requests has been passed as bytes consumer.
-  kNetworkRequestDatapipeDrainedAsBytesConsumer,
-  // Network request is redirected.
-  kNetworkRequestRedirected,
-  // Network request is open for too long.
-  kNetworkRequestTimeout,
-  // Network request buffers too much data.
-  kNetworkExceedsBufferLimit,
-};
-//
+import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
+
 // This interface defines back-forward cache related methods that will be
 // invoked from the renderer process.
 //

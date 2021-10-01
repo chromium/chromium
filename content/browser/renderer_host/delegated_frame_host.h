@@ -24,7 +24,7 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"

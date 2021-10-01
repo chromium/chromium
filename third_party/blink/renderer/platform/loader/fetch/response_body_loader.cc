@@ -12,7 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"

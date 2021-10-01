@@ -60,7 +60,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/mojom/page/drag.mojom.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"

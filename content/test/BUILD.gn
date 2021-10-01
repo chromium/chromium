@@ -1461,7 +1461,6 @@ test("content_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public/mojom/frame",
     "//third_party/leveldatabase",
     "//third_party/mesa_headers",
     "//third_party/re2",

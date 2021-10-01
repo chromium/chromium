@@ -14,7 +14,6 @@
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
-#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/platform/input/input_handler_proxy.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"

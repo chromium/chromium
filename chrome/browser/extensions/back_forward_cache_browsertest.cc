@@ -21,7 +21,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-shared.h"
 
 namespace extensions {
 
