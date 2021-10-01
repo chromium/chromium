@@ -535,7 +535,7 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
     const GURL& web_app_hint_url) const {
 #if !defined(OS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::GetDeprecated(profile_);
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
     const absl::optional<web_app::AppId> app_id =
         web_app_provider->registrar().FindAppWithUrlInScope(web_app_hint_url);
