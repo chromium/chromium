@@ -68,16 +68,9 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
       identity, IdentityAvatarSize::DefaultLarge);
   icon_ = gfx::Image(CircularImageFromImage(image, image.size.width));
 
-  if (base::FeatureList::IsEnabled(
-          signin::kSigninNotificationInfobarUsernameInTitle)) {
-    title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
-        IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
-        base::SysNSStringToUTF16(identity.userGivenName)));
-  } else {
-    title_ = base::SysNSStringToUTF16(
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE));
-  }
-
+  title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
+      IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
+      base::SysNSStringToUTF16(identity.userGivenName)));
   message_ = base::SysNSStringToUTF16(identity.userEmail);
   button_text_ =
       base::SysNSStringToUTF16(l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE));

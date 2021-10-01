@@ -62,11 +62,6 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kLogBreadcrumbsName[];
 extern const char kLogBreadcrumbsDescription[];
 
-// Title and description for the flag that controls the sign-in notification
-// infobar title.
-extern const char kSigninNotificationInfobarUsernameInTitleName[];
-extern const char kSigninNotificationInfobarUsernameInTitleDescription[];
-
 // Title and description for the flag that controls synthetic crash reports
 // generation for Unexplained Termination Events.
 extern const char kSyntheticCrashReportsForUteName[];

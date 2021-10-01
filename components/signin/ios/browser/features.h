@@ -27,9 +27,6 @@ extern const char kDelayThresholdMinutesToUpdateGaiaCookie[];
 // waiting for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApi[];
 
-// Feature controlling whether to use full username in sign-in notifications.
-extern const base::Feature kSigninNotificationInfobarUsernameInTitle;
-
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_FEATURES_H_

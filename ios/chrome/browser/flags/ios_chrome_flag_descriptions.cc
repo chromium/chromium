@@ -266,12 +266,6 @@ const char kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
     "Only enable the upload of taps/views after satisfying conditions (e.g., "
     "user views X cards)";
 
-const char kSigninNotificationInfobarUsernameInTitleName[] =
-    "Sign-in notification infobar title";
-const char kSigninNotificationInfobarUsernameInTitleDescription[] =
-    "When enabled, uses the authenticated user's full name in the infobar "
-    "title.";
-
 const char kInProductHelpDemoModeName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeDescription[] =
     "When enabled, in-product help promotions occur exactly once per cold "

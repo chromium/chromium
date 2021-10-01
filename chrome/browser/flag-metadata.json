@@ -5416,11 +5416,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "use-username-for-signin-notification-infobar-title",
-    "owners": [ "fernandex", "chrome-signin-team" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "use-wallpaper-staging-url",
     "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
     // This flag is required for QA and dogfood testing.
