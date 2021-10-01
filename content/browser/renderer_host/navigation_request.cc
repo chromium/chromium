@@ -3755,7 +3755,7 @@ void NavigationRequest::OnStartChecksComplete(
           devtools_navigation_token(), frame_tree_node_->devtools_frame_token(),
           OriginPolicyThrottle::ShouldRequestOriginPolicy(common_params_->url),
           std::move(cors_exempt_headers), std::move(client_security_state),
-          devtools_accepted_stream_types),
+          devtools_accepted_stream_types, is_pdf_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
       this, loader_type, CreateCookieAccessObserver(),

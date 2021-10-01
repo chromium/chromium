@@ -42,7 +42,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       net::HttpRequestHeaders cors_exempt_headers,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const absl::optional<std::vector<net::SourceStream::SourceType>>&
-          devtools_accepted_stream_types);
+          devtools_accepted_stream_types,
+      bool is_pdf);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -98,6 +99,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // decoding any non-listed stream types.
   absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
+
+  // Indicates that this navigation is for PDF content in a renderer.
+  const bool is_pdf;
 };
 
 }  // namespace content

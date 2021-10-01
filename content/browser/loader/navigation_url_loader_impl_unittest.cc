@@ -220,7 +220,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             false /* obey_origin_policy */,
             net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
-            absl::nullopt /* devtools_accepted_stream_types */));
+            absl::nullopt /* devtools_accepted_stream_types */,
+            false /* is_pdf */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = absl::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(

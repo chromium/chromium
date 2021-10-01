@@ -705,6 +705,35 @@ INSTANTIATE_TEST_SUITE_P(
     PDFExtensionLoadTest,
     testing::Combine(testing::Range(0, kNumberLoadTestParts), testing::Bool()));
 
+using PDFExtensionBlobNavigationTest = PDFExtensionTest;
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, NewTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/pdf/blob_navigation_new_tab.html")));
+
+  // Calling `window.open` without a user gesture will be blocked by the popup
+  // blocker. `ExecJs()` emulates a user gesture which bypasses the restriction.
+  content::TestNavigationObserver navigation_observer(nullptr);
+  navigation_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "openBlobPdfInNewTab()"));
+  navigation_observer.Wait();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  WebContents* new_tab_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(new_tab_contents));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, SameTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(),
+      embedded_test_server()->GetURL("/pdf/blob_navigation_same_tab.html"),
+      /*number_of_navigations=*/2));
+  EXPECT_TRUE(
+      pdf_extension_test_util::EnsurePDFHasLoaded(GetActiveWebContents()));
+}
+
 class DownloadAwaiter : public content::DownloadManager::Observer {
  public:
   DownloadAwaiter() {}
@@ -3585,6 +3614,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTestWithPartialLoading);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionTestWithTestGuestViewManager);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionBlobNavigationTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);

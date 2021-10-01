@@ -389,10 +389,11 @@ void NavigationURLLoaderImpl::StartImpl(
     return;
   }
 
-  // Requests to Blob scheme won't get redirected to/from other schemes
-  // or be intercepted, so we just let it go here.
+  // Requests to Blob scheme won't get redirected to/from other schemes or be
+  // intercepted, so we just let it go here. PDF content is exempted to allow
+  // `PdfURLLoaderRequestInterceptor` to run (see crbug.com/1253314).
   if (request_info_->common_params->url.SchemeIsBlob() &&
-      request_info_->blob_url_loader_factory) {
+      request_info_->blob_url_loader_factory && !request_info_->is_pdf) {
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
         network::SharedURLLoaderFactory::Create(
             std::move(request_info_->blob_url_loader_factory)),

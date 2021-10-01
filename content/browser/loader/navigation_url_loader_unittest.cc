@@ -97,7 +97,8 @@ class NavigationURLLoaderTest : public testing::Test {
             false /* obey_origin_policy */,
             net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
-            absl::nullopt /* devtools_accepted_stream_types */));
+            absl::nullopt /* devtools_accepted_stream_types */,
+            false /* is_pdf */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, nullptr, delegate,
