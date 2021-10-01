@@ -4049,11 +4049,7 @@ void RenderFrameHostImpl::DidFocusFrame() {
               ChromeTrackEvent::kSiteInstance,
               *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
   // We don't handle this IPC signal for non-active RenderFrameHost.
-  //
-  // For RenderFrameHost in BackForwardCache, it is safe to ignore this IPC as
-  // there is a renderer side check (see Document::IsFocusedAllowed) which
-  // returns false.
-  if (lifecycle_state() != LifecycleStateImpl::kActive)
+  if (!IsActive())
     return;
 
   delegate_->SetFocusedFrame(frame_tree_node_, GetSiteInstance());

@@ -468,7 +468,9 @@ void RenderFrameProxyHost::DidFocusFrame() {
               *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
   RenderFrameHostImpl* render_frame_host =
       frame_tree_node_->current_frame_host();
-
+  // Do not focus inactive RenderFrameHost.
+  if (!render_frame_host->IsActive())
+    return;
   render_frame_host->delegate()->SetFocusedFrame(frame_tree_node_,
                                                  GetSiteInstance());
 }

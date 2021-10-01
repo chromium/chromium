@@ -574,6 +574,7 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
                 static_cast<SiteInstanceImpl*>(source)->WriteIntoTrace(
                     ctx.Wrap(event->set_site_instance()));
               });
+  CHECK(node->current_frame_host()->IsActive());
   if (node == GetFocusedFrame())
     return;
 

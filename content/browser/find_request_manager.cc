@@ -362,6 +362,9 @@ void FindRequestManager::SetActiveMatchOrdinal(RenderFrameHostImpl* rfh,
     // match is in, which should be in the |rfh|'s associated WebContents.
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+    // Do not focus inactive RenderFrameHost.
+    if (!rfh->IsActive())
+      return;
     web_contents->SetFocusedFrame(rfh->frame_tree_node(),
                                   rfh->GetSiteInstance());
   }

@@ -10182,6 +10182,74 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 }
 
+// Tests that trying to focus on a BFCached cross-site iframe won't crash.
+// See https://crbug.com/1250218.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       FocusSameSiteSubframeOnPagehide) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL main_url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to a page with a same-site iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+  EXPECT_EQ(rfh_1.get(), web_contents()->GetFocusedFrame());
+
+  // 2) Navigate away from the page while trying to focus the subframe on
+  // pagehide. The DidFocusFrame IPC should arrive after the page gets into
+  // BFCache and should be ignored by the browser. The focus after navigation
+  // should go to the new main frame.
+  EXPECT_TRUE(ExecJs(rfh_1.get(), R"(
+    window.onpagehide = function(e) {
+      document.getElementById("test_iframe").focus();
+  })"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url_2));
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  EXPECT_NE(rfh_1.get(), web_contents()->GetFocusedFrame());
+  EXPECT_EQ(current_frame_host(), web_contents()->GetFocusedFrame());
+
+  // 3) Navigate back to the page. The focus should be on the main frame.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_1.get(), web_contents()->GetFocusedFrame());
+  ExpectRestored(FROM_HERE);
+}
+
+// Tests that trying to focus on a BFCached cross-site iframe won't crash.
+// See https://crbug.com/1250218.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       FocusCrossSiteSubframeOnPagehide) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL main_url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to a page with a cross-site iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+  EXPECT_EQ(rfh_1.get(), web_contents()->GetFocusedFrame());
+
+  // 2) Navigate away from the page while trying to focus the subframe on
+  // pagehide. The DidFocusFrame IPC should arrive after the page gets into
+  // BFCache and should be ignored by the browser. The focus after navigation
+  // should go to the new main frame.
+  EXPECT_TRUE(ExecJs(rfh_1.get(), R"(
+    window.onpagehide = function(e) {
+      document.getElementById("child-0").focus();
+    })"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url_2));
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  EXPECT_NE(rfh_1.get(), web_contents()->GetFocusedFrame());
+
+  // 3) Navigate back to the page. The focus should be on the original page's
+  // main frame.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_1.get(), current_frame_host());
+  ExpectRestored(FROM_HERE);
+}
+
 // We should try to reuse process on same-site renderer-initiated navigations.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        RendererInitiatedSameSiteNavigationReusesProcess) {

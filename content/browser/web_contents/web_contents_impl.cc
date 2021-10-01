@@ -6939,6 +6939,10 @@ void WebContentsImpl::FocusOuterAttachmentFrameChain() {
 
   FrameTreeNode* outer_node =
       FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
+  if (!outer_node->current_frame_host()->IsActive()) {
+    // Don't set focus on an inactive FrameTreeNode.
+    return;
+  }
   outer_node->frame_tree()->SetFocusedFrame(outer_node, nullptr);
 
   // For a browser initiated focus change, let embedding renderer know of the
