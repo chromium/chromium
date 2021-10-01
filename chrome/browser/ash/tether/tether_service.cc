@@ -28,6 +28,9 @@
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
+namespace ash {
+namespace tether {
+
 namespace {
 
 constexpr int64_t kMetricFalsePositiveSeconds = 2;
@@ -657,3 +660,6 @@ void TetherService::SetTestDoubles(
   notification_presenter_ = std::move(notification_presenter);
   timer_ = std::move(timer);
 }
+
+}  // namespace tether
+}  // namespace ash

@@ -64,7 +64,7 @@ namespace settings {
 InternetHandler::InternetHandler(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
 
-  TetherService* tether_service = TetherService::Get(profile);
+  auto* tether_service = tether::TetherService::Get(profile);
   gms_core_notifications_state_tracker_ =
       tether_service ? tether_service->GetGmsCoreNotificationsStateTracker()
                      : nullptr;

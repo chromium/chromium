@@ -18,6 +18,9 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
+namespace ash {
+namespace tether {
+
 // Singleton factory that builds and owns all TetherServices.
 class TetherServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -42,5 +45,8 @@ class TetherServiceFactory : public BrowserContextKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsNULLWhileTesting() const override;
 };
+
+}  // namespace tether
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_FACTORY_H_

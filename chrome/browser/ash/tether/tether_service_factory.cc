@@ -23,6 +23,9 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/session_manager/core/session_manager.h"
 
+namespace ash {
+namespace tether {
+
 namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
@@ -50,9 +53,8 @@ TetherServiceFactory::TetherServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "TetherService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ash::device_sync::DeviceSyncClientFactory::GetInstance());
-  DependsOn(
-      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
+  DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
+  DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 }
 
 TetherServiceFactory::~TetherServiceFactory() {}
@@ -65,23 +67,21 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kTetherStub)) {
+  if (command_line->HasSwitch(switches::kTetherStub)) {
     FakeTetherService* fake_tether_service = new FakeTetherService(
         Profile::FromBrowserContext(context),
         chromeos::PowerManagerClient::Get(),
-        ash::device_sync::DeviceSyncClientFactory::GetForProfile(
+        device_sync::DeviceSyncClientFactory::GetForProfile(
             Profile::FromBrowserContext(context)),
-        ash::secure_channel::SecureChannelClientProvider::GetInstance()
-            ->GetClient(),
-        ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+        secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
+        multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             Profile::FromBrowserContext(context)),
         chromeos::NetworkHandler::Get()->network_state_handler(),
         session_manager::SessionManager::Get());
 
     int num_tether_networks = 0;
-    base::StringToInt(
-        command_line->GetSwitchValueASCII(chromeos::switches::kTetherStub),
-        &num_tether_networks);
+    base::StringToInt(command_line->GetSwitchValueASCII(switches::kTetherStub),
+                      &num_tether_networks);
     fake_tether_service->set_num_tether_networks(num_tether_networks);
 
     return fake_tether_service;
@@ -89,11 +89,10 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
 
   return new TetherService(
       Profile::FromBrowserContext(context), chromeos::PowerManagerClient::Get(),
-      ash::device_sync::DeviceSyncClientFactory::GetForProfile(
+      device_sync::DeviceSyncClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
-      ash::secure_channel::SecureChannelClientProvider::GetInstance()
-          ->GetClient(),
-      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+      secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
+      multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
       chromeos::NetworkHandler::Get()->network_state_handler(),
       session_manager::SessionManager::Get());
@@ -107,3 +106,6 @@ void TetherServiceFactory::RegisterProfilePrefs(
 bool TetherServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
+
+}  // namespace tether
+}  // namespace ash

@@ -1941,7 +1941,7 @@ void UserSessionManager::NotifyUserProfileLoaded(
 }
 
 void UserSessionManager::StartTetherServiceIfPossible(Profile* profile) {
-  TetherService* tether_service = TetherService::Get(profile);
+  auto* tether_service = tether::TetherService::Get(profile);
   if (tether_service)
     tether_service->StartTetherIfPossible();
 }

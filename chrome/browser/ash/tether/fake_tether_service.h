@@ -7,6 +7,9 @@
 
 #include "chrome/browser/ash/tether/tether_service.h"
 
+namespace ash {
+namespace tether {
+
 // A stub of TetherService that provides an easy way to develop for Tether on
 // non-Chromebooks or without a Tether host. To use, see
 // chromeos::switches::kTetherStub for more details.
@@ -40,5 +43,8 @@ class FakeTetherService : public TetherService {
  private:
   int num_tether_networks_ = 1;
 };
+
+}  // namespace tether
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_TETHER_FAKE_TETHER_SERVICE_H_

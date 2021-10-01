@@ -105,7 +105,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   secure_channel::NearbyConnectorFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
   ash::SyncedPrintersManagerFactory::GetInstance();
-  TetherServiceFactory::GetInstance();
+  ash::tether::TetherServiceFactory::GetInstance();
 }
 
 }  // namespace chromeos

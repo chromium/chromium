@@ -62,11 +62,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-using testing::Invoke;
-using testing::NiceMock;
-using testing::Return;
+namespace ash {
+namespace tether {
 
 namespace {
+
+using ::testing::Invoke;
+using ::testing::NiceMock;
 
 const char kTestUserPrivateKey[] = "kTestUserPrivateKey";
 const size_t kNumTestDevices = 5;
@@ -315,7 +317,7 @@ class TetherServiceTest : public testing::Test {
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 
-    fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
+    fake_chrome_user_manager_ = new FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_chrome_user_manager_));
 
@@ -535,7 +537,7 @@ class TetherServiceTest : public testing::Test {
 
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  ash::FakeChromeUserManager* fake_chrome_user_manager_;
+  FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
@@ -1310,3 +1312,6 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabledMultipleChanges) {
   VerifyLastShutdownReason(
       chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
 }
+
+}  // namespace tether
+}  // namespace ash

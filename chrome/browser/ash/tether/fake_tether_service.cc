@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ash/tether/fake_tether_service.h"
 
+namespace ash {
+namespace tether {
+
+namespace {
+
 constexpr char kTetherGuidPrefix[] = "tether-guid-";
 constexpr char kTetherNamePrefix[] = "tether";
 constexpr char kCarrier[] = "FakeCarrier";
+
+}  // namespace
 
 FakeTetherService::FakeTetherService(
     Profile* profile,
@@ -49,3 +56,6 @@ void FakeTetherService::StopTetherIfNecessary() {
 bool FakeTetherService::HasSyncedTetherHosts() const {
   return true;
 }
+
+}  // namespace tether
+}  // namespace ash
