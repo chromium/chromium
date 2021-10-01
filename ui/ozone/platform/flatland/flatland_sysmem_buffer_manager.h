@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_SYSMEM_BUFFER_MANAGER_H_
 
 #include <fuchsia/sysmem/cpp/fidl.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <unordered_map>
 

@@ -7,7 +7,7 @@
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/session.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/callback.h"
 #include "base/macros.h"
