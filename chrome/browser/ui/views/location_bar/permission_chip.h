@@ -55,7 +55,6 @@ class PermissionChip : public views::AccessiblePaneView,
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void AddedToWidget() override;
-  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
