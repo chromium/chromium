@@ -25,6 +25,8 @@ struct BatteryInfo {
   BatteryInfo& operator=(BatteryInfo&&);
   ~BatteryInfo();
 
+  static absl::optional<BatteryInfo> FromByte(uint8_t byte);
+
   bool is_charging = false;
   absl::optional<int8_t> percentage;
 };
@@ -42,6 +44,10 @@ struct BatteryNotification {
   BatteryNotification& operator=(const BatteryNotification&);
   BatteryNotification& operator=(BatteryNotification&&);
   ~BatteryNotification();
+
+  static absl::optional<BatteryNotification> FromBytes(
+      const std::vector<uint8_t>& bytes,
+      bool show_ui);
 
   bool show_ui = false;
   BatteryInfo left_bud_info;

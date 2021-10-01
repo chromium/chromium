@@ -22,7 +22,7 @@ struct NotDiscoverableAdvertisement {
       std::vector<uint8_t> account_key_filter,
       bool show_ui,
       uint8_t salt,
-      absl::optional<BatteryNotification> battery_notification = absl::nullopt);
+      absl::optional<BatteryNotification> battery_notification);
   NotDiscoverableAdvertisement(const NotDiscoverableAdvertisement&);
   NotDiscoverableAdvertisement(NotDiscoverableAdvertisement&&);
   NotDiscoverableAdvertisement& operator=(const NotDiscoverableAdvertisement&);

@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+#include <vector>
+
 #include "ash/services/quick_pair/public/cpp/battery_notification.h"
+
+#include "base/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
+
+constexpr int kBatteryChargingMask = 0b10000000;
+constexpr int kBatteryPercentageMask = 0b01111111;
 
 BatteryInfo::BatteryInfo() = default;
 
@@ -25,6 +33,24 @@ BatteryInfo& BatteryInfo::operator=(const BatteryInfo&) = default;
 BatteryInfo& BatteryInfo::operator=(BatteryInfo&&) = default;
 
 BatteryInfo::~BatteryInfo() = default;
+
+// static
+absl::optional<BatteryInfo> BatteryInfo::FromByte(uint8_t byte) {
+  // Battery value is in the form 0bSVVVVVVV.
+  // S = charinging (0b1) or not (0b0).
+  // V = value, Ranges from 0-100, or 0bS1111111 if unknown.
+  bool is_charging = byte & kBatteryChargingMask;
+  uint8_t percentage = byte & kBatteryPercentageMask;
+  int8_t percentage_signed = static_cast<int8_t>(percentage);
+
+  if (percentage == kBatteryPercentageMask || percentage_signed < 0 ||
+      percentage_signed > 100) {
+    LOG(WARNING) << "Invalid battery percentage.";
+    return absl::make_optional<BatteryInfo>(is_charging);
+  } else {
+    return absl::make_optional<BatteryInfo>(is_charging, percentage_signed);
+  }
+}
 
 BatteryNotification::BatteryNotification() = default;
 
@@ -48,6 +74,40 @@ BatteryNotification& BatteryNotification::operator=(BatteryNotification&&) =
     default;
 
 BatteryNotification::~BatteryNotification() = default;
+
+// static
+absl::optional<BatteryNotification> BatteryNotification::FromBytes(
+    const std::vector<uint8_t>& bytes,
+    bool show_ui) {
+  // Expecting 3 bytes - Left bud, Right bud and case.
+  if (bytes.size() != 3) {
+    LOG(WARNING) << __func__
+                 << ": Invalid bytes length. Expected 3, got: " << bytes.size();
+    return absl::nullopt;
+  }
+
+  absl::optional<BatteryInfo> left_bud_info = BatteryInfo::FromByte(bytes[0]);
+  if (!left_bud_info) {
+    LOG(WARNING) << __func__ << ": Failed to parse the left bud info.";
+    return absl::nullopt;
+  }
+
+  absl::optional<BatteryInfo> right_bud_info = BatteryInfo::FromByte(bytes[1]);
+  if (!right_bud_info) {
+    LOG(WARNING) << __func__ << ": Failed to parse the right bud info.";
+    return absl::nullopt;
+  }
+
+  absl::optional<BatteryInfo> case_info = BatteryInfo::FromByte(bytes[2]);
+  if (!case_info) {
+    LOG(WARNING) << __func__ << ": Failed to parse the case info.";
+    return absl::nullopt;
+  }
+
+  return absl::make_optional<BatteryNotification>(
+      show_ui, left_bud_info.value(), right_bud_info.value(),
+      case_info.value());
+}
 
 }  // namespace quick_pair
 }  // namespace ash

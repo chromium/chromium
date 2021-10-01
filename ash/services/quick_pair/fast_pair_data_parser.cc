@@ -11,6 +11,7 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/services/quick_pair/fast_pair_decryption.h"
+#include "ash/services/quick_pair/public/cpp/battery_notification.h"
 #include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "base/containers/flat_map.h"
@@ -28,6 +29,8 @@ constexpr int kFieldLengthOffset = 4;
 constexpr int kFieldTypeAccountKeyFilter = 0;
 constexpr int kFieldTypeAccountKeyFilterSalt = 1;
 constexpr int kFieldTypeAccountKeyFilterNoNotification = 2;
+constexpr int kFieldTypeBattery = 3;
+constexpr int kFieldTypeBatteryNoNotification = 4;
 
 bool ValidateInputSizes(const std::vector<uint8_t>& aes_key_bytes,
                         const std::vector<uint8_t>& encrypted_bytes) {
@@ -174,6 +177,18 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
                    &salt_bytes);
   }
 
+  std::vector<uint8_t> battery_bytes;
+  bool show_ui_for_battery = false;
+  if (field_indices.contains(kFieldTypeBattery)) {
+    CopyFieldBytes(service_data, field_indices, kFieldTypeBattery,
+                   &battery_bytes);
+    show_ui_for_battery = true;
+  } else if (field_indices.contains(kFieldTypeBatteryNoNotification)) {
+    CopyFieldBytes(service_data, field_indices, kFieldTypeBatteryNoNotification,
+                   &battery_bytes);
+    show_ui_for_battery = false;
+  }
+
   if (account_key_filter_bytes.empty()) {
     std::move(callback).Run(absl::nullopt);
   } else if (salt_bytes.size() != 1) {
@@ -182,7 +197,10 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
     std::move(callback).Run(absl::nullopt);
   } else {
     std::move(callback).Run(NotDiscoverableAdvertisement(
-        std::move(account_key_filter_bytes), show_ui, salt_bytes[0]));
+        std::move(account_key_filter_bytes), show_ui, salt_bytes[0],
+        battery_bytes.size() == 3
+            ? BatteryNotification::FromBytes(battery_bytes, show_ui_for_battery)
+            : absl::nullopt));
   }
 }
 

@@ -23,6 +23,7 @@ source_set("cpp") {
   ]
 
   deps = [
+    "//base",
     "//crypto",
     "//third_party/abseil-cpp:absl",
   ]
