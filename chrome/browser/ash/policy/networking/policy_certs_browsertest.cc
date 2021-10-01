@@ -68,10 +68,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/test/test_background_page_ready_observer.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
@@ -919,18 +919,22 @@ class PolicyProvidedCertsForSigninExtensionTest
     signin_profile_ = GetInitialProfile();
     ASSERT_TRUE(chromeos::ProfileHelper::IsSigninProfile(signin_profile_));
 
-    extensions::ExtensionBackgroundPageReadyObserver extension_1_observer(
+    extensions::ExtensionHostTestHelper extension_1_observer(
         signin_profile_, kSigninScreenExtension1);
-    extensions::ExtensionBackgroundPageReadyObserver extension_2_observer(
+    extension_1_observer.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
+    extensions::ExtensionHostTestHelper extension_2_observer(
         signin_profile_, kSigninScreenExtension2);
+    extension_2_observer.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
 
     AddExtensionForForceInstallation(kSigninScreenExtension1,
                                      kSigninScreenExtension1UpdateManifestPath);
     AddExtensionForForceInstallation(kSigninScreenExtension2,
                                      kSigninScreenExtension2UpdateManifestPath);
 
-    extension_1_observer.Wait();
-    extension_2_observer.Wait();
+    extension_1_observer.WaitForHostCompletedFirstLoad();
+    extension_2_observer.WaitForHostCompletedFirstLoad();
   }
 
   content::StoragePartition* GetStoragePartitionForSigninExtension(
