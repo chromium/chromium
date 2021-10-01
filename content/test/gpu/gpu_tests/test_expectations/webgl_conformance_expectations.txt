@@ -476,14 +476,14 @@ crbug.com/844311 [ mac no-swiftshader-gl ] conformance/glsl/misc/fragcolor-fragd
 
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
-crbug.com/929009 [ mac amd release-x64 ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
+crbug.com/929009 [ mac amd release-x64 angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-disabled ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-opengl ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-metal ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1230781 [ mac amd-0x6821 ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1236072 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-crbug.com/1227774 [ mac amd debug-x64 ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/1227774 [ mac amd debug-x64 angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
@@ -524,6 +524,9 @@ crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/asin/asin_001_to_006.html [ Failure ]
 crbug.com/1227129 [ mac angle-metal passthrough ] conformance/glsl/misc/ternary-operators-in-initializers.html [ Failure ]
 crbug.com/1227767 [ bigsur angle-metal passthrough ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
+crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
+crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_017_to_024.html [ Failure ]
+crbug.com/angleproject/6486 [ mac angle-metal passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
 
 # Mac / Passthrough command decoder / Metal / Intel
 crbug.com/1144258 [ mac angle-metal passthrough intel-0x3e9b ] conformance/glsl/functions/glsl-function-atan-xy.html [ Failure ]
