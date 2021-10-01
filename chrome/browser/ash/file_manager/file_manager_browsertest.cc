@@ -339,16 +339,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("audioOpenDownloads").InGuestMode(),
                       TestCase("audioOpenDownloads"),
                       TestCase("audioOpenDrive"),
-                      TestCase("audioAutoAdvanceDrive"),
                       TestCase("audioRepeatAllModeSingleFileDrive"),
                       TestCase("audioNoRepeatModeSingleFileDrive"),
                       TestCase("audioRepeatOneModeSingleFileDrive"),
-                      TestCase("audioRepeatAllModeMultipleFileDrive"),
                       TestCase("audioNoRepeatModeMultipleFileDrive")
                       // Disable flaky test, crbug.com/1254831
                       // TestCase("audioOpenCloseDownloads"),
                       // TestCase("audioOpenCloseDownloads").InGuestMode(),
                       // TestCase("audioRepeatOneModeMultipleFileDrive"),
+                      // TestCase("audioAutoAdvanceDrive"),
+                      // TestCase("audioRepeatAllModeMultipleFileDrive"),
                       ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
