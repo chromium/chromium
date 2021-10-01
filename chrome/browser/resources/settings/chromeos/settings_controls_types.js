@@ -54,3 +54,9 @@ let DropdownMenuOption;
  * @typedef {!Array<!DropdownMenuOption>}
  */
 let DropdownMenuOptionList;
+
+/** @interface */
+function SettingsPrefsElement() {}
+
+/** @param {string} key */
+SettingsPrefsElement.prototype.refresh = function(key) {};

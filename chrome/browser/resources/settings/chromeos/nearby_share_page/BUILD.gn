@@ -59,8 +59,6 @@ js_library("nearby_share_data_usage_dialog.m") {
   deps = [
     ":types.m",
     "..:prefs_behavior",
-    "../../prefs:prefs",
-    "../../prefs:prefs_types",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
@@ -141,8 +139,6 @@ js_library("nearby_share_subpage.m") {
     "..:os_route.m",
     "..:prefs_behavior",
     "../..:router",
-    "../../prefs:prefs",
-    "../../prefs:prefs_types",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",

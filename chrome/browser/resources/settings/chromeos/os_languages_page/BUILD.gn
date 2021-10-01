@@ -42,8 +42,6 @@ js_library("languages") {
     ":languages_browser_proxy",
     ":languages_types",
     "..:prefs_behavior",
-    "../../prefs:prefs",
-    "../../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -137,7 +135,6 @@ js_library("input_method_options_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_options_page.m.js" ]
   deps = [
     ":input_method_util.m",
-    "../../prefs:prefs",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":input_method_options_page_module" ]

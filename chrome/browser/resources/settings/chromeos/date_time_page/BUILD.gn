@@ -49,7 +49,6 @@ js_library("timezone_selector") {
   deps = [
     ":timezone_browser_proxy",
     "..:prefs_behavior",
-    "../../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]

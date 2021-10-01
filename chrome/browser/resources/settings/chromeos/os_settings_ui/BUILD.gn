@@ -21,7 +21,6 @@ js_library("os_settings_ui.m") {
     "..:os_route.m",
     "..:pref_to_setting_metric_converter.m",
     "../..:router",
-    "../../prefs:prefs",
     "../os_settings_main:os_settings_main",
     "../os_toolbar:os_toolbar",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -33,6 +32,7 @@ js_library("os_settings_ui.m") {
     "//ui/webui/resources/js:util.m",
   ]
   extra_deps = [ ":os_settings_ui_module" ]
+  externs_list = [ "../settings_controls_types.js" ]
 }
 
 group("polymer3_elements") {
@@ -44,9 +44,6 @@ polymer_modulizer("os_settings_ui") {
   html_file = "os_settings_ui.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports + [
-                   "ui/webui/resources/cr_elements/cr_drawer/cr_drawer.html|CrDrawerElement",
-                   "chrome/browser/resources/settings/prefs/prefs.html|SettingsPrefsElement",
-                 ]
+  auto_imports = os_settings_auto_imports + [ "ui/webui/resources/cr_elements/cr_drawer/cr_drawer.html|CrDrawerElement" ]
   namespace_rewrites = os_settings_namespace_rewrites
 }
