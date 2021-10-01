@@ -264,6 +264,10 @@ public final class EventConstants {
     public static final String IPH_SHARED_HIGHLIGHTING_BUTTON_CLICKED =
             "iph_shared_highlighting_button_clicked";
 
+    /** Webnotes Stylize feature used from Sharing Hub */
+    public static final String SHARING_HUB_WEBNOTES_STYLIZE_USED =
+            "sharing_hub_webnotes_stylize_used";
+
     /**
      * Do not instantiate.
      */

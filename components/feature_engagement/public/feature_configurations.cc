@@ -423,6 +423,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 7, 360));
     return config;
   }
+
+  if (kIPHSharingHubWebnotesStylizeFeature.name == feature->name) {
+    // A config that allows the Webnotes Stylize IPH to be shown up to 6 times,
+    // but only if the feature home hasn't been used in the last 360 days.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("sharing_hub_webnotes_stylize_iph_trigger",
+                                  Comparator(LESS_THAN, 6), 360, 360);
+    config->used = EventConfig("sharing_hub_webnotes_stylize_used",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
 #endif  // defined(OS_ANDROID)
 
   if (kIPHDummyFeature.name == feature->name) {
