@@ -53,7 +53,9 @@ interpolation_test('translateZ(50px)', 'translateX(50px)', 'translate3d(25px, 0p
 interpolation_test('translateZ(-50px)','translateZ(50px)', 'translateZ(0px)');
 interpolation_test('translate(0%)', 'translate(50%)', 'translate(25%)');
 interpolation_test('translate(50%)', 'translate(100%, 50%)', 'translate(75%, 25%)');
+interpolation_test('translate(0%, 50%)', 'translate(50%, 100%)', 'translate(25%, 75%)');
 interpolation_test('translate3d(0,0,-50px)','translateZ(50px)', 'translate3d(0px, 0px, 0px)');
+interpolation_test('translate(50px, 0px)', 'translate(100px, 0px)', 'translate(75px)')
 
 interpolation_test('rotate(30deg)', 'rotate(90deg)', 'rotate(60deg)');
 interpolation_test('rotateZ(30deg)', 'rotateZ(90deg)', 'rotateZ(60deg)');

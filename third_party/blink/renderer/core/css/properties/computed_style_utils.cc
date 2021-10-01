@@ -1799,6 +1799,40 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformationMatrix(
   }
 }
 
+CSSValueID ComputedStyleUtils::CSSValueIDForScaleOperation(
+    const TransformOperation::OperationType type) {
+  switch (type) {
+    case TransformOperation::kScaleX:
+      return CSSValueID::kScaleX;
+    case TransformOperation::kScaleY:
+      return CSSValueID::kScaleY;
+    case TransformOperation::kScaleZ:
+      return CSSValueID::kScaleZ;
+    case TransformOperation::kScale3D:
+      return CSSValueID::kScale3d;
+    default:
+      DCHECK(type == TransformOperation::kScale);
+      return CSSValueID::kScale;
+  }
+}
+
+CSSValueID ComputedStyleUtils::CSSValueIDForTranslateOperation(
+    const TransformOperation::OperationType type) {
+  switch (type) {
+    case TransformOperation::kTranslateX:
+      return CSSValueID::kTranslateX;
+    case TransformOperation::kTranslateY:
+      return CSSValueID::kTranslateY;
+    case TransformOperation::kTranslateZ:
+      return CSSValueID::kTranslateZ;
+    case TransformOperation::kTranslate3D:
+      return CSSValueID::kTranslate3d;
+    default:
+      DCHECK(type == TransformOperation::kTranslate);
+      return CSSValueID::kTranslate;
+  }
+}
+
 // We collapse functions like translateX into translate, since we will reify
 // them as a translate anyway.
 CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
@@ -1812,14 +1846,21 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
     case TransformOperation::kScale:
     case TransformOperation::kScale3D: {
       const auto& scale = To<ScaleTransformOperation>(operation);
-      CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(
-          operation.Is3DOperation() ? CSSValueID::kScale3d
-                                    : CSSValueID::kScale);
-      result->Append(*CSSNumericLiteralValue::Create(
-          scale.X(), CSSPrimitiveValue::UnitType::kNumber));
-      result->Append(*CSSNumericLiteralValue::Create(
-          scale.Y(), CSSPrimitiveValue::UnitType::kNumber));
-      if (operation.Is3DOperation()) {
+
+      CSSValueID id = CSSValueIDForScaleOperation(operation.GetType());
+
+      CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(id);
+      if (id == CSSValueID::kScaleX || id == CSSValueID::kScale ||
+          id == CSSValueID::kScale3d) {
+        result->Append(*CSSNumericLiteralValue::Create(
+            scale.X(), CSSPrimitiveValue::UnitType::kNumber));
+      }
+      if (id == CSSValueID::kScaleY || id == CSSValueID::kScale ||
+          id == CSSValueID::kScale3d) {
+        result->Append(*CSSNumericLiteralValue::Create(
+            scale.Y(), CSSPrimitiveValue::UnitType::kNumber));
+      }
+      if (id == CSSValueID::kScale3d || id == CSSValueID::kScaleZ) {
         result->Append(*CSSNumericLiteralValue::Create(
             scale.Z(), CSSPrimitiveValue::UnitType::kNumber));
       }
@@ -1831,12 +1872,21 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
     case TransformOperation::kTranslate:
     case TransformOperation::kTranslate3D: {
       const auto& translate = To<TranslateTransformOperation>(operation);
-      CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(
-          operation.Is3DOperation() ? CSSValueID::kTranslate3d
-                                    : CSSValueID::kTranslate);
-      result->Append(*CSSPrimitiveValue::CreateFromLength(translate.X(), zoom));
-      result->Append(*CSSPrimitiveValue::CreateFromLength(translate.Y(), zoom));
-      if (operation.Is3DOperation()) {
+
+      CSSValueID id = CSSValueIDForTranslateOperation(operation.GetType());
+
+      CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(id);
+      if (id == CSSValueID::kTranslateX || id == CSSValueID::kTranslate ||
+          id == CSSValueID::kTranslate3d) {
+        result->Append(
+            *CSSPrimitiveValue::CreateFromLength(translate.X(), zoom));
+      }
+      if (id == CSSValueID::kTranslateY || id == CSSValueID::kTranslate ||
+          id == CSSValueID::kTranslate3d) {
+        result->Append(
+            *CSSPrimitiveValue::CreateFromLength(translate.Y(), zoom));
+      }
+      if (id == CSSValueID::kTranslate3d || id == CSSValueID::kTranslateZ) {
         // Since this is pixel length, we must unzoom (CreateFromLength above
         // does the division internally).
         result->Append(*CSSNumericLiteralValue::Create(

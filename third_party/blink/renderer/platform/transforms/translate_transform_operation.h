@@ -114,6 +114,10 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     DCHECK(IsMatchingOperationType(type));
   }
 
+  void CommonPrimitiveForInterpolation(
+      const TransformOperation* from,
+      TransformOperation::OperationType& common_type) const;
+
   bool HasNonTrivial3DComponent() const override { return z_ != 0.0; }
 
   Length x_;

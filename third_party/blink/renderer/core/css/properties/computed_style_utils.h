@@ -284,6 +284,14 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ComputedPropertyValue(const CSSProperty&,
                                                const ComputedStyle&,
                                                const LayoutObject* = nullptr);
+
+ private:
+  // Returns the CSSValueID for a scale transform operation.
+  static CSSValueID CSSValueIDForScaleOperation(
+      const TransformOperation::OperationType);
+  // Returns the CSSValueID for a translate transform operation.
+  static CSSValueID CSSValueIDForTranslateOperation(
+      const TransformOperation::OperationType);
 };
 
 }  // namespace blink
