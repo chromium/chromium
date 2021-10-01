@@ -22,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -179,6 +180,12 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
 
   // Notifications When an input delay data becomes available.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
+
+  // Notifications When a user interaction latency data becomes available.
+  virtual void DidObserveUserInteraction(
+      base::TimeDelta max_event_duration,
+      base::TimeDelta total_event_duration,
+      blink::UserInteractionType interaction_type) {}
 
   // Notification When the First Scroll Delay becomes available.
   virtual void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay) {}

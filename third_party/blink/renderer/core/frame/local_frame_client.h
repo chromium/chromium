@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -186,6 +187,12 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidChangePerformanceTiming() {}
   // Will be called when an |InputEvent| is observed.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
+
+  // Will be called when a user interaction is observed.
+  virtual void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+                                         base::TimeDelta total_event_duration,
+                                         UserInteractionType interaction_type) {
+  }
 
   // Will be called when |CpuTiming| events are updated
   virtual void DidChangeCpuTiming(base::TimeDelta time) {}

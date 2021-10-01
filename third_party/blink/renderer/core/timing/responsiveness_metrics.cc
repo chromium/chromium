@@ -7,6 +7,8 @@
 #include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 
 namespace blink {
 
@@ -19,7 +21,7 @@ constexpr int kMaxValueForSampling = 100;
 constexpr int kUkmSamplingRate = 10;
 
 base::TimeDelta MaxEventDuration(
-    WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
+    const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
   DCHECK(timestamps.size());
   base::TimeDelta max_duration =
       timestamps[0].end_time - timestamps[0].start_time;
@@ -32,7 +34,7 @@ base::TimeDelta MaxEventDuration(
 
 base::TimeDelta TotalEventDuration(
     // timestamps is sorted by the start_time of EventTimestamps.
-    WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
+    const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
   DCHECK(timestamps.size());
   // TODO(crbug.com/1229668): Once the event timestamp bug is fixed, add a
   // DCHECK(IsSorted) here.
@@ -49,6 +51,7 @@ base::TimeDelta TotalEventDuration(
   }
   return total_duration;
 }
+
 }  // namespace
 
 ResponsivenessMetrics::ResponsivenessMetrics() = default;
@@ -67,6 +70,16 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     }
   }
 
+  base::TimeDelta max_event_duration = MaxEventDuration(timestamps);
+  base::TimeDelta total_event_duration = TotalEventDuration(timestamps);
+  // We found some negative values in the data. Before figuring out the root
+  // cause, we need this check to avoid sending nonsensical data.
+  if (max_event_duration.InMilliseconds() >= 0 &&
+      total_event_duration.InMilliseconds() >= 0) {
+    window->GetFrame()->Client()->DidObserveUserInteraction(
+        max_event_duration, total_event_duration, interaction_type);
+  }
+
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
   if (source_id != ukm::kInvalidSourceId &&
@@ -74,8 +87,8 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
                                    kMaxValueForSampling) <= kUkmSamplingRate)) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int>(interaction_type))
-        .SetMaxEventDuration(MaxEventDuration(timestamps).InMilliseconds())
-        .SetTotalEventDuration(TotalEventDuration(timestamps).InMilliseconds())
+        .SetMaxEventDuration(max_event_duration.InMilliseconds())
+        .SetTotalEventDuration(total_event_duration.InMilliseconds())
         .Record(ukm_recorder);
   }
 }

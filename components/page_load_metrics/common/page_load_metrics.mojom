@@ -335,9 +335,47 @@ struct InputTiming {
   // future. And if the subtraction result is negative, we will use 0ms.
   mojo_base.mojom.TimeDelta total_adjusted_input_delay;
 
-  // The number of user interactions, including click, tap, key press,
+  // The number of input events, including click, tap, key press,
   // cancellable touchstart, or pointer down followed by a pointer up.
   uint64 num_input_events = 0;
+
+  // The number of user interactions, including click, tap and key press.
+  uint64 num_interactions = 0;
+
+  // Includes an array of max_event_duration which is the longest input event
+  // duration within a user interaction. The unit of duration is ms. Currently,
+  // we send this array to the browser process behind a Finch flag.
+  // TODO(crbug.com/1252179): Once the experiment is done, we could simplify
+  // this part.
+  UserInteractionLatencies max_event_durations;
+
+  // Includes an array of total_event_duration which is the sum of input event
+  // durations within a user interaction without double counting the overlap.
+  // The unit of duration is ms. Currently, we send this array to the browser
+  // process behind a Finch flag.
+  UserInteractionLatencies total_event_durations;
+};
+
+// Data for user interaction latencies which can be meausred in different ways.
+// Currently, the array user_interaction_latencies is sent behind a Finch flag.
+// If we don't send the array, the maximum value will be sent instead.
+union UserInteractionLatencies {
+  array<UserInteractionLatency> user_interaction_latencies;
+  // The maximum value in user_interaction_latencies.
+  mojo_base.mojom.TimeDelta worst_interaction_latency;
+};
+
+// The latency and the type of a user interaction.
+struct UserInteractionLatency {
+  mojo_base.mojom.TimeDelta interaction_latency;
+  UserInteractionType interaction_type;
+};
+
+// The type of a user interaction, including keyboard, click or tap and drag.
+enum UserInteractionType {
+  kKeyboard,
+  kTapOrClick,
+  kDrag,
 };
 
 // Sent from renderer to browser process when the PageLoadTiming for the

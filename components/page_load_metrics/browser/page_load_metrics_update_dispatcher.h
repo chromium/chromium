@@ -208,7 +208,7 @@ class PageLoadMetricsUpdateDispatcher {
     return main_frame_render_data_;
   }
   const mojom::InputTiming& page_input_timing() const {
-    return page_input_timing_;
+    return *page_input_timing_;
   }
   const blink::MobileFriendliness& mobile_friendliness() const {
     return mobile_friendliness_;
@@ -286,7 +286,7 @@ class PageLoadMetricsUpdateDispatcher {
   mojom::FrameMetadataPtr subframe_metadata_;
 
   // InputTiming data accumulated across all frames.
-  mojom::InputTiming page_input_timing_;
+  mojom::InputTimingPtr page_input_timing_;
 
   // MobileFrienddliness data for current view.
   blink::MobileFriendliness mobile_friendliness_;

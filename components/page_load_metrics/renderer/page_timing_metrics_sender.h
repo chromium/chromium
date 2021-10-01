@@ -16,6 +16,7 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 
@@ -78,6 +79,9 @@ class PageTimingMetricsSender {
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect);
 
   void DidObserveInputDelay(base::TimeDelta input_delay);
+  void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+                                 base::TimeDelta total_event_duration,
+                                 blink::UserInteractionType interaction_type);
   // Updates the timing information. Buffers |timing| to be sent over mojo
   // sometime 'soon'.
   void Update(
@@ -95,6 +99,7 @@ class PageTimingMetricsSender {
                               bool is_main_frame_resource,
                               bool completed_before_fcp);
   void SetUpSmoothnessReporting(base::ReadOnlySharedMemoryRegion shared_memory);
+  void InitiateUserInteractionTiming();
 
  protected:
   base::OneShotTimer* timer() const { return timer_.get(); }

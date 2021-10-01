@@ -8,14 +8,11 @@
 #include <unordered_map>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 namespace blink {
-
-// Enum class for user interaction types. It's used in UKM and should not be
-// changed.
-enum class UserInteractionType { kKeyboard = 0, kTapOrClick = 1, kDrag = 2 };
 
 class ResponsivenessMetrics {
  public:

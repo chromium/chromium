@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
@@ -30,6 +31,23 @@ const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
+
+mojom::UserInteractionType UserInteractionTypeForMojom(
+    blink::UserInteractionType interaction_type) {
+  switch (interaction_type) {
+    case blink::UserInteractionType::kKeyboard:
+      return mojom::UserInteractionType::kKeyboard;
+    case blink::UserInteractionType::kTapOrClick:
+      return mojom::UserInteractionType::kTapOrClick;
+    case blink::UserInteractionType::kDrag:
+      return mojom::UserInteractionType::kDrag;
+  }
+  // mojom::UserInteractionType should have the same interaction types as
+  // blink::UserInteractionType does.
+  NOTREACHED();
+  return mojom::UserInteractionType::kMinValue;
+}
+
 }  // namespace
 
 PageTimingMetricsSender::PageTimingMetricsSender(
@@ -47,6 +65,7 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       new_deferred_resource_data_(mojom::DeferredResourceCounts::New()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
+  InitiateUserInteractionTiming();
   const auto resource_id = initial_request->resource_id();
   page_resource_data_use_.emplace(
       std::piecewise_construct, std::forward_as_tuple(resource_id),
@@ -329,6 +348,7 @@ void PageTimingMetricsSender::SendNow() {
                       std::move(new_deferred_resource_data_),
                       std::move(input_timing_delta_), mobile_friendliness_);
   input_timing_delta_ = mojom::InputTiming::New();
+  InitiateUserInteractionTiming();
   new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
   new_features_.clear();
   metadata_->intersection_update.reset();
@@ -351,6 +371,51 @@ void PageTimingMetricsSender::DidObserveInputDelay(
       base::TimeDelta::FromMilliseconds(
           std::max(int64_t(0),
                    input_delay.InMilliseconds() - kInputDelayAdjustmentMillis));
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::InitiateUserInteractionTiming() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies)) {
+    input_timing_delta_->max_event_durations =
+        mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
+    input_timing_delta_->total_event_durations =
+        mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
+  } else {
+    input_timing_delta_->max_event_durations =
+        mojom::UserInteractionLatencies::NewWorstInteractionLatency(
+            base::TimeDelta());
+    input_timing_delta_->total_event_durations =
+        mojom::UserInteractionLatencies::NewWorstInteractionLatency(
+            base::TimeDelta());
+  }
+}
+
+void PageTimingMetricsSender::DidObserveUserInteraction(
+    base::TimeDelta max_event_duration,
+    base::TimeDelta total_event_duration,
+    blink::UserInteractionType interaction_type) {
+  input_timing_delta_->num_interactions++;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies)) {
+    input_timing_delta_->max_event_durations->get_user_interaction_latencies()
+        .emplace_back(mojom::UserInteractionLatency::New(
+            max_event_duration, UserInteractionTypeForMojom(interaction_type)));
+    input_timing_delta_->total_event_durations->get_user_interaction_latencies()
+        .emplace_back(mojom::UserInteractionLatency::New(
+            total_event_duration,
+            UserInteractionTypeForMojom(interaction_type)));
+  } else {
+    input_timing_delta_->max_event_durations->set_worst_interaction_latency(
+        std::max(input_timing_delta_->max_event_durations
+                     ->get_worst_interaction_latency(),
+                 max_event_duration));
+    input_timing_delta_->total_event_durations->set_worst_interaction_latency(
+        std::max(input_timing_delta_->total_event_durations
+                     ->get_worst_interaction_latency(),
+                 total_event_duration));
+  }
+
   EnsureSendTimer();
 }
 

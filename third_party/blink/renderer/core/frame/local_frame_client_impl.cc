@@ -689,6 +689,14 @@ void LocalFrameClientImpl::DidObserveInputDelay(base::TimeDelta input_delay) {
   }
 }
 
+void LocalFrameClientImpl::DidObserveUserInteraction(
+    base::TimeDelta max_event_duration,
+    base::TimeDelta total_event_duration,
+    UserInteractionType interaction_type) {
+  web_frame_->Client()->DidObserveUserInteraction(
+      max_event_duration, total_event_duration, interaction_type);
+}
+
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
   if (web_frame_->Client())
     web_frame_->Client()->DidChangeCpuTiming(time);

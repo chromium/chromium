@@ -14,7 +14,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 
 ForegroundDurationUKMObserver::ForegroundDurationUKMObserver()
-    : last_page_input_timing_(page_load_metrics::mojom::InputTiming()) {}
+    : last_page_input_timing_(page_load_metrics::mojom::InputTiming::New()) {}
 
 ForegroundDurationUKMObserver::~ForegroundDurationUKMObserver() {}
 
@@ -95,14 +95,14 @@ void ForegroundDurationUKMObserver::RecordInputTimingMetrics(
   ukm_builder
       ->SetForegroundNumInputEvents(
           GetDelegate().GetPageInputTiming().num_input_events -
-          last_page_input_timing_.num_input_events)
+          last_page_input_timing_->num_input_events)
       .SetForegroundTotalInputDelay(
           (GetDelegate().GetPageInputTiming().total_input_delay -
-           last_page_input_timing_.total_input_delay)
+           last_page_input_timing_->total_input_delay)
               .InMilliseconds())
       .SetForegroundTotalAdjustedInputDelay(
           (GetDelegate().GetPageInputTiming().total_adjusted_input_delay -
-           last_page_input_timing_.total_adjusted_input_delay)
+           last_page_input_timing_->total_adjusted_input_delay)
               .InMilliseconds());
-  last_page_input_timing_ = GetDelegate().GetPageInputTiming();
+  last_page_input_timing_ = GetDelegate().GetPageInputTiming().Clone();
 }

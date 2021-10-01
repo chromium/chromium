@@ -21,7 +21,6 @@
 
 namespace blink {
 
-using InputEvent = ukm::builders::InputEvent;
 using PageLoad = ukm::builders::PageLoad;
 
 class NetworkActivityCheckerForTest

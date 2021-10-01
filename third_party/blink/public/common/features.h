@@ -419,6 +419,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kClipboardCustomFormats;
 // heuristic where images occupying the full viewport are ignored.
 BLINK_COMMON_EXPORT extern const base::Feature kUsePageViewportInLCP;
 
+// Send all user interaction latency data from renderer to the browser process.
+BLINK_COMMON_EXPORT extern const base::Feature kSendAllUserInteractionLatencies;
+
 // Enable "Sec-CH-UA-Platform" client hint and request header for all requests
 BLINK_COMMON_EXPORT extern const base::Feature kUACHPlatformEnabledByDefault;
 
