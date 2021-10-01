@@ -105,8 +105,6 @@ const CGFloat kButtonSpacing = 8;
     [_hidePasswordButton addTarget:self
                             action:@selector(hidePasswordTapped:)
                   forControlEvents:UIControlEventTouchUpInside];
-    [_hidePasswordButton setImage:self.hidePasswordImage
-                         forState:UIControlStateNormal];
     _hidePasswordButton.tintColor = [UIColor colorNamed:kBlueColor];
 
     // The button should neither shrink nor grow.
@@ -158,7 +156,7 @@ const CGFloat kButtonSpacing = 8;
   self.titleLabel.text = @"";
   self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   self.textField.hidden = YES;
-  self.textField.placeholder = @"";
+  [self setTextFieldPlaceholderText:@""];
   self.textField.inputAccessoryView = nil;
   self.hidePasswordButton.hidden = YES;
   self.passwordHidden = NO;
@@ -187,6 +185,15 @@ const CGFloat kButtonSpacing = 8;
   // margins for each different size.
   self.contentVerticalMarginConstraint.constant =
       (sizeCategoryIsLarge) ? kVerticalMarginLarge : kVerticalMarginSmall;
+}
+
+// Sets the placeholder text for the text field using |attributedPlaceholder| to
+// control the color to meet accessibility contrast standards.
+- (void)setTextFieldPlaceholderText:(NSString*)placeholderText {
+  UIColor* placeholderColor = [UIColor colorNamed:kTextSecondaryColor];
+  self.textField.attributedPlaceholder = [[NSAttributedString alloc]
+      initWithString:placeholderText
+          attributes:@{NSForegroundColorAttributeName : placeholderColor}];
 }
 
 #pragma mark - Actions
@@ -250,9 +257,11 @@ const CGFloat kButtonSpacing = 8;
 
       self.textField.hidden = NO;
       self.textField.returnKeyType = UIReturnKeyNext;
-      self.textField.placeholder = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_USERNAME_PLACEHOLDER",
-          @"Placeholder marking username field as optional");
+      [self setTextFieldPlaceholderText:
+                NSLocalizedString(
+                    @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_USERNAME_"
+                    @"PLACEHOLDER",
+                    @"Placeholder marking username field as optional")];
       break;
     case NewPasswordTableCellTypePassword:
       self.titleLabel.text = NSLocalizedString(
@@ -260,10 +269,12 @@ const CGFloat kButtonSpacing = 8;
 
       self.textField.hidden = NO;
       self.textField.returnKeyType = UIReturnKeyDone;
-      self.textField.placeholder = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_PASSWORD_PLACEHOLDER",
-          @"Placeholder for password field");
+      [self setTextFieldPlaceholderText:NSLocalizedString(
+                                            @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                            @"PASSWORD_PASSWORD_PLACEHOLDER",
+                                            @"Placeholder for password field")];
 
+      self.passwordHidden = NO;
       self.hidePasswordButton.hidden = NO;
       break;
     case NewPasswordTableCellTypeSuggestStrongPassword:

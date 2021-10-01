@@ -279,6 +279,10 @@ const CGFloat kTableViewTopSpace = 14;
 - (void)setPassword:(NSString*)password {
   NewPasswordTableCell* passwordCell = self.passwordCell;
   passwordCell.textField.text = password;
+  // Move voiceover focus to the save button so the user knows that something
+  // has happend and the save button is now enabled.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.navigationItem.rightBarButtonItem);
   [self updateSaveButtonState];
 }
 
