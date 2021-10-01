@@ -5,27 +5,26 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 
 ExtensionsToolbarControls::ExtensionsToolbarControls(
     Browser* browser,
-    ExtensionsToolbarButton* extensions_button)
+    std::unique_ptr<ExtensionsToolbarButton> extensions_button,
+    std::unique_ptr<ExtensionsToolbarButton> site_access_button)
     : ToolbarIconContainerView(/*uses_highlight=*/true),
-      extensions_button_(extensions_button) {
-  // Do not flip the Extensions icon in RTL.
-  extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
-  extensions_button_->SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
-
-  AddMainItem(extensions_button_);
+      site_access_button_(AddChildView(std::move(site_access_button))),
+      extensions_button_(extensions_button.get()) {
+  // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
+  AddMainItem(extensions_button.release());
 }
 
 ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;
 
 void ExtensionsToolbarControls::UpdateAllIcons() {
   extensions_button_->UpdateIcon();
+  site_access_button_->UpdateIcon();
 }
 
 BEGIN_METADATA(ExtensionsToolbarControls, ToolbarIconContainerView)

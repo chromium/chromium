@@ -71,12 +71,22 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       extensions_button_(
           base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
               ? nullptr
-              : new ExtensionsToolbarButton(browser, this)),
+              : new ExtensionsToolbarButton(
+                    browser,
+                    this,
+                    ExtensionsToolbarButton::ButtonType::kExtensions)),
       extensions_controls_(
           base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
               ? new ExtensionsToolbarControls(
                     browser,
-                    new ExtensionsToolbarButton(browser, this))
+                    std::make_unique<ExtensionsToolbarButton>(
+                        browser,
+                        this,
+                        ExtensionsToolbarButton::ButtonType::kExtensions),
+                    std::make_unique<ExtensionsToolbarButton>(
+                        browser,
+                        this,
+                        ExtensionsToolbarButton::ButtonType::kSiteAccess))
               : nullptr),
       display_mode_(display_mode) {
   // The container shouldn't show unless / until we have extensions available.

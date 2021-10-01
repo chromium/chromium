@@ -16,7 +16,8 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
 
   explicit ExtensionsToolbarControls(
       Browser* browser,
-      ExtensionsToolbarButton* extensions_button);
+      std::unique_ptr<ExtensionsToolbarButton> extensions_button,
+      std::unique_ptr<ExtensionsToolbarButton> site_access_button);
   ExtensionsToolbarControls(const ExtensionsToolbarControls&) = delete;
   ExtensionsToolbarControls operator=(const ExtensionsToolbarControls&) =
       delete;
@@ -30,6 +31,7 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   void UpdateAllIcons() override;
 
  private:
+  ExtensionsToolbarButton* const site_access_button_;
   ExtensionsToolbarButton* const extensions_button_;
 };
 
