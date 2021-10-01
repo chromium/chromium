@@ -1523,6 +1523,14 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   if (was_created)
     delegate_->RenderFrameDeleted(this);
 
+  // Resetting `document_associated_data_` destroys live `DocumentServiceBase`
+  // and `RenderDocumentHostUserData` instances. It is important for them to be
+  // destroyed before the body of the `RenderFrameHostImpl` destructor
+  // completes. Among other things, this ensures that any `SafeRef`s from
+  // `DocumentServiceBase` and `RenderFrameHostUserData` subclasses are still
+  // valid when their destructors run.
+  document_associated_data_.reset();
+
   // Ensure that the render process host has been notified that all audio
   // streams from this frame have terminated. This is required to ensure the
   // process host has the correct media stream count, which affects its

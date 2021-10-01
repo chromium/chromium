@@ -36,7 +36,9 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -5935,6 +5937,102 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       result.append(frame_to_label_map[ilr_ptr]);
     EXPECT_EQ(frame_to_immediate_local_roots_map[current_frame_host], result);
   }
+}
+
+// Helpers for the DestructorLifetime test case.
+class DestructorLifetimeDocumentService
+    // The interface in question doesn't really matter here, so just pick a
+    // generic one with an easy interface to stub.
+    : public DocumentServiceBase<blink::mojom::BrowserInterfaceBroker> {
+ public:
+  DestructorLifetimeDocumentService(
+      RenderFrameHostImpl* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver,
+      bool& was_destroyed)
+      : DocumentServiceBase(render_frame_host, std::move(receiver)),
+        render_frame_host_(render_frame_host->GetWeakPtr()),
+        was_destroyed_(was_destroyed) {}
+
+  ~DestructorLifetimeDocumentService() override {
+    was_destroyed_ = true;
+    // The destructor should run before SafeRef<RenderFrameHost> is invalidated.
+    EXPECT_TRUE(render_frame_host_);
+  }
+
+  void GetInterface(mojo::GenericPendingReceiver pending_receiver) override {}
+
+ private:
+  // This should be a SafeRef but that is not yet exposed publicly.
+  const base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
+  bool& was_destroyed_;
+};
+
+class DestructorLifetimeRenderDocumentHostUserData
+    : public RenderDocumentHostUserData<
+          DestructorLifetimeRenderDocumentHostUserData> {
+ public:
+  explicit DestructorLifetimeRenderDocumentHostUserData(
+      RenderFrameHost* render_frame_host,
+      bool& was_destroyed)
+      : render_frame_host_(
+            static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr()),
+        was_destroyed_(was_destroyed) {}
+
+  ~DestructorLifetimeRenderDocumentHostUserData() override {
+    was_destroyed_ = true;
+    // The destructor should run before SafeRef<RenderFrameHost> is invalidated.
+    EXPECT_TRUE(render_frame_host_);
+  }
+
+ private:
+  friend RenderDocumentHostUserData;
+  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+
+  // This should be a SafeRef or use render_frame_host().
+  const base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
+  bool& was_destroyed_;
+};
+
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(
+    DestructorLifetimeRenderDocumentHostUserData)
+
+// Tests that when RenderFrameHostImpl is destroyed, destructors of
+// commonly-used extension points (currently DocumentServiceBase and
+// RenderDocumentHostUserData) run while RenderFrameHostImpl is still in a
+// reasonable state.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, DestructorLifetime) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* child_frame =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
+  ASSERT_TRUE(child_frame);
+
+  bool document_service_was_destroyed = false;
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
+  // This is self-owned so the bare new is OK.
+  new DestructorLifetimeDocumentService(child_frame,
+                                        remote.BindNewPipeAndPassReceiver(),
+                                        document_service_was_destroyed);
+
+  bool render_document_host_user_data_was_destroyed = false;
+  DestructorLifetimeRenderDocumentHostUserData::CreateForCurrentDocument(
+      child_frame, render_document_host_user_data_was_destroyed);
+
+  base::WeakPtr<RenderFrameHostImpl> weak_child_frame =
+      child_frame->GetWeakPtr();
+  ASSERT_TRUE(weak_child_frame);
+
+  // Remove the child frame from the DOM, which destroys the RenderFrameHost.
+  // The destructors of DestructorLifetimeDocumentService and
+  // DestructorLifetimeRenderDocumentHostUserData also perform googletest
+  // assertions to validate invariants.
+  EXPECT_TRUE(ExecJs(shell(), "document.querySelector('iframe').remove()"));
+
+  EXPECT_FALSE(weak_child_frame);
+  EXPECT_TRUE(document_service_was_destroyed);
+  EXPECT_TRUE(render_document_host_user_data_was_destroyed);
 }
 
 class RenderFrameHostImplAnonymousIframeBrowserTest
