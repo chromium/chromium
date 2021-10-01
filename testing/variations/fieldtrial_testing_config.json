@@ -5040,6 +5040,7 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
+                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "8",
                         "OmniboxMaxURLMatches": "3",
                         "OmniboxMaxZeroSuggestMatches": "15",
                         "UIMaxAutocompleteMatches": "8"
