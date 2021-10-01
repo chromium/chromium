@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class WindowAndroid;
@@ -45,7 +46,7 @@ class PasswordReuseDialogViewAndroid {
  private:
   // The controller which owns this dialog and handles the dialog events.
   // |controller_| owns |this|.
-  PasswordReuseControllerAndroid* controller_;
+  raw_ptr<PasswordReuseControllerAndroid> controller_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

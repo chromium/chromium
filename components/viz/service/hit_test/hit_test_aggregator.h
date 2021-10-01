@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -80,11 +81,12 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   // Inserts debug quads based on hit-test data.
   void InsertHitTestDebugQuads(AggregatedRenderPassList* render_passes);
 
-  const HitTestManager* const hit_test_manager_;
+  const raw_ptr<const HitTestManager> hit_test_manager_;
 
-  HitTestAggregatorDelegate* const delegate_;
+  const raw_ptr<HitTestAggregatorDelegate> delegate_;
 
-  LatestLocalSurfaceIdLookupDelegate* const local_surface_id_lookup_delegate_;
+  const raw_ptr<LatestLocalSurfaceIdLookupDelegate>
+      local_surface_id_lookup_delegate_;
 
   // This is the FrameSinkId for the corresponding root CompositorFrameSink.
   const FrameSinkId root_frame_sink_id_;

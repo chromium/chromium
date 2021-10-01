@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/renderer_factory.h"
 
@@ -43,7 +44,7 @@ class MEDIA_EXPORT DecryptingRendererFactory final : public RendererFactory {
       const gfx::ColorSpace& target_color_space) final;
 
  private:
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   std::unique_ptr<media::RendererFactory> renderer_factory_;
 };

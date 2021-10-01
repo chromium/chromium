@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_OBSERVERS_METRICS_COLLECTOR_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/observers/background_metrics_reporter.h"
@@ -101,7 +102,7 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
   void ResetMetricsReportRecord(const PageNode* page_nod);
 
   // The graph to which this object belongs.
-  Graph* graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 };
 
 }  // namespace performance_manager

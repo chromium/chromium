@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -128,10 +129,11 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
+  raw_ptr<SensorReadingSharedBuffer>
+      reading_buffer_;  // NOTE: Owned by |provider_|.
   mojom::SensorType type_;
   ConfigMap config_map_;
-  PlatformSensorProvider* provider_;
+  raw_ptr<PlatformSensorProvider> provider_;
   bool is_active_ = false;
   SensorReading last_raw_reading_;
   mutable base::Lock lock_;  // Protect have_raw_reading_ and last_raw_reading_.

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -91,7 +92,7 @@ class OfferNotificationBubbleControllerImpl
   // when navigating to a origins outside of this set.
   std::vector<GURL> origins_to_display_bubble_;
 
-  ObserverForTest* observer_for_testing_ = nullptr;
+  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

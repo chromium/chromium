@@ -20,6 +20,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -407,7 +408,7 @@ class ScopedCommitStateResetter {
   void disable() { disabled_ = true; }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
   bool disabled_;
 };
 
@@ -438,7 +439,7 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
   }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
   bool debug_url_set_ = false;
 };
 
@@ -502,7 +503,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
         render_frame_host_->GetProcess());
   }
 
-  RenderFrameHostImpl* const render_frame_host_;
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
   const char* const interface_name_;
   const BackForwardCacheImpl::MessageHandlingPolicyWhenCached policy_;
 };
@@ -1161,7 +1162,7 @@ class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
 
  private:
   int32_t const instance_id_;
-  RenderFrameHostImpl* const frame_host_;
+  const raw_ptr<RenderFrameHostImpl> frame_host_;
   mojo::AssociatedReceiver<mojom::PepperPluginInstanceHost> receiver_;
   mojo::AssociatedRemote<mojom::PepperPluginInstance> remote_;
 };
@@ -7493,7 +7494,8 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
       // unload handler if necessary. So delegate sending IPC on the topmost
       // ancestor using the same process.
       RenderFrameHostImpl* local_ancestor = child;
-      for (auto* rfh = child->parent_; rfh != parent_; rfh = rfh->parent_) {
+      for (auto* rfh = child->parent_.get(); rfh != parent_;
+           rfh = rfh->parent_) {
         if (rfh->GetSiteInstance() == child->GetSiteInstance())
           local_ancestor = rfh;
       }

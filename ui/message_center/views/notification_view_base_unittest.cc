@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/views/notification_view.h"
 
 #include <memory>
@@ -202,7 +203,7 @@ class NotificationViewBaseTest : public views::InkDropObserver,
   bool delete_on_notification_removed_ = false;
   std::set<std::string> removed_ids_;
   scoped_refptr<NotificationTestDelegate> delegate_;
-  NotificationViewBase* notification_view_ = nullptr;
+  raw_ptr<NotificationViewBase> notification_view_ = nullptr;
 };
 
 NotificationViewBaseTest::NotificationViewBaseTest() = default;
@@ -388,9 +389,9 @@ TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->message_view_);
+  EXPECT_EQ(nullptr, notification_view()->message_view_.get());
   EXPECT_TRUE(notification_view()->image_container_view_->children().empty());
-  EXPECT_EQ(nullptr, notification_view()->icon_view_);
+  EXPECT_EQ(nullptr, notification_view()->icon_view_.get());
 }
 
 TEST_F(NotificationViewBaseTest, UpdateButtonsStateTest) {

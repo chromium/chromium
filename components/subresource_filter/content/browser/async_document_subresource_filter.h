@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
@@ -185,7 +186,7 @@ class AsyncDocumentSubresourceFilter {
       mojom::ActivationState activation_state);
 
   // Note: Raw pointer, |core_| already holds a reference to |task_runner_|.
-  base::SequencedTaskRunner* task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
   base::OnceClosure first_disallowed_load_callback_;
 

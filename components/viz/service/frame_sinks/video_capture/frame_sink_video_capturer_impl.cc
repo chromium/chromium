@@ -87,7 +87,7 @@ FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
     receiver_.Bind(std::move(receiver));
     receiver_.set_disconnect_handler(
         base::BindOnce(&FrameSinkVideoCapturerManager::OnCapturerConnectionLost,
-                       base::Unretained(frame_sink_manager_), this));
+                       base::Unretained(frame_sink_manager_.get()), this));
   }
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CONNECTORS_INTERNALS_CONNECTORS_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,8 +37,8 @@ class ConnectorsInternalsPageHandler
   void GetZeroTrustState(GetZeroTrustStateCallback) override;
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
-  DeviceTrustService* device_trust_service_;
-  Profile* profile_;
+  raw_ptr<DeviceTrustService> device_trust_service_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace enterprise_connectors

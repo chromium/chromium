@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -236,7 +237,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
   // Used to handle network response.
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   // Worker that does blob related task on IO thread.
   std::unique_ptr<BlobTaskProxy> blob_task_proxy_;
@@ -248,7 +249,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   // Used to access blob storage context.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Data downloaded from network, should be moved to avoid extra copy.
   std::string data_;

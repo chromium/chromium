@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -54,7 +55,7 @@ class SessionEndWaiter
   }
 
  private:
-  metrics::DesktopSessionDurationTracker* tracker_;
+  raw_ptr<metrics::DesktopSessionDurationTracker> tracker_;
   base::RepeatingClosure end_closure_;
   bool waiting_ = false;
 };
@@ -102,7 +103,7 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TouchModeStatsTracker> touch_mode_stats_tracker_;
 
  private:

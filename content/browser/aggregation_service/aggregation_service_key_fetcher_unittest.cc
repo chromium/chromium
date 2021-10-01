@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -128,7 +129,7 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestAggregatableReportManager manager_;
   std::unique_ptr<AggregationServiceKeyFetcher> fetcher_;
-  MockNetworkFetcher* network_fetcher_;
+  raw_ptr<MockNetworkFetcher> network_fetcher_;
 };
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysFromStorage_Succeed) {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -236,7 +237,7 @@ class NotificationViewTest : public views::ViewObserver,
         notification_view()->GetPreferredSize());
   }
 
-  NotificationView* notification_view_ = nullptr;
+  raw_ptr<NotificationView> notification_view_ = nullptr;
 };
 
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {

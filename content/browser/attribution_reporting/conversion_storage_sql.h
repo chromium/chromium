@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -212,7 +213,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Must outlive |this|.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
 

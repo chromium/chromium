@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -194,7 +195,7 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       freezable_task_runner_handle_;
   std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
       unfreezable_task_runner_handle_;
-  blink::WebURLLoaderClient* async_client_ = nullptr;
+  raw_ptr<blink::WebURLLoaderClient> async_client_ = nullptr;
 
   base::WeakPtrFactory<FakeWebURLLoader> weak_factory_{this};
 };

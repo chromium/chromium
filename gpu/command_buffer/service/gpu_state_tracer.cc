@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "context_state.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -36,7 +37,7 @@ class Snapshot : public base::trace_event::ConvertableToTraceFormat {
  private:
   explicit Snapshot(const ContextState* state);
 
-  const ContextState* state_;
+  raw_ptr<const ContextState> state_;
 
   std::vector<unsigned char> screenshot_pixels_;
   gfx::Size screenshot_size_;

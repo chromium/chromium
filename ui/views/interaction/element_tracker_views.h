@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -35,7 +36,7 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
   DECLARE_ELEMENT_TRACKER_METADATA()
 
  private:
-  View* const view_;
+  const raw_ptr<View> view_;
 };
 
 // Manages TrackedElements associated with View objects.

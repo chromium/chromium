@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
 
 class SimpleFactoryKey;
@@ -51,7 +52,7 @@ class OfflinePrefetchDownloadClient : public download::Client {
 
   PrefetchDownloader* GetPrefetchDownloader() const;
 
-  SimpleFactoryKey* simple_factory_key_;
+  raw_ptr<SimpleFactoryKey> simple_factory_key_;
 };
 
 }  // namespace offline_pages

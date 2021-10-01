@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
@@ -63,7 +64,8 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
 
   // Parent information for child managers.
   int client_id_ = -1;
-  TestGpuMemoryBufferManager* parent_gpu_memory_buffer_manager_ = nullptr;
+  raw_ptr<TestGpuMemoryBufferManager> parent_gpu_memory_buffer_manager_ =
+      nullptr;
 
   // Child infomration for parent managers.
   int last_client_id_ = 5000;

@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
@@ -131,7 +132,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
 
   void SendTextInputTypeChangedToView(RenderWidgetHostViewBase* guest_rwhv);
 
-  WebContentsImpl* owner_web_contents_;
+  raw_ptr<WebContentsImpl> owner_web_contents_;
 
   // BrowserPluginGuest::Init can only be called once. This flag allows it to
   // exit early if it's already been called.
@@ -141,7 +142,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   // Using scoped_ptr to avoid including the header file: view_messages.h.
   ui::mojom::TextInputStatePtr last_text_input_state_;
 
-  BrowserPluginGuestDelegate* const delegate_;
+  const raw_ptr<BrowserPluginGuestDelegate> delegate_;
 };
 
 }  // namespace content

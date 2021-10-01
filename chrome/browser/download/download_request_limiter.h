@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -186,9 +187,9 @@ class DownloadRequestLimiter
     // state.
     bool shouldClearDownloadState(content::NavigationHandle* navigation_handle);
 
-    content::WebContents* web_contents_;
+    raw_ptr<content::WebContents> web_contents_;
 
-    DownloadRequestLimiter* host_;
+    raw_ptr<DownloadRequestLimiter> host_;
 
     // Host of the first page the download started on. This may be empty.
     std::string initial_page_host_;

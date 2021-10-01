@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -71,7 +72,7 @@ class InsecureCredentialsHelperTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<MockPasswordStoreInterface> store_;
-  PasswordStoreConsumer* consumer_ = nullptr;
+  raw_ptr<PasswordStoreConsumer> consumer_ = nullptr;
 };
 
 TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {

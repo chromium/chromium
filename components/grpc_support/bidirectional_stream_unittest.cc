@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -102,7 +103,7 @@ class TestBidirectionalStreamCallback {
     ~WriteData();
   };
 
-  bidirectional_stream* stream;
+  raw_ptr<bidirectional_stream> stream;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
@@ -114,7 +115,7 @@ class TestBidirectionalStreamCallback {
 
   // Test results.
   ResponseStep response_step;
-  char* read_buffer;
+  raw_ptr<char> read_buffer;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;

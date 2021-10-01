@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -41,7 +42,7 @@ class ExtensionsMenuTestUtil::MenuViewObserver : public views::ViewObserver {
     *menu_view_ptr_ = nullptr;
   }
 
-  ExtensionsMenuView** const menu_view_ptr_;
+  const raw_ptr<ExtensionsMenuView*> menu_view_ptr_;
 };
 
 // A view wrapper class that owns the ExtensionsToolbarContainer.
@@ -53,7 +54,7 @@ class ExtensionsMenuTestUtil::Wrapper {
       : extensions_container_(new ExtensionsToolbarContainer(browser)) {
     container_parent_.SetSize(gfx::Size(1000, 1000));
     container_parent_.Layout();
-    container_parent_.AddChildView(extensions_container_);
+    container_parent_.AddChildView(extensions_container_.get());
   }
   ~Wrapper() = default;
 
@@ -66,7 +67,7 @@ class ExtensionsMenuTestUtil::Wrapper {
 
  private:
   views::View container_parent_;
-  ExtensionsToolbarContainer* extensions_container_ = nullptr;
+  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
 };
 
 ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,

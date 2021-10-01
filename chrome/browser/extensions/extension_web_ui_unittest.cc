@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -69,7 +70,7 @@ class ExtensionWebUITest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

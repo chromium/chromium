@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -302,7 +303,7 @@ class TestNode : public NodeDelegate {
 
   const NodeName node_name_;
   Node node_;
-  MessageRouter* router_ = nullptr;
+  raw_ptr<MessageRouter> router_ = nullptr;
 
   base::Thread node_thread_;
   base::WaitableEvent events_available_event_;

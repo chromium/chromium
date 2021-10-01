@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
@@ -52,12 +53,12 @@ class SaveAddressProfileView : public AutofillBubbleBase,
   // all icons are vertically centered with corresponding text.
   void AlignIcons();
 
-  SaveUpdateAddressProfileBubbleController* controller_;
+  raw_ptr<SaveUpdateAddressProfileBubbleController> controller_;
 
   // The following are used for UI elements alignment upon changes in theme.
-  views::View* address_components_view_;
+  raw_ptr<views::View> address_components_view_;
   std::vector<views::ImageView*> address_section_icons_;
-  views::ImageButton* edit_button_;
+  raw_ptr<views::ImageButton> edit_button_;
 };
 
 }  // namespace autofill

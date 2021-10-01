@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_GENERATED_PASSWORD_LEAK_DETECTION_PREF_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_GENERATED_PASSWORD_LEAK_DETECTION_PREF_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,7 @@ class GeneratedPasswordLeakDetectionPref
 
  private:
   // Non-owning pointer to the profile this preference is generated for.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

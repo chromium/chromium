@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -312,7 +313,7 @@ class BinaryUploadService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<BinaryFCMService> binary_fcm_service_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Request queued for upload.
   std::queue<std::unique_ptr<Request>> request_queue_;

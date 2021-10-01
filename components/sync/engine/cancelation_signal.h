@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_CANCELATION_SIGNAL_H_
 #define COMPONENTS_SYNC_ENGINE_CANCELATION_SIGNAL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 
 namespace syncer {
@@ -72,7 +73,7 @@ class CancelationSignal {
   bool signalled_ = false;
 
   // The registered abort handler.  May be null.
-  Observer* handler_ = nullptr;
+  raw_ptr<Observer> handler_ = nullptr;
 };
 
 }  // namespace syncer

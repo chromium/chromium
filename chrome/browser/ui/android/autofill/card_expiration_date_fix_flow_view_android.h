@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 
 namespace content {
@@ -51,9 +52,9 @@ class CardExpirationDateFixFlowViewAndroid
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
-  CardExpirationDateFixFlowController* controller_;
+  raw_ptr<CardExpirationDateFixFlowController> controller_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

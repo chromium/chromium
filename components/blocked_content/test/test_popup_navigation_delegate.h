@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_TEST_TEST_POPUP_NAVIGATION_DELEGATE_H_
 #define COMPONENTS_BLOCKED_CONTENT_TEST_TEST_POPUP_NAVIGATION_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
@@ -40,7 +41,7 @@ class TestPopupNavigationDelegate : public PopupNavigationDelegate {
 
  private:
   const GURL url_;
-  ResultHolder* result_holder_;
+  raw_ptr<ResultHolder> result_holder_;
 };
 
 }  // namespace blocked_content

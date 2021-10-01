@@ -9,6 +9,7 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -139,7 +140,7 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
  private:
   MockExtensionSystemFactory<TestExtensionSystem> factory_;
 
-  TestEventRouter* event_router_ = nullptr;  // Created in SetUp().
+  raw_ptr<TestEventRouter> event_router_ = nullptr;  // Created in SetUp().
 };
 
 // Tests with a non-existent directory.

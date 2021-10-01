@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 
@@ -35,11 +36,12 @@ class MEDIA_GPU_EXPORT VideoContextWrapper {
     D3D11_VIDEO_DECODER_BUFFER_TYPE BufferType;
     UINT DataOffset;
     UINT DataSize;
-    void* pIV;
+    raw_ptr<void> pIV;
     UINT IVSize;
 
     // DESC1-specific fields
-    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK* pSubSampleMappingBlock;
+    raw_ptr<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>
+        pSubSampleMappingBlock;
     UINT SubSampleMappingCount;
   };
 

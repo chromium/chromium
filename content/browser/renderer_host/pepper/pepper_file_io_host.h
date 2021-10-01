@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_proxy.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
@@ -130,7 +131,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
       int32_t open_flags,
       ppapi::host::ReplyMessageContext* reply_context) const;
 
-  BrowserPpapiHostImpl* browser_ppapi_host_;
+  raw_ptr<BrowserPpapiHostImpl> browser_ppapi_host_;
 
   int render_process_id_;
   base::ProcessId resolved_render_process_id_;

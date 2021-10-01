@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -111,7 +112,7 @@ class CBOR_EXPORT Writer {
   size_t GetNumUintBytes(uint64_t value);
 
   // Holds the encoded CBOR data.
-  std::vector<uint8_t>* encoded_cbor_;
+  raw_ptr<std::vector<uint8_t>> encoded_cbor_;
 };
 
 }  // namespace cbor

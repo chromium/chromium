@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -66,15 +67,15 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
                                const std::string& platform_path);
 
   // BrowserContext to retrieve URLRequestContext and ResourceContext.
-  BrowserContext* const browser_context_;
+  const raw_ptr<BrowserContext> browser_context_;
 
   // FileSystemContext to be used on FILE thread.
-  storage::FileSystemContext* const file_system_context_;
+  const raw_ptr<storage::FileSystemContext> file_system_context_;
 
   // Render frame is used to check policy/permissions. This class is destroyed
   // along with the RenderFrameHost, as the owner of this class is-a
   // DocumentServiceBase.
-  RenderFrameHostImpl* const render_frame_host_;
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaResourceGetterImpl> weak_factory_{this};

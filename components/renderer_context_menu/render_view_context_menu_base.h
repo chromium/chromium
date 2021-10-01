@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -182,8 +183,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                                bool started_from_context_menu);
 
   content::ContextMenuParams params_;
-  content::WebContents* const source_web_contents_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::WebContents> source_web_contents_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   ui::SimpleMenuModel menu_model_;
 

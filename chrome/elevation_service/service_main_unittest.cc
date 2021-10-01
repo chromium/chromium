@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
@@ -48,7 +49,7 @@ class ServiceMainTest : public testing::Test {
 
  private:
   base::win::ScopedCOMInitializer com_initializer_;
-  elevation_service::ServiceMain* service_main_ = nullptr;
+  raw_ptr<elevation_service::ServiceMain> service_main_ = nullptr;
 };
 
 TEST_F(ServiceMainTest, ExitSignalTest) {

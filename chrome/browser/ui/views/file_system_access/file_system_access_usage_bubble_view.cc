@@ -8,6 +8,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -225,8 +226,8 @@ class CollapsibleListView : public views::View {
   }
 
   bool table_is_expanded_ = false;
-  views::ScrollView* table_view_parent_;
-  views::ToggleImageButton* expand_collapse_button_;
+  raw_ptr<views::ScrollView> table_view_parent_;
+  raw_ptr<views::ToggleImageButton> expand_collapse_button_;
 };
 
 BEGIN_METADATA(CollapsibleListView, views::View)

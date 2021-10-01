@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_BUBBLE_HANDLER_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -82,9 +83,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   // Executes highlight animation on toolbar's avatar icon.
   void ShowAvatarHighlightAnimation();
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
-  ToolbarButtonProvider* toolbar_button_provider_ = nullptr;
+  raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
 
   // Whether a save local card sign in promo bubble could pop up from the avatar
   // button after the highlight animation finishes.

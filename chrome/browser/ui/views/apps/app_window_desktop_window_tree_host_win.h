@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_WINDOW_TREE_HOST_WIN_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
 namespace views {
@@ -38,7 +39,7 @@ class AppWindowDesktopWindowTreeHostWin
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void HandleFrameChanged() override;
 
-  ChromeNativeAppWindowViewsWin* app_window_;
+  raw_ptr<ChromeNativeAppWindowViewsWin> app_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_WINDOW_TREE_HOST_WIN_H_

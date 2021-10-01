@@ -9,6 +9,7 @@
 #include <string>
 #include "base/base64url.h"
 #include "base/containers/mru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -231,13 +232,13 @@ class StarterTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   content::TestBrowserContext browser_context_;
   std::unique_ptr<content::WebContents> web_contents_;
-  NiceMock<MockTriggerScriptUiDelegate>* mock_trigger_script_ui_delegate_ =
-      nullptr;
-  NiceMock<MockServiceRequestSender>*
+  raw_ptr<NiceMock<MockTriggerScriptUiDelegate>>
+      mock_trigger_script_ui_delegate_ = nullptr;
+  raw_ptr<NiceMock<MockServiceRequestSender>>
       mock_trigger_script_service_request_sender_ = nullptr;
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
   // Only set while a trigger script is running.
-  TriggerScriptCoordinator* trigger_script_coordinator_ = nullptr;
+  raw_ptr<TriggerScriptCoordinator> trigger_script_coordinator_ = nullptr;
   FakeStarterPlatformDelegate fake_platform_delegate_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   MockRuntimeManager mock_runtime_manager_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/constrained_window/constrained_window_views.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -126,9 +127,9 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::DialogDelegate> delegate_;
-  views::View* contents_ = nullptr;
+  raw_ptr<views::View> contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
-  Widget* dialog_ = nullptr;
+  raw_ptr<Widget> dialog_ = nullptr;
 };
 
 }  // namespace

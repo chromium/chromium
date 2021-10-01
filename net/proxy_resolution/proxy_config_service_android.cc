@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
@@ -447,7 +448,7 @@ class ProxyConfigServiceAndroid::Delegate
     }
 
    private:
-    Delegate* const delegate_;
+    const raw_ptr<Delegate> delegate_;
   };
 
   virtual ~Delegate() {}

@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -58,7 +59,7 @@ class UiaAccessibilityEventWaiter {
     UiaAccessibilityWaiterInfo info_;
 
    private:
-    UiaAccessibilityEventWaiter* owner_ = nullptr;
+    raw_ptr<UiaAccessibilityEventWaiter> owner_ = nullptr;
 
     Microsoft::WRL::ComPtr<IUIAutomation> uia_;
     Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
@@ -115,7 +116,7 @@ class UiaAccessibilityEventWaiter {
                                            EVENTID event_id) override;
 
       // Points to the waiter to receive notifications.
-      UiaAccessibilityEventWaiter::Thread* owner_ = nullptr;
+      raw_ptr<UiaAccessibilityEventWaiter::Thread> owner_ = nullptr;
 
      private:
       bool MatchesNameRole(IUIAutomationElement* sender);

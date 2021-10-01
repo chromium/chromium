@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
@@ -192,7 +193,7 @@ class MediaSessionNotificationProducer
 
     void MarkActiveIfNecessary();
 
-    MediaSessionNotificationProducer* const owner_;
+    const raw_ptr<MediaSessionNotificationProducer> owner_;
     const std::string id_;
     std::unique_ptr<MediaSessionNotificationItem> item_;
 
@@ -224,7 +225,7 @@ class MediaSessionNotificationProducer
     // Used to request audio output be routed to a different device.
     mojo::Remote<media_session::mojom::MediaController> controller_;
 
-    content::WebContents* const web_contents_;
+    const raw_ptr<content::WebContents> web_contents_;
 
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager_;
@@ -262,7 +263,7 @@ class MediaSessionNotificationProducer
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
       audio_focus_observer_receiver_{this};
 
-  global_media_controls::MediaItemManager* const item_manager_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // Keeps track of all the items we're currently observing.
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_;

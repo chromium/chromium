@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -133,7 +134,7 @@ class AutoResumptionHandlerTest : public testing::Test {
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
-  download::test::MockTaskManager* task_manager_;
+  raw_ptr<download::test::MockTaskManager> task_manager_;
   std::unique_ptr<AutoResumptionHandler> auto_resumption_handler_;
   base::SimpleTestClock clock_;
 };

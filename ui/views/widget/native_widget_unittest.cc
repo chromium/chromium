@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_base.h"
@@ -30,7 +31,7 @@ class ScopedTestWidget {
   internal::NativeWidgetPrivate* get() const { return native_widget_; }
 
  private:
-  internal::NativeWidgetPrivate* native_widget_;
+  raw_ptr<internal::NativeWidgetPrivate> native_widget_;
 };
 
 class NativeWidgetTest : public ViewsTestBase {

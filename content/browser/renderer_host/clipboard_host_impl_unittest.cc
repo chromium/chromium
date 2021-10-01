@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -130,7 +131,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   ui::Clipboard* system_clipboard() { return clipboard_; }
 
  private:
-  ui::Clipboard* clipboard_;
+  raw_ptr<ui::Clipboard> clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -337,10 +338,10 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  ui::Clipboard* const clipboard_;
+  const raw_ptr<ui::Clipboard> clipboard_;
   // `FakeClipboardHostImpl` is a `DocumentServiceBase` and manages its own
   // lifetime.
-  FakeClipboardHostImpl* fake_clipboard_host_impl_;
+  raw_ptr<FakeClipboardHostImpl> fake_clipboard_host_impl_;
 };
 
 TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {

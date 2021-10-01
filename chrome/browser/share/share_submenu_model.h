@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARE_SHARE_SUBMENU_MODEL_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
@@ -73,7 +74,7 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
 
   sharing_hub::SharingHubModel* GetSharingHubModel();
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   std::unique_ptr<ui::DataTransferEndpoint> source_endpoint_;
   Context context_;
   GURL url_;

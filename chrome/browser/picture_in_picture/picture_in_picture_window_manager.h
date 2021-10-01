@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 
 namespace content {
@@ -65,7 +66,8 @@ class PictureInPictureWindowManager {
   ~PictureInPictureWindowManager();
 
   std::unique_ptr<ContentsObserver> contents_observer_;
-  content::PictureInPictureWindowController* pip_window_controller_ = nullptr;
+  raw_ptr<content::PictureInPictureWindowController> pip_window_controller_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_

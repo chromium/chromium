@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
@@ -40,9 +41,9 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.
-  WebBluetoothServiceImpl* const web_bluetooth_service_;
+  const raw_ptr<WebBluetoothServiceImpl> web_bluetooth_service_;
   // The RenderFrameHost that owns |web_bluetooth_service_|.
-  RenderFrameHost* const render_frame_host_;
+  const raw_ptr<RenderFrameHost> render_frame_host_;
 
   // The currently opened BluetoothScanningPrompt.
   std::unique_ptr<BluetoothScanningPrompt> prompt_;

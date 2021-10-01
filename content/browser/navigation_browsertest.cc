@@ -15,6 +15,7 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1975,7 +1976,7 @@ class CorsInjectingUrlLoader : public blink::URLLoaderThrottle {
 
  private:
   // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  std::string* last_cors_header_value_;
+  raw_ptr<std::string> last_cors_header_value_;
 };
 
 // ContentBrowserClient responsible for creating CorsInjectingUrlLoader.
@@ -2000,7 +2001,7 @@ class CorsContentBrowserClient : public TestContentBrowserClient {
 
  private:
   // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  std::string* last_cors_header_value_;
+  raw_ptr<std::string> last_cors_header_value_;
 };
 
 class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
@@ -2034,7 +2035,7 @@ class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
   std::string last_cors_header_value_;
   CorsContentBrowserClient cors_content_browser_client_{
       &last_cors_header_value_};
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 };
 
 // Verifies a header added by way of SetRequestHeader() makes it into
@@ -2109,7 +2110,7 @@ class CreateWebContentsOnCrashObserver : public NotificationObserver {
   bool observed_ = false;
 
   GURL url_;
-  WebContents* first_web_contents_;
+  raw_ptr<WebContents> first_web_contents_;
 
   ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 
@@ -3262,7 +3263,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
 
  private:
   std::unique_ptr<BrowserClient> browser_client_;
-  ContentBrowserClient* old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 
@@ -4350,7 +4351,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     }
 
    private:
-    WebContents* web_contents_;
+    raw_ptr<WebContents> web_contents_;
   };
 
   auto inserter = std::make_unique<TestNavigationThrottleInserter>(
@@ -5535,14 +5536,14 @@ class BeginNavigationInCommitCallbackInterceptor
     // At this point, the renderer has already committed the RenderFrame, but
     // on the browser side, the RenderFrameHost is still speculative. Begin
     // another navigation, which should cause `this` to be discarded.
-    EXPECT_TRUE(BeginNavigateToURLFromRenderer(frame_tree_node_, url_));
+    EXPECT_TRUE(BeginNavigateToURLFromRenderer(frame_tree_node_.get(), url_));
 
     // Ignore the commit message.
     return false;
   }
 
  private:
-  FrameTreeNode* const frame_tree_node_;
+  const raw_ptr<FrameTreeNode> frame_tree_node_;
   const GURL url_;
 };
 
@@ -5718,7 +5719,7 @@ class DetachChildFrameInCommitCallbackInterceptor
     // IPCs from b.com out of order (since process DidCommitNavigation has been
     // interrupted by this hook).
     ExecuteScriptAsync(
-        frame_tree_node_,
+        frame_tree_node_.get(),
         JsReplace("document.querySelectorAll('iframe')[$1].remove()",
                   child_to_detach_));
 
@@ -5735,7 +5736,7 @@ class DetachChildFrameInCommitCallbackInterceptor
   }
 
  private:
-  FrameTreeNode* const frame_tree_node_;
+  const raw_ptr<FrameTreeNode> frame_tree_node_;
   const int child_to_detach_;
 };
 

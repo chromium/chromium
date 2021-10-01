@@ -8,6 +8,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -84,8 +85,8 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   void ResetPopupsAndInput(bool render_process_gone);
 
   std::unique_ptr<ResetScrollObserver> reset_scroll_observer_;
-  WebContentsImpl* web_contents_;
-  RenderWidgetHostViewAndroid* rwhva_ = nullptr;
+  raw_ptr<WebContentsImpl> web_contents_;
+  raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
 
   // A weak reference to the Java GestureListenerManager object.
   JavaObjectWeakGlobalRef java_ref_;

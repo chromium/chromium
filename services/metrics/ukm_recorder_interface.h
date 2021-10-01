@@ -5,6 +5,7 @@
 #ifndef SERVICES_METRICS_UKM_RECORDER_INTERFACE_H_
 #define SERVICES_METRICS_UKM_RECORDER_INTERFACE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
@@ -32,7 +33,7 @@ class UkmRecorderInterface : public ukm::mojom::UkmRecorderInterface {
   void AddEntry(ukm::mojom::UkmEntryPtr entry) override;
   void UpdateSourceURL(int64_t source_id, const std::string& url) override;
 
-  ukm::UkmRecorder* ukm_recorder_;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 };
 
 }  // namespace metrics

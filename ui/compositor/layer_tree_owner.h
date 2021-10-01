@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace ui {
@@ -35,7 +36,7 @@ class COMPOSITOR_EXPORT LayerTreeOwner {
   const Layer* root() const { return root_; }
 
  private:
-  Layer* root_;
+  raw_ptr<Layer> root_;
 };
 
 }  // namespace

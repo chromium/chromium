@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/test_data_creator.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
@@ -144,15 +145,15 @@ class PersonalDataManagerCleaner {
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.
-  PersonalDataManager* const personal_data_manager_ = nullptr;
+  const raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
 
   // The PrefService used by this instance.
-  PrefService* const pref_service_ = nullptr;
+  const raw_ptr<PrefService> pref_service_ = nullptr;
 
   // The AlternativeStateNameMapUpdater, used to populate
   // AlternativeStateNameMap with the geographical state data.
-  AlternativeStateNameMapUpdater* const alternative_state_name_map_updater_ =
-      nullptr;
+  const raw_ptr<AlternativeStateNameMapUpdater>
+      alternative_state_name_map_updater_ = nullptr;
 
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.

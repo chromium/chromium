@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -186,7 +187,7 @@ class VIEWS_EXPORT InkDropHost {
 
    private:
     base::ScopedObservation<View, ViewObserver> observation_{this};
-    InkDropHost* const ink_drop_host_;
+    const raw_ptr<InkDropHost> ink_drop_host_;
   };
 
   class InkDropHostEventHandlerDelegate : public InkDropEventHandler::Delegate {
@@ -201,7 +202,7 @@ class VIEWS_EXPORT InkDropHost {
 
    private:
     // The host.
-    InkDropHost* const ink_drop_host_;
+    const raw_ptr<InkDropHost> ink_drop_host_;
   };
 
   const InkDropEventHandler* GetEventHandler() const;
@@ -220,7 +221,7 @@ class VIEWS_EXPORT InkDropHost {
   // AddInkDropLayer().
   void InstallInkDropMask(ui::Layer* ink_drop_layer);
 
-  View* const host_view_;
+  const raw_ptr<View> host_view_;
 
   // Defines what type of |ink_drop_| to create.
   InkDropMode ink_drop_mode_ = views::InkDropHost::InkDropMode::OFF;

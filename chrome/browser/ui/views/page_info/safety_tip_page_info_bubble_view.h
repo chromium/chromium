@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SAFETY_TIP_PAGE_INFO_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SAFETY_TIP_PAGE_INFO_BUBBLE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "components/security_state/core/security_state.h"
@@ -80,9 +81,9 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
   // applicable (for SafetyTipStatus::kLookalike).
   const GURL suggested_url_;
 
-  views::StyledLabel* info_button_ = nullptr;
-  views::Button* ignore_button_ = nullptr;
-  views::Button* leave_button_ = nullptr;
+  raw_ptr<views::StyledLabel> info_button_ = nullptr;
+  raw_ptr<views::Button> ignore_button_ = nullptr;
+  raw_ptr<views::Button> leave_button_ = nullptr;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;
   SafetyTipInteraction action_taken_ = SafetyTipInteraction::kNoAction;
 };

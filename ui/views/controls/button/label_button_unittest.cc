@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -124,14 +125,14 @@ class LabelButtonTest : public test::WidgetTest {
   }
 
  protected:
-  TestLabelButton* button_ = nullptr;
+  raw_ptr<TestLabelButton> button_ = nullptr;
 
   SkColor themed_normal_text_color_ = 0;
   SkColor styled_normal_text_color_ = 0;
   SkColor styled_highlight_text_color_ = 0;
 
  private:
-  Widget* test_widget_ = nullptr;
+  raw_ptr<Widget> test_widget_ = nullptr;
 };
 
 TEST_F(LabelButtonTest, FocusBehavior) {
@@ -785,7 +786,7 @@ class InkDropLabelButtonTest : public ViewsTestBase {
 
     test_ink_drop_ = new test::TestInkDrop();
     test::InkDropHostTestApi(InkDrop::Get(button_))
-        .SetInkDrop(base::WrapUnique(test_ink_drop_));
+        .SetInkDrop(base::WrapUnique(test_ink_drop_.get()));
   }
 
   void TearDown() override {
@@ -798,10 +799,10 @@ class InkDropLabelButtonTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
 
   // The test target.
-  LabelButton* button_ = nullptr;
+  raw_ptr<LabelButton> button_ = nullptr;
 
   // Weak ptr, |button_| owns the instance.
-  test::TestInkDrop* test_ink_drop_ = nullptr;
+  raw_ptr<test::TestInkDrop> test_ink_drop_ = nullptr;
 };
 
 TEST_F(InkDropLabelButtonTest, HoverStateAfterMouseEnterAndExitEvents) {
@@ -872,9 +873,9 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
         std::make_unique<TestLabelButton>());
   }
 
-  TestLabelButton* button_ = nullptr;
-  Widget* test_widget_ = nullptr;
-  Widget* dummy_widget_ = nullptr;
+  raw_ptr<TestLabelButton> button_ = nullptr;
+  raw_ptr<Widget> test_widget_ = nullptr;
+  raw_ptr<Widget> dummy_widget_ = nullptr;
   Button::ButtonState style_of_inactive_widget_;
 };
 

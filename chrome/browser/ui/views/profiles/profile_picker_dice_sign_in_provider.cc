@@ -278,5 +278,5 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   // Stop the sign-in: hide the toolbar and disallow navigating back (without
   // navigating to any other page).
   host_->ShowScreen(contents(), GURL(), /*show_toolbar=*/false);
-  std::move(callback_).Run(profile_, std::move(contents_), is_saml);
+  std::move(callback_).Run(profile_.get(), std::move(contents_), is_saml);
 }

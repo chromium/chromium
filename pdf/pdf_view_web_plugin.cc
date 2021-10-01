@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
@@ -228,7 +229,7 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   blink::WebPluginContainer* Container() override { return container_; }
 
  private:
-  blink::WebPluginContainer* const container_;
+  const raw_ptr<blink::WebPluginContainer> container_;
 };
 
 }  // namespace

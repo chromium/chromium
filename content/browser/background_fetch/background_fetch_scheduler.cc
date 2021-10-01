@@ -341,7 +341,7 @@ BackgroundFetchScheduler::CreateInitializedController(
       registration_data.upload_total,
       // Safe because JobControllers are destroyed before RegistrationNotifier.
       base::BindRepeating(&BackgroundFetchRegistrationNotifier::Notify,
-                          base::Unretained(registration_notifier_)),
+                          base::Unretained(registration_notifier_.get())),
       base::BindOnce(&BackgroundFetchScheduler::FinishJob,
                      weak_ptr_factory_.GetWeakPtr()));
 

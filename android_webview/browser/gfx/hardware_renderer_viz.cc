@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -58,7 +59,7 @@ class ContextReleaser {
   ~ContextReleaser() { state_->ReleaseCurrent(nullptr); }
 
  private:
-  gpu::SharedContextState* const state_;
+  const raw_ptr<gpu::SharedContextState> state_;
 };
 
 }  // namespace
@@ -121,7 +122,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
 
   // Initialized in ctor and never changes, so it's safe to access from both
   // threads. Can be null, if overlays are disabled.
-  OverlayProcessorWebView* overlay_processor_webview_ = nullptr;
+  raw_ptr<OverlayProcessorWebView> overlay_processor_webview_ = nullptr;
 
   THREAD_CHECKER(viz_thread_checker_);
 };

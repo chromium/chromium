@@ -4,6 +4,7 @@
 
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -91,7 +92,7 @@ class Receiver final : public network::mojom::CrossOriginOpenerPolicyReporter {
   }
 
   // |reporter_| is always valid, because it owns |this|.
-  const content::CrossOriginOpenerPolicyReporter* reporter_;
+  raw_ptr<const content::CrossOriginOpenerPolicyReporter> reporter_;
   const std::string initial_popup_url_;
 };
 

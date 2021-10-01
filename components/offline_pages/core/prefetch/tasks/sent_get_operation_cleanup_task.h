@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_SENT_GET_OPERATION_CLEANUP_TASK_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -33,8 +34,9 @@ class SentGetOperationCleanupTask : public Task {
   void Run() override;
   void OnFinished(bool success);
 
-  PrefetchStore* prefetch_store_;                   // Outlives this class.
-  PrefetchNetworkRequestFactory* request_factory_;  // Outlives this class.
+  raw_ptr<PrefetchStore> prefetch_store_;  // Outlives this class.
+  raw_ptr<PrefetchNetworkRequestFactory>
+      request_factory_;  // Outlives this class.
 
   base::WeakPtrFactory<SentGetOperationCleanupTask> weak_ptr_factory_{this};
 };

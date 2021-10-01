@@ -13,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -366,10 +367,10 @@ class FaviconHandler {
   favicon_base::IconType notification_icon_type_;
 
   // The CoreFaviconService which implements favicon operations. May be null.
-  CoreFaviconService* service_;
+  raw_ptr<CoreFaviconService> service_;
 
   // This handler's delegate.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The index of the favicon URL in |image_urls_| which is currently being
   // requested from history or downloaded.

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -102,7 +103,7 @@ class SyncSocketServerListener : public IPC::Listener {
   // which causes the message loop to exit.
   void OnMsgClassShutdown() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
 
-  IPC::Channel* chan_;
+  raw_ptr<IPC::Channel> chan_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncSocketServerListener);
 };
@@ -155,8 +156,8 @@ class SyncSocketClientListener : public IPC::Listener {
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
-  base::SyncSocket* socket_;
-  IPC::Channel* chan_;
+  raw_ptr<base::SyncSocket> socket_;
+  raw_ptr<IPC::Channel> chan_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncSocketClientListener);
 };

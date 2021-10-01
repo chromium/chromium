@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -364,7 +365,7 @@ class ChromePasswordManagerClient
       content::RenderFrameHost* frame_host,
       const gfx::RectF& bounds_in_frame_coordinates);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
@@ -394,7 +395,8 @@ class ChromePasswordManagerClient
       generated_password_saved_message_delegate_;
 #endif  // defined(OS_ANDROID)
 
-  password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
+  raw_ptr<password_manager::ContentPasswordManagerDriverFactory>
+      driver_factory_;
 
   ChromeWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 
@@ -407,7 +409,7 @@ class ChromePasswordManagerClient
       password_generation_driver_receivers_;
 
   // Observer for password generation popup.
-  PasswordGenerationPopupObserver* observer_;
+  raw_ptr<PasswordGenerationPopupObserver> observer_;
 
   // Controls the popup
   base::WeakPtr<PasswordGenerationPopupControllerImpl> popup_controller_;

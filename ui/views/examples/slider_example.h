@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_SLIDER_EXAMPLE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/examples/example_base.h"
 
@@ -34,10 +35,10 @@ class VIEWS_EXAMPLES_EXPORT SliderExample : public ExampleBase,
                           float old_value,
                           SliderChangeReason reason) override;
 
-  Slider* slider_default_ = nullptr;
-  Slider* slider_minimal_ = nullptr;
-  Label* label_default_ = nullptr;
-  Label* label_minimal_ = nullptr;
+  raw_ptr<Slider> slider_default_ = nullptr;
+  raw_ptr<Slider> slider_minimal_ = nullptr;
+  raw_ptr<Label> label_default_ = nullptr;
+  raw_ptr<Label> label_minimal_ = nullptr;
 };
 
 }  // namespace examples

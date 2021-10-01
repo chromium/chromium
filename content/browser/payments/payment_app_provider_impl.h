@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/payments/payment_event_dispatcher.h"
 #include "content/common/content_export.h"
@@ -86,7 +87,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   base::WeakPtr<WebContents> payment_handler_window_;
 
   // Owns this object.
-  WebContents* payment_request_web_contents_;
+  raw_ptr<WebContents> payment_request_web_contents_;
 
   std::unique_ptr<PaymentEventDispatcher> event_dispatcher_;
 

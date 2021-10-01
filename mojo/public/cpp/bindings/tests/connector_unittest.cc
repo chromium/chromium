@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -62,7 +63,7 @@ class ConnectorDeletingMessageAccumulator : public MessageAccumulator {
   }
 
  private:
-  Connector** connector_;
+  raw_ptr<Connector*> connector_;
 };
 
 class ReentrantMessageAccumulator : public MessageAccumulator {
@@ -83,7 +84,7 @@ class ReentrantMessageAccumulator : public MessageAccumulator {
   int number_of_calls() { return number_of_calls_; }
 
  private:
-  Connector* connector_;
+  raw_ptr<Connector> connector_;
   int number_of_calls_;
 };
 

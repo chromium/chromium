@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/model/data_batch.h"
@@ -109,7 +110,7 @@ class SessionStore {
     std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch_;
     CommitCallback commit_cb_;
     syncer::OnceModelErrorHandler error_handler_;
-    SyncedSessionTracker* const session_tracker_;
+    const raw_ptr<SyncedSessionTracker> session_tracker_;
   };
 
   ~SessionStore();
@@ -164,7 +165,7 @@ class SessionStore {
   // In charge of actually persisting changes to disk.
   const std::unique_ptr<syncer::ModelTypeStore> store_;
 
-  SyncSessionsClient* const sessions_client_;
+  const raw_ptr<SyncSessionsClient> sessions_client_;
 
   SyncedSessionTracker session_tracker_;
 

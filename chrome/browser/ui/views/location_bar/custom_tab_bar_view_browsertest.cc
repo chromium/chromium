@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -77,8 +78,8 @@ class TestTitleObserver : public TabStripModelObserver {
  private:
   bool seen_target_title_ = false;
 
-  content::WebContents* contents_;
-  Browser* browser_;
+  raw_ptr<content::WebContents> contents_;
+  raw_ptr<Browser> browser_;
   std::u16string target_title_;
   base::RunLoop awaiter_;
 };
@@ -222,11 +223,11 @@ class CustomTabBarViewBrowserTest
     Install(std::move(web_app_info));
   }
 
-  BrowserView* browser_view_;
-  LocationBarView* location_bar_;
-  CustomTabBarView* custom_tab_bar_;
-  Browser* app_browser_ = nullptr;
-  web_app::AppBrowserController* app_controller_ = nullptr;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<LocationBarView> location_bar_;
+  raw_ptr<CustomTabBarView> custom_tab_bar_;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<web_app::AppBrowserController> app_controller_ = nullptr;
 
  private:
   void Install(std::unique_ptr<WebApplicationInfo> web_app_info) {

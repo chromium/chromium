@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_delegate.h"
@@ -204,7 +205,7 @@ class BrowserCommandController : public CommandUpdater,
   inline BrowserWindow* window();
   inline Profile* profile();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // The CommandUpdaterImpl that manages the browser window commands.
   CommandUpdaterImpl command_updater_;

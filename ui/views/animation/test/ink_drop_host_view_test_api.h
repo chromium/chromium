@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 
@@ -53,7 +54,7 @@ class InkDropHostTestApi {
 
  private:
   // The InkDropHost to provide internal access to.
-  InkDropHost* ink_drop_host_;
+  raw_ptr<InkDropHost> ink_drop_host_;
 };
 
 }  // namespace test

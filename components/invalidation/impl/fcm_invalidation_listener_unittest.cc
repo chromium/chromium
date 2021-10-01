@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
@@ -183,7 +184,7 @@ class FCMInvalidationListenerTest : public testing::Test {
         kExtensionsTopic_("EXTENSION"),
         kAppsTopic_("APP"),
         fcm_sync_network_channel_(new TestFCMSyncNetworkChannel()),
-        listener_(base::WrapUnique(fcm_sync_network_channel_)),
+        listener_(base::WrapUnique(fcm_sync_network_channel_.get())),
         fake_delegate_(&listener_) {}
 
   void SetUp() override {
@@ -269,8 +270,8 @@ class FCMInvalidationListenerTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  TestFCMSyncNetworkChannel* fcm_sync_network_channel_;
-  MockSubscriptionManager* subscription_manager_;
+  raw_ptr<TestFCMSyncNetworkChannel> fcm_sync_network_channel_;
+  raw_ptr<MockSubscriptionManager> subscription_manager_;
 
  protected:
   // Tests need to access these directly.

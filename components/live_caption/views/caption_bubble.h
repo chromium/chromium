@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/native_theme/caption_style.h"
@@ -144,19 +145,19 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnInactivityTimeout();
 
   // Unowned. Owned by views hierarchy.
-  CaptionBubbleLabel* label_;
-  views::Label* title_;
-  views::Label* error_text_;
-  views::ImageView* error_icon_;
-  views::View* error_message_;
-  views::ImageButton* back_to_tab_button_;
-  views::ImageButton* close_button_;
-  views::ImageButton* expand_button_;
-  views::ImageButton* collapse_button_;
-  CaptionBubbleFrameView* frame_;
+  raw_ptr<CaptionBubbleLabel> label_;
+  raw_ptr<views::Label> title_;
+  raw_ptr<views::Label> error_text_;
+  raw_ptr<views::ImageView> error_icon_;
+  raw_ptr<views::View> error_message_;
+  raw_ptr<views::ImageButton> back_to_tab_button_;
+  raw_ptr<views::ImageButton> close_button_;
+  raw_ptr<views::ImageButton> expand_button_;
+  raw_ptr<views::ImageButton> collapse_button_;
+  raw_ptr<CaptionBubbleFrameView> frame_;
 
   absl::optional<ui::CaptionStyle> caption_style_;
-  CaptionBubbleModel* model_ = nullptr;
+  raw_ptr<CaptionBubbleModel> model_ = nullptr;
 
   base::ScopedClosureRunner destroyed_callback_;
 
@@ -171,7 +172,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.
   std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

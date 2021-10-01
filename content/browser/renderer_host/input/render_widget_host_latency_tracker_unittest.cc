@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -158,7 +159,7 @@ class RenderWidgetHostLatencyTrackerTest
   std::unique_ptr<RenderWidgetHostLatencyTracker> tracker_;
   ui::LatencyTracker viz_tracker_;
   RenderWidgetHostLatencyTrackerTestBrowserClient test_browser_client_;
-  ContentBrowserClient* old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostLatencyTrackerTest);
 };
 

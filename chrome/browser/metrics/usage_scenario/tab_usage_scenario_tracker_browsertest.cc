@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -132,7 +133,7 @@ class TabUsageScenarioTrackerBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::SimpleTestTickClock tick_clock_;
-  TabStatsTracker* tab_stats_tracker_{nullptr};
+  raw_ptr<TabStatsTracker> tab_stats_tracker_{nullptr};
   UsageScenarioDataStoreImpl data_store_;
   std::unique_ptr<TabUsageScenarioTracker> tab_usage_scenario_tracker_;
 };

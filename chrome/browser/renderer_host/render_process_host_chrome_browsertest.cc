@@ -6,6 +6,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -594,7 +595,7 @@ class WindowDestroyer : public content::WebContentsObserver {
   }
 
  private:
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 // Test to ensure that while iterating through all listeners in
@@ -717,7 +718,7 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
   base::Process audio_process_;
   base::Process no_audio_process_;
 
-  content::WebContents* audio_tab_web_contents_;
+  raw_ptr<content::WebContents> audio_tab_web_contents_;
 
  private:
   bool IsProcessBackgrounded(const base::Process& process) {
@@ -748,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
   WaitUntilBackgrounded(no_audio_process_, true, audio_process_, false);
   // Pause the audio and immediately switch to the no audio tab.
   ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_,
+      audio_tab_web_contents_.get(),
       "document.getElementById('audioPlayer').pause();"));
   ShowSingletonTab(no_audio_url_);
 
@@ -769,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
   WaitUntilBackgrounded(audio_process_, false, no_audio_process_, false);
   // Stop the audio.
   ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_,
+      audio_tab_web_contents_.get(),
       "document.getElementById('audioPlayer').pause();"));
 
   // Wait until the no audio page is not backgrounded and the audio page is
@@ -788,14 +789,14 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
 
   // Stop the audio.
   ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_,
+      audio_tab_web_contents_.get(),
       "document.getElementById('audioPlayer').pause();"));
 
   WaitUntilBackgrounded(no_audio_process_, false, audio_process_, true);
 
   // Start the audio from the backgrounded tab.
   ASSERT_TRUE(
-      content::ExecuteScript(audio_tab_web_contents_,
+      content::ExecuteScript(audio_tab_web_contents_.get(),
                              "document.getElementById('audioPlayer').play();"));
 
   // Wait until the two pages are not backgrounded.

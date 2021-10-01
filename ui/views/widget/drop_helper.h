@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -118,10 +119,10 @@ class VIEWS_EXPORT DropHelper {
   void NotifyDragExit();
 
   // RootView we were created for.
-  View* root_view_;
+  raw_ptr<View> root_view_;
 
   // View we're targeting events at.
-  View* target_view_;
+  raw_ptr<View> target_view_;
 
   // The deepest view under the current drop coordinate.
   View* deepest_view_;

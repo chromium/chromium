@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -606,7 +607,7 @@ class CacheStorageDispatcherHost::CacheImpl
   }
 
   // Owns this.
-  CacheStorageDispatcherHost* const host_;
+  const raw_ptr<CacheStorageDispatcherHost> host_;
 
   CacheStorageCacheHandle cache_handle_;
   const blink::StorageKey storage_key_;
@@ -952,7 +953,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   }
 
   // Owns this.
-  CacheStorageDispatcherHost* const host_;
+  const raw_ptr<CacheStorageDispatcherHost> host_;
 
   const blink::StorageKey storage_key_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;

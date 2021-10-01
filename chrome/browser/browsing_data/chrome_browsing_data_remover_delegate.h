@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -182,7 +183,7 @@ class ChromeBrowsingDataRemoverDelegate
 #endif
 
   // The profile for which the data will be deleted.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Prevents |profile_| from getting deleted. Only active between
   // OnStartRemoving() and OnDoneRemoving(), i.e. while there are tasks in

@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -282,7 +283,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // https://crbug.com/1051937 this isn't currently possible.
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  const VariationsClient* variations_client_ = nullptr;
+  raw_ptr<const VariationsClient> variations_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsIdsProvider);
 };

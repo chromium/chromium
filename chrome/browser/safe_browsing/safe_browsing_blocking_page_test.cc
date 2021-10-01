@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -339,7 +340,7 @@ class TestThreatDetailsFactory : public ThreatDetailsFactory {
   ThreatDetails* get_details() { return details_; }
 
  private:
-  ThreatDetails* details_;
+  raw_ptr<ThreatDetails> details_;
 };
 
 // A SafeBrowingBlockingPage class that lets us wait until it's hidden.
@@ -814,7 +815,7 @@ class SafeBrowsingBlockingPageBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestSafeBrowsingServiceFactory factory_;
-  TestSafeBrowsingBlockingPageFactory* raw_blocking_page_factory_;
+  raw_ptr<TestSafeBrowsingBlockingPageFactory> raw_blocking_page_factory_;
   net::EmbeddedTestServer https_server_;
 };
 

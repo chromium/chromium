@@ -23,6 +23,7 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
@@ -870,7 +871,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     }
   };
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   bool is_web_view_request_;
   ukm::SourceIdObj ukm_source_id_;
 

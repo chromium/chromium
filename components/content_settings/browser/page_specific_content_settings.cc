@@ -304,7 +304,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(
           delegate_->GetIsDeletionDisabledCallback()),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
   DCHECK(!main_frame_->GetParent());
-  observation_.Observe(map_);
+  observation_.Observe(map_.get());
   if (main_frame_->GetLifecycleState() ==
       content::RenderFrameHost::LifecycleState::kPrerendering) {
     updates_queued_during_prerender_ = std::make_unique<PendingUpdates>();

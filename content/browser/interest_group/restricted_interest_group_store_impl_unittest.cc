@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
 #include <memory>
@@ -322,8 +323,8 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   base::test::ScopedFeatureList feature_list_;
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
-  ContentBrowserClient* old_content_browser_client_ = nullptr;
-  InterestGroupManager* manager_;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
+  raw_ptr<InterestGroupManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -158,8 +159,9 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
       cloned_tab_observer_;
-  printing::TestPrintViewManagerForRequestPreview* test_print_view_manager_;
-  WebContents* initiator_ = nullptr;
+  raw_ptr<printing::TestPrintViewManagerForRequestPreview>
+      test_print_view_manager_;
+  raw_ptr<WebContents> initiator_ = nullptr;
 };
 
 class PrintPreviewDialogControllerBrowserTestWithUnseasonedOverride

@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "url/gurl.h"
@@ -80,7 +81,7 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
     // The infobar being shown in a given tab. The
     // infobars::ContentInfoBarManager maintains ownership of this object. This
     // struct must always be destroyed before the infobar it tracks.
-    infobars::InfoBar* infobar;
+    raw_ptr<infobars::InfoBar> infobar;
     // Connectability queries outstanding on this infobar.
     std::vector<base::OnceCallback<void(bool)>> callbacks;
   };

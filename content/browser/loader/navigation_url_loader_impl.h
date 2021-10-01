@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader.h"
@@ -208,10 +209,10 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
-  NavigationURLLoaderDelegate* delegate_;
-  BrowserContext* browser_context_;
-  StoragePartitionImpl* storage_partition_;
-  ServiceWorkerMainResourceHandle* service_worker_handle_;
+  raw_ptr<NavigationURLLoaderDelegate> delegate_;
+  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<StoragePartitionImpl> storage_partition_;
+  raw_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   std::unique_ptr<network::ResourceRequest> resource_request_;
   std::unique_ptr<NavigationRequestInfo> request_info_;

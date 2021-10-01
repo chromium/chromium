@@ -47,9 +47,9 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     : parent_(parent),
       source_id_(source_id),
       selected_(false) {
-  AddChildView(icon_view_);
-  AddChildView(image_view_);
-  AddChildView(label_);
+  AddChildView(icon_view_.get());
+  AddChildView(image_view_.get());
+  AddChildView(label_.get());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);

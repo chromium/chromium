@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
@@ -319,7 +320,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // null. If |store_| is null, then NEL policies will be in-memory only.
   // The store is owned by the URLRequestContext because Reporting also needs
   // access to it.
-  PersistentNelStore* store_;
+  raw_ptr<PersistentNelStore> store_;
 
   // Set to true when we have told the store to load NEL policies. This is to
   // make sure we don't try to load policies multiple times.

@@ -266,7 +266,7 @@ View* FocusManager::GetNextFocusableView(View* original_starting_view,
       }
     }
   } else {
-    Widget* widget = starting_widget ? starting_widget : widget_;
+    Widget* widget = starting_widget ? starting_widget : widget_.get();
     focus_traversable = widget->GetFocusTraversable();
   }
 
@@ -670,7 +670,7 @@ bool FocusManager::IsArrowKeyTraversalEnabledForWidget() const {
 
   Widget* const widget = (focused_view_ && focused_view_->GetWidget())
                              ? focused_view_->GetWidget()
-                             : widget_;
+                             : widget_.get();
   return widget && widget->widget_delegate() &&
          widget->widget_delegate()->enable_arrow_key_traversal();
 }

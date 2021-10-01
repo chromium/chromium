@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_PROGRESS_BAR_EXAMPLE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -28,7 +29,7 @@ class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase {
  private:
   void ButtonPressed(double step);
 
-  ProgressBar* progress_bar_ = nullptr;
+  raw_ptr<ProgressBar> progress_bar_ = nullptr;
   double current_percent_ = 0.0;
 };
 

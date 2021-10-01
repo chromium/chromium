@@ -86,10 +86,10 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       footnote_margins_(content_margins_),
       title_icon_(new views::ImageView()),
       default_title_(CreateDefaultTitleLabel(std::u16string()).release()) {
-  AddChildView(title_icon_);
+  AddChildView(title_icon_.get());
 
   default_title_->SetVisible(false);
-  AddChildView(default_title_);
+  AddChildView(default_title_.get());
 
   auto close = CreateCloseButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {

@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -119,7 +120,7 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     }
 
     base::RepeatingClosure next_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    raw_ptr<safe_browsing::ArchiveAnalyzerResults> results_;
   };
   // |analzyer_| should be destroyed after task_environment, so that any other
   // threads with objects holding references to it will be shut down first.

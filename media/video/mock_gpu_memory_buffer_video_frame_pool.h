@@ -6,6 +6,7 @@
 #define MEDIA_VIDEO_MOCK_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -22,7 +23,7 @@ class MockGpuMemoryBufferVideoFramePool : public GpuMemoryBufferVideoFramePool {
   MOCK_METHOD0(Abort, void());
 
  private:
-  std::vector<base::OnceClosure>* frame_ready_cbs_;
+  raw_ptr<std::vector<base::OnceClosure>> frame_ready_cbs_;
 };
 
 }  // namespace media

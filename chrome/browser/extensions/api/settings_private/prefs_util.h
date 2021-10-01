@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
@@ -109,7 +110,7 @@ class PrefsUtil {
   const Extension* GetExtensionControllingPref(
       const api::settings_private::PrefObject& pref_object);
 
-  Profile* profile_;  // weak
+  raw_ptr<Profile> profile_;  // weak
 };
 
 }  // namespace extensions

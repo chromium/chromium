@@ -178,7 +178,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
                           base::Unretained(this)),
       base::BindRepeating(&SyncServiceImpl::StartUpSlowEngineComponents,
                           base::Unretained(this)),
-      should_wait_for_policies ? init_params.policy_service : nullptr);
+      should_wait_for_policies ? init_params.policy_service.get() : nullptr);
 
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
       sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_,

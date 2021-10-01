@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -164,7 +165,7 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
   }
 
  private:
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 };
 
 ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(

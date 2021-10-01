@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/entity_data.h"
@@ -59,7 +60,7 @@ class TestMetadataChangeList : public MetadataChangeList {
   }
 
  private:
-  FakeModelTypeSyncBridge::Store* db_;
+  raw_ptr<FakeModelTypeSyncBridge::Store> db_;
 };
 
 }  // namespace

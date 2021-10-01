@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -133,7 +134,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     ConnectJob* ReleaseJob();
 
    private:
-    ClientSocketHandle* const handle_;
+    const raw_ptr<ClientSocketHandle> handle_;
     CompletionOnceCallback callback_;
     const ProxyAuthCallback proxy_auth_callback_;
     RequestPriority priority_;
@@ -143,7 +144,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
-    ConnectJob* job_;
+    raw_ptr<ConnectJob> job_;
   };
 
   TransportClientSocketPool(
@@ -533,7 +534,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     void SanityCheck() const;
 
     const GroupId group_id_;
-    TransportClientSocketPool* const client_socket_pool_;
+    const raw_ptr<TransportClientSocketPool> client_socket_pool_;
 
     // Total number of ConnectJobs that have never been assigned to a Request.
     // Since jobs use late binding to requests, which ConnectJobs have or have
@@ -790,7 +791,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // their idle sockets when it stalls.  Must be empty on destruction.
   std::set<HigherLayeredPool*> higher_pools_;
 
-  SSLClientContext* const ssl_client_context_;
+  const raw_ptr<SSLClientContext> ssl_client_context_;
 
   base::WeakPtrFactory<TransportClientSocketPool> weak_factory_{this};
 

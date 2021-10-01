@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 typedef std::vector<std::string> HandlerSequenceRecorder;
@@ -59,7 +60,7 @@ class TestEventHandler : public EventHandler {
   int num_touch_events_;
   int num_gesture_events_;
 
-  HandlerSequenceRecorder* recorder_;
+  raw_ptr<HandlerSequenceRecorder> recorder_;
   std::string handler_name_;
 };
 

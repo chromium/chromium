@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
@@ -59,7 +60,7 @@ class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
   // It is owned by InputHandler class, which is used to keep the states of the
   // previous synthetic events when a sequence of actions are dispatched one by
   // one.
-  SyntheticPointerDriver* synthetic_pointer_driver_ = nullptr;
+  raw_ptr<SyntheticPointerDriver> synthetic_pointer_driver_ = nullptr;
   content::mojom::GestureSourceType gesture_source_type_;
   GestureState state_;
   size_t num_actions_dispatched_;

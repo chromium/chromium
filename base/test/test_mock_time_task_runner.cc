@@ -10,6 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -84,7 +85,7 @@ class TestMockTimeTaskRunner::NonOwningProxyTaskRunner
   ~NonOwningProxyTaskRunner() override = default;
 
   mutable Lock lock_;
-  SingleThreadTaskRunner* target_;  // guarded by lock_
+  raw_ptr<SingleThreadTaskRunner> target_;  // guarded by lock_
 
   // Used to implement RunsTasksInCurrentSequence, without relying on |target_|.
   ThreadCheckerImpl thread_checker_;

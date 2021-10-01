@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -2484,7 +2485,7 @@ class CodeCacheHostInterceptor
   // These can be held as raw pointers since we use the
   // RenderFrameHostObserver interface to clear them before they are
   // destroyed.
-  CodeCacheHostImpl* code_cache_host_impl_;
+  raw_ptr<CodeCacheHostImpl> code_cache_host_impl_;
 };
 
 class CacheStorageControlForBadOrigin

@@ -342,7 +342,7 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&cast_channel::CastSocketService::RemoveSocket),
-          base::Unretained(cast_socket_service_), socket_id));
+          base::Unretained(cast_socket_service_.get()), socket_id));
 
   // Remove existing cast sink from |sinks|. It will be added back if
   // it can be successfully reconnected.

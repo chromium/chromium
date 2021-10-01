@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_GET_IMAGES_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_GET_IMAGES_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"
@@ -49,7 +50,7 @@ class GetImagesTask : public Task {
 
   void FinishedExecuting(EncodedImageList images);
 
-  ExploreSitesStore* store_;  // outlives this class.
+  raw_ptr<ExploreSitesStore> store_;  // outlives this class.
 
   DataType data_type_;
   int id_;

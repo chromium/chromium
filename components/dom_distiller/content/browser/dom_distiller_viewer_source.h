@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 
@@ -50,7 +51,7 @@ class DomDistillerViewerSource : public content::URLDataSource {
 
   // The service which contains all the functionality needed to interact with
   // the list of articles.
-  DomDistillerServiceInterface* dom_distiller_service_;
+  raw_ptr<DomDistillerServiceInterface> dom_distiller_service_;
 };
 
 }  // namespace dom_distiller

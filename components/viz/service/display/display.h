@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
@@ -259,15 +260,15 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // ContextLostObserver implementation.
   void OnContextLost() override;
 
-  SharedBitmapManager* const bitmap_manager_;
+  const raw_ptr<SharedBitmapManager> bitmap_manager_;
   const RendererSettings settings_;
 
   // Points to the viz-global singleton.
-  const DebugRendererSettings* const debug_settings_;
+  const raw_ptr<const DebugRendererSettings> debug_settings_;
 
-  DisplayClient* client_ = nullptr;
+  raw_ptr<DisplayClient> client_ = nullptr;
   base::ObserverList<DisplayObserver>::Unchecked observers_;
-  SurfaceManager* surface_manager_ = nullptr;
+  raw_ptr<SurfaceManager> surface_manager_ = nullptr;
   const FrameSinkId frame_sink_id_;
   SurfaceId current_surface_id_;
   gfx::Size current_surface_size_;
@@ -283,7 +284,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 #endif
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> gpu_dependency_;
   std::unique_ptr<OutputSurface> output_surface_;
-  SkiaOutputSurface* const skia_output_surface_;
+  const raw_ptr<SkiaOutputSurface> skia_output_surface_;
   std::unique_ptr<DisplayDamageTracker> damage_tracker_;
   std::unique_ptr<DisplaySchedulerBase> scheduler_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
@@ -293,7 +294,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // This may be null if the Display is on a thread without a MessageLoop.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;
   std::unique_ptr<DirectRenderer> renderer_;
-  SoftwareRenderer* software_renderer_ = nullptr;
+  raw_ptr<SoftwareRenderer> software_renderer_ = nullptr;
   // Currently, this OverlayProcessor takes raw pointer to memory tracker, which
   // is owned by the OutputSurface. This OverlayProcessor also takes resource
   // locks which contains raw pointers to DisplayResourceProvider. Make sure

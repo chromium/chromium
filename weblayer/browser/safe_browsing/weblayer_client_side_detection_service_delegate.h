@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "weblayer/browser/browser_context_impl.h"
 
@@ -31,7 +32,7 @@ class WebLayerClientSideDetectionServiceDelegate
   safe_browsing::ChromeUserPopulation GetUserPopulation() override;
 
  private:
-  BrowserContextImpl* browser_context_;
+  raw_ptr<BrowserContextImpl> browser_context_;
 };
 
 }  // namespace weblayer

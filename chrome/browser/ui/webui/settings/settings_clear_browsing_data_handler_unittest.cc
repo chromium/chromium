@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
@@ -58,7 +59,7 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingClearBrowsingDataHandler> handler_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> dse_factory_util_;
-  TemplateURLService* template_url_service;
+  raw_ptr<TemplateURLService> template_url_service;
 };
 
 void ClearBrowsingDataHandlerUnitTest::SetUp() {

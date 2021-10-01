@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -160,7 +161,7 @@ class ScopedCursorHider {
   }
 
  private:
-  Window* window_;
+  raw_ptr<Window> window_;
   bool hid_cursor_;
 };
 
@@ -346,7 +347,7 @@ WindowTreeHost* Window::GetHost() {
 
 const WindowTreeHost* Window::GetHost() const {
   const Window* root_window = GetRootWindow();
-  return root_window ? root_window->host_ : nullptr;
+  return root_window ? root_window->host_.get() : nullptr;
 }
 
 void Window::Show() {

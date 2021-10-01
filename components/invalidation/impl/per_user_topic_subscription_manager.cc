@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -103,7 +104,7 @@ class PerProjectDictionaryPrefUpdate {
 
  private:
   DictionaryPrefUpdate update_;
-  base::Value* per_sender_pref_;
+  raw_ptr<base::Value> per_sender_pref_;
 };
 
 // Added in M76.

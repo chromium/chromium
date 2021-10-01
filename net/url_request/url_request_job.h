@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
@@ -361,7 +362,7 @@ class NET_EXPORT URLRequestJob {
   void ReadRawDataComplete(int bytes_read);
 
   // The request that initiated this job. This value will never be nullptr.
-  URLRequest* const request_;
+  const raw_ptr<URLRequest> request_;
 
  private:
   class URLRequestJobSourceStream;

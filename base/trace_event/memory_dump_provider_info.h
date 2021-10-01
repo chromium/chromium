@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/memory_dump_provider.h"
 
@@ -66,7 +67,7 @@ struct BASE_EXPORT MemoryDumpProviderInfo
   // It is safe to access the const fields below from any thread as they are
   // never mutated.
 
-  MemoryDumpProvider* const dump_provider;
+  const raw_ptr<MemoryDumpProvider> dump_provider;
 
   // The |options| arg passed to MDM::RegisterDumpProvider().
   const MemoryDumpProvider::Options options;

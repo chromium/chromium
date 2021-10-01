@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
@@ -104,10 +105,10 @@ class TabStatsTracker : public TabStripModelObserver,
 
    private:
     // The delegate used to report the metrics.
-    UmaStatsReportingDelegate* reporting_delegate_;
+    raw_ptr<UmaStatsReportingDelegate> reporting_delegate_;
 
     // The data store that houses the metrics.
-    TabStatsDataStore* data_store_;
+    raw_ptr<TabStatsDataStore> data_store_;
   };
 
   // Accessors, exposed for unittests:

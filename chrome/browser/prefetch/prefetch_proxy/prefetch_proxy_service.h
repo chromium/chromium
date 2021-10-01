@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/content_browser_client.h"
@@ -75,7 +76,7 @@ class PrefetchProxyService : public KeyedService {
   void CleanupNoStatePrefetchResponse(const GURL& url);
 
   // The current profile, not owned.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The custom proxy configurator for Prefetch Proxy.
   std::unique_ptr<PrefetchProxyProxyConfigurator> proxy_configurator_;

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -62,7 +63,7 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
   void OnPersonalDataChanged() override { message_loop_runner_->Quit(); }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

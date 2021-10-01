@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -150,10 +151,10 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void AddBeginFrameRequest(BeginFrameRequestType request);
   void ClearBeginFrameRequest(BeginFrameRequestType request);
 
-  RenderWidgetHostViewAndroid* const rwhva_;
-  SynchronousCompositorClient* const client_;
+  const raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
+  const raw_ptr<SynchronousCompositorClient> client_;
   const viz::FrameSinkId frame_sink_id_;
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   const bool use_in_process_zero_copy_software_draw_;
   mojo::AssociatedRemote<blink::mojom::SynchronousCompositor> sync_compositor_;
   mojo::AssociatedReceiver<blink::mojom::SynchronousCompositorHost>
@@ -208,7 +209,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   uint32_t outstanding_begin_frame_requests_ = 0;
 
   // The begin frame source being observed.  Null if none.
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
   viz::BeginFrameArgs last_begin_frame_args_;
   viz::FrameTimingDetailsMap timing_details_;
 };

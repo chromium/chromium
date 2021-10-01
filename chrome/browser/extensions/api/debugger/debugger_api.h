@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/debugger.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "extensions/browser/extension_function.h"
@@ -39,7 +40,7 @@ class DebuggerFunction : public ExtensionFunction {
 
   Debuggee debuggee_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  ExtensionDevToolsClientHost* client_host_;
+  raw_ptr<ExtensionDevToolsClientHost> client_host_;
 };
 
 // Implements the debugger.attach() extension function.

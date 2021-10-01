@@ -11,6 +11,7 @@
 #include <list>
 #include <vector>
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
@@ -179,7 +180,7 @@ class GPU_GLES2_EXPORT VertexAttrib {
   scoped_refptr<Buffer> buffer_;
 
   // List this info is on.
-  VertexAttribList* list_;
+  raw_ptr<VertexAttribList> list_;
 
   // Iterator for list this info is on. Enabled/Disabled
   VertexAttribList::iterator it_;
@@ -357,7 +358,7 @@ class GPU_GLES2_EXPORT VertexAttribManager
   VertexAttribList disabled_vertex_attribs_;
 
   // The VertexArrayManager that owns this VertexAttribManager
-  VertexArrayManager* manager_;
+  raw_ptr<VertexArrayManager> manager_;
 
   // True if deleted.
   bool deleted_;

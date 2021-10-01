@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -81,7 +82,7 @@ class FtlMessageReceptionChannel final : public MessageReceptionChannel {
   net::BackoffEntry reconnect_retry_backoff_;
   base::OneShotTimer reconnect_retry_timer_;
   std::unique_ptr<base::DelayTimer> stream_pong_timer_;
-  SignalingTracker* signaling_tracker_;  // nullable.
+  raw_ptr<SignalingTracker> signaling_tracker_;  // nullable.
 
   base::WeakPtrFactory<FtlMessageReceptionChannel> weak_factory_{this};
 };

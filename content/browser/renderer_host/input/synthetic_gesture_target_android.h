@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/public/browser/android/motion_event_action.h"
@@ -60,7 +61,7 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
 
   RenderWidgetHostViewAndroid* GetView() const;
 
-  ui::ViewAndroid* const view_;
+  const raw_ptr<ui::ViewAndroid> view_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/file_system/browsertest_helper.h"
 
 #include "base/files/file_util.h"
@@ -417,8 +418,8 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   content::DownloadManager* download_manager() { return download_manager_; }
 
  private:
-  Browser* browser_ = nullptr;
-  content::DownloadManager* download_manager_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<content::DownloadManager> download_manager_ = nullptr;
   std::vector<download::DownloadItem*> download_items_;
   base::OnceClosure stop_waiting_for_download_;
 };

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBRTC_WEBRTC_INTERNALS_MESSAGE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -40,7 +41,7 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   // The WebRTCInternals to use. Always WebRTCInternals::GetInstance()
   // except for testing.
   explicit WebRTCInternalsMessageHandler(WebRTCInternals* webrtc_internals);
-  WebRTCInternals* const webrtc_internals_;
+  const raw_ptr<WebRTCInternals> webrtc_internals_;
 
  private:
   // Returns a pointer to the RFH iff it is currently hosting the

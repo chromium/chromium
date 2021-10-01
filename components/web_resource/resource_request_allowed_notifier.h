@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -122,7 +123,7 @@ class ResourceRequestAllowedNotifier
   const char* disable_network_switch_;
 
   // The local state this class is observing.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // Tracks whether or not the observer/service depending on this class actually
   // requested permission to make a request or not. If it did not, then this
@@ -136,10 +137,11 @@ class ResourceRequestAllowedNotifier
   std::unique_ptr<EulaAcceptedNotifier> eula_notifier_;
 
   // Observing service interested in request permissions.
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   NetworkConnectionTrackerGetter network_connection_tracker_getter_;
-  network::NetworkConnectionTracker* network_connection_tracker_ = nullptr;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
+      nullptr;
   network::mojom::ConnectionType connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   bool connection_initialized_ = false;

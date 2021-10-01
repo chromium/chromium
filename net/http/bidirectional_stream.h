@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -226,14 +227,14 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   std::unique_ptr<BidirectionalStreamRequestInfo> request_info_;
   const NetLogWithSource net_log_;
 
-  HttpNetworkSession* session_;
+  raw_ptr<HttpNetworkSession> session_;
 
   bool send_request_headers_automatically_;
   // Whether request headers have been sent, as indicated in OnStreamReady()
   // callback.
   bool request_headers_sent_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Timer used to buffer data received in short time-spans and send a single
   // read completion notification.

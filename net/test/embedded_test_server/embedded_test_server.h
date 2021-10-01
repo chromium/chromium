@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
@@ -555,7 +556,7 @@ class EmbeddedTestServer {
   std::unique_ptr<TCPServerSocket> listen_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
 
-  EmbeddedTestServerConnectionListener* connection_listener_;
+  raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_;
   uint16_t port_;
   GURL base_url_;
   IPEndPoint local_endpoint_;

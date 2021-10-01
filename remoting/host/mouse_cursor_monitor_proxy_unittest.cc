@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -74,7 +75,7 @@ class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
 };
 
 class MouseCursorMonitorProxyTest

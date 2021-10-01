@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -317,12 +318,13 @@ class SafetyCheckHandler
   std::unique_ptr<safety_check::UpdateCheckHelper> update_helper_;
 
   std::unique_ptr<VersionUpdater> version_updater_;
-  password_manager::BulkLeakCheckServiceInterface* leak_service_ = nullptr;
-  password_manager::InsecureCredentialsManager* insecure_credentials_manager_ =
+  raw_ptr<password_manager::BulkLeakCheckServiceInterface> leak_service_ =
       nullptr;
-  extensions::PasswordsPrivateDelegate* passwords_delegate_ = nullptr;
-  extensions::ExtensionPrefs* extension_prefs_ = nullptr;
-  extensions::ExtensionServiceInterface* extension_service_ = nullptr;
+  raw_ptr<password_manager::InsecureCredentialsManager>
+      insecure_credentials_manager_ = nullptr;
+  raw_ptr<extensions::PasswordsPrivateDelegate> passwords_delegate_ = nullptr;
+  raw_ptr<extensions::ExtensionPrefs> extension_prefs_ = nullptr;
+  raw_ptr<extensions::ExtensionServiceInterface> extension_service_ = nullptr;
   base::ScopedObservation<
       password_manager::BulkLeakCheckServiceInterface,
       password_manager::BulkLeakCheckServiceInterface::Observer>

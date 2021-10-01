@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -54,7 +55,7 @@ class RemoteOpenUrlMessageHandlerTest : public testing::Test {
 
   protocol::FakeMessagePipe fake_pipe_{/* asynchronous= */ false};
   FakeIpcServer::TestState ipc_server_state_;
-  RemoteOpenUrlMessageHandler* message_handler_;
+  raw_ptr<RemoteOpenUrlMessageHandler> message_handler_;
 };
 
 RemoteOpenUrlMessageHandlerTest::RemoteOpenUrlMessageHandlerTest() {
@@ -166,7 +167,7 @@ TEST_F(RemoteOpenUrlMessageHandlerTest,
     ~DestructionDetector() { *out_is_destructor_called_ = true; }
 
    private:
-    bool* out_is_destructor_called_;
+    raw_ptr<bool> out_is_destructor_called_;
   };
 
   bool is_callback_destroyed = false;

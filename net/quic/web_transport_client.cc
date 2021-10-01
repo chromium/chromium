@@ -4,6 +4,7 @@
 
 #include "net/quic/web_transport_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
 namespace net {
@@ -28,7 +29,7 @@ class FailedWebTransportClient : public WebTransportClient {
 
  private:
   WebTransportError error_;
-  WebTransportClientVisitor* visitor_;
+  raw_ptr<WebTransportClientVisitor> visitor_;
 };
 }  // namespace
 

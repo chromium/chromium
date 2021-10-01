@@ -104,7 +104,7 @@ CartService::CartService(Profile* profile)
       metrics_tracker_(std::make_unique<CartMetricsTracker>(
           chrome::FindTabbedBrowser(profile, false))) {
   if (history_service_) {
-    history_service_observation_.Observe(history_service_);
+    history_service_observation_.Observe(history_service_.get());
   }
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpChromeCartModule,

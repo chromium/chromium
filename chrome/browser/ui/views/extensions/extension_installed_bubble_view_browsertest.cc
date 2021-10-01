@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -56,7 +57,7 @@ class ExtensionInstalledBubbleViewsBrowserTest
     return extension;
   }
 
-  views::Widget* bubble_widget_;
+  raw_ptr<views::Widget> bubble_widget_;
 };
 
 void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {

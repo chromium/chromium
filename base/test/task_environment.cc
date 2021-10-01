@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
@@ -339,8 +340,8 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  internal::ThreadPoolImpl* thread_pool_ = nullptr;
-  const TestTaskTracker* thread_pool_task_tracker_ = nullptr;
+  raw_ptr<internal::ThreadPoolImpl> thread_pool_ = nullptr;
+  raw_ptr<const TestTaskTracker> thread_pool_task_tracker_ = nullptr;
 
   // Protects |now_ticks_|
   mutable Lock now_ticks_lock_;

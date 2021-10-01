@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/callback.h"
@@ -99,7 +100,7 @@ class NavigationObserverImpl : public NavigationObserver {
   }
 
  private:
-  NavigationController* controller_;
+  raw_ptr<NavigationController> controller_;
   Callback started_callback_;
   Callback redirected_callback_;
   Callback completed_callback_;
@@ -337,7 +338,7 @@ class BrowserObserverImpl : public BrowserObserver {
 
  private:
   base::RepeatingCallback<void(Tab*)> new_tab_callback_;
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 class NewTabDelegateImpl : public NewTabDelegate {

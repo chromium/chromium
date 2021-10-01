@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,7 +35,7 @@ class ProfileStatistics : public KeyedService {
   ~ProfileStatistics() override;
   void DeregisterAggregator();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<ProfileStatisticsAggregator> aggregator_;
   base::WeakPtrFactory<ProfileStatistics> weak_ptr_factory_{this};
 };

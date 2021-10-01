@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -169,7 +170,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void SwapBuffersAck();
 
   scoped_refptr<ContextProvider> context_provider_;
-  OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<OutputSurfaceClient> client_ = nullptr;
 
   std::unique_ptr<TextureDeleter> texture_deleter_;
 

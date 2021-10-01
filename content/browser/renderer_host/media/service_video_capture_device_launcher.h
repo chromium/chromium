@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
@@ -61,7 +62,7 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
   State state_;
   base::SequenceChecker sequence_checker_;
   base::OnceClosure done_cb_;
-  Callbacks* callbacks_;
+  raw_ptr<Callbacks> callbacks_;
 };
 
 }  // namespace content

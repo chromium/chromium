@@ -232,7 +232,7 @@ void ExtensionHost::RenderProcessGone(base::TerminationStatus status) {
   // more central, like EPM maybe.
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-      content::Source<BrowserContext>(browser_context_),
+      content::Source<BrowserContext>(browser_context_.get()),
       content::Details<ExtensionHost>(this));
 
   ProcessManager::Get(browser_context_)
@@ -273,7 +273,7 @@ void ExtensionHost::DocumentAvailableInMainFrame(
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
     content::NotificationService::current()->Notify(
         extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::Source<const Extension>(extension_),
+        content::Source<const Extension>(extension_.get()),
         content::NotificationService::NoDetails());
   }
 }

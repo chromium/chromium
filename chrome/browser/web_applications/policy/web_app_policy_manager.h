@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -148,16 +149,17 @@ class WebAppPolicyManager {
   // policy.
   void PopulateDisabledWebAppsIdsLists();
 
-  Profile* profile_;
-  PrefService* pref_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class
   // (owned by WebAppProvider).
-  ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
-  WebAppRegistrar* app_registrar_ = nullptr;
-  WebAppSyncBridge* sync_bridge_ = nullptr;
-  SystemWebAppManager* web_app_manager_ = nullptr;
-  OsIntegrationManager* os_integration_manager_ = nullptr;
+  raw_ptr<ExternallyManagedAppManager> externally_managed_app_manager_ =
+      nullptr;
+  raw_ptr<WebAppRegistrar> app_registrar_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<SystemWebAppManager> web_app_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;

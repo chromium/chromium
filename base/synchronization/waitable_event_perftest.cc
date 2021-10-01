@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 
 #include <string>
@@ -110,8 +111,8 @@ class SignalerThread : public SimpleThread {
 
  private:
   WaitableEvent stop_event_;
-  TraceWaitableEvent* waiter_;
-  TraceWaitableEvent* signaler_;
+  raw_ptr<TraceWaitableEvent> waiter_;
+  raw_ptr<TraceWaitableEvent> signaler_;
 };
 
 void PrintPerfWaitableEvent(const TraceWaitableEvent* event,

@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
@@ -168,7 +169,7 @@ class SyncFileSystemService
   // and Remote sync).
   void RunForEachSyncRunners(void(SyncProcessRunner::*method)());
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<LocalFileSyncService> local_service_;
   std::unique_ptr<RemoteFileSyncService> remote_service_;

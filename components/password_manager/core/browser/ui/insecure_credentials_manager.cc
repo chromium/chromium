@@ -228,7 +228,7 @@ InsecureCredentialsManager::InsecureCredentialsManager(
     : presenter_(presenter),
       profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)) {
-  observed_saved_password_presenter_.Observe(presenter_);
+  observed_saved_password_presenter_.Observe(presenter_.get());
 }
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;

@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -270,7 +271,7 @@ class TemplateURLService::Scoper {
 
  private:
   std::unique_ptr<KeywordWebDataService::BatchModeScoper> batch_mode_scoper_;
-  TemplateURLService* service_;
+  raw_ptr<TemplateURLService> service_;
 };
 
 // TemplateURLService ---------------------------------------------------------
@@ -758,7 +759,7 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
 }
 
 const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {
-  return loaded_ ? default_search_provider_
+  return loaded_ ? default_search_provider_.get()
                  : initial_default_search_provider_.get();
 }
 

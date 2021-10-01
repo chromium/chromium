@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
@@ -170,7 +171,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   scoped_refptr<XRRuntimeManagerImpl> runtime_manager_;
   mojo::RemoteSet<device::mojom::XRSessionClient> session_clients_;
   mojo::Remote<device::mojom::VRServiceClient> service_client_;
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
   mojo::SelfOwnedReceiverRef<device::mojom::VRService> receiver_;
   mojo::RemoteSet<device::mojom::XRSessionController> magic_window_controllers_;
   device::mojom::XRVisibilityState visibility_state_ =

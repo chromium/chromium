@@ -14,6 +14,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -126,7 +127,7 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
 
   const mojo::MessagePipeHandle pipe_;
   std::unique_ptr<MojoBootstrap> bootstrap_;
-  Listener* listener_;
+  raw_ptr<Listener> listener_;
 
   std::unique_ptr<internal::MessagePipeReader> message_reader_;
 

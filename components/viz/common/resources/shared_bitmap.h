@@ -10,6 +10,7 @@
 
 #include "base/hash/hash.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/viz_common_export.h"
@@ -44,7 +45,7 @@ class VIZ_COMMON_EXPORT SharedBitmap {
   uint8_t* pixels() { return pixels_; }
 
  private:
-  uint8_t* pixels_;
+  raw_ptr<uint8_t> pixels_;
 };
 
 }  // namespace viz

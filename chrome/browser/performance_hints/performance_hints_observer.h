@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/performance_hints/rewrite_handler.h"
@@ -170,8 +171,8 @@ class PerformanceHintsObserver
   RewriteHandler rewrite_handler_;
 
   // Initialized in constructor. It may be null if !IsOptimizationHintsEnabled.
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
-      nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   // The URL of the main frame of the associated WebContents. This is not set if
   // the current page is an error page.

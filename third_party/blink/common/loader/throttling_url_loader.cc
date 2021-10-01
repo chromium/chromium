@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
@@ -248,11 +249,11 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     }
 
    private:
-    ForwardingThrottleDelegate* const owner_;
+    const raw_ptr<ForwardingThrottleDelegate> owner_;
   };
 
-  ThrottlingURLLoader* loader_;
-  URLLoaderThrottle* const throttle_;
+  raw_ptr<ThrottlingURLLoader> loader_;
+  const raw_ptr<URLLoaderThrottle> throttle_;
 };
 
 ThrottlingURLLoader::StartInfo::StartInfo(

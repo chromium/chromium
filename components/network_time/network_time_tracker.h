@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -199,7 +200,7 @@ class NetworkTimeTracker {
   std::unique_ptr<base::Clock> clock_;
   std::unique_ptr<const base::TickClock> tick_clock_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Network time based on last call to UpdateNetworkTime().
   mutable base::Time network_time_at_last_measurement_;

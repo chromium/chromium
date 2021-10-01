@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -131,7 +132,7 @@ class CleanExitBeacon {
   // Path to the client's user data directory. May be empty.
   const base::FilePath user_data_dir_;
 
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // This is the value of the last live timestamp from local state at the time
   // of construction. It is a timestamp from the previous browser session when

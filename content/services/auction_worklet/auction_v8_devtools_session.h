@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -104,7 +105,7 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
   blink::mojom::DevToolsMessagePtr FinalizeMessage(
       std::vector<uint8_t> message) const;
 
-  AuctionV8Helper* const v8_helper_;  // owns agent owns this.
+  const raw_ptr<AuctionV8Helper> v8_helper_;  // owns agent owns this.
   scoped_refptr<DebugCommandQueue> debug_command_queue_;
   const int context_group_id_;
   const std::string session_id_;

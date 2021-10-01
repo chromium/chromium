@@ -92,7 +92,7 @@ void PaymentRequestDialogView::OnDialogClosed() {
   for (const auto& controller : controller_map_) {
     controller.second->Stop();
   }
-  RemoveChildViewT(view_stack_);
+  RemoveChildViewT(view_stack_.get());
   controller_map_.clear();
   request_->OnUserCancelled();
 }

@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/stringprintf.h"
@@ -221,8 +222,8 @@ class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
   }
 
  private:
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::SharedImageInterface* sii_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  raw_ptr<gpu::SharedImageInterface> sii_;
   gpu::SyncToken sync_token_;
 };
 
@@ -366,7 +367,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
   }
 
  private:
-  viz::SharedBitmapReporter* const shared_bitmap_reporter_;
+  const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
   const viz::SharedBitmapId shared_bitmap_id_;
   base::WritableSharedMemoryMapping shared_mapping_;
 };
@@ -396,7 +397,7 @@ class VideoResourceUpdater::HardwarePlaneResource
     GLuint texture_id() const { return texture_id_; }
 
    private:
-    gpu::gles2::GLES2Interface* gl_;
+    raw_ptr<gpu::gles2::GLES2Interface> gl_;
     GLuint texture_id_;
   };
 
@@ -460,8 +461,8 @@ class VideoResourceUpdater::HardwarePlaneResource
     return gl;
   }
 
-  viz::ContextProvider* const context_provider_;
-  viz::RasterContextProvider* const raster_context_provider_;
+  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
   gpu::Mailbox mailbox_;
   GLenum texture_target_ = GL_TEXTURE_2D;
   bool overlay_candidate_ = false;

@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/insets.h"
@@ -152,7 +153,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
     void AfterPropertyChange(const void* key, int64_t old_value) override;
 
    private:
-    FlexLayout* const layout_;
+    const raw_ptr<FlexLayout> layout_;
   };
 
   using ChildIndices = std::list<size_t>;

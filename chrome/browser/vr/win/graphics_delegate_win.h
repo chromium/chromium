@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/render_info.h"
@@ -87,14 +88,14 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   device::mojom::XRViewPtr right_;
 
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   int last_width_ = 0;
   int last_height_ = 0;
   GLuint image_id_ = 0;  // Image corresponding to our target GpuMemoryBuffer.
   GLuint dest_texture_id_ = 0;
   GLuint draw_frame_buffer_ = 0;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_ = nullptr;
 
   RenderInfo cached_info_ = {};
 

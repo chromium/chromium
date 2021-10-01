@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -258,7 +259,7 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   media::MockDevice mock_device_;
-  media::MockDeviceFactory* mock_device_factory_;
+  raw_ptr<media::MockDeviceFactory> mock_device_factory_;
   std::unique_ptr<DeviceFactoryMediaToMojoAdapter> service_device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> source_provider_;
   mojo::Remote<mojom::VideoSource> source_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/velocity_tracker_state.h"
@@ -141,8 +142,8 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
 
   class TimeoutGestureHandler;
   std::unique_ptr<TimeoutGestureHandler> timeout_handler_;
-  GestureListener* const listener_;
-  DoubleTapListener* double_tap_listener_;
+  const raw_ptr<GestureListener> listener_;
+  raw_ptr<DoubleTapListener> double_tap_listener_;
 
   float touch_slop_square_;
   float double_tap_touch_slop_square_;

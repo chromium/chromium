@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -161,14 +162,14 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The extension action of the extension we are displaying the menu for (if
   // it has one, otherwise NULL).
-  ExtensionAction* extension_action_;
+  raw_ptr<ExtensionAction> extension_action_;
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The delegate which handles the 'inspect popup' menu command (or NULL).
-  PopupDelegate* delegate_;
+  raw_ptr<PopupDelegate> delegate_;
 
   // The visibility of the button at the time the menu opened.
   ButtonVisibility button_visibility_;

@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,7 +111,7 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
     }
   }
 
-  LifecycleUnit* const lifecycle_unit_;
+  const raw_ptr<LifecycleUnit> lifecycle_unit_;
   const LifecycleUnitState expected_state_;
   std::set<LifecycleUnitState> allowed_states_;
   base::RunLoop run_loop_;

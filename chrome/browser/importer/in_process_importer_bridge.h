@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/importer/profile_writer.h"
@@ -62,7 +63,7 @@ class InProcessImporterBridge : public ImporterBridge {
  private:
   ~InProcessImporterBridge() override;
 
-  ProfileWriter* const writer_;  // weak
+  const raw_ptr<ProfileWriter> writer_;  // weak
   const base::WeakPtr<ExternalProcessImporterHost> host_;
 };
 

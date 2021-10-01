@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
@@ -217,7 +218,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
 
  private:
   const base::Time min_required_progress_marker_timestamp_;
-  const syncer::SyncService* const service_;
+  const raw_ptr<const syncer::SyncService> service_;
   const syncer::ModelType model_type_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>

@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "content/common/content_export.h"
@@ -137,7 +138,7 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
     // |outer_| can only be safely used from a task posted to one of the
     // runners.
-    BrowserTaskQueues* outer_ = nullptr;
+    raw_ptr<BrowserTaskQueues> outer_ = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
     std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>

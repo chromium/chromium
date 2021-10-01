@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -71,7 +72,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void OpenFeedbackForm();
 
   FeedbackCommandSettings feedback_settings_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::vector<browser_command::mojom::Command> supported_commands_;
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;

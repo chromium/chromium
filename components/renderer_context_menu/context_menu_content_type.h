@@ -6,6 +6,7 @@
 #define COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -70,7 +71,7 @@ class ContextMenuContentType {
   bool SupportsGroupInternal(int group);
 
   const content::ContextMenuParams params_;
-  content::WebContents* const source_web_contents_;
+  const raw_ptr<content::WebContents> source_web_contents_;
   const bool supports_custom_items_;
 };
 

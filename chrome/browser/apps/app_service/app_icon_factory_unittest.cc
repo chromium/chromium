@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -676,9 +677,9 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   web_app::WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
 
  private:
-  web_app::WebAppProvider* web_app_provider_;
-  web_app::WebAppIconManager* icon_manager_;
-  web_app::WebAppSyncBridge* sync_bridge_;
+  raw_ptr<web_app::WebAppProvider> web_app_provider_;
+  raw_ptr<web_app::WebAppIconManager> icon_manager_;
+  raw_ptr<web_app::WebAppSyncBridge> sync_bridge_;
 };
 
 TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {

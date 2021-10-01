@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -72,7 +73,7 @@ class SafeBrowsingTabObserver
   std::unique_ptr<ClientSideDetectionHost> safebrowsing_detection_host_;
 
   // Our owning WebContents.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<Delegate> delegate_;
 

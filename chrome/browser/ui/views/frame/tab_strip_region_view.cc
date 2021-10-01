@@ -86,7 +86,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
   new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
       tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                                      base::Unretained(tab_strip_))));
+                                      base::Unretained(tab_strip_.get()))));
   new_tab_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
   new_tab_button_->SetAccessibleName(

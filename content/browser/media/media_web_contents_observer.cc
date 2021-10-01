@@ -11,6 +11,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
@@ -136,7 +137,7 @@ class MediaWebContentsObserver::PlayerInfo {
   }
 
   const MediaPlayerId id_;
-  MediaWebContentsObserver* const observer_;
+  const raw_ptr<MediaWebContentsObserver> observer_;
 
   bool has_audio_ = false;
   bool has_video_ = false;
@@ -346,7 +347,7 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
   // to use base::Unretained().
   media_player_observer_receiver_.set_disconnect_handler(base::BindOnce(
       &MediaWebContentsObserver::OnMediaPlayerObserverDisconnected,
-      base::Unretained(media_web_contents_observer_), media_player_id_));
+      base::Unretained(media_web_contents_observer_.get()), media_player_id_));
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::

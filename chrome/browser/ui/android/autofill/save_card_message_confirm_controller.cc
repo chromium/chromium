@@ -112,7 +112,7 @@ SaveCardMessageConfirmController::GetOrCreateJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
   return java_object_ = Java_AutofillMessageConfirmFlowBridge_create(
-             env, reinterpret_cast<intptr_t>(delegate_),
+             env, reinterpret_cast<intptr_t>(delegate_.get()),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/offliner_policy_utils.h"
 #include "components/offline_pages/core/background/request_queue_results.h"
@@ -48,10 +49,10 @@ class CleanupTask : public Task {
       std::vector<std::unique_ptr<SavePageRequest>> requests);
 
   // Member variables, all pointers are not owned here.
-  RequestQueueStore* store_;
-  OfflinerPolicy* policy_;
-  RequestNotifier* notifier_;
-  RequestCoordinatorEventLogger* event_logger_;
+  raw_ptr<RequestQueueStore> store_;
+  raw_ptr<OfflinerPolicy> policy_;
+  raw_ptr<RequestNotifier> notifier_;
+  raw_ptr<RequestCoordinatorEventLogger> event_logger_;
 
   // Holds a map of expired request IDs and respective expiration reasons.
   std::map<int64_t, OfflinerPolicyUtils::RequestExpirationStatus>

@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
@@ -349,7 +350,7 @@ class MockHostResolverBase::MdnsListenerImpl
   const HostPortPair host_;
   const DnsQueryType query_type_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Use a WeakPtr as the resolver may be destroyed while there are still
   // outstanding listener objects.

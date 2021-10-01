@@ -17,6 +17,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -201,9 +202,9 @@ class ObfuscatedFileEnumerator final
     }
   }
 
-  SandboxDirectoryDatabase* db_;
-  FileSystemOperationContext* context_;
-  ObfuscatedFileUtil* obfuscated_file_util_;
+  raw_ptr<SandboxDirectoryDatabase> db_;
+  raw_ptr<FileSystemOperationContext> context_;
+  raw_ptr<ObfuscatedFileUtil> obfuscated_file_util_;
   FileSystemURL root_url_;
   bool recursive_;
 

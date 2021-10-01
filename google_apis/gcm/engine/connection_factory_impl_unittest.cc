@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -146,7 +147,7 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
   // cases it's never consumed by the ConnectionFactory.
   std::unique_ptr<FakeConnectionHandler> scoped_handler_;
   // The current fake connection handler..
-  FakeConnectionHandler* fake_handler_;
+  raw_ptr<FakeConnectionHandler> fake_handler_;
   // Dummy GCM Stats recorder.
   FakeGCMStatsRecorder dummy_recorder_;
   // Dummy mojo pipes.

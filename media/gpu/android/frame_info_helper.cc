@@ -4,6 +4,7 @@
 
 #include "media/gpu/android/frame_info_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/shared_image_video.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -144,7 +145,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
                                                  context_provider);
     }
 
-    gpu::CommandBufferStub* stub_ = nullptr;
+    raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
     base::WeakPtrFactory<OnGpu> weak_factory_{this};
   };
 

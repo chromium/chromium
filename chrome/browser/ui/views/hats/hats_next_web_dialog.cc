@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 
 #include "base/base64url.h"
@@ -113,8 +114,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   }
 
  private:
-  HatsNextWebDialog* dialog_;
-  Browser* browser_;
+  raw_ptr<HatsNextWebDialog> dialog_;
+  raw_ptr<Browser> browser_;
 };
 
 BEGIN_METADATA(HatsNextWebDialog, HatsWebView, views::WebView)

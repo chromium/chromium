@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -86,7 +87,7 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override;
 
   // The associated ExtensionActionRunner.
-  ExtensionActionRunner* extension_action_runner_ = nullptr;
+  raw_ptr<ExtensionActionRunner> extension_action_runner_ = nullptr;
 
   // The map of observed executions, keyed by extension id.
   std::map<std::string, int> extension_executions_;

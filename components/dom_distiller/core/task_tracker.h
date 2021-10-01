@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
@@ -136,7 +137,7 @@ class TaskTracker {
 
   CancelCallback cancel_callback_;
 
-  DistilledContentStore* content_store_;
+  raw_ptr<DistilledContentStore> content_store_;
 
   std::vector<SaveCallback> save_callbacks_;
   // A ViewRequestDelegate will be added to this list when a view request is

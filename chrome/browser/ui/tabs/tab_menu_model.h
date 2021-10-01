@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -47,7 +48,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
 
-  TabMenuModelDelegate* tab_menu_model_delegate_;
+  raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -146,7 +147,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
     }
   }
 
-  const net::HttpResponseHeaders* response_headers_;
+  raw_ptr<const net::HttpResponseHeaders> response_headers_;
 };
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {

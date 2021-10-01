@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "net/http/bidirectional_stream_request_info.h"
@@ -32,7 +33,7 @@ class ScopedBoolSaver {
   ~ScopedBoolSaver() { *var_ = old_val_; }
 
  private:
-  bool* var_;
+  raw_ptr<bool> var_;
   bool old_val_;
 };
 }  // namespace

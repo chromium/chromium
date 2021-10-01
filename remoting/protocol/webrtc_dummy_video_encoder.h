@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -66,13 +67,13 @@ class WebrtcDummyVideoEncoder : public webrtc::VideoEncoder {
   // Protects |encoded_callback_| and |state_|.
   base::Lock lock_;
   State state_;
-  webrtc::EncodedImageCallback* encoded_callback_ = nullptr;
+  raw_ptr<webrtc::EncodedImageCallback> encoded_callback_ = nullptr;
 
   base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer_;
 
   // Holds a reference to the creating factory, if any. Will be notified
   // when this instance is released, so it can stop delivering frames.
-  WebrtcDummyVideoEncoderFactory* factory_ = nullptr;
+  raw_ptr<WebrtcDummyVideoEncoderFactory> factory_ = nullptr;
 };
 
 // This is the encoder factory implementation that is passed to

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -161,7 +162,7 @@ class WindowSizer {
   std::unique_ptr<StateProvider> state_provider_;
 
   // Note that this browser handle might be NULL.
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_H_

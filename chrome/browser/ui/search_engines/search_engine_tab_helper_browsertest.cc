@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,7 +55,7 @@ class TemplateURLServiceObserver {
 
  private:
   void StopLoop() { runner_->Quit(); }
-  base::RunLoop* runner_;
+  raw_ptr<base::RunLoop> runner_;
   base::CallbackListSubscription template_url_subscription_;
 };
 

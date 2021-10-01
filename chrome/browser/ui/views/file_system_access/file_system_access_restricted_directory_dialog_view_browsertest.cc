@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_view.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -34,7 +35,7 @@ class FileSystemAccessRestrictedDirectoryDialogViewTest
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   bool callback_called_ = false;
   SensitiveDirectoryResult callback_result_ =

@@ -2186,7 +2186,7 @@ void SurfaceAggregator::HandleDeJelly(Surface* surface) {
   // necessary.
   for (auto it = root_render_pass->quad_list.begin();
        it != root_render_pass->quad_list.end();) {
-    auto* state = it->shared_quad_state;
+    auto* state = it->shared_quad_state.get();
     bool has_skew = state->de_jelly_delta_y != 0.0f;
 
     // If we have a sub RenderPass which is not compatible with our current
@@ -2248,7 +2248,7 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
     float skew,
     AggregatedRenderPass* render_pass) {
   auto* quad = **quad_iterator;
-  const auto* state = quad->shared_quad_state;
+  const auto* state = quad->shared_quad_state.get();
 
   // Heuristic - we may have over-clipped a quad. If a quad is clipped by the
   // |jelly_clip|, but contains content beyond |jelly_clip|, un-clip the quad by
@@ -2315,7 +2315,7 @@ void SurfaceAggregator::CreateDeJellyNormalQuads(
     AggregatedRenderPass* root_pass,
     float skew) {
   auto* quad = **quad_iterator;
-  const auto* state = quad->shared_quad_state;
+  const auto* state = quad->shared_quad_state.get();
 
   // Crearte a new SharedQuadState on |root_pass| and apply skew if any.
   SharedQuadState* new_state = root_pass->CreateAndAppendSharedQuadState();

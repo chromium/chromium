@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -147,7 +148,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // initialized (e.g. Android). Once platform policies are loaded, the proxy
   // can refer to the actual policy manager if cloud management is enabled.
   // Owned by base class.
-  ProxyPolicyProvider* proxy_policy_provider_ = nullptr;
+  raw_ptr<ProxyPolicyProvider> proxy_policy_provider_ = nullptr;
 
   // The MachineLevelUserCloudPolicyManager is not directly included in the
   // vector of policy providers (defined in the base class). A proxy policy
@@ -162,10 +163,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 #endif  // defined(OS_ANDROID)
 
   // Owned by base class.
-  ConfigurationPolicyProvider* platform_provider_ = nullptr;
+  raw_ptr<ConfigurationPolicyProvider> platform_provider_ = nullptr;
 
   // Owned by base class.
-  ConfigurationPolicyProvider* command_line_provider_ = nullptr;
+  raw_ptr<ConfigurationPolicyProvider> command_line_provider_ = nullptr;
 
   // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that
   // its execution can be deferred until an enrollment token is available.

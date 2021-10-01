@@ -10,6 +10,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -93,7 +94,7 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
   FRIEND_TEST_ALL_PREFIXES(BrowserInstantControllerTest, GoogleBaseURLUpdated);
 
  private:
-  content::WebContents* contents_;
+  raw_ptr<content::WebContents> contents_;
   content::DidStartNavigationObserver did_start_observer_;
   const GURL& url_;
   GURL current_url_;

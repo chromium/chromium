@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 
@@ -60,10 +61,10 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
 
  private:
   // Not owned so must outlive the PaymentRequest object;
-  autofill::RegionDataLoader* region_data_loader_;
+  raw_ptr<autofill::RegionDataLoader> region_data_loader_;
 
   base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer_;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   const bool is_off_the_record_;
   const bool is_valid_ssl_;
   const bool is_browser_window_active_;

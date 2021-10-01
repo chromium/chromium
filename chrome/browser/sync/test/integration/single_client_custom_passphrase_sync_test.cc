@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -78,7 +79,7 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
   }
 
  private:
-  FakeServer* const fake_server_;
+  const raw_ptr<FakeServer> fake_server_;
   std::set<std::string> committed_names_;
 };
 

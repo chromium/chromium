@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -187,7 +188,7 @@ class ConnectionTypeWaiter
       run_loop_->Quit();
   }
 
-  network::NetworkConnectionTracker* tracker_;
+  raw_ptr<network::NetworkConnectionTracker> tracker_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -718,7 +719,7 @@ class NetworkContextConfigurationBrowserTest
     FlushNetworkInterface();
   }
 
-  Browser* incognito_ = nullptr;
+  raw_ptr<Browser> incognito_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 
   net::EmbeddedTestServer https_server_;

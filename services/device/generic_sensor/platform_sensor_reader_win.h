@@ -8,6 +8,7 @@
 #include <SensorsApi.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
@@ -71,7 +72,7 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
   // PlatformSensorWin that can modify internal state of the object.
   base::Lock lock_;
   bool sensor_active_ GUARDED_BY(lock_);
-  Client* client_ GUARDED_BY(lock_);
+  raw_ptr<Client> client_ GUARDED_BY(lock_);
   Microsoft::WRL::ComPtr<ISensor> sensor_;
   Microsoft::WRL::ComPtr<ISensorEvents> event_listener_;
   base::WeakPtrFactory<PlatformSensorReaderWin32> weak_factory_{this};

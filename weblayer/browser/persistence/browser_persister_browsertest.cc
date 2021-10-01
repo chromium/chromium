@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -83,14 +84,14 @@ class BrowserNavigationObserverImpl : public BrowserRestoreObserver,
   void OnRestoreCompleted() override {
     browser_->RemoveBrowserRestoreObserver(this);
     ASSERT_LT(tab_to_wait_for_, browser_->GetTabs().size());
-    ASSERT_EQ(nullptr, tab_);
+    ASSERT_EQ(nullptr, tab_.get());
     tab_ = browser_->GetTabs()[tab_to_wait_for_];
     tab_->GetNavigationController()->AddObserver(this);
   }
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   const GURL& url_;
-  Tab* tab_ = nullptr;
+  raw_ptr<Tab> tab_ = nullptr;
   const size_t tab_to_wait_for_;
   std::unique_ptr<TestNavigationObserver> navigation_observer_;
   base::RunLoop run_loop_;

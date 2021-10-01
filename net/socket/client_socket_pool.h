@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -353,7 +354,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
  private:
   const bool is_for_websockets_;
-  const CommonConnectJobParams* const common_connect_job_params_;
+  const raw_ptr<const CommonConnectJobParams> common_connect_job_params_;
   const std::unique_ptr<ConnectJobFactory> connect_job_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSocketPool);

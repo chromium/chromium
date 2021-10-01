@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
@@ -126,7 +127,7 @@ class FCMInvalidationListener
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
   UnackedInvalidationsMap unacked_invalidations_map_;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // The set of topics for which we want to receive invalidations. We'll pass
   // these to |per_user_topic_subscription_manager_| for (un)subscription.

@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -905,14 +906,14 @@ class HostResolverManager::RequestImpl
   const NetworkIsolationKey network_isolation_key_;
   ResolveHostParameters parameters_;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const resolve_context_;
-  HostCache* const host_cache_;
+  const raw_ptr<ResolveContext> resolve_context_;
+  const raw_ptr<HostCache> host_cache_;
   const HostResolverFlags host_resolver_flags_;
 
   RequestPriority priority_;
 
   // The resolve job that this request is dependent on.
-  Job* job_;
+  raw_ptr<Job> job_;
   base::WeakPtr<HostResolverManager> resolver_;
 
   // The user's callback to invoke when the request completes.
@@ -924,7 +925,7 @@ class HostResolverManager::RequestImpl
   absl::optional<std::vector<std::string>> sanitized_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks request_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -993,7 +994,7 @@ class HostResolverManager::ProbeRequestImpl
   }
 
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* context_;
+  raw_ptr<ResolveContext> context_;
   std::unique_ptr<DnsProbeRunner> runner_;
   base::WeakPtr<HostResolverManager> resolver_;
 
@@ -1218,7 +1219,7 @@ class HostResolverManager::ProcTask {
 
   NetLogWithSource net_log_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Used to loop back from the blocking lookup attempt tasks as well as from
   // delayed retry tasks. Invalidate WeakPtrs on completion and cancellation to
@@ -1884,19 +1885,19 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     return upgrade_result == UpgradeResult::kUpgradeTriggered;
   }
 
-  DnsClient* client_;
+  raw_ptr<DnsClient> client_;
 
   absl::variant<url::SchemeHostPort, std::string> host_;
 
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const resolve_context_;
+  const raw_ptr<ResolveContext> resolve_context_;
 
   // Whether lookups in this DnsTask should occur using DoH or plaintext.
   const bool secure_;
   const SecureDnsMode secure_dns_mode_;
 
   // The listener to the results of this DnsTask.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   const NetLogWithSource net_log_;
 
   base::circular_deque<DnsQueryType> transactions_needed_;
@@ -1911,7 +1912,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // has completed while others are still in progress.
   absl::optional<HostCache::Entry> saved_results_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks task_start_time_;
 
   HttpssvcExperimentDomainCache httpssvc_domain_cache_;
@@ -1947,7 +1948,7 @@ struct HostResolverManager::JobKey {
   HostResolverSource source;
   SecureDnsMode secure_dns_mode;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* resolve_context;
+  raw_ptr<ResolveContext> resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const {
     HostCache::Key key(host, query_type, flags, source, network_isolation_key);
@@ -2801,7 +2802,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   const ResolveHostParameters::CacheUsage cache_usage_;
   // TODO(crbug.com/969847): Consider allowing requests within a single Job to
   // have different HostCaches.
-  HostCache* const host_cache_;
+  const raw_ptr<HostCache> host_cache_;
 
   struct CompletionResult {
     const HostCache::Entry entry;
@@ -2834,12 +2835,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   // The dispatcher with which this Job is currently registered. Is nullptr if
   // not registered with any dispatcher.
-  PrioritizedDispatcher* dispatcher_;
+  raw_ptr<PrioritizedDispatcher> dispatcher_;
 
   // Result of DnsTask.
   int dns_task_error_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
 
   NetLogWithSource net_log_;

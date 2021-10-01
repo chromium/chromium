@@ -71,7 +71,7 @@ void ConditionalCacheDeletionHelper::IterateOverEntries(
     // won't be invalidated. Always close the previous entry so it does not
     // leak.
     if (previous_entry_) {
-      if (condition_.Run(previous_entry_)) {
+      if (condition_.Run(previous_entry_.get())) {
         previous_entry_->Doom();
       }
       previous_entry_->Close();

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/vr/android/gvr/gvr_delegate_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"
@@ -72,7 +73,7 @@ class VrShellDelegate : public device::GvrDelegateProvider {
       bool success);
 
   base::android::ScopedJavaGlobalRef<jobject> j_vr_shell_delegate_;
-  VrShell* vr_shell_ = nullptr;
+  raw_ptr<VrShell> vr_shell_ = nullptr;
 
   // Deferred callback stored for later use in cases where vr_shell
   // wasn't ready yet. Used once SetDelegate is called.

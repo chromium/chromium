@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,9 +58,9 @@ class BoostingVote {
   void Reset();
 
  private:
-  BoostingVoteAggregator* aggregator_ = nullptr;
-  const ExecutionContext* input_execution_context_ = nullptr;
-  const ExecutionContext* output_execution_context_ = nullptr;
+  raw_ptr<BoostingVoteAggregator> aggregator_ = nullptr;
+  raw_ptr<const ExecutionContext> input_execution_context_ = nullptr;
+  raw_ptr<const ExecutionContext> output_execution_context_ = nullptr;
   const char* reason_ = nullptr;
 };
 
@@ -270,8 +271,8 @@ class BoostingVoteAggregator : public VoteObserver {
     const ExecutionContext* dst() const { return dst_; }
 
    private:
-    const ExecutionContext* src_ = nullptr;
-    const ExecutionContext* dst_ = nullptr;
+    raw_ptr<const ExecutionContext> src_ = nullptr;
+    raw_ptr<const ExecutionContext> dst_ = nullptr;
   };
   using ForwardEdge = Edge<true>;
   using ReverseEdge = Edge<false>;

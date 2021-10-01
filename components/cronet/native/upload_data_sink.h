@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/cronet/cronet_upload_data_stream.h"
@@ -63,7 +64,7 @@ class Cronet_UploadDataSinkImpl : public Cronet_UploadDataSink {
   // Cronet objects not owned by |this| and accessed on client thread.
 
   // The request, which owns |this|.
-  Cronet_UrlRequestImpl* const url_request_ = nullptr;
+  const raw_ptr<Cronet_UrlRequestImpl> url_request_ = nullptr;
   // Executor for provider callback, used, but not owned, by |this|. Always
   // outlives |this| callback.
   Cronet_ExecutorPtr const upload_data_provider_executor_ = nullptr;

@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -293,7 +294,7 @@ class ThemeSyncableServiceTest : public testing::Test,
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  FakeThemeService* fake_theme_service_;
+  raw_ptr<FakeThemeService> fake_theme_service_;
   scoped_refptr<extensions::Extension> theme_extension_;
   std::unique_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;

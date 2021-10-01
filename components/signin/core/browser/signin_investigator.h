@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -73,7 +74,7 @@ class SigninInvestigator {
   std::string current_id_;
 
   // Non-owning pointer.
-  DependencyProvider* provider_;
+  raw_ptr<DependencyProvider> provider_;
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_INVESTIGATOR_H_

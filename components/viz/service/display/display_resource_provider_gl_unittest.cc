@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
@@ -159,7 +160,7 @@ class DisplayResourceProviderGLTest : public testing::Test {
   }
 
  protected:
-  ResourceProviderGLES2Interface* gl_ = nullptr;
+  raw_ptr<ResourceProviderGLES2Interface> gl_ = nullptr;
   uint64_t next_fence_sync_ = 1;
   scoped_refptr<TestContextProvider> context_provider_;
   scoped_refptr<TestContextProvider> child_context_provider_;

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SCOPED_RENDER_PASS_TEXTURE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -41,7 +42,7 @@ class VIZ_SERVICE_EXPORT ScopedRenderPassTexture {
  private:
   void Free();
 
-  ContextProvider* context_provider_ = nullptr;
+  raw_ptr<ContextProvider> context_provider_ = nullptr;
   // The GL texture id.
   GLuint gl_id_ = 0;
   // Size of the resource in pixels.

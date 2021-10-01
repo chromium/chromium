@@ -6,6 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_ITEM_RENAME_HANDLER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"
 
@@ -52,7 +53,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
   virtual void ShowDownloadInContext() = 0;
 
  private:
-  DownloadItem* download_item_;
+  raw_ptr<DownloadItem> download_item_;
 };
 
 }  // namespace download

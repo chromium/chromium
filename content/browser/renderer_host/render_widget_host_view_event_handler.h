@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/common/content_export.h"
@@ -301,14 +302,14 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   ui::MotionEventAura pointer_state_;
 
   // The following are not owned. They should outlive |this|
-  RenderWidgetHostImpl* const host_;
+  const raw_ptr<RenderWidgetHostImpl> host_;
   // Should create |this| and own it.
-  RenderWidgetHostViewBase* const host_view_;
+  const raw_ptr<RenderWidgetHostViewBase> host_view_;
   // Optional, used to redirect events to a popup and associated handler.
-  RenderWidgetHostViewBase* popup_child_host_view_ = nullptr;
-  ui::EventHandler* popup_child_event_handler_ = nullptr;
-  Delegate* const delegate_;
-  aura::Window* window_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> popup_child_host_view_ = nullptr;
+  raw_ptr<ui::EventHandler> popup_child_event_handler_ = nullptr;
+  const raw_ptr<Delegate> delegate_;
+  raw_ptr<aura::Window> window_ = nullptr;
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
 
   std::unique_ptr<HitTestDebugKeyEventObserver> debug_observer_;

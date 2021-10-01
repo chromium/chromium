@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_COLORED_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_COLORED_DIALOG_EXAMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
@@ -36,7 +37,7 @@ class ColoredDialog : public views::DialogDelegateView,
                        const std::u16string& new_contents) override;
 
  private:
-  views::Textfield* textfield_;
+  raw_ptr<views::Textfield> textfield_;
 };
 
 class ColoredDialogChooser : public views::View {
@@ -51,7 +52,7 @@ class ColoredDialogChooser : public views::View {
  private:
   void OnFeedbackSubmit(std::u16string text);
 
-  views::Label* confirmation_label_;
+  raw_ptr<views::Label> confirmation_label_;
   base::OneShotTimer confirmation_timer_;
 };
 

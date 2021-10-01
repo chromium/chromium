@@ -9,6 +9,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/gfx_export.h"
@@ -42,7 +43,7 @@ class GFX_EXPORT BiDiLineIterator {
   void GetLogicalRun(int start, int* end, UBiDiLevel* level) const;
 
  private:
-  UBiDi* bidi_;
+  raw_ptr<UBiDi> bidi_;
 };
 
 }  // namespace gfx

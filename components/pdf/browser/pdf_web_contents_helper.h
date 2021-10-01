@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -99,7 +100,7 @@ class PDFWebContentsHelper
 
   content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
   std::unique_ptr<PDFWebContentsHelperClient> const client_;
-  content::TouchSelectionControllerClientManager*
+  raw_ptr<content::TouchSelectionControllerClientManager>
       touch_selection_controller_client_manager_ = nullptr;
 
   // Latest selection bounds received from PDFium.

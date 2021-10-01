@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
@@ -95,7 +96,7 @@ class ChromeOmniboxNavigationObserver
   const AutocompleteMatch match_;
   const AutocompleteMatch alternative_nav_match_;
   const int64_t navigation_id_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Callback to allow tests to inject custom behaviour.
   ShowInfobarCallback show_infobar_;

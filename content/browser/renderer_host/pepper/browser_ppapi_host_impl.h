@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -116,8 +117,8 @@ class CONTENT_EXPORT BrowserPpapiHostImpl : public BrowserPpapiHost {
     ~HostMessageFilter() override;
 
     // Non owning pointers cleared in OnHostDestroyed()
-    ppapi::host::PpapiHost* ppapi_host_;
-    BrowserPpapiHostImpl* browser_ppapi_host_impl_;
+    raw_ptr<ppapi::host::PpapiHost> ppapi_host_;
+    raw_ptr<BrowserPpapiHostImpl> browser_ppapi_host_impl_;
   };
 
   struct InstanceData {

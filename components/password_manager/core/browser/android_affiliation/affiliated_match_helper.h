@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -101,9 +102,9 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  PasswordStore* const password_store_;
+  const raw_ptr<PasswordStore> password_store_;
 
-  AffiliationService* affiliation_service_;
+  raw_ptr<AffiliationService> affiliation_service_;
 
   base::WeakPtrFactory<AffiliatedMatchHelper> weak_ptr_factory_{this};
 };

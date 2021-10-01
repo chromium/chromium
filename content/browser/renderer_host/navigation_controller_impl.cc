@@ -776,7 +776,7 @@ NavigationControllerImpl::GetEntryWithUniqueIDIncludingPending(
   if (entry)
     return entry;
   return pending_entry_ && pending_entry_->GetUniqueID() == nav_entry_id
-             ? pending_entry_
+             ? pending_entry_.get()
              : nullptr;
 }
 

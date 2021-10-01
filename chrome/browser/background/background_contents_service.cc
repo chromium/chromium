@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/single_thread_task_runner.h"
@@ -136,7 +137,7 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
     CloseBalloon(extension_id, profile);
   }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool is_hosted_app_;
   bool is_platform_app_;
   std::string extension_id_;
@@ -311,7 +312,7 @@ void BackgroundContentsService::StartObserving() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-                 content::Source<Profile>(profile_));
+                 content::Source<Profile>(profile_.get()));
 
   // Listen for extension uninstall, load, unloaded notification.
   extension_registry_observation_.Observe(

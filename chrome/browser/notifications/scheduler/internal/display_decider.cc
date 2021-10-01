@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
@@ -159,9 +160,9 @@ class DecisionHelper {
   Notifications notifications_;
 
   const ClientStates client_states_;
-  const SchedulerConfig* config_;
+  raw_ptr<const SchedulerConfig> config_;
   const std::vector<SchedulerClientType> clients_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   SchedulerClientType last_shown_type_;
   std::map<SchedulerClientType, int> shown_per_type_;
@@ -203,9 +204,9 @@ class DisplayDeciderImpl : public DisplayDecider {
     helper->DecideNotificationToShow(results);
   }
 
-  const SchedulerConfig* config_;
+  raw_ptr<const SchedulerConfig> config_;
   const std::vector<SchedulerClientType> clients_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace

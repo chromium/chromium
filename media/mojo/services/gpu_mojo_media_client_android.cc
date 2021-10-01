@@ -5,6 +5,7 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/android_cdm_factory.h"
@@ -113,7 +114,7 @@ class AndroidPlatformDelegate : public GpuMojoMediaClient::PlatformDelegate {
   }
 
  private:
-  GpuMojoMediaClient* client_;
+  raw_ptr<GpuMojoMediaClient> client_;
 };
 
 }  // namespace

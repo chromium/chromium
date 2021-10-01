@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/sync_bundle.h"
@@ -126,9 +127,9 @@ class ExtensionSyncService : public syncer::SyncableService,
   bool ShouldSync(const extensions::Extension& extension) const;
 
   // The normal profile associated with this ExtensionSyncService.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  extensions::ExtensionSystem* system_;
+  raw_ptr<extensions::ExtensionSystem> system_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

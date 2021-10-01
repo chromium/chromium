@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_CORS_CORS_URL_LOADER_H_
 #define SERVICES_NETWORK_CORS_CORS_URL_LOADER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -147,7 +148,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // This raw URLLoaderFactory pointer is shared with the CorsURLLoaderFactory
   // that created and owns this object.
-  mojom::URLLoaderFactory* network_loader_factory_;
+  raw_ptr<mojom::URLLoaderFactory> network_loader_factory_;
 
   // For the actual request.
   mojo::Remote<mojom::URLLoader> network_loader_;
@@ -189,9 +190,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   // Outlives |this|.
-  const OriginAccessList* const origin_access_list_;
-  PreflightController* preflight_controller_;
-  const base::flat_set<std::string>* allowed_exempt_headers_;
+  const raw_ptr<const OriginAccessList> origin_access_list_;
+  raw_ptr<PreflightController> preflight_controller_;
+  raw_ptr<const base::flat_set<std::string>> allowed_exempt_headers_;
 
   // Flag to specify if the CORS-enabled scheme check should be applied.
   const bool skip_cors_enabled_scheme_check_;

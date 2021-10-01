@@ -13,6 +13,7 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -325,12 +326,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   GURL url_;
   std::string mime_type_;
   net::IPEndPoint remote_endpoint_;
-  WebContents* web_contents_;
-  ClientSideDetectionService* csd_service_;
+  raw_ptr<WebContents> web_contents_;
+  raw_ptr<ClientSideDetectionService> csd_service_;
   // We keep a ref pointer here just to make sure the safe browsing
   // database manager stays alive long enough.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
-  ClientSideDetectionHost* host_;
+  raw_ptr<ClientSideDetectionHost> host_;
 
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
 

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/value_store/value_store_factory.h"
 
 namespace value_store {
@@ -47,7 +48,7 @@ class TestValueStoreFactory : public ValueStoreFactory {
   std::unique_ptr<ValueStore> CreateStore();
 
   base::FilePath db_path_;
-  ValueStore* last_created_store_ = nullptr;
+  raw_ptr<ValueStore> last_created_store_ = nullptr;
 
   // A mapping from directories to their ValueStore. None of these value
   // stores are owned by this factory, so care must be taken when calling

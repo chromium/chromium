@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/windows_types.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -45,7 +46,7 @@ class COMPONENT_EXPORT(UI_BASE) GlobalMediaKeysListenerWin
 
   static bool has_instance_;
 
-  MediaKeysListener::Delegate* delegate_;
+  raw_ptr<MediaKeysListener::Delegate> delegate_;
   base::flat_map<KeyboardCode,
                  std::unique_ptr<gfx::SingletonHwndHotKeyObserver>>
       key_codes_hotkey_observers_;

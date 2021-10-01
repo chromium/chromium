@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/task/test_task.h"
@@ -50,7 +51,7 @@ class NestingTask : public Task {
     TaskComplete();
   }
 
-  NestingTask* child_ = nullptr;
+  raw_ptr<NestingTask> child_ = nullptr;
   bool completed_ = false;
 };
 

@@ -164,7 +164,8 @@ int InterpolatingLayoutManager::GetPreferredHeightForWidth(
 const views::LayoutManagerBase* InterpolatingLayoutManager::GetDefaultLayout()
     const {
   DCHECK(!embedded_layouts_.empty());
-  return default_layout_ ? default_layout_ : embedded_layouts_.rbegin()->second;
+  return default_layout_ ? default_layout_.get()
+                         : embedded_layouts_.rbegin()->second;
 }
 
 const views::LayoutManagerBase* InterpolatingLayoutManager::GetSmallestLayout()

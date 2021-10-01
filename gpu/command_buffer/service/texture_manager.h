@@ -18,6 +18,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -659,7 +660,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
 
   // The single TextureRef that accounts for memory for this texture. Must be
   // one of refs_.
-  TextureRef* memory_tracking_ref_ = nullptr;
+  raw_ptr<TextureRef> memory_tracking_ref_ = nullptr;
 
   // The id of the texture that we are responsible for deleting.  Normally, this
   // is the same as |service_id_|, unless a StreamTexture Image with its own
@@ -729,7 +730,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // Whether we have initialized TEXTURE_MAX_ANISOTROPY to 1.
   bool texture_max_anisotropy_initialized_ = false;
 
-  const CompatibilitySwizzle* compatibility_swizzle_ = nullptr;
+  raw_ptr<const CompatibilitySwizzle> compatibility_swizzle_ = nullptr;
 
   bool emulating_rgb_ = false;
 
@@ -784,8 +785,8 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   TextureManager* manager() { return manager_; }
   void reset_client_id() { client_id_ = 0; }
 
-  TextureManager* manager_;
-  Texture* texture_;
+  raw_ptr<TextureManager> manager_;
+  raw_ptr<Texture> texture_;
   GLuint client_id_;
   GLint num_observers_;
   bool force_context_lost_;
@@ -1186,7 +1187,7 @@ class GPU_GLES2_EXPORT TextureManager
     GLsizei depth;
     GLenum format;
     GLenum type;
-    const void* pixels;
+    raw_ptr<const void> pixels;
     uint32_t pixels_size;
     uint32_t padding;
     CommandType command_type;
@@ -1329,7 +1330,7 @@ class GPU_GLES2_EXPORT TextureManager
 
   MemoryTypeTracker* GetMemTracker();
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  MemoryTracker* memory_tracker_;
+  raw_ptr<MemoryTracker> memory_tracker_;
 
   scoped_refptr<FeatureInfo> feature_info_;
 
@@ -1375,9 +1376,9 @@ class GPU_GLES2_EXPORT TextureManager
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  gl::ProgressReporter* progress_reporter_;
+  raw_ptr<gl::ProgressReporter> progress_reporter_;
 
-  ServiceDiscardableManager* discardable_manager_;
+  raw_ptr<ServiceDiscardableManager> discardable_manager_;
 };
 
 }  // namespace gles2

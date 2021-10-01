@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,7 +47,7 @@ class TestPictureInPictureWindowController
   void HangUp() override {}
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 class OverlayWindowViewsTest : public ChromeViewsTestBase {
@@ -94,7 +95,7 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
  private:
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   TestPictureInPictureWindowController pip_window_controller_;
 
   display::test::TestScreen test_screen_;

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
@@ -98,9 +99,9 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
                                       SyncedTabDelegate* tab_delegate);
 
   // Injected dependencies (not owned).
-  Delegate* const delegate_;
-  SyncSessionsClient* const sessions_client_;
-  SyncedSessionTracker* const session_tracker_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<SyncSessionsClient> sessions_client_;
+  const raw_ptr<SyncedSessionTracker> session_tracker_;
 
   std::string current_session_tag_;
 };

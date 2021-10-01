@@ -13,6 +13,7 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -611,8 +612,8 @@ class SkiaRenderer::ScopedSkImageBuilder {
   const absl::optional<SkColor>& clear_color() const { return clear_color_; }
 
  private:
-  const SkImage* sk_image_ = nullptr;
-  const cc::PaintOpBuffer* paint_op_buffer_ = nullptr;
+  raw_ptr<const SkImage> sk_image_ = nullptr;
+  raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
   absl::optional<SkColor> clear_color_;
 };
 
@@ -2753,7 +2754,7 @@ void SkiaRenderer::CopyDrawnRenderPass(
   // Root framebuffer uses id 0 in SkiaOutputSurface.
   AggregatedRenderPassId render_pass_id;
   gpu::Mailbox mailbox;
-  const auto* const render_pass = current_frame()->current_render_pass;
+  const auto* const render_pass = current_frame()->current_render_pass.get();
   if (render_pass != current_frame()->root_render_pass) {
     render_pass_id = render_pass->id;
     auto it = render_pass_backings_.find(render_pass_id);

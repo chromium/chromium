@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -101,7 +102,7 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
   }
 
  private:
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   content::RenderFrameHostReceiverSet<
       chrome::mojom::SyncEncryptionKeysExtension>

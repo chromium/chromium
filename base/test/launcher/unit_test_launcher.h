@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
 
@@ -153,7 +154,7 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 
   ThreadChecker thread_checker_;
 
-  UnitTestPlatformDelegate* platform_delegate_;
+  raw_ptr<UnitTestPlatformDelegate> platform_delegate_;
 
   // Maximum number of tests to run in a single batch.
   size_t batch_limit_;

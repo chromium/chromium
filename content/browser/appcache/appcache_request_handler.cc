@@ -337,7 +337,7 @@ AppCacheRequestHandler::MaybeLoadMainResource(
   const AppCacheHost* spawning_host =
       (request_destination_ ==
        network::mojom::RequestDestination::kSharedWorker)
-          ? host_
+          ? host_.get()
           : host_->GetSpawningHost();
   GURL preferred_manifest_url = spawning_host ?
       spawning_host->preferred_manifest_url() : GURL();

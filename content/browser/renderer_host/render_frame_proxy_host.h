@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/frame.mojom.h"
 #include "ipc/ipc_listener.h"
@@ -301,10 +302,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // equivalent to the result of site_instance_->GetProcess(), but that
   // method has the side effect of creating the process if it doesn't exist.
   // Cache a pointer to avoid unnecessary process creation.
-  RenderProcessHost* process_;
+  raw_ptr<RenderProcessHost> process_;
 
   // The node in the frame tree where this proxy is located.
-  FrameTreeNode* frame_tree_node_;
+  raw_ptr<FrameTreeNode> frame_tree_node_;
 
   // True if we have a live RenderFrameProxy for this host.
   bool render_frame_proxy_created_;

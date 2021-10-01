@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -151,7 +152,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
 
   void SetLastAuthError(const GoogleServiceAuthError& error);
 
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const AccountStateChangedCallback account_state_changed_callback_;
   const CredentialsChangedCallback credentials_changed_callback_;

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_count_metrics.h"
@@ -137,7 +138,7 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
   }
 
  private:
-  TabHoverCardController* const controller_;
+  const raw_ptr<TabHoverCardController> controller_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
@@ -376,7 +377,7 @@ views::Widget* TabHoverCardController::GetHoverCardWidget() {
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
   hover_card_ = new TabHoverCardBubbleView(tab);
-  hover_card_observation_.Observe(hover_card_);
+  hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);
   slide_animator_ = std::make_unique<views::BubbleSlideAnimator>(hover_card_);
   slide_animator_->SetSlideDuration(

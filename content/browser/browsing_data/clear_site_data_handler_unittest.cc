@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
@@ -103,7 +104,7 @@ class VectorConsoleMessagesDelegate : public ConsoleMessagesDelegate {
   }
 
  private:
-  std::vector<Message>* message_buffer_;
+  raw_ptr<std::vector<Message>> message_buffer_;
 };
 
 // A ConsoleDelegate that outputs messages to a string |output_buffer| owned

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
+#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <utility>
@@ -119,7 +120,7 @@ class ViewBlurObserver : public ViewObserver {
   bool was_called() { return !observation_.IsObserving(); }
 
  private:
-  AXAuraObjCache* cache_;
+  raw_ptr<AXAuraObjCache> cache_;
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
@@ -275,7 +276,7 @@ class TestingWidgetDelegateView : public WidgetDelegateView {
       delete;
 
  private:
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
 };
 
 class TestingAXEventObserver : public AXEventObserver {
@@ -295,7 +296,7 @@ class TestingAXEventObserver : public AXEventObserver {
     }
   }
 
-  AXAuraObjCache* cache_;
+  raw_ptr<AXAuraObjCache> cache_;
   base::ScopedObservation<AXEventManager, AXEventObserver> observation_{this};
 };
 

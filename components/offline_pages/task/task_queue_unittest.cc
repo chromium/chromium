@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -29,7 +30,7 @@ class SimpleTask : public Task {
   using Task::TaskComplete;
 
  protected:
-  std::vector<std::string>* events_;
+  raw_ptr<std::vector<std::string>> events_;
   std::string name_;
 };
 
@@ -89,7 +90,7 @@ class OfflineTaskQueueTest : public testing::Test, public TaskQueue::Delegate {
   bool on_idle_called() { return on_idle_called_; }
 
  private:
-  Task* completed_task_ = nullptr;
+  raw_ptr<Task> completed_task_ = nullptr;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
   bool on_idle_called_ = false;

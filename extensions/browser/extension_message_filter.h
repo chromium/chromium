@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -93,7 +94,7 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   // Only access from the UI thread.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

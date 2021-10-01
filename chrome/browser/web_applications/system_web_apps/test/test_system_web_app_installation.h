@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
@@ -191,7 +192,7 @@ class TestSystemWebAppInstallation {
   // Must be called in SetUp*App() methods, before WebAppProvider is created.
   void RegisterAutoGrantedPermissions(ContentSettingsType permission);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   SystemWebAppManager::UpdatePolicy update_policy_ =
       SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
   std::unique_ptr<FakeWebAppProviderCreator> fake_web_app_provider_creator_;

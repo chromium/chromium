@@ -7,8 +7,8 @@
 
 // A content settings provider that takes its settings out of policies.
 
-
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
@@ -74,7 +74,7 @@ class PolicyProvider : public ObservableProvider {
 
   OriginIdentifierValueMap value_map_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

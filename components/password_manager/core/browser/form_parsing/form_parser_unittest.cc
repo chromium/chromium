@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -87,8 +88,8 @@ struct FormParsingTestCase {
   int number_of_all_possible_passwords = -1;
   int number_of_all_possible_usernames = -1;
   // null means no checking
-  const ValueElementVector* all_possible_passwords = nullptr;
-  const ValueElementVector* all_possible_usernames = nullptr;
+  raw_ptr<const ValueElementVector> all_possible_passwords = nullptr;
+  raw_ptr<const ValueElementVector> all_possible_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
   absl::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;

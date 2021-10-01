@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/power_monitor_test.h"
@@ -106,7 +107,7 @@ class FakeRelaunchNotificationController
     delegate_->OnRelaunchDeadlineExpired();
   }
 
-  ControllerDelegate* delegate_;
+  raw_ptr<ControllerDelegate> delegate_;
 };
 
 // A mock delegate for testing.

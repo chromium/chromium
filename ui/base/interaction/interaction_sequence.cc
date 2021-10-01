@@ -387,7 +387,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
       // has ended, conditions like "must remain visible" no longer apply.
       current_step_->subscription = ElementTracker::Subscription();
       RunIfValid(std::move(current_step_->end_callback),
-                 current_step_->element);
+                 current_step_->element.get());
       if (!delete_guard || AbortedDuringCallback())
         return;
     }
@@ -429,7 +429,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // field of the current step from here forward, because we've installed a
     // callback above that will null it out if it becomes invalid.
     RunIfValid(std::move(current_step_->start_callback), this,
-               current_step_->element);
+               current_step_->element.get());
     if (!delete_guard || AbortedDuringCallback())
       return;
   }
@@ -448,7 +448,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     CompletedCallback completed_callback =
         std::move(configuration_->completed_callback);
     std::unique_ptr<Step> last_step = std::move(current_step_);
-    RunIfValid(std::move(last_step->end_callback), last_step->element);
+    RunIfValid(std::move(last_step->end_callback), last_step->element.get());
     RunIfValid(std::move(completed_callback));
     RunIfValid(std::move(quit_closure));
     return;
@@ -468,7 +468,7 @@ void InteractionSequence::StageNextStep() {
   // hidden during the previous step transition, `next_element` could be null.
   TrackedElement* const next_element =
       (activated_during_callback_ || next->element)
-          ? next->element
+          ? next->element.get()
           : tracker->GetFirstMatchingElement(next->id, context());
 
   if (!activated_during_callback_ && next->must_be_visible.value() &&
@@ -476,7 +476,7 @@ void InteractionSequence::StageNextStep() {
     // We're going to abort, but we have to finish the current step first.
     if (current_step_) {
       RunIfValid(std::move(current_step_->end_callback),
-                 current_step_->element);
+                 current_step_->element.get());
     }
     // Fast forward to the next step before aborting so we get the correct
     // information on the failed step in the abort callback.

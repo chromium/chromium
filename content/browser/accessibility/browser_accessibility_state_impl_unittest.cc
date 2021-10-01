@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -32,7 +33,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock clock_;
-  BrowserAccessibilityStateImpl* state_;
+  raw_ptr<BrowserAccessibilityStateImpl> state_;
   BrowserTaskEnvironment task_environment_;
 };
 

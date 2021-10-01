@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -157,7 +158,7 @@ class PermissionRequestManagerTest
   MockPermissionRequest iframe_request_other_domain_;
   MockPermissionRequest iframe_request_camera_other_domain_;
   MockPermissionRequest iframe_request_mic_other_domain_;
-  PermissionRequestManager* manager_;
+  raw_ptr<PermissionRequestManager> manager_;
   std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
   TestPermissionsClient client_;
   base::test::ScopedFeatureList feature_list_;

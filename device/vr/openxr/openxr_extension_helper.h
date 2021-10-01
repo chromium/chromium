@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
@@ -72,7 +73,7 @@ class OpenXrExtensionHelper {
 
  private:
   const OpenXrExtensionMethods extension_methods_;
-  const OpenXrExtensionEnumeration* const extension_enumeration_;
+  const raw_ptr<const OpenXrExtensionEnumeration> extension_enumeration_;
 };
 
 }  // namespace device

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOCOMPLETE_CHROME_AUTOCOMPLETE_SCHEME_CLASSIFIER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class ChromeAutocompleteSchemeClassifier : public AutocompleteSchemeClassifier {
       const std::string& scheme) const override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_CHROME_AUTOCOMPLETE_SCHEME_CLASSIFIER_H_

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
@@ -193,9 +194,9 @@ class ZoomController : public content::WebContentsObserver,
   // Observer receiving notifications on state changes.
   base::ObserverList<ZoomObserver>::Unchecked observers_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   // Keep track of the HostZoomMap we're currently subscribed to.
-  content::HostZoomMap* host_zoom_map_;
+  raw_ptr<content::HostZoomMap> host_zoom_map_;
 
   base::CallbackListSubscription zoom_subscription_;
 

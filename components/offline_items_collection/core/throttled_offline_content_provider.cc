@@ -30,7 +30,7 @@ ThrottledOfflineContentProvider::ThrottledOfflineContentProvider(
       update_queued_(false),
       wrapped_provider_(provider) {
   DCHECK(wrapped_provider_);
-  observation_.Observe(wrapped_provider_);
+  observation_.Observe(wrapped_provider_.get());
 }
 
 ThrottledOfflineContentProvider::~ThrottledOfflineContentProvider() = default;

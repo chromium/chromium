@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -145,7 +146,7 @@ class DeferNextNavigationThrottleInserter
   }
 
   const content::TestNavigationThrottleInserter throttle_inserter_;
-  DeferringThrottle* throttle_ = nullptr;
+  raw_ptr<DeferringThrottle> throttle_ = nullptr;
   base::RunLoop defer_wait_loop_;
   base::RunLoop finish_wait_loop_;
 };

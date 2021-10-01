@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -50,7 +51,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
     notification_header_view_ =
         new NotificationHeaderView(views::Button::PressedCallback());
-    container->AddChildView(notification_header_view_);
+    container->AddChildView(notification_header_view_.get());
 
     widget_.Show();
   }
@@ -79,7 +80,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  NotificationHeaderView* notification_header_view_ = nullptr;
+  raw_ptr<NotificationHeaderView> notification_header_view_ = nullptr;
 
  private:
   views::Widget widget_;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -80,7 +81,7 @@ class NetErrorTabHelperWithPrerenderingTest : public InProcessBrowserTest {
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   std::list<error_page::DnsProbeStatus> dns_probe_status_queue_;
-  chrome_browser_net::NetErrorTabHelper* tab_helper_{nullptr};
+  raw_ptr<chrome_browser_net::NetErrorTabHelper> tab_helper_{nullptr};
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 

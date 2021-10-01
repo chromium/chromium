@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_NETWORK_HANDLER_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_NETWORK_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -108,8 +109,8 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
   void DidReceiveTokenForValidation(const std::string& new_token,
                                     instance_id::InstanceID::Result result);
 
-  gcm::GCMDriver* const gcm_driver_;
-  instance_id::InstanceIDDriver* const instance_id_driver_;
+  const raw_ptr<gcm::GCMDriver> gcm_driver_;
+  const raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
 
   FcmChannelState channel_state_ = FcmChannelState::NOT_STARTED;
   std::string token_;

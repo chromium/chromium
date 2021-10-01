@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -189,10 +190,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SetPageFrozen(bool frozen) override;
   bool IsBackForwardCacheSupported() override;
 
-  RenderViewHostDelegateView* delegate_view_override_;
+  raw_ptr<RenderViewHostDelegateView> delegate_view_override_;
 
   // See set_web_preferences_changed_counter() above. May be nullptr.
-  int* web_preferences_changed_counter_;
+  raw_ptr<int> web_preferences_changed_counter_;
   std::string save_frame_headers_;
   std::u16string suggested_filename_;
   // Map keyed by image URL. Values are <id, callback> pairs.

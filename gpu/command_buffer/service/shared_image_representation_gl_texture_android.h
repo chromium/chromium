@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_GL_TEXTURE_ANDROID_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_GL_TEXTURE_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image_backing_android.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 
@@ -32,7 +33,7 @@ class SharedImageRepresentationGLTextureAndroid
     return static_cast<SharedImageBackingAndroid*>(backing());
   }
 
-  gles2::Texture* const texture_;
+  const raw_ptr<gles2::Texture> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 
   SharedImageRepresentationGLTextureAndroid(

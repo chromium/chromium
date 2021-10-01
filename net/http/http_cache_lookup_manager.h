@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_CACHE_LOOKUP_MANAGER_H_
 #define NET_HTTP_HTTP_CACHE_LOOKUP_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_transaction.h"
@@ -57,7 +58,7 @@ class NET_EXPORT_PRIVATE HttpCacheLookupManager : public ServerPushDelegate {
   };
 
   // HttpCache must outlive the HttpCacheLookupManager.
-  HttpCache* http_cache_;
+  raw_ptr<HttpCache> http_cache_;
   std::map<GURL, std::unique_ptr<LookupTransaction>> lookup_transactions_;
   base::WeakPtrFactory<HttpCacheLookupManager> weak_factory_{this};
 };

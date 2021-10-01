@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -70,7 +71,7 @@ class FakeBatteryLevelProvider : public BatteryLevelProvider {
   }
 
  private:
-  std::queue<BatteryLevelProvider::BatteryState>* battery_states_;
+  raw_ptr<std::queue<BatteryLevelProvider::BatteryState>> battery_states_;
 };
 
 class TestProcessMonitor : public performance_monitor::ProcessMonitor {
@@ -170,7 +171,7 @@ class PowerMetricsReporterUnitTest : public testing::Test {
   TestUsageScenarioDataStoreImpl data_store_;
   std::queue<BatteryLevelProvider::BatteryState> battery_states_;
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
-  BatteryLevelProvider* battery_provider_;
+  raw_ptr<BatteryLevelProvider> battery_provider_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };

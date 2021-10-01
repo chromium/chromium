@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
@@ -122,7 +123,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   // allowed on the current thread.
   void InitWhileIOAllowed();
 
-  HeadlessBrowserImpl* browser_;  // Not owned.
+  raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
   std::unique_ptr<HeadlessBrowserContextOptions> context_options_;
   base::FilePath path_;
 

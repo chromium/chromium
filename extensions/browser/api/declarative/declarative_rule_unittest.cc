@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -36,7 +37,7 @@ std::unique_ptr<base::DictionaryValue> SimpleManifest() {
 struct RecordingCondition {
   typedef int MatchData;
 
-  URLMatcherConditionFactory* factory;
+  raw_ptr<URLMatcherConditionFactory> factory;
   std::unique_ptr<base::Value> value;
 
   void GetURLMatcherConditionSets(

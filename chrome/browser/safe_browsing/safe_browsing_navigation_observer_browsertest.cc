@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -148,7 +149,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   }
 
   base::OnceClosure quit_waiting_callback_;
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
   std::vector<DownloadItem*> items_seen_;
 };
 

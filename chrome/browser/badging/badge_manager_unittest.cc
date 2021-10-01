@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
@@ -92,7 +93,7 @@ class BadgeManagerUnittest : public ::testing::Test {
   }
 
  private:
-  TestBadgeManagerDelegate* delegate_;
+  raw_ptr<TestBadgeManagerDelegate> delegate_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BadgeManager> badge_manager_;

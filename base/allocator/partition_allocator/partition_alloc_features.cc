@@ -35,7 +35,7 @@ const Feature kPartitionAllocLargeThreadCacheSize{
     "PartitionAllocLargeThreadCacheSize", FEATURE_ENABLED_BY_DEFAULT};
 
 const Feature kPartitionAllocBackupRefPtr{"PartitionAllocBackupRefPtr",
-                                          FEATURE_DISABLED_BY_DEFAULT};
+                                          FEATURE_ENABLED_BY_DEFAULT};
 
 constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {

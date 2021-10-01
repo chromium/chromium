@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace updater {
 
 // A simple container of the updater's configuration, as defined by the
@@ -38,7 +40,7 @@ class Configuration {
   void Clear();
   bool ParseCommandLine(const wchar_t* command_line);
 
-  wchar_t** args_ = nullptr;
+  raw_ptr<wchar_t*> args_ = nullptr;
   const wchar_t* command_line_ = nullptr;
   int argument_count_ = 0;
   Operation operation_ = INSTALL_PRODUCT;

@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -316,7 +317,7 @@ class SocketDataProvider {
   virtual void Reset() = 0;
 
   MockConnect connect_;
-  AsyncSocket* socket_ = nullptr;
+  raw_ptr<AsyncSocket> socket_ = nullptr;
 
   int receive_buffer_size_ = -1;
   int send_buffer_size_ = -1;
@@ -596,7 +597,7 @@ class SequencedSocketData : public SocketDataProvider {
   void MaybePostWriteCompleteTask();
 
   StaticSocketDataHelper helper_;
-  SocketDataPrinter* printer_ = nullptr;
+  raw_ptr<SocketDataPrinter> printer_ = nullptr;
   int sequence_number_;
   IoState read_state_;
   IoState write_state_;
@@ -863,7 +864,7 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
 
   AddressList addresses_;
 
-  SocketDataProvider* data_;
+  raw_ptr<SocketDataProvider> data_;
   int read_offset_;
   MockRead read_data_;
   bool need_read_data_;
@@ -955,7 +956,7 @@ class MockProxyClientSocket : public AsyncSocket, public ProxyClientSocket {
 
   NetLogWithSource net_log_;
   std::unique_ptr<StreamSocket> socket_;
-  ProxyClientSocketDataProvider* data_;
+  raw_ptr<ProxyClientSocketDataProvider> data_;
   scoped_refptr<HttpAuthController> auth_controller_;
 
   base::WeakPtrFactory<MockProxyClientSocket> weak_factory_{this};
@@ -1040,7 +1041,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   bool in_confirm_handshake_ = false;
   NetLogWithSource net_log_;
   std::unique_ptr<StreamSocket> stream_socket_;
-  SSLSocketDataProvider* data_;
+  raw_ptr<SSLSocketDataProvider> data_;
   // Address of the "remote" peer we're connected to.
   IPEndPoint peer_addr_;
 
@@ -1130,7 +1131,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   void RunCallback(CompletionOnceCallback callback, int result);
 
   bool connected_;
-  SocketDataProvider* data_;
+  raw_ptr<SocketDataProvider> data_;
   int read_offset_;
   MockRead read_data_;
   bool need_read_data_;
@@ -1181,8 +1182,8 @@ class TestSocketRequest : public TestCompletionCallbackBase {
   void OnComplete(int result);
 
   ClientSocketHandle handle_;
-  std::vector<TestSocketRequest*>* request_order_;
-  size_t* completion_count_;
+  raw_ptr<std::vector<TestSocketRequest*>> request_order_;
+  raw_ptr<size_t> completion_count_;
 };
 
 class ClientSocketPoolTest {
@@ -1289,7 +1290,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
     void OnConnect(int rv);
 
     std::unique_ptr<StreamSocket> socket_;
-    ClientSocketHandle* handle_;
+    raw_ptr<ClientSocketHandle> handle_;
     const SocketTag socket_tag_;
     CompletionOnceCallback user_callback_;
     RequestPriority priority_;
@@ -1336,7 +1337,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
                      int64_t generation) override;
 
  private:
-  ClientSocketFactory* client_socket_factory_;
+  raw_ptr<ClientSocketFactory> client_socket_factory_;
   std::vector<std::unique_ptr<MockConnectJob>> job_list_;
   RequestPriority last_request_priority_;
   int release_count_;
@@ -1448,8 +1449,8 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
   MockUDPClientSocket* GetLastProducedUDPSocket() const { return udp_socket_; }
 
  private:
-  MockTaggingStreamSocket* tcp_socket_ = nullptr;
-  MockUDPClientSocket* udp_socket_ = nullptr;
+  raw_ptr<MockTaggingStreamSocket> tcp_socket_ = nullptr;
+  raw_ptr<MockUDPClientSocket> udp_socket_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MockTaggingClientSocketFactory);
 };

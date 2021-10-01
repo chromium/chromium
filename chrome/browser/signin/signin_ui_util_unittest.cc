@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
@@ -87,7 +88,7 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
   }
 
  private:
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 };
 
 }  // namespace
@@ -99,8 +100,8 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
 
   struct CreateDiceTurnSyncOnHelperParams {
    public:
-    Profile* profile = nullptr;
-    Browser* browser = nullptr;
+    raw_ptr<Profile> profile = nullptr;
+    raw_ptr<Browser> browser = nullptr;
     signin_metrics::AccessPoint signin_access_point =
         signin_metrics::AccessPoint::ACCESS_POINT_MAX;
     signin_metrics::PromoAction signin_promo_action =

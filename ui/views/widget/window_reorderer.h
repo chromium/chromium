@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -49,8 +50,8 @@ class WindowReorderer : public aura::WindowObserver {
 
   // The window and the root view of the native widget which owns the
   // WindowReorderer.
-  aura::Window* parent_window_;
-  View* root_view_;
+  raw_ptr<aura::Window> parent_window_;
+  raw_ptr<View> root_view_;
 
   // Reorders windows as a result of the kHostViewKey being set on a child of
   // |parent_window_|.

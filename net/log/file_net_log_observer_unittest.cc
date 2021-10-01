@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -105,13 +106,13 @@ struct ParsedNetLog {
   base::Value root;
 
   // The constants dictionary.
-  const base::Value* constants = nullptr;
+  raw_ptr<const base::Value> constants = nullptr;
 
   // The events list.
-  const base::Value* events = nullptr;
+  raw_ptr<const base::Value> events = nullptr;
 
   // The optional polled data (may be nullptr).
-  const base::Value* polled_data = nullptr;
+  raw_ptr<const base::Value> polled_data = nullptr;
 };
 
 ::testing::AssertionResult ParsedNetLog::InitFromFileContents(

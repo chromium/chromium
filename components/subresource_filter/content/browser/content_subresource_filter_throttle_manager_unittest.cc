@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -427,7 +428,7 @@ class ContentSubresourceFilterThrottleManagerTest
 
   bool created_safe_browsing_throttle_for_last_navigation_ = false;
 
-  content::ContentBrowserClient* original_browser_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

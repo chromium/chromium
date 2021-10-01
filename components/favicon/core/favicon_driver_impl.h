@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_handler.h"
 
@@ -58,7 +59,7 @@ class FaviconDriverImpl : public FaviconDriver,
 
   // KeyedService used by FaviconDriverImpl. It may be null during testing,
   // but if it is defined, it must outlive the FaviconDriverImpl.
-  CoreFaviconService* favicon_service_;
+  raw_ptr<CoreFaviconService> favicon_service_;
 
   // FaviconHandlers used to download the different kind of favicons.
   std::vector<std::unique_ptr<FaviconHandler>> handlers_;

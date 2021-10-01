@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -35,7 +36,7 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
-  views::MessageBoxView* message_box_view_ = nullptr;
+  raw_ptr<views::MessageBoxView> message_box_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_

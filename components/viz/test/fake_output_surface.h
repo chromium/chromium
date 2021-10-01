@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -125,7 +126,7 @@ class FakeOutputSurface : public OutputSurface {
   explicit FakeOutputSurface(
       std::unique_ptr<SoftwareOutputDevice> software_device);
 
-  OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<OutputSurfaceClient> client_ = nullptr;
   std::unique_ptr<OutputSurfaceFrame> last_sent_frame_;
   size_t num_sent_frames_ = 0;
   bool has_external_stencil_test_ = false;

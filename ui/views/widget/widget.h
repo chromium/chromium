@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -1141,7 +1142,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
-  internal::NativeWidgetPrivate* native_widget_ = nullptr;
+  raw_ptr<internal::NativeWidgetPrivate> native_widget_ = nullptr;
 
   base::ObserverList<WidgetObserver> observers_;
 
@@ -1149,12 +1150,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Non-owned pointer to the Widget's delegate. If a NULL delegate is supplied
   // to Init() a default WidgetDelegate is created.
-  WidgetDelegate* widget_delegate_ = nullptr;
+  raw_ptr<WidgetDelegate> widget_delegate_ = nullptr;
 
   // The parent of this widget. This is the widget that associates with the
   // |params.parent| supplied to Init(). If no parent is given or the native
   // view parent has no associating Widget, this value will be nullptr.
-  Widget* parent_ = nullptr;
+  raw_ptr<Widget> parent_ = nullptr;
 
   // The root of the View hierarchy attached to this window.
   // WARNING: see warning in tooltip_manager_ for ordering dependencies with
@@ -1165,7 +1166,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // window controls, sizing borders etc). To use an implementation other than
   // the default, this class must be sub-classed and this value set to the
   // desired implementation before calling |InitWindow()|.
-  NonClientView* non_client_view_ = nullptr;
+  raw_ptr<NonClientView> non_client_view_ = nullptr;
 
   // The focus manager keeping track of focus for this Widget and any of its
   // children.  NULL for non top-level widgets.
@@ -1175,7 +1176,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Valid for the lifetime of RunShellDrag(), indicates the view the drag
   // started from.
-  View* dragged_view_ = nullptr;
+  raw_ptr<View> dragged_view_ = nullptr;
 
   // See class documentation for Widget above for a note about ownership.
   InitParams::Ownership ownership_ = InitParams::NATIVE_WIDGET_OWNS_WIDGET;
@@ -1266,7 +1267,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // The native theme this widget is using.
   // If nullptr, defaults to use the regular native theme.
-  ui::NativeTheme* native_theme_ = nullptr;
+  raw_ptr<ui::NativeTheme> native_theme_ = nullptr;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -145,8 +146,8 @@ class HeadlessBrowserContextIsolationTest
   }
 
  private:
-  HeadlessBrowserContext* browser_context_;
-  HeadlessWebContents* web_contents2_;
+  raw_ptr<HeadlessBrowserContext> browser_context_;
+  raw_ptr<HeadlessWebContents> web_contents2_;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client2_;
   std::unique_ptr<LoadObserver> load_observer_;
 };

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,7 +33,7 @@ class ConnectorsInternalsUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<ConnectorsInternalsPageHandler> page_handler_;
-  DeviceTrustService* device_trust_service_;
+  raw_ptr<DeviceTrustService> device_trust_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

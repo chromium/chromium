@@ -4,6 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/resource_coordinator/time.h"
@@ -60,7 +61,7 @@ class TabManagerWebContentsDataTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<WebContents> web_contents_;
-  TabManager::WebContentsData* tab_data_;
+  raw_ptr<TabManager::WebContentsData> tab_data_;
   base::SimpleTestTickClock test_clock_;
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_;
 };

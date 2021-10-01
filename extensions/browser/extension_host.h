@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -179,13 +180,13 @@ class ExtensionHost : public DeferredStartRenderHost,
   std::unique_ptr<ExtensionHostDelegate> delegate_;
 
   // The extension that we're hosting in this view.
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 
   // Id of extension that we're hosting in this view.
   const std::string extension_id_;
 
   // The browser context that this host is tied to.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The host for our HTML content.
   std::unique_ptr<content::WebContents> host_contents_;
@@ -195,7 +196,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   // not expose the speculative main frame. While navigating to a still-loading
   // speculative main frame, we want to send messages to it rather than the
   // current frame.
-  content::RenderFrameHost* main_frame_host_;
+  raw_ptr<content::RenderFrameHost> main_frame_host_;
 
   // Whether CreateRendererNow was called before the extension was ready.
   bool is_renderer_creation_pending_ = false;

@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -48,7 +49,7 @@ class AX_EXPORT AXSystemCaretWin : private AXPlatformNodeDelegateBase {
   bool ShouldIgnoreHoveredStateForTesting() override;
   const ui::AXUniqueId& GetUniqueId() const override;
 
-  AXPlatformNodeWin* caret_;
+  raw_ptr<AXPlatformNodeWin> caret_;
   gfx::AcceleratedWidget event_target_;
   AXNodeData data_;
   ui::AXUniqueId unique_id_;

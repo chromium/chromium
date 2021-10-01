@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,6 +65,6 @@ class ChromePluginServiceFilterTest : public ChromeRenderViewHostTestHarness {
     filter_->RegisterProfile(profile());
   }
 
-  ChromePluginServiceFilter* filter_;
+  raw_ptr<ChromePluginServiceFilter> filter_;
   base::FilePath flash_plugin_path_;
 };

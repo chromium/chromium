@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/browsing_data/core/clear_browsing_data_tab.h"
 #include "components/prefs/pref_member.h"
@@ -39,7 +40,7 @@ class BrowsingDataCounter {
     virtual bool Finished() const;
 
    private:
-    const BrowsingDataCounter* source_;
+    raw_ptr<const BrowsingDataCounter> source_;
   };
 
   // A subclass of Result returned when the computation has finished. The result

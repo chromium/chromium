@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
@@ -110,7 +111,7 @@ class TestDialURLFetcher : public DialURLFetcher {
   void StartDownload() override;
 
  private:
-  network::TestURLLoaderFactory* const factory_;
+  const raw_ptr<network::TestURLLoaderFactory> factory_;
 };
 
 class TestDialActivityManager : public DialActivityManager {
@@ -134,7 +135,7 @@ class TestDialActivityManager : public DialActivityManager {
   MOCK_METHOD0(OnFetcherCreated, void());
 
  private:
-  network::TestURLLoaderFactory* const factory_;
+  const raw_ptr<network::TestURLLoaderFactory> factory_;
 
   GURL expected_url_;
   std::string expected_method_;

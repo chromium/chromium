@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory.h"
@@ -53,7 +54,7 @@ class VIEWS_EXPORT BoxLayoutView : public View {
   void ClearFlexForView(const View* view);
 
  private:
-  BoxLayout* const layout_;
+  const raw_ptr<BoxLayout> layout_;
 
   // TODO(tluk): Merge these with the values in BoxLayout after transition to
   // layout views is complete.

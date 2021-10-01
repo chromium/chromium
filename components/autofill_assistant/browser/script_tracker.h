@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/script.h"
@@ -131,8 +132,8 @@ class ScriptTracker : public ScriptExecutor::Listener {
   void OnScriptListChanged(
       std::vector<std::unique_ptr<Script>> scripts) override;
 
-  ScriptExecutorDelegate* const delegate_;
-  ScriptTracker::Listener* const listener_;
+  const raw_ptr<ScriptExecutorDelegate> delegate_;
+  const raw_ptr<ScriptTracker::Listener> listener_;
 
   // If true, a set of script has already been reported to
   // Listener::OnRunnableScriptsChanged.

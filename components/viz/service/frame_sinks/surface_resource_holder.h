@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -36,7 +37,7 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   void UnrefResources(std::vector<ReturnedResource> resources);
 
  private:
-  SurfaceResourceHolderClient* client_;
+  raw_ptr<SurfaceResourceHolderClient> client_;
 
   struct ResourceRefs {
     int refs_received_from_child = 0;

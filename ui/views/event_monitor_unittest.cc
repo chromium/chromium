@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/widget_test.h"
@@ -61,7 +62,7 @@ class EventMonitorTest : public WidgetTest {
   }
 
  protected:
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
 };

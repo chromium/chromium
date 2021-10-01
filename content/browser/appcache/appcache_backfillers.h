@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "sql/database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,7 +47,7 @@ class AppCacheBackfillerVersion8 {
   bool UpdateCachePaddingSize(int64_t padding_size, int64_t cache_id);
 
   // The AppCacheDatabase instance being backfilled.
-  sql::Database* const db_;
+  const raw_ptr<sql::Database> db_;
 };
 
 // Backfills an AppCache database after it has been migrated to version 9.
@@ -77,7 +78,7 @@ class AppCacheBackfillerVersion9 {
   absl::optional<std::string> GetManifestUrlForGroup(int64_t group_id);
 
   // The AppCacheDatabase instance being backfilled.
-  sql::Database* const db_;
+  const raw_ptr<sql::Database> db_;
 };
 
 }  // namespace content

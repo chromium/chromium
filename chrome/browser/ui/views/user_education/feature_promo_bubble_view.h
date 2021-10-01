@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,10 +60,10 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
     CreateParams& operator=(CreateParams&&);
 
-    views::View* anchor_view = nullptr;
+    raw_ptr<views::View> anchor_view = nullptr;
     views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT;
 
-    const gfx::VectorIcon* body_icon = nullptr;
+    raw_ptr<const gfx::VectorIcon> body_icon = nullptr;
     std::u16string body_text;
     absl::optional<std::u16string> title_text;
     absl::optional<std::u16string> screenreader_text;

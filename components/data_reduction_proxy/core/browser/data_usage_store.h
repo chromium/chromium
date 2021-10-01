@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
@@ -98,7 +99,7 @@ class DataUsageStore {
   DataStore::Status LoadBucketAtIndex(int index, DataUsageBucket* current);
 
   // The store to persist data usage information.
-  DataStore* db_;
+  raw_ptr<DataStore> db_;
 
   // The index of the last bucket persisted in the |db_|. |DataUsageBucket| is
   // stored in the |db_| as a circular array. This index points to the array

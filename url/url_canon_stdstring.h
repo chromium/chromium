@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "url/url_canon.h"
 
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
   void Resize(int sz) override;
 
  protected:
-  std::string* str_;
+  raw_ptr<std::string> str_;
 };
 
 // An extension of the Replacements class that allows the setters to use

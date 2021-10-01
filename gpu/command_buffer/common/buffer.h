@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -88,7 +89,7 @@ class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
   ~Buffer();
 
   std::unique_ptr<BufferBacking> backing_;
-  void* memory_;
+  raw_ptr<void> memory_;
   uint32_t size_;
 
   DISALLOW_COPY_AND_ASSIGN(Buffer);

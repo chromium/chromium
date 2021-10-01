@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -63,7 +64,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
   OverlayStrategy GetUMAEnum() const override;
 
  private:
-  OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
+  raw_ptr<OverlayProcessorUsingStrategy> capability_checker_;  // Weak.
 };
 
 }  // namespace viz

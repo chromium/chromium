@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/threading/thread_checker.h"
@@ -338,13 +339,13 @@ class HistoryURLProvider : public HistoryProvider {
       size_t match_number,
       int relevance);
 
-  AutocompleteProviderListener* listener_;
+  raw_ptr<AutocompleteProviderListener> listener_;
 
   // Params for the current query.  The provider should not free this directly;
   // instead, it is passed as a parameter through the history backend, and the
   // parameter itself is freed once it's no longer needed.  The only reason we
   // keep this member is so we can set the cancel bit on it.
-  HistoryURLProviderParams* params_;
+  raw_ptr<HistoryURLProviderParams> params_;
 
   // Whether to query the history URL database to match.  Even if false, we
   // still use the URL database to decide if the URL-what-you-typed was visited

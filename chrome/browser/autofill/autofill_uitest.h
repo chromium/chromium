@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_H_
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -124,7 +125,7 @@ class AutofillUiTest : public InProcessBrowserTest,
   // WebContentsObserver override:
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  content::RenderFrameHost* current_main_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> current_main_rfh_ = nullptr;
   BrowserAutofillManagerTestDelegateImpl test_delegate_;
 
   // KeyPressEventCallback that serves as a sink to ensure that every key press

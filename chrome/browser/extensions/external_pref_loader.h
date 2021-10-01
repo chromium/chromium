@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_loader.h"
@@ -120,7 +121,7 @@ class ExternalPrefLoader : public ExternalLoader {
 
   // Profile that loads these external prefs.
   // Needed for waiting for waiting priority sync.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // User type determined by |profile_|. Used to filter extensions. In some unit
   // tests may not be set.

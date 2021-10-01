@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
@@ -50,7 +51,8 @@ class SignalStorageConfigTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock test_clock_;
   std::map<std::string, proto::SignalStorageConfigs> db_entries_;
-  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>* db_{nullptr};
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>> db_{
+      nullptr};
   std::unique_ptr<SignalStorageConfig> signal_storage_config_;
 };
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_REMOTE_COMMANDS_CLEAR_BROWSING_DATA_JOB_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "content/public/browser/browsing_data_remover.h"
 
@@ -67,7 +68,7 @@ class ClearBrowsingDataJob : public policy::RemoteCommandJob,
   CallbackWithResult failed_callback_;
 
   // Non-owned pointer to the ProfileManager of the current browser process.
-  ProfileManager* profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
 };
 
 }  // namespace enterprise_commands

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -250,7 +251,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Unowned object used for getting and storing real time url check cache.
-  VerdictCacheManager* cache_manager_;
+  raw_ptr<VerdictCacheManager> cache_manager_;
 
   // All requests that are sent but haven't received a response yet.
   PendingRTLookupRequests pending_requests_;
@@ -259,7 +260,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   // Unowned object used to retrieve referrer chains.
-  ReferrerChainProvider* referrer_chain_provider_;
+  raw_ptr<ReferrerChainProvider> referrer_chain_provider_;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;

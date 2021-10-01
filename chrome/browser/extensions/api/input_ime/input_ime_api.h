@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -101,7 +102,7 @@ class ImeObserver : public ash::input_method::InputMethodEngineBase::Observer {
       IMEEngineHandlerInterface::InputContext input_context);
 
   std::string extension_id_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
  private:
   extensions::api::input_ime::AutoCapitalizeType
@@ -212,7 +213,7 @@ class InputImeAPI : public BrowserContextKeyedAPI,
   }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

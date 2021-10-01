@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -132,7 +133,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // SafeElementReference here, but there are cases where we want to do
     // additional processing if this element goes away, so we'll add the
     // listeners manually instead.
-    TrackedElement* element = nullptr;
+    raw_ptr<TrackedElement> element = nullptr;
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.

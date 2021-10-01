@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
@@ -308,23 +309,23 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   const GpuPreferences gpu_preferences_;
   const GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
 
-  GpuChannelManagerDelegate* const delegate_;
+  const raw_ptr<GpuChannelManagerDelegate> delegate_;
 
-  GpuWatchdogThread* watchdog_;
+  raw_ptr<GpuWatchdogThread> watchdog_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
 
   std::unique_ptr<MailboxManager> mailbox_manager_;
   std::unique_ptr<gles2::Outputter> outputter_;
-  Scheduler* scheduler_;
+  raw_ptr<Scheduler> scheduler_;
   // SyncPointManager guaranteed to outlive running MessageLoop.
-  SyncPointManager* const sync_point_manager_;
-  SharedImageManager* const shared_image_manager_;
+  const raw_ptr<SyncPointManager> sync_point_manager_;
+  const raw_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<gles2::ProgramCache> program_cache_;
   gles2::ShaderTranslatorCache shader_translator_cache_;
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
   scoped_refptr<gl::GLSurface> default_offscreen_surface_;
-  GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  const raw_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   GpuFeatureInfo gpu_feature_info_;
   ServiceDiscardableManager discardable_manager_;
   PassthroughDiscardableManager passthrough_discardable_manager_;
@@ -335,7 +336,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   base::TimeTicks begin_wake_up_time_;
 #endif
 
-  ImageDecodeAcceleratorWorker* image_decode_accelerator_worker_ = nullptr;
+  raw_ptr<ImageDecodeAcceleratorWorker> image_decode_accelerator_worker_ =
+      nullptr;
 
   // Flags which indicate GPU process activity. Read by the browser process
   // on GPU process crash.
@@ -359,15 +361,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // With --enable-vulkan, |vulkan_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders will use it for rasterization if
   // features::Vulkan is used.
-  viz::VulkanContextProvider* vulkan_context_provider_ = nullptr;
+  raw_ptr<viz::VulkanContextProvider> vulkan_context_provider_ = nullptr;
 
   // If features::Metal, |metal_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders will use it for rasterization.
-  viz::MetalContextProvider* metal_context_provider_ = nullptr;
+  raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;
 
   // With features::SkiaDawn, |dawn_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders will use it for rasterization.
-  viz::DawnContextProvider* dawn_context_provider_ = nullptr;
+  raw_ptr<viz::DawnContextProvider> dawn_context_provider_ = nullptr;
 
   GpuPeakMemoryMonitor peak_memory_monitor_;
 

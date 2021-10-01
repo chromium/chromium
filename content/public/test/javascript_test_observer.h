@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -84,7 +85,7 @@ class JavascriptTestObserver : public NotificationObserver {
   // This was the last message we care about, stop listening for more messages.
   void EndTest();
 
-  TestMessageHandler* handler_;
+  raw_ptr<TestMessageHandler> handler_;
   bool running_;
   bool finished_;
   NotificationRegistrar registrar_;

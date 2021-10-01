@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "cc/test/geometry_test_utils.h"
@@ -177,7 +178,7 @@ class UiInputManagerContentTest : public UiTest {
   }
 
   gfx::Transform head_pose_;
-  UiInputManager* input_manager_;
+  raw_ptr<UiInputManager> input_manager_;
 };
 
 TEST_F(UiInputManagerTest, FocusedElement) {

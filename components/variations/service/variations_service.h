@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
@@ -354,15 +355,15 @@ class VariationsService
   std::unique_ptr<VariationsServiceClient> client_;
 
   // The pref service used to store persist the variations seed.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // Used for instantiating entropy providers for variations seed simulation.
   // Weak pointer.
-  metrics::MetricsStateManager* state_manager_;
+  raw_ptr<metrics::MetricsStateManager> state_manager_;
 
   // Used to obtain policy-related preferences. Depending on the platform, will
   // either be Local State or Profile prefs.
-  PrefService* policy_pref_service_;
+  raw_ptr<PrefService> policy_pref_service_;
 
   // Contains the scheduler instance that handles timing for requests to the
   // server. Initially NULL and instantiated when the initial fetch is

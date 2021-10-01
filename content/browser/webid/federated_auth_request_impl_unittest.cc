@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
@@ -649,11 +650,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   // Note: `auth_request_service_` owns itself, and will generally be deleted
   // with the TestRenderFrameHost is torn down at `TearDown()` time.
-  FederatedAuthRequestService* auth_request_service_;
+  raw_ptr<FederatedAuthRequestService> auth_request_service_;
 
   // Owned by `auth_request_service_`.
-  NiceMock<MockIdpNetworkRequestManager>* mock_request_manager_;
-  NiceMock<MockIdentityRequestDialogController>* mock_dialog_controller_;
+  raw_ptr<NiceMock<MockIdpNetworkRequestManager>> mock_request_manager_;
+  raw_ptr<NiceMock<MockIdentityRequestDialogController>>
+      mock_dialog_controller_;
 
   std::unique_ptr<NiceMock<MockRequestPermissionDelegate>>
       mock_request_permission_delegate_;

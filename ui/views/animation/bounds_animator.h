@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "ui/gfx/animation/animation_container.h"
@@ -170,7 +171,7 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
   base::TimeDelta GetAnimationDurationForReporting() const override;
 
   // Parent of all views being animated.
-  View* parent_;
+  raw_ptr<View> parent_;
 
   // A more performant version of the bounds animations which updates the
   // transform of the views and therefore skips repainting and relayouting until

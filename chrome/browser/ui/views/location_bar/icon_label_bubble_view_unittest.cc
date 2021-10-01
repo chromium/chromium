@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -192,7 +193,7 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
   void AttachInkDrop() {
     ink_drop_ = new TestInkDrop();
     InkDropHostTestApi(views::InkDrop::Get(view_))
-        .SetInkDrop(base::WrapUnique(ink_drop_));
+        .SetInkDrop(base::WrapUnique(ink_drop_.get()));
   }
 
  private:
@@ -278,8 +279,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  TestIconLabelBubbleView* view_ = nullptr;
-  TestInkDrop* ink_drop_ = nullptr;
+  raw_ptr<TestIconLabelBubbleView> view_ = nullptr;
+  raw_ptr<TestInkDrop> ink_drop_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
   bool steady_reached_ = false;

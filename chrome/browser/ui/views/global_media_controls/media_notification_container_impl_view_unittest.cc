@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -259,7 +260,7 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  MediaNotificationContainerImplView* notification_container_ = nullptr;
+  raw_ptr<MediaNotificationContainerImplView> notification_container_ = nullptr;
   std::unique_ptr<global_media_controls::test::MockMediaItemUIObserver>
       observer_;
   std::unique_ptr<MockMediaNotificationItem> item_;
@@ -323,7 +324,7 @@ class MediaNotificationContainerImplViewCastTest
   TestingProfile profile_;
   std::unique_ptr<CastMediaNotificationItem> item_;
   NiceMock<global_media_controls::test::MockMediaItemManager> item_manager_;
-  MockSessionController* session_controller_ = nullptr;
+  raw_ptr<MockSessionController> session_controller_ = nullptr;
 };
 
 TEST_F(MediaNotificationContainerImplViewCastTest, StopCasting) {

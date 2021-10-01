@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "services/device/public/mojom/device_posture_provider.mojom.h"
 
 namespace device {
@@ -42,7 +43,7 @@ class DevicePosturePlatformProvider {
  private:
   // DevicePosturePlatformProvider is created and owned by
   // DevicePostureProviderImpl making it safe to hold a raw pointer.
-  DevicePostureProviderImpl* provider_;
+  raw_ptr<DevicePostureProviderImpl> provider_;
 };
 
 }  // namespace device

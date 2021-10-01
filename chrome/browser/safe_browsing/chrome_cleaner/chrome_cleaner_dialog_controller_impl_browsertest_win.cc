@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -87,7 +88,7 @@ class ChromeCleanerPromptUserTest
 
  protected:
   MockChromeCleanerController mock_cleaner_controller_;
-  ChromeCleanerDialogControllerImpl* dialog_controller_;
+  raw_ptr<ChromeCleanerDialogControllerImpl> dialog_controller_;
   StrictMock<MockChromeCleanerPromptDelegate> mock_delegate_;
 
   std::string old_seed_;

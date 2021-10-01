@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -61,7 +62,7 @@ struct InstallableData {
   // nullptr if the most appropriate primary icon couldn't be determined or
   // downloaded. The underlying primary icon is owned by the InstallableManager;
   // clients must copy the bitmap if they want to to use it.
-  const SkBitmap* primary_icon;
+  raw_ptr<const SkBitmap> primary_icon;
 
   // Whether the primary icon had the 'maskable' purpose, meaningless if no
   // primary_icon was requested.
@@ -76,7 +77,7 @@ struct InstallableData {
   // icon is optional, no error code is set if it cannot be fetched, and clients
   // specifying |valid_splash_icon| must check that the bitmap exists before
   // using it.
-  const SkBitmap* splash_icon;
+  raw_ptr<const SkBitmap> splash_icon;
 
   // Whether the splash icon had the 'maskable' purpose, meaningless if no
   // splash_icon was requested.

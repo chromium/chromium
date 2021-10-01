@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_DRIVER_STARTUP_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -142,7 +143,7 @@ class StartupController final : public policy::PolicyService::Observer {
   // |OnFirstPoliciesLoaded| to be called before trying to start the engine. If
   // this is null, there is no need to wait for policies to be loaded before
   // starting the engine.
-  policy::PolicyService* policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_;
 
   // Timer to try and start the sync engine in case we are waiting for policies
   // to be loaded and |OnFirstPoliciesLoaded| has not been called before a

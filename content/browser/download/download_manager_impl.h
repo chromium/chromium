@@ -15,6 +15,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner_helpers.h"
@@ -344,10 +345,10 @@ class CONTENT_EXPORT DownloadManagerImpl
       in_progress_download_observer_;
 
   // The current active browser context.
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // Allows an embedder to control behavior. Guaranteed to outlive this object.
-  DownloadManagerDelegate* delegate_;
+  raw_ptr<DownloadManagerDelegate> delegate_;
 
   std::unique_ptr<download::InProgressDownloadManager> in_progress_manager_;
 

@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -309,7 +310,7 @@ class ContextualSearchDelegateTest : public testing::Test {
       test_shared_url_loader_factory_;
 
   // Will be owned by the delegate.
-  ContextualSearchContext* test_context_;
+  raw_ptr<ContextualSearchContext> test_context_;
 
   // Features to enable
   base::test::ScopedFeatureList feature_list_;

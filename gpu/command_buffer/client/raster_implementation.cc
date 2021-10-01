@@ -21,6 +21,7 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
@@ -222,7 +223,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
     return bytes_to_write;
   }
 
-  RasterImplementation* const ri_;
+  const raw_ptr<RasterImplementation> ri_;
   uint32_t end_offset_of_last_inlined_entry_ = 0u;
 };
 
@@ -340,16 +341,16 @@ class RasterImplementation::PaintOpSerializer {
   bool valid() const { return !!buffer_; }
 
  private:
-  RasterImplementation* const ri_;
-  char* buffer_;
-  cc::DecodeStashingImageProvider* const stashing_image_provider_;
-  TransferCacheSerializeHelperImpl* const transfer_cache_helper_;
-  ClientFontManager* font_manager_;
+  const raw_ptr<RasterImplementation> ri_;
+  raw_ptr<char> buffer_;
+  const raw_ptr<cc::DecodeStashingImageProvider> stashing_image_provider_;
+  const raw_ptr<TransferCacheSerializeHelperImpl> transfer_cache_helper_;
+  raw_ptr<ClientFontManager> font_manager_;
 
   uint32_t written_bytes_ = 0;
   uint32_t free_bytes_ = 0;
 
-  size_t* max_op_size_hint_;
+  raw_ptr<size_t> max_op_size_hint_;
 };
 
 RasterImplementation::SingleThreadChecker::SingleThreadChecker(
@@ -386,7 +387,7 @@ struct RasterImplementation::AsyncARGBReadbackRequest {
     std::move(callback).Run(kTopLeft_GrSurfaceOrigin, readback_successful);
   }
 
-  void* dst_pixels;
+  raw_ptr<void> dst_pixels;
   GLuint dst_size;
   GLuint pixels_offset;
   std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
@@ -455,15 +456,15 @@ struct RasterImplementation::AsyncYUVReadbackRequest {
 
   int y_plane_stride;
   GLuint y_plane_offset;
-  uint8_t* y_plane_data;
+  raw_ptr<uint8_t> y_plane_data;
 
   int u_plane_stride;
   GLuint u_plane_offset;
-  uint8_t* u_plane_data;
+  raw_ptr<uint8_t> u_plane_data;
 
   int v_plane_stride;
   GLuint v_plane_offset;
-  uint8_t* v_plane_data;
+  raw_ptr<uint8_t> v_plane_data;
 
   std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
   base::OnceCallback<void()> release_mailbox;

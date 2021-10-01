@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -561,7 +562,7 @@ class QuotaManagerImpl::EvictionRoundInfoHelper {
     Completed();
   }
 
-  QuotaManagerImpl* const manager_;
+  const raw_ptr<QuotaManagerImpl> manager_;
   EvictionRoundInfoCallback callback_;
   base::OnceClosure completion_closure_;
   QuotaSettings settings_;

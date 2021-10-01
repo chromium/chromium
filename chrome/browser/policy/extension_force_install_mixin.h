@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "extensions/common/extension_id.h"
@@ -190,8 +191,9 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
-  Profile* profile_ = nullptr;
-  policy::MockConfigurationPolicyProvider* mock_policy_provider_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<policy::MockConfigurationPolicyProvider> mock_policy_provider_ =
+      nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DeviceStateMixin* device_state_mixin_ = nullptr;
   policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;

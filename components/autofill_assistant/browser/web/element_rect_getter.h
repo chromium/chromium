@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/rectf.h"
@@ -61,7 +62,7 @@ class ElementRectGetter : public WebControllerWorker {
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
-  DevtoolsClient* devtools_client_ = nullptr;
+  raw_ptr<DevtoolsClient> devtools_client_ = nullptr;
   base::WeakPtrFactory<ElementRectGetter> weak_ptr_factory_;
 };
 

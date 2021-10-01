@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect.h"
@@ -77,8 +78,8 @@ class GFX_EXPORT SurfaceControl {
     friend class base::RefCounted<Surface>;
     ~Surface();
 
-    ASurfaceControl* surface_ = nullptr;
-    ASurfaceControl* owned_surface_ = nullptr;
+    raw_ptr<ASurfaceControl> surface_ = nullptr;
+    raw_ptr<ASurfaceControl> owned_surface_ = nullptr;
   };
 
   struct GFX_EXPORT SurfaceStats {
@@ -88,7 +89,7 @@ class GFX_EXPORT SurfaceControl {
     SurfaceStats(SurfaceStats&& other);
     SurfaceStats& operator=(SurfaceStats&& other);
 
-    ASurfaceControl* surface = nullptr;
+    raw_ptr<ASurfaceControl> surface = nullptr;
 
     // The fence which is signaled when the reads for the previous buffer for
     // the given |surface| are finished.

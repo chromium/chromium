@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "components/ntp_snippets/remote/json_request.h"
 #include "components/ntp_snippets/remote/json_to_categories.h"
@@ -109,7 +110,7 @@ class RemoteSuggestionsFetcherImpl : public RemoteSuggestionsFetcher {
       OptionalFetchedCategories fetched_categories);
 
   // Authentication for signed-in users.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
 
@@ -122,7 +123,7 @@ class RemoteSuggestionsFetcherImpl : public RemoteSuggestionsFetcher {
       pending_requests_;
 
   // Weak reference, not owned.
-  language::UrlLanguageHistogram* const language_histogram_;
+  const raw_ptr<language::UrlLanguageHistogram> language_histogram_;
 
   const ParseJSONCallback parse_json_callback_;
 
@@ -133,10 +134,10 @@ class RemoteSuggestionsFetcherImpl : public RemoteSuggestionsFetcher {
   const std::string api_key_;
 
   // Allow for an injectable clock for testing.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Classifier that tells us how active the user is. Not owned.
-  const UserClassifier* user_classifier_;
+  raw_ptr<const UserClassifier> user_classifier_;
 
   // Info on the last finished fetch.
   std::string last_status_;

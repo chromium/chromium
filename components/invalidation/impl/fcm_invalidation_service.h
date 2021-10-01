@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/invalidation/impl/fcm_invalidation_service_base.h"
 #include "components/invalidation/public/identity_provider.h"
@@ -57,7 +58,7 @@ class FCMInvalidationService : public FCMInvalidationServiceBase,
 
   bool IsReadyToStart();
 
-  IdentityProvider* const identity_provider_;
+  const raw_ptr<IdentityProvider> identity_provider_;
   Diagnostics diagnostic_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);

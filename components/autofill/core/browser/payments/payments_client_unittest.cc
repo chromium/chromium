@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -440,14 +441,15 @@ class PaymentsClientTest : public testing::Test {
 
   AutofillClient::PaymentsRpcResult result_ =
       AutofillClient::PaymentsRpcResult::kNone;
-  payments::PaymentsClient::UnmaskDetails* unmask_details_;
+  raw_ptr<payments::PaymentsClient::UnmaskDetails> unmask_details_;
 
   // Server ID of a saved card via credit card upload save.
   std::string server_id_;
   // The OptChangeResponseDetails retrieved from an OptChangeRequest.
   PaymentsClient::OptChangeResponseDetails opt_change_response_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
-  PaymentsClient::UnmaskResponseDetails* unmask_response_details_ = nullptr;
+  raw_ptr<PaymentsClient::UnmaskResponseDetails> unmask_response_details_ =
+      nullptr;
   // The legal message returned from a GetDetails upload save preflight call.
   std::unique_ptr<base::Value> legal_message_;
   // A list of card BIN ranges supported by Google Payments, returned from a
@@ -1289,7 +1291,7 @@ TEST_F(PaymentsClientTest, ReauthNeeded) {
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
     // No response yet.
     EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
-    EXPECT_EQ(nullptr, unmask_response_details_);
+    EXPECT_EQ(nullptr, unmask_response_details_.get());
 
     // Second HTTP_UNAUTHORIZED causes permanent failure.
     IssueOAuthToken();
@@ -1310,7 +1312,7 @@ TEST_F(PaymentsClientTest, ReauthNeeded) {
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
     // No response yet.
     EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
-    EXPECT_EQ(nullptr, unmask_response_details_);
+    EXPECT_EQ(nullptr, unmask_response_details_.get());
 
     // HTTP_OK after first HTTP_UNAUTHORIZED results in success.
     IssueOAuthToken();

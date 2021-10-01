@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_VR_CARDBOARD_INPUT_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/input_delegate.h"
 
 namespace gvr {
@@ -36,7 +37,7 @@ class CardboardInputDelegate : public InputDelegate {
   void OnPause() override;
 
  private:
-  gvr::GvrApi* gvr_api_;
+  raw_ptr<gvr::GvrApi> gvr_api_;
   bool cardboard_trigger_pressed_ = false;
   bool cardboard_trigger_clicked_ = false;
 };

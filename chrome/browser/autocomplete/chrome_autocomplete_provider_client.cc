@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -129,7 +130,7 @@ class AutocompleteClientTabAndroidUserData
   }
   friend class TabAndroidUserData<AutocompleteClientTabAndroidUserData>;
 
-  TabAndroid* tab_;
+  raw_ptr<TabAndroid> tab_;
   bool initialized_ = false;
   GURL stripped_url_;
 

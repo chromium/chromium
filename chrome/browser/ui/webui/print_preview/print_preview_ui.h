@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -285,7 +286,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 #endif
 
   // Weak pointer to the WebUI handler.
-  PrintPreviewHandler* const handler_;
+  const raw_ptr<PrintPreviewHandler> handler_;
 
   // Indicates whether the source document is from ARC.
   bool source_is_arc_ = false;

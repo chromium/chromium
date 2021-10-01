@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -87,7 +88,7 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   JavaObjectWeakGlobalRef obj_;
 
   // RenderFrameHostImpl* associated with the given overlay routing token.
-  RenderFrameHostImpl* rfhi_;
+  raw_ptr<RenderFrameHostImpl> rfhi_;
 
   // Do we care about power efficiency?
   const bool power_efficient_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -74,7 +75,7 @@ class SoundContentSettingObserver
   // True if we have already logged a SiteMuted UKM event since last navigation.
   bool logged_site_muted_ukm_;
 
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};

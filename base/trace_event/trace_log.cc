@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
@@ -159,7 +160,7 @@ class AutoThreadLocalBoolean {
   ~AutoThreadLocalBoolean() { thread_local_boolean_->Set(false); }
 
  private:
-  ThreadLocalBoolean* thread_local_boolean_;
+  raw_ptr<ThreadLocalBoolean> thread_local_boolean_;
 };
 
 // Use this function instead of TraceEventHandle constructor to keep the
@@ -528,7 +529,7 @@ class TraceLog::ThreadLocalEventBuffer
 
   // Since TraceLog is a leaky singleton, trace_log_ will always be valid
   // as long as the thread exists.
-  TraceLog* trace_log_;
+  raw_ptr<TraceLog> trace_log_;
   std::unique_ptr<TraceBufferChunk> chunk_;
   size_t chunk_index_ = 0;
   int generation_;

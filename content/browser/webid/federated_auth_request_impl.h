@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -98,7 +99,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   FederatedIdentitySharingPermissionContextDelegate*
   GetSharingPermissionContext();
 
-  RenderFrameHost* const render_frame_host_ = nullptr;
+  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   const url::Origin origin_;
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
@@ -139,11 +140,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // chrome/browser/ui machinery to be used to load IDP sign-in content.
   std::unique_ptr<WebContents> idp_web_contents_;
 
-  FederatedIdentityActiveSessionPermissionContextDelegate*
+  raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
       active_session_permission_delegate_ = nullptr;
-  FederatedIdentityRequestPermissionContextDelegate*
+  raw_ptr<FederatedIdentityRequestPermissionContextDelegate>
       request_permission_delegate_ = nullptr;
-  FederatedIdentitySharingPermissionContextDelegate*
+  raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
       sharing_permission_delegate_ = nullptr;
 
   IdpNetworkRequestManager::ClientIdMetadata client_id_metadata_;

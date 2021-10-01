@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -47,7 +48,7 @@ class RtcLogFileReader : public FileOperations::Reader {
   // if the end is reached. Returns 0 if there is no more data to be read.
   int ReadPartially(int maximum_to_read, std::vector<std::uint8_t>& output);
 
-  protocol::ConnectionToClient* connection_;
+  raw_ptr<protocol::ConnectionToClient> connection_;
   base::FilePath filename_;
   base::circular_deque<LogSection> data_;
   FileOperations::State state_ = FileOperations::kCreated;

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -52,7 +53,7 @@ class ModuleWatcher {
     // The load address of the module. Careful consideration must be made before
     // accessing memory at this address. See the comment for
     // OnModuleEventCallback.
-    void* module_load_address;
+    raw_ptr<void> module_load_address;
     // The size of the module in memory.
     size_t module_size;
   };

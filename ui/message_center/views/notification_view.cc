@@ -86,7 +86,7 @@ void NotificationView::CreateOrUpdateTitleView(
       notification.type() == NOTIFICATION_TYPE_PROGRESS) {
     if (title_view_) {
       DCHECK(left_content()->Contains(title_view_));
-      left_content()->RemoveChildViewT(title_view_);
+      left_content()->RemoveChildViewT(title_view_.get());
       title_view_ = nullptr;
     }
     return;

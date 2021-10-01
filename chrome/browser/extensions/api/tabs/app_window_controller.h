@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/window_controller.h"
 
 class Profile;
@@ -40,7 +41,7 @@ class AppWindowController : public WindowController {
       bool allow_dev_tools_windows) const override;
 
  private:
-  AppWindow* app_window_;  // Owns us.
+  raw_ptr<AppWindow> app_window_;  // Owns us.
   std::unique_ptr<AppBaseWindow> base_window_;
 };
 

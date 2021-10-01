@@ -367,7 +367,7 @@ void LocationBarView::Init() {
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(
           &OmniboxView::SetUserText),
-      base::Unretained(omnibox_view_), std::u16string()));
+      base::Unretained(omnibox_view_.get()), std::u16string()));
   clear_all_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_CLEAR_ALL));
   clear_all_button_ = AddChildView(std::move(clear_all_button));
@@ -846,7 +846,7 @@ PermissionChip* LocationBarView::DisplayQuietChip(
 
 void LocationBarView::FinalizeChip() {
   DCHECK(chip_);
-  RemoveChildViewT(chip_);
+  RemoveChildViewT(chip_.get());
   chip_ = nullptr;
 }
 
@@ -1449,7 +1449,7 @@ void LocationBarView::UpdateChipVisibility() {
 ui::MouseEvent LocationBarView::AdjustMouseEventLocationForOmniboxView(
     const ui::MouseEvent& event) const {
   ui::MouseEvent adjusted(event);
-  adjusted.ConvertLocationToTarget<View>(this, omnibox_view_);
+  adjusted.ConvertLocationToTarget<View>(this, omnibox_view_.get());
   return adjusted;
 }
 

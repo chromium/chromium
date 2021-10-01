@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -282,7 +283,7 @@ class VariationsHeaderHelper {
         GetVisibilityKey(owner, resource_request));
   }
 
-  network::ResourceRequest* resource_request_;
+  raw_ptr<network::ResourceRequest> resource_request_;
   std::string variations_header_;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsHeaderHelper);

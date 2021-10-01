@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
@@ -311,7 +312,7 @@ class RenderViewHostTestHarness : public ::testing::Test {
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
 #endif
-  RenderProcessHostFactory* factory_ = nullptr;
+  raw_ptr<RenderProcessHostFactory> factory_ = nullptr;
 };
 
 }  // namespace content

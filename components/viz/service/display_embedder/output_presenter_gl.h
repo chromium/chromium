@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -68,14 +69,14 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
 
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;
-  SkiaOutputSurfaceDependency* dependency_;
+  raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   const bool supports_async_swap_;
 
   ResourceFormat image_format_ = RGBA_8888;
 
   // Shared Image factories
-  gpu::SharedImageFactory* const shared_image_factory_;
-  gpu::SharedImageRepresentationFactory* const
+  const raw_ptr<gpu::SharedImageFactory> shared_image_factory_;
+  const raw_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   uint32_t shared_image_usage_;
 };

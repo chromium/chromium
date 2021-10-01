@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,7 +81,7 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   void DecrementDevicesConnectedCount();
 
   // WebContentsImpl that owns the WebBluetoothServiceImpl that owns this map.
-  WebContentsImpl* web_contents_impl_;
+  raw_ptr<WebContentsImpl> web_contents_impl_;
 
   // Keeps the BluetoothGattConnection objects alive so that connections don't
   // get closed.

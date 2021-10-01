@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/origin_context_impl.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -66,7 +67,7 @@ class PartitionImpl : public mojom::Partition {
   void OnDisconnect();
   void RemoveOriginContext(const url::Origin& origin);
 
-  StorageServiceImpl* const service_;
+  const raw_ptr<StorageServiceImpl> service_;
   const absl::optional<base::FilePath> path_;
   mojo::ReceiverSet<mojom::Partition> receivers_;
   std::map<url::Origin, std::unique_ptr<OriginContextImpl>> origin_contexts_;

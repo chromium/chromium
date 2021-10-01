@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox.h"
@@ -130,9 +131,9 @@ class SharedMemIPCClient {
   size_t LockFreeChannel(bool* severe_failure);
   // Return the channel index given the address of the buffer.
   size_t ChannelIndexFromBuffer(const void* buffer);
-  IPCControl* control_;
+  raw_ptr<IPCControl> control_;
   // point to the first channel base
-  char* first_base_;
+  raw_ptr<char> first_base_;
 };
 
 }  // namespace sandbox

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
@@ -57,7 +58,7 @@ class CaptivePortalObserver {
   CaptivePortalResult captive_portal_result_;
   int num_results_received_;
 
-  CaptivePortalService* captive_portal_service_;
+  raw_ptr<CaptivePortalService> captive_portal_service_;
 
   base::CallbackListSubscription subscription_;
 

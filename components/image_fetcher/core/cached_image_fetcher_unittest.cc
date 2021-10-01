@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -135,13 +136,13 @@ class CachedImageFetcherTest : public testing::Test {
   std::unique_ptr<CachedImageFetcher> cached_image_fetcher_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  FakeImageDecoder* fake_image_decoder_;
+  raw_ptr<FakeImageDecoder> fake_image_decoder_;
 
   scoped_refptr<ImageCache> image_cache_;
   base::SimpleTestClock clock_;
   TestingPrefServiceSimple test_prefs_;
   base::ScopedTempDir data_dir_;
-  FakeDB<CachedImageMetadataProto>* db_;
+  raw_ptr<FakeDB<CachedImageMetadataProto>> db_;
   std::map<std::string, CachedImageMetadataProto> metadata_store_;
 
   base::test::TaskEnvironment task_environment_;

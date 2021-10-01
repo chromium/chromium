@@ -88,7 +88,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     InitializationParams params,
     base::OnceCallback<void(mojom::ActivationState)> activation_state_callback)
     : task_runner_(ruleset_handle->task_runner()),
-      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)) {
+      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             params.parent_activation_state.activation_level);
 
@@ -110,7 +110,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     const url::Origin& inherited_document_origin,
     const mojom::ActivationState& activation_state)
     : task_runner_(ruleset_handle->task_runner()),
-      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)) {
+      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             activation_state.activation_level);
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/common/content_export.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -138,7 +139,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   gfx::SizeF old_viewport_size_;
 
   // Current RenderWidgetHostView connected to this instance. Can be null.
-  RenderWidgetHostViewAndroid* rwhva_;
+  raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
   JavaObjectWeakGlobalRef java_ime_adapter_;
 };
 

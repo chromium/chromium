@@ -55,6 +55,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/single_thread_task_runner.h"
@@ -146,11 +147,11 @@ class AwContentsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwContentsUserData* data = static_cast<AwContentsUserData*>(
         web_contents->GetUserData(kAwContentsUserDataKey));
-    return data ? data->contents_ : NULL;
+    return data ? data->contents_.get() : NULL;
   }
 
  private:
-  AwContents* contents_;
+  raw_ptr<AwContents> contents_;
 };
 
 base::subtle::Atomic32 g_instance_count = 0;

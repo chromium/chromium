@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -337,7 +338,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
                                           bool allow_recursion) const;
 
   base::ObserverList<AXTreeObserver> observers_;
-  AXNode* root_ = nullptr;
+  raw_ptr<AXNode> root_ = nullptr;
   std::unordered_map<AXNodeID, AXNode*> id_map_;
   std::string error_;
   AXTreeData data_;

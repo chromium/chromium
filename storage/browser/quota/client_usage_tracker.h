@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_callbacks.h"
@@ -120,7 +121,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
 
   bool IsStorageUnlimited(const blink::StorageKey& storage_key) const;
 
-  mojom::QuotaClient* client_;
+  raw_ptr<mojom::QuotaClient> client_;
   const blink::mojom::StorageType type_;
 
   int64_t global_limited_usage_;

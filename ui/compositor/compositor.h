@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
@@ -434,7 +435,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
 
   gfx::Size size_;
 
-  ui::ContextFactory* context_factory_;
+  raw_ptr<ui::ContextFactory> context_factory_;
 
   // |display_private_| can be null for:
   // 1. Tests that don't set |display_private_|.
@@ -445,14 +446,14 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   //
   // These pointers are owned by |context_factory_|, and must be reset before
   // calling RemoveCompositor();
-  viz::mojom::DisplayPrivate* display_private_ = nullptr;
-  viz::mojom::ExternalBeginFrameController* external_begin_frame_controller_ =
-      nullptr;
+  raw_ptr<viz::mojom::DisplayPrivate> display_private_ = nullptr;
+  raw_ptr<viz::mojom::ExternalBeginFrameController>
+      external_begin_frame_controller_ = nullptr;
 
   std::unique_ptr<PendingBeginFrameArgs> pending_begin_frame_args_;
 
   // The root of the Layer tree drawn by this compositor.
-  Layer* root_layer_ = nullptr;
+  raw_ptr<Layer> root_layer_ = nullptr;
 
   base::ObserverList<CompositorObserver, true>::Unchecked observer_list_;
   base::ObserverList<CompositorAnimationObserver>::Unchecked

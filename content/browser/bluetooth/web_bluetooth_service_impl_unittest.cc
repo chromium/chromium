@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
@@ -399,9 +400,9 @@ class FakeBatteryObjectBundle {
 
  private:
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  FakeBluetoothDevice* device_ = nullptr;
-  FakeBluetoothGattService* service_ = nullptr;
-  FakeBluetoothCharacteristic* characteristic_ = nullptr;
+  raw_ptr<FakeBluetoothDevice> device_ = nullptr;
+  raw_ptr<FakeBluetoothGattService> service_ = nullptr;
+  raw_ptr<FakeBluetoothCharacteristic> characteristic_ = nullptr;
 };  // namespace
 
 }  // namespace
@@ -521,9 +522,9 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness {
   }
 
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  WebBluetoothServiceImpl* service_;
+  raw_ptr<WebBluetoothServiceImpl> service_;
   TestContentBrowserClient browser_client_;
-  ContentBrowserClient* old_browser_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
   std::unique_ptr<FakeBatteryObjectBundle> battery_object_bundle_;
   FakeWebBluetoothCharacteristicClient characteristic_client_;
 };

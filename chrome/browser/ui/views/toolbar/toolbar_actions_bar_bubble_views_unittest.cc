@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.h"
@@ -98,8 +99,8 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> anchor_widget_;
-  views::Widget* bubble_widget_ = nullptr;
-  ToolbarActionsBarBubbleViews* bubble_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  raw_ptr<ToolbarActionsBarBubbleViews> bubble_ = nullptr;
 };
 
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutActionButton) {

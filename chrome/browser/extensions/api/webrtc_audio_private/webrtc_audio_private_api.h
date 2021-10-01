@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/system_monitor.h"
 #include "chrome/common/extensions/api/webrtc_audio_private.h"
@@ -47,7 +48,7 @@ class WebrtcAudioPrivateEventService
 
   void SignalEvent();
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 // Common base for WebrtcAudioPrivate functions, that provides a

@@ -24,6 +24,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -3160,7 +3161,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // some form of page context.
   scoped_refptr<RenderViewHostImpl> render_view_host_;
 
-  RenderFrameHostDelegate* const delegate_;
+  const raw_ptr<RenderFrameHostDelegate> delegate_;
 
   // The SiteInstance associated with this RenderFrameHost. All content drawn
   // in this RenderFrameHost is part of this SiteInstance. Cannot change over
@@ -3178,10 +3179,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Reference to the whole frame tree that this RenderFrameHost belongs to.
   // Allows this RenderFrameHost to add and remove nodes in response to
   // messages from the renderer requesting DOM manipulation.
-  FrameTree* frame_tree_ = nullptr;
+  raw_ptr<FrameTree> frame_tree_ = nullptr;
 
   // The FrameTreeNode which this RenderFrameHostImpl is hosted in.
-  FrameTreeNode* frame_tree_node_ = nullptr;
+  raw_ptr<FrameTreeNode> frame_tree_node_ = nullptr;
 
   // The immediate children of this specific frame.
   std::vector<std::unique_ptr<FrameTreeNode>> children_;
@@ -3192,7 +3193,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // deletion, and GetParent() should never return a different value, even if
   // this RenderFrameHost is on the pending deletion list and the parent
   // FrameTreeNode has changed its current RenderFrameHost.
-  RenderFrameHostImpl* const parent_;
+  const raw_ptr<RenderFrameHostImpl> parent_;
 
   // Number of times we need to iterate from a RenderFrameHost to its parent
   // until we reach main RenderFrameHost (i.e. one which doesn't have a parent).
@@ -3716,7 +3717,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::string canonical_encoding_;
 
   // Used to intercept DidCommit* calls in tests.
-  CommitCallbackInterceptor* commit_callback_interceptor_ = nullptr;
+  raw_ptr<CommitCallbackInterceptor> commit_callback_interceptor_ = nullptr;
 
   // Used to hear about CreateNewPopupWidget calls in tests.
   CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "stdint.h"
 
 #include <limits>
@@ -385,7 +386,7 @@ class URLRequestSimulatedCacheJob : public net::URLRequestJob {
  private:
   void StartAsync() { NotifyHeadersComplete(); }
 
-  scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
+  raw_ptr<scoped_refptr<net::IOBuffer>> simulated_cache_dest_;
   bool use_text_plain_;
   base::WeakPtrFactory<URLRequestSimulatedCacheJob> weak_factory_{this};
 };
@@ -405,7 +406,7 @@ class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
   }
 
  private:
-  scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
+  raw_ptr<scoped_refptr<net::IOBuffer>> simulated_cache_dest_;
   bool use_text_plain_;
   DISALLOW_COPY_AND_ASSIGN(SimulatedCacheInterceptor);
 };
@@ -1011,7 +1012,7 @@ class URLLoaderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
-  net::TestNetworkDelegate*
+  raw_ptr<net::TestNetworkDelegate>
       unowned_test_network_delegate_;  // owned by |context_|
   std::unique_ptr<net::URLRequestContext> context_;
   ResourceScheduler resource_scheduler_;
@@ -1028,7 +1029,7 @@ class URLLoaderTest : public testing::Test {
   bool expect_redirect_ = false;
   mojom::ClientSecurityStatePtr factory_client_security_state_;
   mojom::ClientSecurityStatePtr request_client_security_state_;
-  MockDevToolsObserver* devtools_observer_ = nullptr;
+  raw_ptr<MockDevToolsObserver> devtools_observer_ = nullptr;
   scoped_refptr<ResourceRequestBody> request_body_;
   net::HttpRequestHeaders additional_headers_;
   mojom::IPAddressSpace target_ip_address_space_ =
@@ -1044,7 +1045,7 @@ class URLLoaderTest : public testing::Test {
 
   const cors::OriginAccessList kEmptyOriginAccessList;
 
-  MockAcceptCHFrameObserver* accept_ch_frame_observer_ = nullptr;
+  raw_ptr<MockAcceptCHFrameObserver> accept_ch_frame_observer_ = nullptr;
 };
 
 class URLLoaderMockSocketTest : public URLLoaderTest {
@@ -3683,7 +3684,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
   std::string provider_name_;
   std::vector<uint16_t> algorithm_preferences_;
   int on_certificate_requested_counter_ = 0;
-  mojo::Remote<mojom::URLLoader>* url_loader_remote_ = nullptr;
+  raw_ptr<mojo::Remote<mojom::URLLoader>> url_loader_remote_ = nullptr;
 };
 
 TEST_F(URLLoaderTest, SetAuth) {
@@ -5996,7 +5997,7 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
 
   SyncOrAsync operation_synchrony_;
 
-  bool* begin_done_flag_;
+  raw_ptr<bool> begin_done_flag_;
 };
 
 class NoopTrustTokenKeyCommitmentGetter : public TrustTokenKeyCommitmentGetter {

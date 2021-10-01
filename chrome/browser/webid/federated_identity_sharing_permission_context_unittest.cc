@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -30,7 +31,7 @@ class FederatedIdentitySharingPermissionContextTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  FederatedIdentitySharingPermissionContext* context_;
+  raw_ptr<FederatedIdentitySharingPermissionContext> context_;
   TestingProfile profile_;
 };
 

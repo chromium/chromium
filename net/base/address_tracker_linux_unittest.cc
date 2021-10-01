@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
@@ -733,7 +734,7 @@ class GetCurrentConnectionTypeRunner
   }
 
  private:
-  AddressTrackerLinux* const tracker_;
+  const raw_ptr<AddressTrackerLinux> tracker_;
   base::WaitableEvent done_;
   base::DelegateSimpleThread thread_;
 };

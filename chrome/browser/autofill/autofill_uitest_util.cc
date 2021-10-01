@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -56,7 +57,7 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  Profile* base_profile_;
+  raw_ptr<Profile> base_profile_;
 };
 
 static PersonalDataManager* GetPersonalDataManager(Profile* profile) {

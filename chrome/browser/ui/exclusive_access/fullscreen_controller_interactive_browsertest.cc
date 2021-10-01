@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -771,7 +772,7 @@ class ExperimentalFullscreenControllerInteractiveTest
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  display::Screen* original_screen_ = nullptr;
+  raw_ptr<display::Screen> original_screen_ = nullptr;
   display::ScreenBase screen_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 };

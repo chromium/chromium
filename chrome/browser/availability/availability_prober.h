@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -244,7 +245,7 @@ class AvailabilityProber
   void OnProbingEnd();
 
   // Must outlive |this|.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The name given to this prober instance, used in metrics, prefs, and
   // traffic annotations.
@@ -303,20 +304,20 @@ class AvailabilityProber
   std::unique_ptr<base::DictionaryValue> cached_probe_results_;
 
   // The tick clock used within this class.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The time clock used within this class.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Remembers the last time the prober became active.
   absl::optional<base::Time> time_when_set_active_;
 
   // This reference is kept around for unregistering |this| as an observer on
   // any thread.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Reference for saving |cached_probe_results_| to prefs.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Used for setting up the |url_loader_|.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

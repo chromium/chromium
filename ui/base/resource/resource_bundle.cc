@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -227,7 +228,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
   }
 
  private:
-  ResourceBundle* rb_;
+  raw_ptr<ResourceBundle> rb_;
   const int resource_id_;
 };
 

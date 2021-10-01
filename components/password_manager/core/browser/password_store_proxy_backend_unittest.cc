@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -97,8 +98,8 @@ class PasswordStoreProxyBackendTest : public testing::Test {
   }
 
   std::unique_ptr<PasswordStoreProxyBackend> proxy_backend_;
-  StrictMock<MockPasswordStoreBackend>* main_backend_;
-  StrictMock<MockPasswordStoreBackend>* shadow_backend_;
+  raw_ptr<StrictMock<MockPasswordStoreBackend>> main_backend_;
+  raw_ptr<StrictMock<MockPasswordStoreBackend>> shadow_backend_;
 };
 
 TEST_F(PasswordStoreProxyBackendTest, CallCompletionCallbackAfterInit) {

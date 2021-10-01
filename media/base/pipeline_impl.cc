@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -184,12 +185,12 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  MediaLog* const media_log_;
+  const raw_ptr<MediaLog> media_log_;
 
   // A weak pointer to PipelineImpl. Must only use on the main task runner.
   base::WeakPtr<PipelineImpl> weak_pipeline_;
 
-  Demuxer* demuxer_;
+  raw_ptr<Demuxer> demuxer_;
 
   // Optional default renderer to be used during Start() and Resume(). If not
   // available, or if a different Renderer is needed,
@@ -199,7 +200,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   double playback_rate_;
   float volume_;
   absl::optional<base::TimeDelta> latency_hint_;
-  CdmContext* cdm_context_;
+  raw_ptr<CdmContext> cdm_context_;
 
   // By default, apply pitch adjustments.
   bool preserves_pitch_ = true;
@@ -379,8 +380,8 @@ void PipelineImpl::RendererWrapper::Seek(base::TimeDelta time) {
       &Renderer::Flush, base::Unretained(shared_state_.renderer.get())));
 
   // Seek demuxer.
-  bound_fns.Push(base::BindOnce(&Demuxer::Seek, base::Unretained(demuxer_),
-                                seek_timestamp));
+  bound_fns.Push(base::BindOnce(
+      &Demuxer::Seek, base::Unretained(demuxer_.get()), seek_timestamp));
 
   // Run tasks.
   pending_callbacks_ = SerialRunner::Run(
@@ -451,7 +452,7 @@ void PipelineImpl::RendererWrapper::Resume(
   // Queue the asynchronous actions required to start playback.
   SerialRunner::Queue fns;
 
-  fns.Push(base::BindOnce(&Demuxer::Seek, base::Unretained(demuxer_),
+  fns.Push(base::BindOnce(&Demuxer::Seek, base::Unretained(demuxer_.get()),
                           start_timestamp));
 
   fns.Push(base::BindOnce(&RendererWrapper::CreateRenderer,

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -205,7 +206,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   // for this channel.
   void InitializeLocalCapabilities();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   const ProcessErrorCallback process_error_callback_;
 
   base::Lock channel_lock_;

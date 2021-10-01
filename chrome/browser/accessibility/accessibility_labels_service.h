@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_LABELS_SERVICE_H_
 #define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_LABELS_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -96,7 +97,7 @@ class AccessibilityLabelsService
   void UpdateAccessibilityLabelsHistograms();
 
   // Owns us via the KeyedService mechanism.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

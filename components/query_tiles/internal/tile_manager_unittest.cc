@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -185,7 +186,7 @@ class TileManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TileManager> manager_;
-  MockTileStore* tile_store_;
+  raw_ptr<MockTileStore> tile_store_;
   base::Time current_time_;
 };
 

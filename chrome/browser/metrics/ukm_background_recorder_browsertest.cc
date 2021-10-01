@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
@@ -65,7 +66,7 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  ukm::UkmBackgroundRecorderService* background_recorder_service_;
+  raw_ptr<ukm::UkmBackgroundRecorderService> background_recorder_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(UkmBackgroundRecorderBrowserTest,

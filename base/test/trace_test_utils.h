@@ -5,6 +5,7 @@
 #ifndef BASE_TEST_TRACE_TEST_UTILS_H_
 #define BASE_TEST_TRACE_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/trace_log.h"
@@ -38,7 +39,7 @@ class TracingEnvironment {
   static perfetto::protos::gen::TraceConfig GetDefaultTraceConfig();
 
  private:
-  TaskEnvironment* task_environment_ = nullptr;
+  raw_ptr<TaskEnvironment> task_environment_ = nullptr;
 };
 
 }  // namespace test

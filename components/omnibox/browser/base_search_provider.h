@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -260,7 +261,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   void OnDeletionComplete(bool success,
                           SuggestionDeletionHandler* handler);
 
-  AutocompleteProviderClient* client_;
+  raw_ptr<AutocompleteProviderClient> client_;
 
   // Whether a field trial, if any, has triggered in the most recent
   // autocomplete query. This field is set to true only if the suggestion

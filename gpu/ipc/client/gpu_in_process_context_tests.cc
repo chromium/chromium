@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -62,8 +63,8 @@ class ContextTestBase : public testing::Test {
   }
 
  protected:
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::ContextSupport* context_support_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  raw_ptr<gpu::ContextSupport> context_support_;
   std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
  private:

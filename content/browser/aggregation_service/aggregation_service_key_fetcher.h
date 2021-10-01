@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
@@ -98,7 +99,7 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
 
   // Using a raw pointer is safe because `manager_` is guaranteed to outlive
   // `this`.
-  AggregatableReportManager* manager_;
+  raw_ptr<AggregatableReportManager> manager_;
 
   // Map of all origins that are currently waiting for the public keys, and
   // their associated fetch callbacks. Used to cache ongoing requests to the

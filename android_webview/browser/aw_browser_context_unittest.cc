@@ -6,6 +6,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,8 +48,9 @@ class AwBrowserContextTest : public testing::Test {
 
   // Create the TestBrowserThreads.
   content::BrowserTaskEnvironment task_environment_;
-  content::TestContentClientInitializer* test_content_client_initializer_;
-  AwBrowserProcess* browser_process_;
+  raw_ptr<content::TestContentClientInitializer>
+      test_content_client_initializer_;
+  raw_ptr<AwBrowserProcess> browser_process_;
 };
 
 // Tests that constraints on trust for Symantec-issued certificates are not

@@ -10,6 +10,7 @@
 #include <unordered_set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -77,11 +78,11 @@ class ClientTagBasedRemoteUpdateHandler {
   const ModelType type_;
 
   // ModelTypeSyncBridge linked to associated processor.
-  ModelTypeSyncBridge* const bridge_;
+  const raw_ptr<ModelTypeSyncBridge> bridge_;
 
   // A map of client tag hash to sync entities known to the processor.
   // Should be replaced with new interface.
-  ProcessorEntityTracker* const entity_tracker_;
+  const raw_ptr<ProcessorEntityTracker> entity_tracker_;
 };
 
 }  // namespace syncer

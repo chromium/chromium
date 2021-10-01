@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -195,7 +196,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> image_;
   GrBackendTexture backend_texture_;
-  VulkanCommandPool* const command_pool_;
+  const raw_ptr<VulkanCommandPool> command_pool_;
   const bool use_separate_gl_texture_;
 
   ExternalSemaphore write_semaphore_;
@@ -204,7 +205,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   bool is_write_in_progress_ = false;
   uint32_t reads_in_progress_ = 0;
   uint32_t gl_reads_in_progress_ = 0;
-  gles2::Texture* texture_ = nullptr;
+  raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
 
   // GMB related stuff.

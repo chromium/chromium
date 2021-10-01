@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
+
 namespace {
 
 // Report a single hard-coded supported format to clients.
@@ -43,7 +45,7 @@ class RawPointerVideoCaptureDevice : public media::VideoCaptureDevice {
   }
 
  private:
-  media::VideoCaptureDevice* device_;
+  raw_ptr<media::VideoCaptureDevice> device_;
 };
 
 }  // anonymous namespace

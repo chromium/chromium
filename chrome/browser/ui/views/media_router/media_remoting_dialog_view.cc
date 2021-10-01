@@ -122,7 +122,7 @@ void MediaRemotingDialogView::Init() {
 
   remember_choice_checkbox_ = new views::Checkbox(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_REMOTING_DIALOG_CHECKBOX));
-  AddChildView(remember_choice_checkbox_);
+  AddChildView(remember_choice_checkbox_.get());
 }
 
 void MediaRemotingDialogView::WindowClosing() {

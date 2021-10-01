@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -110,7 +111,7 @@ class SyncProcessRunner {
   void CheckIfIdle();
 
   std::string name_;
-  Client* client_;
+  raw_ptr<Client> client_;
   size_t max_parallel_task_;
   size_t running_tasks_;
   std::unique_ptr<TimerHelper> timer_helper_;

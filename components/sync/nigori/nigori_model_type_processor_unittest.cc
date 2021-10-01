@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -161,7 +162,7 @@ class NigoriModelTypeProcessorTest : public testing::Test {
  private:
   testing::NiceMock<MockNigoriSyncBridge> mock_nigori_sync_bridge_;
   std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_;
-  MockCommitQueue* mock_commit_queue_ptr_;
+  raw_ptr<MockCommitQueue> mock_commit_queue_ptr_;
   NigoriModelTypeProcessor processor_;
 };
 

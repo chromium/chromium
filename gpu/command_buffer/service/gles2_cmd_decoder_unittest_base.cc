@@ -2231,8 +2231,8 @@ void GLES2DecoderTestBase::DoBufferData(GLenum target, GLsizei size) {
 
 void GLES2DecoderTestBase::DoBufferSubData(
     GLenum target, GLint offset, GLsizei size, const void* data) {
-  EXPECT_CALL(*gl_, BufferSubData(target, offset, size,
-                                  shared_memory_address_))
+  EXPECT_CALL(*gl_,
+              BufferSubData(target, offset, size, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   memcpy(shared_memory_address_, data, size);

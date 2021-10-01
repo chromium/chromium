@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
@@ -126,7 +127,7 @@ class LevelDBScope {
     // The ranges are expected to be disjoint.
     bool operator()(const EmptyRange& lhs, const EmptyRange& rhs) const;
 
-    const leveldb::Comparator* comparator_ = nullptr;
+    raw_ptr<const leveldb::Comparator> comparator_ = nullptr;
   };
 
   enum class Mode { kInMemory, kUndoLogOnDisk };

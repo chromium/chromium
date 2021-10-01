@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -199,7 +200,7 @@ class ChannelSteadyPingPongListener : public Listener {
   void SendPong() { sender_->Send(new TestMsg_Ping(payload_)); }
 
  private:
-  Sender* sender_ = nullptr;
+  raw_ptr<Sender> sender_ = nullptr;
   TestParams params_;
   std::string payload_;
   std::string label_;

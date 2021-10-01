@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -75,7 +76,7 @@ class DeviceTrustService : public KeyedService {
 
   PrefChangeRegistrar pref_observer_;
 
-  PrefService* const profile_prefs_;
+  const raw_ptr<PrefService> profile_prefs_;
   std::unique_ptr<AttestationService> attestation_service_;
   std::unique_ptr<SignalsService> signals_service_;
   TrustedUrlPatternsChangedCallbackList callbacks_;

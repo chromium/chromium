@@ -15,6 +15,7 @@
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -65,7 +66,7 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
   static bool GuestCurrentlyAudibleCallback(WebContents* guest);
 
   // Pointer to the WebContentsImpl that owns this object.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 };
 
 }  // namespace content

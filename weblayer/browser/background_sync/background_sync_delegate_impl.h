@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_DELEGATE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_delegate.h"
 #include "url/origin.h"
@@ -47,7 +48,7 @@ class BackgroundSyncDelegateImpl
 #endif  // defined(OS_ANDROID)
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace weblayer

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
@@ -109,10 +110,10 @@ class SyncCycle {
 
  private:
   // The context for this cycle, guaranteed to outlive |this|.
-  SyncCycleContext* const context_;
+  const raw_ptr<SyncCycleContext> context_;
 
   // The delegate for this cycle, must never be null.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Our controller for various status and error counters.
   std::unique_ptr<StatusController> status_controller_;

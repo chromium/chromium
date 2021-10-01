@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -124,7 +125,7 @@ class BookmarkEditorViewTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:

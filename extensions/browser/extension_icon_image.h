@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_ICON_IMAGE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "content/public/browser/notification_observer.h"
@@ -112,7 +113,7 @@ class IconImage : public content::NotificationObserver {
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
   ExtensionIconSet icon_set_;
   const int resource_size_in_dip_;
@@ -125,7 +126,7 @@ class IconImage : public content::NotificationObserver {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  Source* source_;  // Owned by ImageSkia storage.
+  raw_ptr<Source> source_;  // Owned by ImageSkia storage.
   gfx::ImageSkia image_skia_;
   // The icon with whose representation |image_skia_| should be updated if
   // its own representation load fails.

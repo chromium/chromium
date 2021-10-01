@@ -1061,7 +1061,7 @@ void WebAppIntegrationBrowserTestBase::MaybeNavigateTabbedBrowserInScope(
 
 Browser* WebAppIntegrationBrowserTestBase::browser() {
   Browser* browser = active_browser_
-                         ? active_browser_
+                         ? active_browser_.get()
                          : chrome::FindTabbedBrowser(
                                profile(), /*match_original_profiles=*/false);
   DCHECK(browser);

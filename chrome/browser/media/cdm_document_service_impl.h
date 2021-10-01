@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -87,7 +88,7 @@ class CdmDocumentServiceImpl final
       platform_verification_flow_;
 #endif
 
-  content::RenderFrameHost* const render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   base::WeakPtrFactory<CdmDocumentServiceImpl> weak_factory_{this};
 };
 

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -80,13 +81,13 @@ class IdentityDialogController
 
  private:
   WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
-  WebIdDialog* view_{nullptr};
+  raw_ptr<WebIdDialog> view_{nullptr};
 
   void OnViewClosed();
 
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
-  content::WebContents* rp_web_contents_;
+  raw_ptr<content::WebContents> rp_web_contents_;
   IdProviderWindowClosedCallback view_closed_callback_;
 
   base::WeakPtrFactory<IdentityDialogController> weak_ptr_factory_{this};

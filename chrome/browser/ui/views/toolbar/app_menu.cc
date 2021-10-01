@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -327,7 +328,7 @@ class AppMenuView : public views::View {
   base::WeakPtr<AppMenu> menu_;
 
   // The menu model containing the increment/decrement/reset items.
-  ButtonMenuItemModel* menu_model_;
+  raw_ptr<ButtonMenuItemModel> menu_model_;
 };
 
 BEGIN_METADATA(AppMenuView, views::View)
@@ -502,7 +503,7 @@ class AppMenu::ZoomView : public AppMenuView {
     // level can be picked up by screen readers.
     zoom_label_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
 
-    AddChildView(zoom_label_);
+    AddChildView(zoom_label_.get());
 
     increment_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, increment_index),
@@ -521,7 +522,7 @@ class AppMenu::ZoomView : public AppMenuView {
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation to work.
     DCHECK(Button::AsButton(fullscreen_button_));
-    AddChildView(fullscreen_button_);
+    AddChildView(fullscreen_button_.get());
 
     // The max width for `zoom_label_` should not be valid until the calls into
     // UpdateZoomControls().
@@ -660,15 +661,15 @@ class AppMenu::ZoomView : public AppMenuView {
   base::CallbackListSubscription browser_zoom_subscription_;
 
   // Button for incrementing the zoom.
-  LabelButton* increment_button_;
+  raw_ptr<LabelButton> increment_button_;
 
   // Label showing zoom as a percent.
-  Label* zoom_label_;
+  raw_ptr<Label> zoom_label_;
 
   // Button for decrementing the zoom.
-  LabelButton* decrement_button_;
+  raw_ptr<LabelButton> decrement_button_;
 
-  ImageButton* fullscreen_button_;
+  raw_ptr<ImageButton> fullscreen_button_;
 
   // Cached width of how wide the zoom label string can be. This is the width at
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
@@ -752,9 +753,9 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   }
 
  private:
-  AppMenu* const app_menu_;
-  ui::MenuModel* const model_;
-  views::MenuItemView* const menu_item_;
+  const raw_ptr<AppMenu> app_menu_;
+  const raw_ptr<ui::MenuModel> model_;
+  const raw_ptr<views::MenuItemView> menu_item_;
 
   // Recursive helper function for OnMenuStructureChanged() which builds the
   // |menu| and all descendant submenus.

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -101,13 +102,13 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   // Determines where to animate the bubble to during an animation.
   gfx::Rect CalculateTargetBounds(const View* desired_anchor_view) const;
 
-  BubbleDialogDelegateView* const bubble_delegate_;
+  const raw_ptr<BubbleDialogDelegateView> bubble_delegate_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   gfx::LinearAnimation slide_animation_{this};
 
   // The desired anchor view, which is valid during a slide animation. When not
   // animating, this value is null.
-  View* desired_anchor_view_ = nullptr;
+  raw_ptr<View> desired_anchor_view_ = nullptr;
 
   // The tween type to use when animating. The default should be aesthetically
   // pleasing for most applications.

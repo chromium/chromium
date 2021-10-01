@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -95,7 +96,7 @@ class BoxUploaderTestBase : public testing::Test {
   // Decoder and TestingProfileManager must be declared after TaskEnvironment.
   data_decoder::test::InProcessDataDecoder decoder_;  // For parsing responses.
   TestingProfileManager profile_manager_;             // For prefs_.
-  PrefService* prefs_;                                // For storing folder_id.
+  raw_ptr<PrefService> prefs_;                        // For storing folder_id.
 
   // For RunWithQuitClosure() and Quit().
   std::unique_ptr<base::RunLoop> run_loop_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -42,8 +43,8 @@ struct VideoDecoderTraits {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner;
   std::unique_ptr<MediaLog> media_log;
   RequestOverlayInfoCB request_overlay_info_cb;
-  const gfx::ColorSpace* const target_color_space;
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory;
+  const raw_ptr<const gfx::ColorSpace> target_color_space;
+  const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory;
 
   // Android uses this twice.
   GetCommandBufferStubCB get_command_buffer_stub_cb;
@@ -160,7 +161,7 @@ class GpuMojoMediaClient final : public MojoMediaClient {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager_;
   AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   std::unique_ptr<PlatformDelegate> platform_;
 };
 

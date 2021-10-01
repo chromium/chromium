@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
@@ -149,7 +150,7 @@ class DOMContentLoadedObserver : public WebContentsObserver {
   }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
   base::RunLoop run_loop_;
 };
 
@@ -903,7 +904,7 @@ class PageLifecycleStateManagerTestDelegate
 
   void OnDeleted() override { manager_ = nullptr; }
 
-  PageLifecycleStateManager* manager_;
+  raw_ptr<PageLifecycleStateManager> manager_;
   base::OnceClosure store_in_back_forward_cache_sent_;
   base::OnceClosure store_in_back_forward_cache_ack_received_;
   base::OnceClosure restore_from_back_forward_cache_sent_;
@@ -10610,7 +10611,7 @@ class RenderViewHostDeletedObserver : public WebContentsObserver {
   bool deleted() const { return deleted_; }
 
  private:
-  RenderViewHost* render_view_host_;
+  raw_ptr<RenderViewHost> render_view_host_;
   bool deleted_;
 };
 

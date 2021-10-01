@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -139,7 +140,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   virtual SkColor GetTroughColor() const;
   int GetSliderExtraPadding() const;
 
-  SliderListener* listener_;
+  raw_ptr<SliderListener> listener_;
 
   std::unique_ptr<gfx::SlideAnimation> move_animation_;
 

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
@@ -574,7 +575,7 @@ class RenderProcessHostObserverCounter : public RenderProcessHostObserver {
   int exited_count_ = 0;
   int destroyed_count_ = 0;
   bool observing_ = false;
-  RenderProcessHost* observed_host_ = nullptr;
+  raw_ptr<RenderProcessHost> observed_host_ = nullptr;
 };
 
 // Check that the spare renderer is properly destroyed via DisableRefCounts().
@@ -655,8 +656,8 @@ class ShellCloser : public RenderProcessHostObserver {
     logging_string_->append("ShellCloser::RenderProcessHostDestroyed ");
   }
 
-  Shell* shell_;
-  std::string* logging_string_;
+  raw_ptr<Shell> shell_;
+  raw_ptr<std::string> logging_string_;
 };
 
 class ObserverLogger : public RenderProcessHostObserver {
@@ -678,7 +679,7 @@ class ObserverLogger : public RenderProcessHostObserver {
     host_destroyed_ = true;
   }
 
-  std::string* logging_string_;
+  raw_ptr<std::string> logging_string_;
   bool host_destroyed_;
 };
 
@@ -793,7 +794,7 @@ class AudioStartObserver : public WebContentsObserver {
       std::move(audible_closure_).Run();
   }
 
-  RenderFrameHostImpl* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
   bool contents_audible_ = false;
   bool frame_audible_ = false;
   base::OnceClosure audible_closure_;

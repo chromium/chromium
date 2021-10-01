@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -62,8 +63,8 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
-  BubbleContentsWrapper* contents_wrapper_;
-  views::WebView* web_view_;
+  raw_ptr<BubbleContentsWrapper> contents_wrapper_;
+  raw_ptr<views::WebView> web_view_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

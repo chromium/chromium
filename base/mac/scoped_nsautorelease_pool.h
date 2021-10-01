@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 #if defined(__OBJC__)
 @class NSAutoreleasePool;
@@ -39,7 +40,7 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   // no longer needed.
   void Recycle();
  private:
-  NSAutoreleasePool* autorelease_pool_;
+  raw_ptr<NSAutoreleasePool> autorelease_pool_;
 };
 
 }  // namespace mac

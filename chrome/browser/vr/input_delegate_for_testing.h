@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/gesture_detector.h"
 #include "chrome/browser/vr/input_delegate.h"
 #include "chrome/browser/vr/model/controller_model.h"
@@ -44,7 +45,7 @@ class InputDelegateForTesting : public InputDelegate {
  private:
   ControllerModel GetMostRecentModel();
 
-  UiInterface* ui_;
+  raw_ptr<UiInterface> ui_;
   std::queue<ControllerModel> controller_model_queue_;
   ControllerModel cached_controller_model_;
   ControllerModel previous_controller_model_;

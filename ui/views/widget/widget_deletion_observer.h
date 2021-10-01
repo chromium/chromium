@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -32,7 +33,7 @@ class VIEWS_EXPORT WidgetDeletionObserver : public WidgetObserver {
  private:
   void CleanupWidget();
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 }  // namespace views

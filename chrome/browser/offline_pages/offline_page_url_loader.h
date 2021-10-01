@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/offline_pages/offline_page_request_handler.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -102,7 +103,7 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   void MaybeDeleteSelf();
 
   // Not owned. The owner of this should outlive this class instance.
-  content::NavigationUIData* navigation_ui_data_;
+  raw_ptr<content::NavigationUIData> navigation_ui_data_;
 
   int frame_tree_node_id_;
   int transition_type_;

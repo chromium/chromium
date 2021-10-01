@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -283,9 +284,9 @@ class TestOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
 
  private:
   ResultType result_;
-  const std::set<std::string>* requested_scopes_;
+  raw_ptr<const std::set<std::string>> requested_scopes_;
   std::set<std::string> granted_scopes_;
-  OAuth2MintTokenFlow::Delegate* delegate_;
+  raw_ptr<OAuth2MintTokenFlow::Delegate> delegate_;
 };
 
 // Waits for a specific GURL to generate a NOTIFICATION_LOAD_STOP event and
@@ -331,7 +332,7 @@ class WaitForGURLAndCloseWindow : public content::WindowedNotificationObserver {
 
  private:
   GURL url_;
-  content::WebContents* embedder_web_contents_;
+  raw_ptr<content::WebContents> embedder_web_contents_;
 };
 
 }  // namespace
@@ -3401,7 +3402,7 @@ class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
   bool RunClearAllCachedAuthTokensFunction() {
     auto function =
         base::MakeRefCounted<IdentityClearAllCachedAuthTokensFunction>();
-    function->set_extension(extension_);
+    function->set_extension(extension_.get());
     return utils::RunFunction(function.get(), "[]", browser(),
                               api_test_utils::NONE);
   }
@@ -3412,7 +3413,7 @@ class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,

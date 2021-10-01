@@ -161,7 +161,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
 
   int outer_padding_horiz = kOuterPaddingHorizPx;
   int outer_padding_vert = kOuterPaddingVertPx;
-  AddChildView(instruction_view_);
+  AddChildView(instruction_view_.get());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,

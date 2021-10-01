@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
@@ -62,14 +63,14 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
 
-  flags_ui::FlagsState* flags_state_;
+  raw_ptr<flags_ui::FlagsState> flags_state_;
 
   // This view will hold all the child lab items.
-  views::FlexLayoutView* menu_item_container_;
+  raw_ptr<views::FlexLayoutView> menu_item_container_;
 
-  const ChromeLabsBubbleViewModel* model_;
+  raw_ptr<const ChromeLabsBubbleViewModel> model_;
 
-  views::View* restart_prompt_;
+  raw_ptr<views::View> restart_prompt_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile_ = nullptr;

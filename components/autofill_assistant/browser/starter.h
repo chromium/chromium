@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/mru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -145,7 +146,7 @@ class Starter : public content::WebContentsObserver {
   // This cache is shared across all tabs. It is size-limited and entries only
   // last for a limited amount of time before they go stale. Made available in
   // the header for easier unit-testing.
-  base::HashingMRUCache<std::string, base::TimeTicks>*
+  raw_ptr<base::HashingMRUCache<std::string, base::TimeTicks>>
       cached_failed_trigger_script_fetches_;
 
   // The list of organization-identifying domains that a user has temporarily
@@ -164,14 +165,14 @@ class Starter : public content::WebContentsObserver {
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;
-  StarterPlatformDelegate* platform_delegate_ = nullptr;
-  ukm::UkmRecorder* ukm_recorder_ = nullptr;
+  raw_ptr<StarterPlatformDelegate> platform_delegate_ = nullptr;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
   base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
   bool fetch_trigger_scripts_on_navigation_ = false;
   std::unique_ptr<TriggerContext> pending_trigger_context_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
   const scoped_refptr<StarterHeuristic> starter_heuristic_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtrFactory<Starter> weak_ptr_factory_{this};
 };
 

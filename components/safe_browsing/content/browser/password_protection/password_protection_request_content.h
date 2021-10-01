@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -126,7 +127,7 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
 #endif  // defined(OS_ANDROID)
 
   // WebContents of the password protection event.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Cancels the request when it is no longer valid.
   std::unique_ptr<RequestCanceler> request_canceler_;

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "content/public/test/test_utils.h"
@@ -111,7 +112,7 @@ class TestGuestViewManager : public GuestViewManager {
       guest_web_contents_watchers_;
   scoped_refptr<content::MessageLoopRunner> created_message_loop_runner_;
   scoped_refptr<content::MessageLoopRunner> num_created_message_loop_runner_;
-  GuestViewBase* waiting_for_attach_;
+  raw_ptr<GuestViewBase> waiting_for_attach_;
   scoped_refptr<content::MessageLoopRunner> attached_message_loop_runner_;
   scoped_refptr<content::MessageLoopRunner> gc_message_loop_runner_;
 };
@@ -132,7 +133,7 @@ class TestGuestViewManagerFactory : public GuestViewManagerFactory {
       std::unique_ptr<GuestViewManagerDelegate> delegate) override;
 
  private:
-  TestGuestViewManager* test_guest_view_manager_;
+  raw_ptr<TestGuestViewManager> test_guest_view_manager_;
 };
 
 }  // namespace guest_view

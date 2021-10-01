@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -135,7 +136,7 @@ class PredictorInitializer : public TestObserver {
   void OnPredictorInitialized() override { run_loop_.Quit(); }
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
   base::RunLoop run_loop_;
 };
 
@@ -300,7 +301,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   }
 
   WaitEvent wait_event_ = WaitEvent::kNone;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   ResolveHostRequestInfo waiting_on_dns_;
   std::set<ResolveHostRequestInfo> successful_dns_lookups_;
@@ -531,7 +532,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer preconnecting_test_server_;
 
  private:
-  LoadingPredictor* loading_predictor_ = nullptr;
+  raw_ptr<LoadingPredictor> loading_predictor_ = nullptr;
   std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
   std::unique_ptr<net::test_server::ConnectionTracker>
       preconnecting_server_connection_tracker_;
@@ -2209,7 +2210,7 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() { return web_contents_; }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {

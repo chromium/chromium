@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -160,7 +161,7 @@ class CastTransportTest : public testing::Test {
     delegate_ = new MockCastTransportDelegate;
     transport_ = std::make_unique<CastTransportImpl>(
         &mock_socket_, kChannelId, CreateIPEndPointForTest(), logger_);
-    transport_->SetReadDelegate(base::WrapUnique(delegate_));
+    transport_->SetReadDelegate(base::WrapUnique(delegate_.get()));
   }
   ~CastTransportTest() override {}
 
@@ -172,7 +173,7 @@ class CastTransportTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockCastTransportDelegate* delegate_;
+  raw_ptr<MockCastTransportDelegate> delegate_;
   MockSocket mock_socket_;
   Logger* logger_;
   std::unique_ptr<CastTransport> transport_;

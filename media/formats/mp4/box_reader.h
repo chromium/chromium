@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -214,7 +215,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   template <typename T>
   bool ReadAllChildrenInternal(std::vector<T>* children, bool check_box_type);
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   size_t box_size_;
   bool box_size_known_;
   FourCC type_;

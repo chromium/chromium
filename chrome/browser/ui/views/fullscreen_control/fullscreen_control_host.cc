@@ -228,7 +228,7 @@ FullscreenControlPopup* FullscreenControlHost::GetPopup() {
     fullscreen_control_popup_ = std::make_unique<FullscreenControlPopup>(
         browser_view_->GetBubbleParentView(),
         base::BindRepeating(&BrowserView::ExitFullscreen,
-                            base::Unretained(browser_view_)),
+                            base::Unretained(browser_view_.get())),
         base::BindRepeating(&FullscreenControlHost::OnVisibilityChanged,
                             base::Unretained(this)));
   }

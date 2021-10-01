@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,7 +174,7 @@ class CheckRefptrNull : public base::RefCounted<CheckRefptrNull> {
  private:
   friend class base::RefCounted<CheckRefptrNull>;
 
-  scoped_refptr<CheckRefptrNull>* ptr_ = nullptr;
+  raw_ptr<scoped_refptr<CheckRefptrNull>> ptr_ = nullptr;
 };
 
 class Overflow : public base::RefCounted<Overflow> {

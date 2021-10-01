@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -51,15 +52,15 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
     void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
    private:
-    BeginFrameSourceWebView* const owner_;
+    const raw_ptr<BeginFrameSourceWebView> owner_;
   };
 
   void SendBeginFrame(const viz::BeginFrameArgs& args);
   void OnNeedsBeginFrames(bool needs_begin_frames);
 
   BeginFrameSourceClient bfs_client_;
-  viz::BeginFrameSource* observed_begin_frame_source_ = nullptr;
-  BeginFrameSourceWebView* parent_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> observed_begin_frame_source_ = nullptr;
+  raw_ptr<BeginFrameSourceWebView> parent_ = nullptr;
   std::unique_ptr<BeginFrameObserver> parent_observer_;
   bool inside_begin_frame_ = false;
 

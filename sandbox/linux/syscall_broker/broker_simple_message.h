@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -117,9 +118,9 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
   // The statically allocated buffer of size |kMaxMessageLength|.
   uint8_t message_[kMaxMessageLength];
   // The pointer to the next location in the |message_| buffer to read from.
-  uint8_t* read_next_ = message_;
+  raw_ptr<uint8_t> read_next_ = message_;
   // The pointer to the next location in the |message_| buffer to write from.
-  uint8_t* write_next_ = message_;
+  raw_ptr<uint8_t> write_next_ = message_;
 };
 
 }  // namespace syscall_broker

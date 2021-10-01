@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
@@ -122,7 +123,7 @@ class PowerAPI : public BrowserContextKeyedAPI,
   // created only once at the first time the GetWakeLock() is called.
   device::mojom::WakeLock* GetWakeLock();
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Functions that should be called to activate and cancel the wake lock.
   // Tests can change this to record what would've been done instead of

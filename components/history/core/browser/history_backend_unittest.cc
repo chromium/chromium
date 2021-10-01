@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -153,7 +154,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
 
  private:
   // Not owned by us.
-  HistoryBackendTestBase* test_;
+  raw_ptr<HistoryBackendTestBase> test_;
 };
 
 // Exposes some of `HistoryBackend`'s private methods.

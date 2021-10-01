@@ -4,6 +4,7 @@
 
 #include "chrome/browser/share/share_history.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -137,7 +138,8 @@ class ShareHistoryTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<ShareHistory> db_;
   leveldb_proto::test::FakeDB<mojom::ShareHistory>::EntryMap backing_entries_;
-  leveldb_proto::test::FakeDB<mojom::ShareHistory>* backing_db_ = nullptr;
+  raw_ptr<leveldb_proto::test::FakeDB<mojom::ShareHistory>> backing_db_ =
+      nullptr;
   base::CancelableOnceClosure backing_init_callback_;
 };
 

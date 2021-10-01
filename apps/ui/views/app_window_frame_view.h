@@ -5,6 +5,7 @@
 #ifndef APPS_UI_VIEWS_APP_WINDOW_FRAME_VIEW_H_
 #define APPS_UI_VIEWS_APP_WINDOW_FRAME_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -83,15 +84,15 @@ class AppWindowFrameView : public views::NonClientFrameView {
   // Return the current frame color based on the active state of the window.
   SkColor CurrentFrameColor();
 
-  views::Widget* widget_;
-  extensions::NativeAppWindow* window_;
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<extensions::NativeAppWindow> window_;
   bool draw_frame_;
   SkColor active_frame_color_;
   SkColor inactive_frame_color_;
-  views::ImageButton* close_button_ = nullptr;
-  views::ImageButton* maximize_button_ = nullptr;
-  views::ImageButton* restore_button_ = nullptr;
-  views::ImageButton* minimize_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::ImageButton> maximize_button_ = nullptr;
+  raw_ptr<views::ImageButton> restore_button_ = nullptr;
+  raw_ptr<views::ImageButton> minimize_button_ = nullptr;
 
   // Allow resize for clicks this many pixels inside the bounds.
   int resize_inside_bounds_size_ = 5;

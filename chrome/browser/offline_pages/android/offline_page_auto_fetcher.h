@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_AUTO_FETCHER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_AUTO_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/offline_pages/core/background/request_queue_results.h"
@@ -38,7 +39,7 @@ class OfflinePageAutoFetcher : public chrome::mojom::OfflinePageAutoFetcher {
 
   GURL last_committed_url_;
   int android_tab_id_;
-  OfflinePageAutoFetcherService* auto_fetcher_service_ = nullptr;
+  raw_ptr<OfflinePageAutoFetcherService> auto_fetcher_service_ = nullptr;
 };
 
 }  // namespace offline_pages

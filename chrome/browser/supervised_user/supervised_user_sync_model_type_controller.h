@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
 class Profile;
@@ -36,7 +37,7 @@ class SupervisedUserSyncModelTypeController
   PreconditionState GetPreconditionState() const override;
 
  private:
-  const Profile* const profile_;
+  const raw_ptr<const Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SYNC_MODEL_TYPE_CONTROLLER_H_

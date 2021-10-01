@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/apdu/apdu_command.h"
@@ -159,7 +160,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice final : public FidoDevice {
   // All the FidoHidDevice instances are owned by U2fRequest. So it is safe to
   // let the FidoHidDevice share the device::mojo::HidManager raw pointer from
   // U2fRequest.
-  device::mojom::HidManager* hid_manager_;
+  raw_ptr<device::mojom::HidManager> hid_manager_;
   device::mojom::HidDeviceInfoPtr device_info_;
   scoped_refptr<FidoHidDevice::RefCountedHidConnection> connection_;
   base::WeakPtrFactory<FidoHidDevice> weak_factory_{this};

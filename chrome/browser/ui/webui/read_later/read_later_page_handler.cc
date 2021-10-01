@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
@@ -145,8 +146,8 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
     kMarkAsUnread,
     kDelete,
   };
-  Browser* const browser_;
-  ReadingListModel* reading_list_model_;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<ReadingListModel> reading_list_model_;
   GURL url_;
 };
 
@@ -167,7 +168,7 @@ ReadLaterPageHandler::ReadLaterPageHandler(
   DCHECK(profile);
 
   reading_list_model_ = ReadingListModelFactory::GetForBrowserContext(profile);
-  reading_list_model_scoped_observation_.Observe(reading_list_model_);
+  reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
 }
 
 ReadLaterPageHandler::~ReadLaterPageHandler() = default;
@@ -289,7 +290,7 @@ void ReadLaterPageHandler::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_));
+      reading_list_model_.get()));
   reading_list_model_scoped_observation_.Reset();
   reading_list_model_ = nullptr;
 }

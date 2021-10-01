@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_ANDROID_POLICY_CACHE_UPDATER_ANDROID_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_ANDROID_POLICY_CACHE_UPDATER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/common/policy_service.h"
 
@@ -30,8 +31,8 @@ class POLICY_EXPORT PolicyCacheUpdater : public PolicyService::Observer {
  private:
   void UpdateCache(const PolicyMap& current_policy_map);
 
-  PolicyService* policy_service_;
-  const ConfigurationPolicyHandlerList* handler_list_;
+  raw_ptr<PolicyService> policy_service_;
+  raw_ptr<const ConfigurationPolicyHandlerList> handler_list_;
 };
 
 }  // namespace android

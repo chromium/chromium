@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -87,7 +88,7 @@ class ImageViewTest : public ViewsTestBase,
   Widget* widget() { return &widget_; }
 
  private:
-  ImageView* image_view_ = nullptr;
+  raw_ptr<ImageView> image_view_ = nullptr;
   Widget widget_;
 };
 

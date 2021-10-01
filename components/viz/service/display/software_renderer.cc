@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
@@ -71,7 +72,7 @@ class AnimatedImagesProvider : public cc::ImageProvider {
   }
 
  private:
-  const PictureDrawQuad::ImageAnimationMap* image_animation_map_;
+  raw_ptr<const PictureDrawQuad::ImageAnimationMap> image_animation_map_;
 };
 
 }  // namespace

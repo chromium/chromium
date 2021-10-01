@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -138,15 +139,15 @@ class SearchTabHelper : public content::WebContentsObserver,
       uint8_t line,
       bool accepted);
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   SearchIPCRouter ipc_router_;
 
-  InstantService* instant_service_;
+  raw_ptr<InstantService> instant_service_;
 
   bool is_setting_title_ = false;
 
-  chrome_colors::ChromeColorsService* chrome_colors_service_;
+  raw_ptr<chrome_colors::ChromeColorsService> chrome_colors_service_;
 
   std::unique_ptr<NTPUserDataLogger> logger_;
 

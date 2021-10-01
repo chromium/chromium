@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_ROUTER_TAB_HELPER_H_
 #define CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_ROUTER_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/core/session_id.h"
@@ -75,11 +76,11 @@ class SyncSessionsRouterTabHelper
   void NotifyRouter(bool page_load_completed = false);
 
   // |router_| is a KeyedService and is guaranteed to outlive |this|.
-  SyncSessionsWebContentsRouter* router_;
+  raw_ptr<SyncSessionsWebContentsRouter> router_;
 
-  ChromeTranslateClient* chrome_translate_client_;
+  raw_ptr<ChromeTranslateClient> chrome_translate_client_;
 
-  favicon::FaviconDriver* favicon_driver_;
+  raw_ptr<favicon::FaviconDriver> favicon_driver_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

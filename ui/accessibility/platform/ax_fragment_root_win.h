@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 
 #include <wrl/client.h>
@@ -79,7 +80,7 @@ class AX_EXPORT AXFragmentRootWin : public ui::AXPlatformNodeDelegateBase {
   AXPlatformNodeDelegate* GetParentNodeDelegate() const;
 
   gfx::AcceleratedWidget widget_;
-  AXFragmentRootDelegateWin* const delegate_;
+  const raw_ptr<AXFragmentRootDelegateWin> delegate_;
   Microsoft::WRL::ComPtr<ui::AXFragmentRootPlatformNodeWin> platform_node_;
   ui::AXUniqueId unique_id_;
 };

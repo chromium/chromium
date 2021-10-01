@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -48,7 +49,7 @@ struct TypefaceSerializationContext {
   TypefaceSerializationContext(TypefaceUsageMap* usage);
   ~TypefaceSerializationContext();
 
-  TypefaceUsageMap* usage;
+  raw_ptr<TypefaceUsageMap> usage;
   base::flat_set<SkFontID> finished;  // Should be empty on first use.
 };
 

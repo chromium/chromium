@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_SERVICE_SHARED_IMAGE_STUB_H_
 #define GPU_IPC_SERVICE_SHARED_IMAGE_STUB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -118,7 +119,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   // Wait on the sync token if any and destroy the shared image.
   void DestroySharedImage(const Mailbox& mailbox, const SyncToken& sync_token);
 
-  GpuChannel* channel_;
+  raw_ptr<GpuChannel> channel_;
 
   // While this is not a CommandBuffer, this provides a unique identifier for
   // a SharedImageStub, comprised of identifiers which it was already using.

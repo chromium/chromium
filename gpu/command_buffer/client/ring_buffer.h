@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -130,7 +131,7 @@ class GPU_EXPORT RingBuffer {
   void FreeOldestBlock();
   uint32_t GetLargestFreeSizeNoWaitingInternal();
 
-  CommandBufferHelper* helper_;
+  raw_ptr<CommandBufferHelper> helper_;
 
   // Used blocks are added to the end, blocks are freed from the beginning.
   Container blocks_;
@@ -155,7 +156,7 @@ class GPU_EXPORT RingBuffer {
   uint32_t num_used_blocks_ = 0;
 
   // The physical address that corresponds to base_offset.
-  void* base_;
+  raw_ptr<void> base_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(RingBuffer);
 };

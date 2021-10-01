@@ -13,6 +13,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -158,7 +159,7 @@ class ServiceInstance : public mojom::Connector,
       mojo::PendingRemote<mojom::ServiceManagerListener> listener) override;
 
   // Always owns |this|.
-  service_manager::ServiceManager* const service_manager_;
+  const raw_ptr<service_manager::ServiceManager> service_manager_;
 
   // A unique identity for this instance. Distinct from PID, as a single process
   // may host multiple service instances. Globally unique across time and space.

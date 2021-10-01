@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -53,7 +54,7 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
 
   // The upload data sink that is owned by url request and always accessed on
   // the client thread. It always outlives |this| callback.
-  Cronet_UploadDataSinkImpl* const upload_data_sink_ = nullptr;
+  const raw_ptr<Cronet_UploadDataSinkImpl> upload_data_sink_ = nullptr;
 
   // Executor for provider callback, used, but not owned, by |this|. Always
   // outlives |this| callback.
@@ -262,8 +263,8 @@ void Cronet_UploadDataSinkImpl::NetworkTasks::InitializeOnNetworkThread(
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   PostTaskToExecutor(
       base::BindOnce(&Cronet_UploadDataSinkImpl::InitializeUploadDataStream,
-                     base::Unretained(upload_data_sink_), upload_data_stream,
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::Unretained(upload_data_sink_.get()),
+                     upload_data_stream, base::ThreadTaskRunnerHandle::Get()));
 }
 
 void Cronet_UploadDataSinkImpl::NetworkTasks::Read(
@@ -271,14 +272,14 @@ void Cronet_UploadDataSinkImpl::NetworkTasks::Read(
     int buf_len) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   PostTaskToExecutor(base::BindOnce(&Cronet_UploadDataSinkImpl::Read,
-                                    base::Unretained(upload_data_sink_),
+                                    base::Unretained(upload_data_sink_.get()),
                                     std::move(buffer), buf_len));
 }
 
 void Cronet_UploadDataSinkImpl::NetworkTasks::Rewind() {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   PostTaskToExecutor(base::BindOnce(&Cronet_UploadDataSinkImpl::Rewind,
-                                    base::Unretained(upload_data_sink_)));
+                                    base::Unretained(upload_data_sink_.get())));
 }
 
 void Cronet_UploadDataSinkImpl::NetworkTasks::OnUploadDataStreamDestroyed() {

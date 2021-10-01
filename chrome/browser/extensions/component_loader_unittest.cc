@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -83,7 +84,7 @@ class ComponentLoaderTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  TestExtensionSystem* extension_system_;
+  raw_ptr<TestExtensionSystem> extension_system_;
   ComponentLoader component_loader_;
 
   // The root directory of the text extension.

@@ -178,7 +178,7 @@ BrowsingHistoryService::BrowsingHistoryService(
 
   // Get notifications when history is cleared.
   if (local_history_)
-    history_service_observation_.Observe(local_history_);
+    history_service_observation_.Observe(local_history_.get());
 
   // Get notifications when web history is deleted.
   WebHistoryService* web_history = driver_->GetWebHistoryService();
@@ -192,7 +192,7 @@ BrowsingHistoryService::BrowsingHistoryService(
     // observing. This is okay because sync will never start for us, for example
     // it may be disabled by flag or we're part of an incognito/guest mode
     // window.
-    sync_service_observation_.Observe(sync_service_);
+    sync_service_observation_.Observe(sync_service_.get());
   }
 }
 

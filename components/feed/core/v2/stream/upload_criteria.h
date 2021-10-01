@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_STREAM_UPLOAD_CRITERIA_H_
 #define COMPONENTS_FEED_CORE_V2_STREAM_UPLOAD_CRITERIA_H_
 
+#include "base/memory/raw_ptr.h"
+
 class PrefService;
 
 namespace feed {
@@ -27,7 +29,7 @@ class UploadCriteria {
   bool HasReachedConditionsToUploadActionsWithNoticeCard();
   void UpdateCanUploadActionsWithNoticeCard();
 
-  PrefService* profile_prefs_;
+  raw_ptr<PrefService> profile_prefs_;
   // Whether the feed stream can upload actions with the notice card in the
   // feed. This is cached so that we enable uploads in the session after the
   // criteria was met.

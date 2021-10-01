@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -53,11 +54,11 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   chrome::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch window with tab strip.
-  views::Checkbox* tabbed_window_checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> tabbed_window_checkbox_ = nullptr;
 
   chrome::PwaInProductHelpState iph_state_;
-  PrefService* prefs_;
-  feature_engagement::Tracker* tracker_;
+  raw_ptr<PrefService> prefs_;
+  raw_ptr<feature_engagement::Tracker> tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_

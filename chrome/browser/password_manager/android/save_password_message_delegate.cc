@@ -235,7 +235,7 @@ void SavePasswordMessageDelegate::DisplayUsernameConfirmDialog(
   // SavePasswordMessageDelegate owns password_edit_dialog_. Callbacks won't be
   // called after the SavePasswordMessageDelegate object is destroyed.
   password_edit_dialog_ = password_edit_dialog_factory_.Run(
-      web_contents_,
+      web_contents_.get(),
       base::BindOnce(&SavePasswordMessageDelegate::HandleSavePasswordFromDialog,
                      base::Unretained(this)),
       base::BindOnce(&SavePasswordMessageDelegate::HandleDialogDismissed,

@@ -40,7 +40,7 @@ void GestureInterpreter::SetContext(RendererProxy* renderer,
   input_stub_ = input_stub;
   auto transformation_callback =
       renderer_ ? base::BindRepeating(&RendererProxy::SetTransformation,
-                                      base::Unretained(renderer_))
+                                      base::Unretained(renderer_.get()))
                 : DesktopViewport::TransformationCallback();
   viewport_.RegisterOnTransformationChangedCallback(transformation_callback,
                                                     true);

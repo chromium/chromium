@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "third_party/libpng/png.h"
@@ -65,7 +66,7 @@ class PngDecoderState {
   int output_channels;
 
   // An incoming SkBitmap to write to. If NULL, we write to output instead.
-  SkBitmap* bitmap;
+  raw_ptr<SkBitmap> bitmap;
 
   // Used during the reading of an SkBitmap. Defaults to true until we see a
   // pixel with anything other than an alpha of 255.
@@ -73,7 +74,7 @@ class PngDecoderState {
 
   // The other way to decode output, where we write into an intermediary buffer
   // instead of directly to an SkBitmap.
-  std::vector<unsigned char>* output;
+  raw_ptr<std::vector<unsigned char>> output;
 
   // Size of the image, set in the info callback.
   int width;

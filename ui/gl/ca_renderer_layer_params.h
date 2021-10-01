@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -44,7 +45,7 @@ struct GL_EXPORT CARendererLayerParams {
   const gfx::RRectF rounded_corner_bounds;
   unsigned sorting_context_id;
   const gfx::Transform transform;
-  gl::GLImage* image;
+  raw_ptr<gl::GLImage> image;
   const gfx::RectF contents_rect;
   const gfx::Rect rect;
   unsigned background_color;

@@ -409,7 +409,7 @@ CreditCardAccessoryControllerImpl::GetManualFillingController() {
 autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
   DCHECK(web_contents_->GetFocusedFrame());
   return af_driver_for_testing_
-             ? af_driver_for_testing_
+             ? af_driver_for_testing_.get()
              : autofill::ContentAutofillDriver::GetForRenderFrameHost(
                    web_contents_->GetFocusedFrame());
 }

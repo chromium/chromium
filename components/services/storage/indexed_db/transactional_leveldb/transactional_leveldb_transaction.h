@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -104,7 +105,7 @@ class TransactionalLevelDBTransaction
 
   void EvictLoadedIterators();
 
-  TransactionalLevelDBDatabase* const db_;
+  const raw_ptr<TransactionalLevelDBDatabase> db_;
   // Non-null until the transaction is committed or rolled back.
   std::unique_ptr<LevelDBScope> scope_;
   bool finished_ = false;
@@ -167,7 +168,7 @@ class LevelDBDirectTransaction {
 
   bool IsFinished() const { return write_batch_ == nullptr; }
 
-  TransactionalLevelDBDatabase* const db_;
+  const raw_ptr<TransactionalLevelDBDatabase> db_;
   std::unique_ptr<LevelDBWriteBatch> write_batch_;
 };
 

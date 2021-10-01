@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -58,7 +59,7 @@ class AppWindowGeometryCacheTest : public ExtensionsTest {
   std::string AddExtensionWithPrefs(const std::string& name);
 
  protected:
-  ExtensionPrefs* extension_prefs_;  // Weak.
+  raw_ptr<ExtensionPrefs> extension_prefs_;  // Weak.
   std::unique_ptr<AppWindowGeometryCache> cache_;
 };
 

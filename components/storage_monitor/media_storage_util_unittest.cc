@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -72,7 +73,7 @@ class MediaStorageUtilTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestStorageMonitor* monitor_;
+  raw_ptr<TestStorageMonitor> monitor_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 

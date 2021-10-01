@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
@@ -204,7 +205,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
   base::Lock lock_;
   std::unique_ptr<base::StackSamplingProfiler> profiler_;  // under |lock_|
-  TracingProfileBuilder* profile_builder_ = nullptr;
+  raw_ptr<TracingProfileBuilder> profile_builder_ = nullptr;
   base::RepeatingClosure sample_callback_for_testing_;
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)

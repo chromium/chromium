@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -378,7 +379,7 @@ class AffiliationBackendTest : public testing::Test {
   MockAffiliationConsumer mock_consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   // Owned by |backend_|.
-  MockAffiliationFetchThrottler* mock_fetch_throttler_ = nullptr;
+  raw_ptr<MockAffiliationFetchThrottler> mock_fetch_throttler_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AffiliationBackendTest);
 };

@@ -158,7 +158,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
             tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
             .release();
-    site_settings_view_->AddChildView(cookie_button_);
+    site_settings_view_->AddChildView(cookie_button_.get());
   }
 
   // Update the text displaying the number of allowed cookies.
@@ -323,7 +323,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     connection_button_ = security_container_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
-                                base::Unretained(navigation_handler_)),
+                                base::Unretained(navigation_handler_.get())),
             PageInfoViewFactory::GetConnectionSecureIcon(), 0, std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
@@ -486,7 +486,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
-                          base::Unretained(navigation_handler_)));
+                          base::Unretained(navigation_handler_.get())));
 
   close_button->SetVisible(true);
   close_button->SetProperty(views::kCrossAxisAlignmentKey,

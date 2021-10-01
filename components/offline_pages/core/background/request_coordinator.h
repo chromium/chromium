@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -470,7 +471,7 @@ class RequestCoordinator : public KeyedService,
   std::unique_ptr<Scheduler> scheduler_;
   // Unowned pointer. Guaranteed to be non-null during the lifetime of |this|.
   // Must be accessed only on the UI thread.
-  network::NetworkQualityTracker* network_quality_tracker_;
+  raw_ptr<network::NetworkQualityTracker> network_quality_tracker_;
   net::EffectiveConnectionType network_quality_at_request_start_;
   // Holds an ID of the currently active request.
   int64_t active_request_id_;

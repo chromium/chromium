@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -96,7 +97,7 @@ class CookieStoreSync {
   }
 
  private:
-  blink::mojom::CookieStore* cookie_store_service_;
+  raw_ptr<blink::mojom::CookieStore> cookie_store_service_;
 };
 
 const char kExampleScope[] = "https://example.com/a/";
@@ -146,7 +147,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
     }
 
    private:
-    CookieStoreWorkerTestHelper* const worker_helper_;
+    const raw_ptr<CookieStoreWorkerTestHelper> worker_helper_;
   };
 
   std::unique_ptr<FakeServiceWorker> CreateServiceWorker() override {
@@ -165,7 +166,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
 
  private:
   // Set by WaitForActivateEvent(), used in OnActivateEvent().
-  base::RunLoop* quit_on_activate_ = nullptr;
+  raw_ptr<base::RunLoop> quit_on_activate_ = nullptr;
 
   // Collects the changes reported to OnCookieChangeEvent().
   std::vector<net::CookieChangeInfo> changes_;
