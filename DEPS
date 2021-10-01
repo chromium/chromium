@@ -160,11 +160,15 @@ vars = {
   # entries in a comma-separated list.
   # Wildcards are supported (e.g. "qemu.*").
   #
-  # Example of images include:
+  # Available images:
   #   Emulation:
-  #     qemu.x64, qemu.arm64, workstation.qemu-x64-release
+  #   - qemu.x64 (pulls terminal.qemu-x64-release)
+  #   - qemu.arm64 (pulls terminal.qemu-arm64-release)
+  #   - workstation.qemu-x64-release
   #   Hardware:
-  #     generic.x64, generic.arm64
+  #   - generic.x64 (pulls terminal.x64-debug)
+  #   - generic.arm64 (pulls terminal.arm64-debug)
+  #   - chromebook.x64 (pulls terminal.chromebook-x64-debug)
   #
   # Since the images are hundreds of MB, default to only downloading the image
   # most commonly useful for developers. Bots and developers that need to use
