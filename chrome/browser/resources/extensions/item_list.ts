@@ -7,17 +7,17 @@ import './item.js';
 import './shared_style.js';
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionsItemElement, ItemDelegate} from './item.js';
 
 type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
 
 const ExtensionsItemListElementBase =
-    mixinBehaviors([I18nBehavior], CrContainerShadowMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nBehavior};
+    I18nMixin(CrContainerShadowMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nMixinInterface};
 
 class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   static get is() {
