@@ -6,6 +6,10 @@ module chromeos.bluetooth_config.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 
+// The maximum number of characters a Bluetooth device's nickname can be set
+// to.
+const uint8 kDeviceNicknameCharacterLimit = 32;
+
 // State of Bluetooth on the device.
 enum BluetoothSystemState {
   // Device does not have access to Bluetooth.

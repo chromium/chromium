@@ -2,6 +2,7 @@ include_rules = [
   "+components/device_event_log",
   "+components/user_manager",
   "+components/session_manager/core",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
   "+device/bluetooth",
   "+mojo/public",
 ]
