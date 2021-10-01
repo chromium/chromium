@@ -312,7 +312,7 @@ java_prebuilt("com_google_guava_failureaccess_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_guava_java") {
-  jar_path = "libs/com_google_guava_guava/guava-30.1.1-jre.jar"
+  jar_path = "libs/com_google_guava_guava/guava-31.0-jre.jar"
   output_name = "com_google_guava_guava"
   enable_bytecode_checks = false
   deps = [
@@ -642,7 +642,7 @@ java_prebuilt("net_ltgt_gradle_incap_incap_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.8.0.jar"
+  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.12.0.jar"
   output_name = "org_checkerframework_checker_qual"
   supports_android = true
   enable_bytecode_checks = false

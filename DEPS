@@ -2908,7 +2908,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_guava_guava',
-              'version': 'version:2@30.1.1-jre.cr0',
+              'version': 'version:2@31.0-jre.cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3293,7 +3293,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_checkerframework_checker_qual',
-              'version': 'version:2@3.8.0.cr0',
+              'version': 'version:2@3.12.0.cr0',
           },
       ],
       'condition': 'checkout_android',
