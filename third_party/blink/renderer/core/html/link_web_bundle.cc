@@ -100,6 +100,12 @@ void LinkWebBundle::Process() {
                        owner_->Href().ElidedString());
       return;
     }
+    // Release the old resources explicitly before assigning new bundle loader
+    // instead of relying on GC.
+    if (bundle_loader_) {
+      active_bundles->Remove(*this);
+      ReleaseBundleLoader();
+    }
     bundle_loader_ = MakeGarbageCollected<WebBundleLoader>(
         *this, owner_->GetDocument(), owner_->Href(),
         GetCrossOriginAttributeValue(

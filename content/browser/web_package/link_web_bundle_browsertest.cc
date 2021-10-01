@@ -169,7 +169,10 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleHugeWebBundleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != "/web_bundle/huge.wbn")
+    // Handler should return huge bundles only for "/web_bundle/huge.wbn" and
+    // "/web_bundle/huge2.wbn".
+    if (!(request.relative_url == "/web_bundle/huge.wbn" ||
+          request.relative_url == "/web_bundle/huge2.wbn"))
       return nullptr;
     GURL primary_url(https_server_.GetURL("/web_bundle/huge.txt"));
     web_package::test::WebBundleBuilder builder(primary_url.spec(),
@@ -211,6 +214,53 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
+
+IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, ChangeLinkElementHref) {
+  GURL url(https_server()->GetURL("/web_bundle/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // We load a huge.wbn and change the reference to another bundle url. If we
+  // don't release webbundle resources immediately when a link element's
+  // reference is changed, the load should fail because of a memory quota in
+  // the network process. See https://crbug.com/1249338.
+  DOMMessageQueue dom_message_queue(shell()->web_contents());
+  ExecuteScriptAsync(shell(),
+                     R"HTML(
+        (async () => {
+          const link = await addLinkAndWaitForLoad("/web_bundle/huge.wbn", [
+            // resources are dummy. The test shouldn't depends on this value.
+            "http://example.com/web-bundle/huge.txt",
+          ]);
+          await changeLinkHrefAndWaitForLoad(link, "/web_bundle/huge2.wbn")
+          window.domAutomationController.send('webbundle loaded after change');
+        })();
+
+        function addLinkAndWaitForLoad(url, resources) {
+          return new Promise((resolve, reject) => {
+            const link = document.createElement("link");
+            link.rel = "webbundle";
+            link.href = url;
+            for (const resource of resources) {
+              link.resources.add(resource);
+            }
+            link.onload = () => resolve(link);
+            link.onerror = () => reject(link);
+            document.body.appendChild(link);
+          });
+        }
+
+        function changeLinkHrefAndWaitForLoad(link, url) {
+          return new Promise((resolve, reject) => {
+            link.href = url;
+            link.onload = () => resolve(link);
+            link.onerror = () => reject(link);
+          });
+        }
+      )HTML");
+  std::string message;
+  EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"webbundle loaded after change\"", message);
+}
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, RemoveLinkElement) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
