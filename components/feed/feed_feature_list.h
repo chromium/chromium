@@ -71,6 +71,10 @@ extern const base::Feature kFeedClearImageMemoryCache;
 // feeds quickly.
 extern const base::Feature kFeedBackToTop;
 
+// Feature that enables the 'X' in the signin promo in the Feed. Without the 'X'
+// the signin promo is not dismissible without opting to sign in.
+extern const base::Feature kFeedSignInPromoDismiss;
+
 // Feature that enables StAMP cards in the feed.
 extern const base::Feature kFeedStamp;
 

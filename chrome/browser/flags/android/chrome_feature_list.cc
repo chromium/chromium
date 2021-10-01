@@ -139,6 +139,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kFeedClearImageMemoryCache,
     &feed::kFeedImageMemoryCacheSizePercentage,
     &feed::kFeedInteractiveRefresh,
+    &feed::kFeedSignInPromoDismiss,
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedSpinnerAlwaysAnimate,
     &feed::kInterestFeedV1ClicksAndViewsConditionalUpload,

@@ -206,10 +206,14 @@ public class FeedSurfaceMediator
             // blocking the UI thread for several seconds if the accounts cache is not populated
             // yet.
             if (isVisible()) {
+                SigninPromoController.OnDismissListener dismissListener = null;
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SIGNIN_PROMO_DISMISS)) {
+                    dismissListener = this::onDismissPromo;
+                }
                 mSigninPromoController.setUpSyncPromoView(mProfileDataCache,
                         mCoordinator.getSigninPromoView().findViewById(
                                 R.id.signin_promo_view_container),
-                        this::onDismissPromo);
+                        dismissListener);
             }
         }
 

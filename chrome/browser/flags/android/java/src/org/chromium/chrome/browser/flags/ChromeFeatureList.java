@@ -339,6 +339,7 @@ public abstract class ChromeFeatureList {
             "FeedImageMemoryCacheSizePercentage";
     public static final String FEED_INTERACTIVE_REFRESH = "FeedInteractiveRefresh";
     public static final String FEED_RELIABILITY_LOGGING = "FeedReliabilityLogging";
+    public static final String FEED_SIGNIN_PROMO_DISMISS = "FeedSignInPromoDismiss";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";
