@@ -1429,7 +1429,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSSizeMetrics) {
   // Metrics look at decoded body length.
   // 30 + 50 = 80 kilobytes.
   int64_t bucketed_network_js_bytes =
-      ukm::GetExponentialBucketMin(80 * 1024, 10);
+      ukm::GetExponentialBucketMinForBytes(80 * 1024);
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -1440,7 +1440,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSSizeMetrics) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
                                                           GURL(kTestUrl1));
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), "Net.JavaScriptBytes", bucketed_network_js_bytes);
+        kv.second.get(), "Net.JavaScriptBytes2", bucketed_network_js_bytes);
   }
 }
 
@@ -1479,7 +1479,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSMaxSizeMetrics) {
   // Metrics look at max decoded body length.
   // max(30,500) = 500 kilobytes.
   int64_t bucketed_network_js_max_bytes =
-      ukm::GetExponentialBucketMin(500 * 1024, 10);
+      ukm::GetExponentialBucketMinForBytes(500 * 1024);
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -1490,7 +1490,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSMaxSizeMetrics) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
                                                           GURL(kTestUrl1));
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), "Net.JavaScriptMaxBytes",
+        kv.second.get(), "Net.JavaScriptMaxBytes2",
         bucketed_network_js_max_bytes);
   }
 }
@@ -1533,14 +1533,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, ImageMediaSizeMetrics) {
                                                           GURL(kTestUrl1));
     // 30 KB for all images, 20 KB for subframe images, and 50 KB for media.
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), "Net.ImageBytes",
-        ukm::GetExponentialBucketMin(30 * 1024, 1.15));
+        kv.second.get(), "Net.ImageBytes2",
+        ukm::GetExponentialBucketMinForBytes(30 * 1024));
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), "Net.ImageSubframeBytes",
-        ukm::GetExponentialBucketMin(20 * 1024, 1.15));
+        kv.second.get(), "Net.ImageSubframeBytes2",
+        ukm::GetExponentialBucketMinForBytes(20 * 1024));
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), "Net.MediaBytes",
-        ukm::GetExponentialBucketMin(50 * 1024, 1.15));
+        kv.second.get(), "Net.MediaBytes2",
+        ukm::GetExponentialBucketMinForBytes(50 * 1024));
   }
 }
 

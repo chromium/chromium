@@ -1563,10 +1563,10 @@ TEST_F(UkmServiceTest, FilterCanRemoveMetrics) {
   recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
 
   // This event sticks around albeit with a single metric instead of two.
-  TestEvent1(id).SetCpuTime(1).SetNet_MediaBytes(0).Record(&service);
+  TestEvent1(id).SetCpuTime(1).SetNet_CacheBytes2(0).Record(&service);
 
   // This event is discarded because its only metric gets stripped out.
-  TestEvent1(id).SetNet_MediaBytes(0).Record(&service);
+  TestEvent1(id).SetNet_CacheBytes2(0).Record(&service);
 
   service.Flush();
   ASSERT_EQ(1, GetPersistedLogCount());

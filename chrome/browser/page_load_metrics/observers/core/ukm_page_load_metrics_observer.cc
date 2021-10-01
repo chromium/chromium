@@ -726,22 +726,22 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   }
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
-  // Use a bucket spacing factor of 1.3 for bytes.
-  builder.SetNet_CacheBytes2(ukm::GetExponentialBucketMin(cache_bytes_, 1.3));
+  builder.SetNet_CacheBytes2(
+      ukm::GetExponentialBucketMinForBytes(cache_bytes_));
   builder.SetNet_NetworkBytes2(
-      ukm::GetExponentialBucketMin(network_bytes_, 1.3));
+      ukm::GetExponentialBucketMinForBytes(network_bytes_));
 
-  // Use a bucket spacing factor of 10 for JS bytes.
-  builder.SetNet_JavaScriptBytes(
-      ukm::GetExponentialBucketMin(js_decoded_bytes_, 10));
-  builder.SetNet_JavaScriptMaxBytes(
-      ukm::GetExponentialBucketMin(js_max_decoded_bytes_, 10));
+  builder.SetNet_JavaScriptBytes2(
+      ukm::GetExponentialBucketMinForBytes(js_decoded_bytes_));
+  builder.SetNet_JavaScriptMaxBytes2(
+      ukm::GetExponentialBucketMinForBytes(js_max_decoded_bytes_));
 
-  builder.SetNet_ImageBytes(
-      ukm::GetExponentialBucketMin(image_total_bytes_, 1.15));
-  builder.SetNet_ImageSubframeBytes(
-      ukm::GetExponentialBucketMin(image_subframe_bytes_, 1.15));
-  builder.SetNet_MediaBytes(ukm::GetExponentialBucketMin(media_bytes_, 1.15));
+  builder.SetNet_ImageBytes2(
+      ukm::GetExponentialBucketMinForBytes(image_total_bytes_));
+  builder.SetNet_ImageSubframeBytes2(
+      ukm::GetExponentialBucketMinForBytes(image_subframe_bytes_));
+  builder.SetNet_MediaBytes2(
+      ukm::GetExponentialBucketMinForBytes(media_bytes_));
 
   if (main_frame_timing_)
     ReportMainResourceTimingMetrics(builder);

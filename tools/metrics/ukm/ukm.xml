@@ -12415,6 +12415,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net.ImageBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.ImageBytes2.
+    </obsolete>
+    <summary>
+      The total number of bytes loaded from the network for images on the page.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      spacing factor of 1.3). On mobile this only records bytes up until the
+      page/app is backgrounded.
+    </summary>
+  </metric>
+  <metric name="Net.ImageBytes2">
     <summary>
       The total number of bytes loaded from the network for images on the page.
       This is rounded down to the nearest exponential bucket (with a bucket
@@ -12423,6 +12434,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net.ImageSubframeBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.ImageSubframeBytes2.
+    </obsolete>
+    <summary>
+      The total number of bytes loaded from the network for images on the
+      subframes of the page. This is rounded down to the nearest exponential
+      bucket (with a bucket spacing factor of 1.3). On mobile this only records
+      bytes up until the page/app is backgrounded.
+    </summary>
+  </metric>
+  <metric name="Net.ImageSubframeBytes2">
     <summary>
       The total number of bytes loaded from the network for images on the
       subframes of the page. This is rounded down to the nearest exponential
@@ -12431,6 +12453,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net.JavaScriptBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.JavaScriptBytes2.
+    </obsolete>
     <summary>
       The sum of decoded body lengths of all JavaScript resouces that completed
       loading on the page. This is rounded down to the nearest exponential
@@ -12438,7 +12463,18 @@ be describing additional metrics about the same event.
       bytes up until the page/app is backgrounded.
     </summary>
   </metric>
+  <metric name="Net.JavaScriptBytes2">
+    <summary>
+      The sum of decoded body lengths of all JavaScript resouces that completed
+      loading on the page. This is rounded down to the nearest exponential
+      bucket (with a bucket spacing factor of 1.3). On mobile this only records
+      bytes up until the page/app is backgrounded.
+    </summary>
+  </metric>
   <metric name="Net.JavaScriptMaxBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.JavaScriptMaxBytes2.
+    </obsolete>
     <summary>
       The max of decoded body lengths of all JavaScript resouces that completed
       loading on the page. This is rounded down to the nearest exponential
@@ -12446,7 +12482,26 @@ be describing additional metrics about the same event.
       bytes up until the page/app is backgrounded.
     </summary>
   </metric>
+  <metric name="Net.JavaScriptMaxBytes2">
+    <summary>
+      The max of decoded body lengths of all JavaScript resouces that completed
+      loading on the page. This is rounded down to the nearest exponential
+      bucket (with a bucket spacing factor of 1.3). On mobile this only records
+      bytes up until the page/app is backgrounded.
+    </summary>
+  </metric>
   <metric name="Net.MediaBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.MediaBytes2.
+    </obsolete>
+    <summary>
+      The total number of bytes loaded from the network for media (video, audio)
+      on the page. This is rounded down to the nearest exponential bucket (with
+      a bucket spacing factor of 1.3). On mobile this only records bytes up
+      until the page/app is backgrounded.
+    </summary>
+  </metric>
+  <metric name="Net.MediaBytes2">
     <summary>
       The total number of bytes loaded from the network for media (video, audio)
       on the page. This is rounded down to the nearest exponential bucket (with
