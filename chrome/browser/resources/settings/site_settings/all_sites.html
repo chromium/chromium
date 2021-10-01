@@ -145,6 +145,40 @@
       </template>
     </cr-lazy-render>
 
+    <!-- Confirm remove site dialog. -->
+    <cr-lazy-render id="confirmRemoveSite">
+      <template>
+        <cr-dialog close-text="$i18n{close}">
+          <div id="removeSiteTitle" slot="title">
+            [[getRemoveSiteTitle_(actionMenuModel_)]]
+          </div>
+          <div slot="body">
+            <div id="logoutBulletPoint" class="detail">
+              <iron-icon icon="all-sites:logout"></iron-icon>
+              [[getRemoveSiteLogoutBulletPoint_(actionMenuModel_)]]
+            </div>
+            <div class="detail">
+              <iron-icon icon="all-sites:offline"></iron-icon>
+              $i18n{siteSettingsRemoveSiteOfflineData}
+            </div>
+            <div id="permissionsBulletPoint" class="detail"
+              hidden$="[[!showPermissionsBulletPoint_(actionMenuModel_)]]">
+              <iron-icon icon="settings:permissions"></iron-icon>
+              $i18n{siteSettingsRemoveSitePermissions}
+            </div>
+          </div>
+          <div slot="button-container">
+            <cr-button class="cancel-button" on-click="onCloseDialog_">
+              $i18n{cancel}
+            </cr-button>
+            <cr-button class="action-button" on-click="onConfirmRemoveSite_">
+              $i18n{siteSettingsRemoveSiteConfirm}
+            </cr-button>
+          </div>
+        </cr-dialog>
+      </template>
+    </cr-lazy-render>
+
     <!-- Confirm clear all data dialog. -->
     <cr-lazy-render id="confirmClearAllData">
       <template>

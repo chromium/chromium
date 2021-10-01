@@ -567,8 +567,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  clearOriginDataAndCookies() {
-    this.methodCalled('clearOriginDataAndCookies');
+  clearOriginDataAndCookies(origin) {
+    this.methodCalled('clearOriginDataAndCookies', origin);
   }
 
   /** @override */

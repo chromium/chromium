@@ -174,17 +174,21 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
-    assert(routes.SITE_SETTINGS_SITE_DATA);
+    assert(
+        this.enableConsolidatedSiteStorageControls_ ?
+            routes.SITE_SETTINGS_ALL :
+            routes.SITE_SETTINGS_SITE_DATA);
     const selectSiteDataLinkRow = () => {
       focusWithoutInk(
           assert(this.shadowRoot!.querySelector('#site-data-trigger')!));
     };
-    this.focusConfig.set(
-        routes.SITE_SETTINGS_SITE_DATA.path, selectSiteDataLinkRow);
     if (this.enableConsolidatedSiteStorageControls_) {
       this.focusConfig.set(
           `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
           selectSiteDataLinkRow);
+    } else {
+      this.focusConfig.set(
+          routes.SITE_SETTINGS_SITE_DATA.path, selectSiteDataLinkRow);
     }
   }
 

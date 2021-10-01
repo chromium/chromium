@@ -16,7 +16,7 @@ import {eventToPromise} from 'chrome://test/test_util.js';
 
 // clang-format on
 
-suite('SiteEntry', function() {
+suite('SiteEntry_DisabledConsolidatedControls', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    * @type {!SiteGroup}
@@ -67,6 +67,12 @@ suite('SiteEntry', function() {
    * @type {Element}
    */
   let toggleButton;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: false,
+    });
+  });
 
   // Initialize a site-list before each test.
   setup(function() {
@@ -153,7 +159,7 @@ suite('SiteEntry', function() {
   test('with single origin, shows overflow menu', function() {
     testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
     flush();
-    const overflowMenuButton = testElement.$.overflowMenuButton;
+    const overflowMenuButton = testElement.$$('#overflowMenuButton');
     assertFalse(overflowMenuButton.closest('.row-aligned').hidden);
   });
 
@@ -436,5 +442,110 @@ suite('SiteEntry', function() {
     assertEquals(
         'www.example.com',
         origins[2].querySelector('#originSiteRepresentation').innerText.trim());
+  });
+});
+
+suite('SiteEntry_EnabledConsolidatedControls', function() {
+  /**
+   * An example eTLD+1 Object with multiple origins grouped under it.
+   * @type {!SiteGroup}
+   */
+  const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
+    'http://example.com',
+    'https://www.example.com',
+    'https://login.example.com',
+  ]);
+
+  /**
+   * An example eTLD+1 Object with a single origin in it.
+   * @type {!SiteGroup}
+   */
+  const TEST_SINGLE_SITE_GROUP = createSiteGroup('foo.com', [
+    'https://login.foo.com',
+  ]);
+
+  const TEST_COOKIE_LIST = {
+    id: 'foo',
+    children: [
+      {domain: 'example.com'},
+      {domain: 'example.com'},
+      {domain: 'example.com'},
+    ]
+  };
+
+  /**
+   * The mock proxy object to use during test.
+   * @type {TestSiteSettingsPrefsBrowserProxy}
+   */
+  let browserProxy;
+
+  /**
+   * The mock local data proxy object to use during test.
+   * @type {TestLocalDataBrowserProxy}
+   */
+  let localDataBrowserProxy;
+
+  /**
+   * A site list element created before each test.
+   * @type {SiteList}
+   */
+  let testElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: true,
+    });
+  });
+
+  // Initialize a site-list before each test.
+  setup(function() {
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    localDataBrowserProxy = new TestLocalDataBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    LocalDataBrowserProxyImpl.instance_ = localDataBrowserProxy;
+
+    PolymerTest.clearBody();
+    testElement = document.createElement('site-entry');
+    assertTrue(!!testElement);
+    document.body.appendChild(testElement);
+  });
+
+  test('remove site fires correct event for individual site', async function() {
+    testElement.siteGroup =
+        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    flush();
+
+    const collapseChild = testElement.$.originList.get();
+    flush();
+    const originList = collapseChild.querySelectorAll('.hr');
+    assertEquals(3, originList.length);
+
+    for (let i = 0; i < originList.length; i++) {
+      const siteRemoved = eventToPromise('remove-site', testElement);
+      originList[i].querySelector('#removeOriginButton').click();
+      const siteRemovedEvent = await siteRemoved;
+
+      const {actionScope, index, origin} = siteRemovedEvent.detail;
+      assertEquals('origin', actionScope);
+      assertEquals(testElement.listIndex, index);
+      assertEquals(testElement.siteGroup.origins[i].origin, origin);
+    }
+  });
+
+  test('remove site fires correct event for site group', async function() {
+    testElement.siteGroup =
+        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    flush();
+
+    const siteRemoved = eventToPromise('remove-site', testElement);
+    testElement.$$('#removeSiteButton').click();
+    const siteRemovedEvent = await siteRemoved;
+
+    const {actionScope, index, origin} = siteRemovedEvent.detail;
+
+    // Site groups are removed exclusively based on their index.
+    assertEquals(undefined, actionScope);
+    assertEquals(testElement.listIndex, index);
+    assertEquals(undefined, origin);
   });
 });

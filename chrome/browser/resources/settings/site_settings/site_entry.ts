@@ -124,6 +124,13 @@ class SiteEntryElement extends SiteEntryElementBase {
        * The selected sort method.
        */
       sortMethod: {type: String, observer: 'updateOrigins_'},
+
+      /** @private */
+      enableConsolidatedSiteStorageControls_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('consolidatedSiteStorageControlsEnabled'),
+      },
     };
   }
 
@@ -389,6 +396,16 @@ class SiteEntryElement extends SiteEntryElementBase {
    */
   private showOverflowMenu_(e: Event) {
     this.fire('open-menu', {
+      target: e.target,
+      index: this.listIndex,
+      item: this.siteGroup,
+      origin: (e.target as HTMLElement).dataset['origin'],
+      actionScope: (e.target as HTMLElement).dataset['context'],
+    });
+  }
+
+  private onRemove_(e: Event) {
+    this.fire('remove-site', {
       target: e.target,
       index: this.listIndex,
       item: this.siteGroup,

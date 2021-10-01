@@ -23,6 +23,7 @@ import './site_entry.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -48,6 +49,7 @@ type ActionMenuModel = {
 };
 
 type OpenMenuEvent = CustomEvent<ActionMenuModel>;
+type RemoveSiteEvent = CustomEvent<ActionMenuModel>;
 
 type SelectedItem = {
   item: SiteGroup,
@@ -57,6 +59,7 @@ type SelectedItem = {
 declare global {
   interface HTMLElementEventMap {
     'open-menu': OpenMenuEvent;
+    'remove-site': RemoveSiteEvent;
     'site-entry-selected': CustomEvent<SelectedItem>;
   }
 }
@@ -66,6 +69,7 @@ interface AllSitesElement {
     allSitesList: IronListElement,
     confirmClearAllData: CrLazyRenderElement<CrDialogElement>,
     confirmClearData: CrLazyRenderElement<CrDialogElement>,
+    confirmRemoveSite: CrLazyRenderElement<CrDialogElement>,
     confirmResetSettings: CrLazyRenderElement<CrDialogElement>,
     menu: CrLazyRenderElement<CrActionMenuElement>,
     sortMethod: HTMLSelectElement,
@@ -215,6 +219,7 @@ class AllSitesElement extends AllSitesElementBase {
         });
 
     this.addEventListener('open-menu', this.onOpenMenu_.bind(this));
+    this.addEventListener('remove-site', this.onRemoveSite_.bind(this));
 
     const sortParam = Router.getInstance().getQueryParameters().get('sort');
     if (sortParam !== null &&
@@ -445,6 +450,48 @@ class AllSitesElement extends AllSitesElementBase {
     this.$.menu.get().showAt(target);
   }
 
+  onRemoveSite_(e: RemoveSiteEvent) {
+    this.actionMenuModel_ = e.detail;
+    this.$.confirmRemoveSite.get().showModal();
+  }
+
+  onConfirmRemoveSite_(e: Event) {
+    const {index, actionScope, origin} = this.actionMenuModel_!;
+    const siteGroupToUpdate = this.filteredList_[index];
+
+    const updatedSiteGroup: SiteGroup = {
+      etldPlus1: siteGroupToUpdate.etldPlus1,
+      hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
+      numCookies: siteGroupToUpdate.numCookies,
+      origins: []
+    };
+
+    if (actionScope === 'origin') {
+      this.browserProxy.clearOriginDataAndCookies(this.toUrl(origin)!.href);
+      this.resetPermissionsForOrigin_(origin);
+
+      updatedSiteGroup.origins =
+          siteGroupToUpdate.origins.filter(o => o.origin !== origin);
+      updatedSiteGroup.hasInstalledPWA =
+          updatedSiteGroup.origins.some(o => o.isInstalled);
+      updatedSiteGroup.numCookies -=
+          siteGroupToUpdate.origins.find(o => o.origin === origin)!.numCookies;
+
+    } else {
+      this.browserProxy.clearEtldPlus1DataAndCookies(
+          siteGroupToUpdate.etldPlus1);
+      siteGroupToUpdate.origins.forEach(originEntry => {
+        this.resetPermissionsForOrigin_(originEntry.origin);
+      });
+    }
+
+    this.updateSiteGroup_(index, updatedSiteGroup);
+
+    this.$.allSitesList.fire('iron-resize');
+    this.updateTotalUsage_();
+    this.onCloseDialog_(e);
+  }
+
   /**
    * Confirms the resetting of all content settings for an origin.
    */
@@ -562,6 +609,83 @@ class AllSitesElement extends AllSitesElementBase {
             this.originRepresentation(
                 this.actionMenuModel_.item.origins[0].origin));
   }
+
+  private getRemoveSiteTitle_(): string {
+    if (this.actionMenuModel_ === null) {
+      return '';
+    }
+
+    const originScoped = this.actionMenuModel_.actionScope === 'origin';
+    const singleOriginSite =
+        !originScoped && this.actionMenuModel_.item.origins.length === 1;
+
+    const numInstalledApps =
+        this.actionMenuModel_.item.origins
+            .filter(
+                o =>
+                    !originScoped || this.actionMenuModel_!.origin === o.origin)
+            .filter(o => o.isInstalled)
+            .length;
+
+    let messageId;
+    if (originScoped || singleOriginSite) {
+      if (numInstalledApps === 1) {
+        messageId = 'siteSettingsRemoveSiteOriginAppDialogTitle';
+      } else {
+        assert(numInstalledApps === 0);
+        messageId = 'siteSettingsRemoveSiteOriginDialogTitle';
+      }
+    } else {
+      if (numInstalledApps > 1) {
+        messageId = 'siteSettingsRemoveSiteGroupAppPluralDialogTitle';
+      } else if (numInstalledApps === 1) {
+        messageId = 'siteSettingsRemoveSiteGroupAppDialogTitle';
+      } else {
+        messageId = 'siteSettingsRemoveSiteGroupDialogTitle';
+      }
+    }
+
+    let displayOrigin;
+    if (originScoped) {
+      displayOrigin = this.actionMenuModel_.origin;
+    } else if (singleOriginSite) {
+      displayOrigin = this.actionMenuModel_.item.origins[0].origin;
+    } else {
+      displayOrigin = this.actionMenuModel_.item.etldPlus1;
+    }
+
+    return loadTimeData.substituteString(
+        this.i18n(messageId), this.originRepresentation(displayOrigin));
+  }
+
+  private getRemoveSiteLogoutBulletPoint_() {
+    if (this.actionMenuModel_ === null) {
+      return '';
+    }
+
+    const originScoped = this.actionMenuModel_.actionScope === 'origin';
+    const singleOriginSite =
+        !originScoped && this.actionMenuModel_.item.origins.length === 1;
+
+    return originScoped || singleOriginSite ?
+        this.i18n('siteSettingsRemoveSiteOriginLogout') :
+        this.i18n('siteSettingsRemoveSiteGroupLogout');
+  }
+
+  private showPermissionsBulletPoint_(): boolean {
+    if (this.actionMenuModel_ === null) {
+      return false;
+    }
+
+    // If the selected item if a site group, search all child origins for
+    // permissions. If it is not, only look at the relevant origin.
+    return this.actionMenuModel_.item.origins
+        .filter(
+            o => this.actionMenuModel_!.actionScope !== 'origin' ||
+                this.actionMenuModel_!.origin === o.origin)
+        .some(o => o.hasPermissionSettings);
+  }
+
   /**
    * Get the appropriate label for the clear all data confirmation
    * dialog, depending on whether or not any apps are installed.

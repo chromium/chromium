@@ -11,9 +11,11 @@ import {TestLocalDataBrowserProxy} from 'chrome://test/settings/test_local_data_
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair,createOriginInfo,createRawSiteException,createSiteGroup,createSiteSettingsPrefs} from 'chrome://test/settings/test_util.js';
 
+import {isChildVisible} from '../test_util.js';
+
 // clang-format on
 
-suite('AllSites', function() {
+suite('AllSites_DisabledConsolidatedControls', function() {
   const TEST_COOKIE_LIST = {
     id: 'example',
     children: [
@@ -63,6 +65,10 @@ suite('AllSites', function() {
 
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
+
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: false,
+    });
   });
 
   suiteTeardown(function() {
@@ -384,7 +390,7 @@ suite('AllSites', function() {
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(1, siteEntries.length);
-    const overflowMenuButton = siteEntries[0].$.overflowMenuButton;
+    const overflowMenuButton = siteEntries[0].$$('#overflowMenuButton');
     assertFalse(overflowMenuButton.closest('.row-aligned').hidden);
     // Open the reset settings dialog.
     const overflowMenu = testElement.$.menu.get();
@@ -479,7 +485,7 @@ suite('AllSites', function() {
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(1, siteEntries.length);
-    const overflowMenuButton = siteEntries[0].$.overflowMenuButton;
+    const overflowMenuButton = siteEntries[0].$$('#overflowMenuButton');
     assertFalse(overflowMenuButton.closest('.row-aligned').hidden);
 
     // Open the clear data dialog.
@@ -836,4 +842,321 @@ suite('AllSites', function() {
         assertEquals(1, testElement.filteredList_.length);
         assertEquals(3, testElement.filteredList_[0].origins.length);
       });
+});
+
+suite('AllSites_EnabledConsolidatedControls', function() {
+  /**
+   * An example eTLD+1 Object with multiple origins grouped under it.
+   * @type {!SiteGroup}
+   */
+  const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
+    'http://subdomain.example.com/',
+    'https://www.example.com/',
+    'https://login.example.com/',
+  ]);
+
+  /**
+   * An example eTLD+1 Object with a single origin grouped under it.
+   * @type {!SiteGroup}
+   */
+  const TEST_SINGLE_SITE_GROUP = createSiteGroup('example.com', [
+    'https://single.example.com',
+  ]);
+
+  /**
+   * A site list element created before each test.
+   * @type {SiteList}
+   */
+  let testElement;
+
+  /**
+   * The mock proxy object to use during test.
+   * @type {TestSiteSettingsPrefsBrowserProxy}
+   */
+  let browserProxy = null;
+
+  /**
+   * The mock local data proxy object to use during test.
+   * @type {TestLocalDataBrowserProxy}
+   */
+  let localDataBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: true,
+    });
+  });
+
+  // Initialize a site-list before each test.
+  setup(async function() {
+    PolymerTest.clearBody();
+
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    localDataBrowserProxy = new TestLocalDataBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
+    testElement = document.createElement('all-sites');
+    assertTrue(!!testElement);
+    document.body.appendChild(testElement);
+  });
+
+  function removeFirstOrigin() {
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(1, siteEntries.length);
+    const originList = siteEntries[0].$.originList.get();
+    flush();
+    const originEntries = originList.querySelectorAll('.hr');
+    assertEquals(3, originEntries.length);
+    originEntries[0].querySelector('#removeOriginButton').click();
+  }
+
+  function removeFirstSiteGroup() {
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(1, siteEntries.length);
+    siteEntries[0].$$('#removeSiteButton').click();
+  }
+
+  function confirmDialog() {
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    testElement.$.confirmRemoveSite.get()
+        .getElementsByClassName('action-button')[0]
+        .click();
+  }
+
+  function cancelDialog() {
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    testElement.$.confirmRemoveSite.get()
+        .getElementsByClassName('cancel-button')[0]
+        .click();
+  }
+
+  function getString(messageId) {
+    return testElement.i18n(messageId);
+  }
+
+  function getSubstitutedString(messageId, substitute) {
+    return loadTimeData.substituteString(
+        testElement.i18n(messageId), substitute);
+  }
+
+  test('remove site group', function() {
+    testElement.siteGroupMap.set(
+        TEST_MULTIPLE_SITE_GROUP.etldPlus1,
+        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstSiteGroup();
+    confirmDialog();
+
+    assertEquals(
+        TEST_MULTIPLE_SITE_GROUP.origins.length,
+        browserProxy.getCallCount('setOriginPermissions'));
+    assertEquals(0, testElement.filteredList_.length);
+    assertEquals(1, browserProxy.getCallCount('clearEtldPlus1DataAndCookies'));
+  });
+
+  test('remove origin', async function() {
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    siteGroup.origins[0].numCookies = 1;
+    siteGroup.origins[1].numCookies = 2;
+    siteGroup.origins[2].numCookies = 3;
+    siteGroup.numCookies = 6;
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstOrigin();
+    confirmDialog();
+
+    assertEquals(
+        siteGroup.origins[0].origin,
+        await browserProxy.whenCalled('clearOriginDataAndCookies'));
+    assertEquals(1, browserProxy.getCallCount('clearOriginDataAndCookies'));
+    assertEquals(5, testElement.filteredList_[0].numCookies);
+  });
+
+  test('cancel remove site group', function() {
+    testElement.siteGroupMap.set(
+        TEST_MULTIPLE_SITE_GROUP.etldPlus1,
+        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstSiteGroup();
+    cancelDialog();
+
+    assertEquals(0, browserProxy.getCallCount('setOriginPermissions'));
+    assertEquals(1, testElement.filteredList_.length);
+    assertEquals(0, browserProxy.getCallCount('clearEtldPlus1DataAndCookies'));
+  });
+
+  test('cancel remove origin', function() {
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    siteGroup.origins[0].numCookies = 1;
+    siteGroup.origins[1].numCookies = 2;
+    siteGroup.origins[2].numCookies = 3;
+    siteGroup.numCookies = 6;
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstOrigin();
+    cancelDialog();
+
+    assertEquals(0, browserProxy.getCallCount('clearOriginDataAndCookies'));
+    assertEquals(0, browserProxy.getCallCount('setOriginPermissions'));
+    assertEquals(6, testElement.filteredList_[0].numCookies);
+  });
+
+  test('permissions bullet point visbility', function() {
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    siteGroup.origins[0].hasPermissionSettings = true;
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstOrigin();
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    assertTrue(isChildVisible(testElement, '#permissionsBulletPoint'));
+    cancelDialog();
+
+    removeFirstSiteGroup();
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    assertTrue(isChildVisible(testElement, '#permissionsBulletPoint'));
+    cancelDialog();
+
+    siteGroup.origins[0].hasPermissionSettings = false;
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstOrigin();
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    assertFalse(isChildVisible(testElement, '#permissionsBulletPoint'));
+    cancelDialog();
+
+    removeFirstSiteGroup();
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    assertFalse(isChildVisible(testElement, '#permissionsBulletPoint'));
+    cancelDialog();
+  });
+
+  test('dynamic strings', async function() {
+    // Single origin, no apps.
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstOrigin();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteOriginDialogTitle', 'subdomain.example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteOriginLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+    cancelDialog();
+
+    // Site group, multiple origins, no apps.
+    removeFirstSiteGroup();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteGroupDialogTitle', 'example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteGroupLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+    cancelDialog();
+
+    // Single origin with app.
+    siteGroup.origins[0].isInstalled = true;
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstOrigin();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteOriginAppDialogTitle',
+            'subdomain.example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteOriginLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+    cancelDialog();
+
+    // Site group, multiple origins, with single app.
+    removeFirstSiteGroup();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteGroupAppDialogTitle', 'example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteGroupLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+    cancelDialog();
+
+    // Site group, multiple sites, multiple apps.
+    siteGroup.origins[1].isInstalled = true;
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstSiteGroup();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteGroupAppPluralDialogTitle', 'example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteGroupLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+    cancelDialog();
+
+    // Site group, single origin, no app.
+    const singleOriginSiteGroup =
+        JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+    testElement.siteGroupMap.set(
+        singleOriginSiteGroup.etldPlus1,
+        JSON.parse(JSON.stringify(singleOriginSiteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstSiteGroup();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteOriginDialogTitle', 'single.example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteOriginLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+    cancelDialog();
+
+    // Site group, single origin, one app.
+    singleOriginSiteGroup.origins[0].isInstalled = true;
+    testElement.siteGroupMap.set(
+        singleOriginSiteGroup.etldPlus1,
+        JSON.parse(JSON.stringify(singleOriginSiteGroup)));
+    testElement.forceListUpdate_();
+    flush();
+
+    removeFirstSiteGroup();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsRemoveSiteOriginAppDialogTitle', 'single.example.com'),
+        testElement.shadowRoot.querySelector('#removeSiteTitle').innerText);
+    assertEquals(
+        getString('siteSettingsRemoveSiteOriginLogout'),
+        testElement.shadowRoot.querySelector('#logoutBulletPoint').innerText);
+  });
 });
