@@ -232,9 +232,8 @@ static bool ReadTimeSinceEpoch(CBS* input, base::Time* output) {
     return false;
   }
 
-  *output =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(time_since_epoch_signed.ValueOrDie());
+  *output = base::Time::UnixEpoch() +
+            base::Milliseconds(int64_t{time_since_epoch_signed.ValueOrDie()});
 
   return true;
 }

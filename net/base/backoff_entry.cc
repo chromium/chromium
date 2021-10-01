@@ -148,8 +148,8 @@ base::TimeTicks BackoffEntry::CalculateReleaseTime() const {
   // Do overflow checking in microseconds, the internal unit of TimeTicks.
   base::internal::CheckedNumeric<int64_t> backoff_duration_us = delay_ms + 0.5;
   backoff_duration_us *= base::Time::kMicrosecondsPerMillisecond;
-  base::TimeDelta backoff_duration = base::TimeDelta::FromMicroseconds(
-      backoff_duration_us.ValueOrDefault(std::numeric_limits<int64_t>::max()));
+  base::TimeDelta backoff_duration = base::Microseconds(int64_t{
+      backoff_duration_us.ValueOrDefault(std::numeric_limits<int64_t>::max())});
   base::TimeTicks release_time = BackoffDurationToReleaseTime(backoff_duration);
 
   // Never reduce previously set release horizon, e.g. due to Retry-After

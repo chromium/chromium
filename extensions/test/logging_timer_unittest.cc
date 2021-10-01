@@ -13,7 +13,7 @@ namespace extensions {
 namespace {
 
 // Shorthand.
-const auto& GetMS = base::TimeDelta::FromMilliseconds;
+const auto& GetMS = base::Milliseconds<int>;
 
 }  // namespace
 
