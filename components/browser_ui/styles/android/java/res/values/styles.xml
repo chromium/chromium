@@ -173,16 +173,6 @@
         <item name="android:paddingStart">16dp</item>
     </style>
 
-    <!-- Fullscreen -->
-    <style name="Base.Theme.Chromium.Fullscreen" parent="Theme.BrowserUI.DayNight">
-        <!-- With ActionBar but not window title -->
-        <!-- TODO(huayinz): Check if windowActionBar is actually needed. -->
-        <item name="windowActionBar">true</item>
-        <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="colorAccent">@color/default_control_color_active</item>
-    </style>
-    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
-
     <style name="ModernToolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">@color/default_text_color</item>

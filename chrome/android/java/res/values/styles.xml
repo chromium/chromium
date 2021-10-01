@@ -36,10 +36,9 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
-    <style name="Theme.Chromium.Activity.Fullscreen" parent="Theme.Chromium.Fullscreen">
-        <!-- No ActionBar -->
-        <item name="windowActionBar">false</item>
-    </style>
+    <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight" />
+    <style name="Theme.Chromium.Activity.Fullscreen"
+        parent="Base.Theme.Chromium.Activity.Fullscreen" />
     <style name="Theme.Chromium.Activity.Fullscreen.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>

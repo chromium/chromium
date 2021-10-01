@@ -17,7 +17,7 @@ import androidx.appcompat.widget.Toolbar;
  */
 public class PrivacyReviewDialog extends AlertDialog {
     public PrivacyReviewDialog(Context context) {
-        super(context, R.style.Theme_Chromium_Fullscreen);
+        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         View view = LayoutInflater.from(context).inflate(R.layout.privacy_review_dialog, null);
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.prefs_privacy_review_title);

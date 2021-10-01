@@ -46,7 +46,7 @@ public class LightweightReactionsDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_Fullscreen);
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mSceneCoordinator = new LightweightReactionsSceneCoordinator();
 
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);

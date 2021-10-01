@@ -53,7 +53,7 @@ public class QrCodeDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initTabs();
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_Fullscreen);
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
         builder.setView(getDialogView());
         return builder.create();
     }

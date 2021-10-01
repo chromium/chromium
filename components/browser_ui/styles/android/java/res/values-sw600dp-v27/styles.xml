@@ -4,5 +4,6 @@
      found in the LICENSE file. -->
 
 <resources>
-    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
+    <style name="ThemeOverlay.BrowserUI.Fullscreen"
+        parent="Base.ThemeOverlay.BrowserUI.Fullscreen" />
 </resources>

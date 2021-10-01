@@ -135,7 +135,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         PropertyModelChangeProcessor.create(
                 mModel, mDialogView, LongScreenshotsAreaSelectionDialogViewBinder::bind);
 
-        mDialog = new Dialog(mActivity, R.style.Theme_Chromium_Fullscreen);
+        mDialog = new Dialog(mActivity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mDialog.addContentView(mDialogView,
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT));

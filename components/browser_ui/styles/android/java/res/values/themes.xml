@@ -73,6 +73,19 @@
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
 
+    <!-- Theme overlays -->
+
+    <!-- Fullscreen -->
+    <style name="Base.ThemeOverlay.BrowserUI.Fullscreen" parent="">
+        <!-- android:windowContentTransitions is set to true in Theme.Chromium.WithWindowAnimation,
+             which causes a cryptic crash in EditorDialog. See: https://crbug.com/1254821. -->
+        <item name="android:windowContentTransitions">false</item>
+    </style>
+    <style name="ThemeOverlay.BrowserUI.Fullscreen"
+        parent="Base.ThemeOverlay.BrowserUI.Fullscreen" />
+
+    <!-- Color overlays -->
+
     <!-- Indirection to allow downstream to add attributes. -->
     <style name="ColorOverlay" parent="Base.ColorOverlay"/>
     <!-- TODO(https://crbug.com/1216642): Inconsistent naming style. Remove

@@ -88,7 +88,7 @@ public class PhotoPickerDialog
      */
     public PhotoPickerDialog(WindowAndroid windowAndroid, ContentResolver contentResolver,
             PhotoPickerListener listener, boolean multiSelectionAllowed, List<String> mimeTypes) {
-        super(windowAndroid.getContext().get(), R.style.Theme_Chromium_Fullscreen);
+        super(windowAndroid.getContext().get(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
         mWindowAndroid = windowAndroid;
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
