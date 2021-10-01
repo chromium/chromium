@@ -53,6 +53,7 @@
       'linux-official': 'official_optimize_goma',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
       'mac-archive-dbg': 'debug_bot',
+      'mac-archive-tagged': 'official_optimize_goma',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64',
       'mac-arm64-archive-dbg': 'debug_bot_arm64',
       'mac-official': 'official_optimize_goma',

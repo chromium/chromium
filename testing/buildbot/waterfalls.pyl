@@ -293,6 +293,15 @@
           'scripts': 'public_build_scripts',
         },
       },
+      'mac-archive-tagged': {
+        'mixins': ['mac-archive-rel-args'],
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'public_build_scripts',
+        },
+      },
       'mac-arm64-archive-dbg': {
         'additional_compile_targets': [
           'all',

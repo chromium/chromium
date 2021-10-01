@@ -1588,6 +1588,20 @@ ci.chromium_builder(
 )
 
 ci.chromium_builder(
+    name = "mac-archive-tagged",
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "tag",
+    ),
+    main_console_view = "main",
+    os = os.MAC_DEFAULT,
+    tree_closing = False,
+    schedule = "triggered",
+    triggered_by = [],
+    execution_timeout = 7 * time.hour,
+)
+
+ci.chromium_builder(
     name = "mac-arm64-archive-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "mac|arm",
