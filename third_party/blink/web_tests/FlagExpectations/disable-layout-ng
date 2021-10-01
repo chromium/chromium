@@ -13,6 +13,7 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-sizing/dynamic-change-inline-size-002.html [ Failure ]
 
 
 # accessibility/

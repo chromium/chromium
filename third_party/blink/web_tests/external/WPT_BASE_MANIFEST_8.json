@@ -143922,6 +143922,45 @@
        {}
       ]
      ],
+     "dynamic-change-inline-size-001.html": [
+      "bc6db56a58067322122f24cb412773a435ba47d9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "dynamic-change-inline-size-002.html": [
+      "4d0306205e8b0a33f813fc436af6e9f85a17ed9e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "dynamic-change-inline-size-003.html": [
+      "7b2d465da4d1ee65e539046539fb2a203c1ae064",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/dynamic-change-inline-size-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "fit-content-length-percentage-001.html": [
       "b30c3cc8193f5a115d7e519b29579b8a5505a3d9",
       [
@@ -208257,6 +208296,19 @@
      }
     },
     "layout": {
+     "svg-intrinsic-size-invalidation.html": [
+      "7c3daf8e5c0c4b4c4cbb1f2ca38f237b480f8c9c",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-intrinsic-size-invalidation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-with-precent-dimensions-relayout.html": [
       "9d04f412b70ad3038bde08b31bf981b7f65619bb",
       [
@@ -248731,6 +248783,10 @@
       "42b985f3c0ecc079515aa27fb2f666be5b3f45e8",
       []
      ],
+     "dynamic-change-inline-size-003-ref.html": [
+      "c8d67a8d27457acc6edaf3a60d31fc005791d6ed",
+      []
+     ],
      "hori-block-size-small-or-larger-than-container-with-min-or-max-content-1-ref.html": [
       "263a0869aedbaceb06ebe81a53372c905e8acd9e",
       []
@@ -268042,7 +268098,7 @@
       []
      ],
      "csstest-basic-italic.ttf": [
-      "10926ce4e1109ad47af3314777c64a0996ef7061",
+      "c375ab37b9e3686a6cc47737843da87dae668cfd",
       []
      ],
      "csstest-basic-regular.ttf": [
@@ -273028,10 +273084,6 @@
        "cfb3376feff4285356d70408c109d44938f656c1",
        []
       ],
-      "cache-storage.tentative.https_shared_worker-expected.txt": [
-       "7d481558dbb9f10d069a7d482d132bc6417a6b1b",
-       []
-      ],
       "dedicated-worker.tentative.https-expected.txt": [
        "7ecbf9ce7d5e1358c846788eb555627ca00c4833",
        []
@@ -273046,10 +273098,6 @@
         []
        ]
       },
-      "shared-worker.tentative.https-expected.txt": [
-       "19699d99f224b20d10094626a49f7b22daa324bb",
-       []
-      ],
       "video.tentative.https.window.js.headers": [
        "68fde79c91426c7f2e88afbb07f254d23fa1ba70",
        []
@@ -273150,7 +273198,7 @@
       []
      ],
      "reporting-to-endpoint.https-expected.txt": [
-      "dcedb6060f32da453e92a067b6158a27e9fe2c9c",
+      "3534fc363787be60b967fd458e19b20d8fc4752f",
       []
      ],
      "reporting-to-endpoint.https.html.headers": [
@@ -273348,15 +273396,11 @@
       []
      ],
      "shared-workers.https-expected.txt": [
-      "ecd693e3f3ff3ee028ca08f214b3f73a3e013295",
+      "f3e13f6fe8eb2fb2737acb85d635f154b04264e1",
       []
      ],
      "srcdoc.https.html.headers": [
       "6604450991a122e3e241e40b1b9e0516c525389d",
-      []
-     ],
-     "worker-inheritance.sub.https-expected.txt": [
-      "abe668941d3a74e4196d943cced2653b589efee4",
       []
      ],
      "worker-inheritance.sub.https.html.headers": [
@@ -277565,7 +277609,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "c6421ecbc3973c3f993931b82434408c63f40cd8",
+       "bcbce0586f3f4622985c9eea63a7e334b792ed68",
        []
       ],
       "transfer-errors.window-expected.txt": [
@@ -286938,7 +286982,7 @@
     ]
    },
    "lint.ignore": [
-    "4b2ddb5a694f8eab62ebdf5dc325778c2987d378",
+    "bcbf9e7e1d0e0fd1d634c60a8ef681c30a376927",
     []
    ],
    "loading": {
@@ -293563,7 +293607,7 @@
      []
     ],
     "testharness.js": [
-     "6112395e77918ab24a85fddf25a7e3e9b0f1c3b3",
+     "9c885ea8b5a725aa23f3ef2b736a41d3759950e0",
      []
     ],
     "testharness.js.headers": [
@@ -297931,6 +297975,10 @@
      }
     },
     "layout": {
+     "svg-intrinsic-size-invalidation-ref.html": [
+      "acfc7be517b3cc6783a372de4c67cc0d7a8b976e",
+      []
+     ],
      "svg-use-symbol-width-print-ref.html": [
       "6c94e34c04546eb4488d7927c93c46838ab1c817",
       []
@@ -300499,6 +300547,10 @@
       "da36e49320369ddc94405d298746db562be50045",
       []
      ],
+     "corp.har": [
+      "36c2a014e8e3e006eaf0b30cd08e8e3b8fce7e6c",
+      []
+     ],
      "cross-origin-no-cors.har": [
       "c31a0963fd3fe3150623620ebe8a8a8664e75a73",
       []
@@ -300552,7 +300604,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "038f9ad14bda2d2fa937f33939c58cc8996d3bee",
+      "86413179cf9cacf196f7336affba8033d4454961",
       []
      ],
      "location": {
@@ -300680,7 +300732,7 @@
       ]
      },
      "test-helpers.js": [
-      "32cbb2f6b1d98e5b0e169d836b0d8a635da1bfb9",
+      "d93e32d6a46c993b85c9e55fe37a6a949c99ce40",
       []
      ],
      "urn-uuid.har": [
@@ -300695,6 +300747,10 @@
       "cors": {
        "__dir__.sub.headers": [
         "767da13cb2f6ef30d854bad9bb49d1d3445f5bfd",
+        []
+       ],
+       "corp.wbn": [
+        "ea2745684b4436e551ca8764136141eeee0e3f63",
         []
        ],
        "cross-origin-b2.wbn": [
@@ -300869,6 +300925,10 @@
      }
     },
     "subresource-loading": {
+     "link-coep.https.tentative.html.headers": [
+      "6604450991a122e3e241e40b1b9e0516c525389d",
+      []
+     ],
      "link-csp-blocked.https.tentative.html.sub.headers": [
       "ac826f8c485d107806e841d6ffb463bf5d20c0a8",
       []
@@ -300884,6 +300944,14 @@
       ],
       "check-cookie-and-return-bundle.py": [
        "0d4f14ecb7921edfcb4583b0611d5787a36a1015",
+       []
+      ],
+      "coep-test.js": [
+       "62d04a00a5054f3a7d59b94c2b14020df94f3805",
+       []
+      ],
+      "corp-test.js": [
+       "281902a3f7773f91c6dfc09d5e81a337c91f3688",
        []
       ],
       "element-removal-test.js": [
@@ -300951,10 +301019,14 @@
        []
       ],
       "subframe-from-web-bundle-test.js": [
-       "5ed4f4bad44baff2bd46cb4a907167aa531409c7",
+       "86de84174c777dc2e5017de8b1bb88c6c0ba765b",
        []
       ]
-     }
+     },
+     "script-coep.https.tentative.html.headers": [
+      "4e798cd9f5d3f756df077a43ce9a1a6f9b41fd28",
+      []
+     ]
     }
    },
    "web-locks": {
@@ -303612,11 +303684,11 @@
       []
      ],
      "query.py": [
-      "514d90c6116149768d582405ed3855dec846c4b7",
+      "75d458255ad7af10508dce9905bf2ddb259f3699",
       []
      ],
      "server-close.py": [
-      "0a8da68cc562a17cb7c98bbc596c215a6c9f7bbd",
+      "b3d9e10a67a9659c5316c84d434eb1e01a114dea",
       []
      ],
      "server-connection-close.py": [
@@ -497057,6 +497129,20 @@
        {}
       ]
      ],
+     "link-coep.https.tentative.html": [
+      "53aadc291e03b808d8d21a32f91abd82d745eca0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "link-corp.https.tentative.html": [
+      "8985ca921a14116357282bf2466c1bfca495efca",
+      [
+       null,
+       {}
+      ]
+     ],
      "link-cors-error.https.tentative.html": [
       "a769fdbc61e76f03a9f2cc966e0d996ed4a7a87c",
       [
@@ -497247,119 +497333,133 @@
       ]
      ],
      "script-accept-header.https.tentative.html": [
-      "13082622863ee6df6d1ae5d23adb457db5d0ff95",
+      "cb821d5251dee04f6fb9006c87ad43a0f3e79a59",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-coep.https.tentative.html": [
+      "380d09403436ea453f434a035df4286ec1f458e2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-corp.https.tentative.html": [
+      "218e9e739bc9eb249e7cfeb95098e158567297d2",
       [
        null,
        {}
       ]
      ],
      "script-element-removal.https.tentative.html": [
-      "9b837463a9e776a21b92ea53c4f45b8ed4c092d5",
+      "a46ce3bbf85a5e9fcbd64223cffab094a55f3436",
       [
        null,
        {}
       ]
      ],
      "script-nested-bundle.https.tentative.html": [
-      "8ef63072d9dad626cad05740b98f8512f09e959a",
+      "4daf60acf5eecf6420e8e0b82a74662aec5f6ea7",
       [
        null,
        {}
       ]
      ],
      "script-network-error.https.tentative.html": [
-      "9930712016e541b611c6b2d0e1726b966a8c6823",
+      "688dd05391d6dd7bd2ff187d8ba3fb471546b796",
       [
        null,
        {}
       ]
      ],
      "script-not-found.https.tentative.html": [
-      "651ab866da25efd8fbcd2c62cc473271ca15a2d3",
+      "09b09141d24c5a05a24c5a942713bf65b4eaadda",
       [
        null,
        {}
       ]
      ],
      "script-path-restriction.https.tentative.html": [
-      "9be710ce715710021d9f1623b455cf6e7316fdcd",
+      "87f642889be08442d99739d0938e535caa8b60fe",
       [
        null,
        {}
       ]
      ],
      "script-relative-url-in-web-bundle-cors.https.tentative.sub.html": [
-      "40114c7c5999a8499d017f8598f8cd6ea9603485",
+      "409b1452ec032a3df17b438823d072f79497702d",
       [
        null,
        {}
       ]
      ],
      "script-relative-url-in-web-bundle.https.tentative.html": [
-      "37a896b4828b97c56e7d7cd4c9d4c3cb63483c92",
+      "d9bd199ca2a952ebfb10f3603ea63c3b5ff53f90",
       [
        null,
        {}
       ]
      ],
      "script-relative-url-with-base.https.tentative.html": [
-      "afbaab08b491e394560df8f345a455a3c2510da7",
+      "1b52fbba9ef55d237c7e77708c728246879d88d9",
       [
        null,
        {}
       ]
      ],
      "script-relative-url.https.tentative.html": [
-      "b1a565481701832e9ecc9aad12034cd9aa810b74",
+      "8b9a1cae9ef806415655ee8277bc884d824f7cfd",
       [
        null,
        {}
       ]
      ],
      "script-request-destination.https.tentative.html": [
-      "a5b13accffe19cc51d1ea4c57aec8e5b1ac04aeb",
+      "21e4e4110b4db8a0762206f0f0ea4f841fd6e3cd",
       [
        null,
        {}
       ]
      ],
      "script-resource-timing-attributes-consistent.https.tentative.html": [
-      "49a83311bce91dc87f05fee669cb50a86a48b769",
+      "065953333e68c270b0cf332b295c55ef96cb1ee2",
       [
        null,
        {}
       ]
      ],
      "script-resource-timing.https.tentative.html": [
-      "4bc9c1198da9f5016c6a7dde0dc6ef5dd838828f",
+      "562fd2dfe336d07d106c1a066600ebdf7be8926d",
       [
        null,
        {}
       ]
      ],
      "script-service-worker-controlled.https.tentative.html": [
-      "7f2eec0bab1bff5c45aa7be003352f2d16c6f8b7",
+      "f2d1a401a3410fb13f689b08426dbb0539044db3",
       [
        null,
        {}
       ]
      ],
      "script-static-element-with-base.https.tentative.sub.html": [
-      "258e13a7693583d73ec2e113034ff0a4ff97b527",
+      "f12eb3a6782f9a1699b2c3de93e63fd1ee1e4b33",
       [
        null,
        {}
       ]
      ],
      "script-static-element.https.tentative.sub.html": [
-      "ba7e16bf956268796a0ace7a3561a66761826f38",
+      "8467477fa190e7b7265fa16e09ceb80514b9c686",
       [
        null,
        {}
       ]
      ],
      "script-subframe-from-web-bundle.https.tentative.html": [
-      "32768fb188884b890ff970c58b673618f5a9c272",
+      "34ed21d795838c86e2c8e5ec3a7b2651be75a43f",
       [
        null,
        {}
