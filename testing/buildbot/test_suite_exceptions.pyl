@@ -2154,6 +2154,9 @@
     ],
   },
   'net_unittests': {
+    'remove_from': [
+      'android-lollipop-arm-rel', # Not enough capacity. https://crbug.com/1248257
+    ],
     'modifications': {
       'CrWinAsan': {
         # TODO(crbug.com/794372): net_unittests is slow under ASan.
