@@ -75,6 +75,9 @@ class AssistantClient {
   using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
   using OnDeviceStateEventRequest = ::assistant::api::OnDeviceStateEventRequest;
 
+  // Each authentication token exists of a [gaia_id, access_token] tuple.
+  using AuthTokens = std::vector<std::pair<std::string, std::string>>;
+
   AssistantClient(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
       assistant_client::AssistantManagerInternal* assistant_manager_internal);
@@ -136,7 +139,12 @@ class AssistantClient {
   virtual void RegisterActionModule(
       assistant_client::ActionModule* action_module) = 0;
 
-  // Settings-related functionality:
+  // Settings-related functionality during bootup:
+  virtual void SetAuthenticationInfo(const AuthTokens& tokens) = 0;
+  virtual void SetInternalOptions(const std::string& locale,
+                                  bool spoken_feedback_enabled) = 0;
+
+  // Settings-related functionality after fully started:
   virtual void UpdateAssistantSettings(
       const ::assistant::ui::SettingsUiUpdate& settings,
       const std::string& user_id,
@@ -149,9 +157,11 @@ class AssistantClient {
       base::OnceCallback<void(
           const ::assistant::api::GetAssistantSettingsResponse&)> on_done) = 0;
   virtual void SetLocaleOverride(const std::string& locale) = 0;
-  virtual void SetInternalOptions(const std::string& locale,
-                                  bool spoken_feedback_enabled) = 0;
   virtual void SetDeviceAttributes(bool enable_dark_mode) = 0;
+  virtual std::string GetDeviceId() = 0;
+
+  // Audio-related functionality:
+  virtual void EnableListening(bool listening_enabled) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

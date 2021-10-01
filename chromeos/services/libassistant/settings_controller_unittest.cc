@@ -59,18 +59,8 @@ class AssistantClientMock : public FakeAssistantClient {
               SetInternalOptions,
               (const std::string& locale, bool spoken_feedback_enabled));
   MOCK_METHOD(void, SetDeviceAttributes, (bool dark_mode_enabled));
-};
-
-class AssistantManagerMock : public assistant::FakeAssistantManager {
- public:
-  AssistantManagerMock() = default;
-  AssistantManagerMock(const AssistantManagerMock&) = delete;
-  AssistantManagerMock& operator=(const AssistantManagerMock&) = delete;
-  ~AssistantManagerMock() override = default;
-
-  // assistant::FakeAssistantManager implementation:
-  MOCK_METHOD(void, EnableListening, (bool value));
-  MOCK_METHOD(void, SetAuthTokens, (const AuthTokens&));
+  MOCK_METHOD(void, EnableListening, (bool listening_enabled));
+  MOCK_METHOD(void, SetAuthenticationInfo, (const AuthTokens& tokens));
 };
 
 }  // namespace
@@ -110,16 +100,12 @@ class AssistantSettingsControllerTest : public testing::Test {
     assistant_client_ = nullptr;
     assistant_manager_internal_ = nullptr;
 
-    auto assistant_manager = std::make_unique<AssistantManagerMock>();
+    auto assistant_manager =
+        std::make_unique<assistant::FakeAssistantManager>();
     assistant_manager_internal_ = std::make_unique<
         testing::StrictMock<assistant::FakeAssistantManagerInternal>>();
     assistant_client_ = std::make_unique<AssistantClientMock>(
         std::move(assistant_manager), assistant_manager_internal_.get());
-  }
-
-  AssistantManagerMock& assistant_manager_mock() {
-    return *reinterpret_cast<AssistantManagerMock*>(
-        assistant_client_->assistant_manager());
   }
 
   AssistantClientMock& assistant_client_mock() { return *assistant_client_; }
@@ -171,7 +157,7 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_NO_CALLS(assistant_client_mock(), SetLocaleOverride);
   EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
-  EXPECT_NO_CALLS(assistant_manager_mock(), SetAuthTokens);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetAuthenticationInfo);
   CreateAndStartLibassistant();
 }
 
@@ -337,7 +323,7 @@ TEST_F(AssistantSettingsControllerTest, ShouldSetAuthenticationTokens) {
 
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_mock(), SetAuthTokens(expected));
+  EXPECT_CALL(assistant_client_mock(), SetAuthenticationInfo(expected));
 
   controller().SetAuthenticationTokens(
       ToVector(mojom::AuthenticationToken::New("user", "token")));
@@ -350,7 +336,7 @@ TEST_F(AssistantSettingsControllerTest,
   controller().SetAuthenticationTokens(
       ToVector(mojom::AuthenticationToken::New("user", "token")));
 
-  EXPECT_CALL(assistant_manager_mock(), SetAuthTokens(expected));
+  EXPECT_CALL(assistant_client_mock(), SetAuthenticationInfo(expected));
 
   CreateLibassistant();
 }
@@ -360,7 +346,7 @@ TEST_F(AssistantSettingsControllerTest,
   CreateLibassistant();
 
   const AuthTokens expected = {};
-  EXPECT_CALL(assistant_manager_mock(), SetAuthTokens(expected));
+  EXPECT_CALL(assistant_client_mock(), SetAuthenticationInfo(expected));
 
   controller().SetAuthenticationTokens({});
 }
@@ -368,7 +354,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest, ShouldSetListeningEnabled) {
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_mock(), EnableListening(true));
+  EXPECT_CALL(assistant_client_mock(), EnableListening(true));
 
   controller().SetListeningEnabled(true);
 }
@@ -377,7 +363,7 @@ TEST_F(AssistantSettingsControllerTest,
        ShouldSetListeningEnabledWhenLibassistantIsCreated) {
   controller().SetListeningEnabled(false);
 
-  EXPECT_CALL(assistant_manager_mock(), EnableListening(false));
+  EXPECT_CALL(assistant_client_mock(), EnableListening(false));
 
   CreateLibassistant();
 }

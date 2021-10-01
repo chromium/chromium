@@ -57,6 +57,9 @@ class AssistantClientV1 : public AssistantClient {
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
+  void SetAuthenticationInfo(const AuthTokens& tokens) override;
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override;
   void UpdateAssistantSettings(
       const ::assistant::ui::SettingsUiUpdate& settings,
       const std::string& user_id,
@@ -69,10 +72,10 @@ class AssistantClientV1 : public AssistantClient {
       base::OnceCallback<
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
-  void SetInternalOptions(const std::string& locale,
-                          bool spoken_feedback_enabled) override;
   void SetLocaleOverride(const std::string& locale) override;
   void SetDeviceAttributes(bool enable_dark_mode) override;
+  std::string GetDeviceId() override;
+  void EnableListening(bool listening_enabled) override;
 
  private:
   class DeviceStateListener;

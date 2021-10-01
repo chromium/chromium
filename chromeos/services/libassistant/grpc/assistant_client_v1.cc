@@ -384,6 +384,22 @@ void AssistantClientV1::RegisterActionModule(
   assistant_manager_internal()->RegisterActionModule(action_module);
 }
 
+void AssistantClientV1::SetAuthenticationInfo(const AuthTokens& tokens) {
+  assistant_manager()->SetAuthTokens(tokens);
+}
+
+void AssistantClientV1::SetInternalOptions(const std::string& locale,
+                                           bool spoken_feedback_enabled) {
+  // All options must have value before we can convey them to libassistant.
+  DCHECK(dark_mode_enabled_.has_value());
+
+  assistant_manager_internal()->SetOptions(
+      *CreateInternalOptions(assistant_manager_internal(), locale,
+                             spoken_feedback_enabled,
+                             dark_mode_enabled_.value()),
+      [](bool success) { DVLOG(2) << "set options: " << success; });
+}
+
 void AssistantClientV1::UpdateAssistantSettings(
     const SettingsUiUpdate& settings,
     const std::string& user_id,
@@ -436,18 +452,6 @@ void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
   }
 }
 
-void AssistantClientV1::SetInternalOptions(const std::string& locale,
-                                           bool spoken_feedback_enabled) {
-  // All options must have value before we can convey them to libassistant.
-  DCHECK(dark_mode_enabled_.has_value());
-
-  assistant_manager_internal()->SetOptions(
-      *CreateInternalOptions(assistant_manager_internal(), locale,
-                             spoken_feedback_enabled,
-                             dark_mode_enabled_.value()),
-      [](bool success) { DVLOG(2) << "set options: " << success; });
-}
-
 void AssistantClientV1::SetLocaleOverride(const std::string& locale) {
   assistant_manager_internal()->SetLocaleOverride(locale);
 }
@@ -456,6 +460,14 @@ void AssistantClientV1::SetDeviceAttributes(bool enable_dark_mode) {
   // We don't actually do anything here besides caching the passed in value
   // because dark mode is set through |SetOptions| for V1.
   dark_mode_enabled_ = enable_dark_mode;
+}
+
+std::string AssistantClientV1::GetDeviceId() {
+  return assistant_manager()->GetDeviceId();
+}
+
+void AssistantClientV1::EnableListening(bool listening_enabled) {
+  assistant_manager()->EnableListening(listening_enabled);
 }
 
 }  // namespace libassistant

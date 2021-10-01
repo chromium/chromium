@@ -16,6 +16,18 @@ namespace libassistant {
 
 namespace {
 
+class AssistantManagerMock : public assistant::FakeAssistantManager {
+ public:
+  AssistantManagerMock() = default;
+  AssistantManagerMock(const AssistantManagerMock&) = delete;
+  AssistantManagerMock& operator=(const AssistantManagerMock&) = delete;
+  ~AssistantManagerMock() override = default;
+
+  // assistant::FakeAssistantManager implementation:
+  MOCK_METHOD(void, EnableListening, (bool value));
+  MOCK_METHOD(void, SetAuthTokens, (const AssistantClient::AuthTokens&));
+};
+
 class AssistantManagerInternalMock
     : public assistant::FakeAssistantManagerInternal {
  public:
@@ -43,8 +55,7 @@ class AssistantClientV1Test : public testing::Test {
   ~AssistantClientV1Test() override = default;
 
   void SetUp() override {
-    auto assistant_manager =
-        std::make_unique<assistant::FakeAssistantManager>();
+    auto assistant_manager = std::make_unique<AssistantManagerMock>();
     assistant_manager_internal_ =
         std::make_unique<testing::StrictMock<AssistantManagerInternalMock>>();
 
@@ -58,6 +69,11 @@ class AssistantClientV1Test : public testing::Test {
 
   AssistantManagerInternalMock& assistant_manager_internal_mock() {
     return *assistant_manager_internal_;
+  }
+
+  AssistantManagerMock& assistant_manager_mock() {
+    return *reinterpret_cast<AssistantManagerMock*>(
+        assistant_client_->assistant_manager());
   }
 
  private:
@@ -79,6 +95,20 @@ TEST_F(AssistantClientV1Test, ShouldSetOptions) {
   EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
 
   v1_client().SetInternalOptions("locale", true);
+}
+
+TEST_F(AssistantClientV1Test, ShouldSetListeningEnabled) {
+  EXPECT_CALL(assistant_manager_mock(), EnableListening(true));
+
+  v1_client().EnableListening(true);
+}
+
+TEST_F(AssistantClientV1Test, ShouldSetAuthenticationTokens) {
+  const AssistantClient::AuthTokens expected = {{"user", "token"}};
+
+  EXPECT_CALL(assistant_manager_mock(), SetAuthTokens(expected));
+
+  v1_client().SetAuthenticationInfo(expected);
 }
 
 }  // namespace libassistant

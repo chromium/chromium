@@ -72,6 +72,11 @@ void FakeAssistantClient::AddDeviceStateEventObserver(
 void FakeAssistantClient::RegisterActionModule(
     assistant_client::ActionModule* action_module) {}
 
+void FakeAssistantClient::SetInternalOptions(const std::string& locale,
+                                             bool spoken_feedback_enabled) {}
+
+void FakeAssistantClient::SetAuthenticationInfo(const AuthTokens& tokens) {}
+
 void FakeAssistantClient::UpdateAssistantSettings(
     const ::assistant::ui::SettingsUiUpdate& settings,
     const std::string& user_id,
@@ -86,10 +91,13 @@ void FakeAssistantClient::GetAssistantSettings(
 
 void FakeAssistantClient::SetLocaleOverride(const std::string& locale) {}
 
-void FakeAssistantClient::SetInternalOptions(const std::string& locale,
-                                             bool spoken_feedback_enabled) {}
+std::string FakeAssistantClient::GetDeviceId() {
+  return assistant_manager()->GetDeviceId();
+}
 
 void FakeAssistantClient::SetDeviceAttributes(bool enable_dark_mode) {}
+
+void FakeAssistantClient::EnableListening(bool listening_enabled) {}
 
 }  // namespace libassistant
 }  // namespace chromeos

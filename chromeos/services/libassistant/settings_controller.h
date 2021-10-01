@@ -14,10 +14,6 @@
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace assistant_client {
-class AssistantManager;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace libassistant {
 
@@ -73,7 +69,6 @@ class SettingsController : public AssistantClientObserver,
 
   // Set in |OnAssistantClientCreated| and unset in
   // |OnDestroyingAssistantClient|.
-  assistant_client::AssistantManager* assistant_manager_ = nullptr;
   AssistantClient* assistant_client_ = nullptr;
 
   absl::optional<bool> hotword_enabled_;

@@ -63,6 +63,9 @@ class FakeAssistantClient : public AssistantClient {
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override;
+  void SetAuthenticationInfo(const AuthTokens& tokens) override;
   void UpdateAssistantSettings(
       const ::assistant::ui::SettingsUiUpdate& settings,
       const std::string& user_id,
@@ -76,9 +79,9 @@ class FakeAssistantClient : public AssistantClient {
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
   void SetLocaleOverride(const std::string& locale) override;
-  void SetInternalOptions(const std::string& locale,
-                          bool spoken_feedback_enabled) override;
   void SetDeviceAttributes(bool enable_dark_mode) override;
+  std::string GetDeviceId() override;
+  void EnableListening(bool listening_enabled) override;
 };
 
 }  // namespace libassistant

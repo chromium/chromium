@@ -18,8 +18,6 @@
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/assistant_manager.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace chromeos {
@@ -59,14 +57,14 @@ class SettingsController::DeviceSettingsUpdater
     : public AssistantClientObserver {
  public:
   DeviceSettingsUpdater(SettingsController* parent,
-                        assistant_client::AssistantManager* assistant_manager)
-      : parent_(*parent), assistant_manager_(*assistant_manager) {}
+                        AssistantClient* assistant_client)
+      : parent_(*parent), assistant_client_(*assistant_client) {}
   DeviceSettingsUpdater(const DeviceSettingsUpdater&) = delete;
   DeviceSettingsUpdater& operator=(const DeviceSettingsUpdater&) = delete;
   ~DeviceSettingsUpdater() override = default;
 
   void UpdateSettings(const std::string& locale, bool hotword_enabled) {
-    const std::string device_id = assistant_manager_.GetDeviceId();
+    const std::string device_id = assistant_client_.GetDeviceId();
     if (device_id.empty())
       return;
 
@@ -97,7 +95,7 @@ class SettingsController::DeviceSettingsUpdater
   }
 
   SettingsController& parent_;
-  assistant_client::AssistantManager& assistant_manager_;
+  AssistantClient& assistant_client_;
 };
 
 // Sends a 'get settings' requests to Libassistant,
@@ -275,22 +273,22 @@ void SettingsController::UpdateSettings(const std::string& settings,
 
 void SettingsController::UpdateListeningEnabled(
     absl::optional<bool> listening_enabled) {
-  if (!assistant_manager_)
+  if (!assistant_client_)
     return;
   if (!listening_enabled.has_value())
     return;
 
-  assistant_manager_->EnableListening(listening_enabled.value());
+  assistant_client_->EnableListening(listening_enabled.value());
 }
 
 void SettingsController::UpdateAuthenticationTokens(
     const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens) {
-  if (!assistant_manager_)
+  if (!assistant_client_)
     return;
   if (!tokens.has_value())
     return;
 
-  assistant_manager_->SetAuthTokens(ToAuthTokens(tokens.value()));
+  assistant_client_->SetAuthenticationInfo(ToAuthTokens(tokens.value()));
 }
 
 void SettingsController::UpdateInternalOptions(
@@ -326,7 +324,6 @@ void SettingsController::UpdateDeviceSettings(
 void SettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_client_ = assistant_client;
-  assistant_manager_ = assistant_client->assistant_manager();
 
   // Note we do not enable the device settings updater here, as it requires
   // Libassistant to be started.
@@ -337,15 +334,15 @@ void SettingsController::OnAssistantClientCreated(
 
 void SettingsController::OnAssistantClientStarted(
     AssistantClient* assistant_client) {
-  device_settings_updater_ = std::make_unique<DeviceSettingsUpdater>(
-      this, assistant_client->assistant_manager());
+  device_settings_updater_ =
+      std::make_unique<DeviceSettingsUpdater>(this, assistant_client);
 
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
 void SettingsController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
-  assistant_manager_ = nullptr;
+  assistant_client_ = nullptr;
   device_settings_updater_ = nullptr;
   pending_response_waiters_.AbortAll();
 
