@@ -338,7 +338,7 @@ void ViewAccessibility::EndPopupFocusOverride() {
 }
 
 void ViewAccessibility::FireFocusAfterMenuClose() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose);
+  view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {

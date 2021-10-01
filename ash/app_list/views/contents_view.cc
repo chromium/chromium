@@ -441,8 +441,8 @@ void ContentsView::UpdateExpandArrowBehavior(AppListViewState target_state) {
   // Allow ChromeVox to focus the expand arrow only when peeking launcher.
   expand_arrow_view_->GetViewAccessibility().OverrideIsIgnored(
       !expand_arrow_enabled);
-  expand_arrow_view_->GetViewAccessibility().NotifyAccessibilityEvent(
-      ax::mojom::Event::kTreeChanged);
+  expand_arrow_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
+                                               true);
 
   expand_arrow_view_->MaybeEnableHintingAnimation(expand_arrow_enabled);
 }
