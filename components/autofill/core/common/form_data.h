@@ -77,11 +77,60 @@ struct FrameTokenWithPredecessor {
 //
 // There are a few exceptions to the aforementioned one-to-one correspondences
 // between Autofill's data types and Blink's:
-// - Autofill only supports certain types of WebFormControlElements.
+// - Autofill only supports certain types of WebFormControlElements: select,
+//   textarea, and input elements whose type [4] is one of the following:
+//   checkbox, email, month, number, password, radio, search, tel, text, url
+//   (where values not listed in [4] default to "text", and "checkbox" and
+//   "radio" inputs are currently not filled). In particular, form-associated
+//   custom elements [3] are not supported.
 // - Autofill has the concept of an unowned form, which does not correspond to
 //   an existing blink::WebFormElement.
 // - Autofill may move FormFieldDatas to other FormDatas across shadow/main
 //   DOMs and across frames.
+//
+// In Blink, a field can, but does not have to be associated with a form. A
+// field is *associated* with a form iff either:
+// - it is a descendant of a <form> element, or
+// - it has its "form" attribute set to the ID of a <form> element.
+// Note that this association does not transcend DOMs. See [1] for details.
+//
+// In Autofill, we lift Blink's form association across DOMs. We say a field is
+// *owned* by a form iff:
+// - the field is associated with that form, or
+// - the field is unassociated and the form is its nearest shadow-including
+//   ancestor [2].
+// So the difference between the two terms is that a field in a shadow DOM may
+// be unassociated but owned (by a <form> in an ancestor DOM).
+//
+// Example:
+// <body>
+//   <form>
+//     <input id=A>
+//   </form>
+//   <input id=B>
+//   <form>
+//     #shadow-root
+//       <input id=C>
+//   </form>
+// </body>
+// The input A is an associated and owned field.
+// The input B is an unassociated and unowned field.
+// The input C is an unassociated but an owned field.
+//
+// TODO(crbug.com/1243730): Currently, Autofill ignores unowned fields in shadow
+// DOMs.
+//
+// The unowned fields of the frame constitute that frame's *unowned form*.
+//
+// Forms from different frames of the same WebContents may furthermore be
+// merged. For details, see ContentAutofillRouter.
+//
+// clang-format off
+// [1] https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner
+// [2] https://dom.spec.whatwg.org/#concept-shadow-including-descendant
+// [3] https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
+// [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+// clang-format on
 struct FormData {
   // Less-than relation for STL containers. Compares only members needed to
   // uniquely identify a form.

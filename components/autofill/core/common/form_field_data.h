@@ -63,7 +63,8 @@ struct SelectOption {
   std::u16string content;
 };
 
-// Stores information about a field in a form.
+// Stores information about a field in a form. Read more about forms and fields
+// at FormData.
 struct FormFieldData {
   using CheckStatus = mojom::FormFieldData_CheckStatus;
   using RoleAttribute = mojom::FormFieldData_RoleAttribute;
