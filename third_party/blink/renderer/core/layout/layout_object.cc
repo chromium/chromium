@@ -2511,6 +2511,75 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       diff.Merge(cached_inherited_first_line_style->VisualInvalidationDiff(
           GetDocument(), *style));
     }
+
+    auto HighlightPseudoUpdateDiff = [this, style,
+                                      &diff](const PseudoId pseudo) {
+      DCHECK(pseudo == kPseudoIdTargetText ||
+             pseudo == kPseudoIdSpellingError ||
+             pseudo == kPseudoIdGrammarError);
+
+      if (style_->HasPseudoElementStyle(pseudo) ||
+          style->HasPseudoElementStyle(pseudo)) {
+        const ComputedStyle* pseudo_old_style = nullptr;
+        const ComputedStyle* pseudo_new_style = nullptr;
+
+        // TODO(rego): Refactor this code so we can call something like
+        // HighlightData()->PseudoStyle(pseudo) and avoid the switch (we could
+        // also avoid the switch in
+        // HighlightPaintingUtils::HighlightPseudoStyle().
+        switch (pseudo) {
+          case kPseudoIdTargetText:
+            pseudo_old_style = style_->HighlightData()
+                                   ? style_->HighlightData()->TargetText().get()
+                                   : nullptr;
+            pseudo_new_style = style->HighlightData()
+                                   ? style->HighlightData()->TargetText().get()
+                                   : nullptr;
+            break;
+          case kPseudoIdSpellingError:
+            pseudo_old_style =
+                style_->HighlightData()
+                    ? style_->HighlightData()->SpellingError().get()
+                    : nullptr;
+            pseudo_new_style =
+                style->HighlightData()
+                    ? style->HighlightData()->SpellingError().get()
+                    : nullptr;
+            break;
+          case kPseudoIdGrammarError:
+            pseudo_old_style =
+                style_->HighlightData()
+                    ? style_->HighlightData()->GrammarError().get()
+                    : nullptr;
+            pseudo_new_style =
+                style->HighlightData()
+                    ? style->HighlightData()->GrammarError().get()
+                    : nullptr;
+            break;
+          default:
+            NOTREACHED();
+        }
+
+        if (pseudo_old_style && pseudo_new_style) {
+          diff.Merge(pseudo_old_style->VisualInvalidationDiff(
+              GetDocument(), *pseudo_new_style));
+        } else {
+          diff.SetNeedsPaintInvalidation();
+        }
+      }
+    };
+
+    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
+      // TODO(rego): We don't do anything regarding ::selection, as ::selection
+      // uses its own mechanism for this (see
+      // LayoutObject::InvalidateSelectedChildrenOnStyleChange()). Maybe in the
+      // future we could detect changes here for ::selection too.
+      HighlightPseudoUpdateDiff(kPseudoIdTargetText);
+      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
+        HighlightPseudoUpdateDiff(kPseudoIdSpellingError);
+        HighlightPseudoUpdateDiff(kPseudoIdGrammarError);
+      }
+    }
   }
 
   diff = AdjustStyleDifference(diff);

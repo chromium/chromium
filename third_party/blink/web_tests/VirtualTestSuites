@@ -1132,7 +1132,10 @@
   },
   {
     "prefix": "css-highlight-inheritance",
-    "bases": ["external/wpt/css/css-pseudo"],
+    "bases": [
+      "external/wpt/css/css-pseudo",
+      "wpt_internal/css/css-pseudo"
+    ],
     "args": ["--enable-blink-features=HighlightInheritance"]
   },
   {
