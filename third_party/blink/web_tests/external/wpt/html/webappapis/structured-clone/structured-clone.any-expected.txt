@@ -120,14 +120,14 @@ FAIL Array ImageBitmap object, ImageBitmap 1x1 transparent non-black promise_tes
 FAIL Object ImageBitmap object, ImageBitmap 1x1 transparent black promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL Object ImageBitmap object, ImageBitmap 1x1 transparent non-black promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL ObjectPrototype must lose its exotic-ness when cloned promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
-FAIL Serializing a non-serializable platform object fails promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
+FAIL Serializing a non-serializable platform object fails promise_rejects_dom: function "function() { throw e }" threw object "TypeError: self.structuredClone is not a function" that is not a DOMException DataCloneError: property "code" is equal to undefined, expected 25
 FAIL An object whose interface is deleted from the global must still deserialize promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL A subclass instance will deserialize as its closest serializable superclass promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL ArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL MessagePort promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL A detached ArrayBuffer cannot be transferred promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL A detached platform object cannot be transferred promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
-FAIL Transferring a non-transferable platform object fails promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
+FAIL Transferring a non-transferable platform object fails promise_rejects_dom: function "function() { throw e }" threw object "TypeError: self.structuredClone is not a function" that is not a DOMException DataCloneError: property "code" is equal to undefined, expected 25
 FAIL An object whose interface is deleted from the global object must still be received promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 FAIL A subclass instance will be received as its closest transferable superclass promise_test: Unhandled rejection with value: object "TypeError: self.structuredClone is not a function"
 Harness: the test ran to completion.

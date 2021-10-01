@@ -9947,8 +9947,8 @@
       {}
      ]
     ],
-    "local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.tentative.html": [
-     "2b9c4445df4b642953de5f5d1882a077a98392c0",
+    "local_FileSystemFileHandle-create-sync-access-handle-manual.https.tentative.html": [
+     "2f2fc00e5ebdf9090b5c9e32683721ec999f05f7",
      [
       null,
       {}
@@ -234387,11 +234387,11 @@
        []
       ],
       "font-palette-values-invalid-expected.txt": [
-       "2d11c5443961f1f6a288603912f6c2867175b1e3",
+       "6ff6e54b6401f75263c1ca917254c741642df921",
        []
       ],
       "font-palette-values-valid-expected.txt": [
-       "252eb64ff6414742251f11b772d35d730290d146",
+       "b679d437bd7d2827f9781c910bbce3f48e59e6ec",
        []
       ],
       "font-size-adjust-computed-expected.txt": [
@@ -245729,6 +245729,10 @@
       "782ffab9da1c1cb55b4488e7fc8f913dd18857f3",
       []
      ],
+     "scrollbar-gutter-dynamic-001-ref.html": [
+      "5f2f7bff26420e949093a822d8995d9fcc3f1f51",
+      []
+     ],
      "text-overflow-ellipsis-editing-input-ref.html": [
       "3902072bc58b7bf62290edafbce1b735288af716",
       []
@@ -253151,7 +253155,7 @@
        []
       ],
       "rotate-composition-expected.txt": [
-       "ed01489819048567b3704f630d6ae77f3be1657d",
+       "4982c0e1eae3185ad3d621fcb89cbc98aeb373bb",
        []
       ],
       "rotate-transform-equivalent-ref.html": [
@@ -267598,7 +267602,7 @@
       []
      ],
      "FileSystemBaseHandle-remove.js": [
-      "8e3daba7abc07797c356172bcf7a70c0dd11ed67",
+      "329fbe223f3ad2911322f99ffcac86161345d488",
       []
      ],
      "FileSystemDirectoryHandle-getDirectoryHandle.js": [
@@ -267618,7 +267622,7 @@
       []
      ],
      "FileSystemDirectoryHandle-removeEntry.js": [
-      "7cdfb8fd6b519e1b6da5b1d51aa8f45ee18aac76",
+      "01e2ebe10889b0de539b54d983124865ab9276bc",
       []
      ],
      "FileSystemDirectoryHandle-rename.js": [
@@ -267629,7 +267633,7 @@
       "a8900f97e54523f29bdc9afcd021d32c9dbb0e08",
       []
      ],
-     "FileSystemFileHandle-create-sync-access-handle-dedicated-worker.js": [
+     "FileSystemFileHandle-create-sync-access-handle.js": [
       "8efe685596b749ba67aaea939d7a5f82417a5199",
       []
      ],
@@ -272939,7 +272943,7 @@
          []
         ],
         "the-offscreen-canvas.yaml": [
-         "2bffbf2a9726d509c298cc52cd75bdee525f39b9",
+         "f985ae6af2e909b61610d5cd52f413d92fff6bca",
          []
         ],
         "transformations.yaml": [
@@ -273044,6 +273048,10 @@
       },
       "shared-worker.tentative.https-expected.txt": [
        "19699d99f224b20d10094626a49f7b22daa324bb",
+       []
+      ],
+      "video.tentative.https.window.js.headers": [
+       "68fde79c91426c7f2e88afbb07f254d23fa1ba70",
        []
       ]
      },
@@ -283939,7 +283947,7 @@
        []
       ],
       "utils.js": [
-       "06bf01832838098b79a419fb32c4a6ec1657f01f",
+       "f4ff426825612c3f82f3ad893b91d4c97916580a",
        []
       ]
      }
@@ -284397,7 +284405,7 @@
      },
      "structured-clone": {
       "structured-clone-battery-of-tests-harness.js": [
-       "8b0394b4c66a1904fb9199e424d6a24072278190",
+       "00a86fa74b9a968dabae400f57dd32ffb836aa2c",
        []
       ],
       "structured-clone-battery-of-tests-with-transferables.js": [
@@ -284413,11 +284421,11 @@
        []
       ],
       "structured-clone.any-expected.txt": [
-       "f1f72581db37111108631d0c2ecc51d562b3c9fb",
+       "e72c9f52a2668d890eb789c6391a3dd87b5d13c8",
        []
       ],
       "structured-clone.any.worker-expected.txt": [
-       "885d4975a7373dc385acab6e186977d1293285df",
+       "c6a86222810e8bee7fa0245f047c6849fb166c4a",
        []
       ]
      },
@@ -343666,14 +343674,14 @@
        ]
       ],
       "font-palette-values-invalid.html": [
-       "870542ed88c4c9307c0c5219c3c4de868fecfae3",
+       "4756a886abc0070c5fb7d73c82d23fa9611cda7c",
        [
         null,
         {}
        ]
       ],
       "font-palette-values-valid.html": [
-       "665841cc21a5f5aab6ec897a301446003364f5cd",
+       "6ac58a08ee9274c14112d1f56bc69f7ee44bbd42",
        [
         null,
         {}
@@ -397078,10 +397086,10 @@
       }
      ]
     ],
-    "sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.js": [
-     "f0d938b045c906a4eb6e7902e39fdc95ad15a2a0",
+    "sandboxed_FileSystemFileHandle-create-sync-access-handle.https.tentative.window.js": [
+     "aa4d91d15da1cb0cebd4e47ea7300ac6206ced30",
      [
-      "file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.html",
+      "file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle.https.tentative.window.html",
       {
        "script_metadata": [
         [
@@ -397098,7 +397106,7 @@
         ],
         [
          "script",
-         "script-tests/FileSystemFileHandle-create-sync-access-handle-dedicated-worker.js"
+         "script-tests/FileSystemFileHandle-create-sync-access-handle.js"
         ]
        ]
       }
@@ -420384,6 +420392,20 @@
          "html/canvas/offscreen/text/2d.text.measure.width.space.worker.html",
          {}
         ]
+       ],
+       "2d.text.setFont.mathFont.html": [
+        "3ee2cc77855e958979781a2e1b0c6568b4537335",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.setFont.mathFont.worker.js": [
+        "f45e1e46edcfc24b0b914d51e46dcdf9d31338db",
+        [
+         "html/canvas/offscreen/text/2d.text.setFont.mathFont.worker.html",
+         {}
+        ]
        ]
       },
       "the-canvas-state": {
@@ -422076,11 +422098,30 @@
         }
        ]
       ],
-      "video.tentative.https.html": [
-       "97b8509f3a5c2def67d58c1476ca1258871a8b5f",
+      "video.tentative.https.window.js": [
+       "0410b48564f55b9103bb918348486aa707b71466",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/credentialless/video.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -440149,8 +440190,17 @@
        }
       ]
      ],
-     "basic.html": [
-      "fe8cebc1089e6a5b15eb24ec0e3a9b2eb284c796",
+     "activation-trigger-click.html": [
+      "abf685f9220e334ef0ff82124c635c5454d73b4e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "activation-trigger-keypress.html": [
+      "cf3816fd95e9b6ffb72b66ef6a49911850848986",
       [
        null,
        {
@@ -442156,7 +442206,7 @@
      },
      "structured-clone": {
       "structured-clone.any.js": [
-       "34f96f33fdf88127a1c6d066781f7ab5b884b746",
+       "90ba5dfc90008ee876c6bb6972fb51251e4cb21d",
        [
         "html/webappapis/structured-clone/structured-clone.any.html",
         {
@@ -538455,6 +538505,15 @@
     "css-namespaces": {
      "syntax-016.xml": [
       "1e280d8cba530c10e01d5fc679950bf67a5f14d9",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "css-overflow": {
+     "scrollbar-gutter-dynamic-001.html": [
+      "d6451ff995f5b522626e8e05eaed33d3e49e5f9b",
       [
        null,
        {}

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values assert_equals: expected 13 but got 0
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values assert_equals: expected 14 but got 0
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 1 Cannot read properties of undefined (reading 'cssText')
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 2 Cannot read properties of undefined (reading 'cssText')
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 3 Cannot read properties of undefined (reading 'cssText')
@@ -13,5 +13,6 @@ FAIL CSS Fonts Module Level 4: parsing @font-palette-values 10 Cannot read prope
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 11 Cannot read properties of undefined (reading 'cssText')
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 12 Cannot read properties of undefined (reading 'cssText')
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 13 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 14 Cannot read properties of undefined (reading 'cssText')
 Harness: the test ran to completion.
 

@@ -9,6 +9,7 @@
  * - `postTest()`: An optional, async function run after a test is done
  * - `structuredClone(obj, transferList)`: Required function that somehow
  *                                         structurally clones an object.
+ *                                         Must return a promise.
  * - `hasDocument`: When true, disables tests that require a document. True by default.
  */
 

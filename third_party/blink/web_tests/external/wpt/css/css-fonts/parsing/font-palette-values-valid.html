@@ -62,41 +62,31 @@
 
 /* 8 */
 @font-palette-values I {
-    base-palette: -3;
+    override-color: 0 #0000FF;
 }
 
 /* 9 */
 @font-palette-values J {
-    override-color: -3 rgb(17, 34, 51);
+    override-color: 0 green;
 }
 
 /* 10 */
 @font-palette-values K {
-    override-color: 0 #0000FF;
+    override-color: 0 transparent;
 }
 
 /* 11 */
 @font-palette-values L {
-    override-color: 0 green;
+    override-color: 0 rgba(1 2 3 / 4);
 }
 
 /* 12 */
 @font-palette-values M {
-    override-color: 0 transparent;
+    override-color: 0 lab(29.2345% 39.3825 20.0664);
 }
 
 /* 13 */
 @font-palette-values N {
-    override-color: 0 rgba(1 2 3 / 4);
-}
-
-/* 14 */
-@font-palette-values O {
-    override-color: 0 lab(29.2345% 39.3825 20.0664);
-}
-
-/* 15 */
-@font-palette-values P {
     override-color: 0 color(display-p3 100% 100% 100%);
 }
 </style>
@@ -235,38 +225,12 @@ test(function() {
 
 test(function() {
     let text = rules[8].cssText;
-    assert_not_equals(text.indexOf("base-palette"), -1);
-});
-
-test(function() {
-    let rule = rules[8];
-    assert_equals(rule.fontFamily, "");
-    assert_equals(rule.basePalette, "-3");
-    assert_equals(rule.size, 0);
-});
-
-test(function() {
-    let text = rules[9].cssText;
-    assert_not_equals(text.indexOf("override-color"), -1);
-});
-
-test(function() {
-    let rule = rules[9];
-    assert_equals(rule.fontFamily, "");
-    assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(7), undefined);
-    assert_equals(rule.get(-3), undefined);
-});
-
-test(function() {
-    let text = rules[10].cssText;
     assert_not_equals(text.indexOf("override-color"), -1);
     assert_not_equals(text.indexOf("rgb(0, 0, 255)"), -1);
 });
 
 test(function() {
-    let rule = rules[10];
+    let rule = rules[8];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
@@ -274,13 +238,13 @@ test(function() {
 });
 
 test(function() {
-    let text = rules[11].cssText;
+    let text = rules[9].cssText;
     assert_not_equals(text.indexOf("override-color"), -1);
     assert_not_equals(text.indexOf("rgb(0, 128, 0)"), -1);
 });
 
 test(function() {
-    let rule = rules[11];
+    let rule = rules[9];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
@@ -288,13 +252,13 @@ test(function() {
 });
 
 test(function() {
-    let text = rules[12].cssText;
+    let text = rules[10].cssText;
     assert_not_equals(text.indexOf("override-color"), -1);
     assert_not_equals(text.indexOf("rgba(0, 0, 0, 0)"), -1);
 });
 
 test(function() {
-    let rule = rules[12];
+    let rule = rules[10];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
@@ -302,13 +266,13 @@ test(function() {
 });
 
 test(function() {
-    let text = rules[13].cssText;
+    let text = rules[11].cssText;
     assert_not_equals(text.indexOf("override-color"), -1);
     assert_not_equals(text.indexOf("2"), -1);
 });
 
 test(function() {
-    let rule = rules[13];
+    let rule = rules[11];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
@@ -316,13 +280,13 @@ test(function() {
 });
 
 test(function() {
-    let text = rules[14].cssText;
+    let text = rules[12].cssText;
     assert_not_equals(text.indexOf("override-color"), -1);
     assert_not_equals(text.indexOf("29"), -1);
 });
 
 test(function() {
-    let rule = rules[14];
+    let rule = rules[12];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
@@ -330,13 +294,13 @@ test(function() {
 });
 
 test(function() {
-    let text = rules[15].cssText;
+    let text = rules[13].cssText;
     assert_not_equals(text.indexOf("override-color"), -1);
     assert_not_equals(text.indexOf("display-p3"), -1);
 });
 
 test(function() {
-    let rule = rules[15];
+    let rule = rules[13];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
