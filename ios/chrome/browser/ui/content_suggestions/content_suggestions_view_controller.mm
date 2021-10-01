@@ -27,10 +27,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -57,10 +55,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 @property(nonatomic, strong)
     ContentSuggestionsCollectionUpdater* collectionUpdater;
 
-// The overscroll actions controller managing accelerators over the toolbar.
-@property(nonatomic, strong)
-    OverscrollActionsController* overscrollActionsController;
-
 // The layout of the content suggestions collection view.
 @property(nonatomic, strong) ContentSuggestionsLayout* layout;
 
@@ -68,13 +62,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 
 @implementation ContentSuggestionsViewController
 
-@synthesize audience = _audience;
-@synthesize suggestionCommandHandler = _suggestionCommandHandler;
-@synthesize headerSynchronizer = _headerSynchronizer;
-@synthesize collectionUpdater = _collectionUpdater;
-@synthesize overscrollActionsController = _overscrollActionsController;
-@synthesize overscrollDelegate = _overscrollDelegate;
-@synthesize scrolledToTop = _scrolledToTop;
 @dynamic collectionViewModel;
 
 #pragma mark - Lifecycle
@@ -87,10 +74,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
     _discoverFeedHeaderDelegate = _collectionUpdater;
   }
   return self;
-}
-
-- (void)dealloc {
-  [self.overscrollActionsController invalidate];
 }
 
 #pragma mark - Public
@@ -167,18 +150,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   [self.collectionView performBatchUpdates:batchUpdates completion:nil];
 }
 
-- (void)updateConstraints {
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.headerSynchronizer updateConstraints];
-  [self.collectionView reloadData];
-  self.styler.cellStyle = MDCCollectionViewCellStyleCard;
-}
-
-- (void)clearOverscroll {
-  [self.overscrollActionsController clear];
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -208,110 +179,24 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
     longPressRecognizer.delegate = self;
     [self.collectionView addGestureRecognizer:longPressRecognizer];
 
-  self.overscrollActionsController = [[OverscrollActionsController alloc]
-      initWithScrollView:self.collectionView];
-  [self.overscrollActionsController
-      setStyle:OverscrollStyle::NTP_NON_INCOGNITO];
-  self.overscrollActionsController.delegate = self.overscrollDelegate;
-  [self updateOverscrollActionsState];
-}
-
-- (void)updateOverscrollActionsState {
-  if (IsSplitToolbarMode(self)) {
-    [self.overscrollActionsController enableOverscrollActions];
-  } else {
-    [self.overscrollActionsController disableOverscrollActions];
-  }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  self.headerSynchronizer.showing = YES;
-  // Reload data to ensure the Most Visited tiles and fakeOmnibox are correctly
-  // positionned, in particular during a rotation while a ViewController is
-  // presented in front of the NTP.
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.collectionView.collectionViewLayout invalidateLayout];
-  // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  // Resize the collection as it might have been rotated while not being
-  // presented (e.g. rotation on stack view).
-  [self updateConstraints];
+
+  // TODO(crbug.com/1200303): Reload data is needed here so the content matches
+  // the current UI Layout after changing the Feed state (e.g. Turned On/Off).
+  // This shouldn't be necessary once we stop starting and stopping the
+  // Coordinator to achieve this.
+  [self.collectionView reloadData];
   [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  self.headerSynchronizer.showing = NO;
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.audience viewDidDisappear];
   }
-}
-
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  if (!parent)
-    return;
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.parentViewController.view.bounds.size
-                                      .width];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:
-           (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-  void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
-      ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self.headerSynchronizer updateFakeOmniboxOnNewWidth:size.width];
-        [self.collectionView.collectionViewLayout invalidateLayout];
-      };
-  [coordinator animateAlongsideTransition:alongsideBlock completion:nil];
-}
-
-- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
-              withTransitionCoordinator:
-                  (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super willTransitionToTraitCollection:newCollection
-               withTransitionCoordinator:coordinator];
-  // Invalidating the layout after changing the cellStyle results in the layout
-  // not being updated. Do it before to have it taken into account.
-  [self.collectionView.collectionViewLayout invalidateLayout];
-  self.styler.cellStyle = MDCCollectionViewCellStyleCard;
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self.collectionViewLayout invalidateLayout];
-    [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
-  }
-  [self.headerSynchronizer updateConstraints];
-  [self updateOverscrollActionsState];
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    [self.themeChangeDelegate handleThemeChange];
-  }
-}
-
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-
-  // Only get the bottom safe area inset.
-  UIEdgeInsets insets = UIEdgeInsetsZero;
-  insets.bottom = self.view.safeAreaInsets.bottom;
-  self.collectionView.contentInset = insets;
-
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.headerSynchronizer updateConstraints];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -319,8 +204,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
-
-  [self.headerSynchronizer unfocusOmnibox];
 
   CollectionViewItem* item =
       [self.collectionViewModel itemAtIndexPath:indexPath];
@@ -543,73 +426,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   return [self.collectionUpdater shouldUseCustomStyleForSection:section];
 }
 
-#pragma mark - ThumbStripSupporting
-
-- (BOOL)isThumbStripEnabled {
-  return self.panGestureHandler != nil;
-}
-
-- (void)thumbStripEnabledWithPanHandler:
-    (ViewRevealingVerticalPanHandler*)panHandler {
-  DCHECK(!self.thumbStripEnabled);
-  self.panGestureHandler = panHandler;
-}
-
-- (void)thumbStripDisabled {
-  DCHECK(self.thumbStripEnabled);
-  self.panGestureHandler = nil;
-}
-
-#pragma mark - UIScrollViewDelegate Methods.
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [super scrollViewDidScroll:scrollView];
-  [self.panGestureHandler scrollViewDidScroll:scrollView];
-  [self.overscrollActionsController scrollViewDidScroll:scrollView];
-  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
-  self.scrolledToTop =
-      scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
-  scrollView.showsHorizontalScrollIndicator = NO;
-}
-
-- (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
-  // User has tapped the status bar to scroll to the top.
-  // Prevent scrolling back to pre-focus state, making sure we don't have
-  // two scrolling animations running at the same time.
-  [self.headerSynchronizer resetPreFocusOffset];
-  // Unfocus omnibox without scrolling back.
-  [self.headerSynchronizer unfocusOmnibox];
-  return YES;
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
-  [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
-  [self.panGestureHandler scrollViewWillBeginDragging:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-  [self.overscrollActionsController scrollViewDidEndDragging:scrollView
-                                              willDecelerate:decelerate];
-  [self.panGestureHandler scrollViewDidEndDragging:scrollView
-                                    willDecelerate:decelerate];
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset {
-  [super scrollViewWillEndDragging:scrollView
-                      withVelocity:velocity
-               targetContentOffset:targetContentOffset];
-  [self.overscrollActionsController
-      scrollViewWillEndDragging:scrollView
-                   withVelocity:velocity
-            targetContentOffset:targetContentOffset];
-  [self.panGestureHandler scrollViewWillEndDragging:scrollView
-                                       withVelocity:velocity
-                                targetContentOffset:targetContentOffset];
-}
 
 #pragma mark - UIGestureRecognizerDelegate
 
@@ -678,9 +494,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
     default:
       break;
   }
-
-  if (IsRegularXRegularSizeClass(self))
-    [self.headerSynchronizer unfocusOmnibox];
 }
 
 // Checks if the |section| is empty and add an empty element if it is the case.

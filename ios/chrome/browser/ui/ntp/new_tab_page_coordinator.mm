@@ -227,7 +227,6 @@
                          browser:self.browser];
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.toolbarDelegate = self.toolbarDelegate;
-  self.contentSuggestionsCoordinator.panGestureHandler = self.panGestureHandler;
   self.contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   self.contentSuggestionsCoordinator.ntpCommandHandler = self;
   self.contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
