@@ -121,6 +121,10 @@ extern const char kDiscoverFeedInNtpDescription[];
 extern const char kDownloadMobileConfigFileName[];
 extern const char kDownloadMobileConfigFileDescription[];
 
+// Title and description for the flag to enable Vcard support.
+extern const char kDownloadVcardName[];
+extern const char kDownloadVcardDescription[];
+
 // Title and description for the flag to enable kEditPasswordsInSettings flag on
 // iOS.
 extern const char kEditPasswordsInSettingsName[];

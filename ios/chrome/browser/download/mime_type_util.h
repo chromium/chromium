@@ -10,6 +10,9 @@
 // MIME type for iOS configuration file.
 extern char kMobileConfigurationType[];
 
+// MIME type for Virtual Contact File.
+extern char kVcardMimeType[];
+
 // MIME type for pass data.
 extern char kPkPassMimeType[];
 

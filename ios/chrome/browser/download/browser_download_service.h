@@ -64,7 +64,9 @@ enum class DownloadMimeTypeResult {
   LegacyPixarUniversalSceneDescription = 19,
   // model/vnd.usdz+zip MIME type.
   UniversalSceneDescription = 20,
-  kMaxValue = UniversalSceneDescription,
+  // text/vcard MIME type.
+  Vcard = 21,
+  kMaxValue = Vcard,
 };
 
 // Keyed Service which acts as web::DownloadController delegate and routes

@@ -728,6 +728,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceMajorVersion100InUserAgentDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::kForceMajorVersion100InUserAgent)},
+    {"download-vcard", flag_descriptions::kDownloadVcardName,
+     flag_descriptions::kDownloadVcardDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDownloadVcard)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

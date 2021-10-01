@@ -143,6 +143,9 @@ const char kDownloadMobileConfigFileName[] = "Download .mobileconfig file";
 const char kDownloadMobileConfigFileDescription[] =
     "Allows user to download and install a .mobileconfig file";
 
+const char kDownloadVcardName[] = "Download Vcard";
+const char kDownloadVcardDescription[] = "Allows user to download & open Vcard";
+
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";

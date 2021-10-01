@@ -1289,6 +1289,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "download-vcard",
+    "owners": [ "ewannpv", "gambard" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "draw-predicted-ink-point",
     "owners": [ "joalmei@microsoft.com" ],
     "expiry_milestone": 98
