@@ -125,6 +125,21 @@ DOMWindow* DOMWindow::parent() const {
   if (!GetFrame())
     return nullptr;
 
+  // TODO(crbug.com/1123606): Remove this once we use MPArch as the underlying
+  // fenced frames implementation, instead of the
+  // `FencedFrameShadowDOMDelegate`. This is the version of `parent()`
+  // specifically for fenced frames implemented with the ShadowDOM, because it
+  // returns the real parent frame unless `GetFrame()` is a fenced frame, in
+  // which case this frame's own `DomWindow` is considered the parent window,
+  // just like in top-level frames. See
+  // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit#heading=h.jztjmd6vstll.
+  if (RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()) &&
+      features::kFencedFramesImplementationTypeParam.Get() ==
+          features::FencedFramesImplementationType::kShadowDOM &&
+      GetFrame()->Owner() && GetFrame()->Owner()->GetFramePolicy().is_fenced) {
+    return GetFrame()->DomWindow();
+  }
+
   Frame* parent = GetFrame()->Tree().Parent();
   return parent ? parent->DomWindow() : GetFrame()->DomWindow();
 }
