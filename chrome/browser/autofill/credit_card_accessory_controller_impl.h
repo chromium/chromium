@@ -79,6 +79,9 @@ class CreditCardAccessoryControllerImpl
   // plaintext and won't require any authentication when filling is triggered.
   std::vector<const CachedServerCardInfo*> GetUnmaskedCreditCards() const;
 
+  // Gets promo code offers from personal data manager.
+  std::vector<const AutofillOfferData*> GetPromoCodeOffers() const;
+
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   autofill::AutofillDriver* GetDriver();
   autofill::BrowserAutofillManager* GetManager() const;
