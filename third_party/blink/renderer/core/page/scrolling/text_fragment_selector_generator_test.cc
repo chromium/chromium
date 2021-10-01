@@ -1159,6 +1159,27 @@ TEST_F(TextFragmentSelectorGeneratorTest, InputSubmit) {
   VerifySelector(start, end, "First%20paragraph,Second");
 }
 
+// Checks that haphen, ampersand and comma in selector are escaped.
+// crbug.com/1245669
+TEST_F(TextFragmentSelectorGeneratorTest, EscapeSelectorSpecialChars) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='div'>First paragraph with hyphen- ampersand& and comma,</div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(div->firstChild(), 0);
+  const auto& end = Position(div->firstChild(), 50);
+  ASSERT_EQ("First paragraph with hyphen- ampersand& and comma,",
+            PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(
+      start, end,
+      "First%20paragraph%20with%20hyphen%2D%20ampersand%26%20and%20comma%2C");
+}
+
 // Checks selection right after a shadow tree will use the shadow tree for
 // prefix. Input with text value will create a shadow tree.
 TEST_F(TextFragmentSelectorGeneratorTest, InputSubmitPrefix) {

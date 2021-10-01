@@ -39,6 +39,14 @@ String ExtractSuffix(String* target_text) {
   return "";
 }
 
+// Escapes special chars that can be part of text fragment directive, including
+// hyphen (-), ampersand (&), and comma (,).
+String EscapeSelectorSpecialCharacters(const String& target_text) {
+  String escaped_str = EncodeWithURLEscapeSequences(target_text);
+  escaped_str.Replace("-", "%2D");
+  return escaped_str;
+}
+
 }  // namespace
 
 TextFragmentSelector TextFragmentSelector::Create(String target_text) {
@@ -85,22 +93,22 @@ TextFragmentSelector::TextFragmentSelector(SelectorType type) : type_(type) {}
 String TextFragmentSelector::ToString() const {
   StringBuilder selector;
   if (!prefix_.IsEmpty()) {
-    selector.Append(EncodeWithURLEscapeSequences(prefix_));
+    selector.Append(EscapeSelectorSpecialCharacters(prefix_));
     selector.Append("-,");
   }
 
   if (!start_.IsEmpty()) {
-    selector.Append(EncodeWithURLEscapeSequences(start_));
+    selector.Append(EscapeSelectorSpecialCharacters(start_));
   }
 
   if (!end_.IsEmpty()) {
     selector.Append(",");
-    selector.Append(EncodeWithURLEscapeSequences(end_));
+    selector.Append(EscapeSelectorSpecialCharacters(end_));
   }
 
   if (!suffix_.IsEmpty()) {
     selector.Append(",-");
-    selector.Append(EncodeWithURLEscapeSequences(suffix_));
+    selector.Append(EscapeSelectorSpecialCharacters(suffix_));
   }
 
   return selector.ToString();
