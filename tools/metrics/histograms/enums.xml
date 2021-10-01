@@ -75784,6 +75784,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Screenshot Deleted"/>
 </enum>
 
+<enum name="SharingScrollCaptureBitmapGenerationStatus">
+<!--
+  SharingScrollCaptureBitmapGenerationStatus must be kept in sync with BitmapGenerationStatus defined
+  in /chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureCallbackImpl.java
+-->
+
+  <int value="0" label="Capture Completed"/>
+  <int value="1" label="Insufficient Memory"/>
+  <int value="2" label="General Generation Error"/>
+</enum>
+
 <enum name="SharingSendMessageResult">
   <int value="0" label="Successful"/>
   <int value="1" label="Device is not found"/>

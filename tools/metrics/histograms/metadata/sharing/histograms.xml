@@ -423,6 +423,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Whether the editor was dismissed during editor recreation.</summary>
 </histogram>
 
+<histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
+    enum="SharingScrollCaptureBitmapGenerationStatus" expires_after="M98">
+  <owner>yashard@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the status of the Bitmap Generator when capturing scroll capture
+    long screenshot. Recorded after the page capture request is sent to the
+    paint_preview capture service and compositor, when the service is no longer
+    busy. This metric is only emitted on Android S+.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ScrollCapture.SuccessfulCaptureDuration" units="ms"
+    expires_after="M98">
+  <owner>yashard@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the total time spent capturing a long screenshot of a page using
+    scroll capture. It is recorded when a scroll capture request successfully
+    finishes. This metric is only emitted on Android S+.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SendAckMessageResult" enum="SharingSendMessageResult"
     expires_after="M97">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
