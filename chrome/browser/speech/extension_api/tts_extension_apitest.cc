@@ -19,14 +19,15 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -279,15 +280,15 @@ class TtsApiTest : public ExtensionApiTest {
   }
 
   void AddNetworkSpeechSynthesisExtension() {
-    content::WindowedNotificationObserver observer(
-        NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::NotificationService::AllSources());
+    ExtensionHostTestHelper host_helper(profile());
+    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
     ExtensionService* service =
         extensions::ExtensionSystem::Get(profile())->extension_service();
     service->component_loader()->AddNetworkSpeechSynthesisExtension();
-    observer.Wait();
+    const ExtensionHost* extension_host =
+        host_helper.WaitForDocumentElementAvailable();
     ASSERT_EQ(mojom::ManifestLocation::kComponent,
-              content::Source<const Extension>(observer.source())->location());
+              extension_host->extension()->location());
   }
 
  protected:
