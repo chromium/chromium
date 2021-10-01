@@ -951,7 +951,7 @@ TEST_P(SocketBrokerTest, SocketBrokerTestTCP) {
                           .c_str()));
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     AppContainerBrokered,
     SocketBrokerTest,
     ::testing::Combine(
@@ -959,7 +959,7 @@ INSTANTIATE_TEST_CASE_P(
         /* using socket brokering */ ::testing::Values(true),
         /* connect to real adapter */ ::testing::Values(true, false),
         /* add brokering rule */ ::testing::Values(true, false)));
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     AppContainerNonBrokered,
     SocketBrokerTest,
     ::testing::Combine(
@@ -967,7 +967,7 @@ INSTANTIATE_TEST_CASE_P(
         /* using socket brokering */ ::testing::Values(false),
         /* connect to real adapter */ ::testing::Values(true, false),
         /* add brokering rule */ ::testing::Values(true, false)));
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     NoAppContainerNonBrokered,
     SocketBrokerTest,
     ::testing::Combine(
