@@ -477,8 +477,7 @@ struct GridItemIndices {
 
     // Layout the |grid_items| based on the offsets provided.
     void PlaceGridItems(const GridItems& grid_items,
-                        const GridGeometry& grid_geometry,
-                        LayoutUnit block_size);
+                        const GridGeometry& grid_geometry);
 
     // Computes the static position, grid area and its offset of out of flow
     // elements in the grid.

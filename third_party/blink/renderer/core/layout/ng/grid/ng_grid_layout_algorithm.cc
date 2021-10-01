@@ -341,7 +341,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
       ComputeGrid();
   }
 
-  PlaceGridItems(grid_items, grid_geometry, block_size);
+  PlaceGridItems(grid_items, grid_geometry);
 
   // Cache range placement data for out of flow items.
   for (auto& out_of_flow_item : out_of_flow_items) {
@@ -1274,10 +1274,10 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
   DCHECK(grid_properties);
   DCHECK(grid_items);
 
-  absl::optional<wtf_size_t> previous_capacity =
-      Node().GetPreviousGridItemsSizeForReserveCapacity();
-  if (previous_capacity)
-    grid_items->ReserveCapacity(previous_capacity.value());
+  if (auto previous_capacity =
+          Node().GetPreviousGridItemsSizeForReserveCapacity()) {
+    grid_items->ReserveCapacity(*previous_capacity);
+  }
 
   const auto& container_style = Style();
   const auto container_writing_mode = ConstraintSpace().GetWritingMode();
@@ -3310,8 +3310,7 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
 }
 
 void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
-                                           const GridGeometry& grid_geometry,
-                                           LayoutUnit block_size) {
+                                           const GridGeometry& grid_geometry) {
   const auto& container_space = ConstraintSpace();
   const auto container_writing_direction =
       container_space.GetWritingDirection();
