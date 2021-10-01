@@ -217,23 +217,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Test that swiping left to right navigate back.
 // TODO(crbug.com/768339): This test is faling on devices because
 // grey_swipeFastInDirectionWithStartPoint does not work.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testNavigateBackWithGesture DISABLED_testNavigateBackWithGesture
-#else
-#define MAYBE_testNavigateBackWithGesture testNavigateBackWithGesture
-#endif
-- (void)MAYBE_testNavigateBackWithGesture {
+// TODO(crbug.com/978877): Fix the bug in EG and enable the test.
+// Navigate back side swipe gesture does not work on iOS13 simulator. This
+// is not specific to Bookmarks. The issue is that the gesture needs to
+// start offscreen, and EG cannot replicate that.
+- (void)DISABLED_testNavigateBackWithGesture {
   // Disabled on iPad as there is not "navigate back" gesture.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad");
-  }
-
-  if (@available(iOS 13, *)) {
-    // Navigate back side swipe gesture does not work on iOS13 simulator. This
-    // is not specific to Bookmarks. The issue is that the gesture needs to
-    // start offscreen, and EG cannot replicate that.
-    // TODO(crbug.com/978877): Fix the bug in EG and enable the test.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 13.");
   }
 
   [BookmarkEarlGrey setupStandardBookmarks];

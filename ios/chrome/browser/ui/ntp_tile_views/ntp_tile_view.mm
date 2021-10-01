@@ -75,20 +75,15 @@ const CGFloat kPreferredMaxWidth = 73;
 
     _imageBackgroundView = backgroundView;
 
-    if (@available(iOS 13.4, *)) {
-      _pointerInteraction =
-          [[UIPointerInteraction alloc] initWithDelegate:self];
-      [self addInteraction:self.pointerInteraction];
-    }
+    _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
+    [self addInteraction:self.pointerInteraction];
   }
   return self;
 }
 
 - (void)dealloc {
-  if (@available(iOS 13.4, *)) {
-    [self removeInteraction:self.pointerInteraction];
-    self.pointerInteraction = nil;
-  }
+  [self removeInteraction:self.pointerInteraction];
+  self.pointerInteraction = nil;
 }
 
 // Returns the font size for the location label.

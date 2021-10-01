@@ -36,11 +36,7 @@ const char kMOVPath[] = "/video_sample.mov";
 
 // Matcher for the Cancel button.
 id<GREYMatcher> ShareMenuDismissButton() {
-  if (@available(iOS 13, *)) {
-    return chrome_test_util::CloseButton();
-  } else {
-    return chrome_test_util::CancelButton();
-  }
+  return chrome_test_util::CloseButton();
 }
 
 }  // namespace

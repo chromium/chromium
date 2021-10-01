@@ -326,10 +326,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
 
-  if (@available(iOS 13.4, *)) {
-      [self.fakeOmnibox
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  }
+  [self.fakeOmnibox
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
   [self.headerView addViewsToSearchField:self.fakeOmnibox];
 
@@ -380,23 +378,21 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-      self.identityDiscButton.pointerInteractionEnabled = YES;
-      self.identityDiscButton.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        // The identity disc button is oversized to the avatar image to meet the
-        // minimum touch target dimensions. The hover pointer effect should
-        // match the avatar image dimensions, not the button dimensions.
-        CGFloat singleInset =
-            (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
-        CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
-        UIPointerShape* shape =
-            [UIPointerShape shapeWithRoundedRect:rect
-                                    cornerRadius:rect.size.width / 2];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  self.identityDiscButton.pointerInteractionEnabled = YES;
+  self.identityDiscButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    // The identity disc button is oversized to the avatar image to meet the
+    // minimum touch target dimensions. The hover pointer effect should
+    // match the avatar image dimensions, not the button dimensions.
+    CGFloat singleInset =
+        (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+    CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:rect
+                                cornerRadius:rect.size.width / 2];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 
     // TODO(crbug.com/965958): Set action on button to launch into Settings.
     [self.headerView setIdentityDiscView:self.identityDiscButton];

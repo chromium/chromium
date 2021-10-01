@@ -383,9 +383,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - BookmarkTextFieldItemDelegate
 
 - (void)textDidChangeForItem:(BookmarkTextFieldItem*)item {
-  if (@available(iOS 13, *)) {
-    self.modalInPresentation = YES;
-  }
+  self.modalInPresentation = YES;
   [self updateSaveButtonState];
 }
 

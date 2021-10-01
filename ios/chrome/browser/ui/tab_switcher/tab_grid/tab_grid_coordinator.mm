@@ -620,29 +620,25 @@
       initWithConsumer:self.baseViewController.incognitoTabsConsumer
            reauthAgent:reauthAgent];
 
-  if (@available(iOS 13.0, *)) {
-    self.recentTabsContextMenuHelper =
-        [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                              recentTabsPresentationDelegate:self
-                                      tabContextMenuDelegate:self];
-    self.baseViewController.remoteTabsViewController.menuProvider =
-        self.recentTabsContextMenuHelper;
-  }
+  self.recentTabsContextMenuHelper =
+      [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                            recentTabsPresentationDelegate:self
+                                    tabContextMenuDelegate:self];
+  self.baseViewController.remoteTabsViewController.menuProvider =
+      self.recentTabsContextMenuHelper;
 
-  if (@available(iOS 13.0, *)) {
-    self.regularTabsGridContextMenuHelper =
-        [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                                     actionsDataSource:self.regularTabsMediator
-                                tabContextMenuDelegate:self];
-    self.baseViewController.regularTabsContextMenuProvider =
-        self.regularTabsGridContextMenuHelper;
-    self.incognitoTabsGridContextMenuHelper = [[GridContextMenuHelper alloc]
-               initWithBrowser:self.incognitoBrowser
-             actionsDataSource:self.incognitoTabsMediator
-        tabContextMenuDelegate:self];
-    self.baseViewController.incognitoTabsContextMenuProvider =
-        self.incognitoTabsGridContextMenuHelper;
-  }
+  self.regularTabsGridContextMenuHelper =
+      [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                                   actionsDataSource:self.regularTabsMediator
+                              tabContextMenuDelegate:self];
+  self.baseViewController.regularTabsContextMenuProvider =
+      self.regularTabsGridContextMenuHelper;
+  self.incognitoTabsGridContextMenuHelper =
+      [[GridContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
+                                   actionsDataSource:self.incognitoTabsMediator
+                              tabContextMenuDelegate:self];
+  self.baseViewController.incognitoTabsContextMenuProvider =
+      self.incognitoTabsGridContextMenuHelper;
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.

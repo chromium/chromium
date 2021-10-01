@@ -44,9 +44,7 @@ const CGFloat kQRCodeImageSize = 200.0;
   self.alwaysShowImage = YES;
   self.primaryActionBarButtonStyle = UIBarButtonSystemItemAction;
 
-  if (@available(iOS 13.4, *)) {
-      self.pointerInteractionEnabled = YES;
-  }
+  self.pointerInteractionEnabled = YES;
 
   [super loadView];
 }

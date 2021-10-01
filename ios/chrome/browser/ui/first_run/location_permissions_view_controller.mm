@@ -30,9 +30,7 @@
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
+  self.pointerInteractionEnabled = YES;
   [super loadView];
 }
 

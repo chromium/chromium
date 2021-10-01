@@ -328,9 +328,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   [self setBreakpadEnabled:optIn withUploading:allowUploading];
   [self setWatchWWANEnabled:optIn];
   [self setAppGroupMetricsEnabled:optIn];
-  if (@available(iOS 13, *)) {
-    [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
-  }
+  [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
 }
 
 - (BOOL)areMetricsEnabled {

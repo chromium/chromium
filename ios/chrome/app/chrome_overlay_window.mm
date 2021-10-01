@@ -30,10 +30,8 @@
   if (self) {
     // When not created via a nib, create the recorders immediately.
     [self updateBreakpad];
-    if (@available(iOS 13, *)) {
-      _userInterfaceStyleRecorder = [[UserInterfaceStyleRecorder alloc]
-          initWithUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
-    }
+    _userInterfaceStyleRecorder = [[UserInterfaceStyleRecorder alloc]
+        initWithUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
   }
   return self;
 }
@@ -51,14 +49,10 @@
 }
 
 - (void)setFrame:(CGRect)rect {
-  if (@available(iOS 13, *)) {
-    if ((ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) &&
-        (rect.origin.x != 0 || rect.origin.y != 0)) {
-      // skip, this rect is wrong and probably in portrait while
-      // display is in landscape or vice-versa.
-    } else {
-      [super setFrame:rect];
-    }
+  if ((ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) &&
+      (rect.origin.x != 0 || rect.origin.y != 0)) {
+    // skip, this rect is wrong and probably in portrait while
+    // display is in landscape or vice-versa.
   } else {
     [super setFrame:rect];
   }
@@ -72,15 +66,13 @@
       self.traitCollection.horizontalSizeClass) {
     [self updateBreakpad];
   }
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      [self.userInterfaceStyleRecorder
-          userInterfaceStyleDidChange:self.traitCollection.userInterfaceStyle];
-    }
-    [self updateBreakpad];
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self.userInterfaceStyleRecorder
+        userInterfaceStyleDidChange:self.traitCollection.userInterfaceStyle];
   }
+  [self updateBreakpad];
 }
 
 @end

@@ -21,17 +21,15 @@ const CGFloat kDefaultHeaderHeight = 10;
 }  // namespace
 
 UITableViewStyle ChromeTableViewStyle() {
-  if (@available(iOS 13, *)) {
-    if (!IsSmallDevice())
-      return UITableViewStyleInsetGrouped;
-  }
+  if (!IsSmallDevice())
+    return UITableViewStyleInsetGrouped;
+
   return UITableViewStyleGrouped;
 }
 
 CGFloat ChromeTableViewHeightForHeaderInSection(NSInteger section) {
-  if (@available(iOS 13, *)) {
-    if (section == 0)
-      return kFirstHeaderHeight;
-  }
+  if (section == 0)
+    return kFirstHeaderHeight;
+
   return kDefaultHeaderHeight;
 }

@@ -43,9 +43,7 @@
 
 - (instancetype)initWithScene:(id)scene {
   if ((self = [super initWithAppState:nil])) {
-    if (@available(ios 13, *)) {
-      [self setScene:scene];
-    }
+    [self setScene:scene];
   }
   return self;
 }

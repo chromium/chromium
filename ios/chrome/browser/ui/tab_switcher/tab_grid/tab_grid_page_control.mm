@@ -387,14 +387,10 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   self.remoteIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
   self.remoteSelectedIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
 
-  if (@available(iOS 13.4, *)) {
-      self.incognitoHoverView.center =
-          [self centerOfSegment:TabGridPageIncognitoTabs];
-      self.regularHoverView.center =
-          [self centerOfSegment:TabGridPageRegularTabs];
-      self.remoteHoverView.center =
-          [self centerOfSegment:TabGridPageRemoteTabs];
-  }
+  self.incognitoHoverView.center =
+      [self centerOfSegment:TabGridPageIncognitoTabs];
+  self.regularHoverView.center = [self centerOfSegment:TabGridPageRegularTabs];
+  self.remoteHoverView.center = [self centerOfSegment:TabGridPageRemoteTabs];
 
   // Determine the slider origin and range; this is based on the layout guides
   // and can't be computed until they are determined.
@@ -559,27 +555,25 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   [self.selectedImageView addSubview:remoteSelectedIcon];
   self.remoteSelectedIcon = remoteSelectedIcon;
 
-  if (@available(iOS 13.4, *)) {
-      CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
-      UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
-      UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
-      UIView* remoteHoverView = [[UIView alloc] initWithFrame:segmentRect];
-      [self insertSubview:incognitoHoverView belowSubview:self.sliderView];
-      [self insertSubview:regularHoverView belowSubview:self.sliderView];
-      [self insertSubview:remoteHoverView belowSubview:self.sliderView];
-      self.incognitoHoverView = incognitoHoverView;
-      self.regularHoverView = regularHoverView;
-      self.remoteHoverView = remoteHoverView;
+  CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
+  UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
+  UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
+  UIView* remoteHoverView = [[UIView alloc] initWithFrame:segmentRect];
+  [self insertSubview:incognitoHoverView belowSubview:self.sliderView];
+  [self insertSubview:regularHoverView belowSubview:self.sliderView];
+  [self insertSubview:remoteHoverView belowSubview:self.sliderView];
+  self.incognitoHoverView = incognitoHoverView;
+  self.regularHoverView = regularHoverView;
+  self.remoteHoverView = remoteHoverView;
 
-      [self.incognitoHoverView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-      [self.regularHoverView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-      [self.remoteHoverView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-      [self.sliderView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  }
+  [self.incognitoHoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  [self.regularHoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  [self.remoteHoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  [self.sliderView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
   // Update the label text, in case these properties have been set before the
   // views were set up.

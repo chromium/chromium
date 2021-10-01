@@ -149,14 +149,12 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
         kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
         kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
 
-    if (@available(iOS 13.4, *)) {
-        self.button.pointerInteractionEnabled = YES;
-        // This button's background color is configured whenever the cell is
-        // reused. The pointer style provider used here dynamically provides the
-        // appropriate style based on the background color at runtime.
-        self.button.pointerStyleProvider =
-            CreateOpaqueOrTransparentButtonPointerStyleProvider();
-    }
+    self.button.pointerInteractionEnabled = YES;
+    // This button's background color is configured whenever the cell is
+    // reused. The pointer style provider used here dynamically provides the
+    // appropriate style based on the background color at runtime.
+    self.button.pointerStyleProvider =
+        CreateOpaqueOrTransparentButtonPointerStyleProvider();
 
     // Vertical stackView to hold label and button.
     self.verticalStackView = [[UIStackView alloc]

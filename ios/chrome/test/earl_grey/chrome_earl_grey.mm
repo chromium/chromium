@@ -49,9 +49,6 @@ NSString* const kWaitForRestoreSessionToFinishError =
 
 namespace chrome_test_util {
 UIWindow* GetAnyKeyWindow() {
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-  return [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication].keyWindow;
-#else
   // Only one or zero foreground scene should be available if this is called.
   NSSet<UIScene*>* scenes =
       [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication]
@@ -72,7 +69,6 @@ UIWindow* GetAnyKeyWindow() {
       return window;
   }
   return nil;
-#endif
 }
 }  // namespace chrome_test_util
 

@@ -39,9 +39,7 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 37;
   self.subtitleString = subtitleString;
   self.primaryActionString = primaryActionString;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
+  self.pointerInteractionEnabled = YES;
   [super loadView];
 }
 

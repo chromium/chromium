@@ -39,12 +39,10 @@
   // when it exits it, the cached app switcher snapshot will have the overlay on
   // it, and therefore needs updating.
   if (sceneState.activationLevel < SceneActivationLevelForegroundInactive) {
-    if (@available(iOS 13, *)) {
-      if (base::ios::IsMultiwindowSupported()) {
-        DCHECK(sceneState.scene.session);
-        [[UIApplication sharedApplication]
-            requestSceneSessionRefresh:sceneState.scene.session];
-      }
+    if (base::ios::IsMultiwindowSupported()) {
+      DCHECK(sceneState.scene.session);
+      [[UIApplication sharedApplication]
+          requestSceneSessionRefresh:sceneState.scene.session];
     }
   }
 }
@@ -57,11 +55,9 @@
     return;
   }
 
-  if (@available(iOS 13, *)) {
-    // No multiwindow before iOS 13 => no blocker necessary.
-    self.overlayWindow =
-        [[UIWindow alloc] initWithWindowScene:self.sceneState.scene];
-  }
+  self.overlayWindow =
+      [[UIWindow alloc] initWithWindowScene:self.sceneState.scene];
+
   // The blocker is above everything, including the alerts, but below the status
   // bar.
   self.overlayWindow.windowLevel = UIWindowLevelStatusBar - 1;

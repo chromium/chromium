@@ -80,9 +80,7 @@ const CGFloat kArrowDownMargin = 12.;
     AddSameCenterYConstraint(self, _arrowImageView);
     ApplyVisualConstraintsWithMetrics(constraints, views, metrics);
 
-    if (@available(iOS 13.4, *)) {
-      [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
 
     // Accessibility.
     self.isAccessibilityElement = YES;

@@ -234,28 +234,15 @@ id<GREYMatcher> ReplacePasswordButton() {
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by |label|.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
-  if (@available(iOS 13, *)) {
-    // iOS13 reworked menu button subviews to no longer be accessibility
-    // elements.  Multiple menu button subviews no longer show up as potential
-    // matches, which means the matcher logic does not need to be as complex as
-    // the iOS 11/12 logic.  Various table view cells may share the same
-    // accesibility label, but those can be filtered out by ignoring
-    // UIAccessibilityTraitButton.
-    return grey_allOf(
-        grey_accessibilityLabel(l10n_util::GetNSString(label)),
-        grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)), nil);
-  } else {
-    // This is a hack relying on UIKit's internal structure. There are multiple
-    // items with the label the test is looking for, because the menu items
-    // likely have the same labels as the buttons for the same function. There
-    // is no easy way to identify elements which are part of the pop-up, because
-    // the associated classes are internal to UIKit. However, the pop-up items
-    // are of internal classs UICalloutBarButton, which can be tested easily
-    // in EG2.
-    return grey_allOf(grey_kindOfClassName(@"UICalloutBarButton"),
-                      grey_accessibilityLabel(l10n_util::GetNSString(label)),
-                      nullptr);
-  }
+  // iOS13 reworked menu button subviews to no longer be accessibility
+  // elements.  Multiple menu button subviews no longer show up as potential
+  // matches, which means the matcher logic does not need to be as complex as
+  // the iOS 11/12 logic.  Various table view cells may share the same
+  // accesibility label, but those can be filtered out by ignoring
+  // UIAccessibilityTraitButton.
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(label)),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)), nil);
 }
 
 // Returns matcher for the "Add Password" button located at the bottom of the

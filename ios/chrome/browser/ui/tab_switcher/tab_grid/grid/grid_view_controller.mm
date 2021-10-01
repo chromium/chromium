@@ -176,10 +176,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
 
-  if (@available(iOS 13.4, *)) {
-      self.pointerInteractionCells =
-          [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
-  }
+  self.pointerInteractionCells =
+      [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -408,14 +406,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // rows during transitions between grid and horizontal layouts.
   cell.layer.zPosition = self.items.count - itemIndex;
 
-  if (@available(iOS 13.4, *)) {
-      if (![self.pointerInteractionCells containsObject:cell]) {
-        [cell addInteraction:[[UIPointerInteraction alloc]
-                                 initWithDelegate:self]];
-        // |self.pointerInteractionCells| is only expected to get as large as
-        // the number of reusable cells in memory.
-        [self.pointerInteractionCells addObject:cell];
-      }
+  if (![self.pointerInteractionCells containsObject:cell]) {
+    [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+    // |self.pointerInteractionCells| is only expected to get as large as
+    // the number of reusable cells in memory.
+    [self.pointerInteractionCells addObject:cell];
   }
   return cell;
 }

@@ -28,11 +28,8 @@
     _regularImage = regularImage;
     _incognitoImage = incognitoImage;
 
-    if (@available(iOS 13.4, *)) {
-        self.pointerInteractionEnabled = YES;
-        self.pointerStyleProvider =
-            CreateLiftEffectCirclePointerStyleProvider();
-    }
+    self.pointerInteractionEnabled = YES;
+    self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
   }
   return self;
 }

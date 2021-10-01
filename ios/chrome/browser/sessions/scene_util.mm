@@ -193,20 +193,17 @@ void MigrateSessionStorageForDirectory(const base::FilePath& directory,
 }
 
 NSString* SessionIdentifierForScene(id maybe_scene) {
-  if (@available(ios 13, *)) {
-    DCHECK(maybe_scene);
-    DCHECK([maybe_scene respondsToSelector:@selector(session)]);
-    DCHECK([[maybe_scene session]
-        respondsToSelector:@selector(persistentIdentifier)]);
-    if (base::ios::IsMultipleScenesSupported()) {
-      NSString* identifier = base::mac::ObjCCastStrict<NSString>(
-          [[maybe_scene session] persistentIdentifier]);
+  DCHECK(maybe_scene);
+  DCHECK([maybe_scene respondsToSelector:@selector(session)]);
+  DCHECK([[maybe_scene session]
+      respondsToSelector:@selector(persistentIdentifier)]);
+  if (base::ios::IsMultipleScenesSupported()) {
+    NSString* identifier = base::mac::ObjCCastStrict<NSString>(
+        [[maybe_scene session] persistentIdentifier]);
 
-      DCHECK(identifier.length != 0);
-      DCHECK(![kSyntheticSessionIdentifier isEqual:identifier]);
-      return identifier;
-    }
+    DCHECK(identifier.length != 0);
+    DCHECK(![kSyntheticSessionIdentifier isEqual:identifier]);
+    return identifier;
   }
-
   return kSyntheticSessionIdentifier;
 }

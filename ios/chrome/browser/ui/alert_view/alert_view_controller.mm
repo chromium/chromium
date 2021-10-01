@@ -118,13 +118,11 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      self.textFieldStackHolder.layer.borderColor =
-          [UIColor colorNamed:kSeparatorColor].CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.textFieldStackHolder.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
   }
 }
 
@@ -285,14 +283,12 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     stackHolder.layer.cornerRadius = kTextFieldCornerRadius;
     stackHolder.layer.borderColor =
         [UIColor colorNamed:kSeparatorColor].CGColor;
-    if (@available(iOS 13, *)) {
-      // Use performAsCurrentTraitCollection to get the correct CGColor for the
-      // given dynamic color and current userInterfaceStyle.
-      [self.traitCollection performAsCurrentTraitCollection:^{
-        stackHolder.layer.borderColor =
-            [UIColor colorNamed:kSeparatorColor].CGColor;
-      }];
-    }
+    // Use performAsCurrentTraitCollection to get the correct CGColor for the
+    // given dynamic color and current userInterfaceStyle.
+    [self.traitCollection performAsCurrentTraitCollection:^{
+      stackHolder.layer.borderColor =
+          [UIColor colorNamed:kSeparatorColor].CGColor;
+    }];
     stackHolder.layer.borderWidth = 1.0 / [UIScreen mainScreen].scale;
     stackHolder.clipsToBounds = YES;
     stackHolder.backgroundColor =

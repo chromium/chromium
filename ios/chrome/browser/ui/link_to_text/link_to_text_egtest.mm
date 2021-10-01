@@ -212,67 +212,65 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
     EARL_GREY_TEST_DISABLED(@"Test is disabled on iPad.");
   }
 
-  if (@available(iOS 13, *)) {
-    GURL pageURL = self.testServer->GetURL(kTestURL);
-    [ChromeEarlGrey loadURL:pageURL];
-    [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+  GURL pageURL = self.testServer->GetURL(kTestURL);
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
-    [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
 
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:chrome_test_util::LongPressElementForContextMenu(
-                          [ElementSelector
-                              selectorWithElementID:kSimpleTextElementId],
-                          true)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::LongPressElementForContextMenu(
+                        [ElementSelector
+                            selectorWithElementID:kSimpleTextElementId],
+                        true)];
 
-    // Wait for the menu to open. The "Copy" menu item will always be present,
-    // but other items may be hidden behind the overflow button.
-    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                        chrome_test_util::SystemSelectionCalloutCopyButton()];
+  // Wait for the menu to open. The "Copy" menu item will always be present,
+  // but other items may be hidden behind the overflow button.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SystemSelectionCalloutCopyButton()];
 
-    // The link to text button may be in the overflow, so use a search action to
-    // find it, if necessary.
-    id<GREYMatcher> linkToTextMatcher =
-        grey_allOf(chrome_test_util::SystemSelectionCalloutLinkToTextButton(),
-                   grey_sufficientlyVisible(), nil);
-    [[[EarlGrey selectElementWithMatcher:linkToTextMatcher]
-           usingSearchAction:grey_tap()
-        onElementWithMatcher:chrome_test_util::
-                                 SystemSelectionCalloutOverflowButton()]
-        performAction:grey_tap()];
+  // The link to text button may be in the overflow, so use a search action to
+  // find it, if necessary.
+  id<GREYMatcher> linkToTextMatcher =
+      grey_allOf(chrome_test_util::SystemSelectionCalloutLinkToTextButton(),
+                 grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:linkToTextMatcher]
+         usingSearchAction:grey_tap()
+      onElementWithMatcher:chrome_test_util::
+                               SystemSelectionCalloutOverflowButton()]
+      performAction:grey_tap()];
 
-    // Make sure the Edit menu is gone.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SystemSelectionCallout()]
-        assertWithMatcher:grey_notVisible()];
+  // Make sure the Edit menu is gone.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SystemSelectionCallout()]
+      assertWithMatcher:grey_notVisible()];
 
-    // Wait for the Activity View to show up (look for the Copy action).
-    id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
-    [ChromeEarlGrey
-        waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
+  // Wait for the Activity View to show up (look for the Copy action).
+  id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
 
-    // Tap on the Copy action.
-    [[EarlGrey selectElementWithMatcher:copyActivityButton]
-        performAction:grey_tap()];
+  // Tap on the Copy action.
+  [[EarlGrey selectElementWithMatcher:copyActivityButton]
+      performAction:grey_tap()];
 
-    // Assert the values stored in the pasteboard. Lower-casing the expected
-    // GURL as that is what the JS library is doing.
-    std::vector<TextFragment> fragments{
-        TextFragment(base::ToLowerASCII(kToBeSelectedText))};
-    GURL expectedGURL =
-        shared_highlighting::AppendFragmentDirectives(pageURL, fragments);
+  // Assert the values stored in the pasteboard. Lower-casing the expected
+  // GURL as that is what the JS library is doing.
+  std::vector<TextFragment> fragments{
+      TextFragment(base::ToLowerASCII(kToBeSelectedText))};
+  GURL expectedGURL =
+      shared_highlighting::AppendFragmentDirectives(pageURL, fragments);
 
-    // Wait for the value to be in the pasteboard.
-    GREYCondition* getPasteboardValue = [GREYCondition
-        conditionWithName:@"Could not get an expected URL from the pasteboard."
-                    block:^{
-                      return expectedGURL == [ChromeEarlGrey pasteboardURL];
-                    }];
+  // Wait for the value to be in the pasteboard.
+  GREYCondition* getPasteboardValue = [GREYCondition
+      conditionWithName:@"Could not get an expected URL from the pasteboard."
+                  block:^{
+                    return expectedGURL == [ChromeEarlGrey pasteboardURL];
+                  }];
 
-    GREYAssert([getPasteboardValue
-                   waitWithTimeout:base::test::ios::kWaitForActionTimeout],
-               @"Could not get expected URL from pasteboard.");
-  }
+  GREYAssert([getPasteboardValue
+                 waitWithTimeout:base::test::ios::kWaitForActionTimeout],
+             @"Could not get expected URL from pasteboard.");
 }
 
 - (void)testBadSelectionDisablesGenerateLink {

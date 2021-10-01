@@ -467,9 +467,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   // Always set the -UIViewController.modalPresentationStyle before accessing
   // -UIViewController.presentationController.
   self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  if (@available(iOS 13, *)) {
-    self.viewController.presentationController.delegate = self;
-  }
+  self.viewController.presentationController.delegate = self;
+
   switch (self.signinIntent) {
     case UserSigninIntentFirstRun: {
       // Displays the sign-in screen with transitions specific to first-run.

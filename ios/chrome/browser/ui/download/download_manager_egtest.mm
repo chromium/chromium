@@ -254,14 +254,6 @@ bool WaitForOpenInDownloadsButton() {
 // Tests that filename label and "Open in Downloads" button are showing.
 - (void)testVisibleFileNameAndOpenInDownloads {
   // Apple is hiding UIActivityViewController's contents from the host app on
-  // iOS 12. However, at least on iOS 13, the actions provided by the host app
-  // itself are not obfuscated.
-  if (@available(iOS 13, *)) {
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"Test skipped on iOS12.");
-  }
-
-  // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");

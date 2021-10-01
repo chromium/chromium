@@ -348,30 +348,20 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (NSUInteger)windowCount WARN_UNUSED_RESULT {
   // If the scene API is in use, return the count of open sessions.
-  if (@available(iOS 13, *)) {
-    return UIApplication.sharedApplication.openSessions.count;
-  }
-
-  // Otherwise, there's always exectly one window;
-  return 1;
+  return UIApplication.sharedApplication.openSessions.count;
 }
 
 + (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT {
   // If the scene API is in use, look at all the connected scenes and count
   // those in the foreground.
-  if (@available(iOS 13, *)) {
-    NSUInteger count = 0;
-    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-      if (scene.activationState == UISceneActivationStateForegroundActive ||
-          scene.activationState == UISceneActivationStateForegroundInactive) {
-        count++;
-      }
+  NSUInteger count = 0;
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    if (scene.activationState == UISceneActivationStateForegroundActive ||
+        scene.activationState == UISceneActivationStateForegroundInactive) {
+      count++;
     }
-    return count;
   }
-
-  // Otherwise, there's always exectly one window;
-  return 1;
+  return count;
 }
 
 + (NSError*)openNewWindow {
@@ -380,25 +370,20 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
         @"Multiwindow not supported");
   }
 
-  if (@available(iOS 13, *)) {
-    // Always disable default browser promo in new window, to avoid
-    // messages to be closed too early.
-    [self disableDefaultBrowserPromo];
+  // Always disable default browser promo in new window, to avoid
+  // messages to be closed too early.
+  [self disableDefaultBrowserPromo];
 
-    NSUserActivity* activity =
-        [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
-    UISceneActivationRequestOptions* options =
-        [[UISceneActivationRequestOptions alloc] init];
-    [UIApplication.sharedApplication
-        requestSceneSessionActivation:nil /* make a new scene */
-                         userActivity:activity
-                              options:options
-                         errorHandler:nil];
-    return nil;
-  }
-
-  return testing::NSErrorWithLocalizedDescription(
-      @"Multiwindow supported on iOS13+ only");
+  NSUserActivity* activity =
+      [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
+  UISceneActivationRequestOptions* options =
+      [[UISceneActivationRequestOptions alloc] init];
+  [UIApplication.sharedApplication
+      requestSceneSessionActivation:nil /* make a new scene */
+                       userActivity:activity
+                            options:options
+                       errorHandler:nil];
+  return nil;
 }
 
 + (void)openNewTabInWindowWithNumber:(int)windowNumber {
@@ -423,23 +408,21 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 }
 
 + (void)closeWindowWithNumber:(int)windowNumber {
-  if (@available(iOS 13, *)) {
-    NSArray<SceneState*>* connectedScenes =
-        chrome_test_util::GetMainController().appState.connectedScenes;
-    NSString* accessibilityIdentifier =
-        [NSString stringWithFormat:@"%ld", (long)windowNumber];
-    for (SceneState* state in connectedScenes) {
-      if ([state.window.accessibilityIdentifier
-              isEqualToString:accessibilityIdentifier]) {
-        UIWindowSceneDestructionRequestOptions* options =
-            [[UIWindowSceneDestructionRequestOptions alloc] init];
-        options.windowDismissalAnimation =
-            UIWindowSceneDismissalAnimationStandard;
-        [UIApplication.sharedApplication
-            requestSceneSessionDestruction:state.scene.session
-                                   options:options
-                              errorHandler:nil];
-      }
+  NSArray<SceneState*>* connectedScenes =
+      chrome_test_util::GetMainController().appState.connectedScenes;
+  NSString* accessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)windowNumber];
+  for (SceneState* state in connectedScenes) {
+    if ([state.window.accessibilityIdentifier
+            isEqualToString:accessibilityIdentifier]) {
+      UIWindowSceneDestructionRequestOptions* options =
+          [[UIWindowSceneDestructionRequestOptions alloc] init];
+      options.windowDismissalAnimation =
+          UIWindowSceneDismissalAnimationStandard;
+      [UIApplication.sharedApplication
+          requestSceneSessionDestruction:state.scene.session
+                                 options:options
+                            errorHandler:nil];
     }
   }
 }

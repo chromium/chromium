@@ -216,14 +216,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (![menu isMenuVisible]) {
     menu.menuItems = [self menuItems];
     [self becomeFirstResponder];
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-    [menu setTargetRect:[self.tableView rectForRowAtIndexPath:indexPath]
-                 inView:self.tableView];
-    [menu setMenuVisible:YES animated:YES];
-#else
     [menu showMenuFromView:self.tableView
                       rect:[self.tableView rectForRowAtIndexPath:indexPath]];
-#endif
   }
 }
 

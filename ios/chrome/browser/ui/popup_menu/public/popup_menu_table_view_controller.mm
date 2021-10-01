@@ -50,10 +50,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 - (instancetype)init {
   self = [super initWithStyle:UITableViewStyleGrouped];
   if (self) {
-    if (@available(iOS 13.4, *)) {
-        self.cellsInMemory =
-            [NSHashTable<UITableViewCell*> weakObjectsHashTable];
-    }
+    self.cellsInMemory = [NSHashTable<UITableViewCell*> weakObjectsHashTable];
   }
   return self;
 }
@@ -269,11 +266,9 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if (@available(iOS 13.4, *)) {
-      if (![self.cellsInMemory containsObject:cell]) {
-        [cell addInteraction:[[ViewPointerInteraction alloc] init]];
-        [self.cellsInMemory addObject:cell];
-      }
+  if (![self.cellsInMemory containsObject:cell]) {
+    [cell addInteraction:[[ViewPointerInteraction alloc] init]];
+    [self.cellsInMemory addObject:cell];
   }
   return cell;
 }

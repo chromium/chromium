@@ -581,9 +581,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 // Helper to create the primary action button.
 - (UIButton*)createPrimaryActionButton {
   BOOL pointerInteractionEnabled = NO;
-  if (@available(iOS 13.4, *)) {
-    pointerInteractionEnabled = self.pointerInteractionEnabled;
-  }
+  pointerInteractionEnabled = self.pointerInteractionEnabled;
   UIButton* primaryActionButton =
       PrimaryActionButton(pointerInteractionEnabled);
   [primaryActionButton addTarget:self
@@ -622,12 +620,10 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
   secondaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
-  if (@available(iOS 13.4, *)) {
-    if (self.pointerInteractionEnabled) {
-      secondaryActionButton.pointerInteractionEnabled = YES;
-      secondaryActionButton.pointerStyleProvider =
-          CreateOpaqueButtonPointerStyleProvider();
-    }
+  if (self.pointerInteractionEnabled) {
+    secondaryActionButton.pointerInteractionEnabled = YES;
+    secondaryActionButton.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
   }
 
   return secondaryActionButton;
@@ -653,12 +649,10 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
 
-  if (@available(iOS 13.4, *)) {
-    if (self.pointerInteractionEnabled) {
-      tertiaryActionButton.pointerInteractionEnabled = YES;
-      tertiaryActionButton.pointerStyleProvider =
-          CreateOpaqueButtonPointerStyleProvider();
-    }
+  if (self.pointerInteractionEnabled) {
+    tertiaryActionButton.pointerInteractionEnabled = YES;
+    tertiaryActionButton.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
   }
 
   return tertiaryActionButton;

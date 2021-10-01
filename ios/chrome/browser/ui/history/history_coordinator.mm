@@ -75,9 +75,7 @@
   self.historyTableViewController.browser = self.browser;
   self.historyTableViewController.loadStrategy = self.loadStrategy;
 
-  if (@available(iOS 13.0, *)) {
-    self.historyTableViewController.menuProvider = self;
-  }
+  self.historyTableViewController.menuProvider = self;
 
   DCHECK(!_browserObserver);
   _browserObserver =

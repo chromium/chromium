@@ -583,12 +583,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                action:@selector(searchCopiedText:)]);
 
     BOOL updateSuccessful = [self updateCachedClipboardStateWithCompletion:^() {
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-      [menu setTargetRect:self.locationBarSteadyView.frame inView:self.view];
-      [menu setMenuVisible:YES animated:YES];
-#else
       [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
-#endif
       // When the menu is manually presented, it doesn't get focused by
       // Voiceover. This notification forces voiceover to select the
       // presented menu.

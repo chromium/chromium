@@ -13,9 +13,7 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    if (@available(iOS 13.4, *)) {
-        self.pointerInteractionEnabled = YES;
-    }
+    self.pointerInteractionEnabled = YES;
   }
   return self;
 }

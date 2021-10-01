@@ -186,17 +186,15 @@ initWithCollectionController:
   [self updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
   [self.collectionView.collectionViewLayout invalidateLayout];
 
-  if (@available(iOS 13, *)) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      // On iOS 13, invalidating the layout doesn't reset the positioning of the
-      // header. To make sure that it is correctly positioned, scroll 1pt. This
-      // is done in the next runloop to have the collectionView resized and the
-      // content offset set to the new value. See crbug.com/1025694.
-      CGPoint currentOffset = [self.collectionView contentOffset];
-      currentOffset.y += 1;
-      [self.collectionView setContentOffset:currentOffset animated:YES];
-    });
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // On iOS 13, invalidating the layout doesn't reset the positioning of the
+    // header. To make sure that it is correctly positioned, scroll 1pt. This
+    // is done in the next runloop to have the collectionView resized and the
+    // content offset set to the new value. See crbug.com/1025694.
+    CGPoint currentOffset = [self.collectionView contentOffset];
+    currentOffset.y += 1;
+    [self.collectionView setContentOffset:currentOffset animated:YES];
+  });
 }
 
 #pragma mark - ContentSuggestionsHeaderSynchronizing

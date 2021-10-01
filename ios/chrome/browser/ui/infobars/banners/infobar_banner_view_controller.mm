@@ -128,14 +128,10 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [self.view.layer setShadowOpacity:kBannerViewShadowOpacity];
   // If dark mode is set when the banner is presented, the semantic color will
   // need to be set here.
-  if (@available(iOS 13, *)) {
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      [self.view.layer
-          setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
-    }];
-  } else {
-    [self.view.layer setShadowColor:[UIColor blackColor].CGColor];
-  }
+  [self.traitCollection performAsCurrentTraitCollection:^{
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
+  }];
   self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
   self.view.isAccessibilityElement = YES;
   self.view.accessibilityLabel = [self accessibilityLabel];
@@ -233,17 +229,15 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
                forControlEvents:UIControlEventTouchUpInside];
   self.infobarButton.accessibilityIdentifier =
       kInfobarBannerAcceptButtonIdentifier;
-  if (@available(iOS 13.4, *)) {
-      self.infobarButton.pointerInteractionEnabled = YES;
-      self.infobarButton.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        UIPointerShape* shape =
-            [UIPointerShape shapeWithRoundedRect:button.frame
-                                    cornerRadius:kBannerViewCornerRadius];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  self.infobarButton.pointerInteractionEnabled = YES;
+  self.infobarButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:button.frame
+                                cornerRadius:kBannerViewCornerRadius];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 
   UIView* buttonSeparator = [[UIView alloc] init];
   buttonSeparator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -278,11 +272,9 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [containerStack addArrangedSubview:self.openModalButton];
   // Hide open modal button if user shouldn't be allowed to open the modal.
   self.openModalButton.hidden = !self.presentsModal;
-  if (@available(iOS 13.4, *)) {
-      self.openModalButton.pointerInteractionEnabled = YES;
-      self.openModalButton.pointerStyleProvider =
-          CreateDefaultEffectCirclePointerStyleProvider();
-  }
+  self.openModalButton.pointerInteractionEnabled = YES;
+  self.openModalButton.pointerStyleProvider =
+      CreateDefaultEffectCirclePointerStyleProvider();
 
   // Add accept button.
   [containerStack addArrangedSubview:self.infobarButton];
@@ -371,13 +363,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 // presented.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      [self.view.layer
-          setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }
 }
 

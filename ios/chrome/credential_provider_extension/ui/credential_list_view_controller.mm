@@ -47,9 +47,7 @@ UIColor* BackgroundColor() {
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
-    if (@available(iOS 13.4, *)) {
-      [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
 }
@@ -312,21 +310,19 @@ UIColor* BackgroundColor() {
       @"IDS_IOS_CREDENTIAL_PROVIDER_SHOW_DETAILS_ACCESSIBILITY_LABEL",
       @"Show Details.");
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider = ^UIPointerStyle*(
-        UIButton* button, __unused UIPointerEffect* proposedEffect,
-        __unused UIPointerShape* proposedShape) {
-      UITargetedPreview* preview =
-          [[UITargetedPreview alloc] initWithView:button];
-      UIPointerHighlightEffect* effect =
-          [UIPointerHighlightEffect effectWithPreview:preview];
-      UIPointerShape* shape =
-          [UIPointerShape shapeWithRoundedRect:button.frame
-                                  cornerRadius:button.frame.size.width / 2];
-      return [UIPointerStyle styleWithEffect:effect shape:shape];
-    };
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = ^UIPointerStyle*(
+      UIButton* button, __unused UIPointerEffect* proposedEffect,
+      __unused UIPointerShape* proposedShape) {
+    UITargetedPreview* preview =
+        [[UITargetedPreview alloc] initWithView:button];
+    UIPointerHighlightEffect* effect =
+        [UIPointerHighlightEffect effectWithPreview:preview];
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:button.frame
+                                cornerRadius:button.frame.size.width / 2];
+    return [UIPointerStyle styleWithEffect:effect shape:shape];
+  };
 
   return button;
 }

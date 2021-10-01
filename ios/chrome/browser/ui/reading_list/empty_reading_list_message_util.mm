@@ -74,14 +74,6 @@ NSAttributedString* GetReadLaterString() {
 // is formatted with |attributes|.
 void AppendToolsIcon(NSMutableAttributedString* text,
                      NSDictionary* attributes) {
-  if (@available(iOS 13, *)) {
-  } else {
-    // Add a zero width space to set the attributes for the image.
-    NSAttributedString* spacer =
-        [[NSAttributedString alloc] initWithString:@"\u200B"
-                                        attributes:attributes];
-    [text appendAttributedString:spacer];
-  }
 
   // The icon bounds must be offset to be vertically centered with the message
   // text.
@@ -92,13 +84,8 @@ void AppendToolsIcon(NSMutableAttributedString* text,
 
   // Attach the icon image.
   NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
-  if (@available(iOS 13, *)) {
-    attachment.image =
-        [icon imageWithTintColor:attributes[NSForegroundColorAttributeName]];
-  } else {
-    attachment.image =
-        [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  attachment.image =
+      [icon imageWithTintColor:attributes[NSForegroundColorAttributeName]];
   attachment.bounds = icon_bounds;
   NSAttributedString* attachment_string =
       [NSAttributedString attributedStringWithAttachment:attachment];

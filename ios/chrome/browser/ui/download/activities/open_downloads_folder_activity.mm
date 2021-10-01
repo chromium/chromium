@@ -34,9 +34,7 @@ NSString* const kOpenDownloadsFolderActivityType =
 }
 
 - (UIImage*)activityImage {
-  if (@available(iOS 13, *))
-    return [UIImage systemImageNamed:@"arrow.down.to.line.alt"];
-  return [UIImage imageNamed:@"activity_services_downloads"];
+  return [UIImage systemImageNamed:@"arrow.down.to.line.alt"];
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

@@ -393,14 +393,12 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (UIImage*)selectIconImageForCurrentState {
-  if (@available(iOS 13, *)) {
-    if (_state == GridCellStateEditingUnselected) {
-      return [[UIImage systemImageNamed:@"circle"]
-          imageWithTintColor:UIColor.systemGray3Color
-               renderingMode:UIImageRenderingModeAlwaysOriginal];
-    }
-    return [UIImage systemImageNamed:@"checkmark.circle.fill"];
+  if (_state == GridCellStateEditingUnselected) {
+    return [[UIImage systemImageNamed:@"circle"]
+        imageWithTintColor:UIColor.systemGray3Color
+             renderingMode:UIImageRenderingModeAlwaysOriginal];
   }
+  return [UIImage systemImageNamed:@"checkmark.circle.fill"];
   NOTREACHED();
   return nil;
 }

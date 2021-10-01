@@ -49,9 +49,7 @@
   self.viewController.subtitleString = self.warningText;
   self.viewController.actionHandler = self;
   self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  if (@available(iOS 13, *)) {
-    self.viewController.modalInPresentation = YES;
-  }
+  self.viewController.modalInPresentation = YES;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];

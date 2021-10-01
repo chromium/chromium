@@ -23,9 +23,7 @@
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
 
-  if (@available(iOS 13.4, *)) {
-      self.pointerInteractionEnabled = YES;
-  }
+  self.pointerInteractionEnabled = YES;
 
   [super loadView];
 }

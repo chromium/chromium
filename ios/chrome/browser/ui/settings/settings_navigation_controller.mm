@@ -311,9 +311,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     self.modalPresentationStyle = UIModalPresentationFormSheet;
     // Set the presentationController delegate. This is used for swipe down to
     // dismiss. This needs to be set after the modalPresentationStyle.
-    if (@available(iOS 13, *)) {
-      self.presentationController.delegate = self;
-    }
+    self.presentationController.delegate = self;
   }
   return self;
 }
@@ -498,25 +496,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector
-            (presentationControllerShouldDismiss:)]) {
-      return [self.currentPresentedViewController
-          presentationControllerShouldDismiss:presentationController];
-    }
+  if ([self.currentPresentedViewController
+          respondsToSelector:@selector(presentationControllerShouldDismiss:)]) {
+    return [self.currentPresentedViewController
+        presentationControllerShouldDismiss:presentationController];
   }
   return NO;
 }
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector(presentationControllerDidDismiss:)]) {
-      [self.currentPresentedViewController
-          presentationControllerDidDismiss:presentationController];
-    }
+  if ([self.currentPresentedViewController
+          respondsToSelector:@selector(presentationControllerDidDismiss:)]) {
+    [self.currentPresentedViewController
+        presentationControllerDidDismiss:presentationController];
   }
   // Call settingsWasDismissed to make sure any necessary cleanup is performed.
   [self.settingsNavigationDelegate settingsWasDismissed];
@@ -524,12 +517,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)presentationControllerWillDismiss:
     (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector(presentationControllerWillDismiss:)]) {
-      [self.currentPresentedViewController
-          presentationControllerWillDismiss:presentationController];
-    }
+  if ([self.currentPresentedViewController
+          respondsToSelector:@selector(presentationControllerWillDismiss:)]) {
+    [self.currentPresentedViewController
+        presentationControllerWillDismiss:presentationController];
   }
 }
 

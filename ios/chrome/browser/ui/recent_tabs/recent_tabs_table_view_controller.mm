@@ -275,13 +275,11 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (void)loadModel {
   [super loadModel];
 
-  if (@available(iOS 13, *)) {
-    if (self.session) {
-      // Replace mediator to store collapsed keys in scene session.
-      self.tableViewModel.collapsableMediator =
-          [[ListModelCollapsedSceneSessionMediator alloc]
-              initWithSession:self.session];
-    }
+  if (self.session) {
+    // Replace mediator to store collapsed keys in scene session.
+    self.tableViewModel.collapsableMediator =
+        [[ListModelCollapsedSceneSessionMediator alloc]
+            initWithSession:self.session];
   }
 
   [self addRecentlyClosedSection];

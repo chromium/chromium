@@ -127,9 +127,7 @@
   self.tableViewController.audience = self;
   self.tableViewController.dataSource = self.mediator;
 
-  if (@available(iOS 13.0, *)) {
-    self.tableViewController.menuProvider = self;
-  }
+  self.tableViewController.menuProvider = self;
 
   itemFactory.accessibilityDelegate = self.tableViewController;
 

@@ -224,11 +224,9 @@ id<GREYMatcher> SearchCopiedTextButton() {
 // Tests that in compact, a share button is visible.
 // Voice search is not enabled on the bots, so the voice search button is
 // not tested here.
-- (void)testTrailingButton {
-  // TODO(crbug.com/996541) Starting in Xcode 11 beta 6, the share button does
-  // not appear (even with a delay) flakily.
-  if (@available(iOS 13, *))
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS13.");
+// TODO(crbug.com/996541) Starting in Xcode 11 beta 6, the share button does
+// not appear (even with a delay) flakily.
+- (void)DISABLED_testTrailingButton {
   [self openPage1];
 
   if ([ChromeEarlGrey isCompactWidth]) {

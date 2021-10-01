@@ -562,11 +562,9 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_actionButton addTarget:self
                       action:@selector(handleActionButtonTapped)
             forControlEvents:UIControlEventTouchUpInside];
-    if (@available(iOS 13.4, *)) {
-        _actionButton.pointerInteractionEnabled = YES;
-        _actionButton.pointerStyleProvider =
-            CreateOpaqueButtonPointerStyleProvider();
-    }
+    _actionButton.pointerInteractionEnabled = YES;
+    _actionButton.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
   }
   return _actionButton;
 }

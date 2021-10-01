@@ -202,18 +202,16 @@
   constraint.active = YES;
   button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
-  if (@available(iOS 13.4, *)) {
-      button.pointerInteractionEnabled = YES;
-      button.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        // This gets rid of a thin border on a spotlighted bookmarks button.
-        // This is applied to all toolbar buttons for consistency.
-        CGRect rect = CGRectInset(button.frame, 1, 1);
-        UIPointerShape* shape = [UIPointerShape shapeWithRoundedRect:rect];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    // This gets rid of a thin border on a spotlighted bookmarks button.
+    // This is applied to all toolbar buttons for consistency.
+    CGRect rect = CGRectInset(button.frame, 1, 1);
+    UIPointerShape* shape = [UIPointerShape shapeWithRoundedRect:rect];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 }
 
 @end

@@ -556,11 +556,9 @@ enum AuthenticationButtonType {
     }
   }
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider =
-        CreateOpaqueOrTransparentButtonPointerStyleProvider();
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider =
+      CreateOpaqueOrTransparentButtonPointerStyleProvider();
 }
 
 // Applies font and inset to |button| according to the current size class.

@@ -212,12 +212,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (@available(iOS 13, *)) {
-  } else {
-    // This is a workaround to fix the vertical alignment of the back button.
-    // The bug has been fixed in iOS 13. See crbug.com/931173 if needed.
-    [self.navigationController.navigationBar setNeedsLayout];
-  }
 }
 
 #pragma mark - UITableViewDelegate

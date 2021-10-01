@@ -167,9 +167,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  if (@available(iOS 13, *)) {
-    [self updateLayoutForPreviousTraitCollection:nil];
-  }
+  [self updateLayoutForPreviousTraitCollection:nil];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {

@@ -33,9 +33,7 @@
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
 
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
+  self.pointerInteractionEnabled = YES;
 
   [super loadView];
 }

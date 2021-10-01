@@ -848,15 +848,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that the "Cancel", "Edit" and "Mark Unread" buttons are not visible
 // after delete (using swipe).
 - (void)testVisibleButtonsAfterSwipeDeletion {
-  // Reading list's view width is narrower on Ipad Air (iOS 12) than on other
-  // devices. The grey_swipeSlowInDirection action deletes the element instead
-  // of displaying the 'Delete' button.
-  if (@available(iOS 13, *)) {
-  } else {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-      EARL_GREY_TEST_SKIPPED(@"Test skipped on Ipad Air 2, iOS12.");
-  }
-
   // TODO(crbug.com/1046978): Test fails on iOS 13.3 iPad
   if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnOrLater(13, 3, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 13.3 iPad and later.");

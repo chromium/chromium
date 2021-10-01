@@ -258,9 +258,7 @@
   self.suggestionsViewController.contentSuggestionsEnabled =
       self.contentSuggestionsEnabled;
 
-  if (@available(iOS 13.0, *)) {
-    self.suggestionsViewController.menuProvider = self;
-  }
+  self.suggestionsViewController.menuProvider = self;
 
   self.ntpMediator.consumer = self.headerController;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol

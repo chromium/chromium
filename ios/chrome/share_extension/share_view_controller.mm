@@ -100,9 +100,7 @@ const CGFloat kMediumAlpha = 0.5;
   self.maskView = maskView;
   // On iOS 13, the default share extension presentation style already has a
   // mask behind the view.
-  if (@available(iOS 13, *)) {
-    self.maskView.hidden = YES;
-  }
+  self.maskView.hidden = YES;
   [self.maskView
       setBackgroundColor:[UIColor colorWithWhite:0 alpha:kMediumAlpha]];
   [self.view addSubview:self.maskView];

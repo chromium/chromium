@@ -62,12 +62,10 @@
 - (void)start {
   self.viewController = [[ConsentViewController alloc] init];
   self.viewController.actionHandler = self;
-  if (@available(iOS 13, *)) {
-    self.viewController.modalInPresentation = YES;
-    self.viewController.modalPresentationStyle =
-        self.isInitialConfigurationRequest ? UIModalPresentationFullScreen
-                                           : UIModalPresentationAutomatic;
-  }
+  self.viewController.modalInPresentation = YES;
+  self.viewController.modalPresentationStyle =
+      self.isInitialConfigurationRequest ? UIModalPresentationFullScreen
+                                         : UIModalPresentationAutomatic;
   BOOL animated = !self.isInitialConfigurationRequest;
   [self.baseViewController presentViewController:self.viewController
                                         animated:animated

@@ -29,8 +29,7 @@ class ScreenshotDelegateTest : public PlatformTest {
   void SetUp() override {
     browser_interface_ = [[StubBrowserInterface alloc] init];
     browser_interface_provider_ = [[StubBrowserInterfaceProvider alloc] init];
-    if (@available(iOS 13, *))
-      screenshot_service_ = OCMClassMock([UIScreenshotService class]);
+    screenshot_service_ = OCMClassMock([UIScreenshotService class]);
   }
 
   void createScreenshotDelegate() {

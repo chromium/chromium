@@ -476,11 +476,9 @@ constexpr CGFloat kSeparatorHeight = 1;
     _primaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
     _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (@available(iOS 13.4, *)) {
-      _primaryActionButton.pointerInteractionEnabled = YES;
-      _primaryActionButton.pointerStyleProvider =
-          CreateOpaqueButtonPointerStyleProvider();
-    }
+    _primaryActionButton.pointerInteractionEnabled = YES;
+    _primaryActionButton.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
 
     // Use |primaryActionString| even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
@@ -609,10 +607,8 @@ constexpr CGFloat kSeparatorHeight = 1;
   button.accessibilityIdentifier = accessibilityIdentifier;
   button.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
   return button;
 }

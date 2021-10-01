@@ -31,9 +31,7 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
   self.titleString = titleString;
   self.subtitleString = subtitleString;
 
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
+  self.pointerInteractionEnabled = YES;
 
   [super loadView];
 }

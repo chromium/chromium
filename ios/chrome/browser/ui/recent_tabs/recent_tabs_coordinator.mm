@@ -70,16 +70,14 @@
   self.recentTabsTableViewController.handler = handler;
   self.recentTabsTableViewController.presentationDelegate = self;
 
-  if (@available(iOS 13.0, *)) {
-    self.recentTabsContextMenuHelper =
-        [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.browser
-                              recentTabsPresentationDelegate:self
-                                      tabContextMenuDelegate:self];
-    self.recentTabsTableViewController.menuProvider =
-        self.recentTabsContextMenuHelper;
-    self.recentTabsTableViewController.session =
-        self.baseViewController.view.window.windowScene.session;
-  }
+  self.recentTabsContextMenuHelper =
+      [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.browser
+                            recentTabsPresentationDelegate:self
+                                    tabContextMenuDelegate:self];
+  self.recentTabsTableViewController.menuProvider =
+      self.recentTabsContextMenuHelper;
+  self.recentTabsTableViewController.session =
+      self.baseViewController.view.window.windowScene.session;
 
   // Adds the "Done" button and hooks it up to |stop|.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
