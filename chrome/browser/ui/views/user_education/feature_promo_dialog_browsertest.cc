@@ -224,6 +224,37 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogReadLaterTest,
   ShowAndVerifyUi();
 }
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+// Need a separate fixture to override the feature flag.
+class FeaturePromoDialogSideSearchTest : public FeaturePromoDialogTest {
+ public:
+  FeaturePromoDialogSideSearchTest() {
+    feature_list_.InitAndEnableFeature(features::kSideSearch);
+  }
+
+  void SetUpOnMainThread() override {
+    FeaturePromoDialogTest::SetUpOnMainThread();
+  }
+
+  ~FeaturePromoDialogSideSearchTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoDialogSideSearchTest,
+                       InvokeUi_IPH_SideSearch) {
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->toolbar()
+      ->left_side_panel_button()
+      ->SetVisible(true);
+  RunScheduledLayouts();
+
+  set_baseline("3187662");
+  ShowAndVerifyUi();
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_TabSearch) {
   set_baseline("2991858");
   ShowAndVerifyUi();

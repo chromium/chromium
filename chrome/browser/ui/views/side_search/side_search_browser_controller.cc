@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -328,6 +330,11 @@ void SideSearchBrowserController::UpdateSidePanel() {
 
   const bool can_show_side_panel_for_page =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation();
+  if (can_show_side_panel_for_page &&
+      tab_contents_helper->returned_to_previous_srp()) {
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHSideSearchFeature);
+  }
   const bool will_show_side_panel =
       can_show_side_panel_for_page && GetSidePanelToggledOpen();
 

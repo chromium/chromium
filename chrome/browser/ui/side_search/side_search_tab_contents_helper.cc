@@ -47,6 +47,9 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
   const auto& url = navigation_handle->GetURL();
 
   if (google_util::IsGoogleSearchUrl(url)) {
+    returned_to_previous_srp_ = navigation_handle->GetPageTransition() &
+                                ui::PAGE_TRANSITION_FORWARD_BACK;
+
     // Capture the URL here in case the side contents is closed before the
     // navigation completes.
     last_search_url_ = url;

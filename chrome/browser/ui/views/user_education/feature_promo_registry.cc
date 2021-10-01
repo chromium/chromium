@@ -98,6 +98,13 @@ views::View* GetAvatarToolbarButton(BrowserView* browser_view) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+// kIPHSideSearchFeature:
+views::View* GetSideSearchButton(BrowserView* browser_view) {
+  return browser_view->toolbar()->left_side_panel_button();
+}
+#endif
+
 // kIPHTabSearchFeature:
 views::View* GetTabSearchButton(BrowserView* browser_view) {
   auto* tab_search_host = browser_view->GetTabSearchBubbleHost();
@@ -300,6 +307,18 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     RegisterFeature(feature_engagement::kIPHReopenTabFeature, params,
                     base::BindRepeating(GetAppMenuButton));
   }
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  {
+    // kIPHSideSearchFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_SIDE_SEARCH_PROMO;
+    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_LEFT;
+
+    RegisterFeature(feature_engagement::kIPHSideSearchFeature, params,
+                    base::BindRepeating(GetSideSearchButton));
+  }
+#endif
 
   {
     // kIPHTabSearchFeature:

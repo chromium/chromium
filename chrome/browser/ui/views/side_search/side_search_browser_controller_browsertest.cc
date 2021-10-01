@@ -40,7 +40,6 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features;
     scoped_feature_list_.InitWithFeatures(GetEnabledFeatures(), {});
     InProcessBrowserTest::SetUp();
   }
