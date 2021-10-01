@@ -10,7 +10,7 @@ namespace blink {
 // Maximum number of ad components a bid in an auction can have. When a renderer
 // retrieves the component ad URLs from an auction, the API acts as if exactly
 // this number of ad components were returned by padding the returned list with
-// additional obfuscated URN URLs that mapt to about:blank, to avoid creating a
+// additional obfuscated URN URLs that map to about:blank, to avoid creating a
 // side channel from a bidder worklet to the main ad.
 constexpr size_t kMaxAdAuctionAdComponents = 20;
 
