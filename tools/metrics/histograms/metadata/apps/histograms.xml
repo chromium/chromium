@@ -90,6 +90,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
                mode."/>
 </variants>
 
+<variants name="InstallReason">
+  <variant name="Oem" summary="Installed by an OEM"/>
+  <variant name="Policy" summary="Installed by policy"/>
+  <variant name="Preload" summary="Preinstalled by default"/>
+  <variant name="Sync" summary="Installed by sync"/>
+  <variant name="System" summary="Installed with the system"/>
+  <variant name="Unknown" summary="Installed with unknown source"/>
+  <variant name="User" summary="Installed by user"/>
+</variants>
+
 <variants name="InstallSource">
   <variant name="Oem" summary="Installed by an OEM"/>
   <variant name="Policy" summary="Installed by policy"/>
@@ -1641,8 +1651,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
+<histogram name="Apps.AppsCountPerInstallReason.{AppType}.{InstallReason}"
+    units="Apps" expires_after="2022-07-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    The total number of installed {AppType} for each app type {InstallReason} in
+    Chrome OS. This is logged when more than 24 hours pass after last log, or
+    during the system startup phase if more than 24 hours passed after last log.
+    This histogram is capped at 1000; values above this go into the overflow
+    bucket.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+  <token key="InstallReason" variants="InstallReason"/>
+</histogram>
+
 <histogram name="Apps.AppsCountPerInstallSource.{AppType}.{InstallSource}"
     units="Apps" expires_after="2022-07-01">
+  <obsolete>
+    Removed in M96. Replaced with Apps.AppsCountPerInstallReason.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
   <summary>

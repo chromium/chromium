@@ -54,8 +54,8 @@ namespace {
 
 // UMA metrics for a snapshot count of installed apps.
 constexpr char kAppsCountHistogramPrefix[] = "Apps.AppsCount.";
-constexpr char kAppsCountPerInstallSourceHistogramPrefix[] =
-    "Apps.AppsCountPerInstallSource.";
+constexpr char kAppsCountPerInstallReasonHistogramPrefix[] =
+    "Apps.AppsCountPerInstallReason.";
 constexpr char kAppsRunningDurationHistogramPrefix[] = "Apps.RunningDuration.";
 constexpr char kAppsRunningPercentageHistogramPrefix[] =
     "Apps.RunningPercentage.";
@@ -64,13 +64,13 @@ constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 constexpr char kAppsUsageTimeHistogramPrefixV2[] = "Apps.UsageTimeV2.";
 constexpr char kAppPreviousReadinessStatus[] = "Apps.PreviousReadinessStatus.";
 
-constexpr char kInstallSourceUnknownHistogram[] = "Unknown";
-constexpr char kInstallSourceSystemHistogram[] = "System";
-constexpr char kInstallSourcePolicyHistogram[] = "Policy";
-constexpr char kInstallSourceOemHistogram[] = "Oem";
-constexpr char kInstallSourcePreloadHistogram[] = "Preload";
-constexpr char kInstallSourceSyncHistogram[] = "Sync";
-constexpr char kInstallSourceUserHistogram[] = "User";
+constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
+constexpr char kInstallReasonSystemHistogram[] = "System";
+constexpr char kInstallReasonPolicyHistogram[] = "Policy";
+constexpr char kInstallReasonOemHistogram[] = "Oem";
+constexpr char kInstallReasonPreloadHistogram[] = "Preload";
+constexpr char kInstallReasonSyncHistogram[] = "Sync";
+constexpr char kInstallReasonUserHistogram[] = "User";
 
 constexpr base::TimeDelta kMinDuration = base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kMaxDuration = base::TimeDelta::FromDays(1);
@@ -189,22 +189,22 @@ apps::AppTypeName GetAppTypeNameForWebApp(
   return apps::AppTypeName::kWeb;
 }
 
-std::string GetInstallSource(apps::mojom::InstallReason install_reason) {
+std::string GetInstallReason(apps::mojom::InstallReason install_reason) {
   switch (install_reason) {
     case apps::mojom::InstallReason::kUnknown:
-      return kInstallSourceUnknownHistogram;
+      return kInstallReasonUnknownHistogram;
     case apps::mojom::InstallReason::kSystem:
-      return kInstallSourceSystemHistogram;
+      return kInstallReasonSystemHistogram;
     case apps::mojom::InstallReason::kPolicy:
-      return kInstallSourcePolicyHistogram;
+      return kInstallReasonPolicyHistogram;
     case apps::mojom::InstallReason::kOem:
-      return kInstallSourceOemHistogram;
+      return kInstallReasonOemHistogram;
     case apps::mojom::InstallReason::kDefault:
-      return kInstallSourcePreloadHistogram;
+      return kInstallReasonPreloadHistogram;
     case apps::mojom::InstallReason::kSync:
-      return kInstallSourceSyncHistogram;
+      return kInstallReasonSyncHistogram;
     case apps::mojom::InstallReason::kUser:
-      return kInstallSourceUserHistogram;
+      return kInstallReasonUserHistogram;
   }
 }
 
@@ -647,12 +647,12 @@ std::string AppPlatformMetrics::GetAppsCountHistogramNameForTest(
 
 // static
 std::string
-AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
     AppTypeName app_type_name,
     apps::mojom::InstallReason install_reason) {
-  return kAppsCountPerInstallSourceHistogramPrefix +
+  return kAppsCountPerInstallReasonHistogramPrefix +
          GetAppTypeHistogramName(app_type_name) + "." +
-         GetInstallSource(install_reason);
+         GetInstallReason(install_reason);
 }
 
 // static
@@ -1055,10 +1055,10 @@ void AppPlatformMetrics::ClearRunningDuration() {
 void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
   std::map<AppTypeName, int> app_count;
   std::map<AppTypeName, std::map<apps::mojom::InstallReason, int>>
-      app_count_per_install_source;
+      app_count_per_install_reason;
   app_registry_cache_.ForEachApp(
       [app_type, this, &app_count,
-       &app_count_per_install_source](const apps::AppUpdate& update) {
+       &app_count_per_install_reason](const apps::AppUpdate& update) {
         if (app_type != apps::mojom::AppType::kUnknown &&
             (update.AppType() != app_type ||
              update.AppId() == extension_misc::kChromeAppId)) {
@@ -1075,7 +1075,7 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
         }
 
         ++app_count[app_type_name];
-        ++app_count_per_install_source[app_type_name][update.InstallReason()];
+        ++app_count_per_install_reason[app_type_name][update.InstallReason()];
       });
 
   for (auto it : app_count) {
@@ -1087,11 +1087,11 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
       // often.
       base::UmaHistogramCounts1000(kAppsCountHistogramPrefix + histogram_name,
                                    it.second);
-      for (auto install_source_it : app_count_per_install_source[it.first]) {
+      for (auto install_reason_it : app_count_per_install_reason[it.first]) {
         base::UmaHistogramCounts1000(
-            kAppsCountPerInstallSourceHistogramPrefix + histogram_name + "." +
-                GetInstallSource(install_source_it.first),
-            install_source_it.second);
+            kAppsCountPerInstallReasonHistogramPrefix + histogram_name + "." +
+                GetInstallReason(install_reason_it.first),
+            install_reason_it.second);
       }
     }
   }
