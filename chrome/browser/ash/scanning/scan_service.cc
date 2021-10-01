@@ -97,6 +97,16 @@ bool SaveAsPdf(const std::vector<std::string>& jpg_images,
                bool rotate_alternate_pages,
                bool is_multi_page_scan,
                absl::optional<int> dpi) {
+  size_t total_image_size = 0;
+  for (const std::string& image : jpg_images) {
+    total_image_size += image.size();
+  }
+  base::UmaHistogramCounts1M(
+      is_multi_page_scan
+          ? "Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
+          : "Scanning.CombinedImageSizeInKbBeforePdf",
+      total_image_size / 1024);
+
   const base::TimeTicks pdf_start_time = base::TimeTicks::Now();
   const bool pdf_saved = chromeos::ConvertJpgImagesToPdf(
       jpg_images, file_path, rotate_alternate_pages, dpi);

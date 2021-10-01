@@ -21,6 +21,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Scanning.CombinedImageSizeInKbBeforePdf" units="KB"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the total size of the scanned images stored in memory right before
+    they are converted into the final PDF.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
+    units="KB" expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    During a multi-page scan session, records the total size of the scanned
+    images stored in memory at the moment the user clicks save to convert them
+    into the final PDF.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.MultiPageScan.NumPagesScanned" units="pages"
     expires_after="2022-09-03">
   <owner>gavinwill@chromium.org</owner>
