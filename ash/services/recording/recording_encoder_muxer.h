@@ -187,6 +187,15 @@ class RecordingEncoderMuxer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // A callback triggered when a failure happens during encoding. Once
+  // triggered, this callback is null, and therefore indicates that a failure
+  // occurred (See did_failure_occur() above).
+  // This has to be the first thing created, so it's the last thing that gets
+  // destroyed, since any failure in the encoders or muxer rely on this callback
+  // to notify the service about the failure.
+  // See https://crbug.com/1255090.
+  OnFailureCallback on_failure_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::unique_ptr<media::VpxVideoEncoder> video_encoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -217,11 +226,6 @@ class RecordingEncoderMuxer {
   // window gets resized).
   base::queue<gfx::Size> video_visible_rect_sizes_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // A callback triggered when a failure happens during encoding. Once
-  // triggered, this callback is null, and therefore indicates that a failure
-  // occurred (See did_failure_occur() above).
-  OnFailureCallback on_failure_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // True once video encoder is initialized successfully.
   bool is_video_encoder_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) =

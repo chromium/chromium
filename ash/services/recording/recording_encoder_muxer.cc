@@ -224,12 +224,12 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
     const media::AudioParameters* audio_input_params,
     const base::FilePath& webm_file_path,
     OnFailureCallback on_failure_callback)
-    : webm_muxer_(
+    : on_failure_callback_(std::move(on_failure_callback)),
+      webm_muxer_(
           media::AudioCodec::kOpus,
           /*has_video_=*/true,
           /*has_audio_=*/!!audio_input_params,
-          std::make_unique<RecordingMuxerDelegate>(webm_file_path, this)),
-      on_failure_callback_(std::move(on_failure_callback)) {
+          std::make_unique<RecordingMuxerDelegate>(webm_file_path, this)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (audio_input_params) {
