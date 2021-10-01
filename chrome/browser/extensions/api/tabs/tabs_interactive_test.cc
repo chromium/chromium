@@ -296,9 +296,8 @@ base::Value* ExtensionWindowLastFocusedTest::RunFunction(
   return utils::RunFunctionAndReturnSingleResult(function, params, browser());
 }
 
-// Flaky. https://crbug.com/1035622
 IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
-                       DISABLED_NoDevtoolsAndAppWindows) {
+                       NoDevtoolsAndAppWindows) {
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
   {
@@ -336,9 +335,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
   CloseAppWindow(app_window);
 }
 
-// https://crbug.com/956870
 IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
-                       DISABLED_NoTabIdForDevToolsAndAppWindows) {
+                       NoTabIdForDevToolsAndAppWindows) {
   Browser* normal_browser = CreateBrowserWithEmptyTab(false);
   {
     ActivateBrowserWindow(normal_browser);
