@@ -1476,7 +1476,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Prerender.Experimental.PrerenderCancelledInterface"
     enum="PrerenderCancelledInterface" expires_after="2022-01-27">
-  <owner>falken@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
@@ -1523,7 +1522,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Prerender.Experimental.PrerenderHostFinalStatus"
     enum="PrerenderHostFinalStatus" expires_after="2022-01-27">
-  <owner>falken@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>

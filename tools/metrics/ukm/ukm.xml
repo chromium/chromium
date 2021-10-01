@@ -12886,8 +12886,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.ServiceWorkerControlled" singular="True">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Recorded for page loads controlled by a service worker.
   </summary>
@@ -14322,7 +14322,7 @@ be describing additional metrics about the same event.
 
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>falken@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
   <summary>
     Metrics related to Prerender2
     (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
