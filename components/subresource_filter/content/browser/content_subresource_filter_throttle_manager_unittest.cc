@@ -29,7 +29,6 @@
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
-#include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
@@ -43,20 +42,16 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_client.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
-#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features.h"
-#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace subresource_filter {
@@ -64,8 +59,6 @@ namespace subresource_filter {
 namespace proto = url_pattern_index::proto;
 
 const char kTestURLWithActivation[] = "https://www.page-with-activation.com/";
-const char kTestPrerenderURLWithActivation[] =
-    "https://www.page-with-activation.com/prerender.html";
 const char kTestURLWithActivation2[] =
     "https://www.page-with-activation-2.com/";
 const char kTestURLWithDryRun[] = "https://www.page-with-dryrun.com/";
@@ -192,7 +185,6 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
 
 class ContentSubresourceFilterThrottleManagerTest
     : public content::RenderViewHostTestHarness,
-      public content::ContentBrowserClient,
       public content::WebContentsObserver,
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
@@ -247,15 +239,12 @@ class ContentSubresourceFilterThrottleManagerTest
         web_contents, throttle_manager_test_support_->profile_context(),
         /*database_manager=*/nullptr, dealer_handle_.get());
 
-    original_browser_client_ = content::SetBrowserClientForTesting(this);
-
     Observe(web_contents);
 
     NavigateAndCommit(GURL("https://example.first"));
   }
 
   void TearDown() override {
-    content::SetBrowserClientForTesting(original_browser_client_);
     throttle_manager_test_support_.reset();
     dealer_handle_.reset();
     base::RunLoop().RunUntilIdle();
@@ -348,10 +337,11 @@ class ContentSubresourceFilterThrottleManagerTest
     agent_map_.erase(host);
   }
 
-  // content::ContentBrowserClient
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(
+  void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->IsSameDocument())
+      return;
+
     // Inject the proper throttles at this time.
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
     PageActivationNotificationTiming state =
@@ -370,10 +360,10 @@ class ContentSubresourceFilterThrottleManagerTest
       if (strcmp(it->GetNameForLogging(),
                  "SubresourceFilterSafeBrowsingActivationThrottle") == 0) {
         created_safe_browsing_throttle_for_last_navigation_ = true;
-        break;
       }
+
+      navigation_handle->RegisterThrottleForTesting(std::move(it));
     }
-    return throttles;
   }
 
   void CreateAgentForHost(content::RenderFrameHost* host) {
@@ -426,8 +416,6 @@ class ContentSubresourceFilterThrottleManagerTest
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   bool created_safe_browsing_throttle_for_last_navigation_ = false;
-
-  content::ContentBrowserClient* original_browser_client_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1553,95 +1541,6 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_EQ(
       ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
       throttle_manager);
-}
-
-class PrerenderContentSubresourceFilterThrottleManagerTest
-    : public ContentSubresourceFilterThrottleManagerTest {
- public:
-  PrerenderContentSubresourceFilterThrottleManagerTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
-  }
-  ~PrerenderContentSubresourceFilterThrottleManagerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderContentSubresourceFilterThrottleManagerTest,
-                         ::testing::Values(WILL_START_REQUEST,
-                                           WILL_PROCESS_RESPONSE));
-
-// Regression test for the crash in https://crbug.com/1203614. Starts a
-// prerender with a cross-origin iframe. The iframe navigation will start but,
-// since it's cross-origin, will be deferred by the
-// PrerenderSubframeNavigationThrottle until the prerender is activated to
-// primary. The bug was that the prerender activating navigation (note:
-// prerendering activation is not related to subresource filter activation)
-// would pass through the ContentSubresourceFilterThrottleManager which caused
-// it to create a new AsyncDocumentSubresourceFilter for the main RFH and
-// unintentionally overwrite the old one. However, the deferred throttle still
-// has a raw pointer to the original so this blows up when the navigation
-// continues. This test passes if it doesn't crash.
-TEST_P(PrerenderContentSubresourceFilterThrottleManagerTest,
-       PrerenderWithDeferredCrossOriginIframeCrash) {
-  using content::NavigationSimulator;
-  using content::RenderFrameHost;
-  using content::RenderFrameHostTester;
-  using content::WebContents;
-  using content::WebContentsTester;
-
-  // This crash was occurring in the navigation response due to fetching load
-  // policy for CName aliases.
-  base::test::ScopedFeatureList enable_send_cname_aliases;
-  enable_send_cname_aliases.InitAndEnableFeature(
-      features::kSendCnameAliasesToSubresourceFilterFromBrowser);
-
-  const GURL kInitiatorUrl(kTestURLWithActivation);
-  const GURL kPrerenderingUrl(kTestPrerenderURLWithActivation);
-  const GURL kPrerenderingIframeUrl("https://crossorigin.com/index.html");
-
-  ASSERT_TRUE(url::IsSameOriginWith(kInitiatorUrl, kPrerenderingUrl));
-  ASSERT_FALSE(url::IsSameOriginWith(kPrerenderingIframeUrl, kPrerenderingUrl));
-
-  NavigateAndCommitMainFrame(kInitiatorUrl);
-
-  auto* web_contents = RenderViewHostTestHarness::web_contents();
-  WebContentsTester* web_contents_tester =
-      WebContentsTester::For(RenderViewHostTestHarness::web_contents());
-
-  // Start prerendering a page with a cross-origin iframe. The iframe will
-  // block starting the request since it's cross origin and inside a prerender.
-  std::unique_ptr<NavigationSimulator> subframe_navigation;
-  RenderFrameHost* prerender_rfh = nullptr;
-  {
-    prerender_rfh =
-        web_contents_tester->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
-    ASSERT_EQ(prerender_rfh->GetLifecycleState(),
-              RenderFrameHost::LifecycleState::kPrerendering);
-
-    auto* prerender_subframe_rfh =
-        RenderFrameHostTester::For(prerender_rfh)->AppendChild("subframe");
-    subframe_navigation = NavigationSimulator::CreateRendererInitiated(
-        kPrerenderingIframeUrl, prerender_subframe_rfh);
-    subframe_navigation->SetResponseDnsAliases({"alias1", "alias2"});
-    subframe_navigation->SetAutoAdvance(false);
-    subframe_navigation->Start();
-    ASSERT_TRUE(subframe_navigation->IsDeferred());
-  }
-
-  // Promote the prerendered page to be primary.
-  {
-    auto navigation = NavigationSimulator::CreateRendererInitiated(
-        kPrerenderingUrl, web_contents->GetMainFrame());
-    navigation->Commit();
-    ASSERT_EQ(prerender_rfh->GetLifecycleState(),
-              RenderFrameHost::LifecycleState::kActive);
-    ASSERT_FALSE(subframe_navigation->IsDeferred());
-  }
-
-  subframe_navigation->SetAutoAdvance(true);
-  subframe_navigation->Commit();
 }
 
 // TODO(csharrison): Make sure the following conditions are exercised in tests:
