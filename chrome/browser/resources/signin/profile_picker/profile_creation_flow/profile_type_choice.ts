@@ -9,7 +9,7 @@ import './shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,8 +27,8 @@ export interface ProfileTypeChoiceElement {
 }
 
 const ProfileTypeChoiceElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+    mixinBehaviors([WebUIListenerBehavior], I18nMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior};
 
 export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   static get is() {
