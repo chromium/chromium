@@ -270,7 +270,6 @@ JaPhoneticData = class {
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
-          case JaPhoneticData.CharacterSet.OTHER:
             return {delimiter: true, prefix: 'ハンカクオオモジ'};
         }
         break;
@@ -290,6 +289,7 @@ JaPhoneticData = class {
           case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.HALF_WIDTH_NUMERIC:
           case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
+          case JaPhoneticData.CharacterSet.OTHER:
             return {delimiter: true, prefix: null};
         }
         break;
@@ -298,7 +298,6 @@ JaPhoneticData = class {
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
-          case JaPhoneticData.CharacterSet.OTHER:
             return {delimiter: true, prefix: 'オオモジ'};
         }
         break;
