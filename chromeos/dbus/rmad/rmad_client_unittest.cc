@@ -162,6 +162,18 @@ class RmadClientTest : public testing::Test {
     EmitSignal(&signal);
   }
 
+  // Passes a hardware verification status signal to |client_|.
+  void EmitHardwareVerificationResultSignal(bool is_compliant,
+                                            std::string error_message) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kHardwareVerificationResultSignal);
+    rmad::HardwareVerificationResult result_proto;
+    result_proto.set_is_compliant(is_compliant);
+    result_proto.set_error_str(error_message);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(result_proto);
+    EmitSignal(&signal);
+  }
+
  protected:
   // Maps from rmad signal name to the corresponding callback provided by
   // |client_|.
@@ -223,14 +235,21 @@ class TestObserver : public RmadClient::Observer {
   float last_provisioning_progress() const {
     return last_provisioning_progress_;
   }
-  int num_hardware_write_protection_state() {
+  int num_hardware_write_protection_state() const {
     return num_hardware_write_protection_state_;
   }
-  bool last_hardware_write_protection_state() {
+  bool last_hardware_write_protection_state() const {
     return last_hardware_write_protection_state_;
   }
-  int num_power_cable_state() { return num_power_cable_state_; }
-  bool last_power_cable_state() { return last_power_cable_state_; }
+  int num_power_cable_state() const { return num_power_cable_state_; }
+  bool last_power_cable_state() const { return last_power_cable_state_; }
+  int num_hardware_verification_result() const {
+    return num_hardware_verification_result_;
+  }
+  const rmad::HardwareVerificationResult& last_hardware_verification_result()
+      const {
+    return last_hardware_verification_result_;
+  }
 
   // Called when an error occurs outside of state transitions.
   // e.g. while calibrating devices.
@@ -272,6 +291,14 @@ class TestObserver : public RmadClient::Observer {
     last_power_cable_state_ = plugged_in;
   }
 
+  // Called when hardware verification completes.
+  void HardwareVerificationResult(
+      const rmad::HardwareVerificationResult& last_hardware_verification_result)
+      override {
+    num_hardware_verification_result_++;
+    last_hardware_verification_result_ = last_hardware_verification_result;
+  }
+
  private:
   RmadClient* client_;  // Not owned.
   int num_error_ = 0;
@@ -289,6 +316,8 @@ class TestObserver : public RmadClient::Observer {
   bool last_hardware_write_protection_state_ = true;
   int num_power_cable_state_ = 0;
   bool last_power_cable_state_ = true;
+  int num_hardware_verification_result_ = 0;
+  rmad::HardwareVerificationResult last_hardware_verification_result_;
 };  // namespace chromeos
 
 TEST_F(RmadClientTest, GetCurrentState) {
@@ -680,6 +709,25 @@ TEST_F(RmadClientTest, PowerCableState) {
   EmitPowerCableStateSignal(true);
   EXPECT_EQ(2, observer_1.num_power_cable_state());
   EXPECT_EQ(true, observer_1.last_power_cable_state());
+}
+
+// Tests that synchronous observers are notified about hardware verification
+// status.
+TEST_F(RmadClientTest, HardwareVerificationResult) {
+  TestObserver observer_1(client_);
+
+  EmitHardwareVerificationResultSignal(false, "fatal error");
+  EXPECT_EQ(1, observer_1.num_hardware_verification_result());
+  EXPECT_EQ(false,
+            observer_1.last_hardware_verification_result().is_compliant());
+  EXPECT_EQ("fatal error",
+            observer_1.last_hardware_verification_result().error_str());
+
+  EmitHardwareVerificationResultSignal(true, "ok");
+  EXPECT_EQ(2, observer_1.num_hardware_verification_result());
+  EXPECT_EQ(true,
+            observer_1.last_hardware_verification_result().is_compliant());
+  EXPECT_EQ("ok", observer_1.last_hardware_verification_result().error_str());
 }
 
 }  // namespace chromeos

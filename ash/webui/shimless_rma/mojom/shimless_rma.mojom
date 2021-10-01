@@ -65,6 +65,7 @@ enum RmaState {
   kRunCalibration,
   kProvisionDevice,
   kWaitForManualWPEnable,
+  kFinalize,
   kRepairComplete,
 };
 
@@ -352,6 +353,14 @@ interface PowerCableStateObserver {
   OnPowerCableStateChanged(bool plugged_in);
 };
 
+// Implemented by clients to receive status of finalization (hardware
+// verification).
+interface FinalizationObserver {
+  // OnHardwareVerificationResult is called to report if hardware verification
+  // succeeded or failed. With an optional error message for failures.
+  OnHardwareVerificationResult(bool is_compliant, string error_message);
+};
+
 // Enables clients in the webui to manage the RMA flow.
 // This API is hosted in the web browser exposed to the Shimless RMA SWA.
 interface ShimlessRmaService {
@@ -581,17 +590,17 @@ interface ShimlessRmaService {
   //
   // Complete RMA and reboot.
   // Returns an error indicating success or a failure.
-  FinalizeAndReboot()
+  EndRmaAndReboot()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
   // Complete RMA and shutdown.
   // Returns an error indicating success or a failure.
-  FinalizeAndShutdown()
+  EndRmaAndShutdown()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
   // Attempt to cut off the device battery and shutdown.
   // Returns an error indicating success or a failure.
-  CutoffBattery()
+  EndRmaAndCutoffBattery()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
 
@@ -614,4 +623,6 @@ interface ShimlessRmaService {
   // The power cable state is needed to indicate if the device is ready for
   // battery cutoff.
   ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
+  // Registers an observer for completion of hardware finalization.
+  ObserveFinalizationStatus(pending_remote<FinalizationObserver> observer);
 };

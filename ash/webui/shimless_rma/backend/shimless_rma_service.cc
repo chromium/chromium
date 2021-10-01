@@ -601,46 +601,46 @@ void ShimlessRmaService::CalibrationComplete(
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::FinalizeAndReboot(FinalizeAndRebootCallback callback) {
-  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
-    LOG(ERROR) << "FinalizeAndReboot called from incorrect state "
+void ShimlessRmaService::EndRmaAndReboot(EndRmaAndRebootCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "EndRmaAndReboot called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
                             can_abort_, can_go_back_,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  state_proto_.mutable_finalize()->set_shutdown(
-      rmad::FinalizeState::RMAD_FINALIZE_REBOOT);
+  state_proto_.mutable_repair_complete()->set_shutdown(
+      rmad::RepairCompleteState::RMAD_REPAIR_COMPLETE_REBOOT);
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::FinalizeAndShutdown(
-    FinalizeAndShutdownCallback callback) {
-  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
-    LOG(ERROR) << "FinalizeAndShutdown called from incorrect state "
+void ShimlessRmaService::EndRmaAndShutdown(EndRmaAndShutdownCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "EndRmaAndShutdown called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
                             can_abort_, can_go_back_,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  state_proto_.mutable_finalize()->set_shutdown(
-      rmad::FinalizeState::RMAD_FINALIZE_SHUTDOWN);
+  state_proto_.mutable_repair_complete()->set_shutdown(
+      rmad::RepairCompleteState::RMAD_REPAIR_COMPLETE_SHUTDOWN);
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::CutoffBattery(CutoffBatteryCallback callback) {
-  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
-    LOG(ERROR) << "CutoffBattery called from incorrect state "
+void ShimlessRmaService::EndRmaAndCutoffBattery(
+    EndRmaAndCutoffBatteryCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "EndRmaAndCutoffBattery called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
                             can_abort_, can_go_back_,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  state_proto_.mutable_finalize()->set_shutdown(
-      rmad::FinalizeState::RMAD_FINALIZE_BATERY_CUTOFF);
+  state_proto_.mutable_repair_complete()->set_shutdown(
+      rmad::RepairCompleteState::RMAD_REPAIR_COMPLETE_BATTERY_CUTOFF);
   TransitionNextStateGeneric(std::move(callback));
 }
 
@@ -693,6 +693,15 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
   }
 }
 
+void ShimlessRmaService::HardwareVerificationResult(
+    const rmad::HardwareVerificationResult& hardwareVerificationResult) {
+  if (finalization_observer_.is_bound()) {
+    finalization_observer_->OnHardwareVerificationResult(
+        hardwareVerificationResult.is_compliant(),
+        hardwareVerificationResult.error_str());
+  }
+}
+
 void ShimlessRmaService::ObserveError(
     ::mojo::PendingRemote<mojom::ErrorObserver> observer) {
   error_observer_.Bind(std::move(observer));
@@ -722,6 +731,11 @@ void ShimlessRmaService::ObserveHardwareWriteProtectionState(
 void ShimlessRmaService::ObservePowerCableState(
     ::mojo::PendingRemote<mojom::PowerCableStateObserver> observer) {
   power_cable_observer_.Bind(std::move(observer));
+}
+
+void ShimlessRmaService::ObserveFinalizationStatus(
+    ::mojo::PendingRemote<mojom::FinalizationObserver> observer) {
+  finalization_observer_.Bind(std::move(observer));
 }
 
 ////////////////////////////////

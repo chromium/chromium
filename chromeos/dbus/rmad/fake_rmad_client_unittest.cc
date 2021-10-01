@@ -92,6 +92,13 @@ class TestObserver : public RmadClient::Observer {
   }
   int num_power_cable_state() { return num_power_cable_state_; }
   bool last_power_cable_state() { return last_power_cable_state_; }
+  int num_hardware_verification_result() const {
+    return num_hardware_verification_result_;
+  }
+  const rmad::HardwareVerificationResult& last_hardware_verification_result()
+      const {
+    return last_hardware_verification_result_;
+  }
 
   // Called when an error occurs outside of state transitions.
   // e.g. while calibrating devices.
@@ -134,6 +141,14 @@ class TestObserver : public RmadClient::Observer {
     last_power_cable_state_ = plugged_in;
   }
 
+  // Called when hardware verification completes.
+  void HardwareVerificationResult(
+      const rmad::HardwareVerificationResult& last_hardware_verification_result)
+      override {
+    num_hardware_verification_result_++;
+    last_hardware_verification_result_ = last_hardware_verification_result;
+  }
+
  private:
   RmadClient* client_;  // Not owned.
   int num_error_ = 0;
@@ -151,6 +166,8 @@ class TestObserver : public RmadClient::Observer {
   bool last_hardware_write_protection_state_ = true;
   int num_power_cable_state_ = 0;
   bool last_power_cable_state_ = true;
+  int num_hardware_verification_result_ = 0;
+  rmad::HardwareVerificationResult last_hardware_verification_result_;
 };  // namespace chromeos
 
 rmad::RmadState CreateWelcomeState() {
@@ -546,6 +563,26 @@ TEST_F(FakeRmadClientTest, PowerCableStateObservation) {
   fake_client_()->TriggerPowerCableStateObservation(true);
   EXPECT_EQ(2, observer_1.num_power_cable_state());
   EXPECT_EQ(true, observer_1.last_power_cable_state());
+}
+
+// Tests that synchronous observers are notified about hardware verification
+// status.
+TEST_F(FakeRmadClientTest, HardwareVerificationResultObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerHardwareVerificationResultObservation(false,
+                                                               "fatal error");
+  EXPECT_EQ(1, observer_1.num_hardware_verification_result());
+  EXPECT_EQ(false,
+            observer_1.last_hardware_verification_result().is_compliant());
+  EXPECT_EQ("fatal error",
+            observer_1.last_hardware_verification_result().error_str());
+
+  fake_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  EXPECT_EQ(2, observer_1.num_hardware_verification_result());
+  EXPECT_EQ(true,
+            observer_1.last_hardware_verification_result().is_compliant());
+  EXPECT_EQ("ok", observer_1.last_hardware_verification_result().error_str());
 }
 
 }  // namespace

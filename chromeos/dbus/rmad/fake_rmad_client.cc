@@ -312,6 +312,16 @@ void FakeRmadClient::TriggerPowerCableStateObservation(bool plugged_in) {
     observer.PowerCableState(plugged_in);
 }
 
+void FakeRmadClient::TriggerHardwareVerificationResultObservation(
+    bool is_compliant,
+    const std::string& error_str) {
+  rmad::HardwareVerificationResult verificationStatus;
+  verificationStatus.set_is_compliant(is_compliant);
+  verificationStatus.set_error_str(error_str);
+  for (auto& observer : observers_)
+    observer.HardwareVerificationResult(verificationStatus);
+}
+
 const rmad::GetStateReply& FakeRmadClient::GetStateReply() const {
   return state_replies_[state_index_];
 }

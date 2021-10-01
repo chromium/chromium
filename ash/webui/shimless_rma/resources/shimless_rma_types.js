@@ -190,6 +190,29 @@ export let PowerCableStateObserverRemote =
     ash.shimlessRma.mojom.PowerCableStateObserverRemote;
 
 /**
+ * Type alias for FinalizationObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.FinalizationObserverRemote}
+ */
+export let FinalizationObserverRemote =
+    ash.shimlessRma.mojom.FinalizationObserverRemote;
+
+/**
+ * Type alias for FinalizationObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.FinalizationObserverReceiver}
+ */
+export let FinalizationObserverReceiver =
+    ash.shimlessRma.mojom.FinalizationObserverReceiver;
+
+/**
+ * Type alias for FinalizationObserverInterface.
+ * @typedef {
+ *    ash.shimlessRma.mojom.FinalizationObserverInterface
+ * }
+ */
+export let FinalizationObserverInterface =
+    ash.shimlessRma.mojom.FinalizationObserverInterface;
+
+/**
  * Type alias for the ShimlessRmaService.
  * @typedef {ash.shimlessRma.mojom.ShimlessRmaService}
  */

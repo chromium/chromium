@@ -103,9 +103,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void ContinueCalibration(ContinueCalibrationCallback callback) override;
   void CalibrationComplete(CalibrationCompleteCallback callback) override;
 
-  void FinalizeAndReboot(FinalizeAndRebootCallback callback) override;
-  void FinalizeAndShutdown(FinalizeAndShutdownCallback callback) override;
-  void CutoffBattery(CutoffBatteryCallback callback) override;
+  void EndRmaAndReboot(EndRmaAndRebootCallback callback) override;
+  void EndRmaAndShutdown(EndRmaAndShutdownCallback callback) override;
+  void EndRmaAndCutoffBattery(EndRmaAndCutoffBatteryCallback callback) override;
 
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
@@ -120,6 +120,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
           observer) override;
   void ObservePowerCableState(
       ::mojo::PendingRemote<mojom::PowerCableStateObserver> observer) override;
+  void ObserveFinalizationStatus(
+      ::mojo::PendingRemote<mojom::FinalizationObserver> observer) override;
 
   void BindInterface(
       mojo::PendingReceiver<mojom::ShimlessRmaService> pending_receiver);
@@ -134,6 +136,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                             double progress) override;
   void HardwareWriteProtectionState(bool enabled) override;
   void PowerCableState(bool plugged_in) override;
+  void HardwareVerificationResult(const rmad::HardwareVerificationResult&
+                                      hardwareVerificationResult) override;
 
   void OsUpdateProgress(update_engine::Operation operation, double progress);
 
@@ -168,6 +172,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::Remote<mojom::HardwareWriteProtectionStateObserver>
       hwwp_state_observer_;
   mojo::Remote<mojom::PowerCableStateObserver> power_cable_observer_;
+  mojo::Remote<mojom::FinalizationObserver> finalization_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

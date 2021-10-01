@@ -87,6 +87,8 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     case ProtoRmadState::kWpEnablePhysical:
       return MojomRmaState::kWaitForManualWPEnable;
     case ProtoRmadState::kFinalize:
+      return MojomRmaState::kFinalize;
+    case ProtoRmadState::kRepairComplete:
       return MojomRmaState::kRepairComplete;
 
     case ProtoRmadState::STATE_NOT_SET:

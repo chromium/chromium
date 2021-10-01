@@ -56,6 +56,7 @@ class RmadClientImpl : public RmadClient {
   void HardwareWriteProtectionStateReceived(dbus::Signal* signal);
   void PowerCableStateReceived(dbus::Signal* signal);
   void ProvisioningProgressReceived(dbus::Signal* signal);
+  void HardwareVerificationResultReceived(dbus::Signal* signal);
 
   void SignalConnected(const std::string& interface_name,
                        const std::string& signal_name,
@@ -85,6 +86,8 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
       {rmad::kPowerCableStateSignal, &RmadClientImpl::PowerCableStateReceived},
       {rmad::kProvisioningProgressSignal,
        &RmadClientImpl::ProvisioningProgressReceived},
+      {rmad::kHardwareVerificationResultSignal,
+       &RmadClientImpl::HardwareVerificationResultReceived},
   };
   auto on_connected_callback = base::BindRepeating(
       &RmadClientImpl::SignalConnected, weak_ptr_factory_.GetWeakPtr());
@@ -199,6 +202,20 @@ void RmadClientImpl::ProvisioningProgressReceived(dbus::Signal* signal) {
     observer.ProvisioningProgress(
         static_cast<rmad::ProvisionDeviceState::ProvisioningStep>(step),
         progress);
+  }
+}
+
+void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kHardwareVerificationResultSignal);
+  dbus::MessageReader reader(signal);
+  // Read proto message
+  rmad::HardwareVerificationResult signal_proto;
+  if (!reader.PopArrayOfBytesAsProto(&signal_proto)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  for (auto& observer : observers_) {
+    observer.HardwareVerificationResult(signal_proto);
   }
 }
 

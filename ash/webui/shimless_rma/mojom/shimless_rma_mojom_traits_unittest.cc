@@ -89,7 +89,8 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
        {mojom::RmaState::kProvisionDevice, rmad::RmadState::kProvisionDevice},
        {mojom::RmaState::kWaitForManualWPEnable,
         rmad::RmadState::kWpEnablePhysical},
-       {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
+       {mojom::RmaState::kFinalize, rmad::RmadState::kFinalize},
+       {mojom::RmaState::kRepairComplete, rmad::RmadState::kRepairComplete}});
 
   // rmad::RmadState::STATE_NOT_SET is used when RMA is not active so the
   // toMojo conversion is reachable, unlike most other enums.
