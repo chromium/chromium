@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 448 tests; 422 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 448 tests; 428 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS CSS Transitions: property <transform> from [perspective(400px)] to [perspective(500px)] at (-1) should be [perspective(333.3333333333333px)]
 PASS CSS Transitions: property <transform> from [perspective(400px)] to [perspective(500px)] at (0) should be [perspective(400px)]
 PASS CSS Transitions: property <transform> from [perspective(400px)] to [perspective(500px)] at (0.25) should be [perspective(421.0526315789474px)]
@@ -72,23 +72,23 @@ PASS Web Animations: property <transform> from [scaleZ(1) perspective(400px)] to
 PASS Web Animations: property <transform> from [scaleZ(1) perspective(400px)] to [scaleZ(2) perspective(500px)] at (0.75) should be [scaleZ(1.75) perspective(470.5882352941176px)]
 PASS Web Animations: property <transform> from [scaleZ(1) perspective(400px)] to [scaleZ(2) perspective(500px)] at (1) should be [scaleZ(2) perspective(500px)]
 PASS Web Animations: property <transform> from [scaleZ(1) perspective(400px)] to [scaleZ(2) perspective(500px)] at (2) should be [scaleZ(3) perspective(666.6666666666666px)]
-FAIL CSS Transitions: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)] Cannot read properties of null (reading '1')
+PASS CSS Transitions: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)]
 PASS CSS Transitions: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0) should be [scaleZ(2)]
 PASS CSS Transitions: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0.5) should be [scaleZ(2) perspective(1000px)]
 PASS CSS Transitions: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (1) should be [scaleZ(2) perspective(500px)]
 PASS CSS Transitions: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (2) should be [scaleZ(2) perspective(250px)]
-FAIL CSS Transitions with transition: all: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)] Cannot read properties of null (reading '1')
+PASS CSS Transitions with transition: all: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)]
 PASS CSS Transitions with transition: all: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0) should be [scaleZ(2)]
 PASS CSS Transitions with transition: all: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0.5) should be [scaleZ(2) perspective(1000px)]
 PASS CSS Transitions with transition: all: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (1) should be [scaleZ(2) perspective(500px)]
 PASS CSS Transitions with transition: all: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (2) should be [scaleZ(2) perspective(250px)]
-FAIL CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)] Cannot read properties of null (reading '1')
-FAIL CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0) should be [scaleZ(2)] Cannot read properties of null (reading '1')
+PASS CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)]
+PASS CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0) should be [scaleZ(2)]
 PASS CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0.5) should be [scaleZ(2) perspective(1000px)]
 PASS CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (1) should be [scaleZ(2) perspective(500px)]
 PASS CSS Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (2) should be [scaleZ(2) perspective(250px)]
-FAIL Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)] Cannot read properties of null (reading '1')
-FAIL Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0) should be [scaleZ(2)] Cannot read properties of null (reading '1')
+PASS Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (-1) should be [scaleZ(2)]
+PASS Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0) should be [scaleZ(2)]
 PASS Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (0.5) should be [scaleZ(2) perspective(1000px)]
 PASS Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (1) should be [scaleZ(2) perspective(500px)]
 PASS Web Animations: property <transform> from [scaleZ(2)] to [scaleZ(2) perspective(500px)] at (2) should be [scaleZ(2) perspective(250px)]
