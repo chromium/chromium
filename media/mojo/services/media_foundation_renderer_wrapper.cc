@@ -98,7 +98,8 @@ base::TimeDelta MediaFoundationRendererWrapper::GetMediaTime() {
 void MediaFoundationRendererWrapper::GetDCOMPSurface(
     GetDCOMPSurfaceCallback callback) {
   if (has_get_dcomp_surface_called_) {
-    mojo::ReportBadMessage("GetDCOMPSurface should only be called once!");
+    renderer_extension_receiver_.ReportBadMessage(
+        "GetDCOMPSurface should only be called once!");
     return;
   }
 
