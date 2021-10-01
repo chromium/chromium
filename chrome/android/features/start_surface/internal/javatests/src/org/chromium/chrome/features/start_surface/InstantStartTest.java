@@ -1436,7 +1436,7 @@ public class InstantStartTest {
                 .check(matches(isDisplayed()));
     }
 
-    public static Matcher<View> matchesBackgroundAlpha(final int expectedAlpha) {
+    private static Matcher<View> matchesBackgroundAlpha(final int expectedAlpha) {
         return new BoundedMatcher<View, View>(View.class) {
             String mMessage;
             int mActualAlpha;

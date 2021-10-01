@@ -22,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -83,7 +84,21 @@ class TasksView extends CoordinatorLayoutForPointer {
         mCarouselTabSwitcherContainer =
                 (FrameLayout) findViewById(R.id.carousel_tab_switcher_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
+
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
+        // TODO(https://crbug.com/1251632): Find out why scrolling was broken after
+        // crrev.com/c/3025127. Force the header view to be draggable as a workaround.
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();
+        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(AppBarLayout appBarLayout) {
+                return true;
+            }
+        });
+        params.setBehavior(behavior);
+
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
         setTabCarouselTitleStyle();
