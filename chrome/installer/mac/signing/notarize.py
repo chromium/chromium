@@ -113,19 +113,21 @@ def wait_for_results(uuids, config):
                 # error code refers to the not-found state. The UUID is known-
                 # good since it was a result of submit(), so loop to wait for
                 # it to show up.
-                if e.returncode in (1, 239):
-                    try:
-                        plist = plistlib.loads(e.output)
-                        if plist['product-errors'][0]['code'] == 1519:
-                            continue
-                    except:
-                        pass
+                if e.returncode == 239:
+                    plist = plistlib.loads(e.output)
+                    if plist['product-errors'][0]['code'] == 1519:
+                        continue
                 # Sometimes there are network hiccups when fetching notarization
                 # info, but that often fixes itself and shouldn't derail the
                 # entire signing operation. More serious extended connectivity
                 # problems will eventually fall through to the "no results"
                 # timeout.
                 if e.returncode == 13:
+                    logger.warning(e.output)
+                    continue
+                # And other times the command exits with code 1 and no further
+                # output.
+                if e.returncode == 1:
                     logger.warning(e.output)
                     continue
                 raise e

@@ -301,24 +301,9 @@ class TestWaitForResults(unittest.TestCase):
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch('signing.commands.run_command_output')
-    def test_notarization_info_known_exit_1(self, run_command_output, **kwargs):
+    def test_notarization_info_exit_1(self, run_command_output, **kwargs):
         run_command_output.side_effect = [
-            subprocess.CalledProcessError(
-                1, 'altool',
-                _make_plist({
-                    'product-errors': [{
-                        'code': 1519,
-                        'message': 'Could not find the RequestUUID.',
-                        'userInfo': {
-                            'NSLocalizedDescription':
-                                'Could not find the RequestUUID.',
-                            'NSLocalizedFailureReason':
-                                'Apple Services operation failed.',
-                            'NSLocalizedRecoverySuggestion':
-                                'Could not find the RequestUUID.'
-                        }
-                    }]
-                })),
+            subprocess.CalledProcessError(1, 'altool', ''),
             _make_plist({
                 'notarization-info': {
                     'Date': '2021-08-24T19:28:21Z',
@@ -341,26 +326,6 @@ class TestWaitForResults(unittest.TestCase):
                 '--output-format', 'xml'
             ])
         ])
-
-    @mock.patch('signing.commands.run_command_output')
-    def test_notarization_info_exit_1(self, run_command_output, **kwargs):
-        message = 'Failed to frobinate the widget.'
-        run_command_output.side_effect = [
-            subprocess.CalledProcessError(
-                1, 'altool',
-                _make_plist(
-                    {'product-errors': [{
-                        'code': 4223,
-                        'message': message,
-                    }]})),
-        ]
-        uuids = ['279a6988-4fbb-43a0-a0d0-239bcfa6bb80']
-        try:
-            # Force yield to evaluate.
-            list(notarize.wait_for_results(uuids, test_config.TestConfig()))
-            self.fail('Should have thrown')
-        except subprocess.CalledProcessError as e:
-            self.assertTrue(message in e.output.decode('utf-8'))
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch.multiple('signing.commands',
