@@ -116,6 +116,7 @@
                         "promo_card_max_shown": "3"
                     },
                     "enable_features": [
+                        "ContextualSearchLongpressResolve",
                         "ContextualSearchNewSettings",
                         "ContextualSearchTranslations"
                     ]
@@ -2377,9 +2378,6 @@
             "experiments": [
                 {
                     "name": "Launch-candidate_20210915",
-                    "enable_features": [
-                        "ContextualSearchLongpressResolve"
-                    ],
                     "disable_features": [
                         "ContextualSearchLiteralSearchTap"
                     ]
