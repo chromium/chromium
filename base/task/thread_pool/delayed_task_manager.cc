@@ -35,12 +35,9 @@ DelayedTaskManager::DelayedTask::~DelayedTask() = default;
 DelayedTaskManager::DelayedTask& DelayedTaskManager::DelayedTask::operator=(
     DelayedTaskManager::DelayedTask&& other) = default;
 
-bool DelayedTaskManager::DelayedTask::operator<=(
+bool DelayedTaskManager::DelayedTask::operator>(
     const DelayedTask& other) const {
-  if (task.delayed_run_time == other.task.delayed_run_time) {
-    return task.sequence_num <= other.task.sequence_num;
-  }
-  return task.delayed_run_time < other.task.delayed_run_time;
+  return task > other.task;
 }
 
 bool DelayedTaskManager::DelayedTask::IsScheduled() const {
@@ -111,14 +108,14 @@ void DelayedTaskManager::ProcessRipeTasks() {
     // sequence now rather than in the future, to minimize CPU wake ups and save
     // power.
     while (!delayed_task_queue_.empty() &&
-           (delayed_task_queue_.Min().task.delayed_run_time <= now ||
-            !delayed_task_queue_.Min().task.task.MaybeValid())) {
+           (delayed_task_queue_.top().task.delayed_run_time <= now ||
+            !delayed_task_queue_.top().task.task.MaybeValid())) {
       // The const_cast on top is okay since the DelayedTask is
       // transactionally being popped from |delayed_task_queue_| right after
       // and the move doesn't alter the sort order.
       ripe_delayed_tasks.push_back(
-          std::move(const_cast<DelayedTask&>(delayed_task_queue_.Min())));
-      delayed_task_queue_.Pop();
+          std::move(const_cast<DelayedTask&>(delayed_task_queue_.top())));
+      delayed_task_queue_.pop();
     }
     process_ripe_tasks_time = GetTimeToScheduleProcessRipeTasksLockRequired();
   }
@@ -133,7 +130,7 @@ absl::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
   CheckedAutoLock auto_lock(queue_lock_);
   if (delayed_task_queue_.empty())
     return absl::nullopt;
-  return delayed_task_queue_.Min().task.delayed_run_time;
+  return delayed_task_queue_.top().task.delayed_run_time;
 }
 
 TimeTicks DelayedTaskManager::GetTimeToScheduleProcessRipeTasksLockRequired() {
@@ -143,7 +140,7 @@ TimeTicks DelayedTaskManager::GetTimeToScheduleProcessRipeTasksLockRequired() {
   // The const_cast on top is okay since |IsScheduled()| and |SetScheduled()|
   // don't alter the sort order.
   DelayedTask& ripest_delayed_task =
-      const_cast<DelayedTask&>(delayed_task_queue_.Min());
+      const_cast<DelayedTask&>(delayed_task_queue_.top());
   if (ripest_delayed_task.IsScheduled())
     return TimeTicks::Max();
   ripest_delayed_task.SetScheduled();

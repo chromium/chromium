@@ -60,14 +60,9 @@ struct DelayedWakeUp {
     return !(*this != other);
   }
 
-  bool operator<=(const DelayedWakeUp& other) const {
-    if (time == other.time) {
-      if (resolution == other.resolution)
-        return true;
-
-      return resolution < other.resolution;
-    }
-    return time < other.time;
+  // Used for a min-heap.
+  bool operator>(const DelayedWakeUp& other) const {
+    return std::tie(time, resolution) > std::tie(other.time, other.resolution);
   }
 };
 

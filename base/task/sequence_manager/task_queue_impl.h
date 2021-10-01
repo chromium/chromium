@@ -7,17 +7,19 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <memory>
 #include <queue>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/pending_task.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/common/intrusive_heap.h"
 #include "base/task/common/operations_controller.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/atomic_flag_set.h"
@@ -188,11 +190,9 @@ class BASE_EXPORT TaskQueueImpl {
 
   void OnWakeUp(LazyNow* lazy_now);
 
-  base::internal::HeapHandle heap_handle() const {
-    return main_thread_only().heap_handle;
-  }
+  HeapHandle heap_handle() const { return main_thread_only().heap_handle; }
 
-  void set_heap_handle(base::internal::HeapHandle heap_handle) {
+  void set_heap_handle(HeapHandle heap_handle) {
     main_thread_only().heap_handle = heap_handle;
   }
 
@@ -330,11 +330,11 @@ class BASE_EXPORT TaskQueueImpl {
     // TODO(crbug.com/1155905): we pass SequenceManager to be able to record
     // crash keys. Remove this parameter after chasing down this crash.
     void SweepCancelledTasks(SequenceManagerImpl* sequence_manager);
-    std::priority_queue<Task> TakeTasks() { return std::move(queue_); }
     Value AsValue(TimeTicks now) const;
 
    private:
-    struct PQueue : public std::priority_queue<Task> {
+    struct PQueue
+        : public std::priority_queue<Task, std::vector<Task>, std::greater<>> {
       // Removes all cancelled tasks from the queue. Returns the number of
       // removed high resolution tasks (which could be lower than the total
       // number of removed tasks).
@@ -365,7 +365,7 @@ class BASE_EXPORT TaskQueueImpl {
     std::unique_ptr<WorkQueue> immediate_work_queue;
     DelayedIncomingQueue delayed_incoming_queue;
     ObserverList<TaskObserver>::Unchecked task_observers;
-    base::internal::HeapHandle heap_handle;
+    HeapHandle heap_handle;
     bool is_enabled = true;
     trace_event::BlameContext* blame_context = nullptr;  // Not owned.
     EnqueueOrder current_fence;

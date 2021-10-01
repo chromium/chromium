@@ -4,6 +4,7 @@
 
 #include "base/task/thread_pool/task_source_sort_key.h"
 
+#include "base/cxx17_backports.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,277 +12,59 @@
 namespace base {
 namespace internal {
 
-TEST(TaskSourceSortKeyTest, OperatorLessThanOrEqual) {
-  TaskSourceSortKey key_a(TaskPriority::USER_BLOCKING,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_b(TaskPriority::USER_BLOCKING,
-                          TimeTicks::FromInternalValue(2000));
-  TaskSourceSortKey key_c(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_d(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(2000));
-  TaskSourceSortKey key_e(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(1000), 1);
-  TaskSourceSortKey key_f(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(2000), 1);
-  TaskSourceSortKey key_g(TaskPriority::BEST_EFFORT,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_h(TaskPriority::BEST_EFFORT,
-                          TimeTicks::FromInternalValue(2000));
+namespace {
 
-  EXPECT_LE(key_a, key_a);
-  EXPECT_FALSE(key_b <= key_a);
-  EXPECT_FALSE(key_c <= key_a);
-  EXPECT_FALSE(key_d <= key_a);
-  EXPECT_FALSE(key_e <= key_a);
-  EXPECT_FALSE(key_f <= key_a);
-  EXPECT_FALSE(key_g <= key_a);
-  EXPECT_FALSE(key_h <= key_a);
+// Keys are manually ordered from the least important to the most important.
+const TaskSourceSortKey kTestKeys[] = {
+    {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(2000)},
+    {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(1000)},
+    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000), 1},
+    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(1000), 1},
+    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000)},
+    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(1000)},
+    {TaskPriority::USER_BLOCKING, TimeTicks() + Seconds(2000)},
+    {TaskPriority::USER_BLOCKING, TimeTicks() + Seconds(1000)},
+};
 
-  EXPECT_LE(key_a, key_b);
-  EXPECT_LE(key_b, key_b);
-  EXPECT_FALSE(key_c <= key_b);
-  EXPECT_FALSE(key_d <= key_b);
-  EXPECT_FALSE(key_e <= key_b);
-  EXPECT_FALSE(key_f <= key_b);
-  EXPECT_FALSE(key_g <= key_b);
-  EXPECT_FALSE(key_h <= key_b);
+}  // namespace
 
-  EXPECT_LE(key_a, key_c);
-  EXPECT_LE(key_b, key_c);
-  EXPECT_LE(key_c, key_c);
-  EXPECT_FALSE(key_d <= key_c);
-  EXPECT_FALSE(key_e <= key_c);
-  EXPECT_FALSE(key_f <= key_c);
-  EXPECT_FALSE(key_g <= key_c);
-  EXPECT_FALSE(key_h <= key_c);
+TEST(TaskSourceSortKeyTest, OperatorLessThan) {
+  for (size_t i = 0; i < size(kTestKeys); i++) {
+    // All the entries before the index of the current key are smaller.
+    for (size_t j = 0; j < i; j++)
+      EXPECT_LT(kTestKeys[j], kTestKeys[i]);
 
-  EXPECT_LE(key_a, key_d);
-  EXPECT_LE(key_b, key_d);
-  EXPECT_LE(key_c, key_d);
-  EXPECT_LE(key_d, key_d);
-  EXPECT_FALSE(key_e <= key_d);
-  EXPECT_FALSE(key_f <= key_d);
-  EXPECT_FALSE(key_g <= key_d);
-  EXPECT_FALSE(key_h <= key_d);
-
-  EXPECT_LE(key_a, key_e);
-  EXPECT_LE(key_b, key_e);
-  EXPECT_LE(key_c, key_e);
-  EXPECT_LE(key_d, key_e);
-  EXPECT_LE(key_e, key_e);
-  EXPECT_FALSE(key_f <= key_e);
-  EXPECT_FALSE(key_g <= key_e);
-  EXPECT_FALSE(key_h <= key_e);
-
-  EXPECT_LE(key_a, key_f);
-  EXPECT_LE(key_b, key_f);
-  EXPECT_LE(key_c, key_f);
-  EXPECT_LE(key_d, key_f);
-  EXPECT_LE(key_e, key_f);
-  EXPECT_LE(key_f, key_f);
-  EXPECT_FALSE(key_g <= key_f);
-  EXPECT_FALSE(key_h <= key_f);
-
-  EXPECT_LE(key_a, key_g);
-  EXPECT_LE(key_b, key_g);
-  EXPECT_LE(key_c, key_g);
-  EXPECT_LE(key_d, key_g);
-  EXPECT_LE(key_e, key_g);
-  EXPECT_LE(key_f, key_g);
-  EXPECT_LE(key_g, key_g);
-  EXPECT_FALSE(key_h <= key_g);
-
-  EXPECT_LE(key_a, key_h);
-  EXPECT_LE(key_b, key_h);
-  EXPECT_LE(key_c, key_h);
-  EXPECT_LE(key_d, key_h);
-  EXPECT_LE(key_e, key_h);
-  EXPECT_LE(key_f, key_h);
-  EXPECT_LE(key_g, key_h);
-  EXPECT_LE(key_h, key_h);
+    // All the other entries (including itself) are not smaller than the current
+    // key.
+    for (size_t j = i; j < size(kTestKeys); j++)
+      EXPECT_FALSE(kTestKeys[j] < kTestKeys[i]);
+  }
 }
 
 TEST(TaskSourceSortKeyTest, OperatorEqual) {
-  TaskSourceSortKey key_a(TaskPriority::USER_BLOCKING,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_b(TaskPriority::USER_BLOCKING,
-                          TimeTicks::FromInternalValue(2000));
-  TaskSourceSortKey key_c(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_d(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(2000));
-  TaskSourceSortKey key_e(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(1000), 1);
-  TaskSourceSortKey key_f(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(2000), 1);
-  TaskSourceSortKey key_g(TaskPriority::BEST_EFFORT,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_h(TaskPriority::BEST_EFFORT,
-                          TimeTicks::FromInternalValue(2000));
-
-  EXPECT_EQ(key_a, key_a);
-  EXPECT_FALSE(key_b == key_a);
-  EXPECT_FALSE(key_c == key_a);
-  EXPECT_FALSE(key_d == key_a);
-  EXPECT_FALSE(key_e == key_a);
-  EXPECT_FALSE(key_f == key_a);
-  EXPECT_FALSE(key_g == key_a);
-  EXPECT_FALSE(key_h == key_a);
-
-  EXPECT_FALSE(key_a == key_b);
-  EXPECT_EQ(key_b, key_b);
-  EXPECT_FALSE(key_c == key_b);
-  EXPECT_FALSE(key_d == key_b);
-  EXPECT_FALSE(key_e == key_b);
-  EXPECT_FALSE(key_f == key_b);
-  EXPECT_FALSE(key_g == key_b);
-  EXPECT_FALSE(key_h == key_b);
-
-  EXPECT_FALSE(key_a == key_c);
-  EXPECT_FALSE(key_b == key_c);
-  EXPECT_EQ(key_c, key_c);
-  EXPECT_FALSE(key_d == key_c);
-  EXPECT_FALSE(key_e == key_c);
-  EXPECT_FALSE(key_f == key_c);
-  EXPECT_FALSE(key_g == key_c);
-  EXPECT_FALSE(key_h == key_c);
-
-  EXPECT_FALSE(key_a == key_d);
-  EXPECT_FALSE(key_b == key_d);
-  EXPECT_FALSE(key_c == key_d);
-  EXPECT_EQ(key_d, key_d);
-  EXPECT_FALSE(key_e == key_d);
-  EXPECT_FALSE(key_f == key_d);
-  EXPECT_FALSE(key_g == key_d);
-  EXPECT_FALSE(key_h == key_d);
-
-  EXPECT_FALSE(key_a == key_e);
-  EXPECT_FALSE(key_b == key_e);
-  EXPECT_FALSE(key_c == key_e);
-  EXPECT_FALSE(key_d == key_e);
-  EXPECT_EQ(key_e, key_e);
-  EXPECT_FALSE(key_f == key_e);
-  EXPECT_FALSE(key_g == key_e);
-  EXPECT_FALSE(key_h == key_e);
-
-  EXPECT_FALSE(key_a == key_f);
-  EXPECT_FALSE(key_b == key_f);
-  EXPECT_FALSE(key_c == key_f);
-  EXPECT_FALSE(key_d == key_f);
-  EXPECT_FALSE(key_e == key_f);
-  EXPECT_EQ(key_f, key_f);
-  EXPECT_FALSE(key_g == key_f);
-  EXPECT_FALSE(key_h == key_f);
-
-  EXPECT_FALSE(key_a == key_g);
-  EXPECT_FALSE(key_b == key_g);
-  EXPECT_FALSE(key_c == key_g);
-  EXPECT_FALSE(key_d == key_g);
-  EXPECT_FALSE(key_e == key_g);
-  EXPECT_FALSE(key_f == key_g);
-  EXPECT_EQ(key_g, key_g);
-  EXPECT_FALSE(key_h == key_g);
-
-  EXPECT_FALSE(key_a == key_h);
-  EXPECT_FALSE(key_b == key_h);
-  EXPECT_FALSE(key_c == key_h);
-  EXPECT_FALSE(key_d == key_h);
-  EXPECT_FALSE(key_e == key_h);
-  EXPECT_FALSE(key_f == key_h);
-  EXPECT_FALSE(key_g == key_h);
-  EXPECT_EQ(key_h, key_h);
+  // Compare each test key to every other key. They will be equal only when
+  // their index is the same.
+  for (size_t i = 0; i < size(kTestKeys); i++) {
+    for (size_t j = 0; j < size(kTestKeys); j++) {
+      if (i == j)
+        EXPECT_EQ(kTestKeys[i], kTestKeys[j]);
+      else
+        EXPECT_FALSE(kTestKeys[i] == kTestKeys[j]);
+    }
+  }
 }
 
 TEST(TaskSourceSortKeyTest, OperatorNotEqual) {
-  TaskSourceSortKey key_a(TaskPriority::USER_BLOCKING,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_b(TaskPriority::USER_BLOCKING,
-                          TimeTicks::FromInternalValue(2000));
-  TaskSourceSortKey key_c(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_d(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(2000));
-  TaskSourceSortKey key_e(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(1000), 1);
-  TaskSourceSortKey key_f(TaskPriority::USER_VISIBLE,
-                          TimeTicks::FromInternalValue(2000), 1);
-  TaskSourceSortKey key_g(TaskPriority::BEST_EFFORT,
-                          TimeTicks::FromInternalValue(1000));
-  TaskSourceSortKey key_h(TaskPriority::BEST_EFFORT,
-                          TimeTicks::FromInternalValue(2000));
-
-  EXPECT_FALSE(key_a != key_a);
-  EXPECT_NE(key_b, key_a);
-  EXPECT_NE(key_c, key_a);
-  EXPECT_NE(key_d, key_a);
-  EXPECT_NE(key_e, key_a);
-  EXPECT_NE(key_f, key_a);
-  EXPECT_NE(key_g, key_a);
-  EXPECT_NE(key_h, key_a);
-
-  EXPECT_NE(key_a, key_b);
-  EXPECT_FALSE(key_b != key_b);
-  EXPECT_NE(key_c, key_b);
-  EXPECT_NE(key_d, key_b);
-  EXPECT_NE(key_e, key_b);
-  EXPECT_NE(key_f, key_b);
-  EXPECT_NE(key_g, key_b);
-  EXPECT_NE(key_h, key_b);
-
-  EXPECT_NE(key_a, key_c);
-  EXPECT_NE(key_b, key_c);
-  EXPECT_FALSE(key_c != key_c);
-  EXPECT_NE(key_d, key_c);
-  EXPECT_NE(key_e, key_c);
-  EXPECT_NE(key_f, key_c);
-  EXPECT_NE(key_g, key_c);
-  EXPECT_NE(key_h, key_c);
-
-  EXPECT_NE(key_a, key_d);
-  EXPECT_NE(key_b, key_d);
-  EXPECT_NE(key_c, key_d);
-  EXPECT_FALSE(key_d != key_d);
-  EXPECT_NE(key_e, key_d);
-  EXPECT_NE(key_f, key_d);
-  EXPECT_NE(key_g, key_d);
-  EXPECT_NE(key_h, key_d);
-
-  EXPECT_NE(key_a, key_e);
-  EXPECT_NE(key_b, key_e);
-  EXPECT_NE(key_c, key_e);
-  EXPECT_NE(key_d, key_e);
-  EXPECT_FALSE(key_e != key_e);
-  EXPECT_NE(key_f, key_e);
-  EXPECT_NE(key_g, key_e);
-  EXPECT_NE(key_h, key_e);
-
-  EXPECT_NE(key_a, key_f);
-  EXPECT_NE(key_b, key_f);
-  EXPECT_NE(key_c, key_f);
-  EXPECT_NE(key_d, key_f);
-  EXPECT_NE(key_e, key_f);
-  EXPECT_FALSE(key_f != key_f);
-  EXPECT_NE(key_g, key_f);
-  EXPECT_NE(key_h, key_f);
-
-  EXPECT_NE(key_a, key_g);
-  EXPECT_NE(key_b, key_g);
-  EXPECT_NE(key_c, key_g);
-  EXPECT_NE(key_d, key_g);
-  EXPECT_NE(key_e, key_g);
-  EXPECT_NE(key_f, key_g);
-  EXPECT_FALSE(key_g != key_g);
-  EXPECT_NE(key_h, key_g);
-
-  EXPECT_NE(key_a, key_h);
-  EXPECT_NE(key_b, key_h);
-  EXPECT_NE(key_c, key_h);
-  EXPECT_NE(key_d, key_h);
-  EXPECT_NE(key_e, key_h);
-  EXPECT_NE(key_f, key_h);
-  EXPECT_NE(key_g, key_h);
-  EXPECT_FALSE(key_h != key_h);
+  // Compare each test key to every other key. They will not be equal only when
+  // their index is different.
+  for (size_t i = 0; i < size(kTestKeys); i++) {
+    for (size_t j = 0; j < size(kTestKeys); j++) {
+      if (i != j)
+        EXPECT_NE(kTestKeys[i], kTestKeys[j]);
+      else
+        EXPECT_FALSE(kTestKeys[i] != kTestKeys[j]);
+    }
+  }
 }
 
 }  // namespace internal

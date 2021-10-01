@@ -15,8 +15,7 @@ namespace base {
 namespace sequence_manager {
 
 TimeDomain::TimeDomain()
-    : sequence_manager_(nullptr),
-      associated_thread_(MakeRefCounted<internal::AssociatedThreadId>()) {}
+    : associated_thread_(MakeRefCounted<internal::AssociatedThreadId>()) {}
 
 TimeDomain::~TimeDomain() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
@@ -64,7 +63,7 @@ void TimeDomain::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
   absl::optional<TimeTicks> previous_wake_up;
   absl::optional<WakeUpResolution> previous_queue_resolution;
   if (!delayed_wake_up_queue_.empty())
-    previous_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
+    previous_wake_up = delayed_wake_up_queue_.top().wake_up.time;
   if (queue->heap_handle().IsValid()) {
     previous_queue_resolution =
         delayed_wake_up_queue_.at(queue->heap_handle()).wake_up.resolution;
@@ -74,8 +73,8 @@ void TimeDomain::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
     // Insert a new wake-up into the heap.
     if (queue->heap_handle().IsValid()) {
       // O(log n)
-      delayed_wake_up_queue_.ChangeKey(queue->heap_handle(),
-                                       {wake_up.value(), queue});
+      delayed_wake_up_queue_.Replace(queue->heap_handle(),
+                                     {wake_up.value(), queue});
     } else {
       // O(log n)
       delayed_wake_up_queue_.insert({wake_up.value(), queue});
@@ -88,7 +87,7 @@ void TimeDomain::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
 
   absl::optional<TimeTicks> new_wake_up;
   if (!delayed_wake_up_queue_.empty())
-    new_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
+    new_wake_up = delayed_wake_up_queue_.top().wake_up.time;
 
   if (previous_queue_resolution &&
       *previous_queue_resolution == WakeUpResolution::kHigh) {
@@ -124,8 +123,8 @@ void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   // Wake up any queues with pending delayed work.
   bool update_needed = false;
   while (!delayed_wake_up_queue_.empty() &&
-         delayed_wake_up_queue_.Min().wake_up.time <= lazy_now->Now()) {
-    internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
+         delayed_wake_up_queue_.top().wake_up.time <= lazy_now->Now()) {
+    internal::TaskQueueImpl* queue = delayed_wake_up_queue_.top().queue;
     // OnWakeUp() is expected to update the next wake-up for this queue with
     // SetNextWakeUpForQueue(), thus allowing us to make progress.
     queue->OnWakeUp(lazy_now);
@@ -140,11 +139,11 @@ void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   // and needs to be updated. This is done lazily only once the related queue
   // becomes the next one to wake up, since that wake up can't be moved up.
   // |delayed_wake_up_queue_| is non-empty here, per the condition above.
-  internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
+  internal::TaskQueueImpl* queue = delayed_wake_up_queue_.top().queue;
   queue->UpdateDelayedWakeUp(lazy_now);
   while (!delayed_wake_up_queue_.empty()) {
     internal::TaskQueueImpl* old_queue =
-        std::exchange(queue, delayed_wake_up_queue_.Min().queue);
+        std::exchange(queue, delayed_wake_up_queue_.top().queue);
     if (old_queue == queue)
       break;
     queue->UpdateDelayedWakeUp(lazy_now);
@@ -155,7 +154,7 @@ absl::optional<DelayedWakeUp> TimeDomain::GetNextDelayedWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (delayed_wake_up_queue_.empty())
     return absl::nullopt;
-  return delayed_wake_up_queue_.Min().wake_up;
+  return delayed_wake_up_queue_.top().wake_up;
 }
 
 Value TimeDomain::AsValue() const {
@@ -163,7 +162,7 @@ Value TimeDomain::AsValue() const {
   state.SetStringKey("name", GetName());
   state.SetIntKey("registered_delay_count", delayed_wake_up_queue_.size());
   if (!delayed_wake_up_queue_.empty()) {
-    TimeDelta delay = delayed_wake_up_queue_.Min().wake_up.time - Now();
+    TimeDelta delay = delayed_wake_up_queue_.top().wake_up.time - Now();
     state.SetDoubleKey("next_delay_ms", delay.InMillisecondsF());
   }
   return state;

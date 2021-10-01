@@ -64,13 +64,13 @@ class TestTimeDomain : public TimeDomain {
   internal::TaskQueueImpl* NextScheduledTaskQueue() const {
     if (delayed_wake_up_queue_.empty())
       return nullptr;
-    return delayed_wake_up_queue_.Min().queue;
+    return delayed_wake_up_queue_.top().queue;
   }
 
   TimeTicks NextScheduledRunTime() const {
     if (delayed_wake_up_queue_.empty())
       return TimeTicks::Max();
-    return delayed_wake_up_queue_.Min().wake_up.time;
+    return delayed_wake_up_queue_.top().wake_up.time;
   }
 
   MOCK_METHOD2(SetNextDelayedDoWork,
