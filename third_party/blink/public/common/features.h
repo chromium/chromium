@@ -487,6 +487,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kClientHintsResourceWidth;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsViewportWidth;
 BLINK_COMMON_EXPORT extern const base::Feature
     kWebSQLInThirdPartyContextEnabled;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kClientHintsDeviceMemory_DEPRECATED;
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDPR_DEPRECATED;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kClientHintsResourceWidth_DEPRECATED;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kClientHintsViewportWidth_DEPRECATED;
 
 }  // namespace features
 }  // namespace blink

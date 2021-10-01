@@ -1061,5 +1061,21 @@ const base::Feature kClientHintsViewportWidth{
 const base::Feature kWebSQLInThirdPartyContextEnabled{
     "WebSQLInThirdPartyContextEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable legacy `device-memory` client hint.
+const base::Feature kClientHintsDeviceMemory_DEPRECATED{
+    "ClientHintsDeviceMemory_DEPRECATED", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable legacy `dpr` client hint.
+const base::Feature kClientHintsDPR_DEPRECATED{
+    "ClientHintsDPR_DEPRECATED", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable legacy `width` client hint.
+const base::Feature kClientHintsResourceWidth_DEPRECATED{
+    "ClientHintsResourceWidth_DEPRECATED", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable legacy `viewport-width` client hint.
+const base::Feature kClientHintsViewportWidth_DEPRECATED{
+    "ClientHintsViewportWidth_DEPRECATED", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

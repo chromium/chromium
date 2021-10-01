@@ -57,6 +57,25 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       if (!base::FeatureList::IsEnabled(features::kClientHintsViewportWidth))
         return true;
       break;
+    case WebClientHintsType::kDeviceMemory_DEPRECATED:
+      if (!base::FeatureList::IsEnabled(
+              features::kClientHintsDeviceMemory_DEPRECATED))
+        return true;
+      break;
+    case WebClientHintsType::kDpr_DEPRECATED:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsDPR_DEPRECATED))
+        return true;
+      break;
+    case WebClientHintsType::kResourceWidth_DEPRECATED:
+      if (!base::FeatureList::IsEnabled(
+              features::kClientHintsResourceWidth_DEPRECATED))
+        return true;
+      break;
+    case WebClientHintsType::kViewportWidth_DEPRECATED:
+      if (!base::FeatureList::IsEnabled(
+              features::kClientHintsViewportWidth_DEPRECATED))
+        return true;
+      break;
     default:
       break;
   }
