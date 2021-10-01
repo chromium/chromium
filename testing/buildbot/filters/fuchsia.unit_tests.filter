@@ -59,6 +59,7 @@
 -ExtensionProtocolsTest.Verification*
 -ExtensionServiceTest.InstallTheme
 -ExtensionUserScriptLoaderTest.Component*
+-ExtensionsMenuViewUnitTest.ContextMenuButtonUserAction
 -ExtensionsMenuViewUnitTest.Invalidate*
 -ExtensionsMenuViewUnitTest.Reorder*
 -ExtensionsMenuViewUnitTest.Reset*
@@ -113,3 +114,19 @@
 -WebAppIconFactoryTest.LoadNonMaskableIcon
 -WebAppIconFactoryTest.LoadNonMaskableIcon*
 -WebAppIconFactoryTest.LoadSmall*
+
+# crbug.com/1254928: DCHECK failures
+-BoxUploader_PreflightCheckTest.ConflictAndSuccessAfterkMaxUniqueTries
+-ClientDataDelegateDesktopTest.FillRegisterBrowserRequest_BrowserDeviceIdentifier
+-ClientDataDelegateDesktopTest.FillRegisterBrowserRequest_NoBrowserDeviceIdentifier
+-CommerceHintAgentTest.RegexBenchmark
+-DeepScanningDownloadRestrictionsTest.GeneratesCorrectReport/0
+-DeepScanningDownloadRestrictionsTest.GeneratesCorrectReport/1
+-DeepScanningDownloadRestrictionsTest.GeneratesCorrectReport/2
+-DeepScanningDownloadRestrictionsTest.GeneratesCorrectReport/3
+-DeepScanningDownloadRestrictionsTest.GeneratesCorrectReport/4
+-DeepScanningReportingTest.MultipleFiles
+-DeepScanningReportingTest.ProcessesResponseCorrectly
+-DeepScanningReportingTest.Timeout
+-ExtensionsMenuViewUnitTest.ContextMenuButtonUserAction
+-PredictionManagerTest.AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget
