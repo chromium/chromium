@@ -61,11 +61,11 @@ resource_sizes_system_webview_bundle,"agrieve@chromium.org, jbudorick@chromium.o
 resource_sizes_system_webview_google_bundle,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome_google,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-speedometer,hablich@chromium.org,Blink,,
-speedometer-future,hablich@chromium.org,Blink,,
-speedometer2,hablich@chromium.org,Blink,,
-speedometer2-future,hablich@chromium.org,Blink,,
-speedometer2-pcscan,tmrts@chromium.org,Blink,,
+speedometer,hablich@chromium.org,Blink>JavaScript,,
+speedometer-future,hablich@chromium.org,Blink>JavaScript,,
+speedometer2,hablich@chromium.org,Blink>JavaScript,,
+speedometer2-future,hablich@chromium.org,Blink>JavaScript,,
+speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 system_health.common_desktop,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.common_mobile,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"

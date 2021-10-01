@@ -22,8 +22,8 @@ from page_sets import speedometer2_pages
 _SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(),
     'third_party', 'blink', 'perf_tests', 'speedometer')
 
-@benchmark.Info(emails=['hablich@chromium.org'],
-                component='Blink')
+
+@benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')
 class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
   """Speedometer2 Benchmark.
 
@@ -126,8 +126,7 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
       cls.iteration_count = args.iteration_count
 
 
-@benchmark.Info(emails=['hablich@chromium.org'],
-                component='Blink')
+@benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')
 class V8Speedometer2Future(Speedometer2):
   """Speedometer2 benchmark with the V8 flag --future.
 
@@ -142,7 +141,7 @@ class V8Speedometer2Future(Speedometer2):
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
 
 
-@benchmark.Info(emails=['tmrts@chromium.org'], component='Blink')
+@benchmark.Info(emails=['tmrts@chromium.org'], component='Blink>JavaScript')
 class Speedometer2PCScan(Speedometer2):
   """Speedometer2 benchmark with the PCSscan flag.
 
