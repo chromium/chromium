@@ -95,6 +95,10 @@ class CORE_EXPORT StyleRecalcChange {
     return {propagate_,
             static_cast<Flags>(flags_ | (from.flags_ & kRecalcContainerFlags))};
   }
+  StyleRecalcChange Combine(const StyleRecalcChange& other) {
+    return {std::max(propagate_, other.propagate_),
+            static_cast<Flags>(flags_ | other.flags_)};
+  }
 
   bool ReattachLayoutTree() const { return flags_ & kReattach; }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }

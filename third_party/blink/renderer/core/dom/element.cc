@@ -217,20 +217,21 @@ class DisplayLockStyleScope {
     return false;
   }
 
-  void NotifyUpdateWasBlocked(DisplayLockContext::StyleType style) {
+  void NotifyChildStyleRecalcWasBlocked(const StyleRecalcChange& change) {
     DCHECK(!ShouldUpdateChildStyle());
     // The only way to be blocked here is if we have a display lock context.
     DCHECK(element_->GetDisplayLockContext());
 
-    element_->GetDisplayLockContext()->NotifyStyleRecalcWasBlocked(style);
+    element_->GetDisplayLockContext()->NotifyChildStyleRecalcWasBlocked(change);
   }
 
   StyleRecalcChange AdjustStyleRecalcChangeForChildren(
       StyleRecalcChange change) {
-    DCHECK(element_->GetDisplayLockContext());
-    DCHECK(element_->GetDisplayLockContext()->ShouldStyleChildren());
-    return element_->GetDisplayLockContext()
-        ->AdjustStyleRecalcChangeForChildren(change);
+    if (auto* context = element_->GetDisplayLockContext()) {
+      DCHECK(context->ShouldStyleChildren());
+      return context->AdjustStyleRecalcChangeForChildren(change);
+    }
+    return change;
   }
 
  private:
@@ -2973,36 +2974,15 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   // We're done with self style, notify the display lock.
-  bool did_unlock = display_lock_style_scope.DidUpdateSelfStyle();
-
-  // If the update to self style caused the display-lock to unlock, then we
-  // should adjust `child_change` with whatever deferred dirty bits the context
-  // had. This ensures that during this call, we will recurse into children for
-  // layout changes (if needed).
-  if (did_unlock) {
-    child_change = display_lock_style_scope.AdjustStyleRecalcChangeForChildren(
-        child_change);
-  }
-
+  display_lock_style_scope.DidUpdateSelfStyle();
   if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
-    if (child_change.RecalcChildren()) {
-      // If we should've calculated the style for children but was blocked,
-      // notify so that we'd come back.
-      // Note that the if-clause wouldn't catch cases where
-      // ChildNeedsStyleRecalc() is true but child_change.RecalcChildren() is
-      // false. Since we are retaining the child dirty bit, that case is
-      // automatically handled without needing to notify it here.
-      display_lock_style_scope.NotifyUpdateWasBlocked(
-          DisplayLockContext::kStyleUpdateDescendants);
-
-    } else if (child_change.TraversePseudoElements(*this)) {
-      display_lock_style_scope.NotifyUpdateWasBlocked(
-          DisplayLockContext::kStyleUpdatePseudoElements);
-    }
+    display_lock_style_scope.NotifyChildStyleRecalcWasBlocked(child_change);
     if (HasCustomStyleCallbacks())
       DidRecalcStyle(child_change);
     return;
   }
+  child_change =
+      display_lock_style_scope.AdjustStyleRecalcChangeForChildren(child_change);
 
   if (!child_change.ReattachLayoutTree()) {
     LayoutObject* layout_object = GetLayoutObject();

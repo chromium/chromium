@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -18,7 +19,6 @@ namespace blink {
 
 class Document;
 class Element;
-class StyleRecalcChange;
 
 enum class DisplayLockActivationReason {
   // Accessibility driven activation
@@ -67,15 +67,6 @@ class CORE_EXPORT DisplayLockContext final
     : public GarbageCollected<DisplayLockContext>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
-  // The type of style that was blocked by this display lock.
-  enum StyleType {
-    kStyleUpdateNotRequired,
-    kStyleUpdateSelf,
-    kStyleUpdatePseudoElements,
-    kStyleUpdateChildren,
-    kStyleUpdateDescendants
-  };
-
   enum class ForcedPhase { kStyleAndLayoutTree, kLayout, kPrePaint };
 
   explicit DisplayLockContext(Element*);
@@ -101,9 +92,9 @@ class CORE_EXPORT DisplayLockContext final
   bool ShouldPaintChildren() const;
 
   // Returns true if the last style recalc traversal was blocked at this
-  // element, either for itself, its children or its descendants.
-  bool StyleTraversalWasBlocked() {
-    return blocked_style_traversal_type_ != kStyleUpdateNotRequired;
+  // element.
+  bool StyleTraversalWasBlocked() const {
+    return !blocked_child_recalc_change_.IsEmpty();
   }
 
   // Returns true if the contents of the associated element should be visible
@@ -137,13 +128,13 @@ class CORE_EXPORT DisplayLockContext final
 
   // Inform the display lock that it prevented a style change. This is used to
   // invalidate style when we need to update it in the future.
-  void NotifyStyleRecalcWasBlocked(StyleType type) {
-    blocked_style_traversal_type_ =
-        std::max(blocked_style_traversal_type_, type);
+  void NotifyChildStyleRecalcWasBlocked(const StyleRecalcChange& change) {
+    blocked_child_recalc_change_ = blocked_child_recalc_change_.Combine(change);
   }
 
   void NotifyReattachLayoutTreeWasBlocked() {
-    reattach_layout_tree_was_blocked_ = true;
+    blocked_child_recalc_change_ =
+        blocked_child_recalc_change_.ForceReattachLayoutTree();
   }
 
   void NotifyChildLayoutWasBlocked() { child_layout_was_blocked_ = true; }
@@ -396,11 +387,7 @@ class CORE_EXPORT DisplayLockContext final
 
   UpdateForcedInfo forced_info_;
 
-  StyleType blocked_style_traversal_type_ = kStyleUpdateNotRequired;
-  // Signifies whether we've blocked a layout tree reattachment on |element_|'s
-  // descendants or not, so that we can mark |element_| for reattachment when
-  // needed.
-  bool reattach_layout_tree_was_blocked_ = false;
+  StyleRecalcChange blocked_child_recalc_change_;
 
   bool needs_effective_allowed_touch_action_update_ = false;
   bool needs_blocking_wheel_event_handler_update_ = false;

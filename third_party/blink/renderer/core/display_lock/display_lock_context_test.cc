@@ -169,7 +169,7 @@ class DisplayLockContextTest
   }
 
   bool ReattachWasBlocked(DisplayLockContext* context) {
-    return context->reattach_layout_tree_was_blocked_;
+    return context->blocked_child_recalc_change_.ReattachLayoutTree();
   }
 
   const int FAKE_FIND_ID = 1;
