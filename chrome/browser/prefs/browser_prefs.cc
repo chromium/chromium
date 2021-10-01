@@ -437,6 +437,11 @@
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_prefs.h"
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1378,6 +1383,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   accessibility_prefs::RegisterInvertBubbleUserPrefs(registry);
   RegisterBrowserViewProfilePrefs(registry);
 #endif
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  side_search_prefs::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(

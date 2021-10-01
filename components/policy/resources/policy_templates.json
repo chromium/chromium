@@ -7817,6 +7817,35 @@
       'desc': '''Leaving the policy unset or setting it to Enabled allows users to view and use the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> region search menu item in the context menu. Setting the policy to Disabled means users will not see the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> region search menu item in the context menu when <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> region search is supported.''',
     },
     {
+      'name': 'SideSearchEnabled',
+      'owners': ['tluk@chromium.org', 'chrome-cros@google.com'],
+      'type': 'main',
+      'schema' : {'type': 'boolean'},
+      'supported_on': ['chrome_os:96-'],
+      'example_value': False,
+      'features':{
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable showing <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a Browser side panel.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable showing <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a Browser side panel.',
+        },
+      ],
+      'id': 906,
+      'default': True,
+      'caption': '''Allow showing the most recent <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a Browser side panel''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled or leaving the policy unset means that users can bring up their most recent <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a side panel via toggling an icon in the toolbar.
+
+      Setting the policy to Disabled removes the icon from the toolbar that opens the side panel with the <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results.''',
+    },
+    {
       'name': 'InsecurePrivateNetworkRequestsAllowed',
       'owners': [
         'titouan@chromium.org',
@@ -29088,6 +29117,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 905,
+  'highest_id_currently_used': 906,
   'highest_atomic_group_id_currently_used': 41
 }
