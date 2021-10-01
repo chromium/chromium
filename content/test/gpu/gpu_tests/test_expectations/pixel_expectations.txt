@@ -393,6 +393,10 @@ crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFa
 # Produces blank images on gpu-fyi-try-chromeos-kevin, gpu-fyi-try-chromeos-amd64-generic.
 crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Skip ]
 
+# Failing on ChromeOS FYI Release (amd64-generic), ChromeOS FYI Release (kevin).
+crbug.com/1240440 [ chromeos ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
+crbug.com/1240440 [ chromeos ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
+
 # Cannot use file in Chromium checkout for fake video capture device on Android
 # or ChromeOS.
 crbug.com/1129879 [ android ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
