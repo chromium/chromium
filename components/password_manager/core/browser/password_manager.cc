@@ -955,7 +955,8 @@ void PasswordManager::OnLoginSuccessful() {
   DCHECK(submitted_form);
   client_->MaybeReportEnterpriseLoginEvent(
       submitted_form->url, submitted_form->IsFederatedCredential(),
-      submitted_form->federation_origin);
+      submitted_form->federation_origin,
+      submitted_manager->GetPendingCredentials().username_value);
   if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
     return;
 

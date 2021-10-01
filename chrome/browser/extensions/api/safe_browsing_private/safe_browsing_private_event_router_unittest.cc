@@ -211,11 +211,13 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
   void TriggerOnLoginEvent(
       const GURL& url,
+      const std::u16string& login_user_name,
       absl::optional<url::Origin> federated_origin = absl::nullopt) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnLoginEvent(url, federated_origin.has_value(),
                        federated_origin.has_value() ? federated_origin.value()
-                                                    : url::Origin());
+                                                    : url::Origin(),
+                       login_user_name);
   }
 
   void TriggerOnPasswordBreachEvent(
@@ -750,9 +752,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEvent) {
 
   safe_browsing::EventReportValidator validator(client_.get());
   validator.ExpectLoginEvent("https://www.example.com/", false, "",
-                             profile_->GetProfileUserName());
+                             profile_->GetProfileUserName(), u"login-username");
 
-  TriggerOnLoginEvent(GURL("https://www.example.com/"));
+  TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username");
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
@@ -768,9 +770,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
   safe_browsing::EventReportValidator validator(client_.get());
   validator.ExpectLoginEvent("https://www.example.com/", true,
                              "https://www.google.com",
-                             profile_->GetProfileUserName());
+                             profile_->GetProfileUserName(), u"login-username");
 
-  TriggerOnLoginEvent(GURL("https://www.example.com/"),
+  TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username",
                       url::Origin::Create(GURL("https://www.google.com")));
 }
 

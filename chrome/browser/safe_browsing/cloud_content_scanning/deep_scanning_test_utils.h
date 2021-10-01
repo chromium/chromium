@@ -138,7 +138,8 @@ class EventReportValidator {
   void ExpectLoginEvent(const std::string& expected_url,
                         bool expected_is_federated,
                         const std::string& expected_federated_origin,
-                        const std::string& expected_username);
+                        const std::string& expected_profile_username,
+                        const std::u16string& expected_login_username);
 
   void ExpectPasswordBreachEvent(
       const std::string& expected_trigger,
@@ -168,6 +169,9 @@ class EventReportValidator {
                      const absl::optional<std::string>& expected_value);
   void ValidateField(base::Value* value,
                      const std::string& field_key,
+                     const absl::optional<std::u16string>& expected_value);
+  void ValidateField(base::Value* value,
+                     const std::string& field_key,
                      const absl::optional<int>& expected_value);
   void ValidateField(base::Value* value,
                      const std::string& field_key,
@@ -185,6 +189,7 @@ class EventReportValidator {
   std::string username_;
   absl::optional<bool> is_federated_ = absl::nullopt;
   absl::optional<std::string> federated_origin_ = absl::nullopt;
+  absl::optional<std::u16string> login_user_name_ = absl::nullopt;
   absl::optional<std::vector<std::pair<std::string, std::u16string>>>
       password_breach_identities_ = absl::nullopt;
 

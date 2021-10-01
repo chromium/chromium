@@ -88,6 +88,7 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyScanId[];
   static const char kKeyIsFederated[];
   static const char kKeyFederatedOrigin[];
+  static const char kKeyLoginUserName[];
   static const char kKeyPasswordBreachIdentities[];
   static const char kKeyPasswordBreachIdentitiesUrl[];
   static const char kKeyPasswordBreachIdentitiesUsername[];
@@ -229,7 +230,8 @@ class SafeBrowsingPrivateEventRouter
 
   void OnLoginEvent(const GURL& url,
                     bool is_federated,
-                    const url::Origin& federated_origin);
+                    const url::Origin& federated_origin,
+                    const std::u16string& username);
 
   void OnPasswordBreach(
       const std::string& trigger,

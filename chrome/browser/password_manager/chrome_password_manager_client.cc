@@ -874,7 +874,8 @@ void ChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
 void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     const GURL& url,
     bool is_federated,
-    const url::Origin& federated_origin) const {
+    const url::Origin& federated_origin,
+    const std::u16string& login_user_name) const {
   if (!base::FeatureList::IsEnabled(policy::features::kLoginEventReporting))
     return;
 
@@ -886,7 +887,7 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
   // The router is responsible for checking if the reporting of this event type
   // is enabled by the admin.
-  router->OnLoginEvent(url, is_federated, federated_origin);
+  router->OnLoginEvent(url, is_federated, federated_origin, login_user_name);
 }
 
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
