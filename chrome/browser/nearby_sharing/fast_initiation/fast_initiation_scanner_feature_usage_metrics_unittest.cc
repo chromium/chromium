@@ -63,6 +63,10 @@ class FastInitiationScannerFeatureUsageMetricsTest : public ::testing::Test {
         fast_initiation_scanner_factory_.get());
   }
 
+  void TearDown() override {
+    FastInitiationScanner::Factory::SetFactoryForTesting(nullptr);
+  }
+
   void ExpectBucketCounts(bool is_eligible, bool is_enabled) {
     // Allow time for the histogram to be logged.
     base::HistogramTester histograms;
