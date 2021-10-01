@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/declarative_net_request/index_helper.h"
+#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 
 #include <iterator>
 #include <utility>
@@ -23,14 +23,14 @@ namespace {
 namespace dnr_api = api::declarative_net_request;
 
 // Combines indexing results from multiple FileBackedRulesetSources into a
-// single IndexHelper::Result.
-IndexHelper::Result CombineResults(
+// single InstallIndexHelper::Result.
+InstallIndexHelper::Result CombineResults(
     std::vector<std::pair<const FileBackedRulesetSource*,
                           IndexAndPersistJSONRulesetResult>> results,
     bool log_histograms) {
   using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
 
-  IndexHelper::Result total_result;
+  InstallIndexHelper::Result total_result;
   total_result.ruleset_install_prefs.reserve(results.size());
   bool any_ruleset_indexed_successfully = false;
   size_t total_rules_count = 0;
@@ -114,13 +114,14 @@ IndexHelper::Result CombineResults(
 
 }  // namespace
 
-IndexHelper::Result::Result() = default;
-IndexHelper::Result::~Result() = default;
-IndexHelper::Result::Result(Result&&) = default;
-IndexHelper::Result& IndexHelper::Result::operator=(Result&&) = default;
+InstallIndexHelper::Result::Result() = default;
+InstallIndexHelper::Result::~Result() = default;
+InstallIndexHelper::Result::Result(Result&&) = default;
+InstallIndexHelper::Result& InstallIndexHelper::Result::operator=(Result&&) =
+    default;
 
 // static
-void IndexHelper::IndexStaticRulesets(
+void InstallIndexHelper::IndexStaticRulesets(
     const Extension& extension,
     FileBackedRulesetSource::RulesetFilter ruleset_filter,
     uint8_t parse_flags,
@@ -131,14 +132,14 @@ void IndexHelper::IndexStaticRulesets(
   //  - All individual callbacks return synchronously.
   // In these cases there's a potential for a use-after-free with manual memory
   // management.
-  auto index_helper = base::WrapRefCounted(new IndexHelper(
+  auto install_index_helper = base::WrapRefCounted(new InstallIndexHelper(
       FileBackedRulesetSource::CreateStatic(extension, ruleset_filter),
       std::move(callback)));
-  index_helper->Start(parse_flags);
+  install_index_helper->Start(parse_flags);
 }
 
 // static
-IndexHelper::Result IndexHelper::IndexStaticRulesetsUnsafe(
+InstallIndexHelper::Result InstallIndexHelper::IndexStaticRulesetsUnsafe(
     const Extension& extension,
     FileBackedRulesetSource::RulesetFilter ruleset_filter,
     uint8_t parse_flags) {
@@ -159,30 +160,31 @@ IndexHelper::Result IndexHelper::IndexStaticRulesetsUnsafe(
   return CombineResults(std::move(results), log_histograms);
 }
 
-IndexHelper::IndexHelper(std::vector<FileBackedRulesetSource> sources,
-                         IndexCallback callback)
+InstallIndexHelper::InstallIndexHelper(
+    std::vector<FileBackedRulesetSource> sources,
+    IndexCallback callback)
     : sources_(std::move(sources)), callback_(std::move(callback)) {}
 
-IndexHelper::~IndexHelper() = default;
+InstallIndexHelper::~InstallIndexHelper() = default;
 
-void IndexHelper::Start(uint8_t parse_flags) {
+void InstallIndexHelper::Start(uint8_t parse_flags) {
   // |all_done_closure| will be invoked once |barrier_closure| is run
   // |sources_.size()| times.
   base::OnceClosure all_done_closure =
-      base::BindOnce(&IndexHelper::OnAllRulesetsIndexed, this);
+      base::BindOnce(&InstallIndexHelper::OnAllRulesetsIndexed, this);
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(sources_.size(), std::move(all_done_closure));
 
   for (size_t i = 0; i < sources_.size(); ++i) {
     // Since |sources_| is const, |sources_[i]| is guaranteed to remain valid.
-    auto callback = base::BindOnce(&IndexHelper::OnRulesetIndexed, this,
+    auto callback = base::BindOnce(&InstallIndexHelper::OnRulesetIndexed, this,
                                    barrier_closure, i);
     sources_[i].IndexAndPersistJSONRuleset(&decoder_, parse_flags,
                                            std::move(callback));
   }
 }
 
-void IndexHelper::OnAllRulesetsIndexed() {
+void InstallIndexHelper::OnAllRulesetsIndexed() {
   DCHECK_EQ(sources_.size(), results_.size());
 
   bool log_histograms = !sources_.empty();
@@ -190,9 +192,10 @@ void IndexHelper::OnAllRulesetsIndexed() {
 }
 
 // Callback invoked when indexing of a single ruleset is completed.
-void IndexHelper::OnRulesetIndexed(base::OnceClosure ruleset_done_closure,
-                                   size_t source_index,
-                                   IndexAndPersistJSONRulesetResult result) {
+void InstallIndexHelper::OnRulesetIndexed(
+    base::OnceClosure ruleset_done_closure,
+    size_t source_index,
+    IndexAndPersistJSONRulesetResult result) {
   results_.emplace_back(&sources_[source_index], std::move(result));
   std::move(ruleset_done_closure).Run();
 }

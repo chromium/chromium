@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEX_HELPER_H_
-#define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEX_HELPER_H_
+#ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INSTALL_INDEX_HELPER_H_
+#define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INSTALL_INDEX_HELPER_H_
 
 #include <cstdint>
 #include <string>
@@ -23,8 +23,9 @@ namespace extensions {
 class Extension;
 namespace declarative_net_request {
 
-// A class to help in indexing multiple rulesets.
-class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
+// A class to help in indexing multiple rulesets at install time.
+class InstallIndexHelper
+    : public base::RefCountedThreadSafe<InstallIndexHelper> {
  public:
   struct Result {
     Result();
@@ -60,13 +61,13 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
       uint8_t parse_flags);
 
  private:
-  friend class base::RefCountedThreadSafe<IndexHelper>;
+  friend class base::RefCountedThreadSafe<InstallIndexHelper>;
   using IndexResults = std::vector<std::pair<const FileBackedRulesetSource*,
                                              IndexAndPersistJSONRulesetResult>>;
 
-  IndexHelper(std::vector<FileBackedRulesetSource> sources,
-              IndexCallback callback);
-  ~IndexHelper();
+  InstallIndexHelper(std::vector<FileBackedRulesetSource> sources,
+                     IndexCallback callback);
+  ~InstallIndexHelper();
 
   // Starts indexing the rulesets.
   void Start(uint8_t parse_flags);
@@ -88,11 +89,11 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   IndexResults results_;
 
   // We use a single shared Data Decoder service instance to process all of the
-  // rulesets for this IndexHelper.
+  // rulesets for this InstallIndexHelper.
   data_decoder::DataDecoder decoder_;
 };
 
 }  // namespace declarative_net_request
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEX_HELPER_H_
+#endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INSTALL_INDEX_HELPER_H_

@@ -40,8 +40,8 @@ namespace {
 namespace dnr_api = extensions::api::declarative_net_request;
 
 // A class to help in indexing multiple rulesets.
-// TODO(kzar): Look into either combining this with the separate IndexHelper
-//             class, or rename that other class to InstallIndexHelper.
+// TODO(crbug.com/1254680): Look into unifying this with the InstallIndexHelper
+//                          class, moving any differing logic to the clients.
 class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
  public:
   using IndexCallback = base::OnceCallback<void(LoadRequestData)>;
