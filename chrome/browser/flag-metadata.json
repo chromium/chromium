@@ -446,7 +446,7 @@
   {
     "name": "autofill-keyboard-accessory-view",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "autofill-parse-merchant-promo-code-fields",
@@ -1465,7 +1465,7 @@
   {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "enable-autofill-password-account-indicator-footer",
@@ -4568,7 +4568,7 @@
   {
     "name": "recover-from-never-save-android",
     "owners": [ "ioanap" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "reduce-display-notifications",
