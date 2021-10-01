@@ -6531,6 +6531,7 @@ crbug.com/1197464 [ Mac ] virtual/scroll-unification/plugins/refcount-leaks.html
 
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
+crbug.com/1216587 [ Mac11-arm64 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
 
 # Sheriff 2021-07-01
 # Now also flakily timing-out.
@@ -6940,6 +6941,13 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-spec
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_avc [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/12-55.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
+# mac-arm CI 10-01-2021
+crbug.com/1249176 [ Mac11-arm64 ] editing/text-iterator/beforematch-async.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/event-timing/click-interactionid.html [ Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/webappapis/update-rendering/child-document-raf-order.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/idle-detection/interceptor.https.html [ Timeout Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/opened-document-security-origin-resets-on-navigation.html [ Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/runtime/runtime-install-binding.js [ Failure Pass ]
 
 crbug.com/1249176 [ Mac11-arm64 ] editing/selection/find-in-text-control.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-min-max-attribute.html [ Crash ]
