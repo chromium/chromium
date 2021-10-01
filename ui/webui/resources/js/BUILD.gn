@@ -33,11 +33,18 @@ group("preprocess") {
   public_deps = [
     ":preprocess_generated",
     ":preprocess_src",
+    ":preprocess_src_ts",
     "cr/ui:preprocess",
   ]
   if (include_polymer) {
     public_deps += [ "browser_command:build_ts" ]
   }
+}
+
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "./"
+  out_folder = "$preprocess_folder"
+  in_files = [ "i18n_mixin.ts" ]
 }
 
 preprocess_if_expr("preprocess_src") {

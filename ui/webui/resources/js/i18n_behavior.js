@@ -8,6 +8,8 @@
  * strings. Typically it is used as [[i18n('someString')]] computed bindings or
  * for this.i18n('foo'). It is not needed for HTML $i18n{otherString}, which is
  * handled by a C++ templatizer.
+ * NOTE: This file is deprecated in favor of i18n_mixin.ts. Don't use it in new
+ * code.
  */
 
 // #import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from './parse_html_subset.m.js';
