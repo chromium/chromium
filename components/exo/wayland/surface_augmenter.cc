@@ -46,11 +46,11 @@ class AugmentedSurface : public SurfaceObserver {
   }
 
   void SetCorners(double top_left,
-                  double bottom_left,
+                  double top_right,
                   double bottom_right,
-                  double top_right) {
+                  double bottom_left) {
     surface_->SetRoundedCorners(
-        gfx::RoundedCornersF(top_left, top_right, bottom_left, bottom_right));
+        gfx::RoundedCornersF(top_left, top_right, bottom_right, bottom_left));
   }
 
   // Overridden from SurfaceObserver:
@@ -70,20 +70,20 @@ void augmented_surface_destroy(wl_client* client, wl_resource* resource) {
 void augmented_surface_set_corners(wl_client* client,
                                    wl_resource* resource,
                                    wl_fixed_t top_left,
-                                   wl_fixed_t bottom_left,
+                                   wl_fixed_t top_right,
                                    wl_fixed_t bottom_right,
-                                   wl_fixed_t top_right) {
+                                   wl_fixed_t bottom_left) {
   if (top_left < 0 || bottom_left < 0 || bottom_right < 0 || top_right < 0) {
     wl_resource_post_error(
         resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
         "All corner must have positive radius (%d, %d, %d, %d)", top_left,
-        bottom_left, bottom_right, top_right);
+        top_right, bottom_right, bottom_left);
     return;
   }
 
   GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
-      wl_fixed_to_double(top_left), wl_fixed_to_double(bottom_left),
-      wl_fixed_to_double(bottom_right), wl_fixed_to_double(top_right));
+      wl_fixed_to_double(top_left), wl_fixed_to_double(top_right),
+      wl_fixed_to_double(bottom_right), wl_fixed_to_double(bottom_left));
 }
 
 const struct augmented_surface_interface augmented_implementation = {
