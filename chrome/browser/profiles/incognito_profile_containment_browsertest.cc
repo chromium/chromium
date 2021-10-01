@@ -209,11 +209,6 @@ bool AreFilesModified(Snapshot& snapshot_before,
         continue;
       }
 
-      // If an empty file is added or modified, ignore for now.
-      // TODO(http://crbug.com/1234755): Consider newly added empty files.
-      if (!fd.second.size)
-        continue;
-
       // If data content is not changed, it can be ignored.
       if (!is_new && !IsFileModified(before->second, fd.second))
         continue;
