@@ -20,7 +20,7 @@ import java.util.UUID;
 class BLEAdvert implements Closeable {
     private static final String TAG = "CableBLEAdvert";
     // This UUID is allocated to Google.
-    private static final String CABLE_UUID = "0000fde2-0000-1000-8000-00805f9b34fb";
+    private static final String CABLE_UUID = "0000fff9-0000-1000-8000-00805f9b34fb";
 
     private AdvertiseCallback mCallback;
 
