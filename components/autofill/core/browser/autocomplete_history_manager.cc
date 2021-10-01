@@ -49,12 +49,6 @@ bool IsTextField(const FormFieldData& field) {
 // that a different website or different form uses the same field name for a
 // totally different purpose.
 bool IsMeaningfulFieldName(const std::u16string& name) {
-  // If the corresponding feature is not enabled, every field name is considered
-  // as meaningful.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutocompleteFilterForMeaningfulNames)) {
-    return true;
-  }
   return !MatchesPattern(
       name, u"^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$");
 }

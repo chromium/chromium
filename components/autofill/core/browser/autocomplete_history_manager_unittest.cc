@@ -486,10 +486,6 @@ TEST_F(AutocompleteHistoryManagerTest,
 // it has a meaningless name.
 TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_FilterName) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutocompleteFilterForMeaningfulNames);
-
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
   std::u16string test_name = u"input_123";
@@ -519,10 +515,6 @@ TEST_F(AutocompleteHistoryManagerTest,
 // because the field's name is meaningful.
 TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_PassName) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutocompleteFilterForMeaningfulNames);
-
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
   std::u16string test_name = u"addressline_1";

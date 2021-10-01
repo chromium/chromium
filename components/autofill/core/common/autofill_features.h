@@ -13,8 +13,6 @@ namespace autofill {
 namespace features {
 
 // All features in alphabetical order.
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutocompleteFilterForMeaningfulNames;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillAcrossIframes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePrompt;
