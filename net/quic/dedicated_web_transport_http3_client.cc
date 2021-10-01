@@ -120,7 +120,9 @@ class DedicatedWebTransportHttp3ClientSession
   }
 
   bool ShouldNegotiateWebTransport() override { return true; }
-  bool ShouldNegotiateHttp3Datagram() override { return true; }
+  quic::HttpDatagramSupport LocalHttpDatagramSupport() override {
+    return quic::HttpDatagramSupport::kDraft04;
+  }
 
   void OnConnectionClosed(const quic::QuicConnectionCloseFrame& frame,
                           quic::ConnectionCloseSource source) override {
