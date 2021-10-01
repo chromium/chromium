@@ -43348,7 +43348,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Periodic poll"/>
 </enum>
 
+<enum name="InstallReason">
+  <int value="0" label="Installed with unknown reason"/>
+  <int value="1"
+      label="Installed with the system and is considered a part of the OS"/>
+  <int value="2" label="Installed by policy"/>
+  <int value="3" label="Installed by an OEM"/>
+  <int value="4"
+      label="Preinstalled by default, but is not considered a system app"/>
+  <int value="5" label="Installed by sync"/>
+  <int value="6" label="Installed by user action"/>
+</enum>
+
 <enum name="InstallSource">
+  <obsolete>
+    Removed in M96. Replaced with InstallReason.
+  </obsolete>
   <int value="0" label="Installed with unknown source"/>
   <int value="1"
       label="Installed with the system and is considered a part of the OS"/>

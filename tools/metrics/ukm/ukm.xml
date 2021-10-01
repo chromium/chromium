@@ -4010,7 +4010,22 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InstallReason" enum="InstallReason">
+    <summary>
+      An enum that records the reason why the app was installed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="InstallSource" enum="InstallSource">
+    <obsolete>
+      Removed in M96. Replaced with InstallReason.
+    </obsolete>
     <summary>
       An enum that records how the app was installed.
     </summary>

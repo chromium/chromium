@@ -584,7 +584,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
       ++count;
       test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
                                              (int)app_type_name);
-      test_ukm_recorder()->ExpectEntryMetric(entry, "InstallSource",
+      test_ukm_recorder()->ExpectEntryMetric(entry, "InstallReason",
                                              (int)install_reason);
       test_ukm_recorder()->ExpectEntryMetric(entry, "InstallTime",
                                              (int)install_time);
