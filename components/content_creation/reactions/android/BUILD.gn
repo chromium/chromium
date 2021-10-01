@@ -6,9 +6,15 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/components/content_creation/reactions/ReactionMetadata.java" ]
+  sources = [
+    "java/src/org/chromium/components/content_creation/reactions/ReactionMetadata.java",
+    "java/src/org/chromium/components/content_creation/reactions/ReactionMetadataConversionBridge.java",
+  ]
 
-  deps = [ ":reaction_types_java" ]
+  deps = [
+    ":reaction_types_java",
+    "//base:base_java",
+  ]
 
   resources_package = "org.chromium.components.content_creation.reactions"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -19,4 +25,22 @@ android_library("reaction_types_java") {
       [ "//components/content_creation/reactions/core:java_enum_srcjar" ]
 
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/components/content_creation/reactions/ReactionMetadataConversionBridge.java" ]
+}
+
+source_set("android") {
+  sources = [
+    "reaction_metadata_conversion_bridge.cc",
+    "reaction_metadata_conversion_bridge.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/content_creation/reactions/core",
+    "//components/content_creation/reactions/core:reaction_types",
+  ]
 }
