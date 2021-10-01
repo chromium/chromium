@@ -1077,6 +1077,32 @@
           'gtest_tests': 'android_12_emulator_gtests',
         }
       },
+      'android-cronet-x86-dbg-11-tests': {
+        'mixins': [
+          '11-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
+      'android-cronet-x86-dbg-oreo-tests': {
+        'mixins': [
+          'oreo-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
       'android-cronet-x86-dbg-pie-tests': {
         'mixins': [
           'pie-x86-emulator',
