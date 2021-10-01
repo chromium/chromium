@@ -749,57 +749,29 @@ String ScreenshotTool::GetOverlayName() {
 
 void ScreenshotTool::Dispatch(const ScriptValue& message,
                               ExceptionState& exception_state) {
-  IntPoint p1;
-  IntPoint p2;
+  Dictionary dict(message);
 
-  // TODO(caseq): remove support for stringified representation once front-end
-  // is updated to pass an object.
-  String message_string;
-  if (message.ToString(message_string)) {
-    std::vector<uint8_t> cbor;
-    if (message_string.Is8Bit()) {
-      crdtp::json::ConvertJSONToCBOR(
-          crdtp::span<uint8_t>(message_string.Characters8(),
-                               message_string.length()),
-          &cbor);
-    } else {
-      crdtp::json::ConvertJSONToCBOR(
-          crdtp::span<uint16_t>(
-              reinterpret_cast<const uint16_t*>(message_string.Characters16()),
-              message_string.length()),
-          &cbor);
-    }
-    std::unique_ptr<protocol::DOM::Rect> box =
-        protocol::DOM::Rect::FromBinary(cbor.data(), cbor.size());
-    if (!box)
-      return;
-    p1 = IntPoint(box->getX(), box->getY());
-    p2 =
-        IntPoint(box->getX() + box->getWidth(), box->getY() + box->getHeight());
-  } else {
-    Dictionary dict(message);
+  auto x = dict.Get<IDLLong>("x", exception_state);
+  if (exception_state.HadException())
+    return;
+  auto y = dict.Get<IDLLong>("y", exception_state);
+  if (exception_state.HadException())
+    return;
+  auto width = dict.Get<IDLLong>("width", exception_state);
+  if (exception_state.HadException())
+    return;
+  auto height = dict.Get<IDLLong>("height", exception_state);
+  if (exception_state.HadException())
+    return;
 
-    auto x = dict.Get<IDLLong>("x", exception_state);
-    if (exception_state.HadException())
-      return;
-    auto y = dict.Get<IDLLong>("y", exception_state);
-    if (exception_state.HadException())
-      return;
-    auto width = dict.Get<IDLLong>("width", exception_state);
-    if (exception_state.HadException())
-      return;
-    auto height = dict.Get<IDLLong>("height", exception_state);
-    if (exception_state.HadException())
-      return;
-
-    if (!x || !y || !width || !height) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                        kInvalidOverlayCommand);
-      return;
-    }
-    p1 = IntPoint(*x, *y);
-    p2 = IntPoint(*x + *width, *y + *height);
+  if (!x || !y || !width || !height) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      kInvalidOverlayCommand);
+    return;
   }
+
+  IntPoint p1(*x, *y);
+  IntPoint p2(*x + *width, *y + *height);
 
   float scale = 1.0f;
 
