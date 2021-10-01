@@ -32,7 +32,7 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
-<translation id="1510238584712386396">Launcher</translation>
+<translation id="1510238584712386396">Iniciador</translation>
 <translation id="1600964289716072707">Coloque outra página no scanner e selecione Digitalizar para adicionar a página.</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1639239467298939599">A carregar</translation>
@@ -78,7 +78,7 @@
 <translation id="2461822463642141190">Atual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Atualizar a imagem de fundo atual</translation>
-<translation id="2517472476991765520">Analisar</translation>
+<translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novidades no Chrome OS</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
