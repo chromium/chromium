@@ -1353,32 +1353,43 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
   ASSERT_TRUE(send_stream);
 
   auto* script_state = scope.GetScriptState();
-
-  ScriptPromise close_promise;
+  auto* isolate = scope.GetIsolate();
+  // We use v8::Persistent instead of ScriptPromise, because ScriptPromise
+  // will be broken when CollectAllGarbageForTesting is called.
+  v8::Persistent<v8::Promise> close_promise_persistent;
 
   {
-    // The close() method also creates v8 handles referencing the
-    // SendStream via the base class.
-    v8::HandleScope handle_scope(scope.GetIsolate());
-
-    close_promise = send_stream->close(script_state, ASSERT_NO_EXCEPTION);
-
-    // The WebTransport object is kept alive by the OutgoingStreamClient.
-    ASSERT_TRUE(web_transport);
-
-    // The SendStream object has not been collected yet, because it remains
-    // referenced by |web_transport| until OnOutgoingStreamClosed is called.
-    EXPECT_TRUE(send_stream);
-
-    web_transport->OnOutgoingStreamClosed(/*stream_id=*/0);
+    v8::HandleScope handle_scope(isolate);
+    ScriptPromise close_promise =
+        send_stream->close(script_state, ASSERT_NO_EXCEPTION);
+    close_promise_persistent.Reset(isolate, close_promise.V8Promise());
   }
 
-  ScriptPromiseTester tester(script_state, close_promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsFulfilled());
+  test::RunPendingTasks();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // The WebTransport object is alive because it's connected.
+  ASSERT_TRUE(web_transport);
+
+  // The SendStream object has not been collected yet, because it remains
+  // referenced by |web_transport| until OnOutgoingStreamClosed is called.
+  EXPECT_TRUE(send_stream);
+
+  web_transport->OnOutgoingStreamClosed(/*stream_id=*/0);
+
+  {
+    v8::HandleScope handle_scope(isolate);
+    ScriptPromiseTester tester(
+        script_state,
+        ScriptPromise(script_state, close_promise_persistent.Get(isolate)));
+    close_promise_persistent.Reset();
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+  }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
+  EXPECT_TRUE(web_transport);
   EXPECT_FALSE(send_stream);
 }
 
