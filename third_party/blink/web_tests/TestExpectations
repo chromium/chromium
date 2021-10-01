@@ -7032,3 +7032,6 @@ crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animati
 
 # Sheriff 2021-09-29
 crbug.com/1254163 [ Mac ] virtual/scroll-unification/ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
+
+# Sheriff 2021-10-01
+crbug.com/1255014 [ Linux ] virtual/scroll-unification-overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure Pass ]
