@@ -740,6 +740,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisabledTest(message = "Failing at least on M, O and P: https://crbug.com/1254327")
     // clang-format off
     public void testInstantStartDisabledOnLowEndDevice() throws IOException {
         // clang-format on
