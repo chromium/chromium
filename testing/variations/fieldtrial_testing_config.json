@@ -6346,21 +6346,6 @@
             ]
         }
     ],
-    "QuickAnswersV2": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "QuickAnswersV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuietNotificationPrompts": [
         {
             "platforms": [
