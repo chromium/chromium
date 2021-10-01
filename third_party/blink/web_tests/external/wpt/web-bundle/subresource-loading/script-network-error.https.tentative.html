@@ -7,6 +7,9 @@
 
 <script>
   window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'script';
+  setup(() => {
+    assert_true(HTMLScriptElement.supports('webbundle'));
+  });
 </script>
 <body>
   <script src="resources/network-error-test.sub.js"></script>

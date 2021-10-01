@@ -32,5 +32,10 @@
   <script src="scopes/script.js"></script>
   <script src="out-of-scope/script.js"></script>
 
+  <script>
+    setup(() => {
+      assert_true(HTMLScriptElement.supports('webbundle'));
+    });
+  </script>
   <script src="/web-bundle/subresource-loading/resources/static-element-with-test.js"></script>
 </body>

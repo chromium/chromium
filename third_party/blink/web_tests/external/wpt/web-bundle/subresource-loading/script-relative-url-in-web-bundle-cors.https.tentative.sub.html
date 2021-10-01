@@ -20,6 +20,10 @@
     }
   </script>
   <script>
+    setup(() => {
+      assert_true(HTMLScriptElement.supports('webbundle'));
+    });
+
     const loaded_scripts = [];
     function scriptLoaded(file) {
       loaded_scripts.push(file);

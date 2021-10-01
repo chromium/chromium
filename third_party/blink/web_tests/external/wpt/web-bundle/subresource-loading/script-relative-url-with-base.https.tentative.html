@@ -21,5 +21,10 @@
     }
   </script>
 
+  <script>
+    setup(() => {
+      assert_true(HTMLScriptElement.supports('webbundle'));
+    });
+  </script>
   <script src="/web-bundle/subresource-loading/resources/relative-url-with-base-test.js"></script>
 </body>

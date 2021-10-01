@@ -20,5 +20,10 @@
       ]
     }
   </script>
+  <script>
+    setup(() => {
+      assert_true(HTMLScriptElement.supports('webbundle'));
+    });
+  </script>
   <script src="resources/path-restriction-test.js"></script>
 </body>
