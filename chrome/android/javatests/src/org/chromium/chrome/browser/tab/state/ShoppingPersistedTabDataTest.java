@@ -673,7 +673,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.NONE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                Assert.assertNull(shoppingPersistedTabData);
+                Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
                 semaphore.release();
             });
         });
