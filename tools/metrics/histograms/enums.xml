@@ -86734,6 +86734,11 @@ others/histograms.xml -->
   <int value="5" label="WireGuard"/>
 </enum>
 
+<enum name="VPNL2TPIPsecTunnelGroupUsage">
+  <int value="0" label="Tunnel group is not used"/>
+  <int value="1" label="Tunnel group is used"/>
+</enum>
+
 <enum name="VPNRemoteAuthenticationType">
   <int value="0" label="OpenVPN Default"/>
   <int value="1" label="OpenVPN Certificate"/>
