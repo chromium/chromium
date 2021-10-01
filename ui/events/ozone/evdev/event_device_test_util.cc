@@ -1156,6 +1156,123 @@ const DeviceCapabilities kSarienKeyboard = {
     /* ff */ "0",
 };
 
+// The built-in keyboard on Woomax, which has a numeric pad
+const DeviceCapabilities kWoomaxKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "10000000000000 0 300000000 200040004000 3d1ebfdf524fff80 3fffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The keyboard of a Drobit
+const DeviceCapabilities kDrobitKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input2/event2",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "10000000000000 0 300000000 200040004000 3d1e169a52400000 37ffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The numberpad-aspect of the touchpad on Drobit.
+const DeviceCapabilities kDrobitNumberpad = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.1/i2c_designware.5/i2c-20/"
+    "i2c-ELAN2701:00/0018:04F3:31C6.0001/input/input5/event5",
+    /* name */ "ELAN2701:00 04F3:31C6 Keyboard",
+    /* phys */ "i2c-ELAN2701:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "04f3",
+    /* product */ "31c6",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */ "5000fffa0 80040000006040",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1",
+    /* ff */ "0",
+};
+
+const DeviceCapabilities kLogitechKeyboardK120 = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:08.1/0000:04:00.3/usb1/1-2/1-2:1.0/"
+    "0003:046D:C31C.0002/input/input18/event16",
+    /* name */ "Logitech USB Keyboard",
+    /* phys */ "usb-0000:04:00.3-2/input0",
+    /* uniq */ "",
+    /* bustype */ "0003",
+    /* vendor */ "046d",
+    /* product */ "c31c",
+    /* version */ "0110",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "1000000000007 ff9f207ac14057ff febeffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1f",
+    /* ff */ "0",
+};
+const DeviceAbsoluteAxis kMicrosoftBluetoothNumberPadAbsAxes[] = {
+    {ABS_VOLUME, {0, 0, 1023, 0, 0, 0}},
+};
+const DeviceCapabilities kMicrosoftBluetoothNumberPad = {
+    /* path */
+    "/sys/devices/virtual/misc/uhid/0005:045E:0836.0007/input/input26/event16",
+    /* name */ "Microsoft Number Pad Keyboard",
+    /* phys */ "c8:b2:9b:af:3a:47",
+    /* uniq */ "ce:aa:3f:f5:d9:12",
+    /* bustype */ "0005",
+    /* vendor */ "045e",
+    /* product */ "0836",
+    /* version */ "0125",
+    /* prop */ "0",
+    /* ev */ "12001f",
+    /* key */
+    "3f000303ff 0 0 483ffff17aff32d bfd4444600000000 1 130ff38b17c007 "
+    "ffe77bfad9415fff ffbeffdff3cfffff fffffffffffffffe",
+    /* rel */ "1040",
+    /* abs */ "100000000",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    kMicrosoftBluetoothNumberPadAbsAxes,
+    base::size(kMicrosoftBluetoothNumberPadAbsAxes),
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.

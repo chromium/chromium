@@ -95,6 +95,11 @@ extern const DeviceCapabilities kPuffMicrophoneMuteSwitch;
 extern const DeviceCapabilities kDrawciaStylusGarage;
 extern const DeviceCapabilities kEveKeyboard;
 extern const DeviceCapabilities kSarienKeyboard;
+extern const DeviceCapabilities kWoomaxKeyboard;
+extern const DeviceCapabilities kDrobitKeyboard;
+extern const DeviceCapabilities kDrobitNumberpad;
+extern const DeviceCapabilities kLogitechKeyboardK120;
+extern const DeviceCapabilities kMicrosoftBluetoothNumberPad;
 }  // namspace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_

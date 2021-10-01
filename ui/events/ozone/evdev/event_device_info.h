@@ -159,6 +159,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a stylus garage switch on this device.
   bool HasStylusSwitch() const;
 
+  // Determine whether there are numberpad keys on this device.
+  bool HasNumberpad() const;
+
   // Determine whether there's a gamepad on this device.
   bool HasGamepad() const;
 
@@ -178,6 +181,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
 
   // Determines InputDeviceType from device identification.
   static InputDeviceType GetInputDeviceTypeFromId(input_id id);
+
+  // Determines if device is within a limited set of internal USB devices.
+  static bool IsInternalUSB(input_id id);
 
  private:
   enum class LegacyAbsoluteDeviceType {

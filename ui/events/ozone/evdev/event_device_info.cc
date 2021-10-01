@@ -592,6 +592,37 @@ bool EventDeviceInfo::HasStylusSwitch() const {
                                          device_type_ == INPUT_DEVICE_INTERNAL);
 }
 
+bool EventDeviceInfo::HasNumberpad() const {
+  // Does not check for HasKeyboard(): the dynamic numberpad
+  // and external standalone numeric-pads will not be considered
+  // keyboards, if their descriptor happens to be correct.
+  if (!HasEventType(EV_KEY))
+    return false;
+
+  // The block-lists for keyboards are useful; currently, if something is
+  // falsely claiming to be a keyboard, it probably has false numberpad keys as
+  // well. If a numberpad needs to be added to the keyboard block-list, then
+  // consider whether we need an overriding allow-list here, or whether
+  // it is time to grow the list into a more detailed structure that can
+  // provides more specific information on what a device's capabilities are.
+  if (IsInKeyboardBlockList(input_id_))
+    return false;
+  if (IsStylusButtonDevice())
+    return false;
+  // Internal USB devices that are keyboards tend to be hammer-likes
+  // that we should not treat as numberpads.
+  if (IsInternalUSB(input_id_))
+    return false;
+
+  // Consider a device to have a numberpad if it has all ten numeric keys.
+  for (int key : {KEY_KP0, KEY_KP1, KEY_KP2, KEY_KP3, KEY_KP4, KEY_KP5, KEY_KP6,
+                  KEY_KP7, KEY_KP8, KEY_KP9}) {
+    if (!HasKeyEvent(key))
+      return false;
+  }
+  return true;
+}
+
 bool EventDeviceInfo::HasGamepad() const {
   if (!HasEventType(EV_KEY))
     return false;
@@ -651,6 +682,12 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
     default:
       return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
   }
+}
+
+// static
+bool EventDeviceInfo::IsInternalUSB(input_id id) {
+  return (id.bustype == BUS_USB && GetInputDeviceTypeFromId(id) ==
+                                       InputDeviceType::INPUT_DEVICE_INTERNAL);
 }
 
 EventDeviceInfo::LegacyAbsoluteDeviceType
