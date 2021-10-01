@@ -80,7 +80,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
 
   ~SystemProxyManager() override;
 
-  // Called by ChromeBrowserMainPartsChromeOS in order to bootstrap the
+  // Called by `ChromeBrowserMainPartsAsh` in order to bootstrap the
   // SystemProxyManager instance after the required global data is
   // available (local state, and CrosSettings).
   static void Initialize(PrefService* local_state);
@@ -93,7 +93,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   // SystemProxyManager during startup or shutdown.
   static SystemProxyManager* Get();
 
-  // Called by ChromeBrowserMainPartsChromeOS in order to shutdown the
+  // Called by `ChromeBrowserMainPartsAsh` in order to shutdown the
   // SystemProxyManager instance before the required global data is destroyed
   // (local state and CrosSettings).
   static void Shutdown();

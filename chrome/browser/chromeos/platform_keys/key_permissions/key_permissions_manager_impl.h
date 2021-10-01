@@ -106,7 +106,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   static void SetSystemTokenKeyPermissionsManagerForTesting(
       KeyPermissionsManager* system_token_kpm_for_testing);
 
-  // Used by ChromeBrowserMainPartsChromeos to create a system-wide key
+  // Used by `ChromeBrowserMainPartsAsh` to create a system-wide key
   // permissions manager instance.
   static std::unique_ptr<KeyPermissionsManager>
   CreateSystemTokenKeyPermissionsManager();

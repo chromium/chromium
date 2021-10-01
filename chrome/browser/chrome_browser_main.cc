@@ -743,7 +743,7 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostCreateMainMessageLoop");
 
 #if !defined(OS_ANDROID)
-  // Initialize the upgrade detector here after ChromeBrowserMainPartsChromeos
+  // Initialize the upgrade detector here after `ChromeBrowserMainPartsAsh`
   // has had a chance to connect the DBus services.
   UpgradeDetector::GetInstance()->Init();
 #endif
@@ -1810,7 +1810,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // Android specific MessageLoop
   NOTREACHED();
 #else
-  // Shutdown the UpgradeDetector here before ChromeBrowserMainPartsChromeos
+  // Shutdown the UpgradeDetector here before `ChromeBrowserMainPartsAsh`
   // disconnects DBus services in its PostDestroyThreads.
   UpgradeDetector::GetInstance()->Shutdown();
 

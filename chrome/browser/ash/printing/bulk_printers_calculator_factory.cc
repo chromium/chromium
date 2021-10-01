@@ -13,7 +13,7 @@ namespace ash {
 
 namespace {
 
-// This class is owned by ChromeBrowserMainPartsChromeos.
+// This class is owned by `ChromeBrowserMainPartsAsh`.
 static BulkPrintersCalculatorFactory* g_bulk_printers_factory = nullptr;
 
 }  // namespace

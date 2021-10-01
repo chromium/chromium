@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   // Tracks the visible networks and their properties.
   // |network_state_handler_| outlives the lifetime of this class.
-  // chrome_browser_main_chromeos.cc initializes the network_state object as
+  // |ChromeBrowserMainPartsAsh| initializes the network_state object as
   // part of the |dbus_services_|, before |DeviceActivityClient| is initialized.
   // Similarly, |DeviceActivityClient| is destructed before |dbus_services_|.
   NetworkStateHandler* const network_state_handler_;

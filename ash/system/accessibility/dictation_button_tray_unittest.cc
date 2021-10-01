@@ -156,7 +156,7 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
 
     // Since this test suite is part of ash unit tests, the
     // SodaInstallerImplChromeOS is never created (it's normally created when
-    // ChromeBrowserMainPartsChromeos initializes). Create it here so that
+    // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance) returns a valid instance.
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();

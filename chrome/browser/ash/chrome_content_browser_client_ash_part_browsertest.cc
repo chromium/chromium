@@ -15,9 +15,9 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-using ChromeContentBrowserClientChromeOsPartTest = InProcessBrowserTest;
+using ChromeContentBrowserClientAshPartTest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientChromeOsPartTest,
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientAshPartTest,
                        SettingsWindowFontSize) {
   // Install the Settings App.
   web_app::WebAppProvider::GetForTest(browser()->profile())

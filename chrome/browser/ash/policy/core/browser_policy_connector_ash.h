@@ -90,7 +90,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
 
   // Shutdown() is called from BrowserProcessImpl::StartTearDown() but |this|
   // observes some objects that get destroyed earlier. PreShutdown() is called
-  // from ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun(), allowing the
+  // from `ChromeBrowserMainPartsAsh::PostMainMessageLoopRun()`, allowing the
   // connection to these dependencies to be severed earlier.
   void PreShutdown();
 

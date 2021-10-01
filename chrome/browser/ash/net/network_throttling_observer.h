@@ -15,7 +15,7 @@ class PrefRegistrySimple;
 namespace chromeos {
 
 // NetworkThrottlingObserver is a singleton, owned by
-// ChromeBrowserMainPartsChromeos.
+// `ChromeBrowserMainPartsAsh`.
 // This class is responsible for propagating network bandwidth throttling policy
 // changes (prefs::kNetworkThrottlingEnabled) in Chrome down to Shill which
 // implements by calling 'tc' in the kernel.

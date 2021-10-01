@@ -24,7 +24,7 @@
 
 namespace {
 
-// Owned by ChromeBrowserMainPartsChromeos.
+// Owned by `ChromeBrowserMainPartsAsh`.
 chromeos::platform_keys::SystemTokenArcKpmDelegate*
     g_system_token_arc_usage_manager_delegate = nullptr;
 

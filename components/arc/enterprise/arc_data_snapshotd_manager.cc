@@ -115,7 +115,7 @@ const int kTpm2Version = 0x322e3000;
 
 bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
 
-// This class is owned by ChromeBrowserMainPartsChromeos.
+// This class is owned by `ChromeBrowserMainPartsAsh`.
 static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool is_last)

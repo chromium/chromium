@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CHROME_BROWSER_MAIN_CHROMEOS_H_
-#define CHROME_BROWSER_CHROMEOS_CHROME_BROWSER_MAIN_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_CHROME_BROWSER_MAIN_PARTS_ASH_H_
+#define CHROME_BROWSER_ASH_CHROME_BROWSER_MAIN_PARTS_ASH_H_
 
 #include <memory>
 
@@ -119,17 +119,16 @@ class KeyPermissionsManager;
 // NOTE: Chromeos UI (Ash) support should be added to
 // ChromeBrowserMainExtraPartsAsh instead. This class should not depend on
 // src/ash or chrome/browser/ui/ash.
-class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
+class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
  public:
-  ChromeBrowserMainPartsChromeos(const content::MainFunctionParams& parameters,
-                                 StartupData* startup_data);
+  ChromeBrowserMainPartsAsh(const content::MainFunctionParams& parameters,
+                            StartupData* startup_data);
 
-  ChromeBrowserMainPartsChromeos(const ChromeBrowserMainPartsChromeos&) =
+  ChromeBrowserMainPartsAsh(const ChromeBrowserMainPartsAsh&) = delete;
+  ChromeBrowserMainPartsAsh& operator=(const ChromeBrowserMainPartsAsh&) =
       delete;
-  ChromeBrowserMainPartsChromeos& operator=(
-      const ChromeBrowserMainPartsChromeos&) = delete;
 
-  ~ChromeBrowserMainPartsChromeos() override;
+  ~ChromeBrowserMainPartsAsh() override;
 
   // ChromeBrowserMainParts overrides.
   int PreEarlyInitialization() override;
@@ -247,4 +246,4 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CHROME_BROWSER_MAIN_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_CHROME_BROWSER_MAIN_PARTS_ASH_H_

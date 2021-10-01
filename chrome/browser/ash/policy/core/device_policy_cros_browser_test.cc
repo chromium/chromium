@@ -138,7 +138,7 @@ void DevicePolicyCrosTestHelper::InstallOwnerKey() {
 
 // static
 void DevicePolicyCrosTestHelper::OverridePaths() {
-  // This is usually done by ChromeBrowserMainChromeOS, but some tests
+  // This is usually done by `ChromeBrowserMainPartsAsh`, but some tests
   // use the overridden paths before ChromeBrowserMain starts. Make sure that
   // the paths are overridden before using them.
   base::FilePath user_data_dir;

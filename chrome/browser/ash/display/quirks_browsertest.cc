@@ -81,7 +81,7 @@ class QuirksBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     // NOTE: QuirksManager::Initialize() isn't necessary here, since it'll be
-    // called in ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun().
+    // called in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
 
     // Create display_profiles subdirectory under temp profile directory.
     const base::FilePath path =

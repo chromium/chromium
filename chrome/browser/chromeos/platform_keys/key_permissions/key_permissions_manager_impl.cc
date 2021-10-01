@@ -39,7 +39,7 @@ namespace {
 
 bool g_one_time_migration_enabled_for_testing = true;
 
-// Owned by ChromeBrowserMainPartsChromeos.
+// Owned by `ChromeBrowserMainPartsAsh`.
 chromeos::platform_keys::KeyPermissionsManager*
     g_system_token_key_permissions_manager = nullptr;
 

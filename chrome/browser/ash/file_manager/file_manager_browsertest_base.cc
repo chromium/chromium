@@ -1692,7 +1692,7 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     // Although in this path no browser is created (and so one can never
     // close..), setting this to false prevents InProcessBrowserTest from adding
     // the kDisableZeroBrowsersOpenForTests flag, which would prevent
-    // chrome_browser_main_chromeos from adding the keepalive that normally
+    // `ChromeBrowserMainPartsAsh` from adding the keepalive that normally
     // stops chromeos from shutting down unexpectedly.
     set_exit_when_last_browser_closes(false);
   }

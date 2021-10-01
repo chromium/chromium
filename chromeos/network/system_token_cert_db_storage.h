@@ -24,7 +24,7 @@ namespace chromeos {
 // Used by SystemTokenCertDbInitializer to save the system token certificate
 // database when it is ready.
 // This class is following the singleton pattern. The single global instance is
-// initialized and destroyed by ChromeBrowserMainPartsChromeos.
+// initialized and destroyed by `ChromeBrowserMainPartsAsh`.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
  public:
   // An observer that gets notified when the global NSSCertDatabase is about to
@@ -46,11 +46,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
   static constexpr base::TimeDelta kMaxCertDbRetrievalDelay =
       base::TimeDelta::FromMinutes(5);
 
-  // Called by ChromeBrowserMainPartsChromeos to initialize a global
+  // Called by `ChromeBrowserMainPartsAsh` to initialize a global
   // SystemTokenCertDbStorage instance.
   static void Initialize();
 
-  // Called by ChromeBrowserMainPartsChromeos to delete the global
+  // Called by `ChromeBrowserMainPartsAsh` to delete the global
   // SystemTokenCertDbStorage instance.
   static void Shutdown();
 

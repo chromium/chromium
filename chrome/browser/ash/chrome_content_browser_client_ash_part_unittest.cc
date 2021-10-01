@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/chrome_content_browser_client_chromeos_part.h"
+#include "chrome/browser/ash/chrome_content_browser_client_ash_part.h"
 
 #include <string>
 
@@ -13,7 +13,7 @@
 namespace {
 
 bool UseDefaultFontSize(const std::string& url) {
-  return ChromeContentBrowserClientChromeOsPart::UseDefaultFontSizeForTest(
+  return ChromeContentBrowserClientAshPart::UseDefaultFontSizeForTest(
       GURL(url));
 }
 
@@ -24,7 +24,7 @@ std::string GetExtensionURL(const std::string& extension_id) {
   return url;
 }
 
-TEST(ChromeContentBrowserClientChromeOsPartTest, FontSizeForChromeUI) {
+TEST(ChromeContentBrowserClientAshPartTest, FontSizeForChromeUI) {
   struct TestCase {
     std::string url;
     bool is_system_ui;
@@ -41,7 +41,7 @@ TEST(ChromeContentBrowserClientChromeOsPartTest, FontSizeForChromeUI) {
   }
 }
 
-TEST(ChromeContentBrowserClientChromeOsPartTest, FontSizeForApps) {
+TEST(ChromeContentBrowserClientAshPartTest, FontSizeForApps) {
   struct TestCase {
     std::string extension_id;
     bool is_system_ui;

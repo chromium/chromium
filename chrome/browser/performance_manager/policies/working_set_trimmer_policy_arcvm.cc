@@ -54,7 +54,7 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
 
   auto* arc_session_manager = arc::ArcSessionManager::Get();
   // ArcSessionManager is created very early in
-  // ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun().
+  // `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
   DCHECK(arc_session_manager);
   arc_session_manager->AddObserver(this);
 
@@ -72,7 +72,7 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
   // more details, especially its AddObserver() function.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   // ArcServiceManager and objects owned by the manager are created very early
-  // in ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() too.
+  // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.
   DCHECK(arc_service_manager);
   arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
 }

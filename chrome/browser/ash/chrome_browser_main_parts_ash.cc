@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/chrome_browser_main_chromeos.h"
+#include "chrome/browser/ash/chrome_browser_main_parts_ash.h"
 
 #include <stddef.h>
 
@@ -33,6 +33,7 @@
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -522,14 +523,14 @@ class DBusServices {
 
 }  // namespace internal
 
-// ChromeBrowserMainPartsChromeos ----------------------------------------------
+// ChromeBrowserMainPartsAsh ---------------------------------------------------
 
-ChromeBrowserMainPartsChromeos::ChromeBrowserMainPartsChromeos(
+ChromeBrowserMainPartsAsh::ChromeBrowserMainPartsAsh(
     const content::MainFunctionParams& parameters,
     StartupData* startup_data)
     : ChromeBrowserMainPartsLinux(parameters, startup_data) {}
 
-ChromeBrowserMainPartsChromeos::~ChromeBrowserMainPartsChromeos() {
+ChromeBrowserMainPartsAsh::~ChromeBrowserMainPartsAsh() {
   // To be precise, logout (browser shutdown) is not yet done, but the
   // remaining work is negligible, hence we say LogoutDone here.
   BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutDone", false);
@@ -538,7 +539,7 @@ ChromeBrowserMainPartsChromeos::~ChromeBrowserMainPartsChromeos() {
 
 // content::BrowserMainParts and ChromeBrowserMainExtraParts overrides ---------
 
-int ChromeBrowserMainPartsChromeos::PreEarlyInitialization() {
+int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   base::CommandLine* singleton_command_line =
       base::CommandLine::ForCurrentProcess();
 
@@ -589,7 +590,7 @@ int ChromeBrowserMainPartsChromeos::PreEarlyInitialization() {
   return ChromeBrowserMainPartsLinux::PreEarlyInitialization();
 }
 
-void ChromeBrowserMainPartsChromeos::PreCreateMainMessageLoop() {
+void ChromeBrowserMainPartsAsh::PreCreateMainMessageLoop() {
   // Initialize session manager in early stage in case others want to listen
   // to session state change right after browser is started.
   g_browser_process->platform_part()->InitializeSessionManager();
@@ -597,7 +598,7 @@ void ChromeBrowserMainPartsChromeos::PreCreateMainMessageLoop() {
   ChromeBrowserMainPartsLinux::PreCreateMainMessageLoop();
 }
 
-void ChromeBrowserMainPartsChromeos::PostCreateMainMessageLoop() {
+void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
   // Used by ChromeOS components to retrieve the system token certificate
   // database.
   SystemTokenCertDbStorage::Initialize();
@@ -619,7 +620,7 @@ void ChromeBrowserMainPartsChromeos::PostCreateMainMessageLoop() {
 
 // Threads are initialized between CreateMainMessageLoop and MainMessageLoopRun.
 // about_flags settings are applied in ChromeBrowserMainParts::PreCreateThreads.
-int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
+int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   network_change_manager_client_ = std::make_unique<NetworkChangeManagerClient>(
       static_cast<net::NetworkChangeNotifierPosix*>(
           content::GetNetworkChangeNotifier()));
@@ -647,7 +648,7 @@ int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
       CrasAudioHandler::Get());
 
   quirks::QuirksManager::Initialize(
-      std::unique_ptr<quirks::QuirksManager::Delegate>(
+      base::WrapUnique<quirks::QuirksManager::Delegate>(
           new quirks::QuirksManagerDelegateImpl()),
       g_browser_process->local_state(),
       g_browser_process->system_network_context_manager()
@@ -713,7 +714,7 @@ int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
 
-void ChromeBrowserMainPartsChromeos::PreProfileInit() {
+void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- immediately before Profile creation().
 
@@ -975,7 +976,7 @@ void SetGuestLocale(Profile* const profile) {
       profile, user, std::move(callback));
 }
 
-void ChromeBrowserMainPartsChromeos::PostProfileInit() {
+void ChromeBrowserMainPartsAsh::PostProfileInit() {
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- just after CreateProfile().
 
@@ -1094,7 +1095,7 @@ void ChromeBrowserMainPartsChromeos::PostProfileInit() {
   ChromeBrowserMainPartsLinux::PostProfileInit();
 }
 
-void ChromeBrowserMainPartsChromeos::PreBrowserStart() {
+void ChromeBrowserMainPartsAsh::PreBrowserStart() {
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- just before MetricsService::LogNeedForCleanShutdown().
 
@@ -1115,7 +1116,7 @@ void ChromeBrowserMainPartsChromeos::PreBrowserStart() {
   ChromeBrowserMainPartsLinux::PreBrowserStart();
 }
 
-void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
+void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
     device_activity_controller_ =
         std::make_unique<ash::device_activity::DeviceActivityController>();
@@ -1210,7 +1211,7 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
 // PreMainMessageLoopRun sub-stages) getting called, so be careful with
 // shutdown calls and test |pre_profile_init_called_| if necessary. See
 // crbug.com/702403 for details.
-void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
+void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   SystemProxyManager::Shutdown();
   device_activity_controller_.reset();
   crostini_unsupported_action_notifier_.reset();
@@ -1412,7 +1413,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   g_browser_process->platform_part()->DestroyChromeUserManager();
 }
 
-void ChromeBrowserMainPartsChromeos::PostDestroyThreads() {
+void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // Destroy crosvm_metrics_ after threads are stopped so that no weak_ptr is
   // held by any task.
   crosvm_metrics_.reset();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/chrome_content_browser_client_chromeos_part.h"
+#include "chrome/browser/ash/chrome_content_browser_client_ash_part.h"
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
@@ -112,13 +112,13 @@ void OverrideFontSize(content::WebContents* contents,
 
 }  // namespace
 
-ChromeContentBrowserClientChromeOsPart ::
-    ChromeContentBrowserClientChromeOsPart() = default;
+ChromeContentBrowserClientAshPart::ChromeContentBrowserClientAshPart() =
+    default;
 
-ChromeContentBrowserClientChromeOsPart ::
-    ~ChromeContentBrowserClientChromeOsPart() = default;
+ChromeContentBrowserClientAshPart::~ChromeContentBrowserClientAshPart() =
+    default;
 
-void ChromeContentBrowserClientChromeOsPart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientAshPart::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // A webcontents may not be the delegate of the render view host such as in
@@ -131,7 +131,7 @@ void ChromeContentBrowserClientChromeOsPart::OverrideWebkitPrefs(
 }
 
 // static
-bool ChromeContentBrowserClientChromeOsPart::UseDefaultFontSizeForTest(
+bool ChromeContentBrowserClientAshPart::UseDefaultFontSizeForTest(
     const GURL& url) {
   return UseDefaultFontSize(url);
 }

@@ -336,6 +336,8 @@
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
+#include "chrome/browser/ash/chrome_browser_main_parts_ash.h"
+#include "chrome/browser/ash/chrome_content_browser_client_ash_part.h"
 #include "chrome/browser/ash/drive/fileapi/drivefs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_system_provider/fileapi/backend_delegate.h"
@@ -349,8 +351,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/chromeos/chrome_browser_main_chromeos.h"
-#include "chrome/browser/chromeos/chrome_content_browser_client_chromeos_part.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/fileapi/mtp_file_system_backend_delegate.h"
@@ -1176,7 +1176,7 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  extra_parts_.push_back(new ChromeContentBrowserClientChromeOsPart);
+  extra_parts_.push_back(new ChromeContentBrowserClientAshPart);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -1276,7 +1276,7 @@ ChromeContentBrowserClient::CreateBrowserMainParts(
   main_parts =
       std::make_unique<ChromeBrowserMainPartsMac>(parameters, &startup_data_);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  main_parts = std::make_unique<chromeos::ChromeBrowserMainPartsChromeos>(
+  main_parts = std::make_unique<chromeos::ChromeBrowserMainPartsAsh>(
       parameters, &startup_data_);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   main_parts = std::make_unique<ChromeBrowserMainPartsLacros>(parameters,
@@ -1324,7 +1324,7 @@ ChromeContentBrowserClient::CreateBrowserMainParts(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(jamescook): Combine with ChromeBrowserMainPartsChromeos.
+  // TODO(jamescook): Combine with `ChromeBrowserMainPartsAsh`.
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsAsh>());
 #endif
 

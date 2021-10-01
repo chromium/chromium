@@ -171,7 +171,7 @@ class RecentArcMediaSourceTest : public testing::Test {
   arc::FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
 

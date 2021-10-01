@@ -101,7 +101,7 @@
 namespace arc {
 namespace {
 
-// ChromeBrowserMainPartsChromeos owns.
+// `ChromeBrowserMainPartsAsh` owns.
 ArcServiceLauncher* g_arc_service_launcher = nullptr;
 
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(

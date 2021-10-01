@@ -94,7 +94,7 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
   FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcContentFileSystemAsyncFileUtil> async_file_util_;

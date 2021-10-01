@@ -34,7 +34,7 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   static constexpr base::TimeDelta kMaxCertDbRetrievalDelay =
       base::TimeDelta::FromMinutes(5);
 
-  // Note: This should only be used by ChromeBrowserMainPartsChromeos to
+  // Note: This should only be used by `ChromeBrowserMainPartsAsh` to
   // initialize the system token certificate database. Use
   // SystemTokenCertDbStorage to retrieve the database.
   SystemTokenCertDBInitializer();

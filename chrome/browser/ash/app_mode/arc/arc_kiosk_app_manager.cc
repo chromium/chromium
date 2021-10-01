@@ -31,7 +31,7 @@ namespace ash {
 
 namespace {
 
-// This class is owned by ChromeBrowserMainPartsChromeos.
+// This class is owned by `ChromeBrowserMainPartsAsh`.
 static ArcKioskAppManager* g_arc_kiosk_app_manager = nullptr;
 
 }  // namespace

@@ -16,7 +16,7 @@ class PrefRegistrySimple;
 namespace chromeos {
 
 // FastTransitionObserver is a singleton, owned by
-// ChromeBrowserMainPartsChromeos.
+// `ChromeBrowserMainPartsAsh`.
 // This class is responsible for propagating Fast Transition policy
 // changes (prefs::kFastTransitionEnabled) in Chrome down to Shill.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {

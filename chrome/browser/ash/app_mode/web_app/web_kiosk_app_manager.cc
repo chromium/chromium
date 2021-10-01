@@ -19,7 +19,7 @@
 namespace ash {
 
 namespace {
-// This class is owned by ChromeBrowserMainPartsChromeos.
+// This class is owned by `ChromeBrowserMainPartsAsh`.
 static WebKioskAppManager* g_web_kiosk_app_manager = nullptr;
 }  // namespace
 
