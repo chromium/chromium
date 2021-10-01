@@ -745,7 +745,8 @@ class NGInlineNodeDataEditor final {
     DCHECK_LE(end_offset, item.end_offset_);
     const unsigned safe_end_offset = GetLastSafeToReuse(item, end_offset);
     const unsigned start_offset = item.start_offset_;
-    if (start_offset == safe_end_offset)
+    // Nothing to reuse if no characters are safe to reuse.
+    if (safe_end_offset <= start_offset)
       return NGInlineItem(item, start_offset, end_offset, nullptr);
     // To handle kerning, e.g. "AV", we should not reuse last glyph.
     // See http://crbug.com/1129710
