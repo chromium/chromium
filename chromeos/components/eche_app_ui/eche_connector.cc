@@ -4,6 +4,7 @@
 
 #include "chromeos/components/eche_app_ui/eche_connector.h"
 
+#include "chromeos/components/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
@@ -63,6 +64,20 @@ void EcheConnector::Disconnect() {
   while (!queue_.empty())
     queue_.pop();
   connection_manager_->Disconnect();
+}
+
+void EcheConnector::SendAppsSetupRequest() {
+  proto::SendAppsSetupRequest request;
+  proto::ExoMessage message;
+  *message.mutable_apps_setup_request() = std::move(request);
+  SendMessage(message.SerializeAsString());
+}
+
+void EcheConnector::GetAppsAccessStateRequest() {
+  proto::GetAppsAccessStateRequest request;
+  proto::ExoMessage message;
+  *message.mutable_apps_access_state_request() = std::move(request);
+  SendMessage(message.SerializeAsString());
 }
 
 void EcheConnector::OnFeatureStatusChanged() {

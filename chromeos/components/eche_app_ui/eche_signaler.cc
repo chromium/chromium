@@ -62,7 +62,7 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
   } else if (message.has_response()) {
     signal = message.response().data();
   } else {
-    signal = {};
+    return;
   }
   std::vector<uint8_t> encoded_signal(signal.begin(), signal.end());
   observer_->OnReceivedSignalingMessage(encoded_signal);

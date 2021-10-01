@@ -26,6 +26,8 @@ class EcheConnector : public FeatureStatusProvider::Observer {
 
   void SendMessage(const std::string& message);
   void Disconnect();
+  void SendAppsSetupRequest();
+  void GetAppsAccessStateRequest();
 
  private:
   // FeatureStatusProvider::Observer:

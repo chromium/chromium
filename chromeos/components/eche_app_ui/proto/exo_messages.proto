@@ -10,6 +10,10 @@ message ExoMessage {
     SignalingResponse response = 2;
     SignalingAction action = 3;
     ProximityPing proximity_ping = 4;
+    SendAppsSetupRequest apps_setup_request = 5;
+    SendAppsSetupResponse apps_setup_response = 6;
+    GetAppsAccessStateRequest apps_access_state_request = 7;
+    GetAppsAccessStateResponse apps_access_state_response = 8;
   }
 }
 
@@ -33,3 +37,29 @@ enum ActionType {
 message ProximityPing {
 }
 
+enum AppsAccessState {
+  ACCESS_NOT_GRANTED = 0;
+  ACCESS_GRANTED = 1;
+}
+
+enum Result {
+  RESULT_NO_ERROR = 0;
+  RESULT_ERROR_ACTION_FAILED = 1;
+  RESULT_ERROR_NOT_SUPPORTED = 2;
+}
+
+// Usesd to send apps setup requset to remote phone.
+message SendAppsSetupRequest {}
+// The result of the SendAppsSetupRequest sent by remote phone.
+message SendAppsSetupResponse {
+  Result result = 1;
+  AppsAccessState apps_access_state = 2;
+}
+
+// Usesd to get apps access state from remote phone.
+message GetAppsAccessStateRequest {}
+// The result of the GetAppsAccessStateRequest sent by remote phone.
+message GetAppsAccessStateResponse {
+  Result result = 1;
+  AppsAccessState apps_access_state = 2;
+}

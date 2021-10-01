@@ -42,6 +42,7 @@ class EcheSignaler;
 class SystemInfoProvider;
 class EcheUidProvider;
 class EcheNotificationGenerator;
+class EcheMessageReceiver;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -91,6 +92,7 @@ class EcheAppManager : public KeyedService {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
+  std::unique_ptr<EcheMessageReceiver> message_receiver_;
 };
 
 }  // namespace eche_app

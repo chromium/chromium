@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/system/sys_info.h"
+#include "chromeos/components/eche_app_ui/eche_message_receiver.h"
 #include "chromeos/components/eche_app_ui/eche_notification_generator.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
@@ -70,7 +71,9 @@ EcheAppManager::EcheAppManager(
               feature_status_provider_.get(),
               launch_app_helper_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
-          launch_app_helper_.get())) {
+          launch_app_helper_.get())),
+      message_receiver_(
+          std::make_unique<EcheMessageReceiver>(connection_manager_.get())) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
@@ -111,6 +114,7 @@ void EcheAppManager::Shutdown() {
   eche_notification_click_handler_.reset();
   launch_app_helper_.reset();
   feature_status_provider_.reset();
+  message_receiver_.reset();
   connection_manager_.reset();
 }
 

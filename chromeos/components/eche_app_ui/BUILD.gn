@@ -24,6 +24,8 @@ static_library("eche_app_ui") {
     "eche_connector.h",
     "eche_feature_status_provider.cc",
     "eche_feature_status_provider.h",
+    "eche_message_receiver.cc",
+    "eche_message_receiver.h",
     "eche_notification_click_handler.cc",
     "eche_notification_click_handler.h",
     "eche_notification_generator.cc",
@@ -88,6 +90,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "eche_feature_status_provider_unittest.cc",
+    "eche_message_receiver_unittest.cc",
     "eche_notification_click_handler_unittest.cc",
     "eche_notification_generator_unittest.cc",
     "eche_recent_app_click_handler_unittest.cc",
@@ -100,6 +103,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/components/eche_app_ui/proto",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/components/phonehub",
