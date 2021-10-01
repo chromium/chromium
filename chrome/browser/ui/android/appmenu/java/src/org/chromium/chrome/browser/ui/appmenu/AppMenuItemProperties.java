@@ -56,7 +56,7 @@ public class AppMenuItemProperties {
 
     /** The click handler for the menu item. */
     public static final WritableObjectPropertyKey<AppMenuClickHandler> CLICK_HANDLER =
-            new WritableObjectPropertyKey<>();
+            new WritableObjectPropertyKey<>(true /* skipEquality */, "CLICK_HANDLER");
 
     /**
      * The sub menu for the menu item, this is used for the menu item which has sub menu items. ex.

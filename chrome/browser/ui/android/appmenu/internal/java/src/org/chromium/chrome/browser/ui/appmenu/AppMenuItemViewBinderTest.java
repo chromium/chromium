@@ -372,9 +372,11 @@ public class AppMenuItemViewBinderTest {
     @Test
     @UiThreadTest
     @MediumTest
-    public void testConvertView_Reused_StandardMenuItem() {
-        createStandardMenuItem(MENU_ID1, TITLE_1);
-        createStandardMenuItem(MENU_ID2, TITLE_2);
+    public void testConvertView_Reused_StandardMenuItem() throws TimeoutException {
+        PropertyModel standardModel1 = createStandardMenuItem(MENU_ID1, TITLE_1);
+        standardModel1.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
+        PropertyModel standardModel2 = createStandardMenuItem(MENU_ID2, TITLE_2);
+        standardModel2.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
 
         ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
@@ -385,6 +387,11 @@ public class AppMenuItemViewBinderTest {
         View view2 = mModelListAdapter.getView(1, view1, parentView);
         Assert.assertEquals("Convert view should have been re-used", view1, view2);
         Assert.assertEquals("Title should have been updated", TITLE_2, titleView.getText());
+
+        view2.performClick();
+        mClickHandler.onClickCallback.waitForCallback(0);
+        Assert.assertEquals("Incorrect clicked item id", MENU_ID2,
+                mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
