@@ -99,7 +99,9 @@ TEST_F(DOMStorageContextWrapperTest,
                              CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
                              MakeBadMessageCallback());
   EXPECT_TRUE(bad_message_called_);
-  EXPECT_EQ(bad_message_, "Access denied for localStorage request");
+  EXPECT_EQ(bad_message_,
+            "Access denied for localStorage request due to "
+            "ChildProcessSecurityPolicy.");
 }
 
 // Tries to open a local storage area with a process that is locked to a
@@ -125,7 +127,9 @@ TEST_F(DOMStorageContextWrapperTest,
                             CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
                             MakeBadMessageCallback());
   EXPECT_TRUE(bad_message_called_);
-  EXPECT_EQ(bad_message_, "Access denied for sessionStorage request");
+  EXPECT_EQ(bad_message_,
+            "Access denied for sessionStorage request due to "
+            "ChildProcessSecurityPolicy.");
 }
 
 // Tries to open a session storage area with a process that is locked to a

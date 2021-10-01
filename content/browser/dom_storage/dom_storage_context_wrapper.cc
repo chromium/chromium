@@ -293,6 +293,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
     mojo::ReportBadMessageCallback bad_message_callback) {
   const std::string type_string =
       type == StorageType::kLocalStorage ? "localStorage" : "sessionStorage";
+  bool host_storage_key_did_not_match = false;
   if (local_frame_token) {
     RenderFrameHostImpl* host = RenderFrameHostImpl::FromFrameToken(
         security_policy_handle.child_id(), *local_frame_token);
@@ -301,15 +302,21 @@ bool DOMStorageContextWrapper::IsRequestValid(
     if (!host) {
       return false;
     }
-    // TODO(https://crbug.com/1212808): We should check if the storage key on
-    // the host matches the one sent via IPC.
+    host_storage_key_did_not_match = host->storage_key() != storage_key;
   }
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-  // ChildProcessSecurityPolicyImpl is converted.
-  if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
-    SYSLOG(WARNING) << "Denying illegal " << type_string << " request.";
+  if (host_storage_key_did_not_match ||
+      !security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
+    std::string reason;
+    if (host_storage_key_did_not_match) {
+      reason = "due to StorageKey.";
+    } else {
+      reason = "due to ChildProcessSecurityPolicy.";
+    }
+    SYSLOG(WARNING) << "Denying illegal " << type_string << " request "
+                    << reason;
     std::move(bad_message_callback)
-        .Run(base::StrCat({"Access denied for ", type_string, " request"}));
+        .Run(base::StrCat(
+            {"Access denied for ", type_string, " request ", reason}));
     return false;
   }
   return true;
