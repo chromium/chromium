@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback.h"
+
 namespace ash {
 
 class AuthIconView;
@@ -66,9 +68,26 @@ class AuthFactorModel {
   // Controls whether the label is announced by Chromevox.
   virtual bool ShouldAnnounceLabel() = 0;
 
+  // Alternative text to be provided to screen readers.
+  virtual std::u16string GetAccessibleName() = 0;
+
   // Update an AuthIconView to represent the current state of the auth factor.
   // Should call SetIcon() or set up an animation.
   virtual void UpdateIcon(AuthIconView* icon_view) = 0;
+
+  virtual void OnTapEvent() {}
+
+  // Set a callback that will be called by the AuthFactorModel whenever its
+  // internal state changes. Used by LoginAuthFactorsView to determine when it
+  // is necessary to update the displayed icons and label.
+  void SetOnStateChangedCallback(base::RepeatingClosure on_state_changed);
+
+ protected:
+  // Should be called whenever the internal state of the auth model changes to
+  // invoke the |on_state_changed_callback_| if set.
+  void NotifyOnStateChanged();
+
+  base::RepeatingClosure on_state_changed_callback_;
 };
 
 }  // namespace ash

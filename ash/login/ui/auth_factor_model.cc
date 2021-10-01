@@ -18,4 +18,14 @@ AuthFactorModel::AuthFactorModel() = default;
 
 AuthFactorModel::~AuthFactorModel() = default;
 
+void AuthFactorModel::SetOnStateChangedCallback(
+    base::RepeatingClosure on_state_changed) {
+  on_state_changed_callback_ = on_state_changed;
+}
+
+void AuthFactorModel::NotifyOnStateChanged() {
+  if (on_state_changed_callback_)
+    on_state_changed_callback_.Run();
+}
+
 }  // namespace ash

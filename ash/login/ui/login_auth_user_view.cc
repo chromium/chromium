@@ -1126,7 +1126,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   if (smartLockUIRevampEnabled) {
     auth_factors_view = std::make_unique<LoginAuthFactorsView>();
     auth_factors_view_ = auth_factors_view.get();
-    auth_factors_view_->AddAuthFactor(std::make_unique<FingerprintAuthModel>());
+    auto fingerprint_auth_model = std::make_unique<FingerprintAuthModel>();
+    fingerprint_auth_model_ = fingerprint_auth_model.get();
+    auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_model));
   } else {
     fingerprint_view = std::make_unique<FingerprintView>();
     fingerprint_view_ = fingerprint_view.get();
@@ -1330,6 +1332,10 @@ void LoginAuthUserView::SetAuthMethods(
   if (fingerprint_view_) {
     fingerprint_view_->SetVisible(current_state.has_fingerprint);
     fingerprint_view_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
+  }
+  if (fingerprint_auth_model_) {
+    fingerprint_auth_model_->SetVisible(current_state.has_fingerprint);
+    fingerprint_auth_model_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
   }
   challenge_response_view_->SetVisible(current_state.has_challenge_response);
 
@@ -1565,17 +1571,21 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
 }
 
 void LoginAuthUserView::SetFingerprintState(FingerprintState state) {
-  if (!fingerprint_view_)
-    return;
-
-  fingerprint_view_->SetState(state);
+  if (fingerprint_view_) {
+    fingerprint_view_->SetState(state);
+  }
+  if (fingerprint_auth_model_) {
+    fingerprint_auth_model_->SetFingerprintState(state);
+  }
 }
 
 void LoginAuthUserView::NotifyFingerprintAuthResult(bool success) {
-  if (!fingerprint_view_)
-    return;
-
-  fingerprint_view_->NotifyFingerprintAuthResult(success);
+  if (fingerprint_view_) {
+    fingerprint_view_->NotifyFingerprintAuthResult(success);
+  }
+  if (fingerprint_auth_model_) {
+    fingerprint_auth_model_->NotifyFingerprintAuthResult(success);
+  }
 }
 
 void LoginAuthUserView::SetAuthDisabledMessage(
@@ -1597,8 +1607,8 @@ views::View* LoginAuthUserView::GetActiveInputView() {
 
 gfx::Size LoginAuthUserView::CalculatePreferredSize() const {
   gfx::Size size = views::View::CalculatePreferredSize();
-  // Make sure we are at least as big as the user view. If we do not do this the
-  // view will be below minimum size when no auth methods are displayed.
+  // Make sure we are at least as big as the user view. If we do not do this
+  // the view will be below minimum size when no auth methods are displayed.
   size.SetToMax(user_view_->GetPreferredSize());
   return size;
 }
@@ -1645,9 +1655,9 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
 }
 
 void LoginAuthUserView::OnAuthComplete(absl::optional<bool> auth_success) {
-  // Clear the password only if auth fails. Make sure to keep the password view
-  // disabled even if auth succeededs, as if the user submits a password while
-  // animating the next lock screen will not work as expected. See
+  // Clear the password only if auth fails. Make sure to keep the password
+  // view disabled even if auth succeededs, as if the user submits a password
+  // while animating the next lock screen will not work as expected. See
   // https://crbug.com/808486.
   if (!auth_success.has_value() || !auth_success.value()) {
     password_view_->Reset();
@@ -1678,7 +1688,8 @@ void LoginAuthUserView::OnChallengeResponseAuthComplete(
     }
   }
 
-  on_auth_.Run(auth_success.value_or(false), /*display_error_messages=*/false);
+  on_auth_.Run(auth_success.value_or(false),
+               /*display_error_messages=*/false);
 }
 
 void LoginAuthUserView::OnUserViewTap() {
@@ -1892,7 +1903,8 @@ gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
 
   if (state.has_pinpad)
     return SizeFromHeight(kDistanceBetweenPasswordFieldAndPinKeyboardDp);
-  if (state.has_fingerprint || auth_factors_view_)
+  if (state.has_fingerprint ||
+      (auth_factors_view_ && auth_factors_view_->GetVisible()))
     return SizeFromHeight(kDistanceBetweenPasswordFieldAndFingerprintViewDp);
   if (state.has_challenge_response)
     return SizeFromHeight(kDistanceBetweenPwdFieldAndChallengeResponseViewDp);
