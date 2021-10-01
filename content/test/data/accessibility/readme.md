@@ -354,6 +354,9 @@ If you are adding a new test file remember to add a corresponding test case in:
 * `content/browser/accessibility/dump_accessibility_events_browsertest.cc`; or
 * `content/browser/accessibility/dump_accessibility_tree_browsertest.cc`
 
+If you are adding a new events test, remember to add a corresponding test case
+for Android, see more info below.
+
 ## More details on DumpAccessibilityEvents tests
 
 These tests are similar to `DumpAccessibilityTree` tests in that they first
@@ -377,3 +380,50 @@ a direct result of calling `go()`.
 Windows will "translate" some IA2 events to UIA, and it is not
 possible to turn this feature off. Therefore as our UIA behavior is in addition
 to IA2, we will receive duplicated events for Focus, MenuOpened and MenuClosed.
+
+### Including Tests for Android
+
+The Android DumpAccessibilityEvents tests work differently than the other
+platforms and are driven by the Java-side code. The tests all reside in the
+[WebContentsAccessibilityEventsTest.java](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java)
+class. The tests are controlled from the Java code so that they can leverage the
+full accessibility suite and test the
+[AccessibilityEvents](https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent)
+that are sent to downstream services. For this to work, when adding a new events
+test, you must include a test line in the Java class.
+
+Example: If you are adding a new events test, "example-test.html", you would
+first create the html file as normal (content/test/data/accessibility/event/example-test.html),
+and add the test to the existing `dump_accessibility_events_browsertests.cc`:
+
+```
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, AccessibilityEventsExampleTest) {
+  RunEventTest(FILE_PATH_LITERAL("example-test.html"));
+}
+```
+
+To include this test on Android, you would add a similar block to the
+`WebContentsAccessibilityEventsTest.java` class:
+
+```
+@Test
+@SmallTest
+public void test_exampleTest() {
+    performTest("example-test.html", "example-test-expected-android.txt");
+}
+```
+
+Some tests on Android won't produce any events. For these you do not need to
+create an empty file, but can instead make the test line:
+
+```
+    performTest("example-test.html", EMPTY_EXPECTATIONS_FILE);
+```
+
+The easiest approach is to use the above line, run the tests, and if it fails,
+the error message will give you the exact text to add to the
+`-expected-android.txt` file. The `-expected-android.txt` file should go in the
+same directory as the others (content/test/data/accessibility/event).
+
+A PRESUBMIT check will give a non-blocking warning if you are adding, renaming,
+or deleting an events test without a corresponding change for Android.
