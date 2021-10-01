@@ -59,7 +59,7 @@ void PrintHelpForTreeSelectors() {
   printf("    --edge\tEdge browser\n");
 #endif
   printf("    --firefox\tFirefox browser\n");
-#if defined(MACOS)
+#if defined(OS_MAC)
   printf("    --safari\tSafari browser\n");
 #endif
   printf(
