@@ -130,11 +130,11 @@ TEST_F(CaptureSchedulerTest, SingleSampleDifferentTimes) {
 }
 
 TEST_F(CaptureSchedulerTest, RollingAverageDifferentTimes) {
-  const int kTestResults[][base::size(kTestInputs)] = {
-      {360, 290, 233, 133, 80, 80, 133, 233},  // One core.
-      {180, 145, 116, 66, 50, 50, 66, 116},    // Two cores.
-      {90, 72, 58, 50, 50, 50, 50, 58},        // Four cores.
-      {50, 50, 50, 50, 50, 50, 50, 50}         // Eight cores.
+  const double kTestResults[][base::size(kTestInputs)] = {
+      {360, 290, 233.333, 133.333, 80, 80, 133.333, 233.333},  // One core.
+      {180, 145, 116.666, 66.666, 50, 50, 66.666, 116.666},    // Two cores.
+      {90, 72.5, 58.333, 50, 50, 50, 50, 58.333},              // Four cores.
+      {50, 50, 50, 50, 50, 50, 50, 50}                         // Eight cores.
   };
 
   for (size_t i = 0; i < base::size(kTestResults); ++i) {
@@ -145,7 +145,7 @@ TEST_F(CaptureSchedulerTest, RollingAverageDifferentTimes) {
           base::TimeDelta::FromMilliseconds(kTestInputs[j]),
           base::TimeDelta::FromMilliseconds(
               kTestInputs[base::size(kTestInputs) - 1 - j]),
-          base::TimeDelta::FromMilliseconds(kTestResults[i][j]));
+          base::TimeDelta::FromMillisecondsD(kTestResults[i][j]));
     }
   }
 }

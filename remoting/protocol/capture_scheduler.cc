@@ -160,7 +160,7 @@ void CaptureScheduler::ScheduleNextCapture() {
   // fraction of CPU across all cores.
   base::TimeDelta delay =
       std::max(minimum_interval_,
-               base::TimeDelta::FromMilliseconds(
+               base::TimeDelta::FromMillisecondsD(
                    (capture_time_.Average() + encode_time_.Average()) /
                    (kRecordingCpuConsumption * num_of_processors_)));
 
