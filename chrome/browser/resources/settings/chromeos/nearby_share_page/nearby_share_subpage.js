@@ -448,11 +448,17 @@ Polymer({
   /**
    * @param {boolean} isNearbySharingEnabled
    * @param {boolean} isOnboardingComplete
+   * @param {boolean} shouldShowFastInititationNotificationToggle
    * @return {boolean}
    * @private
    */
-  shouldDisableFastInitiationNotificationToggle_(
-      isNearbySharingEnabled, isOnboardingComplete) {
-    return !isNearbySharingEnabled && isOnboardingComplete;
+  shouldShowSubpageContent_(
+      isNearbySharingEnabled, isOnboardingComplete,
+      shouldShowFastInititationNotificationToggle) {
+    if (!isOnboardingComplete) {
+      return false;
+    }
+    return isNearbySharingEnabled ||
+        shouldShowFastInititationNotificationToggle;
   },
 });

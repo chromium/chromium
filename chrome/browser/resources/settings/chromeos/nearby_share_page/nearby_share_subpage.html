@@ -78,8 +78,10 @@
               prefs.nearby_sharing.enabled.value)]]">
       </settings-toggle-button>
     </template>
-    <template is="dom-if" id="subpageContent"
-        if="[[prefs.nearby_sharing.enabled.value]]" restamp>
+    <template is="dom-if" id="subpageContent" if="[[shouldShowSubpageContent_(
+        prefs.nearby_sharing.enabled.value,
+        prefs.nearby_sharing.onboarding_complete.value,
+        shouldShowFastInititationNotificationToggle_)]]" restamp>
       <div class="settings-box two-line">
         <div class="start"
             aria-label="[[getAccountRowLabel(profileName_, profileLabel_)]]">
@@ -183,30 +185,27 @@
           $i18n{nearbyShareEditDataUsage}
         </cr-button>
       </div>
-      <template is="dom-if"
-          if="[[shouldShowFastInititationNotificationToggle_]]"
-          restamp>
-        <div class="settings-box two-line" id="fastInitiationNotificationRow">
-          <div class="start">
-            <div id="fastInitiationNotificationRowTitle" aria-hidden="true">
-              $i18n{fastInitiationNotificationToggleTitle}
-            </div>
-            <div aria-hidden="true" class="secondary"
-                id="fastInitiationNotificationRowDescription">
-              $i18n{fastInitiationNotificationToggleDescription}
-            </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowFastInititationNotificationToggle_]]"
+        restamp>
+      <div class="settings-box two-line" id="fastInitiationNotificationRow">
+        <div class="start">
+          <div id="fastInitiationNotificationRowTitle" aria-hidden="true">
+            $i18n{fastInitiationNotificationToggleTitle}
           </div>
-          <cr-toggle
-              id="fastInitiationNotificationToggle"
-              aria-labelledby="fastInitiationNotificationRowTitle"
-              aria-describedby="fastInitiationNotificationRowDescription"
-              checked="[[settings.fastInitiationNotificationEnabled]]"
-              disabled="[[shouldDisableFastInitiationNotificationToggle_(
-                  settings.enabled,  settings.isOnboardingComplete)]]"
-              on-change="onFastInitiationNotificationToggledByUser_">
-          </cr-toggle>
+          <div aria-hidden="true" class="secondary"
+              id="fastInitiationNotificationRowDescription">
+            $i18n{fastInitiationNotificationToggleDescription}
+          </div>
         </div>
-      </template>
+        <cr-toggle
+            id="fastInitiationNotificationToggle"
+            aria-labelledby="fastInitiationNotificationRowTitle"
+            aria-describedby="fastInitiationNotificationRowDescription"
+            checked="[[settings.fastInitiationNotificationEnabled]]"
+            on-change="onFastInitiationNotificationToggledByUser_">
+        </cr-toggle>
+      </div>
     </template>
     <template is="dom-if" if="[[showDataUsageDialog_]]" restamp>
       <nearby-share-data-usage-dialog prefs="{{prefs}}" id="dataUsageDialog"

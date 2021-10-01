@@ -71,7 +71,7 @@ suite('NearbyShare', function() {
     fakeSettings.setEnabled(true);
     nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
-    createSubpage(true);
+    createSubpage(/*is_enabled=*/ true, /*is_onboarding_complete=*/ true);
 
     featureToggleButton = subpage.$$('#featureToggleButton');
   });
@@ -81,7 +81,7 @@ suite('NearbyShare', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
-  function createSubpage(is_enabled) {
+  function createSubpage(is_enabled, is_onboarding_complete) {
     PolymerTest.clearBody();
 
     subpage = document.createElement('settings-nearby-share-subpage');
@@ -95,7 +95,10 @@ suite('NearbyShare', function() {
         },
         'device_name': {
           value: '',
-        }
+        },
+        'onboarding_complete': {
+          value: is_onboarding_complete,
+        },
       }
     };
 
@@ -110,6 +113,28 @@ suite('NearbyShare', function() {
     return (el !== null) && (el.style.display !== 'none');
   }
 
+  function subpageControlsHidden(is_hidden) {
+    assertEquals(is_hidden, !doesElementExist('#highVisibilityToggle'));
+    assertEquals(is_hidden, !doesElementExist('#editDeviceNameButton'));
+    assertEquals(is_hidden, !doesElementExist('#editVisibilityButton'));
+    assertEquals(is_hidden, !doesElementExist('#editDataUsageButton'));
+  }
+
+  function subpageControlsDisabled(is_disabled) {
+    assertEquals(
+        is_disabled,
+        subpage.$$('#highVisibilityToggle').hasAttribute('disabled'));
+    assertEquals(
+        is_disabled,
+        subpage.$$('#editDeviceNameButton').hasAttribute('disabled'));
+    assertEquals(
+        is_disabled,
+        subpage.$$('#editVisibilityButton').hasAttribute('disabled'));
+    assertEquals(
+        is_disabled,
+        subpage.$$('#editDataUsageButton').hasAttribute('disabled'));
+  }
+
   function flushAsync() {
     Polymer.dom.flush();
     // Use setTimeout to wait for the next macrotask.
@@ -122,10 +147,8 @@ suite('NearbyShare', function() {
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('On', featureToggleButton.label.trim());
-    assertTrue(doesElementExist('#highVisibilityToggle'));
-    assertTrue(doesElementExist('#editDeviceNameButton'));
-    assertTrue(doesElementExist('#editVisibilityButton'));
-    assertTrue(doesElementExist('#editDataUsageButton'));
+    subpageControlsHidden(false);
+    subpageControlsDisabled(false);
 
     featureToggleButton.click();
     Polymer.dom.flush();
@@ -133,10 +156,7 @@ suite('NearbyShare', function() {
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('Off', featureToggleButton.label.trim());
-    assertFalse(doesElementExist('#highVisibilityToggle'));
-    assertFalse(doesElementExist('#editDeviceNameButton'));
-    assertFalse(doesElementExist('#editVisibilityButton'));
-    assertFalse(doesElementExist('#editDataUsageButton'));
+    subpageControlsHidden(true);
   });
 
   test('toggle row controls preference', function() {
@@ -416,7 +436,7 @@ suite('NearbyShare', function() {
     fakeSettings.setEnabled(false);
     nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
-    createSubpage(/*is_enabled=*/ false);
+    createSubpage(/*is_enabled=*/ false, /*is_onboarding_complete=*/ false);
 
     await flushAsync();
     // Ensure contacts download occurs when the subpage is attached.
@@ -481,10 +501,7 @@ suite('NearbyShare', function() {
     assertEquals('Off', featureToggleButton.label.trim());
     assertEquals('none', subpageContent.style.display);
     assertEquals('none', subpage.$$('#helpContent').style.display);
-    assertFalse(doesElementExist('#highVisibilityToggle'));
-    assertFalse(doesElementExist('#editDeviceNameButton'));
-    assertFalse(doesElementExist('#editVisibilityButton'));
-    assertFalse(doesElementExist('#editDataUsageButton'));
+    subpageControlsHidden(true);
     assertFalse(doesElementExist('#help'));
   });
 
@@ -510,6 +527,27 @@ suite('NearbyShare', function() {
       await flushAsync();
       assertFalse(fastInitToggle.checked);
       assertFalse(subpage.settings.fastInitiationNotificationEnabled);
+    });
+
+    test('Subpage content visible but disabled when feature off', async () => {
+      featureToggleButton.click();
+      Polymer.dom.flush();
+
+      assertEquals(false, featureToggleButton.checked);
+      assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
+      assertEquals('Off', featureToggleButton.label.trim());
+
+      subpageControlsHidden(false);
+      subpageControlsDisabled(true);
+    });
+
+    test('Subpage content not visible pre-onboarding', async () => {
+      featureToggleButton.click();
+      subpage.set('prefs.nearby_sharing.onboarding_complete.value', false);
+      await flushAsync();
+
+      assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
+      subpageControlsHidden(true);
     });
   });
 });
