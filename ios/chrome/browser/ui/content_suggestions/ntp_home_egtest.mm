@@ -693,7 +693,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
-  // Ensures that tiles are still all visible with feed turned off.
+  // Ensures that tiles are still all visible with feed turned off after
+  // scrolling.
   for (NSInteger index = 0; index < 8; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -703,6 +704,20 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
+  // Ensures that fake omnibox visibility is correct.
+  // On iPads, fake omnibox disappears and becomes real omnibox. On other
+  // devices, fake omnibox persists and sticks to top.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:grey_notVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Ensures that logo/doodle is no longer visible when scrolled down.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 // Test to ensure that initial position and content are maintained when rotating
@@ -725,28 +740,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Test to ensure that feed can be collapsed/shown and that feed header changes
 // accordingly.
 - (void)testToggleFeedVisible {
-  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
-  NSString* labelTextForVisibleFeed =
-      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-  NSString* labelTextForHiddenFeed =
-      [NSString stringWithFormat:@"%@ – %@", labelTextForVisibleFeed,
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
-  // Ensure that label is visible with correct text for visible feed.
-  [self testNTPInitialPositionAndContent:collectionView];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::DiscoverHeaderLabel(),
-                                   grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
-  GREYAssertTrue(
-      [discoverHeaderLabel.text isEqualToString:labelTextForVisibleFeed],
-      @"Discover header label is incorrect with feed visible.");
+  // Check feed label and if NTP is scrollable.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
 
   // Hide feed.
   // TODO(crbug.com/1194106): Hide feed using feed header menu instead of
@@ -755,89 +754,61 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
 
-  // Ensure that label is visible with correct text for hidden feed.
-  [self testNTPInitialPositionAndContent:collectionView];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::DiscoverHeaderLabel(),
-                                   grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
-  GREYAssertTrue(
-      [discoverHeaderLabel.text isEqualToString:labelTextForHiddenFeed],
-      @"Discover header label is incorrect with feed hidden.");
+  // Check feed label and if NTP is scrollable.
+  [self checkFeedLabelForFeedVisible:NO];
+  [self checkIfNTPIsScrollable];
 
   // Show feed again.
   [ChromeEarlGreyAppInterface
       setBoolValue:YES
        forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
 
-  // Ensure that label is visible with correct text for feed being made visible.
-  [self testNTPInitialPositionAndContent:collectionView];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::DiscoverHeaderLabel(),
-                                   grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
-  GREYAssertTrue(
-      [discoverHeaderLabel.text isEqualToString:labelTextForVisibleFeed],
-      @"Discover header label is incorrect with feed made visible.");
+  // Check feed label and if NTP is scrollable.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
 }
 
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
 - (void)testToggleFeedEnabled {
-  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
-  // Ensure that label is visible with correct text for enabled feed.
-  [self testNTPInitialPositionAndContent:collectionView];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::DiscoverHeaderLabel(),
-                                   grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
-  GREYAssertTrue(
-      [discoverHeaderLabel.text
-          isEqualToString:l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)],
-      @"Discover header label is incorrect with feed enabled.");
+  // Ensure that label is visible with correct text for enabled feed, and that
+  // the NTP is scrollable.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
 
   // Disable feed.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsArticleSuggestionsCellId)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
 
-  // Ensure that label is no longer visible.
-  [self testNTPInitialPositionAndContent:collectionView];
+  // Ensure that label is no longer visible and that the NTP is still
+  // scrollable.
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
       assertWithMatcher:grey_nil()];
+  [self checkIfNTPIsScrollable];
 
   // Re-enable feed.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsArticleSuggestionsCellId)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
 
-  // Ensure that label is once again visible.
-  [self testNTPInitialPositionAndContent:collectionView];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::DiscoverHeaderLabel(),
-                                   grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
-  GREYAssertTrue(
-      [discoverHeaderLabel.text
-          isEqualToString:l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)],
-      @"Discover header label is incorrect with feed re-enabled.");
+  // Ensure that label is once again visible and that the NTP is still
+  // scrollable.
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
 }
 #pragma mark - Helpers
 
@@ -874,6 +845,40 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Check that feed label is visible with correct text for feed visibility.
+- (void)checkFeedLabelForFeedVisible:(BOOL)visible {
+  NSString* labelTextForVisibleFeed =
+      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+  NSString* labelTextForHiddenFeed =
+      [NSString stringWithFormat:@"%@ – %@", labelTextForVisibleFeed,
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
+  NSString* labelText =
+      visible ? labelTextForVisibleFeed : labelTextForHiddenFeed;
+  [EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)];
+  UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
+  GREYAssertTrue([discoverHeaderLabel.text isEqualToString:labelText],
+                 @"Discover header label is incorrect");
+}
+
+// Check that NTP is scrollable by scrolling and comparing offsets, then return
+// to top.
+- (void)checkIfNTPIsScrollable {
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  CGFloat yOffsetBeforeScroll = collectionView.contentOffset.y;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  GREYAssertTrue(yOffsetBeforeScroll != collectionView.contentOffset.y,
+                 @"NTP cannot be scrolled.");
+
+  // Scroll back to top of NTP.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 }
 
 @end
