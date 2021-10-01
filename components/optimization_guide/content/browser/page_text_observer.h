@@ -88,7 +88,6 @@ class PageTextObserver : public content::WebContentsObserver,
   size_t outstanding_requests() const { return outstanding_requests_; }
 
   // content::WebContentsObserver:
-  void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void RenderFrameCreated(content::RenderFrameHost* rfh) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
