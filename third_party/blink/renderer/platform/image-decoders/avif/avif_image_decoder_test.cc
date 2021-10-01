@@ -933,8 +933,8 @@ TEST(StaticAVIFTests, AlphaHasNoIspeProperty) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(ReadFile("/images/resources/avif/green-no-alpha-ispe.avif"),
                    true);
-  EXPECT_TRUE(decoder->IsSizeAvailable());
-  EXPECT_FALSE(decoder->Failed());
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->Failed());
 }
 
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
