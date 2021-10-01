@@ -182,7 +182,8 @@ const std::vector<GURL>& NavigationImpl::GetRedirectChain() {
 }
 
 NavigationState NavigationImpl::GetState() {
-  if (navigation_handle_->IsErrorPage() || navigation_handle_->IsDownload())
+  if (navigation_handle_->IsErrorPage() || navigation_handle_->IsDownload() ||
+      (finished_ && !navigation_handle_->HasCommitted()))
     return NavigationState::kFailed;
   if (navigation_handle_->HasCommitted())
     return NavigationState::kComplete;

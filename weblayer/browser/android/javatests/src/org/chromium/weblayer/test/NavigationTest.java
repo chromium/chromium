@@ -653,13 +653,19 @@ public class NavigationTest {
                 curRedirectedCount, Arrays.asList(Uri.parse(url), Uri.parse(finalUrl)));
     }
 
-    @MinWebLayerVersion(93)
+    /**
+     * This test verifies that initial renderer-initiated navigations to about:blank in WebLayer get
+     * marked as failing due to the fact that such navigations are not committed within //content.
+     * It additionally verifies that calling Navigation#getPage() on such a failed navigation raises
+     * an exception rather than crashing the browser (regression test for crbug.com/1233480).
+     */
+    @MinWebLayerVersion(96)
     @Test
     @SmallTest
-    public void testGetPageInOnNavigationCompletedForIncompleteNavigation() throws Exception {
+    public void testInitialRendererInitiatedNavigationToAboutBlankFails() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
 
-        // Setup a callback for when the navigation in a new tab completes.
+        // Setup a callback for when the navigation in a new tab fails.
         CallbackHelper callbackHelper = new CallbackHelper();
         NewTabCallback newTabCallback = new NewTabCallback() {
             @Override
@@ -667,11 +673,13 @@ public class NavigationTest {
                 NavigationController navigationController = tab.getNavigationController();
                 navigationController.registerNavigationCallback(new NavigationCallback() {
                     @Override
-                    public void onNavigationCompleted(Navigation navigation) {
-                        // We're looking for a completed but not committed navigation.
-                        assertEquals(NavigationState.WAITING_RESPONSE, navigation.getState());
-                        // Calling getPage() should throw an exception if the state is not COMPLETE.
+                    public void onNavigationFailed(Navigation navigation) {
+                        assertEquals(NavigationState.FAILED, navigation.getState());
+
+                        // Calling Navigation#getPage() should throw an exception here because the
+                        // navigation has not committed.
                         assertThrows(IllegalStateException.class, () -> { navigation.getPage(); });
+
                         navigationController.unregisterNavigationCallback(this);
                         callbackHelper.notifyCalled();
                     }
@@ -681,12 +689,12 @@ public class NavigationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { activity.getBrowser().getActiveTab().setNewTabCallback(newTabCallback); });
 
-        // Open a new tab by clicking on the document.
+        // Click on the document to invoke window.open(), which results in a renderer-initiated
+        // navigation to about:blank in a new tab.
         mActivityTestRule.executeScriptSync(
                 "document.onclick = () => window.open();", true /* useSeparateIsolate */);
         EventUtils.simulateTouchCenterOfView(activity.getWindow().getDecorView());
 
-        // Expect no browser crash. Regression test for crbug.com/1233480.
         callbackHelper.waitForFirst();
     }
 

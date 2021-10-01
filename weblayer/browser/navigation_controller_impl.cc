@@ -488,6 +488,8 @@ void NavigationControllerImpl::DidFinishNavigation(
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
 
+  navigation->set_finished();
+
   if (navigation_handle->HasCommitted()) {
     navigation->set_safe_to_get_page();
 
@@ -508,7 +510,11 @@ void NavigationControllerImpl::DidFinishNavigation(
       PageImpl::GetOrCreateForPage(rfh->GetPage());
   }
 
-  if (navigation_handle->GetNetErrorCode() == net::OK &&
+  // In some corner cases (e.g., a tab closing with an ongoing navigation)
+  // navigations finish without committing but without any other error state.
+  // Such navigations are regarded as failed by WebLayer.
+  if (navigation_handle->HasCommitted() &&
+      navigation_handle->GetNetErrorCode() == net::OK &&
       !navigation_handle->IsErrorPage()) {
 #if defined(OS_ANDROID)
     if (java_controller_) {

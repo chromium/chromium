@@ -805,6 +805,23 @@ class WaitForMediaPlaying : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+class WaitForResponseStart : public content::WebContentsObserver {
+ public:
+  explicit WaitForResponseStart(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  WaitForResponseStart(const WaitForResponseStart&) = delete;
+  WaitForResponseStart& operator=(const WaitForResponseStart&) = delete;
+
+  // WebContentsObserver:
+  void DidReceiveResponse() final { run_loop_.Quit(); }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AutoPlayEnabled) {
@@ -1062,6 +1079,96 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   page_language_determination_run_loop2.Run();
   EXPECT_EQ(committed_page, page_with_language_determined);
   EXPECT_EQ("fr", determined_language);
+}
+
+// Verifies that closing a tab when a navigation is waiting for a response
+// causes the navigation to be marked as failed to the embedder.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       CloseTabWithNavigationWaitingForResponse) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "", true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL("/initial_url.html");
+  base::RunLoop run_loop;
+  Navigation* ongoing_navigation = nullptr;
+
+  auto observer =
+      std::make_unique<NavigationObserverImpl>(GetNavigationController());
+  observer->SetStartedCallback(base::BindLambdaForTesting(
+      [&](Navigation* navigation) { ongoing_navigation = navigation; }));
+  observer->SetFailedCallback(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        EXPECT_EQ(url, navigation->GetURL());
+        EXPECT_EQ(NavigationState::kFailed, navigation->GetState());
+
+        run_loop.Quit();
+
+        // The NavigationControllerImpl that |observer| is observing will
+        // be destroyed before control returns to the test, so destroy
+        // |observer| now to avoid UaF.
+        observer.reset();
+      }));
+
+  shell()->LoadURL(url);
+  response.WaitForRequest();
+
+  EXPECT_EQ(NavigationState::kWaitingResponse, ongoing_navigation->GetState());
+  shell()->browser()->DestroyTab(shell()->tab());
+
+  run_loop.Run();
+}
+
+// Verifies that closing a tab when a navigation is in the middle of receiving a
+// response causes the navigation to be marked as failed to the embedder.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       CloseTabWithNavigationReceivingBytes) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "", true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL("/initial_url.html");
+  base::RunLoop run_loop;
+  Navigation* ongoing_navigation = nullptr;
+
+  auto observer =
+      std::make_unique<NavigationObserverImpl>(GetNavigationController());
+  observer->SetStartedCallback(base::BindLambdaForTesting(
+      [&](Navigation* navigation) { ongoing_navigation = navigation; }));
+  observer->SetFailedCallback(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        EXPECT_EQ(url, navigation->GetURL());
+        EXPECT_EQ(NavigationState::kFailed, navigation->GetState());
+
+        run_loop.Quit();
+
+        // The NavigationControllerImpl that |observer| is observing will
+        // be destroyed before control returns to the test, so destroy
+        // |observer| now to avoid UaF.
+        observer.reset();
+      }));
+
+  shell()->LoadURL(url);
+  response.WaitForRequest();
+
+  response.Send(net::HTTP_OK, "text/html", "<html>");
+
+  // Ensure that the navigation has started receiving the response before
+  // proceeding.
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto wait_for_response_start =
+      std::make_unique<WaitForResponseStart>(tab->web_contents());
+  wait_for_response_start->Wait();
+
+  EXPECT_EQ(NavigationState::kReceivingBytes, ongoing_navigation->GetState());
+
+  // Destroy |wait_for_response_start| before we indirectly destroy the
+  // WebContents it's observing.
+  wait_for_response_start.reset();
+
+  shell()->browser()->DestroyTab(tab);
+
+  run_loop.Run();
 }
 
 }  // namespace weblayer

@@ -17,6 +17,11 @@ crbug.com/1196803 [ client_lte_91 ] org.chromium.weblayer.test.ExternalNavigatio
 
 crbug.com/1239002 [ all ] org.chromium.weblayer.test.FullscreenSizeTest#testOsk [ Skip ]
 
+# In 96 we changed the implementation to have navigations fail rather than
+# complete in this case. Unfortunately there is no way to skip tests based on
+# the impl being >= a given version.
+crbug.com/1253395 [ all ] org.chromium.weblayer.test.NavigationTest#testGetPageInOnNavigationCompletedForIncompleteNavigation [ Skip ]
+
 # These tests were flaky, the fix was in the associated html files which landed
 # in 94.
 crbug.com/1222694 [ client_lte_94 ] org.chromium.weblayer.test.FullscreenCallbackTest* [ Skip ]

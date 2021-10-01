@@ -62,6 +62,8 @@ class NavigationImpl : public Navigation {
     return disable_network_error_auto_reload_;
   }
 
+  void set_finished() { finished_ = true; }
+
 #if defined(OS_ANDROID)
   int GetState(JNIEnv* env) { return static_cast<int>(GetState()); }
   base::android::ScopedJavaLocalRef<jstring> GetUri(JNIEnv* env);
@@ -158,6 +160,9 @@ class NavigationImpl : public Navigation {
   bool safe_to_get_page_ = false;
 
   bool disable_network_error_auto_reload_ = false;
+
+  // Whether this navigation has finished.
+  bool finished_ = false;
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;
