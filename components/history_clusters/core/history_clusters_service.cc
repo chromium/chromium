@@ -704,18 +704,19 @@ void HistoryClustersService::OnGotHistoryVisits(
   NotifyDebugMessage("Calling backend_->GetClusters()");
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumVisitsToCluster",
                                static_cast<int>(annotated_visits.size()));
-  // TODO(crbug/1243049) : Add timing metrics for the on-device clustering
-  // backend.
+
   backend_->GetClusters(
       base::BindOnce(&HistoryClustersService::OnGotClusters,
                      weak_ptr_factory_.GetWeakPtr(), query,
-                     continuation_end_time, std::move(callback)),
+                     continuation_end_time, base::TimeTicks::Now(),
+                     std::move(callback)),
       annotated_visits);
 }
 
 void HistoryClustersService::OnGotClusters(
     const std::string& query,
     base::Time continuation_end_time,
+    base::TimeTicks cluster_start_time,
     QueryClustersCallback callback,
     const std::vector<history::Cluster>& clusters) const {
   NotifyDebugMessage("HistoryClustersService::OnGotClusters()");
@@ -723,6 +724,9 @@ void HistoryClustersService::OnGotClusters(
   if (!continuation_end_time.is_null()) {
     result.continuation_end_time = continuation_end_time;
   }
+
+  base::UmaHistogramTimes("History.Clusters.Backend.GetClustersLatency",
+                          base::TimeTicks::Now() - cluster_start_time);
 
   auto filtered_raw_clusters = FilterClustersMatchingQuery(query, clusters);
   result.clusters = CollapseDuplicateVisits(filtered_raw_clusters);

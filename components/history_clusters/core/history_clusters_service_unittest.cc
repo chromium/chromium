@@ -288,6 +288,8 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
       "History.Clusters.Backend.NumVisitsToCluster", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.PercentClustersFilteredByQuery", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.GetClustersLatency", 1);
 }
 
 TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesIntegrationTest) {
@@ -566,6 +568,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.PercentClustersFilteredByQuery", 50,
       base::size(test_data) - 2);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.GetClustersLatency", base::size(test_data));
 }
 
 TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
