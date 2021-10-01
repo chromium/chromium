@@ -146,12 +146,12 @@ public class FeedManagementMediator {
 
     private void handleInterestsClick(View view) {
         Log.d(TAG, "Interests click caught.");
-        launchUriActivity("https://www.google.com/preferences/interests/yourinterests");
+        launchUriActivity("https://www.google.com/preferences/interests/yourinterests?sh=n");
     }
 
     private void handleHiddenClick(View view) {
         Log.d(TAG, "Hidden click caught.");
-        launchUriActivity("https://www.google.com/preferences/interests/hidden");
+        launchUriActivity("https://www.google.com/preferences/interests/hidden?sh=n");
     }
 
     private void handleAutoplayClick(View view) {
