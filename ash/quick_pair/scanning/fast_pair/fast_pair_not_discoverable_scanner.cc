@@ -147,11 +147,14 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
   model_id_stream << std::uppercase << std::hex
                   << metadata->device_metadata->device.id();
 
+  int tx_power = metadata->device_metadata->device.ble_tx_power();
+
   range_tracker_->Track(
       device, metadata->device_metadata->device.trigger_distance(),
       base::BindRepeating(&FastPairNotDiscoverableScanner::NotifyDeviceFound,
                           weak_pointer_factory_.GetWeakPtr(),
-                          model_id_stream.str()));
+                          model_id_stream.str()),
+      tx_power == 0 ? absl::nullopt : absl::make_optional(tx_power));
 }
 
 void FastPairNotDiscoverableScanner::NotifyDeviceFound(

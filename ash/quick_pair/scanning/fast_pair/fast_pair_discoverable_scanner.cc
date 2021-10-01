@@ -107,6 +107,13 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
     device::BluetoothDevice* device,
     const std::string model_id,
     DeviceMetadata* device_metadata) {
+  if (!device_metadata) {
+    QP_LOG(WARNING) << __func__
+                    << ": Could not get metadata for id: " << model_id
+                    << ". Ignoring this advertisement";
+    return;
+  }
+
   double trigger_distance;
   if (device_metadata && device_metadata->device.trigger_distance() > 0) {
     trigger_distance = device_metadata->device.trigger_distance();
@@ -120,10 +127,13 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
                   "trigger_distance="
                << trigger_distance;
 
+  int tx_power = device_metadata->device.ble_tx_power();
+
   range_tracker_->Track(
       device, trigger_distance,
       base::BindRepeating(&FastPairDiscoverableScanner::NotifyDeviceFound,
-                          weak_pointer_factory_.GetWeakPtr(), model_id));
+                          weak_pointer_factory_.GetWeakPtr(), model_id),
+      tx_power == 0 ? absl::nullopt : absl::make_optional(tx_power));
 }
 
 void FastPairDiscoverableScanner::OnDeviceLost(
