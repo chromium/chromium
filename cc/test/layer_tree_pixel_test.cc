@@ -17,6 +17,7 @@
 #include "cc/test/pixel_test_output_surface.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "cc/test/test_types.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -72,13 +73,33 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
   if (!use_software_renderer()) {
     compositor_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/use_accelerated_raster(),
-            /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+            /*enable_gles2_interface=*/true, /*support_locking=*/false,
+            viz::RasterInterfaceType::None);
+
+    viz::RasterInterfaceType worker_ri_type;
+    switch (raster_type()) {
+      case TestRasterType::kOop:
+        worker_ri_type = viz::RasterInterfaceType::OOPR;
+        break;
+      case TestRasterType::kGpu:
+        worker_ri_type = viz::RasterInterfaceType::GPU;
+        break;
+      case TestRasterType::kOneCopy:
+        worker_ri_type = viz::RasterInterfaceType::Software;
+        break;
+      case TestRasterType::kZeroCopy:
+        worker_ri_type = viz::RasterInterfaceType::Software;
+        break;
+      case TestRasterType::kBitmap:
+        worker_ri_type = viz::RasterInterfaceType::None;
+        break;
+      default:
+        NOTREACHED();
+    }
     worker_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/use_accelerated_raster(),
-            /*enable_oop_rasterization=*/raster_type() == TestRasterType::kOop,
-            /*support_locking=*/true);
+            /*enable_gles2_interface=*/false, /*support_locking=*/true,
+            worker_ri_type);
     // Bind worker context to main thread like it is in production. This is
     // needed to fully initialize the context. Compositor context is bound to
     // the impl thread in LayerTreeFrameSink::BindToCurrentThread().
@@ -106,12 +127,8 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
 void LayerTreePixelTest::DrawLayersOnThread(LayerTreeHostImpl* host_impl) {
   // Verify that we're using Gpu rasterization or not as requested.
   if (!use_software_renderer()) {
-    viz::ContextProvider* context_provider =
-        host_impl->layer_tree_frame_sink()->context_provider();
     viz::RasterContextProvider* worker_context_provider =
         host_impl->layer_tree_frame_sink()->worker_context_provider();
-    EXPECT_EQ(use_accelerated_raster(),
-              context_provider->ContextCapabilities().gpu_rasterization);
     EXPECT_EQ(use_accelerated_raster(),
               worker_context_provider->ContextCapabilities().gpu_rasterization);
     EXPECT_EQ(
@@ -157,8 +174,8 @@ LayerTreePixelTest::CreateDisplayOutputSurfaceOnThread(
     // compositor.
     auto display_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+            /*enable_gles2_interface=*/true, /*support_locking=*/false,
+            viz::RasterInterfaceType::None);
     gpu::ContextResult result = display_context_provider->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 

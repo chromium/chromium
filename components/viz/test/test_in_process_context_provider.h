@@ -38,15 +38,17 @@ class DisplayCompositorMemoryAndTaskController;
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext();
 
+enum RasterInterfaceType { None, Software, GPU, OOPR };
+
 class TestInProcessContextProvider
     : public base::RefCountedThreadSafe<TestInProcessContextProvider>,
       public ContextProvider,
       public RasterContextProvider {
  public:
   explicit TestInProcessContextProvider(
-      bool enable_gpu_rasterization,
-      bool enable_oop_rasterization,
+      bool enable_gles2_interface,
       bool support_locking,
+      RasterInterfaceType raster_interface_type,
       gpu::raster::GrShaderCache* gr_shader_cache = nullptr,
       gpu::GpuProcessActivityFlags* activity_flags = nullptr);
 
@@ -73,8 +75,8 @@ class TestInProcessContextProvider
   ~TestInProcessContextProvider() override;
 
  private:
-  const bool enable_gpu_rasterization_;
-  const bool enable_oop_rasterization_;
+  const bool enable_gles2_interface_;
+  const RasterInterfaceType raster_interface_type_;
   gpu::raster::GrShaderCache* gr_shader_cache_ = nullptr;
   gpu::GpuProcessActivityFlags* activity_flags_ = nullptr;
 

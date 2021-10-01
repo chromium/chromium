@@ -74,10 +74,11 @@ class OopPixelTest : public testing::Test,
 
   void SetUp() override {
     InitializeOOPContext();
+    // Needs RasterInterface for ScopedRasterContextLock
     gles2_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/false, /*support_locking=*/true);
+            /*enable_gles2_interface=*/true, /*support_locking=*/true,
+            viz::RasterInterfaceType::GPU);
     gpu::ContextResult result = gles2_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int gles2_max_texture_size =
@@ -102,9 +103,9 @@ class OopPixelTest : public testing::Test,
 
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/true, /*support_locking=*/true,
-            &gr_shader_cache_, &activity_flags_);
+            /*enable_gles2_interface=*/false, /*support_locking=*/true,
+            viz::RasterInterfaceType::OOPR, &gr_shader_cache_,
+            &activity_flags_);
     gpu::ContextResult result = raster_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int raster_max_texture_size =

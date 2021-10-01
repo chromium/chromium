@@ -947,21 +947,23 @@ class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
     gl::GLSurfaceTestSupport::InitializeOneOff();
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-        /*enable_gpu_rasterization=*/false,
-        /*enable_oop_rasterization=*/GetParam(), /*support_locking=*/false);
+        /*enable_gles2_interface=*/false,
+        /*support_locking=*/false,
+        GetParam() ? viz::RasterInterfaceType::OOPR
+                   : viz::RasterInterfaceType::GPU);
     gpu::ContextResult result = media_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     gles2_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-        /*enable_gpu_rasterization=*/false,
-        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+        /*enable_gles2_interface=*/true, /*support_locking=*/false,
+        viz::RasterInterfaceType::None);
     result = gles2_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     destination_context_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+            /*enable_gles2_interface=*/true, /*support_locking=*/false,
+            viz::RasterInterfaceType::None);
     result = destination_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cropped_frame_ = CreateCroppedFrame();
