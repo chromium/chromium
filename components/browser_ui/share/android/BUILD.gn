@@ -4,6 +4,22 @@
 
 import("//build/config/android/rules.gni")
 
+source_set("android") {
+  sources = [
+    "intent_helper.cc",
+    "intent_helper.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/browser_ui/share/IntentHelper.java" ]
+}
+
 # Constants only target without dependencies to allow embedders to only include relevant code.
 android_library("constants_java") {
   sources = [
@@ -14,6 +30,7 @@ android_library("constants_java") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/share/ClipboardImageFileProvider.java",
+    "java/src/org/chromium/components/browser_ui/share/IntentHelper.java",
     "java/src/org/chromium/components/browser_ui/share/ShareDialogAdapter.java",
     "java/src/org/chromium/components/browser_ui/share/ShareHelper.java",
     "java/src/org/chromium/components/browser_ui/share/ShareImageFileUtils.java",

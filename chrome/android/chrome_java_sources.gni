@@ -34,7 +34,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/DevToolsServer.java",
   "java/src/org/chromium/chrome/browser/FileProviderHelper.java",
   "java/src/org/chromium/chrome/browser/IntentHandler.java",
-  "java/src/org/chromium/chrome/browser/IntentHelper.java",
   "java/src/org/chromium/chrome/browser/KeyboardShortcuts.java",
   "java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java",
   "java/src/org/chromium/chrome/browser/LauncherShortcutActivity.java",

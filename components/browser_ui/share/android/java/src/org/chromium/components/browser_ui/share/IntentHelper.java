@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.components.browser_ui.share;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -19,7 +19,6 @@ import java.io.File;
  * Helper for issuing intents to the android framework.
  */
 public abstract class IntentHelper {
-
     private IntentHelper() {}
 
     /**
@@ -37,7 +36,7 @@ public abstract class IntentHelper {
             String email, String subject, String body, String chooserTitle, String fileToAttach) {
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("message/rfc822");
-        if (!TextUtils.isEmpty(email)) send.putExtra(Intent.EXTRA_EMAIL, new String[] { email });
+        if (!TextUtils.isEmpty(email)) send.putExtra(Intent.EXTRA_EMAIL, new String[] {email});
         send.putExtra(Intent.EXTRA_SUBJECT, subject);
         send.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
         if (!TextUtils.isEmpty(fileToAttach)) {

@@ -46,6 +46,7 @@ include_rules = [
   "+components/media_router",
   "+components/metrics",
   "+components/navigation_interception",
+  "+components/net_log",
   "+components/network_session_configurator",
   "+components/network_time",
   "+components/page_load_metrics/browser",

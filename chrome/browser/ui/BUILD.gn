@@ -843,6 +843,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//components/browser_ui/client_certificate/android",
+      "//components/browser_ui/share/android",
       "//components/browser_ui/util/android",
       "//components/embedder_support/android:context_menu",
       "//components/embedder_support/android:web_contents_delegate",

@@ -3708,7 +3708,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/ChromePowerModeVoter.java",
     "java/src/org/chromium/chrome/browser/DevToolsServer.java",
     "java/src/org/chromium/chrome/browser/IntentHandler.java",
-    "java/src/org/chromium/chrome/browser/IntentHelper.java",
     "java/src/org/chromium/chrome/browser/NearOomMonitor.java",
     "java/src/org/chromium/chrome/browser/PlayServicesVersionInfo.java",
     "java/src/org/chromium/chrome/browser/SearchGeolocationDisclosureTabHelper.java",
