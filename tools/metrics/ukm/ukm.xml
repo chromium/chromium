@@ -10870,6 +10870,9 @@ be describing additional metrics about the same event.
     Metrics associated with main frame navigation.
   </summary>
   <metric name="EarlyHintsForFinalRequest">
+    <obsolete>
+      Deprecated 09/2021
+    </obsolete>
     <owner>nhiroki@chromium.org</owner>
     <owner>chrome-loading@google.com</owner>
     <summary>
@@ -10879,6 +10882,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="EarlyHintsForFirstRequest">
+    <obsolete>
+      Deprecated 09/2021
+    </obsolete>
     <owner>nhiroki@chromium.org</owner>
     <owner>chrome-loading@google.com</owner>
     <summary>
