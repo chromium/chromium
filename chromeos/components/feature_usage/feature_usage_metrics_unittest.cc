@@ -5,6 +5,9 @@
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 
 #include "base/logging.h"
+#include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_monitor_device_source.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -18,6 +21,7 @@ namespace {
 const char kTestFeature[] = "TestFeature";
 const char kTestMetric[] = "ChromeOS.FeatureUsage.TestFeature";
 const char kTestUsetimeMetric[] = "ChromeOS.FeatureUsage.TestFeature.Usetime";
+constexpr base::TimeDelta kDefaultUseTime = base::TimeDelta::FromMinutes(10);
 
 }  // namespace
 
@@ -25,9 +29,15 @@ class FeatureUsageMetricsTest : public ::testing::Test,
                                 public FeatureUsageMetrics::Delegate {
  public:
   FeatureUsageMetricsTest() {
+    if (!base::PowerMonitor::IsInitialized()) {
+      base::PowerMonitor::Initialize(
+          std::make_unique<base::PowerMonitorDeviceSource>());
+    }
+
     ResetHistogramTester();
+
     feature_usage_metrics_ = std::make_unique<FeatureUsageMetrics>(
-        kTestFeature, this, env_.GetMockTickClock());
+        kTestFeature, this, env_.GetMockClock(), env_.GetMockTickClock());
   }
 
   // FeatureUsageMetrics::Delegate:
@@ -38,7 +48,6 @@ class FeatureUsageMetricsTest : public ::testing::Test,
   void ResetHistogramTester() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
-
   base::test::TaskEnvironment env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -65,12 +74,12 @@ TEST_F(FeatureUsageMetricsTest, RecordUsageWithFailure) {
 }
 
 TEST_F(FeatureUsageMetricsTest, RecordUsetime) {
-  const base::TimeDelta use_time = base::TimeDelta::FromSeconds(10);
   feature_usage_metrics_->RecordUsage(/*success=*/true);
   feature_usage_metrics_->StartSuccessfulUsage();
-  env_.FastForwardBy(use_time);
+  env_.FastForwardBy(kDefaultUseTime);
   feature_usage_metrics_->StopSuccessfulUsage();
-  histogram_tester_->ExpectUniqueTimeSample(kTestUsetimeMetric, use_time, 1);
+  histogram_tester_->ExpectUniqueTimeSample(kTestUsetimeMetric, kDefaultUseTime,
+                                            1);
 }
 
 TEST_F(FeatureUsageMetricsTest, RecordLongUsetime) {
@@ -124,6 +133,81 @@ TEST_F(FeatureUsageMetricsTest, PeriodicMetricsTest) {
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 0);
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
+}
+
+TEST_F(FeatureUsageMetricsTest, ReportUseTimeOnShutdown) {
+  feature_usage_metrics_->RecordUsage(/*success=*/true);
+  feature_usage_metrics_->StartSuccessfulUsage();
+  env_.FastForwardBy(kDefaultUseTime);
+  feature_usage_metrics_.reset();
+  histogram_tester_->ExpectUniqueTimeSample(kTestUsetimeMetric, kDefaultUseTime,
+                                            1);
+}
+
+TEST_F(FeatureUsageMetricsTest, ReportPeriodicOnSuspend) {
+  base::PowerMonitorDeviceSource::HandleSystemSuspending();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 1);
+
+  // Undo global changes.
+  base::PowerMonitorDeviceSource::HandleSystemResumed();
+}
+
+TEST_F(FeatureUsageMetricsTest, ReportUseTimeOnSuspend) {
+  feature_usage_metrics_->RecordUsage(/*success=*/true);
+  feature_usage_metrics_->StartSuccessfulUsage();
+  env_.FastForwardBy(kDefaultUseTime);
+
+  base::PowerMonitorDeviceSource::HandleSystemSuspending();
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectUniqueTimeSample(kTestUsetimeMetric, kDefaultUseTime,
+                                            1);
+
+  // Undo global changes.
+  base::PowerMonitorDeviceSource::HandleSystemResumed();
+}
+
+TEST_F(FeatureUsageMetricsTest, SuspensionTimeNotReported) {
+  feature_usage_metrics_->RecordUsage(/*success=*/true);
+  feature_usage_metrics_->StartSuccessfulUsage();
+  env_.FastForwardBy(kDefaultUseTime);
+  base::PowerMonitorDeviceSource::HandleSystemSuspending();
+  base::RunLoop().RunUntilIdle();
+
+  // Time during suspension must not be reported.
+  env_.AdvanceClock(FeatureUsageMetrics::kRepeatedInterval * 1.33);
+
+  base::PowerMonitorDeviceSource::HandleSystemResumed();
+  base::RunLoop().RunUntilIdle();
+
+  env_.FastForwardBy(kDefaultUseTime);
+  feature_usage_metrics_->StopSuccessfulUsage();
+
+  // Time reported before suspend.
+  histogram_tester_->ExpectTimeBucketCount(kTestUsetimeMetric, kDefaultUseTime,
+                                           1);
+  // Time reported after suspend on initial interval.
+  histogram_tester_->ExpectTimeBucketCount(
+      kTestUsetimeMetric, FeatureUsageMetrics::kInitialInterval, 1);
+  // Time reported on StopSuccessfulUsage.
+  histogram_tester_->ExpectTimeBucketCount(
+      kTestUsetimeMetric,
+      kDefaultUseTime - FeatureUsageMetrics::kInitialInterval, 1);
+
+  histogram_tester_->ExpectTotalCount(kTestUsetimeMetric, 3);
+
+  // isEligible and isEnabled should contain 3 records:
+  //  1. Reported on startup after kInitialInterval.
+  //  2. Reported OnSuspend
+  //  3. Reported OnResume after kInitialInterval.
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 3);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 3);
 }
 
 }  // namespace feature_usage

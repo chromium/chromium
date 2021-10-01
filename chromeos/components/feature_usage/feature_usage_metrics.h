@@ -8,10 +8,16 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/time/tick_clock.h"
+#include "base/power_monitor/power_observer.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Clock;
+class TickClock;
+}  // namespace base
 
 namespace feature_usage {
 
@@ -20,7 +26,7 @@ namespace feature_usage {
 // the data analytics side to incorporate a new feature.
 // This class also provides a way to report periodically if the device is
 // eligible for the feature and whether user has it enabled.
-class FeatureUsageMetrics {
+class FeatureUsageMetrics final : public base::PowerSuspendObserver {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -57,10 +63,11 @@ class FeatureUsageMetrics {
   // nullptr.
   FeatureUsageMetrics(const std::string& feature_name,
                       Delegate* delegate,
+                      const base::Clock* clock,
                       const base::TickClock* tick_clock);
   FeatureUsageMetrics(const FeatureUsageMetrics&) = delete;
   FeatureUsageMetrics& operator=(const FeatureUsageMetrics&) = delete;
-  ~FeatureUsageMetrics();
+  ~FeatureUsageMetrics() final;
 
   // `RecordUsage` should be called on every usage of the feature. `success`
   // indicates whether the usage was successful. For example if user touches the
@@ -74,23 +81,31 @@ class FeatureUsageMetrics {
   void StopSuccessfulUsage();
 
  private:
+  void OnSuspend() final;
+  void OnResume() final;
+
   void SetupTimer(base::TimeDelta delta);
   void MaybeReportPeriodicMetrics();
+  void ReportPeriodicMetrics();
+  void MaybeReportUseTime();
 
   void RecordUsetime(base::TimeDelta usetime) const;
 
+  base::Time Now() const;
+
   const std::string histogram_name_;
-  const Delegate* const delegate_;
+  const Delegate* const delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::TimeTicks last_time_enabled_reported_;
+  base::Time last_time_enabled_reported_;
 
-  const base::TickClock* const tick_clock_;
-  base::TimeTicks start_usage_;
-  std::unique_ptr<base::OneShotTimer> timer_;
+  const base::Clock* const clock_;
+  base::Time start_usage_;
+  base::OneShotTimer timer_;
 
 #if DCHECK_IS_ON()
   absl::optional<bool> last_record_usage_outcome_;
 #endif
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace feature_usage

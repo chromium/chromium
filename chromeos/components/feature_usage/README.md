@@ -9,7 +9,7 @@ could be easily incorporated on the data analytics side.
 ## Objectives
 
 This component is the part of Standard Feature Usage Logging (Googlers could see
-go/sful). The goal is to make metrics calculation and analysis easily scalable
+go/sful and go/sful-dd). The goal is to make metrics calculation and analysis easily scalable
 to the new features. Both for feature owners and for data analytics team.
 
 ## Overview
@@ -23,7 +23,9 @@ The following events are reported by the component (for details see
 * Record the usage time of the feature.
 
 The first two are reported periodically every 30 minutes. To correctly track 1-,
-7-, 28-days users. The feature usage component encapsulates this logic.
+7-, 28-days users. These events are also reported on the object creation and on
+the system resume from suspension. The feature usage component encapsulates this
+logic.
 
 For more details see original [CL](https://crrev.com/c/2596263)
 
@@ -56,7 +58,8 @@ name="FeaturesLoggingUsageEvents">`
 ### Creating component object
 You need to implement `FeatureUsageMetrics::Delegate` and pass it to the
 `FeatureUsageMetrics`. Delegate is called to report periodic events (eligible,
-enabled).
+enabled). Delegate is called on the same sequence FeatureUsageMetrics was
+created. FeatureUsageMetrics must be used only on the sequence it was created.
 
 ```c++
 class MyDelegate : public FeatureUsageMetrics::Delegate {
@@ -138,4 +141,3 @@ histogram_tester.ExpectBucketCount(
 histogram_tester_->ExpectTimeBucketCount(
   "ChromeOS.FeatureUsage.YouFeature.Usetime", usetime, 1);
 ```
-
