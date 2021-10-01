@@ -4,16 +4,19 @@
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
+#include "base/test/scoped_mock_clock_override.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 const char kTestUrl1[] = "https://www.google.com";
 
+using content::Visibility;
 using page_load_metrics::FakePageLoadMetricsObserverDelegate;
 using page_load_metrics::PageLoadMetricsObserverDelegate;
 using ukm::builders::HistoryNavigation;
@@ -40,6 +43,9 @@ class BackForwardCachePageLoadMetricsObserverTest
     fake_delegate_ = std::make_unique<FakePageLoadMetricsObserverDelegate>();
     fake_delegate_->web_contents_ = web_contents();
     observer_with_fake_delegate_->SetDelegate(fake_delegate_.get());
+    observer_with_fake_delegate_->has_ever_entered_back_forward_cache_ = true;
+    observer_with_fake_delegate_->back_forward_cache_navigation_ids_.push_back(
+        123456);
   }
 
   void AssertHistoryNavigationRecordedAmpNavigation(bool was_amp) {
@@ -82,6 +88,15 @@ class BackForwardCachePageLoadMetricsObserverTest
     return metadata;
   }
 
+  void InvokeMeasureForegroundDuration(
+      BackForwardCachePageLoadMetricsObserver* observer,
+      bool simulate_app_backgrounding) {
+    observer->MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+        simulate_app_backgrounding);
+  }
+
+  void SetObserverHidden() { observer_with_fake_delegate_->was_hidden_ = true; }
+
   page_load_metrics::mojom::PageLoadTiming timing_;
   BackForwardCachePageLoadMetricsObserver* observer_;
 
@@ -99,32 +114,29 @@ class BackForwardCachePageLoadMetricsObserverTest
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        OnRestoreFromBackForwardCache_NonAmpPageHasFalse) {
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_is_served_from_bfcache(true);
+  navigation_handle_.set_is_served_from_bfcache(true);
 
   tester()->SimulateMetadataUpdate(NonAmpMetadata(),
                                    web_contents()->GetMainFrame());
-  observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle);
+  observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle_);
 
   AssertHistoryNavigationRecordedAmpNavigation(false);
 }
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        OnRestoreFromBackForwardCache_AmpPageHasTrue) {
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_is_served_from_bfcache(true);
+  navigation_handle_.set_is_served_from_bfcache(true);
 
   tester()->SimulateMetadataUpdate(AmpMetadata(),
                                    web_contents()->GetMainFrame());
-  observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle);
+  observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle_);
 
   AssertHistoryNavigationRecordedAmpNavigation(true);
 }
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        OnNonBackForwardCacheNavigation_AmpPageIsUndefined) {
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_is_served_from_bfcache(false);
+  navigation_handle_.set_is_served_from_bfcache(false);
 
   tester()->SimulateMetadataUpdate(NonAmpMetadata(),
                                    web_contents()->GetMainFrame());
@@ -233,4 +245,205 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
             kNavigationToFirstPaintAfterBackForwardCacheRestoreName);
     EXPECT_EQ(expected_metrics_count, result_metrics.size());
   }
+}
+
+// Tests basic logging of foreground duration.
+// Note that for this, and other foreground duration tests, that the logged
+// foreground duration is bucketed, so even though the test sets up specific
+// timings, the expected result from the logs is the bucketed result.
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       TestBasicForegroundLogging) {
+  base::TimeTicks navigation_start =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
+
+  auto in_foreground_bf_state =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, navigation_start);
+  fake_delegate_->AddBackForwardCacheRestore(in_foreground_bf_state);
+  // Set up timing so that foreground duration will be 200ms (but will then be
+  // bucketed)
+  fake_delegate_->page_end_reason_ = page_load_metrics::END_OTHER;
+  fake_delegate_->page_end_time_ =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(300);
+
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/false);
+
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(200, result_metrics.begin()->begin()->second);
+
+  // Check that another metric can be logged with different times.
+  fake_delegate_->page_end_time_ =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1000);
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/false);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(2U, result_metrics.size());
+  EXPECT_EQ(900, result_metrics[1].begin()->second);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       TestLoggingWithNoPageEndWithFirstBackgroundTime) {
+  // This start time is passed to the BackForwardCacheRestore struct, but isn't
+  // actually supposed to be used in the calculations. It's just set here to
+  // make sure that it isn't used.
+  base::TimeTicks navigation_start =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
+
+  auto in_foreground_bf_state =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, navigation_start);
+  in_foreground_bf_state.first_background_time =
+      base::TimeDelta::FromMilliseconds(400);
+  fake_delegate_->AddBackForwardCacheRestore(in_foreground_bf_state);
+
+  fake_delegate_->page_end_reason_ = page_load_metrics::END_NONE;
+
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/false);
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(400, result_metrics.begin()->begin()->second);
+
+  // The app backgrounding argument should be irrelevant, so re-run and check
+  // that two metrics are present (and the same).
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/true);
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(2U, result_metrics.size());
+  EXPECT_EQ(400, result_metrics[1].begin()->second);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+  base::TimeTicks navigation_start =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
+  auto in_foreground_bf_state =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, navigation_start);
+  fake_delegate_->AddBackForwardCacheRestore(in_foreground_bf_state);
+
+  fake_delegate_->page_end_reason_ = page_load_metrics::END_NONE;
+  {
+    // In the case that there is no page end time and the page has never
+    // backgrounded, the observer falls back to using Now as the end point of
+    // the time in foreground. So override what 'Now' means.
+    base::ScopedMockClockOverride clock_override;
+    base::TimeTicks scoped_clock_start_time =
+        base::ScopedMockClockOverride::NowTicks();
+    InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                    /*simulate_app_backgrounding=*/false);
+
+    // There's no page end time, and no first background time, and the app isn't
+    // backgrounding, so there should be no results.
+    auto& test_ukm_recorder = tester()->test_ukm_recorder();
+    auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+        HistoryNavigation::kEntryName,
+        HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+    EXPECT_EQ(0U, result_metrics.size());
+
+    // This time the app is entering the background, so a metric should be
+    // logged.
+    InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                    /*simulate_app_backgrounding=*/true);
+    result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+        HistoryNavigation::kEntryName,
+        HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+    EXPECT_EQ(1U, result_metrics.size());
+
+    // The recorded time has been bucketed, so the test needs to figure out what
+    // the bucketed version of the over-ridden Now is.
+    base::TimeDelta expected_foreground_time =
+        scoped_clock_start_time - navigation_start;
+    int64_t bucketed_expected_time = ukm::GetSemanticBucketMinForDurationTiming(
+        expected_foreground_time.InMilliseconds());
+    EXPECT_EQ(bucketed_expected_time, result_metrics.begin()->begin()->second);
+  }
+}
+
+// Verifies that no foreground duration is logged if the page is restored from
+// BFCache while not in the foreground.
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       DoesNotLogForegroundDurationIfRestoredInBackground) {
+  // Tell the fake delegate that the BFCache restore happened in the background.
+  // This means there should be no foreground duration recorded.
+  auto no_foreground_bf_state =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/false, base::TimeTicks::Now());
+  fake_delegate_->AddBackForwardCacheRestore(no_foreground_bf_state);
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/true);
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
+
+  // This argument shouldn't make any difference.
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/false);
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
+}
+
+// Verifies that no foreground duration is logged if the page is restored from
+// BFCache while not in the foreground.
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       DoesNotLogForegroundDurationIfWasHidden) {
+  auto in_foreground_bf_state =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks::Now());
+  fake_delegate_->AddBackForwardCacheRestore(in_foreground_bf_state);
+  SetObserverHidden();
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/true);
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
+
+  // This argument shouldn't make any difference.
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/false);
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       DoesNotLogForegroundDurationIfNeverEnteredBFCache) {
+  auto never_in_bfcache_observer =
+      std::make_unique<BackForwardCachePageLoadMetricsObserver>();
+  never_in_bfcache_observer->SetDelegate(fake_delegate_.get());
+  InvokeMeasureForegroundDuration(never_in_bfcache_observer.get(),
+                                  /*simulate_app_backgrounding=*/false);
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
+
+  InvokeMeasureForegroundDuration(never_in_bfcache_observer.get(),
+                                  /*simulate_app_backgrounding=*/true);
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
 }

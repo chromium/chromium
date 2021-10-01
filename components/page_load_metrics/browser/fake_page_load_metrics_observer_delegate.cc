@@ -68,7 +68,7 @@ bool FakePageLoadMetricsObserverDelegate::DidCommit() const {
 }
 
 PageEndReason FakePageLoadMetricsObserverDelegate::GetPageEndReason() const {
-  return page_load_metrics::END_NONE;
+  return page_end_reason_;
 }
 
 const UserInitiatedInfo&

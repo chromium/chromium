@@ -79,6 +79,7 @@ class FakePageLoadMetricsObserverDelegate
   UserInitiatedInfo user_initiated_info_;
   GURL url_;
   GURL start_url_;
+  PageEndReason page_end_reason_ = page_load_metrics::END_NONE;
   UserInitiatedInfo page_end_user_initiated_info_;
   base::TimeTicks page_end_time_;
   mojom::FrameMetadata main_frame_metadata_;

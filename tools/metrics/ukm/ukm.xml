@@ -7733,6 +7733,18 @@ be describing additional metrics about the same event.
       cache and the first requestAnimationFrame time in milliseconds.
     </summary>
   </metric>
+  <metric name="ForegroundDurationAfterBackForwardCacheRestore">
+    <summary>
+      For page loads that start in the foreground, measures the duration of time
+      in milliseconds until one of the following events occurs: the load of the
+      main resource fails, the page load is stopped, the tab hosting the page is
+      closed, the render process hosting the page goes away, a new navigation
+      which later commits is initiated in the same tab, or the tab hosting the
+      page is backgrounded. This metric has a very long tail, for pages that
+      spend a long period of time in the foreground. As such, use of the mean or
+      tail values are not recommended.
+    </summary>
+  </metric>
   <metric name="LastCommittedCrossDocumentNavigationSourceIdForTheSameDocument">
     <summary>
       For history navigations and reloads, the source id of the previous

@@ -3404,8 +3404,15 @@ class PageLoadMetricsBackForwardCacheBrowserTest
   void VerifyPageEndReasons(const std::vector<PageEndReason>& reasons,
                             const GURL& url,
                             bool is_bfcache_enabled);
+  int64_t CountForMetricForURL(base::StringPiece entry_name,
+                               base::StringPiece metric_name,
+                               const GURL& url);
+  void ExpectNewForegroundDuration(const GURL& url, bool expect_bfcache);
 
  private:
+  int64_t expected_page_load_foreground_durations_ = 0;
+  int64_t expected_bfcache_foreground_durations_ = 0;
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -3461,6 +3468,22 @@ void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
   EXPECT_EQ(reason_index, reasons.size());
 }
 
+int64_t PageLoadMetricsBackForwardCacheBrowserTest::CountForMetricForURL(
+    base::StringPiece entry_name,
+    base::StringPiece metric_name,
+    const GURL& url) {
+  int64_t count = 0;
+  for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
+    auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
+    if (source->url() != url)
+      continue;
+    if (test_ukm_recorder_->EntryHasMetric(entry, metric_name)) {
+      count++;
+    }
+  }
+  return count;
+}
+
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
                        LogsPageEndReasons) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3470,7 +3493,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   bool back_forward_cache_enabled = GetParam() == kEnabled;
   // Navigate to A.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHost* rfh_a = web_contents()->GetMainFrame();
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetMainFrame());
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -3503,6 +3526,153 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   expected_reasons_a.push_back(page_load_metrics::END_FORWARD_BACK);
   VerifyPageEndReasons(expected_reasons_a, url_a, back_forward_cache_enabled);
+}
+
+void PageLoadMetricsBackForwardCacheBrowserTest::ExpectNewForegroundDuration(
+    const GURL& url,
+    bool expect_bfcache) {
+  if (expect_bfcache) {
+    expected_bfcache_foreground_durations_++;
+  } else {
+    expected_page_load_foreground_durations_++;
+  }
+  int64_t bf_count = CountForMetricForURL(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName,
+      url);
+  int64_t pl_count = CountForMetricForURL(
+      PageLoad::kEntryName, PageLoad::kPageTiming_ForegroundDurationName, url);
+  EXPECT_EQ(bf_count, expected_bfcache_foreground_durations_);
+  EXPECT_EQ(pl_count, expected_page_load_foreground_durations_);
+}
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
+                       LogsBasicPageForegroundDuration) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  bool back_forward_cache_enabled = GetParam() == kEnabled;
+  // Navigate to A.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetMainFrame());
+
+  // Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  if (back_forward_cache_enabled) {
+    ASSERT_EQ(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
+
+  // Verify a new foreground duration - this one shouldn't be logged by the
+  // bfcache metrics regardless of bfcache being enabled or not.
+  ExpectNewForegroundDuration(url_a, /*expect_bfcache=*/false);
+
+  // Go back to A, restoring it from the back-forward cache (if enabled)
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Navigate to B again - this should trigger the
+  // BackForwardCachePageLoadMetricsObserver for A (if enabled)
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  ExpectNewForegroundDuration(url_a, back_forward_cache_enabled);
+
+  // Go back to A, restoring it from the back-forward cache (again)
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  web_contents()->GetController().GoForward();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Verify another foreground duration was logged.
+  ExpectNewForegroundDuration(url_a, back_forward_cache_enabled);
+}
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
+                       LogsPageForegroundDurationOnHide) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  bool back_forward_cache_enabled = GetParam() == kEnabled;
+  // Navigate to A.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetMainFrame());
+
+  // Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  if (back_forward_cache_enabled) {
+    ASSERT_EQ(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
+
+  // Verify a new foreground duration - this one shouldn't be logged by the
+  // bfcache metrics regardless of bfcache being enabled or not.
+  ExpectNewForegroundDuration(url_a, /*expect_bfcache=*/false);
+
+  // Go back to A, restoring it from the back-forward cache (if enabled)
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Open and move to a new tab. This hides A, which should log a foreground
+  // duration.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url_b, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // The new tab opening should cause a foreground duration for the original
+  // tab, since it's been hidden.
+  ExpectNewForegroundDuration(url_a, back_forward_cache_enabled);
+
+  // From this point no more foreground durations are expected to be logged, so
+  // stash the current counts.
+  int64_t bf_count = CountForMetricForURL(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName,
+      url_a);
+  int64_t pl_count =
+      CountForMetricForURL(PageLoad::kEntryName,
+                           PageLoad::kPageTiming_ForegroundDurationName, url_a);
+
+  // Switch back to the tab for url_a.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url_a, WindowOpenDisposition::SWITCH_TO_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+
+  // And then switch back to url_b's tab. This should call OnHidden for the
+  // url_a tab again, but no new foreground duration should be logged.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url_b, WindowOpenDisposition::SWITCH_TO_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+
+  int64_t bf_count_after_switch = CountForMetricForURL(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName,
+      url_a);
+  int64_t pl_count_after_switch =
+      CountForMetricForURL(PageLoad::kEntryName,
+                           PageLoad::kPageTiming_ForegroundDurationName, url_a);
+  EXPECT_EQ(bf_count, bf_count_after_switch);
+  EXPECT_EQ(pl_count, pl_count_after_switch);
+
+  // Switch back to the tab for url_a, then close the browser. This should cause
+  // OnComplete to be called on the BFCache observer, but this should not cause
+  // a new foreground duration to be logged.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url_a, WindowOpenDisposition::SWITCH_TO_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+  CloseBrowserSynchronously(browser());
+
+  // Neither of the metrics for url_a should have moved.
+  int64_t bf_count_after_close = CountForMetricForURL(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName,
+      url_a);
+  int64_t pl_count_after_close =
+      CountForMetricForURL(PageLoad::kEntryName,
+                           PageLoad::kPageTiming_ForegroundDurationName, url_a);
+  EXPECT_EQ(bf_count, bf_count_after_close);
+  EXPECT_EQ(pl_count, pl_count_after_close);
 }
 
 INSTANTIATE_TEST_SUITE_P(
