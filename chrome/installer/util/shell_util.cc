@@ -2703,9 +2703,8 @@ bool ShellUtil::AddAppProtocolAssociations(
     return false;
   }
 
-  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe)) {
+  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe))
     return false;
-  }
 
   bool success = true;
   for (const auto& protocol : protocols) {
@@ -2756,14 +2755,6 @@ bool ShellUtil::RemoveAppProtocolAssociations(const std::wstring& prog_id) {
 
   return InstallUtil::DeleteRegistryKey(HKEY_CURRENT_USER, app_key_path,
                                         WorkItem::kWow64Default);
-}
-
-// static
-std::wstring ShellUtil::GetProgIdForBrowser(const base::FilePath& chrome_exe) {
-  std::wstring prog_id =
-      base::StrCat({install_static::GetProgIdPrefix(),
-                    GetCurrentInstallationSuffix(chrome_exe)});
-  return prog_id;
 }
 
 // static

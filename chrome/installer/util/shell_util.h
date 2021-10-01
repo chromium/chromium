@@ -809,9 +809,6 @@ class ShellUtil {
   // prior to Win8, where write access to HKLM is required.
   static bool RemoveAppProtocolAssociations(const std::wstring& prog_id);
 
-  // Returns the browser's ProgId for the current install.
-  static std::wstring GetProgIdForBrowser(const base::FilePath& chrome_exe);
-
   // Retrieves the file path of the application registered as the
   // shell->open->command for |prog_id|. This only queries the user's
   // registered applications in HKCU. If |prog_id| is for an app that is
