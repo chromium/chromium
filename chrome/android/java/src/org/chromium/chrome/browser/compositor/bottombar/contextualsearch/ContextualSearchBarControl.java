@@ -122,9 +122,6 @@ public class ContextualSearchBarControl {
     /** The max height of the Related Searches section of the Bar, used for shrink animation. */
     private float mInBarRelatedSearchesMaxHeightForShrinkAnimation;
 
-    /** A way to notify tests when the in-bar animation changes. */
-    private Runnable mInBarAnimationTestNotifier;
-
     /**
      * Constructs a new bottom bar control container by inflating views from XML.
      *
@@ -185,11 +182,6 @@ public class ContextualSearchBarControl {
      * Removes the bottom bar views from the parent container.
      */
     public void destroy() {
-        // Make sure animations are canceled otherwise setting the height can put it into an
-        // inconsistent state.
-        if (mInBarRelatedSearchesAnimation != null) {
-            mInBarRelatedSearchesAnimation.cancel();
-        }
         mContextControl.destroy();
         mSearchTermControl.destroy();
         mCaptionControl.destroy();
@@ -591,7 +583,6 @@ public class ContextualSearchBarControl {
         if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
             clearCacheMaxHeightForShrinkAnimation();
         }
-        if (mInBarAnimationTestNotifier != null) mInBarAnimationTestNotifier.run();
     }
 
     /** Returns the maximum height of the Related Searches UI that we show right in the Bar. */
@@ -620,11 +611,5 @@ public class ContextualSearchBarControl {
      */
     float getInBarRelatedSearchesAnimatedHeightDps() {
         return mInBarRelatedSearchesAnimatedHeightDps;
-    }
-
-    @VisibleForTesting
-    public void setInBarAnimationTestNotifier(Runnable runnable) {
-        assert mInBarAnimationTestNotifier == null;
-        mInBarAnimationTestNotifier = runnable;
     }
 }
