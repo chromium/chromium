@@ -212,15 +212,6 @@ cipd_archive("castrunner") {
   sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner/cast_runner.far" ]
 }
 
-cipd_archive("http") {
-  package_basename = "http"
-  description = "Prebuilt HTTP service binary for Fuchsia."
-
-  deps = [ "//fuchsia/http:http_pkg" ]
-
-  sources = [ "${root_gen_dir}/fuchsia/http/http/http.far" ]
-}
-
 cipd_archive("web_engine_shell") {
   package_basename = "web_engine_shell"
   description = "Simple command-line embedder for WebEngine."
@@ -396,7 +387,6 @@ group("cipd") {
     ":chromedriver",
     ":clear_key_cdm",
     ":debug_symbols",
-    ":http",
   ]
   visibility = []  # Required to replace the file default.
   visibility = [ "//fuchsia:gn_all" ]
