@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Process;
-import android.system.ErrnoException;
 import android.system.Os;
 
 import org.chromium.base.Log;
@@ -61,21 +60,8 @@ public class NativeTest {
         if (coverageDeviceFile != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 Os.setenv("LLVM_PROFILE_FILE", coverageDeviceFile, true);
-            } catch (ErrnoException e) {
+            } catch (Exception e) {
                 Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
-            }
-        }
-        // To use ErrnoException, need to check Android API level, because
-        // it is not supported by Android API 19 (KitKat)
-        // See crbug.com/1042122.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Set TMPDIR to make perfetto_unittests not to use /data/local/tmp
-            // as temporary directory.
-            try {
-                Os.setenv(
-                        "TMPDIR", activity.getApplicationContext().getCacheDir().getPath(), false);
-            } catch (ErrnoException e) {
-                Log.w(TAG, "failed to set TMPDIR", e);
             }
         }
     }
