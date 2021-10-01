@@ -136,6 +136,8 @@ interface CoreProbes {
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
+  void NetworkStateChanged([Keep] LocalFrame*, bool online);
+  void UpdateApplicationCacheStatus([Keep] LocalFrame*);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
   /* For BlinkGenPropertyTrees/CompositeAfterPaint. */
