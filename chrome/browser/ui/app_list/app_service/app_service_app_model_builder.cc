@@ -65,7 +65,8 @@ class AppServiceAppModelBuilder::CrostiniFolderObserver
     // to ensure the "Linux apps" string is translated into the current
     // language, even if that's a different language then the folder was created
     // with.
-    item->SetName(
+    item->model_updater()->SetItemName(
+        item->id(),
         l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));
   }
 

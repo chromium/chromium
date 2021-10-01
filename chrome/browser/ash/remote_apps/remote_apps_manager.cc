@@ -325,7 +325,7 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
       // Update metadata for newly created folder.
       ChromeAppListItem* item = model_updater_->FindFolderItem(folder_id);
       DCHECK(item) << "Missing folder item for folder_id: " << folder_id;
-      item->SetName(folder_info.name);
+      model_updater_->SetItemName(item->id(), folder_info.name);
       item->SetIsPersistent(true);
 
       syncer::StringOrdinal item_position =

@@ -477,7 +477,7 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
   if (update_name && sync_item->item_name != chrome_item->name() &&
       (chrome_item->is_folder() || chrome_item->name().empty())) {
     // This updates the name in both chrome and ash:
-    chrome_item->SetName(sync_item->item_name);
+    SetItemName(chrome_item->id(), sync_item->item_name);
   }
   if (update_folder && chrome_item->folder_id() != sync_item->parent_id) {
     VLOG(2) << " Moving Item To Folder: " << sync_item->parent_id;

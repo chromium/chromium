@@ -863,6 +863,7 @@ TEST_F(CrostiniAppTest, CreatesFolder) {
   auto metadata = std::make_unique<ash::AppListItemMetadata>();
   metadata->id = ash::kCrostiniFolderId;
   metadata->is_folder = true;
+  metadata->position = syncer::StringOrdinal::CreateInitialOrdinal();
   GetModelUpdater()->OnItemAdded(std::move(metadata));
 
   EXPECT_THAT(GetAllApps(),

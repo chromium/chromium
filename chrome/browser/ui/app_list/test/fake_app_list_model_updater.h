@@ -43,6 +43,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
                        const std::string& folder_id) override;
   void SetItemPosition(const std::string& id,
                        const syncer::StringOrdinal& new_position) override;
+  void SetItemName(const std::string& id, const std::string& new_name) override;
   // For SearchModel:
   void SetSearchEngineIsGoogle(bool is_google) override;
   void PublishSearchResults(

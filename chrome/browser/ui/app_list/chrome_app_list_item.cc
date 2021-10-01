@@ -54,6 +54,10 @@ void ChromeAppListItem::TestApi::SetPosition(
   item_->SetPosition(position);
 }
 
+void ChromeAppListItem::TestApi::SetName(const std::string& name) {
+  item_->SetName(name);
+}
+
 // ChromeAppListItem
 ChromeAppListItem::ChromeAppListItem(Profile* profile,
                                      const std::string& app_id)
@@ -184,21 +188,6 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {
   }
 }
 
-void ChromeAppListItem::SetName(const std::string& name) {
-  metadata_->name = name;
-  AppListModelUpdater* updater = model_updater();
-  if (updater)
-    updater->SetItemName(id(), name);
-}
-
-void ChromeAppListItem::SetNameAndShortName(const std::string& name,
-                                            const std::string& short_name) {
-  metadata_->name = name;
-  AppListModelUpdater* updater = model_updater();
-  if (updater)
-    updater->SetItemNameAndShortName(id(), name, short_name);
-}
-
 void ChromeAppListItem::SetAppStatus(ash::AppStatus app_status) {
   metadata_->app_status = app_status;
   AppListModelUpdater* updater = model_updater();
@@ -208,6 +197,16 @@ void ChromeAppListItem::SetAppStatus(ash::AppStatus app_status) {
 
 void ChromeAppListItem::SetFolderId(const std::string& folder_id) {
   metadata_->folder_id = folder_id;
+}
+
+void ChromeAppListItem::SetName(const std::string& name) {
+  metadata_->name = name;
+}
+
+void ChromeAppListItem::SetNameAndShortName(const std::string& name,
+                                            const std::string& short_name) {
+  metadata_->name = name;
+  metadata_->short_name = short_name;
 }
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {

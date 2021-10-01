@@ -37,6 +37,7 @@ class ChromeAppListItem {
 
     void SetFolderId(const std::string& folder_id);
     void SetPosition(const syncer::StringOrdinal& position);
+    void SetName(const std::string& name);
 
    private:
     ChromeAppListItem* const item_;
@@ -76,9 +77,6 @@ class ChromeAppListItem {
   // interfaces that talk to ash directly.
   void IncrementIconVersion();
   void SetIcon(const gfx::ImageSkia& icon);
-  void SetName(const std::string& name);
-  void SetNameAndShortName(const std::string& name,
-                           const std::string& short_name);
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetIsPageBreak(bool is_page_break);
@@ -134,6 +132,9 @@ class ChromeAppListItem {
 
   AppListControllerDelegate* GetController();
 
+  void SetName(const std::string& name);
+  void SetNameAndShortName(const std::string& name,
+                           const std::string& short_name);
   void SetPosition(const syncer::StringOrdinal& position);
 
   void set_model_updater(AppListModelUpdater* model_updater) {

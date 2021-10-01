@@ -276,7 +276,8 @@ class AppListSyncableService::ModelUpdaterObserver
     // Sync OEM name if it was created on demand on ash side.
     if (item->id() == ash::kOemFolderId &&
         item->name() != owner_->oem_folder_name_) {
-      item->SetName(owner_->oem_folder_name_);
+      owner_->GetModelUpdater()->SetItemName(item->id(),
+                                             owner_->oem_folder_name_);
     }
   }
 
@@ -552,12 +553,10 @@ void AppListSyncableService::ApplyAppAttributes(
 
 void AppListSyncableService::SetOemFolderName(const std::string& name) {
   oem_folder_name_ = name;
+
   // Update OEM folder item if it was already created. If it is not created yet
   // then on creation it will take right name.
-  ChromeAppListItem* oem_folder_item =
-      model_updater_->FindItem(ash::kOemFolderId);
-  if (oem_folder_item)
-    oem_folder_item->SetName(oem_folder_name_);
+  model_updater_->SetItemName(ash::kOemFolderId, oem_folder_name_);
 }
 
 AppListModelUpdater* AppListSyncableService::GetModelUpdater() {
@@ -1505,7 +1504,6 @@ void AppListSyncableService::InstallDefaultPageBreaks() {
 
     auto page_break_item = std::make_unique<PageBreakAppItem>(
         profile(), model_updater_.get(), nullptr /* sync_item */, id);
-    page_break_item->SetName("__default_page_break__");
     AddItem(std::move(page_break_item));
   }
 }
