@@ -29,6 +29,7 @@ class WhatsNewHandler : public content::WebUIMessageHandler {
  private:
   void HandleInitialize(const base::ListValue* args);
   typedef base::OnceCallback<void(bool success,
+                                  bool page_not_found,
                                   std::unique_ptr<std::string> body)>
       OnFetchResultCallback;
   void Fetch(const GURL& url, OnFetchResultCallback on_result);
@@ -38,6 +39,7 @@ class WhatsNewHandler : public content::WebUIMessageHandler {
   void OnFetchResult(const std::string& callback_id,
                      bool is_auto,
                      bool success,
+                     bool page_not_found,
                      std::unique_ptr<std::string> body);
 
   // content::WebUIMessageHandler:
@@ -45,6 +47,7 @@ class WhatsNewHandler : public content::WebUIMessageHandler {
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
+  int num_retries_ = 0;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;

@@ -167,9 +167,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
   PromotionalTabsEnabledPolicyWhatsNewTest() = default;
   ~PromotionalTabsEnabledPolicyWhatsNewTest() override = default;
 
-  virtual int WhatsNewVersionForPref() {
-    return whats_new::kMaxWhatsNewVersion - 1;
-  }
+  virtual int WhatsNewVersionForPref() { return CHROME_VERSION_MAJOR - 1; }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

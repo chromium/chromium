@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +28,12 @@
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
+// The maximum number of times to try loading prior versions if What's New fails
+// to load for the current version. Used only if the user tries to open the page
+// manually. What's New generally has new content every other milestone, so only
+// 1 retry should be needed most of the time; conservatively set the max to 2.
+const int kMaxRetries = 2;
+
 namespace whats_new {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -45,6 +52,15 @@ namespace {
 
 void LogLoadEvent(whats_new::LoadEvent event) {
   base::UmaHistogramEnumeration("WhatsNew.LoadEvent", event);
+}
+
+std::string GetURLForVersion(int version) {
+  // Versions prior to m96 didn't use an extra path.
+  // TODO (https://crbug.com/1219381): Remove the < 96 special logic once the
+  // M96 page has been created by the server team.
+  return version < 96 ? whats_new::kChromeWhatsNewURL
+                      : base::StringPrintf(
+                            "%sm%d", whats_new::kChromeWhatsNewURL, version);
 }
 
 }  // namespace
@@ -81,7 +97,7 @@ void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
     return;
   }
 
-  Fetch(GURL(whats_new::kChromeWhatsNewURL),
+  Fetch(GURL(GetURLForVersion(CHROME_VERSION_MAJOR)),
         base::BindOnce(&WhatsNewHandler::OnFetchResult,
                        weak_ptr_factory_.GetWeakPtr(), callback_id, is_auto));
 }
@@ -140,13 +156,15 @@ void WhatsNewHandler::OnResponseLoaded(const network::SimpleURLLoader* loader,
 
   base::UmaHistogramSparse("WhatsNew.LoadResponseCode", response_code);
   success = success && response_code >= 200 && response_code <= 299 && body;
-  std::move(on_result).Run(success, std::move(body));
+  bool page_not_found = !success && headers && headers->response_code() == 404;
+  std::move(on_result).Run(success, page_not_found, std::move(body));
   loader_map_.erase(loader);
 }
 
 void WhatsNewHandler::OnFetchResult(const std::string& callback_id,
                                     bool is_auto,
                                     bool success,
+                                    bool page_not_found,
                                     std::unique_ptr<std::string> body) {
   if (!success && is_auto) {
     // Open NTP if the page wasn't retrieved and What's New was opened
@@ -161,6 +179,16 @@ void WhatsNewHandler::OnFetchResult(const std::string& callback_id,
                                   WindowOpenDisposition::CURRENT_TAB,
                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
     browser->OpenURL(params);
+  } else if (!success && page_not_found && num_retries_ < kMaxRetries) {
+    // If the user opened the page manually and the error was that the page does
+    // not exist, try to load the page for a previous milestone. It might just
+    // not have a new version for the current one. We still want to show the
+    // most recent What's New (even if it isn't exactly for this milestone) if
+    // the user intentionally navigated there.
+    num_retries_++;
+    Fetch(GURL(GetURLForVersion(CHROME_VERSION_MAJOR - num_retries_)),
+          base::BindOnce(&WhatsNewHandler::OnFetchResult,
+                         weak_ptr_factory_.GetWeakPtr(), callback_id, is_auto));
   } else {
     LogLoadEvent(success ? whats_new::LoadEvent::kLoadSuccess
                          : whats_new::LoadEvent::kLoadFailAndShowError);
@@ -170,6 +198,8 @@ void WhatsNewHandler::OnFetchResult(const std::string& callback_id,
     }
     ResolveJavascriptCallback(
         base::Value(callback_id),
-        success ? base::Value(whats_new::kChromeWhatsNewURL) : base::Value());
+        success
+            ? base::Value(GetURLForVersion(CHROME_VERSION_MAJOR - num_retries_))
+            : base::Value());
   }
 }
