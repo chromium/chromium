@@ -98,6 +98,8 @@ class UiControllerAndroid : public ControllerObserver {
 
   // Overrides ControllerObserver:
   void OnStateChanged(AutofillAssistantState new_state) override;
+  void OnKeyboardSuppressionStateChanged(
+      bool should_suppress_keyboard) override;
   void OnStatusMessageChanged(const std::string& message) override;
   void OnBubbleMessageChanged(const std::string& message) override;
   void CloseCustomTab() override;
@@ -255,7 +257,6 @@ class UiControllerAndroid : public ControllerObserver {
   void SetOverlayState(OverlayState state);
   // Applies the specified OverlayState to the UI.
   void ApplyOverlayState(OverlayState state);
-  void AllowShowingSoftKeyboard(bool enabled);
   void ShowContentAndExpandBottomSheet();
   void SetSpinPoodle(bool enabled);
   std::string GetDebugContext();

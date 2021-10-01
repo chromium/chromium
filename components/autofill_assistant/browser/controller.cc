@@ -54,6 +54,23 @@ const char kProgressBarExperiment[] = "4400697";
 // DISABLED by the user tap.
 const char kNonStickyTtsButtonStateExperiment[] = "4624822";
 
+bool ShouldSuppressKeyboardForState(AutofillAssistantState state) {
+  switch (state) {
+    case AutofillAssistantState::STARTING:
+    case AutofillAssistantState::RUNNING:
+      return true;
+
+    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
+    case AutofillAssistantState::PROMPT:
+    case AutofillAssistantState::BROWSE:
+    case AutofillAssistantState::MODAL_DIALOG:
+    case AutofillAssistantState::STOPPED:
+    case AutofillAssistantState::TRACKING:
+    case AutofillAssistantState::INACTIVE:
+      return false;
+  }
+}
+
 }  // namespace
 
 Controller::Controller(
@@ -911,7 +928,10 @@ bool Controller::EnterState(AutofillAssistantState state) {
   }
   state_ = state;
 
+  bool should_suppress_keyboard = ShouldSuppressKeyboardForState(state_);
+  SuppressKeyboard(should_suppress_keyboard);
   for (ControllerObserver& observer : observers_) {
+    observer.OnKeyboardSuppressionStateChanged(should_suppress_keyboard);
     observer.OnStateChanged(state);
   }
 
@@ -1383,6 +1403,10 @@ AutofillAssistantState Controller::GetState() const {
 
 bool Controller::ShouldShowOverlay() const {
   return overlay_behavior_ == ConfigureUiStateProto::DEFAULT;
+}
+
+bool Controller::ShouldSuppressKeyboard() const {
+  return ShouldSuppressKeyboardForState(state_);
 }
 
 void Controller::OnScriptSelected(const ScriptHandle& handle,
@@ -2136,6 +2160,21 @@ void Controller::OnWebContentsFocused(
     // Show UI again when re-focused in case the web contents moved activity.
     // This is only enabled when tab-switching is enabled.
     client_->AttachUI();
+  }
+}
+
+void Controller::WebContentsDestroyed() {
+  suppress_keyboard_raii_.reset();
+}
+
+void Controller::SuppressKeyboard(bool suppress) {
+  if (suppress) {
+    if (!suppress_keyboard_raii_) {
+      suppress_keyboard_raii_ =
+          std::make_unique<SuppressKeyboardRAII>(web_contents());
+    }
+  } else {
+    suppress_keyboard_raii_.reset();
   }
 }
 

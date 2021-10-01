@@ -32,6 +32,10 @@ class ControllerObserver : public base::CheckedObserver {
   // Called when the controller has entered a new state.
   virtual void OnStateChanged(AutofillAssistantState new_state) = 0;
 
+  // Called when the suppression state of the keyboard changed.
+  virtual void OnKeyboardSuppressionStateChanged(
+      bool should_suppress_keyboard) = 0;
+
   // Report that the status message has changed.
   virtual void OnStatusMessageChanged(const std::string& message) = 0;
 

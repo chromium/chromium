@@ -27,6 +27,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/state.h"
+#include "components/autofill_assistant/browser/suppress_keyboard_raii.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/ui_delegate.h"
 #include "components/autofill_assistant/browser/user_action.h"
@@ -278,6 +279,8 @@ class Controller : public ScriptExecutorDelegate,
   const GenericUserInterfaceProto* GetGenericUiProto() const override;
   const GenericUserInterfaceProto* GetPersistentGenericUiProto() const override;
   bool ShouldShowOverlay() const override;
+  bool ShouldSuppressKeyboard() const override;
+  void SuppressKeyboard(bool suppress) override;
   void ShutdownIfNecessary() override;
   void OnKeyboardVisibilityChanged(bool visible) override;
   void OnInputTextFocusChanged(bool is_text_focused) override;
@@ -386,6 +389,7 @@ class Controller : public ScriptExecutorDelegate,
   void RenderProcessGone(base::TerminationStatus status) override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
+  void WebContentsDestroyed() override;
 
   // Overrides autofill_assistant::UserModel::Observer:
   void OnValueChanged(const std::string& identifier,
@@ -441,6 +445,10 @@ class Controller : public ScriptExecutorDelegate,
 
   // Lazily instantiate in GetWebController().
   std::unique_ptr<WebController> web_controller_;
+
+  // An instance to suppress keyboard. If this is not nullptr, the keyboard
+  // is suppressed.
+  std::unique_ptr<SuppressKeyboardRAII> suppress_keyboard_raii_;
 
   // Lazily instantiate in GetService().
   std::unique_ptr<Service> service_;

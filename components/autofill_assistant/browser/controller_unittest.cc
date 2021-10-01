@@ -149,6 +149,9 @@ class ControllerTest : public testing::Test {
         .WillByDefault(Invoke([this](AutofillAssistantState state) {
           states_.emplace_back(state);
         }));
+    ON_CALL(mock_observer_, OnKeyboardSuppressionStateChanged(_))
+        .WillByDefault(Invoke(
+            [this](bool state) { keyboard_states_.emplace_back(state); }));
     controller_->AddObserver(&mock_observer_);
   }
 
@@ -264,6 +267,7 @@ class ControllerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::TimeTicks now_;
   std::vector<AutofillAssistantState> states_;
+  std::vector<bool> keyboard_states_;
   MockService* mock_service_;
   MockWebController* mock_web_controller_;
   MockAutofillAssistantTtsController* mock_tts_controller_;
@@ -774,6 +778,7 @@ TEST_F(ControllerTest, Autostart) {
                                    AutofillAssistantState::PROMPT,
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::STOPPED));
+  EXPECT_THAT(keyboard_states_, ElementsAre(true, true, false, true, false));
 }
 
 TEST_F(ControllerTest,
@@ -1352,6 +1357,7 @@ TEST_F(ControllerTest, Track) {
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::TRACKING,
                                    AutofillAssistantState::STOPPED));
+  EXPECT_THAT(keyboard_states_, ElementsAre(false, true, false, false));
 
   // Shutdown once we've moved from domain b.example.com, for which we know
   // there are no scripts, to c.example.com, which we don't want to check.
@@ -1618,6 +1624,8 @@ TEST_F(ControllerTest, TrackThenAutostart) {
                                    AutofillAssistantState::PROMPT,
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::TRACKING));
+  EXPECT_THAT(keyboard_states_,
+              ElementsAre(false, true, true, false, true, false));
 }
 
 TEST_F(ControllerTest, BrowseStateStopsOnDifferentDomain) {
@@ -3062,6 +3070,7 @@ TEST_F(ControllerTest, PauseAndResume) {
   EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::STARTING,
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::PROMPT));
+  EXPECT_THAT(keyboard_states_, ElementsAre(true, true, false));
   EXPECT_THAT(controller_->GetStatusMessage(), StrEq("Hello World"));
   EXPECT_THAT(controller_->GetUserActions(),
               ElementsAre(Property(&UserAction::chip,
@@ -3092,6 +3101,8 @@ TEST_F(ControllerTest, PauseAndResume) {
                                    AutofillAssistantState::STOPPED,
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::PROMPT));
+  EXPECT_THAT(keyboard_states_,
+              ElementsAre(true, true, false, false, true, false));
   EXPECT_THAT(controller_->GetStatusMessage(), StrEq("Hello World"));
   EXPECT_THAT(controller_->GetUserActions(),
               ElementsAre(Property(&UserAction::chip,

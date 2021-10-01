@@ -858,9 +858,9 @@ void AutofillAgent::GetElementFormAndFieldDataAtIndex(
   return std::move(callback).Run(form, field);
 }
 
-void AutofillAgent::SetAssistantActionState(bool running) {
+void AutofillAgent::SetAssistantKeyboardSuppressState(bool suppress) {
   DCHECK(autofill_assistant_agent_);
-  if (running) {
+  if (suppress) {
     autofill_assistant_agent_->DisableKeyboard();
   } else {
     autofill_assistant_agent_->EnableKeyboard();

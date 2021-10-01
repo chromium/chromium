@@ -48,7 +48,6 @@ struct FormFieldData;
 
 namespace content {
 class WebContents;
-class RenderFrameHost;
 }  // namespace content
 
 namespace autofill_assistant {
@@ -365,31 +364,6 @@ class WebController {
  private:
   friend class WebControllerBrowserTest;
 
-  // RAII object that sets the action state to "running" when the object is
-  // allocated and to "not running" when it gets deallocated.
-  class ScopedAssistantActionStateRunning
-      : private content::WebContentsObserver {
-   public:
-    explicit ScopedAssistantActionStateRunning(
-        content::WebContents* web_contents,
-        content::RenderFrameHost* render_frame_host);
-    ~ScopedAssistantActionStateRunning() override;
-
-    ScopedAssistantActionStateRunning(
-        const ScopedAssistantActionStateRunning&) = delete;
-    ScopedAssistantActionStateRunning& operator=(
-        const ScopedAssistantActionStateRunning&) = delete;
-
-   private:
-    void SetAssistantActionState(bool running);
-
-    // Overrides content::WebContentsObserver:
-    void RenderFrameDeleted(
-        content::RenderFrameHost* render_frame_host) override;
-
-    content::RenderFrameHost* render_frame_host_;
-  };
-
   void OnJavaScriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
@@ -542,21 +516,6 @@ class WebController {
   void OnDispatchJsEvent(base::OnceCallback<void(const ClientStatus&)> callback,
                          const DevtoolsClient::ReplyStatus& reply_status,
                          std::unique_ptr<runtime::EvaluateResult> result) const;
-
-  // Wrapper for calling the |callback| after re-enabling the keyboard by
-  // setting the assistant action state to "not running".
-  void RetainAssistantActionRunningStateAndExecuteCallback(
-      std::unique_ptr<ScopedAssistantActionStateRunning> scoped_state,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& client_status);
-  // Disables the keyboard by setting the assistant action state to "running"
-  // and wraps the |callback| such that the keyboard is re-enabled before
-  // calling it. Uses the |RenderFrameHost| of the |ElementFinder::Result| to
-  // extract the appropriate |ContentAutofillDriver|.
-  base::OnceCallback<void(const ClientStatus&)>
-  GetAssistantActionRunningStateRetainingCallback(
-      const ElementFinder::Result& element_result,
-      base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.

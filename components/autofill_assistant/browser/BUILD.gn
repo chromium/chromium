@@ -219,6 +219,8 @@ static_library("browser") {
     "state.h",
     "string_conversions_util.cc",
     "string_conversions_util.h",
+    "suppress_keyboard_raii.cc",
+    "suppress_keyboard_raii.h",
     "switches.cc",
     "switches.h",
     "top_padding.cc",

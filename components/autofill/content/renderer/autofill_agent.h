@@ -119,7 +119,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const std::string& selector,
       int index,
       GetElementFormAndFieldDataAtIndexCallback callback) override;
-  void SetAssistantActionState(bool running) override;
+  void SetAssistantKeyboardSuppressState(bool suppress) override;
   void EnableHeavyFormDataScraping() override;
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override;

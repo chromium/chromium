@@ -550,10 +550,6 @@ void WebController::ExecuteVoidJsWithoutArguments(
     const std::string& js_snippet,
     WebControllerErrorInfoProto::WebAction web_action,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  // Wrapping the callback to suppress and free the keyboard.
-  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
-      element, std::move(callback));
-
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
@@ -563,7 +559,7 @@ void WebController::ExecuteVoidJsWithoutArguments(
       base::BindOnce(&WebController::OnJavaScriptResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus, web_action,
-                                    std::move(wrapped_callback))));
+                                    std::move(callback))));
 }
 
 void WebController::ScrollIntoView(
@@ -749,11 +745,6 @@ void WebController::ClickOrTapElement(
     std::move(callback).Run(status);
     return;
   }
-
-  // Wrapping the callback to suppress and free the keyboard.
-  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
-      element, std::move(callback));
-
   std::unique_ptr<ClickOrTapWorker> worker =
       std::make_unique<ClickOrTapWorker>(devtools_client_.get());
   auto* ptr = worker.get();
@@ -765,7 +756,7 @@ void WebController::ClickOrTapElement(
           ptr,
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::CLICK_OR_TAP_ELEMENT,
-                         std::move(wrapped_callback))));
+                         std::move(callback))));
 }
 
 void WebController::OnClickOrTapElement(
@@ -1411,10 +1402,6 @@ void WebController::SendKeyEvents(
     int key_press_delay,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  // Wrapping the callback to suppress and free the keyboard.
-  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
-      element, std::move(callback));
-
   auto worker =
       std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
   auto* ptr = worker.get();
@@ -1424,7 +1411,7 @@ void WebController::SendKeyEvents(
       base::BindOnce(&DecorateWebControllerStatus, web_action,
                      base::BindOnce(&WebController::OnSendKeyboardInputDone,
                                     weak_ptr_factory_.GetWeakPtr(), ptr,
-                                    std::move(wrapped_callback))));
+                                    std::move(callback))));
 }
 
 void WebController::OnSendKeyboardInputDone(
@@ -1628,74 +1615,6 @@ void WebController::OnDispatchJsEvent(
 
 base::WeakPtr<WebController> WebController::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-WebController::ScopedAssistantActionStateRunning::
-    ScopedAssistantActionStateRunning(
-        content::WebContents* web_contents,
-        content::RenderFrameHost* render_frame_host)
-    : content::WebContentsObserver(web_contents),
-      render_frame_host_(render_frame_host) {
-  SetAssistantActionState(/* running= */ true);
-}
-
-WebController::ScopedAssistantActionStateRunning::
-    ~ScopedAssistantActionStateRunning() {
-  SetAssistantActionState(/* running= */ false);
-}
-
-void WebController::ScopedAssistantActionStateRunning::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host_ == render_frame_host)
-    render_frame_host_ = nullptr;
-}
-
-void WebController::ScopedAssistantActionStateRunning::SetAssistantActionState(
-    bool running) {
-  if (render_frame_host_ == nullptr)
-    return;
-
-  ContentAutofillDriver* content_autofill_driver =
-      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host_);
-  if (content_autofill_driver != nullptr) {
-    content_autofill_driver->GetAutofillAgent()->SetAssistantActionState(
-        running);
-  }
-}
-
-void WebController::RetainAssistantActionRunningStateAndExecuteCallback(
-    std::unique_ptr<ScopedAssistantActionStateRunning> scoped_state,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& client_status) {
-  // Deallocating the ScopedAssistantActionStateRunning sets the running state
-  // to "not running" again.
-  scoped_state.reset();
-
-  std::move(callback).Run(client_status);
-}
-
-base::OnceCallback<void(const ClientStatus&)>
-WebController::GetAssistantActionRunningStateRetainingCallback(
-    const ElementFinder::Result& element_result,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  if (element_result.container_frame_host == nullptr) {
-    return callback;
-  }
-  ContentAutofillDriver* content_autofill_driver =
-      ContentAutofillDriver::GetForRenderFrameHost(
-          element_result.container_frame_host);
-  if (content_autofill_driver == nullptr) {
-    return callback;
-  }
-
-  auto scoped_assistant_action_state_running =
-      std::make_unique<ScopedAssistantActionStateRunning>(
-          web_contents_, element_result.container_frame_host);
-
-  return base::BindOnce(
-      &WebController::RetainAssistantActionRunningStateAndExecuteCallback,
-      weak_ptr_factory_.GetWeakPtr(),
-      std::move(scoped_assistant_action_state_running), std::move(callback));
 }
 
 }  // namespace autofill_assistant

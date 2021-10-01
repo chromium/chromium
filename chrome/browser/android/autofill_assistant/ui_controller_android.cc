@@ -248,23 +248,6 @@ absl::optional<bool> GetPreviousFormSelectionResult(
   return input_result.selection().selected(selection_index);
 }
 
-bool ShouldAllowSoftKeyboardForState(AutofillAssistantState state) {
-  switch (state) {
-    case AutofillAssistantState::STARTING:
-    case AutofillAssistantState::RUNNING:
-      return false;
-
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-    case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::BROWSE:
-    case AutofillAssistantState::MODAL_DIALOG:
-    case AutofillAssistantState::STOPPED:
-    case AutofillAssistantState::TRACKING:
-    case AutofillAssistantState::INACTIVE:
-      return true;
-  }
-}
-
 }  // namespace
 
 // static
@@ -392,7 +375,6 @@ void UiControllerAndroid::SetupForState() {
 
   UpdateActions(ui_delegate_->GetUserActions());
   AutofillAssistantState state = ui_delegate_->GetState();
-  AllowShowingSoftKeyboard(ShouldAllowSoftKeyboardForState(state));
   bool should_prompt_action_expand_sheet =
       ui_delegate_->ShouldPromptActionExpandSheet();
   switch (state) {
@@ -455,6 +437,12 @@ void UiControllerAndroid::SetupForState() {
       return;
   }
   NOTREACHED() << "Unknown state: " << static_cast<int>(state);
+}
+
+void UiControllerAndroid::OnKeyboardSuppressionStateChanged(
+    bool should_suppress_keyboard) {
+  Java_AssistantModel_setAllowSoftKeyboard(AttachCurrentThread(), GetModel(),
+                                           !should_suppress_keyboard);
 }
 
 void UiControllerAndroid::OnStatusMessageChanged(const std::string& message) {
@@ -521,11 +509,6 @@ void UiControllerAndroid::OnOverlayColorsChanged(
   Java_AssistantOverlayModel_setHighlightBorderColor(
       env, overlay_model,
       ui_controller_android_utils::GetJavaColor(env, colors.highlight_border));
-}
-
-void UiControllerAndroid::AllowShowingSoftKeyboard(bool enabled) {
-  Java_AssistantModel_setAllowSoftKeyboard(AttachCurrentThread(), GetModel(),
-                                           enabled);
 }
 
 void UiControllerAndroid::ShowContentAndExpandBottomSheet() {
@@ -629,12 +612,17 @@ void UiControllerAndroid::SetVisible(
 
 void UiControllerAndroid::SetVisible(bool visible) {
   Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(), visible);
+  DCHECK(ui_delegate_);
   if (visible) {
     // Recover possibly state changes missed by OnStateChanged()
     SetupForState();
   } else {
     SetOverlayState(OverlayState::HIDDEN);
   }
+  bool should_suppress_keyboard =
+      visible && ui_delegate_->ShouldSuppressKeyboard();
+  ui_delegate_->SuppressKeyboard(should_suppress_keyboard);
+  OnKeyboardSuppressionStateChanged(should_suppress_keyboard);
   ui_delegate_->SetUiShown(visible);
 }
 

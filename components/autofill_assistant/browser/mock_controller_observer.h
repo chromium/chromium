@@ -27,6 +27,7 @@ class MockControllerObserver : public ControllerObserver {
   MOCK_METHOD1(OnBubbleMessageChanged, void(const std::string& message));
   MOCK_METHOD0(CloseCustomTab, void());
   MOCK_METHOD1(OnStateChanged, void(AutofillAssistantState));
+  MOCK_METHOD1(OnKeyboardSuppressionStateChanged, void(bool));
   MOCK_METHOD1(OnUserActionsChanged,
                void(const std::vector<UserAction>& user_actions));
   MOCK_METHOD1(OnCollectUserDataOptionsChanged,

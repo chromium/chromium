@@ -249,7 +249,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
       int index,
       GetElementFormAndFieldDataAtIndexCallback callback) override {}
 
-  void SetAssistantActionState(bool running) override {}
+  void SetAssistantKeyboardSuppressState(bool suppress) override {}
 
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override {}
