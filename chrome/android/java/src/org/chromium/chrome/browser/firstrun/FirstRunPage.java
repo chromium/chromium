@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import org.chromium.base.supplier.BooleanSupplier;
 
 /**
  * Represents first run page shown during the First Run. Actual page implementation is created
@@ -15,32 +14,25 @@ import androidx.fragment.app.Fragment;
  * @param <T> the type of the fragment that displays this FRE page.
  */
 public class FirstRunPage<T extends Fragment & FirstRunFragment> {
-    /** Specifies a condition for skipping a promo page during first run. */
-    interface SkipPageCondition {
-        /**
-         * @param freProperties The up-to-date bundle that indicates what promo pages should be
-         *         skipped.
-         * @return true if the page should be skipped.
-         */
-        boolean shouldSkip(Bundle freProperties);
-    }
-
     /** Instantiates a new fragment. */
     private final Class<T> mClazz;
 
-    /** The condition for skipping the corresponding promo page. */
-    private final @Nullable SkipPageCondition mCondition;
+    /** The condition for showing the corresponding page. */
+    private final BooleanSupplier mShouldShow;
 
     /**
-     * @param clazz The Class object used for instantiating a new fragment
-     * @param condition Specifies the condition for skipping the corresponding promo page
+     * @param clazz The Class object used for instantiating a new fragment (a 0-argument constructor
+     *         is required).
+     * @param shouldShow Specifies the condition for showing the corresponding page.
      */
-    public FirstRunPage(Class<T> clazz, @Nullable SkipPageCondition condition) {
+    public FirstRunPage(Class<T> clazz, BooleanSupplier shouldShow) {
+        assert shouldShow != null;
+
         mClazz = clazz;
-        mCondition = condition;
+        mShouldShow = shouldShow;
     }
 
-    /** @param clazz The Class object used for instantiating a new fragment */
+    /** @param clazz The Class object used for instantiating a new fragment. */
     public FirstRunPage(Class<T> clazz) {
         this(clazz, null);
     }
@@ -49,8 +41,8 @@ public class FirstRunPage<T extends Fragment & FirstRunFragment> {
      * @return Whether this page should be skipped, which can happen on FRE creation or page change
      *         depending on platform and cloud policies.
      */
-    public boolean shouldSkipPage(Bundle freProperties) {
-        return mCondition != null && mCondition.shouldSkip(freProperties);
+    public boolean shouldShow() {
+        return mShouldShow.getAsBoolean();
     }
 
     /**
