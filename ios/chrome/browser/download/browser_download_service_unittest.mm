@@ -273,8 +273,8 @@ TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
 // Config Mime Type.
 TEST_F(BrowserDownloadServiceTest, iOSMobileConfigMimeType) {
   ASSERT_TRUE(download_controller()->GetDelegate());
-  auto task = std::make_unique<web::FakeDownloadTask>(
-      GURL(kUrl), "application/x-apple-aspen-config");
+  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl),
+                                                      kMobileConfigurationType);
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));

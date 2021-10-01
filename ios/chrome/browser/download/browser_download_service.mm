@@ -29,7 +29,7 @@ DownloadMimeTypeResult GetUmaResult(const std::string& mime_type) {
   if (mime_type == "application/zip")
     return DownloadMimeTypeResult::ZipArchive;
 
-  if (mime_type == "application/x-apple-aspen-config")
+  if (mime_type == kMobileConfigurationType)
     return DownloadMimeTypeResult::iOSMobileConfig;
 
   if (mime_type == "application/x-msdownload")
@@ -123,7 +123,7 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper) {
       tab_helper->Download(std::move(task));
     }
-  } else if (task->GetMimeType() == "application/x-apple-aspen-config" &&
+  } else if (task->GetMimeType() == kMobileConfigurationType &&
              base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
     MobileConfigTabHelper* tab_helper =
         MobileConfigTabHelper::FromWebState(web_state);
