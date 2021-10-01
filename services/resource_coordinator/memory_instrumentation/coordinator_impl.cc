@@ -105,7 +105,8 @@ void CoordinatorImpl::RegisterClientProcess(
     const base::Optional<std::string>& service_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   mojo::Remote<mojom::ClientProcess> process(std::move(client_process));
-  coordinator_receivers_.Add(this, std::move(receiver), process_id);
+  if (receiver.is_valid())
+    coordinator_receivers_.Add(this, std::move(receiver), process_id);
   process.set_disconnect_handler(
       base::BindOnce(&CoordinatorImpl::UnregisterClientProcess,
                      base::Unretained(this), process_id));

@@ -672,6 +672,9 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
     mojo::PendingReceiver<memory_instrumentation::mojom::Coordinator> receiver,
     mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess>
         client_process) {
+  // Intentionally disallow non-browser processes from getting a Coordinator.
+  receiver.reset();
+
   // The child process may have already terminated by the time this message is
   // dispatched. We do nothing in that case.
   if (!IsProcessLaunched())
