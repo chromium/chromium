@@ -15,6 +15,10 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
+
 class GURL;
 
 // Side Search helper for the WebContents hosted in the browser's main tab area.
@@ -32,6 +36,11 @@ class SideSearchTabContentsHelper
     virtual content::WebContents* OpenURLFromTab(
         content::WebContents* source,
         const content::OpenURLParams& params) = 0;
+
+    // Notifies the delegate that the side panel's availability has changed.
+    // This is called in response to validating that the side panel SRP is
+    // available in `TestSRPAvailability()`.
+    virtual void SidePanelAvailabilityChanged() = 0;
   };
 
   ~SideSearchTabContentsHelper() override;
@@ -73,6 +82,8 @@ class SideSearchTabContentsHelper
   void SetSidePanelContentsForTesting(
       std::unique_ptr<content::WebContents> side_panel_contents);
 
+  void SetIsSidePanelSRPAvailableForTesting(bool is_side_panel_srp_available);
+
   content::WebContents* side_panel_contents_for_testing() const {
     return side_panel_contents_.get();
   }
@@ -96,6 +107,11 @@ class SideSearchTabContentsHelper
   // contents.
   void CreateSidePanelContents();
 
+  // Makes a HEAD request for the side search Google SRP to test for the page's
+  // availability and sets `is_side_panel_srp_available_` accordingly.
+  void TestSRPAvailability();
+  void OnResponseLoaded(scoped_refptr<net::HttpResponseHeaders> headers);
+
   // Use a weak ptr for the delegate to avoid issues whereby the tab contents
   // could outlive the delegate.
   base::WeakPtr<Delegate> delegate_;
@@ -117,6 +133,12 @@ class SideSearchTabContentsHelper
   // TODO(tluk): Update the way we manage the `side_panel_contents_` to avoid
   // keeping the object around when not needed by the feature.
   std::unique_ptr<content::WebContents> side_panel_contents_;
+
+  // Used to test if the side panel SRP for `last_search_url_` is currently
+  // available. Reset every time `TestSRPAvailability()` is called.
+  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
+
+  base::WeakPtrFactory<SideSearchTabContentsHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

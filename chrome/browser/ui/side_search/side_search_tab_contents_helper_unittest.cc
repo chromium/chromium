@@ -51,6 +51,7 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
     SideSearchTabContentsHelper::CreateForWebContents(web_contents_.get());
     helper()->SetSidePanelContentsForTesting(
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr));
+    helper()->SetIsSidePanelSRPAvailableForTesting(true);
     Test::SetUp();
   }
 

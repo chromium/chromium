@@ -194,6 +194,10 @@ content::WebContents* SideSearchBrowserController::OpenURLFromTab(
   return browser_view_->browser()->OpenURL(params);
 }
 
+void SideSearchBrowserController::SidePanelAvailabilityChanged() {
+  UpdateSidePanel();
+}
+
 void SideSearchBrowserController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
