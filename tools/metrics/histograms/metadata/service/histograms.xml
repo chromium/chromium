@@ -1201,6 +1201,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     {ServiceWorkerEventType} (see ServiceWorker.StartWorker.Status for all start
     attempts). Only recorded for installed workers.
   </summary>
+  <token key="ServiceWorkerEventType" variants="ServiceWorkerEventType"/>
 </histogram>
 
 <histogram name="ServiceWorker.StartWorker.Time" units="ms"
