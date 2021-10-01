@@ -4678,7 +4678,9 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
   EXPECT_EQ(root_window_bounds, overlay_window->GetBoundsInRootWindow());
 }
 
-TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
+// TODO(crbug.com/1255090): Test is flaky.
+TEST_P(ProjectorCaptureModeIntegrationTests,
+       DISABLED_RecordingOverlayWidgetBounds) {
   const auto capture_source = GetParam();
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi test_api;
