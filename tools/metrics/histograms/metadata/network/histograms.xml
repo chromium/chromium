@@ -1108,7 +1108,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.CumulativeTimeOnline" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS device time on line in the previous 24-hour sample period.
@@ -1122,7 +1123,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.DailyChosenFractionOnline.Cellular" units="%"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS fraction of daily cumulative time on a cellular connection when
@@ -1135,7 +1137,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.DailyChosenFractionOnline.Wifi" units="%"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS fraction of daily cumulative time on a WiFi connection when both
@@ -1148,7 +1151,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Any" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS daily cumulative time on line when both cellular and WiFi adaptors
@@ -1161,7 +1165,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Cellular" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS daily cumulative time on a cellular connection when both cellular
@@ -1174,7 +1179,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Wifi" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS daily cumulative time on a WiFi connection when both cellular and
@@ -1471,7 +1477,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.MonthlyChosenFractionOnline.Cellular" units="%"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS fraction of monthly cumulative time on a cellular connection when
@@ -1484,7 +1491,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.MonthlyChosenFractionOnline.Wifi" units="%"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS fraction of monthly cumulative time on a WiFi connection when both
@@ -1497,7 +1505,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.MonthlyChosenTimeOnline.Any" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS monthly cumulative time on line when both cellular and WiFi
@@ -1510,7 +1519,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.MonthlyChosenTimeOnline.Cellular"
     units="seconds" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS monthly cumulative time on a cellular connection when both
@@ -1523,7 +1533,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.MonthlyChosenTimeOnline.Wifi" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS monthly cumulative time on a WiFi connection when both cellular
@@ -1591,7 +1602,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.SuspendActionTimeTaken" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the time in milliseconds it
@@ -1800,7 +1812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.ApDisconnectReason" enum="WiFiReasonCode"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. Reason code reported when the AP disconnects
@@ -1810,7 +1822,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.ApDisconnectType" enum="WiFiStatusType"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. Broad category of reason AP disconnected a
@@ -1820,7 +1832,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.AssocFailureType" enum="WiFiStatusCode"
     expires_after="2022-01-30">
-  <owner>akhouderchah@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. Status code reported when an 802.11
@@ -1832,7 +1844,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.AuthFailureType" enum="WiFiStatusCode"
     expires_after="2022-01-30">
-  <owner>akhouderchah@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. Status code reported when an 802.11
@@ -1844,7 +1856,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.AutoConnectableServices" units="units"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the number of wifi services available for
@@ -1854,7 +1867,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.AvailableBSSesAtConnect" units="units"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the number of BSSes (endpoints) available
@@ -1875,7 +1888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.Channel" enum="NetworkChannelType"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. The channel used for each successful WiFi
@@ -1885,7 +1898,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.ClientDisconnectReason"
     enum="WiFiReasonCode" expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. Reason code reported when the client
@@ -1895,7 +1908,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.ClientDisconnectType" enum="WiFiStatusType"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. Broad category of reason client disconnected
@@ -1917,7 +1930,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.DarkResumeUnmatchedScanResultsReceived"
     enum="DarkResumeUnmatchedScanResultReceived" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks whether any unmatched scan results are
@@ -1929,7 +1942,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.DarkResumeWakeReason"
     enum="DarkResumeWakeReason" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks the wake reason for dark resume.
@@ -1938,7 +1951,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.DevicePresenceStatus" enum="BooleanPresent"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks the presence of a WiFi device in the
@@ -1948,7 +1961,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.Disconnect" enum="NetworkDisconnectType"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric that tracks whether an 802.11 wireless
@@ -1959,7 +1972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.EapInnerProtocol" enum="EAPInnerProtocol"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric sampled on each successful 802.1x wireless
@@ -1969,7 +1982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.EapOuterProtocol" enum="EAPOuterProtocol"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric sampled on each successful 802.1x wireless
@@ -1979,7 +1992,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.ExpiredLeaseLengthSeconds2" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the length of a lease for a
@@ -1990,7 +2003,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.FallbackDNSTestResult"
     enum="FallbackDNSTestResult" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the result of the fallback
@@ -2070,7 +2083,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.IPv6ConnectivityStatus"
     enum="IPv6ConnectivityStatus" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks the presence of complete IPv6
@@ -2207,7 +2220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.NetworkConnectionIPType"
     enum="NetworkConnectionIPType" expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks the types of IP configuration used for
@@ -2217,7 +2230,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.NetworkProblemDetected"
     enum="NetworkProblemType" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the network problems
@@ -2227,7 +2240,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.PhyMode" enum="NetworkPhyModeType"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. The channel type used for each successful
@@ -2237,7 +2250,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.PortalAttempts" units="units"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the number of portal detection
@@ -2248,7 +2262,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.PortalAttemptsToOnline" units="units"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the total number of portal
@@ -2260,7 +2275,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.PortalResult" enum="NetworkPortalResult"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the result of portal detections
@@ -2270,7 +2286,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.RegulatoryDomain" enum="RegulatoryDomain"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric that tracks which country the WiFi regulatory
@@ -2281,7 +2297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.RememberedNetworkCount" units="units"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the number of 802.11 wireless
@@ -2293,7 +2309,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.RememberedSystemNetworkCount" units="units"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the number of 802.11 wireless networks
@@ -2309,7 +2325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.RememberedUserNetworkCount" units="units"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the number of 802.11 wireless networks
@@ -2346,7 +2362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.ScanResult" enum="WiFiScanResult"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric describing, for a WiFi scan attempt, what
@@ -2356,7 +2372,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.ScanTimeInEbusy" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric describing, for a WiFi scan attempt, how many
@@ -2366,7 +2382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.Security" enum="NetworkSecurityType"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric. The security setting for each successful
@@ -2398,7 +2414,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.SignalAtDisconnect" units="negative dBm"
     expires_after="2021-12-01">
-  <owner>silberst@google.com</owner>
+  <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric indicating the negative of the dBm received signal
@@ -2408,7 +2424,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.SignalStrength" units="negative dBm"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric indicating the negative of the dBm received signal
@@ -2459,8 +2475,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.SupplicantAttempts" units="attempts"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
-  <owner>chromeos-kernel-wifi@google.com</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Number of attempts required for a WiFi device to be established with WPA
@@ -2477,8 +2492,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.SuspendDurationWoWOffConnected"
     units="seconds" expires_after="2021-12-01">
-  <owner>semenzato@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Time spent in suspended state, on a resume, for the case when wake on wifi
@@ -2489,8 +2503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.SuspendDurationWoWOffDisconnected"
     units="seconds" expires_after="2021-12-01">
-  <owner>semenzato@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Time spent in suspended state, on a resume, for the case when wake on wifi
@@ -2500,8 +2513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.SuspendDurationWoWOnConnected"
     units="seconds" expires_after="2021-12-01">
-  <owner>semenzato@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Time spent in suspended state, on a resume, for the case when wake on wifi
@@ -2512,8 +2524,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.SuspendDurationWoWOnDisconnected"
     units="seconds" expires_after="2021-12-01">
-  <owner>semenzato@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Time spent in suspended state, on a resume, for the case when wake on wifi
@@ -2523,7 +2534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeOnline" units="seconds"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the time spent using WiFi to transport
@@ -2534,7 +2545,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeResumeToReady" units="ms"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time from the resume event
@@ -2545,7 +2556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToConfig" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to configure Layer 3
@@ -2555,7 +2566,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToConnect" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to connect to a WiFi
@@ -2566,7 +2577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToInitialize" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to initialize an
@@ -2576,7 +2587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToJoin" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to join (associate
@@ -2586,7 +2597,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToOnline" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to determine that an
@@ -2596,7 +2607,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToPortal" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to determine that an
@@ -2619,7 +2631,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToScan" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to scan WiFi until a
@@ -2629,7 +2641,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.TimeToScanAndConnect" units="ms"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time between the beginning
@@ -2641,7 +2653,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.TransmitBitrateMbps" units="Mbps"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the transmit bitrate in
@@ -2652,7 +2664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.UnreliableLinkSignalStrength" units="units"
     expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the signal strength (0-100) of the wifi
@@ -2663,7 +2675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.UserInitiatedConnectionFailureReason"
     enum="ConnectionFailureReason" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the reasons of failed
@@ -2675,7 +2687,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.UserInitiatedConnectionResult"
     enum="ConnectionResult" expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the result of
@@ -2685,7 +2697,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.VerifyWakeOnWiFiSettingsResult"
     enum="VerifyWakeOnWiFiSettingsResult" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the number of times NIC wake on
@@ -2697,7 +2709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.WakeOnWiFiFeaturesEnabledState"
     enum="WakeOnWiFiFeaturesEnabledState" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric that tracks the wake on WiFi features that
@@ -2707,7 +2719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.WakeOnWiFiThrottled"
     enum="WakeOnWiFiThrottled" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks whether wake on WiFi was disabled
@@ -2719,7 +2731,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.WakeReasonReceivedBeforeOnDarkResume"
     enum="WakeReasonReceivedBeforeOnDarkResume" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks whether a wake reason was received
@@ -2729,7 +2741,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.WiFi.WiFiConnectionStatusAfterWake"
     enum="WiFiConnectionStatusAfterWake" expires_after="2021-12-01">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric that tracks the WiFi connection status after

@@ -1422,7 +1422,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.WiFiDeviceCount" units="wifi devices"
     expires_after="2022-01-30">
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Sample collected 10s after boot, showing how many WiFi interfaces are
@@ -1432,9 +1432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.WiFiDisapppearedFromPCI" units="units"
     expires_after="2022-01-30">
-  <owner>rajatja@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
-  <owner>chromeos-kernel-wifi@google.com</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Logged (with a constant value of 1) if a WiFi device experienced a PCI
@@ -1447,8 +1445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.WiFiStatusAfterForcedPCIRescan" enum="WiFiPCIStatus"
     expires_after="2022-01-30">
-  <owner>rajatja@chromium.org</owner>
-  <owner>briannorris@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Shows the WiFi status after the PCI bus is rescanned to recover WiFi. The UI
