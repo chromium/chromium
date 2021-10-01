@@ -4,12 +4,15 @@
 
 #include "ash/shelf/shelf_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/launcher_nudge_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -111,6 +114,10 @@ ShelfController::~ShelfController() {
   model_.DestroyItemDelegates();
 }
 
+void ShelfController::Init() {
+  launcher_nudge_controller_ = std::make_unique<LauncherNudgeController>();
+}
+
 void ShelfController::Shutdown() {
   model_.RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
@@ -133,6 +140,8 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterStringPref(prefs::kShelfAlignmentLocal, std::string());
   registry->RegisterDictionaryPref(prefs::kShelfPreferences);
+
+  LauncherNudgeController::RegisterProfilePrefs(registry);
 }
 
 void ShelfController::OnActiveUserPrefServiceChanged(

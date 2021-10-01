@@ -22,6 +22,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class LauncherNudgeController;
+
 // ShelfController owns the ShelfModel and manages shelf preferences.
 // ChromeShelfController and related classes largely manage the ShelfModel.
 class ASH_EXPORT ShelfController : public SessionObserver,
@@ -37,12 +39,20 @@ class ASH_EXPORT ShelfController : public SessionObserver,
 
   ~ShelfController() override;
 
+  // Creates `launcher_nudge_controller_` instance which needs AppListController
+  // instance to construct.
+  void Init();
+
   // Removes observers from this object's dependencies.
   void Shutdown();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   ShelfModel* model() { return &model_; }
+
+  LauncherNudgeController* launcher_nudge_controller() const {
+    return launcher_nudge_controller_.get();
+  }
 
  private:
   // SessionObserver:
@@ -69,6 +79,9 @@ class ASH_EXPORT ShelfController : public SessionObserver,
 
   // The shelf model shared by all shelf instances.
   ShelfModel model_;
+
+  // The controller of the launcher nudge that animates the home button.
+  std::unique_ptr<LauncherNudgeController> launcher_nudge_controller_;
 
   // Whether the pref for notification badging is enabled.
   absl::optional<bool> notification_badging_pref_enabled_;

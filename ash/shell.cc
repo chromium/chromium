@@ -1229,6 +1229,10 @@ void Shell::Init(
   // to initialize itself.
   shelf_config_->Init();
 
+  // The `shelf_controller_` needs `app_list_controller_` to initialize
+  // launcher_nudge_controller_.
+  shelf_controller_->Init();
+
   nearby_share_controller_ = std::make_unique<NearbyShareControllerImpl>();
   nearby_share_delegate_ = shell_delegate_->CreateNearbyShareDelegate(
       nearby_share_controller_.get());

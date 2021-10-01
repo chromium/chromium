@@ -986,6 +986,11 @@ const base::Feature kSessionManagerLivenessCheck{
 const base::Feature kSettingsAppNotificationSettings{
     "SettingsAppNotificationSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables launcher nudge that animates the home button to guide users to open
+// the launcher.
+const base::Feature kShelfLauncherNudge{"ShelfLauncherNudge",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the new shimless rma flow.
 const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1622,6 +1627,10 @@ bool IsSeparateNetworkIconsEnabled() {
 
 bool IsSettingsAppNotificationSettingsEnabled() {
   return base::FeatureList::IsEnabled(kSettingsAppNotificationSettings);
+}
+
+bool IsShelfLauncherNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kShelfLauncherNudge);
 }
 
 bool IsShimlessRMAFlowEnabled() {
