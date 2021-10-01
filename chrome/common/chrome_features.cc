@@ -386,6 +386,12 @@ const base::Feature kEnterpriseReportingApiKeychainRecreation{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Causes extension manifest versions to be included in the extension info
+// section of CBCM reports.
+const base::Feature kEnterpriseReportingExtensionManifestVersion{
+    "EnterpriseReportingExtensionManifestVersion",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if !defined(OS_ANDROID)
 // Enables real-time reporting for extension request
 const base::Feature kEnterpriseRealtimeExtensionRequest{

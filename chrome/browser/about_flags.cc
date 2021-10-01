@@ -5759,6 +5759,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnterpriseReportingApiKeychainRecreation)},
 #endif  // defined(OS_MAC)
 
+    {"enterprise-reporting-extension-manifest-version",
+     flag_descriptions::kEnterpriseReportingExtensionManifestVersionName,
+     flag_descriptions::kEnterpriseReportingExtensionManifestVersionDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kEnterpriseReportingExtensionManifestVersion)},
+
 #if !defined(OS_ANDROID)
     {"enterprise-realtime-extension-request",
      flag_descriptions::kEnterpriseRealtimeExtensionRequestName,

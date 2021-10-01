@@ -47466,6 +47466,8 @@ from previous Chrome versions.
   <int value="-2097906903" label="ArcNearbySharing:disabled"/>
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097515669" label="disable-cast"/>
+  <int value="-2095687234"
+      label="EnterpriseReportingExtensionManifestVersion:enabled"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
   <int value="-2093047873"
@@ -52820,6 +52822,8 @@ from previous Chrome versions.
   <int value="2014629801" label="view-passwords:disabled"/>
   <int value="2015335629" label="shelf-hover-previews"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
+  <int value="2018661699"
+      label="EnterpriseReportingExtensionManifestVersion:disabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2020107447" label="AndroidPayIntegrationV1:enabled"/>
   <int value="2020898714" label="HudDisplayForPerformanceMetrics:enabled"/>

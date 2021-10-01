@@ -256,6 +256,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnterpriseReportingApiKeychainRecreation;
 #endif
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kEnterpriseReportingExtensionManifestVersion;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnterpriseReportingInChromeOS;

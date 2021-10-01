@@ -1639,6 +1639,9 @@ extern const char kUsePassthroughCommandDecoderDescription[];
 extern const char kExtensionWorkflowJustificationName[];
 extern const char kExtensionWorkflowJustificationDescription[];
 
+extern const char kEnterpriseReportingExtensionManifestVersionName[];
+extern const char kEnterpriseReportingExtensionManifestVersionDescription[];
+
 #if !defined(OS_ANDROID)
 extern const char kShareContextMenuName[];
 extern const char kShareContextMenuDescription[];
