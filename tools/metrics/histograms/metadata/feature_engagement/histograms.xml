@@ -166,6 +166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="IPH_NewTabPageHomeButton" summary="new tab page button"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
+  <variant name="IPH_PageInfoStoreInfo" summary="PageInfoStoreInfo feature"/>
   <variant name="IPH_PasswordsAccountStorage"
       summary="passwords account storage"/>
   <variant name="IPH_PreviewsOmniboxUI"

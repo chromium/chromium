@@ -53,6 +53,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
         FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE, FeatureConstants.PAGE_INFO_FEATURE,
+        FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
         FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
         FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
         FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
@@ -264,6 +265,11 @@ public @interface FeatureConstants {
      * An IPH feature to inform about changing permissions in PageInfo.
      */
     String PAGE_INFO_FEATURE = "IPH_PageInfo";
+
+    /**
+     * An IPH feature to inform users about the StoreInfo feature in PageInfo.
+     */
+    String PAGE_INFO_STORE_INFO_FEATURE = "IPH_PageInfoStoreInfo";
 
     /**
      * An IPH feature to inform users about the screenshot sharing feature.

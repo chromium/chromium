@@ -197,7 +197,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
                 VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
                 /*ExploreIconState*/(pixelSize, callback) ->{},
-                /*userEducationHelper=*/null);
+                /*userEducationHelper=*/null, /*merchantTrustSignalsCoordinatorSupplier=*/null);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

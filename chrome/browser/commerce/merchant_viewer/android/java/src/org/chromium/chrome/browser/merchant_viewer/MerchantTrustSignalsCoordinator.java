@@ -5,13 +5,18 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -19,8 +24,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -36,6 +44,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class MerchantTrustSignalsCoordinator
         implements PageInfoStoreInfoController.StoreInfoActionHandler {
+    /** Interface to control the omnibox store icon and the related IPH. */
+    public interface OmniboxIconController {
+        /**
+         * Show the store icon in omnibox.
+         * @param window The {@link WindowAndroid} of the app.
+         * @param url The url associated with the just showing {@link MerchantTrustMessageContext}.
+         * @param drawable The store icon drawable.
+         * @param stringId Resource id of the IPH string.
+         */
+        void showStoreIcon(
+                WindowAndroid window, String url, Drawable drawable, @StringRes int stringId);
+    }
+
     private final MerchantTrustSignalsMediator mMediator;
     private final MerchantTrustMessageScheduler mMessageScheduler;
     private final MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
@@ -44,6 +65,9 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustSignalsDataProvider mDataProvider;
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final WindowAndroid mWindowAndroid;
+    private OmniboxIconController mOmniboxIconController;
+    private MerchantTrustMessageContext mCurrentMessageContext;
 
     /** Creates a new instance. */
     public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
@@ -51,8 +75,8 @@ public class MerchantTrustSignalsCoordinator
             MessageDispatcher messageDispatcher, ObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
-        this(context, new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
-                new MerchantTrustSignalsDataProvider(), profileSupplier, metrics,
+        this(context, windowAndroid, new MerchantTrustMessageScheduler(messageDispatcher, metrics),
+                tabSupplier, new MerchantTrustSignalsDataProvider(), profileSupplier, metrics,
                 new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
                         bottomSheetController, tabSupplier, layoutView, metrics,
                         intentRequestTracker, profileSupplier),
@@ -60,8 +84,9 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    MerchantTrustSignalsCoordinator(Context context, MerchantTrustMessageScheduler messageScheduler,
-            ObservableSupplier<Tab> tabSupplier, MerchantTrustSignalsDataProvider dataProvider,
+    MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
+            MerchantTrustMessageScheduler messageScheduler, ObservableSupplier<Tab> tabSupplier,
+            MerchantTrustSignalsDataProvider dataProvider,
             ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics,
             MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
             MerchantTrustSignalsStorageFactory storageFactory) {
@@ -70,6 +95,7 @@ public class MerchantTrustSignalsCoordinator
         mMetrics = metrics;
         mStorageFactory = storageFactory;
         mProfileSupplier = profileSupplier;
+        mWindowAndroid = windowAndroid;
 
         mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::maybeDisplayMessage);
         mMessageScheduler = messageScheduler;
@@ -82,8 +108,18 @@ public class MerchantTrustSignalsCoordinator
         mStorageFactory.destroy();
     }
 
+    /**
+     * Set the {@link OmniboxIconController} to manage the store icon in omnibox.
+     */
+    public void setOmniboxIconController(@Nullable OmniboxIconController omniboxIconController) {
+        mOmniboxIconController = omniboxIconController;
+    }
+
     @VisibleForTesting
     void maybeDisplayMessage(MerchantTrustMessageContext item) {
+        // TODO(zhiyuancai): Pass item to maybeShowStoreIcon() directly instead of using
+        // mCurrentMessageContext.
+        mCurrentMessageContext = item;
         MerchantTrustMessageContext scheduledMessage =
                 mMessageScheduler.getScheduledMessageContext();
         if (scheduledMessage != null && scheduledMessage.getHostName() != null
@@ -166,6 +202,9 @@ public class MerchantTrustSignalsCoordinator
     @VisibleForTesting
     void onMessageDismissed(@DismissReason int dismissReason) {
         mMetrics.recordMetricsForMessageDismissed(dismissReason);
+        if (dismissReason == DismissReason.TIMER || dismissReason == DismissReason.GESTURE) {
+            maybeShowStoreIcon();
+        }
     }
 
     @VisibleForTesting
@@ -177,6 +216,10 @@ public class MerchantTrustSignalsCoordinator
     @Override
     public void onStoreInfoClicked(MerchantTrustSignals trustSignals) {
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
+        // If user has clicked the "Store info" row, send a signal to disable {@link
+        // FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE}.
+        final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        tracker.notifyEvent(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED);
     }
 
     private void launchDetailsPage(GURL url) {
@@ -242,5 +285,25 @@ public class MerchantTrustSignalsCoordinator
             return null;
         }
         return UserPrefs.get(profile);
+    }
+
+    @VisibleForTesting
+    void maybeShowStoreIcon() {
+        if (isStoreInfoFeatureEnabled() && mOmniboxIconController != null
+                && mCurrentMessageContext != null && mCurrentMessageContext.getUrl() != null) {
+            mOmniboxIconController.showStoreIcon(mWindowAndroid, mCurrentMessageContext.getUrl(),
+                    getStoreIconDrawable(), R.string.merchant_viewer_omnibox_icon_iph);
+        }
+    }
+
+    @VisibleForTesting
+    boolean isStoreInfoFeatureEnabled() {
+        return PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled();
+    }
+
+    @VisibleForTesting
+    Drawable getStoreIconDrawable() {
+        return ResourcesCompat.getDrawable(
+                mContext.getResources(), R.drawable.ic_storefront_blue, mContext.getTheme());
     }
 }

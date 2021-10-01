@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
-import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.messages.ChromeMessageAutodismissDurationProvider;
 import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
@@ -201,9 +200,8 @@ public class RootUiCoordinator
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier =
-            new ObservableSupplierImpl<>();
-    private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
+    private final ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
+            mMerchantTrustSignalsCoordinatorSupplier = new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -517,10 +515,9 @@ public class RootUiCoordinator
             mCaptureController = null;
         }
 
-        if (mMerchantTrustSignalsCoordinator != null) {
-            mMerchantTrustSignalsCoordinator.destroy();
-            mMerchantTrustSignalsCoordinator = null;
-            mStoreInfoActionHandlerSupplier.set(null);
+        if (mMerchantTrustSignalsCoordinatorSupplier.hasValue()) {
+            mMerchantTrustSignalsCoordinatorSupplier.get().destroy();
+            mMerchantTrustSignalsCoordinatorSupplier.set(null);
         }
 
         mActivity = null;
@@ -648,12 +645,12 @@ public class RootUiCoordinator
     private void initMerchantTrustSignals() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)
                 && shouldInitializeMerchantTrustSignals()) {
-            mMerchantTrustSignalsCoordinator =
+            MerchantTrustSignalsCoordinator merchantTrustSignalsCoordinator =
                     new MerchantTrustSignalsCoordinator(mActivity, mWindowAndroid,
                             getBottomSheetController(), mActivity.getWindow().getDecorView(),
                             MessageDispatcherProvider.from(mWindowAndroid), mActivityTabProvider,
                             mProfileSupplier, new MerchantTrustMetrics(), mIntentRequestTracker);
-            mStoreInfoActionHandlerSupplier.set(mMerchantTrustSignalsCoordinator);
+            mMerchantTrustSignalsCoordinatorSupplier.set(merchantTrustSignalsCoordinator);
         }
     }
 
@@ -666,10 +663,11 @@ public class RootUiCoordinator
     }
 
     /**
-     * Returns the supplier of {@link StoreInfoActionHandler}.
+     * Returns the supplier of {@link MerchantTrustSignalsCoordinator}.
      */
-    public Supplier<StoreInfoActionHandler> getStoreInfoActionHandlerSupplier() {
-        return mStoreInfoActionHandlerSupplier;
+    @NonNull
+    public Supplier<MerchantTrustSignalsCoordinator> getMerchantTrustSignalsCoordinatorSupplier() {
+        return mMerchantTrustSignalsCoordinatorSupplier;
     }
 
     /**
@@ -903,7 +901,7 @@ public class RootUiCoordinator
                     mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker,
-                    getStoreInfoActionHandlerSupplier());
+                    getMerchantTrustSignalsCoordinatorSupplier());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

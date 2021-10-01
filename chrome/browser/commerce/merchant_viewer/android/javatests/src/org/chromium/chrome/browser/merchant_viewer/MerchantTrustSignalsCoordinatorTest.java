@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -35,17 +36,22 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator.OmniboxIconController;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -114,6 +120,18 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Mock
     private PrefService mMockPrefService;
 
+    @Mock
+    private WindowAndroid mMockWindowAndroid;
+
+    @Mock
+    private OmniboxIconController mMockIconController;
+
+    @Mock
+    private Drawable mMockDrawable;
+
+    @Mock
+    private Tracker mMockTracker;
+
     private static final String FAKE_HOST = "fake_host";
     private static final String DIFFERENT_HOST = "different_host";
 
@@ -167,7 +185,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM, "-1");
         FeatureList.setTestValues(mTestValues);
 
-        mCoordinator = spy(new MerchantTrustSignalsCoordinator(mMockContext,
+        mCoordinator = spy(new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
                 mMockMerchantMessageScheduler, mMockTabProvider, mMockMerchantTrustDataProvider,
                 mMockProfileSupplier, mMockMetrics, mMockDetailsTabCoordinator,
                 mMockMerchantTrustStorageFactory));
@@ -175,6 +193,8 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .when(mCoordinator)
                 .getSiteEngagementScore(any(Profile.class), any(String.class));
         doReturn(mMockPrefService).when(mCoordinator).getPrefService();
+        doReturn(mMockDrawable).when(mCoordinator).getStoreIconDrawable();
+        doReturn(false).when(mCoordinator).isStoreInfoFeatureEnabled();
     }
 
     @After
@@ -430,6 +450,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void testOnMessageDismissed() {
         mCoordinator.onMessageDismissed(DismissReason.TIMER);
         verify(mMockMetrics, times(1)).recordMetricsForMessageDismissed(eq(DismissReason.TIMER));
+        verify(mCoordinator, times(1)).maybeShowStoreIcon();
     }
 
     @SmallTest
@@ -444,9 +465,15 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testOnStoreInfoClicked() {
+        TrackerFactory.setTrackerForTests(mMockTracker);
+
         mCoordinator.onStoreInfoClicked(mDummyMerchantTrustSignals);
         verify(mMockDetailsTabCoordinator, times(1))
                 .requestOpenSheet(any(GURL.class), any(String.class));
+        verify(mMockTracker, times(1))
+                .notifyEvent(eq(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED));
+
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @SmallTest
@@ -480,6 +507,26 @@ public class MerchantTrustSignalsCoordinatorTest {
         timestamps = mSerializedTimestamps.split("_");
         Assert.assertEquals(3, timestamps.length);
         Assert.assertTrue(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
+    }
+
+    @SmallTest
+    @Test
+    public void testMaybeShowStoreIcon() {
+        doReturn(true).when(mCoordinator).isStoreInfoFeatureEnabled();
+        mCoordinator.setOmniboxIconController(mMockIconController);
+
+        mCoordinator.maybeShowStoreIcon();
+        verify(mMockIconController, times(0))
+                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_HOST), eq(mMockDrawable), anyInt());
+
+        // Set the mCurrentMessageContext.
+        mCoordinator.maybeDisplayMessage(
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents));
+        mCoordinator.maybeShowStoreIcon();
+        verify(mMockIconController, times(1))
+                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_HOST), eq(mMockDrawable), anyInt());
+
+        mCoordinator.setOmniboxIconController(null);
     }
 
     private void setMockTrustSignalsData(MerchantTrustSignals trustSignalsData) {

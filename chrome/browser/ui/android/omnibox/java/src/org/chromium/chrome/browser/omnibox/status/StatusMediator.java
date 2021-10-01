@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -20,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -46,14 +48,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Contains the controller logic of the Status component.
  */
-public class StatusMediator
-        implements PermissionDialogController.Observer, TemplateUrlServiceObserver {
+public class StatusMediator implements PermissionDialogController.Observer,
+                                       TemplateUrlServiceObserver,
+                                       MerchantTrustSignalsCoordinator.OmniboxIconController {
     private static final int PERMISSION_ICON_DISPLAY_TIMEOUT_MS = 8500;
 
     private final PropertyModel mModel;
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<MerchantTrustSignalsCoordinator>
+            mMerchantTrustSignalsCoordinatorSupplier;
     private boolean mDarkTheme;
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
@@ -84,6 +89,7 @@ public class StatusMediator
 
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
+    private final Handler mStoreIconHandler = new Handler();
     @ContentSettingsType
     private int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
@@ -92,6 +98,8 @@ public class StatusMediator
     private final WindowAndroid mWindowAndroid;
 
     private boolean mUrlBarTextIsSearch = true;
+
+    private boolean mIsStoreIconShowing;
 
     private float mUrlFocusPercent;
 
@@ -116,6 +124,9 @@ public class StatusMediator
      * @param profileSupplier Supplies the current {@link Profile}.
      * @param pageInfoIPHController Manages when an IPH bubble for PageInfo is shown.
      * @param windowAndroid The current {@link WindowAndroid}.
+     * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
+     *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
+     *         such as when called from a search activity.
      */
     public StatusMediator(PropertyModel model, Resources resources, Context context,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider, boolean isTablet,
@@ -124,7 +135,9 @@ public class StatusMediator
             SearchEngineLogoUtils searchEngineLogoUtils,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             Supplier<Profile> profileSupplier, PageInfoIPHController pageInfoIPHController,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier) {
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
@@ -141,6 +154,7 @@ public class StatusMediator
         mUrlBarEditingTextStateProvider = urlBarEditingTextStateProvider;
         mPageInfoIPHController = pageInfoIPHController;
         mWindowAndroid = windowAndroid;
+        mMerchantTrustSignalsCoordinatorSupplier = merchantTrustSignalsCoordinatorSupplier;
 
         mEndPaddingPixelSizeOnFocusDelta =
                 mResources.getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
@@ -161,6 +175,11 @@ public class StatusMediator
     public void destroy() {
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mPermissionDialogController.removeObserver(this);
+        mStoreIconHandler.removeCallbacksAndMessages(null);
+        if (mMerchantTrustSignalsCoordinatorSupplier != null
+                && mMerchantTrustSignalsCoordinatorSupplier.get() != null) {
+            mMerchantTrustSignalsCoordinatorSupplier.get().setOmniboxIconController(null);
+        }
 
         if (mTemplateUrlServiceSupplier.hasValue()) {
             mTemplateUrlServiceSupplier.get().removeObserver(this);
@@ -467,6 +486,8 @@ public class StatusMediator
     void updateLocationBarIcon(@IconTransitionType int transitionType) {
         // Reset the last saved permission.
         mLastPermission = ContentSettingsType.DEFAULT;
+        // Reset the store icon status.
+        mIsStoreIconShowing = false;
         // Update the accessibility description before continuing since we need it either way.
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, getAccessibilityDescriptionRes());
 
@@ -616,6 +637,7 @@ public class StatusMediator
         int permission = SiteSettingsUtil.getHighestPriorityPermission(permissions);
         // The permission is not available in the settings page. Do not show an icon.
         if (permission == ContentSettingsType.DEFAULT) return;
+        resetCustomIconsStatus();
         mLastPermission = permission;
 
         boolean isIncognito = mLocationBarDataProvider.isIncognito();
@@ -643,6 +665,42 @@ public class StatusMediator
         mPageInfoIPHController.onPermissionDialogShown(getIPHTimeout());
     }
 
+    void setStoreIconController() {
+        if (mMerchantTrustSignalsCoordinatorSupplier != null
+                && mMerchantTrustSignalsCoordinatorSupplier.get() != null) {
+            mMerchantTrustSignalsCoordinatorSupplier.get().setOmniboxIconController(this);
+        }
+    }
+
+    // MerchantTrustSignalsCoordinator.OmniboxIconController interface
+    @Override
+    public void showStoreIcon(
+            WindowAndroid window, String url, Drawable drawable, @StringRes int stringId) {
+        if ((window != mWindowAndroid) || (!url.equals(mLocationBarDataProvider.getCurrentUrl()))
+                || (mLocationBarDataProvider.isIncognito())) {
+            return;
+        }
+        resetCustomIconsStatus();
+        StatusIconResource storeIconResource = new StatusIconResource(drawable);
+        storeIconResource.setTransitionType(IconTransitionType.ROTATE);
+        storeIconResource.setAnimationFinishedCallback(
+                () -> mPageInfoIPHController.showStoreIconIPH(getIPHTimeout(), stringId));
+        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, storeIconResource);
+        mStoreIconHandler.postDelayed(()
+                                              -> updateLocationBarIcon(IconTransitionType.ROTATE),
+                PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+        mIsStoreIconShowing = true;
+    }
+
+    // Reset all customized icons' status to avoid different icons' conflicts.
+    @VisibleForTesting
+    void resetCustomIconsStatus() {
+        mPermissionTaskHandler.removeCallbacksAndMessages(null);
+        mLastPermission = ContentSettingsType.DEFAULT;
+        mStoreIconHandler.removeCallbacksAndMessages(null);
+        mIsStoreIconShowing = false;
+    }
+
     /**
      * @return A timeout for the IPH bubble. The bubble is shown after the permission icon animation
      * finishes and should disappear when it animates out.
@@ -656,13 +714,18 @@ public class StatusMediator
         if (mLastPermission != ContentSettingsType.DEFAULT) {
             mDiscoverabilityMetrics.recordDiscoverabilityAction(
                     DiscoverabilityAction.PAGE_INFO_OPENED);
-            mPermissionTaskHandler.removeCallbacksAndMessages(null);
-            updateLocationBarIcon(IconTransitionType.CROSSFADE);
         }
+        resetCustomIconsStatus();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     public int getLastPermission() {
         return mLastPermission;
+    }
+
+    @VisibleForTesting
+    boolean isStoreIconShowingForTesting() {
+        return mIsStoreIconShowing;
     }
 
     @Override

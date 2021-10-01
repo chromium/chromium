@@ -1298,6 +1298,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/attribution_reporting/android/internal:javatests",
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:javatests",
     "//chrome/browser/content_creation/notes/internal/android:java",
     "//chrome/browser/content_creation/notes/internal/android:javatests",

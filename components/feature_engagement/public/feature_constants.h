@@ -87,6 +87,7 @@ extern const base::Feature kIPHKeyboardAccessoryPaymentVirtualCardFeature;
 extern const base::Feature kIPHMicToolbarFeature;
 extern const base::Feature kIPHNewTabPageHomeButtonFeature;
 extern const base::Feature kIPHPageInfoFeature;
+extern const base::Feature kIPHPageInfoStoreInfoFeature;
 extern const base::Feature kIPHPreviewsOmniboxUIFeature;
 extern const base::Feature kIPHQuietNotificationPromptsFeature;
 extern const base::Feature kIPHReadLaterContextMenuFeature;

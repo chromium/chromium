@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -15,6 +16,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -80,6 +82,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param pageInfoAction Displays page info popup.
      * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
      *         help shouldn't be shown, such as when called from a search activity.
+     * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
+     *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
+     *         such as when called from a search activity.
      */
     public StatusCoordinator(boolean isTablet, StatusView statusView,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
@@ -89,7 +94,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier,
             WindowAndroid windowAndroid, PageInfoAction pageInfoAction,
-            UserEducationHelper userEducationHelper) {
+            UserEducationHelper userEducationHelper,
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -108,7 +115,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
                 urlBarEditingTextStateProvider, isTablet, locationBarDataProvider,
                 PermissionDialogController.getInstance(), searchEngineLogoUtils,
-                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController, windowAndroid);
+                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController, windowAndroid,
+                merchantTrustSignalsCoordinatorSupplier);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
@@ -137,6 +145,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
         mMediator.setStatusClickListener(this);
         mMediator.updateStatusVisibility();
+        mMediator.setStoreIconController();
     }
 
     /** @param urlHasFocus Whether the url currently has focus. */

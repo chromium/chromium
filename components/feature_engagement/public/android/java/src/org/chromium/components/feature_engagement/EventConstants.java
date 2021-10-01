@@ -229,6 +229,10 @@ public final class EventConstants {
     /** PageInfo events. */
     public static final String PAGE_INFO_OPENED = "page_info_opened";
 
+    /** PageInfoStoreInfo events. */
+    public static final String PAGE_INFO_STORE_INFO_ROW_CLICKED =
+            "page_info_store_info_row_clicked";
+
     /** Permission events. */
     public static final String PERMISSION_REQUEST_SHOWN = "permission_request_shown";
 

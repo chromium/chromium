@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -14,9 +15,11 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,17 +33,21 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -49,6 +56,7 @@ import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -81,6 +89,10 @@ public final class StatusMediatorUnitTest {
     PermissionDialogController mPermissionDialogController;
     @Mock
     PageInfoIPHController mPageInfoIPHController;
+    @Mock
+    MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
+    @Mock
+    Drawable mStoreIconDrawable;
 
     Context mContext;
     Resources mResources;
@@ -89,6 +101,7 @@ public final class StatusMediatorUnitTest {
     StatusMediator mMediator;
     Bitmap mBitmap;
     OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
+    WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
@@ -96,6 +109,8 @@ public final class StatusMediatorUnitTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mContext = ContextUtils.getApplicationContext();
         mResources = mContext.getResources();
+        mWindowAndroid =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> new WindowAndroid(mContext));
 
         mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> new PropertyModel(StatusProperties.ALL_KEYS));
@@ -120,14 +135,27 @@ public final class StatusMediatorUnitTest {
         setupStatusMediator(/* isTablet= */ false);
     }
 
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
+    }
+
     private void setupStatusMediator(boolean isTablet) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
+            ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorObservableSupplier =
+                            new ObservableSupplierImpl<>();
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider, isTablet, mLocationBarDataProvider,
                     mPermissionDialogController, mSearchEngineLogoUtils,
-                    mTemplateUrlServiceSupplier, () -> mProfile, mPageInfoIPHController, null);
+                    mTemplateUrlServiceSupplier,
+                    ()
+                            -> mProfile,
+                    mPageInfoIPHController, mWindowAndroid,
+                    merchantTrustSignalsCoordinatorObservableSupplier);
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
+            merchantTrustSignalsCoordinatorObservableSupplier.set(mMerchantTrustSignalsCoordinator);
         });
     }
 
@@ -440,6 +468,102 @@ public final class StatusMediatorUnitTest {
                         eq(mResources), /* inNightMode= */ eq(false), any(), any(), any());
     }
 
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetStoreIconController() {
+        mMediator.setStoreIconController();
+        verify(mMerchantTrustSignalsCoordinator, times(1)).setOmniboxIconController(eq(mMediator));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisabledTest(message = "crbug.com/1254561")
+    public void testShowStoreIcon_DifferentUrl() {
+        setupStoreIconForTesting("test1.com", false);
+        // Show the default icon first.
+        mMediator.setUrlHasFocus(true);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+
+        // Try to show the store icon.
+        mMediator.showStoreIcon(mWindowAndroid, "test2.com", mStoreIconDrawable, 0);
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisabledTest(message = "crbug.com/1254561")
+    public void testShowStoreIcon_InIncognito() {
+        setupStoreIconForTesting("test.com", true);
+        // Show the default icon first.
+        mMediator.setUrlHasFocus(true);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+
+        // Try to show the store icon.
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0);
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisabledTest(message = "crbug.com/1254561")
+    public void testShowStoreIcon() {
+        setupStoreIconForTesting("test.com", false);
+        // Show the default icon first.
+        mMediator.setUrlHasFocus(true);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+
+        // Try to show the store icon.
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0);
+        Assert.assertTrue(mMediator.isStoreIconShowingForTesting());
+        Assert.assertEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+        Assert.assertEquals(IconTransitionType.ROTATE,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
+        Assert.assertNotNull(
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback());
+        mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
+        verify(mPageInfoIPHController, times(1)).showStoreIconIPH(anyInt(), eq(0));
+
+        // Simulate that the store icon is blown away by other customized icon.
+        mMediator.resetCustomIconsStatus();
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+
+        // Show store icon again.
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0);
+        Assert.assertTrue(mMediator.isStoreIconShowingForTesting());
+
+        // Simulate that we need to switch back to the default icon.
+        mMediator.setUrlHasFocus(true);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertFalse(mMediator.isStoreIconShowingForTesting());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+    }
+
     /**
      * @param showLogo Whether the search engine logo should be shown.
      * @param isGoogle Whether the search engine is Google.
@@ -449,5 +573,14 @@ public final class StatusMediatorUnitTest {
             boolean showLogo, boolean isGoogle, boolean loupeEverywhere) {
         doReturn(showLogo).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
         doReturn(false).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(true);
+    }
+
+    /**
+     * @param currentUrl Url of current page.
+     * @param isIncognito Whether the current page is in an incognito mode.
+     */
+    private void setupStoreIconForTesting(String currentUrl, boolean isIncognito) {
+        doReturn(currentUrl).when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(isIncognito).when(mLocationBarDataProvider).isIncognito();
     }
 }

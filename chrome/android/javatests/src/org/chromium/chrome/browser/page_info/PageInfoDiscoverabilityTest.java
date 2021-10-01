@@ -200,7 +200,8 @@ public class PageInfoDiscoverabilityTest {
                     mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
                     ()
                             -> mProfile,
-                    mPageInfoIPHController, sPermissionTestRule.getActivity().getWindowAndroid());
+                    mPageInfoIPHController, sPermissionTestRule.getActivity().getWindowAndroid(),
+                    null);
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
     }
