@@ -92,15 +92,3 @@ async function createWebBundleElementAndIframe(t) {
   await load_promise;
   return iframe;
 }
-
-async function evalInIframe(iframe, code) {
-  const message_promise = new Promise((resolve) => {
-      const listener = (e) => {
-        window.removeEventListener('message', listener);
-        resolve(e.data);
-      }
-      window.addEventListener('message', listener);
-    });
-  iframe.contentWindow.postMessage(code,'*');
-  return message_promise;
-}

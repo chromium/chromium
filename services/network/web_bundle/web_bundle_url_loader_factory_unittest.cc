@@ -175,7 +175,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         GURL(kBundleUrl), create_params, std::move(handle),
         std::make_unique<MockMemoryQuotaConsumer>(), devtools_observer_->Bind(),
-        kBundleRequestId);
+        kBundleRequestId, CrossOriginEmbedderPolicy(),
+        nullptr /* coep_reporter */);
     factory_->SetBundleStream(std::move(consumer));
   }
 

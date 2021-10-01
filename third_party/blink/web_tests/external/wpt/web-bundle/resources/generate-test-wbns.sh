@@ -97,6 +97,12 @@ gen-bundle \
   -o wbn/non-utf8-query-encoding.wbn
 
 gen-bundle \
+  -version b1 \
+  -har corp.har \
+  -primaryURL $wpt_test_remote_origin/web-bundle/resources/wbn/cors/no-corp.js \
+  -o wbn/cors/corp.wbn
+
+gen-bundle \
   -version b2 \
   -baseURL $wpt_test_origin/web-bundle/resources/wbn/ \
   -primaryURL $wpt_test_origin/web-bundle/resources/wbn/location.html \

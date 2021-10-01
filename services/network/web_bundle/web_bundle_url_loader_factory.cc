@@ -16,6 +16,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
@@ -181,6 +182,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
       : url_(request.url),
         request_mode_(request.mode),
         request_initiator_(request.request_initiator),
+        request_destination_(request.destination),
         devtools_request_id_(request.devtools_request_id),
         receiver_(this, std::move(loader)),
         client_(std::move(client)),
@@ -207,6 +209,10 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
 
   const absl::optional<url::Origin>& request_initiator() const {
     return request_initiator_;
+  }
+
+  mojom::RequestDestination request_destination() const {
+    return request_destination_;
   }
 
   base::WeakPtr<URLLoader> GetWeakPtr() {
@@ -258,17 +264,26 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     producer.reset();
     client_->OnStartLoadingResponseBody(std::move(consumer));
 
+    // CORB responses are reported as a success.
+    CompleteBlockedResponse(net::OK, absl::nullopt);
+  }
+
+  void CompleteBlockedResponse(
+      int error_code,
+      absl::optional<mojom::BlockedByResponseReason> reason) {
     URLLoaderCompletionStatus status;
-    status.error_code = net::OK;
+    status.error_code = error_code;
     status.completion_time = base::TimeTicks::Now();
     status.encoded_data_length = 0;
     status.encoded_body_length = 0;
     status.decoded_body_length = 0;
+    status.blocked_by_response_reason = reason;
     client_->OnComplete(status);
 
     // Reset the connection to the URLLoaderClient.  This helps ensure that we
     // won't accidentally leak any data to the renderer from this point on.
     client_.reset();
+    delete this;
   }
 
   mojo::Remote<mojom::TrustedHeaderClient>& trusted_header_client() {
@@ -306,6 +321,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   const GURL url_;
   mojom::RequestMode request_mode_;
   absl::optional<url::Origin> request_initiator_;
+  mojom::RequestDestination request_destination_;
   absl::optional<std::string> devtools_request_id_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
@@ -491,13 +507,17 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
         web_bundle_memory_quota_consumer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    absl::optional<std::string> devtools_request_id)
+    absl::optional<std::string> devtools_request_id,
+    const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter)
     : bundle_url_(bundle_url),
       web_bundle_handle_(std::move(web_bundle_handle)),
       web_bundle_memory_quota_consumer_(
           std::move(web_bundle_memory_quota_consumer)),
       devtools_observer_(std::move(devtools_observer)),
-      devtools_request_id_(std::move(devtools_request_id)) {
+      devtools_request_id_(std::move(devtools_request_id)),
+      cross_origin_embedder_policy_(cross_origin_embedder_policy),
+      coep_reporter_(coep_reporter) {
   if (bundle_url != web_bundle_token_params.bundle_url) {
     // This happens when WebBundle request is redirected by WebRequest extension
     // API.
@@ -788,6 +808,18 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
 
   response_head->load_timing = loader->load_timing();
   loader->SetBodyLength(payload_length);
+
+  // Enforce the Cross-Origin-Resource-Policy (CORP) header.
+  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
+          CrossOriginResourcePolicy::IsBlocked(
+              loader->url(), loader->url(), loader->request_initiator(),
+              *response_head, loader->request_mode(),
+              loader->request_destination(), cross_origin_embedder_policy_,
+              coep_reporter_)) {
+    loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
+                                    blocked_reason);
+    return;
+  }
 
   auto corb_analyzer = corb::ResponseAnalyzer::Create();
   auto decision =

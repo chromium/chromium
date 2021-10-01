@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
-#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -97,7 +96,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   mojom::URLLoaderFactoryParamsPtr params_;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
   mojo::Remote<mojom::TrustedURLLoaderHeaderClient> header_client_;
-  mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   // |cors_url_loader_factory_| owns this.
   cors::CorsURLLoaderFactory* cors_url_loader_factory_;

@@ -16,6 +16,22 @@ function addElementAndWaitForError(element) {
   });
 }
 
+// Evaluates |code| in |iframe|. The following message event handler must be
+// registered on the iframe page:
+//   window.addEventListener(
+//       'message',
+//       (e) => { e.source.postMessage(eval(e.data), e.origin); });
+function evalInIframe(iframe, code) {
+  const message_promise = new Promise((resolve) => {
+      window.addEventListener(
+          'message',
+          (e) => { resolve(e.data); },
+          { once : true });
+    });
+  iframe.contentWindow.postMessage(code,'*');
+  return message_promise;
+}
+
 function fetchAndWaitForReject(url) {
   return new Promise((resolve, reject) => {
     fetch(url)
@@ -86,6 +102,19 @@ function addScriptAndWaitForError(url) {
     script.src = url;
     script.onload = reject;
     script.onerror = resolve;
+    document.body.appendChild(script);
+  });
+}
+
+function addScriptAndWaitForExecution(url) {
+  return new Promise((resolve, reject) => {
+    window.scriptLoaded = (val) => {
+      window.scriptLoaded = undefined;
+      resolve(val);
+    };
+    const script = document.createElement("script");
+    script.src = url;
+    script.onerror = reject;
     document.body.appendChild(script);
   });
 }

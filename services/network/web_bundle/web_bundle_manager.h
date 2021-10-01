@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -37,7 +38,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      absl::optional<std::string> devtools_request_id);
+      absl::optional<std::string> devtools_request_id,
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
 
   void StartSubresourceRequest(
       mojo::PendingReceiver<mojom::URLLoader> receiver,
