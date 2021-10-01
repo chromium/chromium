@@ -83,7 +83,7 @@ TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
 TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
   // Disable flag.
   scoped_feature_list_.InitWithFeatures(
-      {}, {app_list_features::kEnableSuggestedFiles});
+      {}, {app_list_features::kEnableSuggestedLocalFiles});
 
   WriteFile("exists_1.txt");
   WriteFile("exists_2.png");
@@ -105,7 +105,7 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvidedWithChips) {
   // Enable flag - with flag enabled, we expect to receive the chip
   // results for each file as well, so each file should be listed twice.
   scoped_feature_list_.InitWithFeatures(
-      {app_list_features::kEnableSuggestedFiles}, {});
+      {app_list_features::kEnableSuggestedLocalFiles}, {});
 
   WriteFile("exists_1.txt");
   WriteFile("exists_2.png");

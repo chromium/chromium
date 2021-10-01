@@ -77,8 +77,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
       item_suggest_cache_(profile, std::move(url_loader_factory)),
-      suggested_drive_files_enabled_(
-          app_list_features::IsSuggestedDriveFilesEnabled()) {
+      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -94,10 +93,10 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   const bool launcher_used = profile->GetPrefs()->GetBoolean(
       chromeos::prefs::kLauncherResultEverLaunched);
   const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
-      app_list_features::kEnableSuggestedDriveFiles,
-      "gate_warm_on_launcher_use", true);
+      app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
+      true);
   const bool should_warm = !gate_on_use || launcher_used;
-  if (suggested_drive_files_enabled_ && drive_service_ && should_warm) {
+  if (suggested_files_enabled_ && drive_service_ && should_warm) {
     if (drive_service_->IsMounted()) {
       // Drivefs is mounted, so we can fetch results immediately.
       OnFileSystemMounted();
@@ -110,7 +109,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
 }
 
 ZeroStateDriveProvider::~ZeroStateDriveProvider() {
-  if (suggested_drive_files_enabled_ && drive_service_)
+  if (suggested_files_enabled_ && drive_service_)
     drive_service_->RemoveObserver(this);
 }
 
@@ -206,7 +205,7 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
 
     provider_results.emplace_back(
         MakeListResult(path_or_error->get_path(), score));
-    if (suggested_drive_files_enabled_ && IsSuggestedContentEnabled(profile_)) {
+    if (suggested_files_enabled_ && IsSuggestedContentEnabled(profile_)) {
       provider_results.emplace_back(
           MakeChipResult(path_or_error->get_path(), score));
     }

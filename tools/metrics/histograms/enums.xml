@@ -50426,6 +50426,7 @@ from previous Chrome versions.
   <int value="192320180" label="ignore-gpu-blocklist"/>
   <int value="192693676"
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>
+  <int value="193865288" label="EnableSuggestedLocalFiles:enabled"/>
   <int value="194573877" label="MacViewsNativeDialogs:disabled"/>
   <int value="194895489" label="passive-listeners-default"/>
   <int value="195112080" label="DeskTemplateSync:enabled"/>
@@ -51058,6 +51059,7 @@ from previous Chrome versions.
   <int value="666871156" label="KaleidoscopeModule:enabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
+  <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>

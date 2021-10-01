@@ -2587,13 +2587,13 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-suggested-drive-files",
-    "owners": [ "tby", "wrong" ],
+    "name": "enable-suggested-files",
+    "owners": [ "wrong", "tby" ],
     "expiry_milestone": 100
   },
   {
-    "name": "enable-suggested-files",
-    "owners": [ "wrong", "tby" ],
+    "name": "enable-suggested-local-files",
+    "owners": [ "tby", "wrong" ],
     "expiry_milestone": 100
   },
   {

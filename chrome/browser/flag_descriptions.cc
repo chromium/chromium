@@ -4559,13 +4559,13 @@ const char kEnableRevenLogSourceDescription[] =
 
 const char kEnableSuggestedFilesName[] = "Enable Suggested Files";
 const char kEnableSuggestedFilesDescription[] =
-    "Enable the Suggested Files feature in Launcher, which will show local "
+    "Enable the Suggested Files feature in Launcher, which will show Drive "
     "file suggestions in the suggestion chips when the launcher is opened.";
 
-const char kEnableSuggestedDriveFilesName[] = "Enable Suggested Drive Files";
-const char kEnableSuggestedDriveFilesDescription[] =
-    "Enable the Suggested Drive Files feature in Launcher, which will show "
-    "Drive file suggestions in the suggestion chips when the launcher is "
+const char kEnableSuggestedLocalFilesName[] = "Enable Suggested Local Files";
+const char kEnableSuggestedLocalFilesDescription[] =
+    "Enable the Suggested local Files feature in Launcher, which will show "
+    "local file suggestions in the suggestion chips when the launcher is "
     "opened.";
 
 const char kEnableWireGuardName[] = "Enable WireGuard VPN";

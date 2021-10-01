@@ -123,7 +123,7 @@ void ZeroStateFileProvider::SetSearchResults(
     new_results.push_back(std::move(result));
 
     // Add suggestion chip file results
-    if (app_list_features::IsSuggestedFilesEnabled() &&
+    if (app_list_features::IsSuggestedLocalFilesEnabled() &&
         IsSuggestedContentEnabled(profile_)) {
       new_results.emplace_back(
           std::make_unique<FileResult>(kFileChipSchema, filepath_score.first,

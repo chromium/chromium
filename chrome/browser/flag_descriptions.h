@@ -2612,8 +2612,8 @@ extern const char kEnableRevenLogSourceDescription[];
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 
-extern const char kEnableSuggestedDriveFilesName[];
-extern const char kEnableSuggestedDriveFilesDescription[];
+extern const char kEnableSuggestedLocalFilesName[];
+extern const char kEnableSuggestedLocalFilesDescription[];
 
 extern const char kEnableWireGuardName[];
 extern const char kEnableWireGuardDescription[];

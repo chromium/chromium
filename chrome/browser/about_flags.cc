@@ -6097,10 +6097,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSuggestedFilesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedFiles)},
 
-    {"enable-suggested-drive-files",
-     flag_descriptions::kEnableSuggestedDriveFilesName,
-     flag_descriptions::kEnableSuggestedDriveFilesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedDriveFiles)},
+    {"enable-suggested-local-files",
+     flag_descriptions::kEnableSuggestedLocalFilesName,
+     flag_descriptions::kEnableSuggestedLocalFilesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedLocalFiles)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-always-return-cloud-tokenized-card",
