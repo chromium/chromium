@@ -11,6 +11,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Matches a FormStructure if its signature is the same as that of the
 // PasswordForm |form|.
@@ -238,6 +239,13 @@ MATCHER(SingleUsernameDataNotUploaded, "") {
 
 MATCHER_P(PasswordsWereRevealed, passwords_were_revealed, "") {
   return passwords_were_revealed == arg.passwords_were_revealed();
+}
+
+MATCHER_P(HasPasswordAttributesVote, is_vote_expected, "") {
+  absl::optional<std::pair<autofill::PasswordAttribute, bool>> vote =
+      arg.get_password_attributes_vote();
+  EXPECT_EQ(is_vote_expected, vote.has_value());
+  return true;
 }
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_VOTE_UPLOADS_TEST_MATCHERS_H_

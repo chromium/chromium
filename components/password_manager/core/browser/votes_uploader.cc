@@ -402,10 +402,14 @@ bool VotesUploader::UploadPasswordVote(
         username_vote_type = AutofillUploadContents::Field::CREDENTIALS_REUSED;
       }
     }
-    if (autofill_type == autofill::PASSWORD) {
-      // The password attributes should be uploaded only on the first save.
+    if (autofill_type == autofill::PASSWORD ||
+        autofill_type == autofill::NEW_PASSWORD) {
+      // The password attributes should be uploaded only on the first save or an
+      // update.
       DCHECK_EQ(form_to_upload.times_used, 0);
-      GeneratePasswordAttributesVote(form_to_upload.password_value,
+      GeneratePasswordAttributesVote(autofill_type == autofill::PASSWORD
+                                         ? form_to_upload.password_value
+                                         : form_to_upload.new_password_value,
                                      &form_structure);
     }
   } else {  // User overwrites username.
@@ -724,6 +728,12 @@ bool VotesUploader::FindCorrectedUsernameElement(
 void VotesUploader::GeneratePasswordAttributesVote(
     const std::u16string& password_value,
     FormStructure* form_structure) {
+  if (password_value.empty()) {
+    NOTREACHED() << "GeneratePasswordAttributesVote cannot take an empty "
+                    "password value.";
+    return;
+  }
+
   // Don't crowdsource password attributes for non-ascii passwords.
   for (const auto& e : password_value) {
     if (!(IsUppercaseLetter(e) || IsLowercaseLetter(e) || IsNumeric(e) ||

@@ -159,6 +159,9 @@ class VotesUploaderTest : public testing::Test {
       form_to_upload_.form_data.fields.push_back(field);
       submitted_form_.form_data.fields.push_back(field);
     }
+    // Password attributes uploading requires a non-empty password value.
+    form_to_upload_.password_value = u"password_value";
+    submitted_form_.password_value = u"password_value";
   }
 
  protected:
@@ -185,6 +188,8 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
   submitted_form_.new_password_element = new_password_element;
   form_to_upload_.confirmation_password_element = confirmation_element;
   submitted_form_.confirmation_password_element = confirmation_element;
+  form_to_upload_.new_password_value = u"new_password_value";
+  submitted_form_.new_password_value = u"new_password_value";
   submitted_form_.submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
   ServerFieldTypeSet expected_field_types = {NEW_PASSWORD,
@@ -274,6 +279,39 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
     }
   }
   EXPECT_EQ(found_fields, 1);
+}
+
+// Tests that password attributes are uploaded only if it is the first save or a
+// password updated.
+TEST_F(VotesUploaderTest, UploadPasswordAttributes) {
+  for (const ServerFieldType autofill_type :
+       {autofill::PASSWORD, autofill::ACCOUNT_CREATION_PASSWORD,
+        autofill::NOT_ACCOUNT_CREATION_PASSWORD, autofill::NEW_PASSWORD,
+        autofill::PROBABLY_NEW_PASSWORD, autofill::NOT_NEW_PASSWORD,
+        autofill::USERNAME}) {
+    SCOPED_TRACE(testing::Message() << "autofill_type=" << autofill_type);
+    VotesUploader votes_uploader(&client_, false);
+    if (autofill_type == autofill::NEW_PASSWORD ||
+        autofill_type == autofill::PROBABLY_NEW_PASSWORD ||
+        autofill_type == autofill::NOT_NEW_PASSWORD) {
+      form_to_upload_.new_password_element = u"new_password_element";
+      form_to_upload_.new_password_value = u"new_password_value";
+    }
+
+    bool expect_password_attributes = autofill_type == autofill::PASSWORD ||
+                                      autofill_type == autofill::NEW_PASSWORD;
+    EXPECT_CALL(mock_autofill_download_manager_,
+                StartUploadRequest(
+                    HasPasswordAttributesVote(expect_password_attributes),
+                    false, _, login_form_signature_, true,
+                    /* pref_service= */ nullptr));
+
+    EXPECT_TRUE(votes_uploader.UploadPasswordVote(
+        form_to_upload_, submitted_form_, autofill_type,
+        login_form_signature_));
+
+    testing::Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+  }
 }
 
 TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
