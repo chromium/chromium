@@ -81,6 +81,7 @@ source_set("tests") {
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
     "//third_party/inspector_protocol:crdtp",
     "//v8",
   ]

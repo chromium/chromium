@@ -123,6 +123,7 @@ source_set("headers") {
     "input/web_pointer_properties.h",
     "input/web_touch_event.h",
     "input/web_touch_point.h",
+    "interest_group/ad_auction_constants.h",
     "interest_group/interest_group.h",
     "interest_group/interest_group_mojom_traits.h",
     "loader/http_body_element_type.h",

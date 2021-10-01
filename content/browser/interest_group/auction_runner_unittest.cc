@@ -40,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 using auction_worklet::TestDevToolsAgentClient;
@@ -2657,15 +2658,18 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
   }
 }
 
-// Test that the limit of 20 ad components per bid is enforced.
+// Test that the limit of kMaxAdComponents ad components per bid is enforced.
 TEST_F(AuctionRunnerTest, AdComponentsLimit) {
   const GURL kRenderUrl = GURL("https://ad1.com");
 
-  for (int num_components = 1; num_components < 22; num_components++) {
+  for (size_t num_components = 1;
+       num_components < blink::kMaxAdAuctionAdComponents + 2;
+       num_components++) {
     std::vector<GURL> ad_component_urls;
-    for (int i = 0; i < num_components; ++i)
+    for (size_t i = 0; i < num_components; ++i) {
       ad_component_urls.emplace_back(
-          GURL(base::StringPrintf("https://%i.com", i)));
+          GURL(base::StringPrintf("https://%zu.com", i)));
+    }
     UseMockWorkletService();
     std::vector<BiddingInterestGroup> bidders;
     bidders.emplace_back(MakeInterestGroup(
@@ -2690,7 +2694,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
     bidder_worklet->CompleteLoadingAndBid(
         /*bid=*/1, kRenderUrl, ad_component_urls, base::TimeDelta());
 
-    if (num_components <= 20) {
+    if (num_components <= blink::kMaxAdAuctionAdComponents) {
       // Since the bid was valid, it should be scored.
       auto score_ad_params = seller_worklet->WaitForScoreAd();
       EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);

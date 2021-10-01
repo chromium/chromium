@@ -26,6 +26,7 @@
 #include "net/base/escape.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -93,7 +94,7 @@ const blink::InterestGroup::Ad* ValidateBidAndGetAd(
       return nullptr;
     }
 
-    if (bid.ad_components->size() > 20) {
+    if (bid.ad_components->size() > blink::kMaxAdAuctionAdComponents) {
       mojo::ReportBadMessage("Too many ad component URLs");
       return nullptr;
     }

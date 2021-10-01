@@ -26,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -689,6 +690,8 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
+  static_assert(blink::kMaxAdAuctionAdComponents == 20,
+                "Unexpected value of kMaxAdAuctionAdComponents");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad",
         bid:1,

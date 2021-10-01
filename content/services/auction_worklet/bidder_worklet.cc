@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -29,6 +30,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -501,10 +503,10 @@ void BidderWorklet::V8State::GenerateBid() {
     }
 
     v8::Local<v8::Array> ad_components_array = ad_components.As<v8::Array>();
-    if (ad_components_array->Length() > 20) {
-      errors_out.push_back(base::StrCat(
-          {script_source_url_.spec(),
-           " generateBid() returned adComponents with over 20 items."}));
+    if (ad_components_array->Length() > blink::kMaxAdAuctionAdComponents) {
+      errors_out.push_back(base::StringPrintf(
+          "%s generateBid() returned adComponents with over %zu items.",
+          script_source_url_.spec().c_str(), blink::kMaxAdAuctionAdComponents));
       PostErrorBidCallbackToUserThread(std::move(errors_out));
       return;
     }
