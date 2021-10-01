@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
@@ -896,9 +897,9 @@ StateSnapshot WebAppIntegrationBrowserTestBase::ConstructStateSnapshot() {
       bool is_app_browser = AppBrowserController::IsWebApp(browser);
       bool install_icon_visible = false;
       bool launch_icon_visible = false;
-      if (!is_app_browser) {
-        launch_icon_visible = intent_picker_view()->GetVisible();
+      if (!is_app_browser && active_tab != nullptr) {
         install_icon_visible = pwa_install_view()->GetVisible();
+        launch_icon_visible = intent_picker_view()->GetVisible();
       }
       browser_state.emplace(
           browser, BrowserState(browser, tab_state_map, active_tab,

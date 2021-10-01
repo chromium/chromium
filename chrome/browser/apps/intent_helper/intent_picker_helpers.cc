@@ -117,7 +117,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
                      ui_auto_display_service, url));
 }
 
-std::vector<IntentPickerAppInfo> MaybeShowIntentPickerImpl(
+std::vector<IntentPickerAppInfo> GetAppsForIntentPicker(
     content::WebContents* web_contents) {
   std::vector<IntentPickerAppInfo> apps = {};
   if (!ShouldCheckAppsForUrl(web_contents))
@@ -130,13 +130,6 @@ std::vector<IntentPickerAppInfo> MaybeShowIntentPickerImpl(
 
   const GURL& url = web_contents->GetLastCommittedURL();
   apps = FindAppsForUrl(web_contents, url, std::move(apps));
-
-  if (apps.empty()) {
-    IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
-    return apps;
-  }
-
-  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
   return apps;
 }
 
@@ -144,16 +137,19 @@ std::vector<IntentPickerAppInfo> MaybeShowIntentPickerImpl(
 
 // for chromeos, this should apply when navigation is not deferred for pwa only
 // case also when navigation deferred and then resumed
-void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
+bool MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  auto apps = MaybeShowIntentPickerImpl(web_contents);
+  std::vector<IntentPickerAppInfo> apps = GetAppsForIntentPicker(web_contents);
+  bool show_intent_icon = !apps.empty();
 #if defined(OS_CHROMEOS)
   MaybeShowIntentPickerBubble(navigation_handle, std::move(apps));
 #endif  // defined(OS_CHROMEOS)
+  return show_intent_icon;
 }
 
 void MaybeShowIntentPicker(content::WebContents* web_contents) {
-  MaybeShowIntentPickerImpl(web_contents);
+  std::vector<IntentPickerAppInfo> apps = GetAppsForIntentPicker(web_contents);
+  IntentPickerTabHelper::SetShouldShowIcon(web_contents, !apps.empty());
 }
 
 void ShowIntentPickerBubble(content::WebContents* web_contents,

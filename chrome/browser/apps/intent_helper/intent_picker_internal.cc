@@ -110,7 +110,6 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
   if (!browser)
     return;
 
-  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
   browser->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
       PageActionIconType::kIntentPicker, absl::nullopt, std::move(callback));

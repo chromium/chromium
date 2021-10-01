@@ -1973,7 +1973,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/toolbar/chrome_labs_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/webauthn/authenticator_dialog_view_browsertest.cc",
@@ -2104,6 +2103,10 @@ if (!is_android && !is_fuchsia) {
         "../browser/enterprise/connectors/file_system/browsertest_helper.h",
         "../browser/enterprise/connectors/file_system/signin_experience_browsertest.cc",
         "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
+
+        # https://crbug.com/1252812 The intent picker (launch icon) actions
+        # are not working on Lacros.
+        "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       ]
     }
 

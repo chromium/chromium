@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 sync_integration_tests_sources = [
   "../browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
   "../browser/sync/test/integration/single_client_custom_passphrase_sync_test.cc",
@@ -73,6 +75,8 @@ if (is_win || is_mac || is_linux) {
   sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_mac_win_linux.cc" ]
 }
 
-if (is_chromeos) {
+# https://crbug.com/1252812 The intent picker (launch icon) actions are not
+# working on Lacros.
+if (is_chromeos && !is_chromeos_lacros) {
   sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_cros.cc" ]
 }

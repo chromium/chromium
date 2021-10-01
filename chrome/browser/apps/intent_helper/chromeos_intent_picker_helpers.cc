@@ -123,15 +123,15 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
 
 void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
                                  std::vector<IntentPickerAppInfo> apps) {
+  if (apps.empty() || GetPickerShowState(navigation_handle, apps) ==
+                          PickerShowState::kOmnibox) {
+    return;
+  }
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   IntentPickerAutoDisplayService* ui_auto_display_service =
       IntentPickerAutoDisplayService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   const GURL& url = navigation_handle->GetURL();
-  if (GetPickerShowState(navigation_handle, apps) ==
-      PickerShowState::kOmnibox) {
-    return;
-  }
 
   IntentPickerTabHelper::LoadAppIcons(
       web_contents, std::move(apps),

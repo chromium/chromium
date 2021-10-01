@@ -142,7 +142,8 @@ void IntentPickerTabHelper::DidFinishNavigation(
        navigation_handle->GetURL() !=
            navigation_handle->GetPreviousMainFrameURL()) &&
       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
-    apps::MaybeShowIntentPicker(navigation_handle);
+    bool should_show_icon = apps::MaybeShowIntentPicker(navigation_handle);
+    IntentPickerTabHelper::SetShouldShowIcon(web_contents(), should_show_icon);
   }
 }
 
