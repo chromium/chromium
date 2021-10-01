@@ -209,8 +209,14 @@ public class FeedSurfaceMediator
                 mSigninPromoController.setUpSyncPromoView(mProfileDataCache,
                         mCoordinator.getSigninPromoView().findViewById(
                                 R.id.signin_promo_view_container),
-                        null);
+                        this::onDismissPromo);
             }
+        }
+
+        @Override
+        public void onDismissPromo() {
+            super.onDismissPromo();
+            mCoordinator.updateHeaderViews(false, null);
         }
     }
 

@@ -136,7 +136,9 @@ public class SigninPromoController {
         }
 
         if (SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, false)) {
+                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, false)
+                || SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)) {
             return false;
         }
 
@@ -227,10 +229,12 @@ public class SigninPromoController {
                 // already an account on the device. Always use the NoExistingAccount variant.
                 mSigninNewAccountUserActionName =
                         "Signin_SigninNewAccountNoExistingAccount_FromNTPContentSuggestions";
-                mSyncPromoDismissedPreferenceTracker = null;
+                mSyncPromoDismissedPreferenceTracker =
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 mImpressionsTilDismissHistogramName = null;
                 mImpressionsTilSigninButtonsHistogramName = null;
-                mImpressionsTilXButtonHistogramName = null;
+                mImpressionsTilXButtonHistogramName =
+                        "MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton";
                 mDescriptionStringId = R.string.signin_promo_description_ntp_content_suggestions;
                 mDescriptionStringIdNoAccount =
                         R.string.signin_promo_description_ntp_content_suggestions_no_account;

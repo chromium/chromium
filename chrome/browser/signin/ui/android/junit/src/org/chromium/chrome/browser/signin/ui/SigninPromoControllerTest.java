@@ -190,4 +190,22 @@ public class SigninPromoControllerTest {
         Assert.assertTrue(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
+
+    @Test
+    public void shouldShowSyncPromoForNTPWhenNotDismissed() {
+        mSharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+
+        Assert.assertTrue(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldHideSyncPromoForNTPWhenDismissed() {
+        mSharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
+
+        Assert.assertFalse(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
 }
