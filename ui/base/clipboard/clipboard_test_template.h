@@ -595,20 +595,6 @@ void AssertBitmapMatchesExpected(const SkBitmap& image,
 }
 
 template <typename T>
-static void TestBitmapWrite(Clipboard* clipboard,
-                            const SkImageInfo& info,
-                            const T* bitmap_data,
-                            const U8x4* expect_data) {
-  WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
-
-  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::BitmapType(),
-                                           ClipboardBuffer::kCopyPaste,
-                                           /* data_dst = */ nullptr));
-  const SkBitmap& image = clipboard_test_util::ReadImage(clipboard);
-  AssertBitmapMatchesExpected(image, info, expect_data);
-}
-
-template <typename T>
 static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
                                       const SkImageInfo& info,
                                       const T* bitmap_data,
@@ -626,53 +612,6 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
   SkBitmap image;
   gfx::PNGCodec::Decode(result.data(), result.size(), &image);
   AssertBitmapMatchesExpected(image, info, expect_data);
-}
-
-#if !defined(OS_ANDROID)
-// TODO(crbug.com/815537): Re-enable this test once death tests work on Android.
-
-// Only kN32_SkColorType bitmaps are allowed in the clipboard to prevent
-// surprising buffer overflows due to bits-per-pixel assumptions.
-TYPED_TEST(ClipboardTest, Bitmap_F16_Premul) {
-  constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
-  constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
-  EXPECT_DEATH(TestBitmapWrite(&this->clipboard(),
-                               SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType,
-                                                 kPremul_SkAlphaType),
-                               &kRGBAF16Premul, &kRGBAPremul),
-               "");
-}
-#endif  // !defined(OS_ANDROID)
-
-// crbug.com/1224904: Flaky on Mac.
-#if defined(OS_MAC)
-#define MAYBE_Bitmap_N32_Premul DISABLED_Bitmap_N32_Premul
-#else
-#define MAYBE_Bitmap_N32_Premul Bitmap_N32_Premul
-#endif
-TYPED_TEST(ClipboardTest, MAYBE_Bitmap_N32_Premul) {
-  constexpr U8x4 b[4 * 3] = {
-      {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
-      {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
-      {0x52, 0x21, 0x77, 0x78}, {0x30, 0x2a, 0x69, 0x87},
-      {0x25, 0x2a, 0x32, 0x36}, {0x1b, 0x40, 0x20, 0x43},
-      {0x21, 0x8c, 0x84, 0x91}, {0x3c, 0x7b, 0x17, 0xc3},
-      {0x5c, 0x15, 0x46, 0x69}, {0x52, 0x19, 0x17, 0x64},
-  };
-  TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(4, 3), b, b);
-}
-
-TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
-  constexpr U8x4 b[2 * 7] = {
-      {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
-      {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
-      {0x52, 0x21, 0x77, 0x78}, {0x30, 0x2a, 0x69, 0x87},
-      {0x25, 0x2a, 0x32, 0x36}, {0x1b, 0x40, 0x20, 0x43},
-      {0x21, 0x8c, 0x84, 0x91}, {0x3c, 0x7b, 0x17, 0xc3},
-      {0x5c, 0x15, 0x46, 0x69}, {0x52, 0x19, 0x17, 0x64},
-      {0x13, 0x03, 0x91, 0xa6}, {0x3e, 0x32, 0x02, 0x83},
-  };
-  TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
 
 #if !defined(OS_ANDROID)
@@ -1204,11 +1143,11 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   EXPECT_EQ(std::u16string(), read_result);
 }
 
-TYPED_TEST(ClipboardTest, PolicyDisallow_ReadImage) {
+TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
   auto policy_controller = std::make_unique<MockPolicyController>();
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(false));
-  const SkBitmap& image = clipboard_test_util::ReadImage(&this->clipboard());
+  std::vector<uint8_t> image = clipboard_test_util::ReadPng(&this->clipboard());
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(true, image.empty());
 }

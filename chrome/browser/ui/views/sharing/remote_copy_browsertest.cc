@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
@@ -148,8 +149,11 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   }
 
   SkBitmap ReadClipboardImage() {
-    return ui::clipboard_test_util::ReadImage(
-        ui::Clipboard::GetForCurrentThread());
+    SkBitmap bitmap;
+    std::vector<uint8_t> png_data =
+        ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
+    gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+    return bitmap;
   }
 
   message_center::Notification GetNotification() {

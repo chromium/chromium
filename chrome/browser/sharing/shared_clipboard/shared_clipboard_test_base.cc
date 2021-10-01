@@ -13,6 +13,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 SharedClipboardTestBase::SharedClipboardTestBase()
@@ -48,8 +49,11 @@ std::string SharedClipboardTestBase::GetClipboardText() {
 }
 
 SkBitmap SharedClipboardTestBase::GetClipboardImage() {
-  return ui::clipboard_test_util::ReadImage(
-      ui::Clipboard::GetForCurrentThread());
+  SkBitmap bitmap;
+  std::vector<uint8_t> png_data =
+      ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  return bitmap;
 }
 
 message_center::Notification SharedClipboardTestBase::GetNotification() {

@@ -116,8 +116,11 @@ std::string GetClipboardText() {
 }
 
 SkBitmap GetClipboardImage() {
-  return ui::clipboard_test_util::ReadImage(
-      ui::Clipboard::GetForCurrentThread());
+  SkBitmap bitmap;
+  std::vector<uint8_t> png_data =
+      ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  return bitmap;
 }
 
 SkBitmap CreateTestSkBitmap() {

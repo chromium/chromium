@@ -134,30 +134,6 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
-// Test that it actually works.
-TEST_F(ClipboardHostImplTest, SimpleImage_ReadBitmap) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3, 2);
-  bitmap.eraseARGB(255, 0, 255, 0);
-  mojo_clipboard()->WriteImage(bitmap);
-  ui::ClipboardSequenceNumberToken sequence_number =
-      system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
-  mojo_clipboard()->CommitWrite();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_NE(sequence_number, system_clipboard()->GetSequenceNumber(
-                                 ui::ClipboardBuffer::kCopyPaste));
-  EXPECT_FALSE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::PlainTextType(), ui::ClipboardBuffer::kCopyPaste,
-      /* data_dst=*/nullptr));
-  EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::BitmapType(), ui::ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr));
-
-  SkBitmap actual = ui::clipboard_test_util::ReadImage(system_clipboard());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
-}
-
 TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(3, 2);
