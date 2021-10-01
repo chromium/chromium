@@ -71,6 +71,19 @@ class SearchQueryElement extends PolymerElement {
   private onClick_(event: MouseEvent) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
+    // To record metrics.
+    this.onAuxClick_();
+
+    OpenWindowProxyImpl.getInstance().open(this.searchQuery.url.url);
+  }
+
+  private onKeydown_(e: KeyboardEvent) {
+    // To be consistent with <history-list>, only handle Enter, and not Space.
+    if (e.key !== 'Enter') {
+      return;
+    }
+
+    // To record metrics.
     this.onAuxClick_();
 
     OpenWindowProxyImpl.getInstance().open(this.searchQuery.url.url);

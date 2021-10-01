@@ -88,9 +88,9 @@
 </iron-collapse>
 <div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
   <div id="related-searches-label">$i18n{relatedSearchesHeader}</div>
-  <div id="search-queries">
+  <div id="search-queries" role="list" aria-labelledby="related-searches-label">
     <template is="dom-repeat" items="[[visit.relatedSearches]]">
-      <search-query search-query="[[item]]" index="[[index]]">
+      <search-query search-query="[[item]]" index="[[index]]" role="listitem">
       </search-query>
     </template>
   </div>
