@@ -58,6 +58,8 @@ namespace cors {
 
 namespace {
 
+using ::testing::Optional;
+
 const uint32_t kRendererProcessId = 573;
 
 constexpr char kTestCorsExemptHeader[] = "x-test-cors-exempt";
@@ -2844,6 +2846,28 @@ TEST_F(CorsURLLoaderTest, NetLogCrossOriginSimpleRequest) {
     return;
   }
   ADD_FAILURE() << "Log entry not found.";
+}
+
+TEST_F(CorsURLLoaderTest, PreflightMissingAllowOrigin) {
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, mojom::kBrowserProcessId);
+
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(CorsErrorStatus(
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader)));
 }
 
 }  // namespace

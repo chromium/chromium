@@ -393,10 +393,12 @@ class PreflightController::PreflightLoader final {
     bool has_authorization_covered_by_wildcard = false;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
         final_url, head, original_request_, tainted_, &detected_error_status);
-    net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_RESULT,
-                      [&result] { return result->NetLogParams(); });
 
     if (result) {
+      // Only log if there is a result to log.
+      net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_RESULT,
+                        [&result] { return result->NetLogParams(); });
+
       // Preflight succeeded. Check |original_request_| with |result|.
       DCHECK(!detected_error_status);
       detected_error_status =
