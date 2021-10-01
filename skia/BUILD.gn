@@ -80,10 +80,7 @@ config("skia_config") {
     }
   }
   if (enable_vulkan) {
-    defines += [
-      "SK_VULKAN_HEADER=\"../../skia/config/SkVulkanConfig.h\"",
-      "SK_VULKAN=1",
-    ]
+    defines += [ "SK_VULKAN=1" ]
   }
   if (skia_use_dawn) {
     defines += [ "SK_DAWN" ]
