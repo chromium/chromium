@@ -585,6 +585,7 @@ TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
       test_application_id() +
       "\" status=\"ok\">"
       "<event status=\"ok\"/>"
+      "<ping status=\"ok\"/>"
       "</app></response>";
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
