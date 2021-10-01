@@ -5026,11 +5026,10 @@ const char kSpectreVariant2MitigationDescription[] =
     "bootstrapping the Seccomp BPF sandbox. Can be overridden by "
     "#force-spectre-variant2-mitigation.";
 
-const char kSplitSettingsSyncName[] = "Split OS and browser sync";
-const char kSplitSettingsSyncDescription[] =
+const char kSyncSettingsCategorizationName[] = "Split OS and browser sync";
+const char kSyncSettingsCategorizationDescription[] =
     "Allows OS sync to be configured separately from browser sync. Changes the "
-    "OS settings UI to provide controls for OS data types. Requires "
-    "#split-settings to be enabled.";
+    "OS settings UI to provide controls for OS data types.";
 
 const char kSystemChinesePhysicalTypingName[] =
     "Use system IME for Chinese typing";

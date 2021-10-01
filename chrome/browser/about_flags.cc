@@ -6244,9 +6244,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"split-settings-sync", flag_descriptions::kSplitSettingsSyncName,
-     flag_descriptions::kSplitSettingsSyncDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kSplitSettingsSync)},
+    {"sync-settings-categorization",
+     flag_descriptions::kSyncSettingsCategorizationName,
+     flag_descriptions::kSyncSettingsCategorizationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kSyncSettingsCategorization)},
     {"os-settings-app-notifications-page",
      flag_descriptions::kOsSettingsAppNotificationsPageName,
      flag_descriptions::kOsSettingsAppNotificationsPageDescription, kOsCrOS,

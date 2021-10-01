@@ -5033,11 +5033,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "split-settings-sync",
-    "owners": [ "rsorokin", "cros-oac@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "start-surface",
     "owners": [ "gogerald", "bling-flags@google.com" ],
     "expiry_milestone": 94
@@ -5079,6 +5074,11 @@
     "name": "sync-autofill-wallet-offer-data",
     "owners": ["siyua", "treib"],
     "expiry_milestone": 100
+  },
+  {
+    "name": "sync-settings-categorization",
+    "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "sync-setup-friendly-settings",
