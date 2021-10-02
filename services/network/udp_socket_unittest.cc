@@ -670,12 +670,14 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
   EXPECT_EQ(std::vector<uint8_t>(), result.data.value());
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC)
+#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC) || \
+    defined(OS_FUCHSIA)
 // Some Android devices do not support multicast socket.
 // The ones supporting multicast need WifiManager.MulticastLock to enable it.
 // https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock.html
 // TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines. Flaky on
 // Mac 11 machines.
+// TODO(crbug.com/1255191): Fails on Fuchsia running with run-test-component.
 #define MAYBE_JoinMulticastGroup DISABLED_JoinMulticastGroup
 #else
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup

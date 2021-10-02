@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/api/system_network/system_network_api.h"
+#include "build/build_config.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
@@ -19,7 +20,13 @@ using SystemNetworkApiUnitTest = extensions::ApiUnitTest;
 
 }  // namespace
 
-TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
+// TODO(crbug.com/1255187): Fails on Fuchsia running with run-test-component.
+#if defined(OS_FUCHSIA)
+#define MAYBE_GetNetworkInterfaces DISABLED_GetNetworkInterfaces
+#else
+#define MAYBE_GetNetworkInterfaces GetNetworkInterfaces
+#endif  // defined(OS_FUCHSIA)
+TEST_F(SystemNetworkApiUnitTest, MAYBE_GetNetworkInterfaces) {
   scoped_refptr<SystemNetworkGetNetworkInterfacesFunction> socket_function(
       new SystemNetworkGetNetworkInterfacesFunction());
   scoped_refptr<const Extension> empty_extension(

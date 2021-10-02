@@ -91,11 +91,12 @@ def AddTestExecutionArgs(arg_parser):
   test_args.add_argument(
       '--isolated-script-test-perf-output',
       help='If present, store chartjson results on this path.')
-  test_args.add_argument('--use-run-test-component',
-                         default=False,
-                         action='store_true',
-                         help='Run the test package hermetically using '
-                         'run-test-component, rather than run.')
+  test_args.add_argument('--use-run',
+                         dest='use_run_test_component',
+                         default=True,
+                         action='store_false',
+                         help='Run the test package using run rather than '
+                         'hermetically using run-test-component.')
   test_args.add_argument(
       '--code-coverage',
       default=False,
@@ -130,9 +131,9 @@ def main():
   if not args.out_dir:
     raise ValueError("out-dir must be specified.")
 
-  # Code coverage uses runtests, which calls run_test_component.
-  if args.code_coverage:
-    args.use_run_test_component = True
+  if args.code_coverage and not args.use_run_test_component:
+    raise ValueError('Collecting code coverage info requires using '
+                     'run-test-component.')
 
   ConfigureLogging(args)
 
