@@ -95,11 +95,11 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, OnActivationRequested, (), (override));
   MOCK_METHOD(void, OnNewOutputAdded, (), (override));
   MOCK_METHOD(void, OnSetServerStartResize, (), (override));
-  MOCK_METHOD(void, ShowSnapPreviewToLeft, (), (override));
-  MOCK_METHOD(void, ShowSnapPreviewToRight, (), (override));
+  MOCK_METHOD(void, ShowSnapPreviewToPrimary, (), (override));
+  MOCK_METHOD(void, ShowSnapPreviewToSecondary, (), (override));
   MOCK_METHOD(void, HideSnapPreview, (), (override));
-  MOCK_METHOD(void, SetSnappedToRight, (), (override));
-  MOCK_METHOD(void, SetSnappedToLeft, (), (override));
+  MOCK_METHOD(void, SetSnappedToSecondary, (), (override));
+  MOCK_METHOD(void, SetSnappedToPrimary, (), (override));
   MOCK_METHOD(void, UnsetSnap, (), (override));
   MOCK_METHOD(void, SetCanGoBack, (), (override));
   MOCK_METHOD(void, UnsetCanGoBack, (), (override));

@@ -195,8 +195,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   bool IsInputEnabled(Surface* surface) const override;
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override;
-  void SetSnappedToLeft() override;
-  void SetSnappedToRight() override;
+  void SetSnappedToPrimary() override;
+  void SetSnappedToSecondary() override;
   void SetPip() override;
   void UnsetPip() override;
 

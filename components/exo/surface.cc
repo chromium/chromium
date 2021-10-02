@@ -601,14 +601,14 @@ void Surface::SetUseImmersiveForFullscreen(bool value) {
     delegate_->SetUseImmersiveForFullscreen(value);
 }
 
-void Surface::ShowSnapPreviewToRight() {
+void Surface::ShowSnapPreviewToSecondary() {
   if (delegate_)
-    delegate_->ShowSnapPreviewToRight();
+    delegate_->ShowSnapPreviewToSecondary();
 }
 
-void Surface::ShowSnapPreviewToLeft() {
+void Surface::ShowSnapPreviewToPrimary() {
   if (delegate_)
-    delegate_->ShowSnapPreviewToLeft();
+    delegate_->ShowSnapPreviewToPrimary();
 }
 
 void Surface::HideSnapPreview() {
@@ -616,14 +616,14 @@ void Surface::HideSnapPreview() {
     delegate_->HideSnapPreview();
 }
 
-void Surface::SetSnappedToRight() {
+void Surface::SetSnappedToSecondary() {
   if (delegate_)
-    delegate_->SetSnappedToRight();
+    delegate_->SetSnappedToSecondary();
 }
 
-void Surface::SetSnappedToLeft() {
+void Surface::SetSnappedToPrimary() {
   if (delegate_)
-    delegate_->SetSnappedToLeft();
+    delegate_->SetSnappedToPrimary();
 }
 
 void Surface::UnsetSnap() {

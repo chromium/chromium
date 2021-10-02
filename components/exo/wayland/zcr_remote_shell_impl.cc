@@ -1248,12 +1248,13 @@ void remote_surface_set_aspect_ratio(wl_client* client,
 
 void remote_surface_set_snapped_to_left(wl_client* client,
                                         wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetSnappedToLeft();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetSnappedToPrimary();
 }
 
 void remote_surface_set_snapped_to_right(wl_client* client,
                                          wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetSnappedToRight();
+  GetUserDataAs<ClientControlledShellSurface>(resource)
+      ->SetSnappedToSecondary();
 }
 
 void remote_surface_start_resize(wl_client* client,

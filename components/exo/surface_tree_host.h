@@ -99,11 +99,11 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void OnActivationRequested() override {}
   void OnNewOutputAdded() override;
   void OnSetServerStartResize() override {}
-  void ShowSnapPreviewToLeft() override {}
-  void ShowSnapPreviewToRight() override {}
+  void ShowSnapPreviewToPrimary() override {}
+  void ShowSnapPreviewToSecondary() override {}
   void HideSnapPreview() override {}
-  void SetSnappedToLeft() override {}
-  void SetSnappedToRight() override {}
+  void SetSnappedToPrimary() override {}
+  void SetSnappedToSecondary() override {}
   void UnsetSnap() override {}
   void SetCanGoBack() override {}
   void UnsetCanGoBack() override {}

@@ -585,10 +585,10 @@ void WaylandToplevelWindow::ShowSnapPreview(
                            ZAURA_SURFACE_INTENT_TO_SNAP_SINCE_VERSION) {
     uint32_t zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_NONE;
     switch (snap_direction) {
-      case WaylandWindowSnapDirection::kLeft:
+      case WaylandWindowSnapDirection::kPrimary:
         zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_LEFT;
         break;
-      case WaylandWindowSnapDirection::kRight:
+      case WaylandWindowSnapDirection::kSecondary:
         zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_RIGHT;
         break;
       case WaylandWindowSnapDirection::kNone:
@@ -608,10 +608,10 @@ void WaylandToplevelWindow::CommitSnap(
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
                            ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION) {
     switch (snap_direction) {
-      case WaylandWindowSnapDirection::kLeft:
+      case WaylandWindowSnapDirection::kPrimary:
         zaura_surface_set_snap_left(aura_surface_.get());
         return;
-      case WaylandWindowSnapDirection::kRight:
+      case WaylandWindowSnapDirection::kSecondary:
         zaura_surface_set_snap_right(aura_surface_.get());
         return;
       case WaylandWindowSnapDirection::kNone:

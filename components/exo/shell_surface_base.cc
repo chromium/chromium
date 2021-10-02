@@ -479,24 +479,26 @@ void ShellSurfaceBase::SetUseImmersiveForFullscreen(bool value) {
     SetShellUseImmersiveForFullscreen(widget_->GetNativeWindow(), value);
 }
 
-void ShellSurfaceBase::ShowSnapPreviewToLeft() {
-  ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kLeft);
+void ShellSurfaceBase::ShowSnapPreviewToPrimary() {
+  ShowSnapPreview(widget_->GetNativeWindow(),
+                  chromeos::SnapDirection::kPrimary);
 }
 
-void ShellSurfaceBase::ShowSnapPreviewToRight() {
-  ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kRight);
+void ShellSurfaceBase::ShowSnapPreviewToSecondary() {
+  ShowSnapPreview(widget_->GetNativeWindow(),
+                  chromeos::SnapDirection::kSecondary);
 }
 
 void ShellSurfaceBase::HideSnapPreview() {
   ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone);
 }
 
-void ShellSurfaceBase::SetSnappedToLeft() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kLeft);
+void ShellSurfaceBase::SetSnappedToPrimary() {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kPrimary);
 }
 
-void ShellSurfaceBase::SetSnappedToRight() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kRight);
+void ShellSurfaceBase::SetSnappedToSecondary() {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kSecondary);
 }
 
 void ShellSurfaceBase::UnsetSnap() {

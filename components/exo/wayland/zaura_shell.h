@@ -50,8 +50,8 @@ class AuraSurface : public SurfaceObserver,
   void DrawAttention();
   void SetFullscreenMode(uint32_t mode);
   void IntentToSnap(uint32_t snap_direction);
-  void SetSnapLeft();
-  void SetSnapRight();
+  void SetSnapPrimary();
+  void SetSnapSecondary();
   void UnsetSnap();
   void SetWindowSessionId(int32_t window_session_id);
   void SetCanGoBack();

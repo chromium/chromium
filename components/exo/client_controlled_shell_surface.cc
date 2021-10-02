@@ -794,13 +794,13 @@ void ClientControlledShellSurface::OnSetFrameColors(SkColor active_color,
   }
 }
 
-void ClientControlledShellSurface::SetSnappedToLeft() {
-  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToLeft");
+void ClientControlledShellSurface::SetSnappedToPrimary() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToPrimary");
   pending_window_state_ = chromeos::WindowStateType::kPrimarySnapped;
 }
 
-void ClientControlledShellSurface::SetSnappedToRight() {
-  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToRight");
+void ClientControlledShellSurface::SetSnappedToSecondary() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToSecondary");
   pending_window_state_ = chromeos::WindowStateType::kSecondarySnapped;
 }
 

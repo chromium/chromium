@@ -98,9 +98,9 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
            requested_state == chromeos::WindowStateType::kSecondarySnapped);
 
     if (requested_state == chromeos::WindowStateType::kPrimarySnapped)
-      shell_surface_->SetSnappedToLeft();
+      shell_surface_->SetSnappedToPrimary();
     else
-      shell_surface_->SetSnappedToRight();
+      shell_surface_->SetSnappedToSecondary();
   }
 
   Commit();

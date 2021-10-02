@@ -13,8 +13,8 @@ class PlatformWindow;
 
 enum class WaylandWindowSnapDirection {
   kNone,
-  kLeft,
-  kRight,
+  kPrimary,
+  kSecondary,
 };
 
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {

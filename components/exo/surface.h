@@ -204,14 +204,16 @@ class Surface final : public ui::PropertyHandler {
   // (plain fullscreen), the titlebar and shelf are always hidden.
   void SetUseImmersiveForFullscreen(bool value);
 
-  // Called to show the snap preview to the right or left, or to hide it.
-  void ShowSnapPreviewToRight();
-  void ShowSnapPreviewToLeft();
+  // Called to show the snap preview to the primary or secondary position, or
+  // to hide it.
+  void ShowSnapPreviewToSecondary();
+  void ShowSnapPreviewToPrimary();
   void HideSnapPreview();
 
-  // Called when the client was snapped to right or left, or reset.
-  void SetSnappedToRight();
-  void SetSnappedToLeft();
+  // Called when the client was snapped to primary or secondary position, or
+  // reset.
+  void SetSnappedToSecondary();
+  void SetSnappedToPrimary();
   void UnsetSnap();
 
   // Whether the current client window can go back, as per its navigation list.

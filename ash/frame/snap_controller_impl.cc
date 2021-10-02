@@ -32,12 +32,11 @@ void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
     phantom_window_controller_ =
         std::make_unique<PhantomWindowController>(window);
   }
+  const SnapViewType snap_type = snap == chromeos::SnapDirection::kPrimary
+                                     ? SnapViewType::kPrimary
+                                     : SnapViewType::kSecondary;
   gfx::Rect phantom_bounds_in_screen =
-      (snap == chromeos::SnapDirection::kLeft)
-          ? GetDefaultSnappedWindowBoundsInParent(window,
-                                                  SnapViewType::kPrimary)
-          : GetDefaultSnappedWindowBoundsInParent(window,
-                                                  SnapViewType::kSecondary);
+      GetDefaultSnappedWindowBoundsInParent(window, snap_type);
   ::wm::ConvertRectToScreen(window->parent(), &phantom_bounds_in_screen);
   phantom_window_controller_->Show(phantom_bounds_in_screen);
 }
@@ -49,7 +48,7 @@ void SnapControllerImpl::CommitSnap(aura::Window* window,
     return;
 
   WindowState* window_state = WindowState::Get(window);
-  const WMEvent snap_event(snap == chromeos::SnapDirection::kLeft
+  const WMEvent snap_event(snap == chromeos::SnapDirection::kPrimary
                                ? WM_EVENT_SNAP_PRIMARY
                                : WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_event);

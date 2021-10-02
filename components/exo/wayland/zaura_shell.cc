@@ -194,11 +194,11 @@ void aura_surface_intent_to_snap(wl_client* client,
 }
 
 void aura_surface_set_snap_left(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<AuraSurface>(resource)->SetSnapLeft();
+  GetUserDataAs<AuraSurface>(resource)->SetSnapPrimary();
 }
 
 void aura_surface_set_snap_right(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<AuraSurface>(resource)->SetSnapRight();
+  GetUserDataAs<AuraSurface>(resource)->SetSnapSecondary();
 }
 
 void aura_surface_unset_snap(wl_client* client, wl_resource* resource) {
@@ -383,20 +383,20 @@ void AuraSurface::IntentToSnap(uint32_t snap_direction) {
       surface_->HideSnapPreview();
       break;
     case ZAURA_SURFACE_SNAP_DIRECTION_LEFT:
-      surface_->ShowSnapPreviewToLeft();
+      surface_->ShowSnapPreviewToPrimary();
       break;
     case ZAURA_SURFACE_SNAP_DIRECTION_RIGHT:
-      surface_->ShowSnapPreviewToRight();
+      surface_->ShowSnapPreviewToSecondary();
       break;
   }
 }
 
-void AuraSurface::SetSnapLeft() {
-  surface_->SetSnappedToLeft();
+void AuraSurface::SetSnapPrimary() {
+  surface_->SetSnappedToPrimary();
 }
 
-void AuraSurface::SetSnapRight() {
-  surface_->SetSnappedToRight();
+void AuraSurface::SetSnapSecondary() {
+  surface_->SetSnappedToSecondary();
 }
 
 void AuraSurface::UnsetSnap() {
