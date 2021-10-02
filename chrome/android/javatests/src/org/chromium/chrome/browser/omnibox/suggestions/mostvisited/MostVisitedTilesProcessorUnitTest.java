@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -111,11 +110,11 @@ public final class MostVisitedTilesProcessorUnitTest {
         Assert.assertNotNull(processor.getExploreSitesIconForTesting());
         Assert.assertEquals(1, mCallbackCount);
 
-        RoundedBitmapDrawable expectedExploreSitesIcon = processor.getExploreSitesIconForTesting();
+        Assert.assertEquals(exploreSitesIcon, processor.getExploreSitesIconForTesting());
         processor.populateModel(mSuggestion, mPropertyModel, 0);
         // Verifies that mExploreIconState#getSummaryImage() is no longer called when there is a
         // cached explore sites icon.
         Assert.assertEquals(1, mCallbackCount);
-        Assert.assertEquals(expectedExploreSitesIcon, processor.getExploreSitesIconForTesting());
+        Assert.assertEquals(exploreSitesIcon, processor.getExploreSitesIconForTesting());
     }
 }

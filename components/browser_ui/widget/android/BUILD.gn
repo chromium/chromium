@@ -347,6 +347,7 @@ java_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinderTest.java",
   ]
   deps = [
     ":java",
@@ -358,5 +359,6 @@ java_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

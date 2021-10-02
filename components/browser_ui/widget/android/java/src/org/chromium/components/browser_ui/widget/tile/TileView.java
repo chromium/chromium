@@ -11,7 +11,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 /**
  * The view for a tile with icon and text.
@@ -23,6 +26,7 @@ public class TileView extends FrameLayout {
     private TextView mTitleView;
     private Runnable mOnFocusViaSelectionListener;
     private ImageView mIconView;
+    private RoundedCornerOutlineProvider mRoundingOutline;
 
     /**
      * Constructor for inflating from XML.
@@ -31,6 +35,15 @@ public class TileView extends FrameLayout {
         super(context, attrs);
     }
 
+    /**
+     * See {@link View#onFinishInflate} for details.
+     *
+     * Important:
+     * This method will never be called when the layout is inflated from a <merge> fragment.
+     * LayoutInflater explicitly avoids invoking this method with merge fragments.
+     * Make sure your layouts explicitly reference the TileView as the top component, rather
+     * than deferring to <merge> tags.
+     */
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -38,6 +51,9 @@ public class TileView extends FrameLayout {
         mIconView = findViewById(R.id.tile_view_icon);
         mBadgeView = findViewById(R.id.offline_badge);
         mTitleView = findViewById(R.id.tile_view_title);
+        mRoundingOutline = new RoundedCornerOutlineProvider();
+        mIconView.setOutlineProvider(mRoundingOutline);
+        mIconView.setClipToOutline(true);
     }
 
     /**
@@ -87,6 +103,17 @@ public class TileView extends FrameLayout {
     /** Specify the handler that will be invoked when this tile is highlighted by the user. */
     void setOnFocusViaSelectionListener(Runnable listener) {
         mOnFocusViaSelectionListener = listener;
+    }
+
+    /** Sets the radius used to round the image content. */
+    void setRoundingRadius(int radius) {
+        mRoundingOutline.setRadius(radius);
+    }
+
+    /** Retrieves the radius used to round the image content. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    int getRoundingRadiusForTesting() {
+        return mRoundingOutline.getRadiusForTesting();
     }
 
     @Override

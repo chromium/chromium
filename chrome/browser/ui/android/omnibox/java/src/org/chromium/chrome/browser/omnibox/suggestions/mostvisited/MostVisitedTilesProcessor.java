@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.DiscardableReferencePool;
@@ -36,7 +35,6 @@ import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,8 +59,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     private @NonNull ExploreIconProvider mExploreIconProvider;
     private @NonNull DiscardableReferencePool mReferencePool;
-    private @Nullable DiscardableReferencePool
-            .DiscardableReference<RoundedBitmapDrawable> mExploreSitesIcon;
+    private @Nullable DiscardableReferencePool.DiscardableReference<Bitmap> mExploreSitesIcon;
 
     /**
      * Constructor.
@@ -154,7 +151,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                                 int iconType) -> {
                             if (icon == null) return;
-                            tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
+                            setIcon(tileModel, icon, false);
                         });
             }
 
@@ -175,32 +172,28 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             mExploreIconProvider.getSummaryImage(mDesiredFaviconWidthPx, (Bitmap icon) -> {
                 if (icon == null) return;
 
-                RoundedBitmapDrawable roundIcon = getRoundIconFromBitmap(icon);
-                mExploreSitesIcon = mReferencePool.put(roundIcon);
-                setLargeIcon(tileModel, roundIcon);
+                mExploreSitesIcon = mReferencePool.put(icon);
+                setIcon(tileModel, icon, true);
             });
         } else {
-            setLargeIcon(tileModel, mExploreSitesIcon.get());
+            setIcon(tileModel, mExploreSitesIcon.get(), true);
         }
     }
 
     /**
-     * Gets a round icon from the given bitmap.
+     * Sets the large icon to the supplied tile's model.
+     *
+     * @param tileModel The model for the specific tile view to be modified.
+     * @param icon The icon to apply.
+     * @param showLargeIcon Whether to show a large icon.
      */
-    private RoundedBitmapDrawable getRoundIconFromBitmap(Bitmap icon) {
-        RoundedBitmapDrawable roundedIcon = ViewUtils.createRoundedBitmapDrawable(
-                mContext.getResources(), icon, mDesiredFaviconWidthPx);
-        roundedIcon.setAntiAlias(true);
-        roundedIcon.setFilterBitmap(true);
-        return roundedIcon;
-    }
-
-    /**
-     * Sets the large icon to the given property model.
-     */
-    private void setLargeIcon(PropertyModel tileModel, RoundedBitmapDrawable icon) {
-        tileModel.set(TileViewProperties.SHOW_LARGE_ICON, true);
-        tileModel.set(TileViewProperties.ICON, icon);
+    private void setIcon(
+            @NonNull PropertyModel tileModel, @NonNull Bitmap icon, boolean showLargeIcon) {
+        tileModel.set(TileViewProperties.SHOW_LARGE_ICON, showLargeIcon);
+        tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
+                mContext.getResources().getDimensionPixelSize(
+                        R.dimen.omnibox_carousel_icon_rounding_radius));
+        tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
     }
 
     /**
@@ -234,7 +227,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @VisibleForTesting
-    RoundedBitmapDrawable getExploreSitesIconForTesting() {
+    Bitmap getExploreSitesIconForTesting() {
         return mExploreSitesIcon != null ? mExploreSitesIcon.get() : null;
     }
 }

@@ -27,6 +27,14 @@ public final class TileViewProperties {
     public static final WritableBooleanPropertyKey SHOW_LARGE_ICON =
             new WritableBooleanPropertyKey();
 
+    /**
+     * The rounding radius of the presented icon.
+     * Applied only if the small icon is used. Large icons are always rounded to the view size
+     * (circular)
+     */
+    public static final WritableIntPropertyKey SMALL_ICON_ROUNDING_RADIUS =
+            new WritableIntPropertyKey();
+
     /** Badge visibility. */
     public static final WritableBooleanPropertyKey BADGE_VISIBLE = new WritableBooleanPropertyKey();
 
@@ -51,6 +59,6 @@ public final class TileViewProperties {
             ON_CREATE_CONTEXT_MENU = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ICON, TITLE, TITLE_LINES,
-            BADGE_VISIBLE, SHOW_LARGE_ICON, CONTENT_DESCRIPTION, ON_FOCUS_VIA_SELECTION, ON_CLICK,
-            ON_LONG_CLICK, ON_CREATE_CONTEXT_MENU};
+            BADGE_VISIBLE, SHOW_LARGE_ICON, SMALL_ICON_ROUNDING_RADIUS, CONTENT_DESCRIPTION,
+            ON_FOCUS_VIA_SELECTION, ON_CLICK, ON_LONG_CLICK, ON_CREATE_CONTEXT_MENU};
 }
