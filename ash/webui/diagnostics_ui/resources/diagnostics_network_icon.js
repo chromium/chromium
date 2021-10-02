@@ -28,6 +28,7 @@ export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
  * element.
  * @typedef {{
  *    connectionState: !ConnectionStateType,
+ *    guid: string,
  *    type: !CrosNetworkType,
  *   }}
  */
@@ -81,7 +82,9 @@ function convertNetworkTypeToCrosNetworkType(type) {
 export function networkToNetworkStateAdapter(network) {
   const type = convertNetworkTypeToCrosNetworkType(network.type);
   const connectionState = convertNetworkStateToCrosNetworkState(network.state);
-  return {connectionState, type};
+  const guid = network.observerGuid;
+
+  return {guid, connectionState, type};
 }
 
 /**

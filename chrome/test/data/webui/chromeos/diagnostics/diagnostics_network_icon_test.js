@@ -96,4 +96,16 @@ export function diagnosticsNetworkIconTestSuite() {
         networkToNetworkStateAdapter(fakeDisconnectedEthernetNetwork)
             .connectionState);
   });
+
+  test('NetworkToNetworkStateAdapter_Guid', () => {
+    assertEquals(
+        fakeEthernetNetwork.observerGuid,
+        networkToNetworkStateAdapter(fakeEthernetNetwork).guid);
+    assertEquals(
+        fakeWifiNetwork.observerGuid,
+        networkToNetworkStateAdapter(fakeWifiNetwork).guid);
+    assertEquals(
+        fakeCellularNetwork.observerGuid,
+        networkToNetworkStateAdapter(fakeCellularNetwork).guid);
+  });
 }
