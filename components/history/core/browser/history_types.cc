@@ -393,6 +393,7 @@ AnnotatedVisit::AnnotatedVisit(URLRow url_row,
                                VisitContextAnnotations context_annotations,
                                VisitContentAnnotations content_annotations,
                                VisitID referring_visit_of_redirect_chain_start,
+                               VisitID opener_visit_of_redirect_chain_start,
                                VisitSource source)
     : url_row(url_row),
       visit_row(visit_row),
@@ -400,6 +401,8 @@ AnnotatedVisit::AnnotatedVisit(URLRow url_row,
       content_annotations(content_annotations),
       referring_visit_of_redirect_chain_start(
           referring_visit_of_redirect_chain_start),
+      opener_visit_of_redirect_chain_start(
+          opener_visit_of_redirect_chain_start),
       source(source) {}
 AnnotatedVisit::AnnotatedVisit(const AnnotatedVisit&) = default;
 AnnotatedVisit& AnnotatedVisit::operator=(const AnnotatedVisit&) = default;

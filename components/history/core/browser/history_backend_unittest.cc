@@ -3504,7 +3504,7 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   auto last_visit_time = base::Time::Now();
   auto add_visit = [&](std::string url, VisitID referring_visit,
-                       bool is_redirect) {
+                       VisitID opener_visit, bool is_redirect) {
     // Each visit should have a unique `visit_time` to avoid deduping visits to
     // the same URL. The exact times don't matter, but we use increasing
     // values to make the test cases easy to reason about.
@@ -3512,28 +3512,32 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
     ui::PageTransition transition =
         is_redirect ? ui::PageTransition::PAGE_TRANSITION_IS_REDIRECT_MASK
                     : ui::PageTransition::PAGE_TRANSITION_CHAIN_START;
-    auto ids =
-        backend_->AddPageVisit(GURL(url), last_visit_time, referring_visit,
-                               transition, false, SOURCE_BROWSED, false, false);
+    auto ids = backend_->AddPageVisit(GURL(url), last_visit_time,
+                                      referring_visit, transition, false,
+                                      SOURCE_BROWSED, false, opener_visit);
     backend_->AddContextAnnotationsForVisit(ids.second, {});
   };
 
   // Navigate to 'google.com'.
-  add_visit("google.com", 0, false);
+  add_visit("google.com", 0, 0, false);
   // It redirects to 'https://www.google.com'.
-  add_visit("https://www.google.com", 1, true);
+  add_visit("https://www.google.com", 1, 0, true);
   // Perform a search.
-  add_visit("https://www.google.com/query=wiki", 2, false);
+  add_visit("https://www.google.com/query=wiki", 2, 0, false);
   // Navigate to 'https://www.google.com' in a new tab.
-  add_visit("https://www.google.com", 0, false);
+  add_visit("https://www.google.com", 0, 0, false);
   // Perform a search
-  add_visit("https://www.google.com/query=wiki2", 4, false);
+  add_visit("https://www.google.com/query=wiki2", 4, 0, false);
   // Follow a search result link.
-  add_visit("https://www.wiki2.org", 5, false);
+  add_visit("https://www.wiki2.org", 5, 0, false);
   // It redirects.
-  add_visit("https://www.wiki2.org/home", 6, true);
+  add_visit("https://www.wiki2.org/home", 6, 0, true);
   // Follow a search result in the first tab.
-  add_visit("https://www.wiki.org", 3, false);
+  add_visit("https://www.wiki.org", 3, 0, false);
+  // Open a search result link in a new tab.
+  add_visit("https://www.wiki2.org", 0, 6, false);
+  // It redirects.
+  add_visit("https://www.wiki2.org/home", 9, 0, true);
 
   // The redirect/referral chain now look like this:
   // 1 ->> 2 -> 3 -> 8
@@ -3542,13 +3546,16 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
 
   struct Expectation {
     VisitID referring_visit;
+    VisitID opener_visit;
     VisitID first_redirect;
     VisitID referring_visit_of_redirect_chain_start;
+    VisitID opener_visit_of_redirect_chain_start;
   };
 
   std::vector<Expectation> expectations = {
-      {0, 1, 0}, {1, 1, 0}, {2, 3, 2}, {0, 4, 0},
-      {4, 5, 4}, {5, 6, 5}, {6, 6, 5}, {3, 8, 3},
+      {0, 0, 1, 0, 0}, {1, 0, 1, 0, 0}, {2, 0, 3, 2, 0}, {0, 0, 4, 0, 0},
+      {4, 0, 5, 4, 0}, {5, 0, 6, 5, 0}, {6, 0, 6, 5, 0}, {3, 0, 8, 3, 0},
+      {0, 6, 9, 0, 6}, {9, 0, 9, 0, 6},
   };
 
   auto annotated_visits = GetAnnotatedVisitRowsFromBackend();
@@ -3559,6 +3566,8 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
     VisitRow visit;
     backend_->db_->GetRowForVisit(visit_id, &visit);
     EXPECT_EQ(visit.referring_visit, expectation.referring_visit)
+        << "visit id: " << visit_id;
+    EXPECT_EQ(visit.opener_visit, expectation.opener_visit)
         << "visit id: " << visit_id;
 
     // Verify `GetRedirectChainStart()`.
@@ -3572,6 +3581,9 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
         << "visit id: " << visit_id;
     EXPECT_EQ(annotated_visit.referring_visit_of_redirect_chain_start,
               expectation.referring_visit_of_redirect_chain_start)
+        << "visit id: " << visit_id;
+    EXPECT_EQ(annotated_visit.opener_visit_of_redirect_chain_start,
+              expectation.opener_visit_of_redirect_chain_start)
         << "visit id: " << visit_id;
   }
 }

@@ -175,6 +175,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
            // TODO(tommycli): Add content annotations.
            {},
            first_redirect.referring_visit,
+           first_redirect.opener_visit,
            visit_source});
     }
 
@@ -359,7 +360,8 @@ std::string GetDebugJSONForVisits(
                           static_cast<int>(visit.visit_row.transition));
     debug_visit.SetIntKey("referringVisitId",
                           visit.referring_visit_of_redirect_chain_start);
-    debug_visit.SetIntKey("openerVisitId", visit.visit_row.opener_visit);
+    debug_visit.SetIntKey("openerVisitId",
+                          visit.opener_visit_of_redirect_chain_start);
     debug_visits_list.Append(std::move(debug_visit));
   }
 
