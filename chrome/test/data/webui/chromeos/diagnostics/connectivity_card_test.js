@@ -157,6 +157,13 @@ export function connectivityCardTestSuite() {
     });
   });
 
+  test('CardNetworkIconEthernetOnlineInitializedCorrectly', () => {
+    return initializeConnectivityCard('ethernetGuid').then(() => {
+      assertTrue(isVisible(
+          /** @type {!Element} */ (connectivityCardElement.$$('#icon'))));
+    });
+  });
+
   test('TestsRunAutomaticallyWhenPageIsActive', () => {
     return initializeConnectivityCard('ethernetGuid', true)
         .then(

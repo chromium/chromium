@@ -80,6 +80,7 @@ js_library("cellular_info") {
 
 js_library("connectivity_card") {
   deps = [
+    ":diagnostics_network_icon",
     ":ip_config_info_drawer",
     ":network_info",
     ":routine_group",
