@@ -7,11 +7,13 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -168,6 +170,19 @@ class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
                          NotificationSpokenFeedbackAppListTest,
+                         ::testing::Values(kTestAsNormalUser,
+                                           kTestAsGuestUser));
+
+// Tests with feature ProductivityLauncher enabled.
+class SpokenFeedbackAppListProductivityLauncherTest
+    : public SpokenFeedbackAppListTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      ash::features::kProductivityLauncher};
+};
+
+INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
+                         SpokenFeedbackAppListProductivityLauncherTest,
                          ::testing::Values(kTestAsNormalUser,
                                            kTestAsGuestUser));
 
@@ -715,6 +730,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithChromeAppListModelUpdaterTest,
   sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech(base::SStringPrintf(
       &expected_text, "Moved to Page 1, row 4, column %d.", original_column));
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
+                       ClamshellLauncher) {
+  PopulateApps(3);
+  EnableChromeVox();
+
+  // Focus the shelf. This selects the launcher button.
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Activate the launcher button. This opens bubble launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+
+  // Move focus down to the apps grid. This selects the first app.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Item 0");
+  sm_.ExpectSpeech("Button");
+
+  // Move the focused item to the right. The announcement does not include a
+  // page because the bubble launcher apps grid is scrollable, not paged.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Moved to row 1, column 2.");
 
   sm_.Replay();
 }

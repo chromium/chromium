@@ -934,8 +934,11 @@ need to be translated for each locale.-->
       <message name="IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE" desc="The spoken feedback text for when an app icon is focused and has a notification badge shown on the icon.">
         <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> requests your attention.
       </message>
-      <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to.">
+      <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to when the app list has pages.">
         Moved to Page <ph name="PAGE_NUMBER">$1<ex>1</ex></ph>, row <ph name="ROW_NUMBER">$2<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$3<ex>2</ex></ph>.
+      </message>
+      <message name="IDS_APP_LIST_APP_DRAG_ROW_COLUMN_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to when the app list does not have pages.">
+        Moved to row <ph name="ROW_NUMBER">$1<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$2<ex>2</ex></ph>.
       </message>
       <message name="IDS_APP_LIST_APP_DRAG_CREATE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text which describes the app that is currently being dragged over another app, and how to create a folder.">
         <ph name="DRAGGED_APP_NAME">$1<ex>App Name</ex></ph> on top of <ph name="IN_PLACE_APP">$2<ex>Other App Name</ex></ph>, release to create folder.

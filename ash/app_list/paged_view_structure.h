@@ -130,6 +130,7 @@ class ASH_EXPORT PagedViewStructure {
     return pages_[page_index].size();
   }
 
+  Mode mode() const { return mode_; }
   const Pages& pages() const { return pages_; }
 
  private:

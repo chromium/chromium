@@ -16,6 +16,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
@@ -2470,7 +2471,13 @@ void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
   const int row =
       ((target_index.slot - (target_index.slot % cols_)) / cols_) + 1;
   const int col = (target_index.slot % cols_) + 1;
-  a11y_announcer_->AnnounceAppsGridReorder(page, row, col);
+  if (view_structure_.mode() == PagedViewStructure::Mode::kSinglePage) {
+    // Don't announce the page for single-page grids (e.g. scrollable grids).
+    a11y_announcer_->AnnounceAppsGridReorder(row, col);
+  } else {
+    // Announce the page for paged grids.
+    a11y_announcer_->AnnounceAppsGridReorder(page, row, col);
+  }
 }
 
 void AppsGridView::CreateGhostImageView() {
