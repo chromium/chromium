@@ -35,9 +35,6 @@ if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
   _sanitizer_runtimes = [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.ubsan_standalone-$_sanitizer_arch-android.so" ]
 }
 
-_BUNDLETOOL_JAR_PATH =
-    "//third_party/android_build_tools/bundletool/bundletool.jar"
-
 # Creates a dist directory for a native executable.
 #
 # Running a native executable on a device requires all the shared library
@@ -4855,8 +4852,7 @@ if (enable_java_templates) {
     _bundle_target_name = "${_target_name}__bundle"
     action_with_pydeps(_bundle_target_name) {
       script = "//build/android/gyp/create_app_bundle.py"
-      inputs = _all_module_zip_paths + _all_module_build_configs +
-               [ _BUNDLETOOL_JAR_PATH ]
+      inputs = _all_module_zip_paths + _all_module_build_configs
       outputs = [ _bundle_path ]
       deps = _all_create_module_targets + [ ":$_build_config_target" ]
       args = [
@@ -5077,10 +5073,7 @@ if (enable_java_templates) {
     _apks_path = "$root_build_dir/apks/$_bundle_name.apks"
     action_with_pydeps("${_target_name}_apks") {
       script = "//build/android/gyp/create_app_bundle_apks.py"
-      inputs = [
-        _bundle_path,
-        _BUNDLETOOL_JAR_PATH,
-      ]
+      inputs = [ _bundle_path ]
       outputs = [ _apks_path ]
       data = [ _apks_path ]
       args = [
