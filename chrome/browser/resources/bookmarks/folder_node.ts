@@ -24,11 +24,16 @@ const BookmarksFolderNodeElementBase =
     mixinBehaviors(StoreClient, PolymerElement) as {
   new (): PolymerElement & BookmarksStoreClientInterface &
       StoreObserver<BookmarksPageState>;
-}
+};
+
+// Workaround because TS compiler doesn't know about scrollIntoViewIfNeeded().
+type HTMLDivElementWithScroll = HTMLDivElement&{
+  scrollIntoViewIfNeeded: () => void;
+};
 
 export interface BookmarksFolderNodeElement {
   $: {
-    container: HTMLDivElement,
+    container: HTMLDivElementWithScroll,
     descendants: HTMLDivElement,
   }
 }
@@ -376,7 +381,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       return;
     }
 
-    microTask.run(() => this.$.container.scrollIntoView());
+    microTask.run(() => this.$.container.scrollIntoViewIfNeeded());
   }
 
   private computeIsOpen_(openState: boolean|null, depth: number): boolean {
