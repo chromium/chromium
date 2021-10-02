@@ -251,7 +251,7 @@ TEST_F(SearchIPCRouterTest, HandleTabChangedEvents) {
 }
 
 TEST_F(SearchIPCRouterTest, ProcessLogEventMsg) {
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(123);
+  base::TimeDelta delta = base::Milliseconds(123);
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
@@ -265,7 +265,7 @@ TEST_F(SearchIPCRouterTest, ProcessLogEventMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, IgnoreLogEventMsg) {
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(123);
+  base::TimeDelta delta = base::Milliseconds(123);
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();

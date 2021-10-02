@@ -167,7 +167,7 @@ TEST_F(AmbientBackendModelTest, ShouldReturnExpectedPhotoRefreshInterval) {
   EXPECT_EQ(GetPhotoRefreshInterval(), kPhotoRefreshInterval);
 
   // Change the photo refresh interval.
-  const base::TimeDelta interval = base::TimeDelta::FromMinutes(1);
+  const base::TimeDelta interval = base::Minutes(1);
   SetPhotoRefreshInterval(interval);
   // The refresh interval will be the set value.
   EXPECT_EQ(GetPhotoRefreshInterval(), interval);

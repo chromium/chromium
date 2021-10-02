@@ -27,7 +27,7 @@ namespace {
 // Android.
 // TODO(yhanada): Implement a way to observe an IME operation completion and
 // send the current text input state right after the IME operation completion.
-constexpr base::TimeDelta kStateUpdateTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kStateUpdateTimeout = base::Seconds(1);
 
 // Characters which should be sent as a KeyEvent and attributes of generated
 // KeyEvent.

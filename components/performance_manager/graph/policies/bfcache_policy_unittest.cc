@@ -22,7 +22,7 @@ class LenientMockBFCachePolicy : public BFCachePolicy {
  public:
   LenientMockBFCachePolicy() {
     flush_on_moderate_pressure_ = true;
-    delay_to_flush_background_tab_ = base::TimeDelta::FromSeconds(5);
+    delay_to_flush_background_tab_ = base::Seconds(5);
   }
   ~LenientMockBFCachePolicy() override = default;
   LenientMockBFCachePolicy(const LenientMockBFCachePolicy& other) = delete;

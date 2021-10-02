@@ -199,8 +199,7 @@ int SearchResultTileItemListView::DoUpdate() {
     recent_playstore_query_ = user_typed_query;
     playstore_impression_timer_.Stop();
     playstore_impression_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kPlayStoreImpressionDelayInMs), this,
+        FROM_HERE, base::Milliseconds(kPlayStoreImpressionDelayInMs), this,
         &SearchResultTileItemListView::OnPlayStoreImpressionTimer);
     // Set the starting time in result view for play store results.
     base::TimeTicks result_display_start = base::TimeTicks::Now();

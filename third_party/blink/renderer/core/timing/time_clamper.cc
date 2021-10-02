@@ -62,7 +62,7 @@ base::TimeDelta TimeClamper::ClampTimeResolution(
   // Flip the number back to being negative if it started that way.
   if (was_negative)
     clamped_time = -clamped_time;
-  return base::TimeDelta::FromMicroseconds(clamped_time);
+  return base::Microseconds(clamped_time);
 }
 
 inline double TimeClamper::ThresholdFor(int64_t clamped_time,

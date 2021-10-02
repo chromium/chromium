@@ -249,8 +249,7 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
           // owned by this object.
           fallback_timer_.Start(
               FROM_HERE,
-              base::TimeDelta::FromMilliseconds(
-                  TransportConnectJob::kIPv6FallbackTimerInMs),
+              base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs),
               base::BindOnce(&WebSocketTransportConnectJob::StartIPv4JobAsync,
                              base::Unretained(this)));
         }

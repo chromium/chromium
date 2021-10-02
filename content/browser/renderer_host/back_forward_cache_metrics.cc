@@ -33,13 +33,13 @@ base::TickClock* g_mock_time_clock_for_testing = nullptr;
 
 // Reduce the resolution of the longer intervals due to privacy considerations.
 base::TimeDelta ClampTime(base::TimeDelta time) {
-  if (time < base::TimeDelta::FromSeconds(5))
-    return base::TimeDelta::FromMilliseconds(time.InMilliseconds());
-  if (time < base::TimeDelta::FromMinutes(3))
-    return base::TimeDelta::FromSeconds(time.InSeconds());
-  if (time < base::TimeDelta::FromHours(3))
-    return base::TimeDelta::FromMinutes(time.InMinutes());
-  return base::TimeDelta::FromHours(time.InHours());
+  if (time < base::Seconds(5))
+    return base::Milliseconds(time.InMilliseconds());
+  if (time < base::Minutes(3))
+    return base::Seconds(time.InSeconds());
+  if (time < base::Hours(3))
+    return base::Minutes(time.InMinutes());
+  return base::Hours(time.InHours());
 }
 
 base::TimeTicks Now() {

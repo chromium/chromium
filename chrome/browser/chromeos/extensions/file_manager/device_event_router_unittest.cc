@@ -34,8 +34,7 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
  public:
   explicit DeviceEventRouterImpl(
       SystemNotificationManager* notification_manager)
-      : DeviceEventRouter(notification_manager,
-                          base::TimeDelta::FromSeconds(0)),
+      : DeviceEventRouter(notification_manager, base::Seconds(0)),
         external_storage_disabled(false) {}
 
   DeviceEventRouterImpl(const DeviceEventRouterImpl&) = delete;

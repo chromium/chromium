@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
       "Something went wrong. Try again in a few seconds");
 
   // Make sure no further changes happen to the view hierarchy.
-  tester()->ExpectNoChange(base::TimeDelta::FromSeconds(1));
+  tester()->ExpectNoChange(base::Seconds(1));
 
   // This is necessary to prevent a UserInitiatedVoicelessActivity from
   // blocking test harness teardown while we wait on assistant to finish

@@ -189,7 +189,7 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   // being killed. In that case, killing them every time is just a waste of
   // resources.
   static constexpr base::TimeDelta GetArcRespawnKillDelay() {
-    return base::TimeDelta::FromSeconds(60);
+    return base::Seconds(60);
   }
 
   // The OOM adjustment score for persistent ARC processes.

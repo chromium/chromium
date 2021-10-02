@@ -25,8 +25,7 @@ const char kCRXFileExtension[] = ".crx";
 
 // Delay between checks for flag file presence when waiting for the cache to
 // become ready.
-constexpr base::TimeDelta kCacheStatusPollingDelay =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCacheStatusPollingDelay = base::Seconds(1);
 
 }  // namespace
 

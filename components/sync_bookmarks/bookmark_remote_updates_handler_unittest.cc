@@ -1042,8 +1042,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const std::string kOriginatorClientItemId = kBookmarkGuid.AsLowercaseString();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;
-  const base::Time kModificationTime(base::Time::Now() -
-                                     base::TimeDelta::FromSeconds(1));
+  const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
@@ -1109,8 +1108,7 @@ TEST_F(
       base::GUID::GenerateRandomV4().AsLowercaseString();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;
-  const base::Time kModificationTime(base::Time::Now() -
-                                     base::TimeDelta::FromSeconds(1));
+  const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);

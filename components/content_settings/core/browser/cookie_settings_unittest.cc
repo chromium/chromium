@@ -642,8 +642,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      {content_settings::GetConstraintExpiration(
-           base::TimeDelta::FromSeconds(100)),
+      {content_settings::GetConstraintExpiration(base::Seconds(100)),
        SessionModel::UserSession});
 
   // When requesting our setting for the url/top-level combination our
@@ -654,7 +653,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
-  FastForwardTime(base::TimeDelta::FromSeconds(101));
+  FastForwardTime(base::Seconds(101));
   EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
             CONTENT_SETTING_BLOCK);
 }

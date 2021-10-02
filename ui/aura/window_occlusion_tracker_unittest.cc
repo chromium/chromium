@@ -32,7 +32,7 @@ namespace aura {
 
 namespace {
 
-constexpr base::TimeDelta kTransitionDuration = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTransitionDuration = base::Seconds(3);
 
 class MockWindowDelegate : public test::ColorTestWindowDelegate {
  public:

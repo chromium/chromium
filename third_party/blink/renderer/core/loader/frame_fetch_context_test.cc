@@ -1263,10 +1263,10 @@ TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
 }
 
 TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
-  scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
-      "type", base::TimeTicks() + base::TimeDelta::FromSecondsD(0.3),
-      mojom::blink::RequestContextType::UNSPECIFIED,
-      network::mojom::RequestDestination::kEmpty);
+  scoped_refptr<ResourceTimingInfo> info =
+      ResourceTimingInfo::Create("type", base::TimeTicks() + base::Seconds(0.3),
+                                 mojom::blink::RequestContextType::UNSPECIFIED,
+                                 network::mojom::RequestDestination::kEmpty);
 
   dummy_page_holder = nullptr;
 

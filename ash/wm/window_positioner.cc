@@ -104,8 +104,7 @@ void SetBoundsAndOffsetTransientChildren(aura::Window* window,
   }
 
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
-  settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kWindowAutoMoveDurationMS));
+  settings.SetTransitionDuration(base::Milliseconds(kWindowAutoMoveDurationMS));
   window->SetBounds(bounds);
 }
 

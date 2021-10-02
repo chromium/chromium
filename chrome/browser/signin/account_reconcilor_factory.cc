@@ -66,10 +66,10 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
   base::TimeDelta GetReconcileTimeout() const override {
     switch (reconcilor_behavior_) {
       case ReconcilorBehavior::kChild:
-        return base::TimeDelta::FromSeconds(10);
+        return base::Seconds(10);
       case ReconcilorBehavior::kEnterprise:
         // 60 seconds is enough to cover about 99% of all reconcile cases.
-        return base::TimeDelta::FromSeconds(60);
+        return base::Seconds(60);
       default:
         NOTREACHED();
         return MirrorAccountReconcilorDelegate::GetReconcileTimeout();

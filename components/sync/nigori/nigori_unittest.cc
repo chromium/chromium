@@ -29,7 +29,7 @@ class FakeTickClock : public base::TickClock {
   // base::TimeTicks::Now(). We do this because we are testing functions which
   // call NowTicks() twice.
   static constexpr base::TimeDelta kTicksAdvanceAfterEachCall =
-      base::TimeDelta::FromMilliseconds(250);
+      base::Milliseconds(250);
 
   base::TimeTicks NowTicks() const override {
     int current_call_count = call_count_;

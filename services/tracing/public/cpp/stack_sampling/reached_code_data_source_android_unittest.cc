@@ -78,7 +78,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
 
 TEST_F(ReachedCodeDataSourceTest, ProfilerDisabled) {
   BeginTrace();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
   EndTracing();
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 0u);
 }
@@ -94,7 +94,7 @@ TEST_F(ReachedCodeDataSourceTest, DISABLED_ProfilerOutput) {
       base::android::PROCESS_BROWSER);
   ASSERT_TRUE(base::android::IsReachedCodeProfilerEnabled());
   BeginTrace();
-  BusyLoopFor(base::TimeDelta::FromSeconds(2));
+  BusyLoopFor(base::Seconds(2));
   EndTracing();
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 1u);
   const auto* packet = producer()->GetFinalizedPacket();

@@ -155,7 +155,7 @@ void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
         base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, low_end_background_cleanup_task_.callback(),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
   }
 }
 

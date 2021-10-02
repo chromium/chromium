@@ -280,7 +280,7 @@ class PropertyWaiter {
     }
   }
 
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kTimeout = base::Seconds(1);
   base::RepeatingCallback<bool(void)> callback_;
   const bool expected_value_;
   bool success_ = false;

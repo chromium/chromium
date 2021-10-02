@@ -585,11 +585,11 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, TextContrast) {
 }
 
 IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, BouncedInstallMeasured) {
-  TestInstallBounce(base::TimeDelta::FromMinutes(50), 1);
+  TestInstallBounce(base::Minutes(50), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, BouncedInstallIgnored) {
-  TestInstallBounce(base::TimeDelta::FromMinutes(70), 0);
+  TestInstallBounce(base::Minutes(70), 0);
 }
 
 // Omnibox install promotion should show if there are no viable related apps

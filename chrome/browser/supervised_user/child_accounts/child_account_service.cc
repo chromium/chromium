@@ -316,8 +316,7 @@ void ChildAccountService::OnGetFamilyMembersSuccess(
 
   family_fetch_backoff_.InformOfRequest(true);
 
-  ScheduleNextFamilyInfoUpdate(
-      base::TimeDelta::FromSeconds(kUpdateIntervalSeconds));
+  ScheduleNextFamilyInfoUpdate(base::Seconds(kUpdateIntervalSeconds));
 }
 
 void ChildAccountService::OnFailure(FamilyInfoFetcher::ErrorCode error) {

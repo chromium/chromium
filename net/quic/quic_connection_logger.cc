@@ -97,9 +97,9 @@ QuicConnectionLogger::~QuicConnectionLogger() {
 
   const quic::QuicConnectionStats& stats = session_->connection()->GetStats();
   UMA_HISTOGRAM_TIMES("Net.QuicSession.MinRTT",
-                      base::TimeDelta::FromMicroseconds(stats.min_rtt_us));
+                      base::Microseconds(stats.min_rtt_us));
   UMA_HISTOGRAM_TIMES("Net.QuicSession.SmoothedRTT",
-                      base::TimeDelta::FromMicroseconds(stats.srtt_us));
+                      base::Microseconds(stats.srtt_us));
 
   if (num_frames_received_ > 0) {
     int duplicate_stream_frame_per_thousand =
@@ -577,7 +577,7 @@ void QuicConnectionLogger::OnRttChanged(quic::QuicTime::Delta rtt) const {
   if (microseconds != 0 &&
       socket_performance_watcher_->ShouldNotifyUpdatedRTT()) {
     socket_performance_watcher_->OnUpdatedRTTAvailable(
-        base::TimeDelta::FromMicroseconds(rtt.ToMicroseconds()));
+        base::Microseconds(rtt.ToMicroseconds()));
   }
 }
 

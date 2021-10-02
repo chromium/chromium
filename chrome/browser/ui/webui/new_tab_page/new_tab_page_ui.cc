@@ -631,8 +631,7 @@ void NewTabPageUI::OnLoad() {
   if (!prev_navigation_time.is_null()) {
     base::UmaHistogramCustomTimes("NewTabPage.TimeSinceLastNTP",
                                   navigation_start_time_ - prev_navigation_time,
-                                  base::TimeDelta::FromSeconds(1),
-                                  base::TimeDelta::FromDays(1), 100);
+                                  base::Seconds(1), base::Days(1), 100);
   }
   profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
                                 navigation_start_time_);

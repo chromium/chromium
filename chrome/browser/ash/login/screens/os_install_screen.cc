@@ -22,10 +22,8 @@ constexpr const char kUserActionErrorShutdownClicked[] =
 constexpr const char kUserActionSuccessRestartClicked[] =
     "os-install-success-restart";
 
-constexpr const base::TimeDelta kTimeTillShutdownOnSuccess =
-    base::TimeDelta::FromSeconds(60);
-constexpr const base::TimeDelta kCountdownDelta =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr const base::TimeDelta kTimeTillShutdownOnSuccess = base::Seconds(60);
+constexpr const base::TimeDelta kCountdownDelta = base::Milliseconds(10);
 }  // namespace
 
 OsInstallScreen::OsInstallScreen(OsInstallScreenView* view,

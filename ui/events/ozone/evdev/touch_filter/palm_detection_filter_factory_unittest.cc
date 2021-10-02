@@ -142,9 +142,8 @@ TEST_F(PalmDetectionFilterFactoryTest, HeuristicTimesSet) {
             palm_filter->FilterNameForTesting());
   HeuristicStylusPalmDetectionFilter* heuristic_filter =
       static_cast<HeuristicStylusPalmDetectionFilter*>(palm_filter.get());
-  EXPECT_EQ(base::TimeDelta::FromSecondsD(0.8), heuristic_filter->CancelTime());
-  EXPECT_EQ(base::TimeDelta::FromSecondsD(15.327),
-            heuristic_filter->HoldTime());
+  EXPECT_EQ(base::Seconds(0.8), heuristic_filter->CancelTime());
+  EXPECT_EQ(base::Seconds(15.327), heuristic_filter->HoldTime());
 }
 TEST_F(PalmDetectionFilterFactoryTest, NeuralReportNoNeuralDetectSet) {
   scoped_feature_list_->InitWithFeatures(

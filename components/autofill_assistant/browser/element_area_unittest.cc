@@ -85,7 +85,7 @@ class ElementAreaTest : public testing::Test {
         element_area_(&delegate_) {
     delegate_.SetWebController(&mock_web_controller_);
     delegate_.GetMutableSettings()->element_position_update_interval =
-        base::TimeDelta::FromMilliseconds(100);
+        base::Milliseconds(100);
 
     test_util::MockFindAnyElement(mock_web_controller_);
     ON_CALL(mock_web_controller_, GetElementRect(_, _))
@@ -436,7 +436,7 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
 
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(0, 25, 100, 50)));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 
   // Updated area is available
   std::vector<RectF> rectangles;
@@ -448,7 +448,7 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
   EXPECT_THAT(on_update_call_count_, 2);
 
   // No update if the element's position has not changed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_THAT(on_update_call_count_, 2);
 }
 

@@ -18,8 +18,7 @@ namespace auto_screen_brightness {
 namespace {
 
 // Interval for asking metrics::DailyEvent to check whether a day has passed.
-constexpr base::TimeDelta kCheckDailyEventInternal =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kCheckDailyEventInternal = base::Seconds(60);
 
 // Prefs corresponding to DeviceClass values.
 constexpr std::array<const char*, MetricsReporter::kNumberDeviceClasses>

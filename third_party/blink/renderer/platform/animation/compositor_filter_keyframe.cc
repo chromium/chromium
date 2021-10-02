@@ -14,7 +14,7 @@ CompositorFilterKeyframe::CompositorFilterKeyframe(
     CompositorFilterOperations value,
     const TimingFunction& timing_function)
     : filter_keyframe_(
-          cc::FilterKeyframe::Create(base::TimeDelta::FromSecondsD(time),
+          cc::FilterKeyframe::Create(base::Seconds(time),
                                      value.ReleaseCcFilterOperations(),
                                      timing_function.CloneToCC())) {}
 

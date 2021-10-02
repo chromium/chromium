@@ -28,8 +28,7 @@ namespace protocol {
 namespace {
 
 // Use a cooldown period to prevent multiple service requests in case of a bug.
-constexpr base::TimeDelta kIceConfigRequestCooldown =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kIceConfigRequestCooldown = base::Minutes(2);
 
 void PrintIceConfig(const IceConfig& ice_config) {
   std::stringstream ss;

@@ -157,7 +157,7 @@ class NetworkPortalDetectorImplTest
     ASSERT_EQ(expected_same_detection_result_count,
               same_detection_result_count());
     ASSERT_EQ(expected_no_response_result_count, no_response_result_count());
-    ASSERT_EQ(base::TimeDelta::FromSeconds(expected_request_timeout_sec),
+    ASSERT_EQ(base::Seconds(expected_request_timeout_sec),
               get_next_attempt_timeout());
     CompleteURLFetch(net_error, status_code, nullptr);
   }
@@ -485,7 +485,7 @@ TEST_F(NetworkPortalDetectorImplTest, PortalDetectionTimeout) {
   ASSERT_EQ(State::STATE_IDLE, state());
 
   // For instantaneous timeout.
-  set_next_attempt_timeout(base::TimeDelta::FromSeconds(0));
+  set_next_attempt_timeout(base::Seconds(0));
 
   ASSERT_EQ(State::STATE_IDLE, state());
   ASSERT_EQ(0, same_detection_result_count());
@@ -516,7 +516,7 @@ TEST_F(NetworkPortalDetectorImplTest, PortalDetectionRetryAfter) {
   // scheduled after 101 seconds.
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   ASSERT_EQ(1, no_response_result_count());
-  ASSERT_EQ(base::TimeDelta::FromSeconds(101), next_attempt_delay());
+  ASSERT_EQ(base::Seconds(101), next_attempt_delay());
 }
 
 TEST_F(NetworkPortalDetectorImplTest, PortalDetectorRetryAfterIsSmall) {
@@ -551,7 +551,7 @@ TEST_F(NetworkPortalDetectorImplTest, FirstAttemptFailed) {
   CompleteURLFetch(net::OK, 503, retry_after);
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   ASSERT_EQ(1, no_response_result_count());
-  ASSERT_EQ(base::TimeDelta::FromSeconds(0), next_attempt_delay());
+  ASSERT_EQ(base::Seconds(0), next_attempt_delay());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
@@ -578,7 +578,7 @@ TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
   CompleteURLFetch(net::OK, 503, retry_after);
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   ASSERT_EQ(1, no_response_result_count());
-  ASSERT_EQ(base::TimeDelta::FromSeconds(0), next_attempt_delay());
+  ASSERT_EQ(base::Seconds(0), next_attempt_delay());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
@@ -586,7 +586,7 @@ TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
   CompleteURLFetch(net::OK, 503, retry_after);
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   ASSERT_EQ(2, no_response_result_count());
-  ASSERT_EQ(base::TimeDelta::FromSeconds(0), next_attempt_delay());
+  ASSERT_EQ(base::Seconds(0), next_attempt_delay());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();

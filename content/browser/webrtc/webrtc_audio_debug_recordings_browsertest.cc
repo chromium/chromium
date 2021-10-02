@@ -66,7 +66,7 @@ bool DeleteFileWithRetryAfterPause(const base::FilePath& path) {
   if (base::DeleteFile(path))
     return true;
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+  base::PlatformThread::Sleep(base::Milliseconds(100));
   return base::DeleteFile(path);
 }
 

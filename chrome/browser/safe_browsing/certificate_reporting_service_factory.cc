@@ -82,7 +82,7 @@ CertificateReportingServiceFactory::CertificateReportingServiceFactory()
       server_public_key_(nullptr),
       server_public_key_version_(0),
       clock_(base::DefaultClock::GetInstance()),
-      queued_report_ttl_(base::TimeDelta::FromSeconds(kMaxReportAgeInSeconds)),
+      queued_report_ttl_(base::Seconds(kMaxReportAgeInSeconds)),
       max_queued_report_count_(kMaxReportCountInQueue),
       service_reset_callback_(base::DoNothing()) {}
 

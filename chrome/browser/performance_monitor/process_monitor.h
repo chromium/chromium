@@ -43,8 +43,7 @@ struct ProcessMetadata {
 class ProcessMonitor {
  public:
   // The interval at which ProcessMonitor performs its timed collections.
-  static constexpr base::TimeDelta kGatherInterval =
-      base::TimeDelta::FromMinutes(2);
+  static constexpr base::TimeDelta kGatherInterval = base::Minutes(2);
 
   struct Metrics {
     Metrics();

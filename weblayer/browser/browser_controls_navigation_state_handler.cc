@@ -30,7 +30,7 @@ namespace {
 base::TimeDelta GetBrowserControlsAllowHideDelay() {
   if (base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest))
     return base::TimeDelta();
-  return base::TimeDelta::FromSeconds(3);
+  return base::Seconds(3);
 }
 
 }  // namespace

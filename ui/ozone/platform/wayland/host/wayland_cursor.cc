@@ -134,9 +134,8 @@ void WaylandCursor::SetPlatformShapeInternal() {
   if (cursor_data_->image_count > 1 && cursor_image->delay > 0) {
     // If we have multiple frames, then we have animated cursor.  Schedule
     // sending the next frame.  See also the comment above.
-    animation_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(cursor_image->delay), this,
-        &WaylandCursor::SetPlatformShapeInternal);
+    animation_timer_.Start(FROM_HERE, base::Milliseconds(cursor_image->delay),
+                           this, &WaylandCursor::SetPlatformShapeInternal);
     ++current_image_index_;
   }
 }

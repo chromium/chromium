@@ -1413,8 +1413,7 @@ class TimeDelayBlinkAXTreeSource : public BlinkAXTreeSource {
                      ui::AXNodeData* out_data) const override {
     BlinkAXTreeSource::SerializeNode(node, out_data);
     if (time_delay_ms_) {
-      task_environment_->FastForwardBy(
-          base::TimeDelta::FromMilliseconds(time_delay_ms_));
+      task_environment_->FastForwardBy(base::Milliseconds(time_delay_ms_));
       time_delay_ms_ = 0;
     }
   }
@@ -1491,7 +1490,7 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
 
   // After 1000 seconds have passed, the next time we send an event we should
   // send URL-keyed metrics.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1000));
+  task_environment_.FastForwardBy(base::Seconds(1000));
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();

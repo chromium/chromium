@@ -205,9 +205,8 @@ void FrameSizeButton::StartSetButtonsToSnapModeTimer(
     AnimateButtonsToSnapMode();
   } else {
     set_buttons_to_snap_mode_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(set_buttons_to_snap_mode_delay_ms_),
-        this, &FrameSizeButton::AnimateButtonsToSnapMode);
+        FROM_HERE, base::Milliseconds(set_buttons_to_snap_mode_delay_ms_), this,
+        &FrameSizeButton::AnimateButtonsToSnapMode);
   }
 }
 

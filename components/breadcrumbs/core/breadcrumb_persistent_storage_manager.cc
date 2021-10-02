@@ -29,7 +29,7 @@ namespace {
 const char kEventSeparator[] = "\n";
 
 // Minimum time between breadcrumb writes to disk.
-constexpr auto kMinDelayBetweenWrites = base::TimeDelta::FromMilliseconds(250);
+constexpr auto kMinDelayBetweenWrites = base::Milliseconds(250);
 
 // Writes |events| to |file_path| at |position|.
 void DoInsertEventsIntoMemoryMappedFile(const base::FilePath& file_path,

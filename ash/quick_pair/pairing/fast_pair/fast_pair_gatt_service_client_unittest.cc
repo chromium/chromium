@@ -36,8 +36,7 @@ using NotifySessionCallback = base::OnceCallback<void(
 using ErrorCallback =
     base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>;
 
-constexpr base::TimeDelta kConnectingTestTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(5);
 
 // Below constants are used to construct MockBluetoothDevice for testing.
 constexpr char kTestBleDeviceAddress[] = "11:12:13:14:15:16";

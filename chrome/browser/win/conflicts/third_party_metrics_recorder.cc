@@ -41,7 +41,7 @@ ThirdPartyMetricsRecorder::ThirdPartyMetricsRecorder() {
   // It is safe to use base::Unretained() since the timer is a member variable
   // of this class.
   heartbeat_metrics_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(5),
+      FROM_HERE, base::Minutes(5),
       base::BindRepeating(&ThirdPartyMetricsRecorder::RecordHeartbeatMetrics,
                           base::Unretained(this)));
 

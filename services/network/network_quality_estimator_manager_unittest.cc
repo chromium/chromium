@@ -157,9 +157,9 @@ TEST_F(NetworkQualityEstimatorManagerTest, ClientNotified) {
                     ->num_network_quality_changed());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
+  EXPECT_EQ(base::Milliseconds(450),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       400,
@@ -181,9 +181,9 @@ TEST_F(NetworkQualityEstimatorManagerTest,
   base::RunLoop().RunUntilIdle();
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
+  EXPECT_EQ(base::Milliseconds(450),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       400,
@@ -221,9 +221,9 @@ TEST_F(NetworkQualityEstimatorManagerTest, OneClientPipeBroken) {
       network_quality_estimator_manager_client2->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 4G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(175),
+  EXPECT_EQ(base::Milliseconds(175),
             network_quality_estimator_manager_client2->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(125),
+  EXPECT_EQ(base::Milliseconds(125),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       1600,
@@ -250,9 +250,9 @@ TEST_F(NetworkQualityEstimatorManagerTest, OneClientPipeBroken) {
       network_quality_estimator_manager_client()->effective_connection_type());
   EXPECT_GE(3u, network_quality_estimator_manager_client()
                     ->num_network_quality_changed());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       75,
@@ -272,9 +272,9 @@ TEST_F(NetworkQualityEstimatorManagerTest,
   base::RunLoop().RunUntilIdle();
   // Typical RTT and downlink values when effective connection type is 2G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       75,
@@ -292,9 +292,9 @@ TEST_F(NetworkQualityEstimatorManagerTest,
       network_quality_estimator_manager_client2.effective_connection_type());
   // Typical RTT and downlink values when when effective connection type is 2G.
   // Taken from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             network_quality_estimator_manager_client2.http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       75, network_quality_estimator_manager_client2.downlink_bandwidth_kbps());

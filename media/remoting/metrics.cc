@@ -77,33 +77,31 @@ void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {
   // Record the session duration.
   const base::TimeDelta session_duration = base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.SessionDuration", session_duration,
-                             base::TimeDelta::FromSeconds(15),
-                             base::TimeDelta::FromHours(12), 50);
+                             base::Seconds(15), base::Hours(12), 50);
 
-  if (session_duration <= base::TimeDelta::FromSeconds(15)) {
+  if (session_duration <= base::Seconds(15)) {
     // Record the session duration in finer scale for short sessions
     UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.ShortSessionDuration",
-                               session_duration,
-                               base::TimeDelta::FromSecondsD(0.1),
-                               base::TimeDelta::FromSeconds(15), 60);
+                               session_duration, base::Seconds(0.1),
+                               base::Seconds(15), 60);
 
-    if (session_duration <= base::TimeDelta::FromSecondsD(0.1)) {
+    if (session_duration <= base::Seconds(0.1)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration0To100MilliSec", trigger,
           STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(1)) {
+    } else if (session_duration <= base::Seconds(1)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration100MilliSecTo1Sec",
           trigger, STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(3)) {
+    } else if (session_duration <= base::Seconds(3)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration1To3Sec", trigger,
           STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(5)) {
+    } else if (session_duration <= base::Seconds(5)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration3To5Sec", trigger,
           STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(10)) {
+    } else if (session_duration <= base::Seconds(10)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration5To10Sec", trigger,
           STOP_TRIGGER_MAX + 1);
@@ -243,9 +241,8 @@ void RendererMetricsRecorder::OnRendererInitialized() {
   const base::TimeDelta elapsed_since_start =
       base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.TimeUntilRemoteInitialized",
-                             elapsed_since_start,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromSeconds(30), 50);
+                             elapsed_since_start, base::Milliseconds(10),
+                             base::Seconds(30), 50);
 }
 
 void RendererMetricsRecorder::OnEvidenceOfPlayoutAtReceiver() {
@@ -254,9 +251,8 @@ void RendererMetricsRecorder::OnEvidenceOfPlayoutAtReceiver() {
   const base::TimeDelta elapsed_since_start =
       base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.TimeUntilFirstPlayout",
-                             elapsed_since_start,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromSeconds(30), 50);
+                             elapsed_since_start, base::Milliseconds(10),
+                             base::Seconds(30), 50);
   did_record_first_playout_ = true;
 }
 

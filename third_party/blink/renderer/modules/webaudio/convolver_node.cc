@@ -145,7 +145,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   {
     // Get some statistics on the size of the impulse response.
     UMA_HISTOGRAM_LONG_TIMES("WebAudio.ConvolverNode.ImpulseResponseLength",
-                             base::TimeDelta::FromSecondsD(buffer->duration()));
+                             base::Seconds(buffer->duration()));
   }
 
   // Wrap the AudioBuffer by an AudioBus. It's an efficient pointer set and not

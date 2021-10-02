@@ -118,14 +118,14 @@ void BalancedMediaTaskRunnerTest::SetupTest(
         timestamps_in_ms[k].size());
     for (size_t i = 0; i < timestamps_in_ms[k].size(); i++) {
       contexts_[k].task_timestamp_list[i] =
-          base::TimeDelta::FromMilliseconds(timestamps_in_ms[k][i]);
+          base::Milliseconds(timestamps_in_ms[k][i]);
     }
   }
 
   // Expected task order (for tasks that are actually run).
   for (size_t k = 0; k < expected_task_timestamps_ms.size(); k++) {
     expected_task_timestamps_.push_back(
-        base::TimeDelta::FromMilliseconds(expected_task_timestamps_ms[k]));
+        base::Milliseconds(expected_task_timestamps_ms[k]));
   }
 }
 
@@ -134,7 +134,7 @@ void BalancedMediaTaskRunnerTest::ProcessAllTasks() {
       FROM_HERE,
       base::BindOnce(&BalancedMediaTaskRunnerTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
   ScheduleTask();
 }
 
@@ -232,9 +232,7 @@ TEST_F(BalancedMediaTaskRunnerTest, OneTaskRunner) {
       std::vector<int>(expected_timestamps,
                        expected_timestamps + base::size(expected_timestamps)));
 
-  SetupTest(base::TimeDelta::FromMilliseconds(30),
-            timestamps_ms,
-            scheduling_pattern,
+  SetupTest(base::Milliseconds(30), timestamps_ms, scheduling_pattern,
             expected_timestamps_ms);
   ProcessAllTasks();
   base::RunLoop().Run();
@@ -265,9 +263,7 @@ TEST_F(BalancedMediaTaskRunnerTest, TwoTaskRunnerUnbalanced) {
       std::vector<int>(expected_timestamps,
                        expected_timestamps + base::size(expected_timestamps)));
 
-  SetupTest(base::TimeDelta::FromMilliseconds(30),
-            timestamps_ms,
-            scheduling_pattern,
+  SetupTest(base::Milliseconds(30), timestamps_ms, scheduling_pattern,
             expected_timestamps_ms);
   ProcessAllTasks();
   base::RunLoop().Run();
@@ -291,8 +287,8 @@ TEST_F(BalancedMediaTaskRunnerTest, TwoStreamsOfDifferentLength) {
   std::vector<size_t> scheduling_pattern = {
       0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0};
 
-  SetupTest(base::TimeDelta::FromMilliseconds(30), timestamps,
-            scheduling_pattern, expected_timestamps);
+  SetupTest(base::Milliseconds(30), timestamps, scheduling_pattern,
+            expected_timestamps);
   ProcessAllTasks();
   base::RunLoop().Run();
   EXPECT_TRUE(expected_task_timestamps_.empty());

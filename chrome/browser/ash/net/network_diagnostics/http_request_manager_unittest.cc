@@ -87,7 +87,7 @@ class HttpRequestManagerTest : public ::testing::Test {
 TEST_F(HttpRequestManagerTest, TestSuccessfulConnection) {
   SetExpectedConnectionResult(true);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   EXPECT_TRUE(test_url_loader_factory().SimulateResponseForPendingRequest(
@@ -98,7 +98,7 @@ TEST_F(HttpRequestManagerTest, TestSuccessfulConnection) {
 TEST_F(HttpRequestManagerTest, TestUnsuccessfulConnection) {
   SetExpectedConnectionResult(false);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   EXPECT_TRUE(test_url_loader_factory().SimulateResponseForPendingRequest(
@@ -109,12 +109,11 @@ TEST_F(HttpRequestManagerTest, TestUnsuccessfulConnection) {
 TEST_F(HttpRequestManagerTest, TestTimeoutExceeded) {
   SetExpectedConnectionResult(false);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   // Advance the clock by |timeout_ms| + 1 milliseconds.
-  task_environment().FastForwardBy(
-      base::TimeDelta::FromMilliseconds(timeout_ms + 1));
+  task_environment().FastForwardBy(base::Milliseconds(timeout_ms + 1));
   // HTTP requests time out after |timeout_ms| milliseconds.
   EXPECT_EQ(0, test_url_loader_factory().NumPending());
   VerifyCallbackInvoked(true);
@@ -123,7 +122,7 @@ TEST_F(HttpRequestManagerTest, TestTimeoutExceeded) {
 TEST_F(HttpRequestManagerTest, TestRetryHttpRequest) {
   SetExpectedConnectionResult(true);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   EXPECT_TRUE(test_url_loader_factory().SimulateResponseForPendingRequest(
@@ -140,16 +139,15 @@ TEST_F(HttpRequestManagerTest, TestRetryHttpRequest) {
 TEST_F(HttpRequestManagerTest, TestOverlappingRequests) {
   SetExpectedConnectionResult(true);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   // Advance the the clock by |timeout_ms| - 1 milliseconds, ensuring the
   // request has not timed out.
-  task_environment().FastForwardBy(
-      base::TimeDelta::FromMilliseconds(timeout_ms - 1));
+  task_environment().FastForwardBy(base::Milliseconds(timeout_ms - 1));
   // Launch another HTTP request.
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   // Only one request is expected because the first request was cancelled when
   // the second one was created.
@@ -163,7 +161,7 @@ TEST_F(HttpRequestManagerTest, TestOverlappingRequests) {
 TEST_F(HttpRequestManagerTest, TestNonOverlappingRequests) {
   SetExpectedConnectionResult(false);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   EXPECT_TRUE(test_url_loader_factory().SimulateResponseForPendingRequest(
@@ -174,11 +172,10 @@ TEST_F(HttpRequestManagerTest, TestNonOverlappingRequests) {
   ResetCallbackInvoked();
   // Advance the clock by |timeout_ms| + 1 milliseconds to simulate that the
   // second request does not overlap with the first.
-  task_environment().FastForwardBy(
-      base::TimeDelta::FromMilliseconds(timeout_ms + 1));
+  task_environment().FastForwardBy(base::Milliseconds(timeout_ms + 1));
   SetExpectedConnectionResult(true);
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   EXPECT_TRUE(test_url_loader_factory().SimulateResponseForPendingRequest(
@@ -190,7 +187,7 @@ TEST_F(HttpRequestManagerTest, TestManagerDestroyedWhenRequestPending) {
   // A connection result will not be returned in this scenario and
   // VerifyConnected() should be invoked.
   http_request_manager()->MakeRequest(
-      GURL(kFakeUrl), base::TimeDelta::FromMilliseconds(timeout_ms),
+      GURL(kFakeUrl), base::Milliseconds(timeout_ms),
       base::BindOnce(&HttpRequestManagerTest::VerifyConnected, weak_ptr()));
   EXPECT_EQ(1, test_url_loader_factory().NumPending());
   ResetHttpRequestManager();

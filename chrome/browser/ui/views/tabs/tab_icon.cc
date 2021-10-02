@@ -53,8 +53,7 @@ class TabIcon::CrashAnimation : public gfx::LinearAnimation,
                                 public gfx::AnimationDelegate {
  public:
   explicit CrashAnimation(TabIcon* target)
-      : gfx::LinearAnimation(base::TimeDelta::FromSeconds(1), 25, this),
-        target_(target) {}
+      : gfx::LinearAnimation(base::Seconds(1), 25, this), target_(target) {}
   CrashAnimation(const CrashAnimation&) = delete;
   CrashAnimation& operator=(const CrashAnimation&) = delete;
   ~CrashAnimation() override = default;
@@ -79,7 +78,7 @@ class TabIcon::CrashAnimation : public gfx::LinearAnimation,
 TabIcon::TabIcon()
     : AnimationDelegateViews(this),
       clock_(base::DefaultTickClock::GetInstance()),
-      favicon_fade_in_animation_(base::TimeDelta::FromMilliseconds(250),
+      favicon_fade_in_animation_(base::Milliseconds(250),
                                  gfx::LinearAnimation::kDefaultFrameRate,
                                  this) {
   SetCanProcessEventsWithinSubtree(false);

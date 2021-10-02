@@ -570,10 +570,9 @@ TEST_P(AssistantPageClamshellTest,
 TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingForNewUsers) {
   // A user is considered new if they haven't had an Assistant interaction in
   // the past 28 days.
-  const base::Time new_user_cutoff =
-      base::Time::Now() - base::TimeDelta::FromDays(28);
+  const base::Time new_user_cutoff = base::Time::Now() - base::Days(28);
 
-  SetTimeOfLastInteraction(new_user_cutoff + base::TimeDelta::FromMinutes(1));
+  SetTimeOfLastInteraction(new_user_cutoff + base::Minutes(1));
   ShowAssistantUi();
 
   // This user *has* interacted with Assistant more recently than 28 days ago so
@@ -591,7 +590,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingForNewUsers) {
 }
 
 TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingUntilInteractionOccurs) {
-  SetTimeOfLastInteraction(base::Time::Now() - base::TimeDelta::FromDays(28));
+  SetTimeOfLastInteraction(base::Time::Now() - base::Days(28));
   ShowAssistantUi();
 
   // This user has *not* interacted with Assistant more recently than 28 days

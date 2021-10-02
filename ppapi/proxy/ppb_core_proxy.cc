@@ -75,7 +75,7 @@ void CallOnMainThread(int delay_in_ms,
   PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostDelayedTask(
       FROM_HERE,
       RunWhileLocked(base::BindOnce(&CallbackWrapper, callback, result)),
-      base::TimeDelta::FromMilliseconds(delay_in_ms));
+      base::Milliseconds(delay_in_ms));
 }
 
 PP_Bool IsMainThread() {

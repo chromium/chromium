@@ -107,10 +107,9 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
 
   const int kSecondsPerMinute = 60;
   base::TimeDelta granularity =
-      base::TimeDelta::FromSecondsD(
-          (Manifest::IsUnpackedLocation(extension()->location())
-               ? alarms_api_constants::kDevDelayMinimum
-               : alarms_api_constants::kReleaseDelayMinimum)) *
+      base::Seconds((Manifest::IsUnpackedLocation(extension()->location())
+                         ? alarms_api_constants::kDevDelayMinimum
+                         : alarms_api_constants::kReleaseDelayMinimum)) *
       kSecondsPerMinute;
 
   std::unique_ptr<Alarm> alarm(

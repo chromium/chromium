@@ -26,8 +26,7 @@ class RecentlyAudibleHelper
  public:
   // This corresponds to the amount of time that the "audio playing" icon will
   // persist in the tab strip after audio has stopped playing.
-  static constexpr base::TimeDelta kRecentlyAudibleTimeout =
-      base::TimeDelta::FromSeconds(2);
+  static constexpr base::TimeDelta kRecentlyAudibleTimeout = base::Seconds(2);
 
   using CallbackList =
       base::RepeatingCallbackList<void(bool was_recently_audible)>;

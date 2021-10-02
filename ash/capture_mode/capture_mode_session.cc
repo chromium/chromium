@@ -131,15 +131,14 @@ constexpr int kCaptureRegionMinimumPaddingDp = 16;
 // The animation duration that the label fades out and scales down before count
 // down starts.
 constexpr base::TimeDelta kCaptureLabelCountdownStartDuration =
-    base::TimeDelta::FromMilliseconds(267);
+    base::Milliseconds(267);
 // The animation duration that the capture bar fades out before count down
 // starts.
-constexpr base::TimeDelta kCaptureBarFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kCaptureBarFadeOutDuration = base::Milliseconds(167);
 // The animation duration that the fullscreen shield fades out before count down
 // starts.
 constexpr base::TimeDelta kCaptureShieldFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(333);
+    base::Milliseconds(333);
 // If there is no text message was showing when count down starts, the label
 // widget will shrink down from 120% -> 100% and fade in.
 constexpr float kLabelScaleUpOnCountdown = 1.2;
@@ -147,10 +146,10 @@ constexpr float kLabelScaleUpOnCountdown = 1.2;
 // The animation duration that the label fades out and scales up when going from
 // the selection phase to the fine tune phase.
 constexpr base::TimeDelta kCaptureLabelRegionPhaseChangeDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(167);
 // The delay before the label fades out and scales up.
 constexpr base::TimeDelta kCaptureLabelRegionPhaseChangeDelay =
-    base::TimeDelta::FromMilliseconds(67);
+    base::Milliseconds(67);
 // When going from the select region phase to the fine tune phase, the label
 // widget will scale up from 80% -> 100%.
 constexpr float kLabelScaleDownOnPhaseChange = 0.8;
@@ -158,10 +157,10 @@ constexpr float kLabelScaleDownOnPhaseChange = 0.8;
 // Animation parameters for capture bar overlapping the user capture region.
 // The default animation duration for opacity changes to the capture bar.
 constexpr base::TimeDelta kCaptureBarOpacityChangeDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 // The animation duration for showing the capture bar on mouse/touch release.
 constexpr base::TimeDelta kCaptureBarOnReleaseOpacityChangeDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(167);
 // When the capture bar and user capture region overlap and the mouse is not
 // hovering over the capture bar, drop the opacity to this value to make the
 // region easier to see.

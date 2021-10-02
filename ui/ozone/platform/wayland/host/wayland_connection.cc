@@ -625,9 +625,8 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
   // base::TimeTicks::Now() uses CLOCK_MONOTONIC, no need to convert clock
   // domain if wp_presentation also uses it.
   if (presentation_clk_id_ == CLOCK_MONOTONIC) {
-    return base::TimeTicks() +
-           base::TimeDelta::FromMicroseconds(
-               ConvertTimespecResultToMicros(tv_sec_hi, tv_sec_lo, tv_nsec));
+    return base::TimeTicks() + base::Microseconds(ConvertTimespecResultToMicros(
+                                   tv_sec_hi, tv_sec_lo, tv_nsec));
   }
 
   struct timespec presentation_now;
@@ -647,7 +646,7 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
       ConvertTimespecResultToMicros(tv_sec_hi, tv_sec_lo, tv_nsec) -
       ConvertTimespecToMicros(presentation_now);
 
-  return now + base::TimeDelta::FromMicroseconds(delta_us);
+  return now + base::Microseconds(delta_us);
 }
 
 // static

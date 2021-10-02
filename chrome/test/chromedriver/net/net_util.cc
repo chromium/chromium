@@ -59,7 +59,7 @@ class SyncUrlFetcher {
 
     loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                TRAFFIC_ANNOTATION_FOR_TESTS);
-    loader_->SetTimeoutDuration(base::TimeDelta::FromSeconds(10));
+    loader_->SetTimeoutDuration(base::Seconds(10));
     loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory_, base::BindOnce(&SyncUrlFetcher::OnURLLoadComplete,
                                             base::Unretained(this)));

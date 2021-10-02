@@ -1702,19 +1702,19 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_RIGHT) {
   // the touch point.
   generator.GestureScrollSequence(gfx::Point(715, kRootHeight / 2),
                                   gfx::Point(725, kRootHeight / 2),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 100, 625, kRootHeight - 200),
             touch_resize_window_->bounds());
   // Drag more, but stop before being snapped to the edge.
   generator.GestureScrollSequence(gfx::Point(725, kRootHeight / 2),
                                   gfx::Point(760, kRootHeight / 2),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 100, 660, kRootHeight - 200),
             touch_resize_window_->bounds());
   // Drag even more to snap to the edge.
   generator.GestureScrollSequence(gfx::Point(760, kRootHeight / 2),
                                   gfx::Point(775, kRootHeight / 2),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 100, 700, kRootHeight - 200),
             touch_resize_window_->bounds());
 }
@@ -1733,19 +1733,19 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_LEFT) {
   // the touch point.
   generator.GestureScrollSequence(gfx::Point(85, kRootHeight / 2),
                                   gfx::Point(75, kRootHeight / 2),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(75, 100, 625, kRootHeight - 200),
             touch_resize_window_->bounds());
   // Drag more, but stop before being snapped to the edge.
   generator.GestureScrollSequence(gfx::Point(75, kRootHeight / 2),
                                   gfx::Point(40, kRootHeight / 2),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(40, 100, 660, kRootHeight - 200),
             touch_resize_window_->bounds());
   // Drag even more to snap to the edge.
   generator.GestureScrollSequence(gfx::Point(40, kRootHeight / 2),
                                   gfx::Point(25, kRootHeight / 2),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(0, 100, 700, kRootHeight - 200),
             touch_resize_window_->bounds());
 }
@@ -1763,17 +1763,17 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_TOP) {
   // Drag out of the top border a bit and check if the border is aligned with
   // the touch point.
   generator.GestureScrollSequence(gfx::Point(400, 85), gfx::Point(400, 75),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 75, 600, kRootHeight - 175),
             touch_resize_window_->bounds());
   // Drag more, but stop before being snapped to the edge.
   generator.GestureScrollSequence(gfx::Point(400, 75), gfx::Point(400, 40),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 40, 600, kRootHeight - 140),
             touch_resize_window_->bounds());
   // Drag even more to snap to the edge.
   generator.GestureScrollSequence(gfx::Point(400, 40), gfx::Point(400, 25),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 0, 600, kRootHeight - 100),
             touch_resize_window_->bounds());
 }
@@ -1792,19 +1792,19 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_BOTTOM) {
   // the touch point.
   generator.GestureScrollSequence(gfx::Point(400, kRootHeight - 85),
                                   gfx::Point(400, kRootHeight - 75),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 100, 600, kRootHeight - 175),
             touch_resize_window_->bounds());
   // Drag more, but stop before being snapped to the edge.
   generator.GestureScrollSequence(gfx::Point(400, kRootHeight - 75),
                                   gfx::Point(400, kRootHeight - 40),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 100, 600, kRootHeight - 140),
             touch_resize_window_->bounds());
   // Drag even more to snap to the edge.
   generator.GestureScrollSequence(gfx::Point(400, kRootHeight - 40),
                                   gfx::Point(400, kRootHeight - 25),
-                                  base::TimeDelta::FromMilliseconds(10), 5);
+                                  base::Milliseconds(10), 5);
   EXPECT_EQ(gfx::Rect(100, 100, 600, kRootHeight - 100),
             touch_resize_window_->bounds());
 }
@@ -1828,8 +1828,8 @@ TEST_F(WorkspaceWindowResizerTest, ResizeHistogram) {
 
   // Flush pending draws until there is no frame presented for 100ms (6 frames
   // worth time) and check that histogram is not updated.
-  while (ui::WaitForNextFrameToBePresented(
-      window_->GetHost()->compositor(), base::TimeDelta::FromMilliseconds(100)))
+  while (ui::WaitForNextFrameToBePresented(window_->GetHost()->compositor(),
+                                           base::Milliseconds(100)))
     ;
   histograms.ExpectTotalCount("Ash.InteractiveWindowResize.TimeToPresent", 1);
 }
@@ -2032,7 +2032,7 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      touch_resize_window_.get());
   generator.GestureScrollSequence(gfx::Point(400, 10), gfx::Point(400, 210),
-                                  base::TimeDelta::FromMilliseconds(10), 10);
+                                  base::Milliseconds(10), 10);
   ASSERT_TRUE(window_state->IsMinimized());
 
   // After unminimzing, the window bounds are the size they were before
@@ -2047,7 +2047,7 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   ASSERT_TRUE(window_state->IsSnapped());
 
   generator.GestureScrollSequence(gfx::Point(10, 10), gfx::Point(10, 210),
-                                  base::TimeDelta::FromMilliseconds(10), 10);
+                                  base::Milliseconds(10), 10);
   ASSERT_TRUE(window_state->IsMinimized());
 
   // After unminimzing, the window bounds are the size they were before
@@ -2090,7 +2090,7 @@ TEST_F(WorkspaceWindowResizerTest,
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      touch_resize_window_.get());
   generator.GestureScrollSequence(gfx::Point(250, 110), gfx::Point(250, 10),
-                                  base::TimeDelta::FromMilliseconds(10), 10);
+                                  base::Milliseconds(10), 10);
   ASSERT_TRUE(window_state->IsMaximized());
 
   // No crash, no DCHECK, and the window stays in the primary display.

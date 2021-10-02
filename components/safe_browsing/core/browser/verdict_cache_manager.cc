@@ -386,8 +386,7 @@ VerdictCacheManager::VerdictCacheManager(
   if (history_service)
     history_service_observation_.Observe(history_service);
   if (!content_settings->IsOffTheRecord()) {
-    ScheduleNextCleanUpAfterInterval(
-        base::TimeDelta::FromSeconds(kCleanUpIntervalInitSecond));
+    ScheduleNextCleanUpAfterInterval(base::Seconds(kCleanUpIntervalInitSecond));
   }
   CacheArtificialRealTimeUrlVerdict();
   CacheArtificialPhishGuardVerdict();
@@ -622,8 +621,7 @@ void VerdictCacheManager::CleanUpExpiredVerdicts() {
   CleanUpExpiredPhishGuardVerdicts();
   CleanUpExpiredRealTimeUrlCheckVerdicts();
   CleanUpExpiredPageLoadTokens();
-  ScheduleNextCleanUpAfterInterval(
-      base::TimeDelta::FromSeconds(kCleanUpIntervalSecond));
+  ScheduleNextCleanUpAfterInterval(base::Seconds(kCleanUpIntervalSecond));
 }
 
 void VerdictCacheManager::CleanUpExpiredPhishGuardVerdicts() {
@@ -708,7 +706,7 @@ void VerdictCacheManager::CleanUpExpiredPageLoadTokens() {
     ChromeUserPopulation::PageLoadToken token = hostname_token_pair.second;
     return base::Time::Now() -
                base::Time::FromJavaTime(token.token_time_msec()) >
-           base::TimeDelta::FromMinutes(kPageLoadTokenExpireMinute);
+           base::Minutes(kPageLoadTokenExpireMinute);
   });
   // TODO(crbug.com/1240403): Log the number of entries in page_load_token_map_;
 }

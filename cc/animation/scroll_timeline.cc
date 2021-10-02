@@ -132,8 +132,7 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
 
   // 4. If current scroll offset is greater than or equal to endScrollOffset:
   if (current_offset >= resolved_end_scroll_offset) {
-    return base::TimeTicks() +
-           base::TimeDelta::FromMillisecondsD(kScrollTimelineDurationMs);
+    return base::TimeTicks() + base::Milliseconds(kScrollTimelineDurationMs);
   }
 
   // Otherwise,
@@ -141,10 +140,10 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
   // procedure for current scroll offset.
   // 5.2 The current time is the result of evaluating the following expression:
   //                progress × timeline duration to get the percentage
-  return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
-                                 ComputeProgress<std::vector<double>>(
-                                     current_offset, scroll_offsets_) *
-                                 kScrollTimelineDurationMs);
+  return base::TimeTicks() +
+         base::Milliseconds(ComputeProgress<std::vector<double>>(
+                                current_offset, scroll_offsets_) *
+                            kScrollTimelineDurationMs);
 }
 
 void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {

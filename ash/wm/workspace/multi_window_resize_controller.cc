@@ -260,8 +260,7 @@ void MultiWindowResizeController::Show(aura::Window* window,
   StartObserving(windows_.window2);
   show_location_in_parent_ =
       ConvertPointToTarget(window, window->parent(), point_in_window);
-  show_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kShowDelayMS),
-                    this,
+  show_timer_.Start(FROM_HERE, base::Milliseconds(kShowDelayMS), this,
                     &MultiWindowResizeController::ShowIfValidMouseLocation);
 }
 
@@ -326,8 +325,7 @@ MultiWindowResizeController::DetermineWindowsFromScreenPoint(
 void MultiWindowResizeController::CreateMouseWatcher() {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<ResizeMouseWatcherHost>(this), this);
-  mouse_watcher_->set_notify_on_exit_time(
-      base::TimeDelta::FromMilliseconds(kHideDelayMS));
+  mouse_watcher_->set_notify_on_exit_time(base::Milliseconds(kHideDelayMS));
   DCHECK(resize_widget_);
   mouse_watcher_->Start(resize_widget_->GetNativeWindow());
 }

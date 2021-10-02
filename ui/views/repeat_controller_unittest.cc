@@ -26,8 +26,7 @@ class RepeatControllerTest : public testing::Test {
   // Short wait that must be below both
   // RepeatController::GetInitialWaitForTesting() and
   // RepeatController::GetRepeatingWaitForTesting().
-  static constexpr base::TimeDelta kShortWait =
-      base::TimeDelta::FromMilliseconds(10);
+  static constexpr base::TimeDelta kShortWait = base::Milliseconds(10);
   static_assert(
       kShortWait < RepeatController::GetInitialWaitForTesting(),
       "kShortWait must be shorter than the RepeatController initial wait.");

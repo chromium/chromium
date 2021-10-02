@@ -149,8 +149,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     int initial_retry_delay_sec;
     if (base::StringToInt(field_params[kInitialRetryParameterName],
                           &initial_retry_delay_sec)) {
-      parameters->initial_retry_delay =
-          base::TimeDelta::FromSeconds(initial_retry_delay_sec);
+      parameters->initial_retry_delay = base::Seconds(initial_retry_delay_sec);
     }
   }
 
@@ -167,7 +166,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     if (base::StringToInt(field_params[kMinSyncRecoveryTimeName],
                           &min_sync_recovery_time_sec)) {
       parameters->min_sync_recovery_time =
-          base::TimeDelta::FromSeconds(min_sync_recovery_time_sec);
+          base::Seconds(min_sync_recovery_time_sec);
     }
   }
 
@@ -176,7 +175,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     if (base::StringToInt(field_params[kMaxSyncEventDurationName],
                           &max_sync_event_duration_sec)) {
       parameters->max_sync_event_duration =
-          base::TimeDelta::FromSeconds(max_sync_event_duration_sec);
+          base::Seconds(max_sync_event_duration_sec);
     }
   }
 
@@ -185,7 +184,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     if (base::StringToInt(field_params[kMinPeriodicSyncEventsInterval],
                           &min_periodic_sync_events_interval_sec)) {
       parameters->min_periodic_sync_events_interval =
-          base::TimeDelta::FromSeconds(min_periodic_sync_events_interval_sec);
+          base::Seconds(min_periodic_sync_events_interval_sec);
     }
   }
 
@@ -280,11 +279,11 @@ base::TimeDelta BackgroundSyncControllerImpl::SnapToMaxOriginFrequency(
   DCHECK_GE(min_interval, 0);
 
   if (min_interval < min_gap_for_origin)
-    return base::TimeDelta::FromMilliseconds(min_gap_for_origin);
+    return base::Milliseconds(min_gap_for_origin);
   if (min_interval % min_gap_for_origin == 0)
-    return base::TimeDelta::FromMilliseconds(min_interval);
-  return base::TimeDelta::FromMilliseconds(
-      (min_interval / min_gap_for_origin + 1) * min_gap_for_origin);
+    return base::Milliseconds(min_interval);
+  return base::Milliseconds((min_interval / min_gap_for_origin + 1) *
+                            min_gap_for_origin);
 }
 
 base::TimeDelta BackgroundSyncControllerImpl::ApplyMinGapForOrigin(

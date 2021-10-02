@@ -76,8 +76,7 @@ class MojoDecryptorTest : public ::testing::Test {
     // We don't care about the encrypted data, just create a simple VideoFrame.
     scoped_refptr<VideoFrame> frame(
         MojoSharedBufferVideoFrame::CreateDefaultForTesting(
-            PIXEL_FORMAT_I420, gfx::Size(100, 100),
-            base::TimeDelta::FromSeconds(100)));
+            PIXEL_FORMAT_I420, gfx::Size(100, 100), base::Seconds(100)));
     frame->AddDestructionObserver(base::BindOnce(
         &MojoDecryptorTest::OnFrameDestroyed, base::Unretained(this)));
 
@@ -91,7 +90,7 @@ class MojoDecryptorTest : public ::testing::Test {
                          Decryptor::AudioDecodeCB audio_decode_cb) {
     const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_4_0;
     const int kSampleRate = 48000;
-    const base::TimeDelta start_time = base::TimeDelta::FromSecondsD(1000.0);
+    const base::TimeDelta start_time = base::Seconds(1000.0);
     auto audio_buffer = MakeAudioBuffer<float>(
         kSampleFormatPlanarF32, kChannelLayout,
         ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 0.0f, 1.0f,

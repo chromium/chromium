@@ -17,8 +17,7 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultRestartDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDefaultRestartDelay = base::Seconds(5);
 
 void RecordInstanceCrashUma(ArcContainerLifetimeEvent sample) {
   UMA_HISTOGRAM_ENUMERATION("Arc.ContainerLifetimeEvent", sample,

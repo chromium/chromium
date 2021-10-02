@@ -2669,7 +2669,7 @@ TEST_P(SequenceManagerTest, SweepLastTaskInQueue) {
   queue->task_runner()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&CancelableTask::FailTask<>, task.weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   // Make sure sweeping away the last task in the queue doesn't end up accessing
   // invalid iterators.
@@ -2684,9 +2684,8 @@ TEST_P(SequenceManagerTest, CancelledTaskPostAnother) {
   auto queue = CreateTaskQueue();
   bool did_post = false;
   auto on_destroy = BindLambdaForTesting([&] {
-    queue->task_runner()->PostDelayedTask(FROM_HERE,
-                                          BindLambdaForTesting([] {}),
-                                          base::TimeDelta::FromSeconds(1));
+    queue->task_runner()->PostDelayedTask(
+        FROM_HERE, BindLambdaForTesting([] {}), base::Seconds(1));
     did_post = true;
   });
 
@@ -2697,7 +2696,7 @@ TEST_P(SequenceManagerTest, CancelledTaskPostAnother) {
       BindOnce(&CancelableTask::FailTask<DestructionCallback>,
                task.weak_factory_.GetWeakPtr(),
                std::move(destruction_observer)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   task.weak_factory_.InvalidateWeakPtrs();
   EXPECT_FALSE(did_post);
@@ -2745,7 +2744,7 @@ TEST_P(SequenceManagerTest, CancelledDelayedTaskShutsDownQueue) {
       BindOnce(&CancelableTask::FailTask<DestructionCallback>,
                task.weak_factory_.GetWeakPtr(),
                std::move(destruction_observer)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   task.weak_factory_.InvalidateWeakPtrs();
   EXPECT_FALSE(did_shutdown);
@@ -4716,9 +4715,9 @@ TEST_P(SequenceManagerTest, PostDelayedTaskFromOtherThread) {
       FROM_HERE, BindOnce(
                      [](scoped_refptr<TaskRunner> task_runner,
                         WaitableEvent* task_posted) {
-                       task_runner->PostDelayedTask(
-                           FROM_HERE, BindOnce(&NopTask),
-                           base::TimeDelta::FromMilliseconds(10));
+                       task_runner->PostDelayedTask(FROM_HERE,
+                                                    BindOnce(&NopTask),
+                                                    base::Milliseconds(10));
                        task_posted->Signal();
                      },
                      std::move(task_runner), &task_posted));
@@ -4733,19 +4732,19 @@ namespace {
 void PostTaskA(scoped_refptr<TaskRunner> task_runner) {
   task_runner->PostTask(FROM_HERE, BindOnce(&NopTask));
   task_runner->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                               base::TimeDelta::FromMilliseconds(10));
+                               base::Milliseconds(10));
 }
 
 void PostTaskB(scoped_refptr<TaskRunner> task_runner) {
   task_runner->PostTask(FROM_HERE, BindOnce(&NopTask));
   task_runner->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                               base::TimeDelta::FromMilliseconds(20));
+                               base::Milliseconds(20));
 }
 
 void PostTaskC(scoped_refptr<TaskRunner> task_runner) {
   task_runner->PostTask(FROM_HERE, BindOnce(&NopTask));
   task_runner->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                               base::TimeDelta::FromMilliseconds(30));
+                               base::Milliseconds(30));
 }
 
 }  // namespace

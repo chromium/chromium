@@ -29,9 +29,8 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
   std::string cert_der;
   if (!net::x509_util::CreateKeyAndSelfSignedCert(
           "CN=Error", static_cast<uint32_t>(g_serial_number.GetNext()),
-          base::Time::Now() - base::TimeDelta::FromMinutes(5),
-          base::Time::Now() + base::TimeDelta::FromMinutes(5), &unused_key,
-          &cert_der)) {
+          base::Time::Now() - base::Minutes(5),
+          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
     return nullptr;
   }
   return net::X509Certificate::CreateFromBytes(

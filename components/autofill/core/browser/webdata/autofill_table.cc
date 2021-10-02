@@ -1008,8 +1008,7 @@ bool AutofillTable::RemoveExpiredFormElements(
   const int64_t period = kAutocompleteRetentionPolicyPeriodInDays;
   const auto change_type = AutofillChange::EXPIRE;
 
-  base::Time expiration_time =
-      AutofillClock::Now() - base::TimeDelta::FromDays(period);
+  base::Time expiration_time = AutofillClock::Now() - base::Days(period);
 
   // Query for the name and value of all form elements that were last used
   // before the |expiration_time|.
@@ -2147,7 +2146,7 @@ bool AutofillTable::GetAutofillOffers(
     data->offer_id = s.ColumnInt64(index++);
     data->offer_reward_amount = s.ColumnString(index++);
     data->expiry = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMilliseconds(s.ColumnInt64(index++)));
+        base::Milliseconds(s.ColumnInt64(index++)));
     data->offer_details_url = GURL(s.ColumnString(index++));
     data->promo_code = s.ColumnString(index++);
     data->display_strings.value_prop_text = s.ColumnString(index++);

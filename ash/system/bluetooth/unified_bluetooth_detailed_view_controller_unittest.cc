@@ -21,8 +21,7 @@ namespace ash {
 
 namespace {
 
-const base::TimeDelta kUpdateFrequencyMs =
-    base::TimeDelta::FromMilliseconds(1000);
+const base::TimeDelta kUpdateFrequencyMs = base::Milliseconds(1000);
 
 }  // namespace
 

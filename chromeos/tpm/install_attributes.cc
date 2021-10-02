@@ -45,7 +45,7 @@ bool g_using_install_attributes_for_testing = false;
 const int kDbusRetryCount = 12;
 
 // Interval of TPM lock state query retries during consistency check.
-constexpr base::TimeDelta kDbusRetryInterval = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDbusRetryInterval = base::Seconds(5);
 
 std::string ReadMapKey(const std::map<std::string, std::string>& map,
                        const std::string& key) {

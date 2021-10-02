@@ -386,12 +386,12 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
   EXPECT_EQ(1, test_handler()->message_requiring_gesture_count());
 
   // Now+5 seconds should be allowed.
-  AdvanceClock(base::TimeDelta::FromSeconds(5));
+  AdvanceClock(base::Seconds(5));
   SendMessageAndWaitForFinish();
   EXPECT_EQ(2, test_handler()->message_requiring_gesture_count());
 
   // Anything after that should be disallowed though.
-  AdvanceClock(base::TimeDelta::FromMicroseconds(1));
+  AdvanceClock(base::Microseconds(1));
   SendMessageAndWaitForFinish();
   EXPECT_EQ(2, test_handler()->message_requiring_gesture_count());
 }

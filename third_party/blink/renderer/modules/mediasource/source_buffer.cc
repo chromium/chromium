@@ -158,7 +158,7 @@ scoped_refptr<media::StreamParserBuffer> MakeAudioStreamParserBuffer(
   // TODO(crbug.com/1144908): Get EncodedAudioChunk to have an optional duration
   // attribute, and require it to be populated for use by MSE-for-WebCodecs,
   // here. For initial prototype, hard-coded 22ms is used as estimated duration.
-  stream_parser_buffer->set_duration(base::TimeDelta::FromMilliseconds(22));
+  stream_parser_buffer->set_duration(base::Milliseconds(22));
   stream_parser_buffer->set_is_duration_estimated(true);
   return stream_parser_buffer;
 }

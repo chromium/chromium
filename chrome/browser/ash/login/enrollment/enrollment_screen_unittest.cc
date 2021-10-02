@@ -199,7 +199,7 @@ class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
     enrollment_screen_->Show(wizard_context_.get());
 
     // Fast forward time by 1 minute.
-    FastForwardTime(base::TimeDelta::FromMinutes(1));
+    FastForwardTime(base::Minutes(1));
 
     // Check that we have retried 4 times.
     EXPECT_EQ(enrollment_screen_->num_retries_, 4);
@@ -264,10 +264,10 @@ TEST_F(ZeroTouchEnrollmentScreenUnitTest, DoNotRetryOnTopOfUser) {
       FROM_HERE,
       base::BindOnce(&EnrollmentScreen::OnRetry,
                      enrollment_screen_->weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(30));
+      base::Seconds(30));
 
   // Fast forward time by 1 minute.
-  FastForwardTime(base::TimeDelta::FromMinutes(1));
+  FastForwardTime(base::Minutes(1));
 
   // Check that the number of retries is still 4.
   EXPECT_EQ(enrollment_screen_->num_retries_, 4);
@@ -283,7 +283,7 @@ TEST_F(ZeroTouchEnrollmentScreenUnitTest, DoNotRetryAfterSuccess) {
   enrollment_screen_->Show(wizard_context_.get());
 
   // Fast forward time by 1 minute.
-  FastForwardTime(base::TimeDelta::FromMinutes(1));
+  FastForwardTime(base::Minutes(1));
 
   // Check that we do not retry.
   EXPECT_EQ(enrollment_screen_->num_retries_, 0);

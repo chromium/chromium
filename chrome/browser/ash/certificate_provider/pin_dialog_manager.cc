@@ -12,8 +12,7 @@
 namespace ash {
 
 // Define timeout for issued sign_request_id.
-constexpr base::TimeDelta kSignRequestIdTimeout =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kSignRequestIdTimeout = base::Minutes(10);
 
 PinDialogManager::PinDialogManager() = default;
 

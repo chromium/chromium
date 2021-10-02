@@ -141,8 +141,7 @@ constexpr char kSideVolumeButtonLocationFilePath[] =
     "/usr/share/chromeos-assets/side_volume_button/location.json";
 
 // The interval between two volume control actions within one volume adjust.
-constexpr base::TimeDelta kVolumeAdjustTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kVolumeAdjustTimeout = base::Seconds(2);
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.

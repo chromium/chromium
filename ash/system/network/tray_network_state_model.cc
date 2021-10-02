@@ -264,7 +264,7 @@ void TrayNetworkStateModel::OnGetVirtualNetworks(
 void TrayNetworkStateModel::NotifyNetworkListChanged() {
   if (timer_.IsRunning())
     return;
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(update_frequency_),
+  timer_.Start(FROM_HERE, base::Milliseconds(update_frequency_),
                base::BindOnce(&TrayNetworkStateModel::SendNetworkListChanged,
                               base::Unretained(this)));
 }

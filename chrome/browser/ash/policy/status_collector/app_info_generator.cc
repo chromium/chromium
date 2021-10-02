@@ -82,7 +82,7 @@ namespace policy {
 AppInfoGenerator::AppInfoProvider::AppInfoProvider(Profile* profile)
     : activity_storage(profile->GetPrefs(),
                        prefs::kAppActivityTimes,
-                       /*day_start_offset=*/base::TimeDelta::FromSeconds(0)),
+                       /*day_start_offset=*/base::Seconds(0)),
       app_service_proxy(*apps::AppServiceProxyFactory::GetForProfile(profile)) {
 }
 

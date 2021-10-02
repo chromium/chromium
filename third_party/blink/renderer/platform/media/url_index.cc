@@ -184,8 +184,7 @@ bool UrlData::Valid() {
   // When ranges are not supported, we cannot re-use cached data.
   if (valid_until_ > now)
     return true;
-  if (now - last_used_ <
-      base::TimeDelta::FromSeconds(kUrlMappingTimeoutSeconds))
+  if (now - last_used_ < base::Seconds(kUrlMappingTimeoutSeconds))
     return true;
   return false;
 }

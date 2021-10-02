@@ -150,8 +150,8 @@ array [
 ]
 )";
 
-constexpr base::TimeDelta kDeviceFoundTimeout = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kDeviceLostTimeout = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDeviceFoundTimeout = base::Seconds(1);
+constexpr base::TimeDelta kDeviceLostTimeout = base::Seconds(3);
 // Used to verify the filter pattern value provided by the scanner.
 constexpr uint8_t kPatternValue[] = {0x2c, 0xfe, 0xfc, 0x12, 0x8e};
 

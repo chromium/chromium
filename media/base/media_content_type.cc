@@ -14,7 +14,7 @@ MediaContentType DurationToMediaContentType(base::TimeDelta duration) {
   // A zero duration indicates that the duration is unknown. "Persistent" type
   // should be used in this case.
   return (duration.is_zero() ||
-          duration > base::TimeDelta::FromSeconds(kMinimumContentDurationSecs))
+          duration > base::Seconds(kMinimumContentDurationSecs))
              ? MediaContentType::Persistent
              : MediaContentType::Transient;
 }

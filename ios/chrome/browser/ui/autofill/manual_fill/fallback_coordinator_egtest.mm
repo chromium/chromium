@@ -212,7 +212,7 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
     // keyboard on iOS15. This may be because the state element is still
     // focused. Instead, wait a moment for the focus to be dismissed.
     if (base::ios::IsRunningOnIOS15OrLater()) {
-      base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(1));
+      base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
     }
   }
 

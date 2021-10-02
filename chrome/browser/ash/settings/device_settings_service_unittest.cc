@@ -123,8 +123,7 @@ TEST_F(DeviceSettingsServiceTest, LoadValidationError) {
 }
 
 TEST_F(DeviceSettingsServiceTest, LoadValidationErrorFutureTimestamp) {
-  base::Time timestamp(base::Time::NowFromSystemTime() +
-                       base::TimeDelta::FromDays(5000));
+  base::Time timestamp(base::Time::NowFromSystemTime() + base::Days(5000));
   device_policy_->policy_data().set_timestamp(
       (timestamp - base::Time::UnixEpoch()).InMilliseconds());
   device_policy_->Build();

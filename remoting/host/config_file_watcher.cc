@@ -136,8 +136,7 @@ void ConfigFileWatcherImpl::WatchOnIoThread() {
   // Create the timer that will be used for delayed-reading the configuration
   // file.
   config_updated_timer_ = std::make_unique<base::DelayTimer>(
-      FROM_HERE, base::TimeDelta::FromSeconds(2), this,
-      &ConfigFileWatcherImpl::ReloadConfig);
+      FROM_HERE, base::Seconds(2), this, &ConfigFileWatcherImpl::ReloadConfig);
 
   // Start watching the configuration file.
   config_watcher_ = std::make_unique<base::FilePathWatcher>();

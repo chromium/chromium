@@ -203,7 +203,7 @@ TEST_F(CastAppDiscoveryServiceTest, Refresh) {
   EXPECT_CALL(message_handler_, RequestAppAvailability(_, "BBBBBBBB", _));
   AddOrUpdateSink(sink2);
 
-  clock_.Advance(base::TimeDelta::FromSeconds(30));
+  clock_.Advance(base::Seconds(30));
 
   // Request app availability for app B for both sinks.
   // App A on |sink2| is not requested due to timing threshold.
@@ -218,7 +218,7 @@ TEST_F(CastAppDiscoveryServiceTest, Refresh) {
       });
   app_discovery_service_->Refresh();
 
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
 
   EXPECT_CALL(message_handler_, RequestAppAvailability(_, "AAAAAAAA", _));
   app_discovery_service_->Refresh();

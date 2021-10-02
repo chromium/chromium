@@ -107,7 +107,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP_AND_FLAGS0(
       internal::kJavaTraceCategory, name.c_str(), TRACE_ID_LOCAL(id),
-      base::TimeTicks() + base::TimeDelta::FromNanoseconds(timestamp_ns),
+      base::TimeTicks() + base::Nanoseconds(timestamp_ns),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
@@ -120,7 +120,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(
 
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP_AND_FLAGS0(
       internal::kJavaTraceCategory, name.c_str(), TRACE_ID_LOCAL(id),
-      base::TimeTicks() + base::TimeDelta::FromNanoseconds(timestamp_ns),
+      base::TimeTicks() + base::Nanoseconds(timestamp_ns),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 

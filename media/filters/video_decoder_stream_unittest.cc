@@ -49,7 +49,7 @@ namespace media {
 namespace {
 const int kNumConfigs = 4;
 const int kNumBuffersInOneConfig = 5;
-constexpr base::TimeDelta kPrepareDelay = base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kPrepareDelay = base::Milliseconds(5);
 
 static int GetDecoderId(int i) {
   return i;
@@ -689,8 +689,7 @@ TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {
                             base::Unretained(this)));
   }
 
-  constexpr base::TimeDelta kDecodeDelay =
-      base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDecodeDelay = base::Milliseconds(10);
 
   Initialize();
 

@@ -58,7 +58,7 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_TwoActive) {
   EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
 
   // Should be within the activity time threshold.
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(27));
+  task_environment()->FastForwardBy(base::Days(27));
   EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
 }
 
@@ -109,7 +109,7 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Expired) {
       testing_profile_manager()->CreateTestingProfile("profile2");
   GetProfileAttributes(profile2)->SetActiveTimeToNow();
   // Should be outside of the activity time threshold.
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(29));
+  task_environment()->FastForwardBy(base::Days(29));
 
   EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
 }

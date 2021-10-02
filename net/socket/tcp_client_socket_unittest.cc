@@ -847,7 +847,7 @@ TEST_F(TCPClientSocketMockTimeTest, NoConnectAttemptTimeoutByDefault) {
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // After 4 minutes, the socket should still be connecting.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
   EXPECT_FALSE(connect_callback.have_result());
   EXPECT_FALSE(socket.IsConnected());
 
@@ -858,8 +858,8 @@ TEST_F(TCPClientSocketMockTimeTest, NoConnectAttemptTimeoutByDefault) {
 // Tests that the maximum timeout is used when there is no estimated
 // RTT.
 TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMaxWhenNoRTT) {
-  OverrideTcpConnectAttemptTimeout override_timeout(
-      1, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+  OverrideTcpConnectAttemptTimeout override_timeout(1, base::Seconds(4),
+                                                    base::Seconds(10));
 
   IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
 
@@ -875,20 +875,20 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMaxWhenNoRTT) {
 
   // Advance to t=3.1s
   // Should still be pending, as this is before the minimum timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(3100));
+  task_environment_.FastForwardBy(base::Milliseconds(3100));
   EXPECT_FALSE(connect_callback.have_result());
   EXPECT_FALSE(socket.IsConnected());
 
   // Advance to t=4.1s
   // Should still be pending. This is after the minimum timeout, but before the
   // maximum.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(connect_callback.have_result());
   EXPECT_FALSE(socket.IsConnected());
 
   // Advance to t=10.1s
   // Should now be timed out, as this is after the maximum timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment_.FastForwardBy(base::Seconds(6));
   rv = connect_callback.GetResult(rv);
   ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
 
@@ -899,13 +899,12 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMaxWhenNoRTT) {
 // Tests that the minimum timeout is used when the adaptive timeout using RTT
 // ends up being too low.
 TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTLow) {
-  OverrideTcpConnectAttemptTimeout override_timeout(
-      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+  OverrideTcpConnectAttemptTimeout override_timeout(5, base::Seconds(4),
+                                                    base::Seconds(10));
 
   // Set the estimated RTT to 1 millisecond.
   TestNetworkQualityEstimator network_quality_estimator;
-  network_quality_estimator.SetStartTimeNullTransportRtt(
-      base::TimeDelta::FromMilliseconds(1));
+  network_quality_estimator.SetStartTimeNullTransportRtt(base::Milliseconds(1));
 
   IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
 
@@ -921,13 +920,13 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTLow) {
   // Advance to t=1.1s
   // Should be pending, since although the adaptive timeout has been reached, it
   // is lower than the minimum timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1100));
+  task_environment_.FastForwardBy(base::Milliseconds(1100));
   EXPECT_FALSE(connect_callback.have_result());
   EXPECT_FALSE(socket.IsConnected());
 
   // Advance to t=4.1s
   // Should have timed out due to hitting the minimum timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment_.FastForwardBy(base::Seconds(3));
   rv = connect_callback.GetResult(rv);
   ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
 
@@ -938,13 +937,12 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTLow) {
 // Tests that the maximum timeout is used when the adaptive timeout from RTT is
 // too high.
 TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTHigh) {
-  OverrideTcpConnectAttemptTimeout override_timeout(
-      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+  OverrideTcpConnectAttemptTimeout override_timeout(5, base::Seconds(4),
+                                                    base::Seconds(10));
 
   // Set the estimated RTT to 5 seconds.
   TestNetworkQualityEstimator network_quality_estimator;
-  network_quality_estimator.SetStartTimeNullTransportRtt(
-      base::TimeDelta::FromSeconds(5));
+  network_quality_estimator.SetStartTimeNullTransportRtt(base::Seconds(5));
 
   IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
 
@@ -961,7 +959,7 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTHigh) {
   // The socket should have timed out due to hitting the maximum timeout. Had
   // the adaptive timeout been used, the socket would instead be timing out at
   // t=25s.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(10100));
+  task_environment_.FastForwardBy(base::Milliseconds(10100));
   rv = connect_callback.GetResult(rv);
   ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
 
@@ -972,14 +970,13 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTHigh) {
 // Tests that an adaptive timeout is used for TCP connection attempts based on
 // the estimated RTT.
 TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesRTT) {
-  OverrideTcpConnectAttemptTimeout override_timeout(
-      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+  OverrideTcpConnectAttemptTimeout override_timeout(5, base::Seconds(4),
+                                                    base::Seconds(10));
 
   // Set the estimated RTT to 1 second. Since the multiplier is set to 5, the
   // total adaptive timeout will be 5 seconds.
   TestNetworkQualityEstimator network_quality_estimator;
-  network_quality_estimator.SetStartTimeNullTransportRtt(
-      base::TimeDelta::FromSeconds(1));
+  network_quality_estimator.SetStartTimeNullTransportRtt(base::Seconds(1));
 
   IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
 
@@ -995,13 +992,13 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesRTT) {
   // Advance to t=4.1s
   // The socket should still be pending. Had the minimum timeout been enforced,
   // it would instead have timed out now.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(4100));
+  task_environment_.FastForwardBy(base::Milliseconds(4100));
   EXPECT_FALSE(connect_callback.have_result());
   EXPECT_FALSE(socket.IsConnected());
 
   // Advance to t=5.1s
   // The adaptive timeout was at t=5s, so it should now be timed out.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   rv = connect_callback.GetResult(rv);
   ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
 
@@ -1012,8 +1009,8 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesRTT) {
 // Tests that when multiple TCP connect attempts are made, the timeout for each
 // one is applied independently.
 TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutIndependent) {
-  OverrideTcpConnectAttemptTimeout override_timeout(
-      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+  OverrideTcpConnectAttemptTimeout override_timeout(5, base::Seconds(4),
+                                                    base::Seconds(10));
 
   // This test will attempt connecting to 5 endpoints.
   const size_t kNumIps = 5;
@@ -1032,14 +1029,14 @@ TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutIndependent) {
 
   // Advance to t=49s
   // Should still be pending.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(49));
+  task_environment_.FastForwardBy(base::Seconds(49));
   EXPECT_FALSE(connect_callback.have_result());
   EXPECT_FALSE(socket.IsConnected());
 
   // Advance to t=50.1s
   // All attempts should take 50 seconds to complete (5 attempts, 10 seconds
   // each). So by this point the overall connect attempt will have timed out.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1100));
+  task_environment_.FastForwardBy(base::Milliseconds(1100));
   rv = connect_callback.GetResult(rv);
   ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
 

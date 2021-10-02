@@ -237,7 +237,7 @@ TEST_F(AccessContextAuditServiceTest, CookieRecords) {
                             kAccessTime1, records);
 
   // Check that a repeated access correctly updates associated timestamp.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   const base::Time kAccessTime2 = clock()->Now();
   service()->RecordCookieAccess({*test_cookie, *test_non_persistent_cookie},
                                 kTopFrameOrigin);
@@ -555,10 +555,8 @@ TEST_F(AccessContextAuditServiceTest, TimeRangeHistoryDeletion) {
 
   clock()->SetNow(base::Time::Now());
   service()->SetClockForTesting(clock());
-  const base::Time kInsideTimeRange =
-      clock()->Now() + base::TimeDelta::FromHours(1);
-  const base::Time kOutsideTimeRange =
-      clock()->Now() + base::TimeDelta::FromHours(3);
+  const base::Time kInsideTimeRange = clock()->Now() + base::Hours(1);
+  const base::Time kOutsideTimeRange = clock()->Now() + base::Hours(3);
 
   history_service()->AddPageWithDetails(kURL1, u"Test1", 1, 1, kInsideTimeRange,
                                         false, history::SOURCE_BROWSED);
@@ -597,8 +595,8 @@ TEST_F(AccessContextAuditServiceTest, TimeRangeHistoryDeletion) {
   base::RunLoop run_loop;
   base::CancelableTaskTracker task_tracker;
   history_service()->ExpireHistoryBetween(
-      std::set<GURL>(), kInsideTimeRange - base::TimeDelta::FromMinutes(10),
-      kInsideTimeRange + base::TimeDelta::FromMinutes(10),
+      std::set<GURL>(), kInsideTimeRange - base::Minutes(10),
+      kInsideTimeRange + base::Minutes(10),
       /*user_initiated*/ true, run_loop.QuitClosure(), &task_tracker);
   run_loop.Run();
 
@@ -710,16 +708,16 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   clock()->SetNow(base::Time());
   service()->SetClockForTesting(clock());
 
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   service()->RecordStorageAPIAccess(kTestOrigin1, kTestStorageType1,
                                     kTopFrameOrigin);
 
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   const base::Time kAccessTime1 = clock()->Now();
   service()->RecordStorageAPIAccess(kTestOrigin2, kTestStorageType2,
                                     kTopFrameOrigin);
 
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   const base::Time kAccessTime2 = clock()->Now();
   service()->RecordStorageAPIAccess(kTestOrigin3, kTestStorageType3,
                                     kTopFrameOrigin);
@@ -730,8 +728,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
       [&](const url::Origin& origin) { return origin == kTestOrigin1; });
   service()->OnOriginDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_WEBSQL, origin_matcher,
-      base::Time() + base::TimeDelta::FromMinutes(50),
-      base::Time() + base::TimeDelta::FromMinutes(80));
+      base::Time() + base::Minutes(50), base::Time() + base::Minutes(80));
 
   auto records = GetAllAccessRecords();
   ASSERT_EQ(2U, records.size());
@@ -743,8 +740,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   // Provide more generalised parameters that target TestOrigin2's record.
   service()->OnOriginDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_ALL, base::NullCallback(),
-      base::Time() + base::TimeDelta::FromMinutes(80),
-      base::Time() + base::TimeDelta::FromMinutes(130));
+      base::Time() + base::Minutes(80), base::Time() + base::Minutes(130));
 
   records = GetAllAccessRecords();
   ASSERT_EQ(1U, records.size());
@@ -797,8 +793,7 @@ TEST_F(AccessContextAuditServiceTest, CookieAccessHelper) {
   helper->RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
 
   // Reaccess the cookie at a later time.
-  const base::Time kAccessTime2 =
-      clock()->Now() + base::TimeDelta::FromMinutes(1);
+  const base::Time kAccessTime2 = clock()->Now() + base::Minutes(1);
   clock()->SetNow(kAccessTime2);
   helper->RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
 
@@ -822,8 +817,7 @@ TEST_F(AccessContextAuditServiceTest, CookieAccessHelper) {
 
   // Record a cookie access and delete the helper, the access should be flushed
   // to the service.
-  const base::Time kAccessTime3 =
-      clock()->Now() + base::TimeDelta::FromMinutes(1);
+  const base::Time kAccessTime3 = clock()->Now() + base::Minutes(1);
   clock()->SetNow(kAccessTime3);
   helper->RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
 
@@ -947,10 +941,8 @@ TEST_F(AccessContextAuditThirdPartyDataClearingTest, TimeRangeHistoryDeletion) {
 
   clock()->SetNow(base::Time::Now());
   service()->SetClockForTesting(clock());
-  const base::Time kInsideTimeRange =
-      clock()->Now() + base::TimeDelta::FromHours(1);
-  const base::Time kOutsideTimeRange =
-      clock()->Now() + base::TimeDelta::FromHours(3);
+  const base::Time kInsideTimeRange = clock()->Now() + base::Hours(1);
+  const base::Time kOutsideTimeRange = clock()->Now() + base::Hours(3);
 
   clock()->SetNow(kOutsideTimeRange);
   // A cookie record outside the time range should not be modified.
@@ -997,8 +989,8 @@ TEST_F(AccessContextAuditThirdPartyDataClearingTest, TimeRangeHistoryDeletion) {
   base::RunLoop run_loop;
   base::CancelableTaskTracker task_tracker;
   history_service()->ExpireHistoryBetween(
-      std::set<GURL>(), kInsideTimeRange - base::TimeDelta::FromMinutes(10),
-      kInsideTimeRange + base::TimeDelta::FromMinutes(10),
+      std::set<GURL>(), kInsideTimeRange - base::Minutes(10),
+      kInsideTimeRange + base::Minutes(10),
       /*user_initiated*/ true, run_loop.QuitClosure(), &task_tracker);
   run_loop.Run();
 

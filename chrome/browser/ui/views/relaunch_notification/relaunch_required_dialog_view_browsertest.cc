@@ -22,7 +22,7 @@ class RelaunchRequiredDialogViewDialogTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    base::Time deadline = base::Time::Now() + base::TimeDelta::FromDays(3);
+    base::Time deadline = base::Time::Now() + base::Days(3);
     RelaunchRequiredDialogView::Show(browser(), deadline, base::DoNothing());
   }
 };

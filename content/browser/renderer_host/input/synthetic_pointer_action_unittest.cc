@@ -887,7 +887,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
       SyntheticPointerActionParams::PointerActionType::MOVE);
   param1.set_position(gfx::PointF(189, 62));
   param1.set_position(gfx::PointF(189, 62));
-  param1.set_timestamp(timestamp + base::TimeDelta::FromSeconds(1));
+  param1.set_timestamp(timestamp + base::Seconds(1));
   params_.PushPointerActionParams(param1);
 
   // Move the mouse while alt and control keys are pressed.
@@ -895,7 +895,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
       SyntheticPointerActionParams::PointerActionType::MOVE);
   param2.set_position(gfx::PointF(139, 98));
   param2.set_key_modifiers(6);
-  param2.set_timestamp(timestamp + base::TimeDelta::FromSeconds(2));
+  param2.set_timestamp(timestamp + base::Seconds(2));
   params_.PushPointerActionParams(param2);
 
   // Send a mouse down with left button while alt and control keys are pressed.
@@ -904,7 +904,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
   param3.set_position(gfx::PointF(139, 98));
   param3.set_button(SyntheticPointerActionParams::Button::LEFT);
   param3.set_key_modifiers(6);
-  param3.set_timestamp(timestamp + base::TimeDelta::FromSeconds(3));
+  param3.set_timestamp(timestamp + base::Seconds(3));
   params_.PushPointerActionParams(param3);
   pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 

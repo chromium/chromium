@@ -59,7 +59,7 @@ class ANIMATION_EXPORT ThrobAnimation : public SlideAnimation {
   base::TimeDelta slide_duration_ = GetSlideDuration();
 
   // Duration of the slide animation when throbbing.
-  base::TimeDelta throb_duration_ = base::TimeDelta::FromMilliseconds(400);
+  base::TimeDelta throb_duration_ = base::Milliseconds(400);
 
   // If throbbing, this is the number of cycles left.
   int cycles_remaining_ = 0;

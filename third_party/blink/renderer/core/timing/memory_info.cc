@@ -42,10 +42,8 @@
 
 namespace blink {
 
-static constexpr base::TimeDelta kTwentyMinutes =
-    base::TimeDelta::FromMinutes(20);
-static constexpr base::TimeDelta kFiftyMs =
-    base::TimeDelta::FromMilliseconds(50);
+static constexpr base::TimeDelta kTwentyMinutes = base::Minutes(20);
+static constexpr base::TimeDelta kFiftyMs = base::Milliseconds(50);
 
 static void GetHeapSize(HeapInfo& info) {
   v8::HeapStatistics heap_statistics;

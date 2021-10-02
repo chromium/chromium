@@ -11,9 +11,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kScreenOnOffDuration =
-    base::TimeDelta::FromMilliseconds(200);
-
+constexpr base::TimeDelta kScreenOnOffDuration = base::Milliseconds(200);
 }
 
 std::unique_ptr<ScreenPowerController> ScreenPowerController::Create(

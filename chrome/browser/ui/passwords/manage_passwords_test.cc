@@ -138,7 +138,7 @@ void ManagePasswordsTest::SetupAutoSignin(
 void ManagePasswordsTest::SetupSafeState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   SetupPendingPassword();
   scoped_refptr<password_manager::PasswordStore> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
@@ -156,7 +156,7 @@ void ManagePasswordsTest::SetupSafeState() {
 void ManagePasswordsTest::SetupMoreToFixState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   scoped_refptr<password_manager::PasswordStore> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);

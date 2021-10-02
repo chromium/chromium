@@ -195,7 +195,7 @@ bool CertVerifierSupportsCRLSetBlocking() {
 
 void SetHSTSForHostName(content::BrowserContext* context,
                         const std::string& hostname) {
-  const base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  const base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   content::StoragePartition* partition = context->GetDefaultStoragePartition();

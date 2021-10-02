@@ -148,13 +148,13 @@ void LogUma(bool success,
   // anything waiting on user action. As such, we can't always assume that a
   // long execution time equates to a poorly-performing function.
   if (success) {
-    if (elapsed_time < base::TimeDelta::FromMilliseconds(1)) {
+    if (elapsed_time < base::Milliseconds(1)) {
       base::UmaHistogramSparse("Extensions.Functions.SucceededTime.LessThan1ms",
                                histogram_value);
-    } else if (elapsed_time < base::TimeDelta::FromMilliseconds(5)) {
+    } else if (elapsed_time < base::Milliseconds(5)) {
       base::UmaHistogramSparse("Extensions.Functions.SucceededTime.1msTo5ms",
                                histogram_value);
-    } else if (elapsed_time < base::TimeDelta::FromMilliseconds(10)) {
+    } else if (elapsed_time < base::Milliseconds(10)) {
       base::UmaHistogramSparse("Extensions.Functions.SucceededTime.5msTo10ms",
                                histogram_value);
     } else {
@@ -164,13 +164,13 @@ void LogUma(bool success,
     UMA_HISTOGRAM_TIMES("Extensions.Functions.SucceededTotalExecutionTime",
                         elapsed_time);
   } else {
-    if (elapsed_time < base::TimeDelta::FromMilliseconds(1)) {
+    if (elapsed_time < base::Milliseconds(1)) {
       base::UmaHistogramSparse("Extensions.Functions.FailedTime.LessThan1ms",
                                histogram_value);
-    } else if (elapsed_time < base::TimeDelta::FromMilliseconds(5)) {
+    } else if (elapsed_time < base::Milliseconds(5)) {
       base::UmaHistogramSparse("Extensions.Functions.FailedTime.1msTo5ms",
                                histogram_value);
-    } else if (elapsed_time < base::TimeDelta::FromMilliseconds(10)) {
+    } else if (elapsed_time < base::Milliseconds(10)) {
       base::UmaHistogramSparse("Extensions.Functions.FailedTime.5msTo10ms",
                                histogram_value);
     } else {

@@ -18,7 +18,7 @@ namespace {
 using base::TimeDelta;
 
 static base::TimeTicks TicksFromSecondsF(double seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSecondsD(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 std::unique_ptr<KeyframeModel> CreateKeyframeModel(double iterations,
@@ -448,7 +448,7 @@ TEST(KeyframeModelTest, TrimTimePauseBasic) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
 
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.5));
+  keyframe_model->Pause(base::Seconds(0.5));
   // When paused, the time returned is always the pause time
   EXPECT_EQ(0.5,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1))
@@ -466,13 +466,13 @@ TEST(KeyframeModelTest, TrimTimePauseAffectedByDelay) {
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   // Pause time is in local time so delay should apply on top of it.
   keyframe_model->set_time_offset(TimeDelta::FromSecondsD(-0.2));
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.5));
+  keyframe_model->Pause(base::Seconds(0.5));
   EXPECT_EQ(0.3,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
 
   keyframe_model->set_time_offset(TimeDelta::FromSecondsD(0.2));
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.5));
+  keyframe_model->Pause(base::Seconds(0.5));
   EXPECT_EQ(0.7,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
@@ -483,13 +483,13 @@ TEST(KeyframeModelTest, TrimTimePauseNotAffectedByStartTime) {
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   // Pause time is in local time so start time should not affect it.
   keyframe_model->set_start_time(TicksFromSecondsF(0.2));
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.5));
+  keyframe_model->Pause(base::Seconds(0.5));
   EXPECT_EQ(0.5,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
 
   keyframe_model->set_start_time(TicksFromSecondsF(0.4));
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.5));
+  keyframe_model->Pause(base::Seconds(0.5));
   EXPECT_EQ(0.5,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
@@ -504,7 +504,7 @@ TEST(KeyframeModelTest, TrimTimePauseResume) {
   EXPECT_EQ(0.4,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.4))
                 .InSecondsF());
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.5));
+  keyframe_model->Pause(base::Seconds(0.5));
   EXPECT_EQ(
       0.5, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.0))
                .InSecondsF());
@@ -516,7 +516,7 @@ TEST(KeyframeModelTest, TrimTimePauseResume) {
   EXPECT_EQ(
       1, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.5))
              .InSecondsF());
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.6));
+  keyframe_model->Pause(base::Seconds(0.6));
   EXPECT_EQ(
       0.6, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2000.0))
                .InSecondsF());
@@ -537,7 +537,7 @@ TEST(KeyframeModelTest, TrimTimePauseResumeReverse) {
   EXPECT_EQ(0.5,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
                 .InSecondsF());
-  keyframe_model->Pause(base::TimeDelta::FromSecondsD(0.25));
+  keyframe_model->Pause(base::Seconds(0.25));
   EXPECT_EQ(0.75, keyframe_model
                       ->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.0))
                       .InSecondsF());

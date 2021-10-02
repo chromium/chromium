@@ -61,8 +61,7 @@ typedef ValidatingAuthenticator::ResultCallback ValidationResultCallback;
 
 // The amount of time to wait before destroying the signal strategy.  This delay
 // ensures there is time for the session-terminate message to be sent.
-constexpr base::TimeDelta kDestroySignalingDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kDestroySignalingDelay = base::Seconds(2);
 
 }  // namespace
 

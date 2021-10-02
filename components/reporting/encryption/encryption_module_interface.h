@@ -29,8 +29,7 @@ class EncryptionModuleInterface
   static const char kEncryptedReporting[];
 
   explicit EncryptionModuleInterface(
-      base::TimeDelta renew_encryption_key_period =
-          base::TimeDelta::FromDays(1));
+      base::TimeDelta renew_encryption_key_period = base::Days(1));
   EncryptionModuleInterface(const EncryptionModuleInterface& other) = delete;
   EncryptionModuleInterface& operator=(const EncryptionModuleInterface& other) =
       delete;

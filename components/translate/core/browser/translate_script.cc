@@ -50,7 +50,7 @@ const char TranslateScript::kJavascriptLoaderCallbackQueryValue[] =
     "cr.googleTranslate.onLoadJavascript";
 
 TranslateScript::TranslateScript()
-    : expiration_delay_(base::TimeDelta::FromDays(kExpirationDelayDays)) {}
+    : expiration_delay_(base::Days(kExpirationDelayDays)) {}
 
 TranslateScript::~TranslateScript() {}
 

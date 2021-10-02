@@ -621,8 +621,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   // Wait for the timer to fire.
   base::RunLoop runner;
   base::OneShotTimer timer;
-  timer.Start(FROM_HERE,
-              base::TimeDelta::FromMilliseconds(kAutoLoginShortDelay + 1),
+  timer.Start(FROM_HERE, base::Milliseconds(kAutoLoginShortDelay + 1),
               runner.QuitClosure());
   runner.Run();
 

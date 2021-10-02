@@ -193,12 +193,12 @@ Status ScrollElementRegionIntoViewHelper(
       }
       middle = tmp_location;
       middle.Offset(region.Width() / 2, region.Height() / 2);
-      Timeout response_timeout(base::TimeDelta::FromSeconds(1));
+      Timeout response_timeout(base::Seconds(1));
       do {
         status =
          VerifyElementClickable(frame, web_view, clickable_element_id, middle);
         if (status.code() == kElementClickIntercepted)
-          base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+          base::PlatformThread::Sleep(base::Milliseconds(50));
         else
           break;
       } while (!response_timeout.IsExpired());
@@ -445,7 +445,7 @@ Status FindElementCommon(int interval_ms,
       return Status(kOk);
     }
 
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(interval_ms));
+    base::PlatformThread::Sleep(base::Milliseconds(interval_ms));
   }
 }
 
@@ -632,7 +632,7 @@ Status GetElementClickableLocation(
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
       return Status(kElementNotVisible);
     }
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
 
   WebRect rect;

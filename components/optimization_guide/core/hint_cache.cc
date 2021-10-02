@@ -388,9 +388,8 @@ void HintCache::AddHintForTesting(const GURL& url,
                                   std::unique_ptr<proto::Hint> hint) {
   if (IsValidURLForURLKeyedHint(url)) {
     url_keyed_hint_cache_.Put(
-        url.spec(),
-        std::make_unique<MemoryHint>(
-            base::Time::Now() + base::TimeDelta::FromDays(7), std::move(hint)));
+        url.spec(), std::make_unique<MemoryHint>(
+                        base::Time::Now() + base::Days(7), std::move(hint)));
   }
 }
 

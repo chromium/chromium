@@ -205,8 +205,7 @@ void UninstallKeystone(UpdaterScope scope) {
   }
   int exit_code = 0;
 
-  if (!process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(30),
-                                      &exit_code)) {
+  if (!process.WaitForExitWithTimeout(base::Seconds(30), &exit_code)) {
     LOG(ERROR) << "Uninstall Keystone didn't finish in the allowed time.";
     return;
   }

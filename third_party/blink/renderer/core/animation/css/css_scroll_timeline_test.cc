@@ -34,8 +34,7 @@ class CSSScrollTimelineTest : public PageTestBase,
   }
 
   void SimulateFrame() {
-    auto new_time = GetAnimationClock().CurrentTime() +
-                    base::TimeDelta::FromMilliseconds(100);
+    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
     GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 };

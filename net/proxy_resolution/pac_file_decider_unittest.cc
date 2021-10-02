@@ -657,11 +657,10 @@ TEST(PacFileDeciderTest, CustomPacFails1_WithPositiveDelay) {
   TestCompletionCallback callback;
   RecordingTestNetLog log;
   PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
-  EXPECT_THAT(
-      decider.Start(
-          ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS),
-          base::TimeDelta::FromMilliseconds(1), true, callback.callback()),
-      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
+                                config, TRAFFIC_ANNOTATION_FOR_TESTS),
+                            base::Milliseconds(1), true, callback.callback()),
+              IsError(ERR_IO_PENDING));
 
   EXPECT_THAT(callback.WaitForResult(), IsError(kFailedDownloading));
   EXPECT_FALSE(decider.script_data().data);
@@ -700,11 +699,10 @@ TEST(PacFileDeciderTest, CustomPacFails1_WithNegativeDelay) {
   TestCompletionCallback callback;
   RecordingTestNetLog log;
   PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
-  EXPECT_THAT(
-      decider.Start(
-          ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS),
-          base::TimeDelta::FromSeconds(-5), true, callback.callback()),
-      IsError(kFailedDownloading));
+  EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
+                                config, TRAFFIC_ANNOTATION_FOR_TESTS),
+                            base::Seconds(-5), true, callback.callback()),
+              IsError(kFailedDownloading));
   EXPECT_FALSE(decider.script_data().data);
 
   // Check the NetLog was filled correctly.

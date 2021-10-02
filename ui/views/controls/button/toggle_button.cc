@@ -128,7 +128,7 @@ class ToggleButton::ThumbView : public View {
 
 ToggleButton::ToggleButton(PressedCallback callback)
     : Button(std::move(callback)) {
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(80));
+  slide_animation_.SetSlideDuration(base::Milliseconds(80));
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   thumb_view_ = AddChildView(std::make_unique<ThumbView>());
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

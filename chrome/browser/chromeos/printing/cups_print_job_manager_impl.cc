@@ -47,7 +47,7 @@ namespace chromeos {
 namespace {
 
 // The rate at which we will poll CUPS for print job updates.
-constexpr base::TimeDelta kPollRate = base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kPollRate = base::Milliseconds(1000);
 
 // Threshold for giving up on communicating with CUPS.
 const int kRetryMax = 6;

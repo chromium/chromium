@@ -169,8 +169,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     start_time = base::TimeTicks::Now();
 
     // Collect all URLs visited within the last month.
-    base::Time one_month_ago =
-        base::Time::Now() - base::TimeDelta::FromDays(30);
+    base::Time one_month_ago = base::Time::Now() - base::Days(30);
     sql::Statement url_sql(db_.GetUniqueStatement(
         "SELECT url, last_visit_time FROM urls WHERE last_visit_time > ?"));
     url_sql.BindInt64(0, one_month_ago.ToInternalValue());
@@ -181,7 +180,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     int month_url_count = 0;
     std::set<std::string> week_hosts;
     std::set<std::string> month_hosts;
-    base::Time one_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
+    base::Time one_week_ago = base::Time::Now() - base::Days(7);
     while (url_sql.Step()) {
       GURL url(url_sql.ColumnString(0));
       base::Time visit_time =
@@ -207,7 +206,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
   base::TimeTicks start_time = base::TimeTicks::Now();
   // Collect all URLs visited within the last month.
-  base::Time one_month_ago = base::Time::Now() - base::TimeDelta::FromDays(30);
+  base::Time one_month_ago = base::Time::Now() - base::Days(30);
 
   sql::Statement url_sql(
       db_.GetUniqueStatement("SELECT url FROM urls "

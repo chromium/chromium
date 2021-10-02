@@ -1610,7 +1610,7 @@ void HostProcess::StartHost() {
 
   if (max_session_duration_minutes_ > 0) {
     host_->SetMaximumSessionDuration(
-        base::TimeDelta::FromMinutes(max_session_duration_minutes_));
+        base::Minutes(max_session_duration_minutes_));
   }
 
   host_status_logger_ = std::make_unique<HostStatusLogger>(
@@ -1721,8 +1721,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
 
     HOST_LOG << "SendHostOfflineReason: sending " << host_offline_reason << ".";
     heartbeat_sender_->SetHostOfflineReason(
-        host_offline_reason,
-        base::TimeDelta::FromSeconds(kHostOfflineReasonTimeoutSeconds),
+        host_offline_reason, base::Seconds(kHostOfflineReasonTimeoutSeconds),
         base::BindOnce(&HostProcess::OnHostOfflineReasonAck, this));
     return;  // Shutdown will resume after OnHostOfflineReasonAck.
   }
@@ -1827,8 +1826,7 @@ int HostProcessMain() {
   // TODO(wez): The HostProcess holds a reference to itself until Shutdown().
   // Remove this hack as part of the multi-process refactoring.
   int exit_code = kSuccessExitCode;
-  ShutdownWatchdog shutdown_watchdog(
-      base::TimeDelta::FromSeconds(kShutdownTimeoutSeconds));
+  ShutdownWatchdog shutdown_watchdog(base::Seconds(kShutdownTimeoutSeconds));
   new HostProcess(std::move(context), &exit_code, &shutdown_watchdog);
 
   // Run the main (also UI) task executor until the host no longer needs it.

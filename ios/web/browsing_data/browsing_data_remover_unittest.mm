@@ -94,9 +94,8 @@ bool RemoveCookies(web::BrowserState* browser_state,
   base::OnceClosure closure = base::BindOnce(^{
     closure_called = true;
   });
-  remover->ClearBrowsingData(
-      types, base::Time::Now() - base::TimeDelta::FromMinutes(1),
-      std::move(closure));
+  remover->ClearBrowsingData(types, base::Time::Now() - base::Minutes(1),
+                             std::move(closure));
 
   return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return closure_called;

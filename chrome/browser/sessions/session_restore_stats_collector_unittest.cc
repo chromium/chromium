@@ -66,7 +66,7 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
       SessionRestoreStatsCollector::SessionRestorePaintFinishReasonUma
           finish_reason) {
     EXPECT_EQ(tab_count, tab_loader_stats_.tab_count);
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(foreground_tab_first_paint_ms),
+    EXPECT_EQ(base::Milliseconds(foreground_tab_first_paint_ms),
               tab_loader_stats_.foreground_tab_first_paint);
     EXPECT_EQ(tab_loader_stats_.tab_first_paint_reason, finish_reason);
   }
@@ -170,9 +170,7 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
   }
 
   // Advances the test clock by 1ms.
-  void Tick() {
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
-  }
+  void Tick() { task_environment_.FastForwardBy(base::Milliseconds(1)); }
 
   void Show(size_t tab_index) {
     restored_tabs_[tab_index].contents()->WasShown();
@@ -195,7 +193,7 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
                                       &entries);
     // Create a last active time in the past.
     content::WebContentsTester::For(contents)->SetLastActiveTime(
-        base::TimeTicks::Now() - base::TimeDelta::FromMinutes(1));
+        base::TimeTicks::Now() - base::Minutes(1));
     restored_tabs_.push_back(
         RestoredTab(contents, is_active, false, false, absl::nullopt));
     if (is_active)

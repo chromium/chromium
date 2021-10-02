@@ -95,7 +95,7 @@ void ImageFetcherBridge::FetchImageData(
   image_fetcher::ImageFetcherParams params(kTrafficAnnotation, client_name);
   if (j_expiration_interval_mins > 0) {
     params.set_hold_for_expiration_interval(
-        base::TimeDelta::FromMinutes(j_expiration_interval_mins));
+        base::Minutes(j_expiration_interval_mins));
   }
 
   // We can skip transcoding here because this method is used in java as
@@ -130,7 +130,7 @@ void ImageFetcherBridge::FetchImage(
   ImageFetcherParams params(kTrafficAnnotation, client_name);
   if (j_expiration_interval_mins > 0) {
     params.set_hold_for_expiration_interval(
-        base::TimeDelta::FromMinutes(j_expiration_interval_mins));
+        base::Minutes(j_expiration_interval_mins));
   }
 
   SimpleFactoryKey* key =

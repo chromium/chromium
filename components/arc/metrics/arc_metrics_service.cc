@@ -33,8 +33,8 @@ namespace {
 
 constexpr char kUmaPrefix[] = "Arc";
 
-constexpr base::TimeDelta kUmaMinTime = base::TimeDelta::FromMilliseconds(1);
-constexpr base::TimeDelta kUmaMaxTime = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kUmaMinTime = base::Milliseconds(1);
+constexpr base::TimeDelta kUmaMaxTime = base::Seconds(60);
 constexpr int kUmaNumBuckets = 50;
 constexpr int kUmaPriAbiMigMaxFailedAttempts = 10;
 constexpr int kUmaFixupDirectoriesCountMin = 0;
@@ -42,8 +42,7 @@ constexpr int kUmaFixupDirectoriesCountMax = 5000000;
 constexpr int kUmaFixupAppsCountMin = 0;
 constexpr int kUmaFixupAppsCountMax = 10000;
 
-constexpr base::TimeDelta kRequestProcessListPeriod =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kRequestProcessListPeriod = base::Minutes(5);
 constexpr char kArcProcessNamePrefix[] = "org.chromium.arc.";
 constexpr char kGmsProcessNamePrefix[] = "com.google.android.gms";
 constexpr char kBootProgressEnableScreen[] = "boot_progress_enable_screen";
@@ -288,8 +287,7 @@ void ArcMetricsService::OnArcStartTimeRetrieved(
             << event->uptimeMillis;
     const std::string name = "Arc." + event->event + suffix;
     const base::TimeTicks uptime =
-        base::TimeDelta::FromMilliseconds(event->uptimeMillis) +
-        base::TimeTicks();
+        base::Milliseconds(event->uptimeMillis) + base::TimeTicks();
     const base::TimeDelta elapsed_time = uptime - arc_start_time.value();
     base::UmaHistogramCustomTimes(name, elapsed_time, kUmaMinTime, kUmaMaxTime,
                                   kUmaNumBuckets);
@@ -579,8 +577,7 @@ absl::optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
     if (!(*it)->event.compare(kBootProgressArcUpgraded)) {
       arc_upgraded_event = std::move(*it);
       events.erase(it);
-      return base::TimeDelta::FromMilliseconds(
-                 arc_upgraded_event->uptimeMillis) +
+      return base::Milliseconds(arc_upgraded_event->uptimeMillis) +
              base::TimeTicks();
     }
   }

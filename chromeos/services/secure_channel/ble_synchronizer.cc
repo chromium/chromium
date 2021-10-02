@@ -72,9 +72,8 @@ void BleSynchronizer::ProcessQueue() {
   // frequently can cause race conditions. See crbug.com/760792.
   if (!last_command_end_timestamp_.is_null() &&
       time_since_last_command_ended <
-          base::TimeDelta::FromMilliseconds(kTimeBetweenEachCommandMs)) {
-    timer_->Start(FROM_HERE,
-                  base::TimeDelta::FromMilliseconds(kTimeBetweenEachCommandMs),
+          base::Milliseconds(kTimeBetweenEachCommandMs)) {
+    timer_->Start(FROM_HERE, base::Milliseconds(kTimeBetweenEachCommandMs),
                   base::BindOnce(&BleSynchronizer::ProcessQueue,
                                  weak_ptr_factory_.GetWeakPtr()));
     return;

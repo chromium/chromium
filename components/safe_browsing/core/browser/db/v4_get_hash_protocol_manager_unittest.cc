@@ -310,8 +310,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingOK) {
   matched_locally[full_hash].push_back(
       StoreAndHashPrefix(GetChromeUrlApiId(), prefix));
   std::vector<FullHashInfo> expected_results;
-  FullHashInfo fhi(full_hash, GetChromeUrlApiId(),
-                   now + base::TimeDelta::FromSeconds(300));
+  FullHashInfo fhi(full_hash, GetChromeUrlApiId(), now + base::Seconds(300));
   fhi.metadata.api_permissions.insert("NOTIFICATIONS");
   expected_results.push_back(fhi);
 
@@ -332,8 +331,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingOK) {
   ASSERT_EQ(1u, cache->size());
   EXPECT_EQ(1u, cache->count(prefix));
   const CachedHashPrefixInfo& cached_result = cache->at(prefix);
-  EXPECT_EQ(cached_result.negative_expiry,
-            now + base::TimeDelta::FromSeconds(600));
+  EXPECT_EQ(cached_result.negative_expiry, now + base::Seconds(600));
   ASSERT_EQ(1u, cached_result.full_hash_infos.size());
   EXPECT_EQ(FullHash("Everything's shiny, Cap'n."),
             cached_result.full_hash_infos[0].full_hash);
@@ -451,7 +449,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseHashResponse) {
   base::Time cache_expire;
   EXPECT_TRUE(pm->ParseHashResponse(res_data, &full_hash_infos, &cache_expire));
 
-  EXPECT_EQ(now + base::TimeDelta::FromSeconds(600), cache_expire);
+  EXPECT_EQ(now + base::Seconds(600), cache_expire);
   // Even though the server responded with two ThreatMatch responses, one
   // should have been dropped.
   ASSERT_EQ(1ul, full_hash_infos.size());
@@ -460,8 +458,8 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseHashResponse) {
   EXPECT_EQ(GetChromeUrlApiId(), fhi.list_id);
   EXPECT_EQ(1ul, fhi.metadata.api_permissions.size());
   EXPECT_EQ(1ul, fhi.metadata.api_permissions.count("NOTIFICATIONS"));
-  EXPECT_EQ(now + base::TimeDelta::FromSeconds(300), fhi.positive_expiry);
-  EXPECT_EQ(now + base::TimeDelta::FromSeconds(400), pm->next_gethash_time_);
+  EXPECT_EQ(now + base::Seconds(300), fhi.positive_expiry);
+  EXPECT_EQ(now + base::Seconds(400), pm->next_gethash_time_);
 }
 
 // Adds an entry with an ignored ThreatEntryType.
@@ -485,7 +483,7 @@ TEST_F(V4GetHashProtocolManagerTest,
   EXPECT_FALSE(
       pm->ParseHashResponse(res_data, &full_hash_infos, &cache_expire));
 
-  EXPECT_EQ(now + base::TimeDelta::FromSeconds(600), cache_expire);
+  EXPECT_EQ(now + base::Seconds(600), cache_expire);
   // There should be no hash results.
   EXPECT_EQ(0ul, full_hash_infos.size());
 }
@@ -519,7 +517,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseHashThreatPatternType) {
     base::Time cache_expire;
     EXPECT_TRUE(
         pm->ParseHashResponse(se_data, &full_hash_infos, &cache_expire));
-    EXPECT_EQ(now + base::TimeDelta::FromSeconds(600), cache_expire);
+    EXPECT_EQ(now + base::Seconds(600), cache_expire);
 
     // Ensure that the threat remains valid since we found a full hash match,
     // even though the metadata information could not be parsed correctly.
@@ -553,7 +551,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseHashThreatPatternType) {
     base::Time cache_expire;
     EXPECT_TRUE(
         pm->ParseHashResponse(pha_data, &full_hash_infos, &cache_expire));
-    EXPECT_EQ(now + base::TimeDelta::FromSeconds(600), cache_expire);
+    EXPECT_EQ(now + base::Seconds(600), cache_expire);
 
     ASSERT_EQ(1ul, full_hash_infos.size());
     const FullHashInfo& fhi = full_hash_infos[0];
@@ -660,7 +658,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseSubresourceFilterMetadata) {
     base::Time cache_expire;
     EXPECT_TRUE(
         pm->ParseHashResponse(sf_data, &full_hash_infos, &cache_expire));
-    EXPECT_EQ(now + base::TimeDelta::FromSeconds(600), cache_expire);
+    EXPECT_EQ(now + base::Seconds(600), cache_expire);
 
     ASSERT_EQ(1ul, full_hash_infos.size());
     const FullHashInfo& fhi = full_hash_infos[0];
@@ -706,7 +704,7 @@ TEST_F(V4GetHashProtocolManagerTest,
   base::Time cache_expire;
   EXPECT_TRUE(pm->ParseHashResponse(res_data, &full_hash_infos, &cache_expire));
 
-  EXPECT_EQ(now + base::TimeDelta::FromSeconds(600), cache_expire);
+  EXPECT_EQ(now + base::Seconds(600), cache_expire);
   ASSERT_EQ(1ul, full_hash_infos.size());
   const auto& fhi = full_hash_infos[0];
   EXPECT_EQ(full_hash, fhi.full_hash);
@@ -772,7 +770,7 @@ TEST_F(V4GetHashProtocolManagerTest, GetCachedResults) {
 
     // Prefix has a cache entry but full hash is not there. (Case: 1-b-i)
     CachedHashPrefixInfo* entry = &(*cache)[prefix];
-    entry->negative_expiry = now + base::TimeDelta::FromMinutes(5);
+    entry->negative_expiry = now + base::Minutes(5);
     pm->GetFullHashCachedResults(matched_locally, now, &prefixes_to_request,
                                  &cached_full_hash_infos);
     EXPECT_TRUE(prefixes_to_request.empty());
@@ -786,7 +784,7 @@ TEST_F(V4GetHashProtocolManagerTest, GetCachedResults) {
 
     // Expired negative cache entry. (Case: 1-b-ii)
     CachedHashPrefixInfo* entry = &(*cache)[prefix];
-    entry->negative_expiry = now - base::TimeDelta::FromMinutes(5);
+    entry->negative_expiry = now - base::Minutes(5);
     pm->GetFullHashCachedResults(matched_locally, now, &prefixes_to_request,
                                  &cached_full_hash_infos);
     ASSERT_EQ(1ul, prefixes_to_request.size());
@@ -801,9 +799,9 @@ TEST_F(V4GetHashProtocolManagerTest, GetCachedResults) {
 
     // Now put unexpired full hash in the cache. (Case: 1-a-i)
     CachedHashPrefixInfo* entry = &(*cache)[prefix];
-    entry->negative_expiry = now + base::TimeDelta::FromMinutes(5);
+    entry->negative_expiry = now + base::Minutes(5);
     entry->full_hash_infos.emplace_back(full_hash, GetUrlMalwareId(),
-                                        now + base::TimeDelta::FromMinutes(3));
+                                        now + base::Minutes(3));
     pm->GetFullHashCachedResults(matched_locally, now, &prefixes_to_request,
                                  &cached_full_hash_infos);
     EXPECT_TRUE(prefixes_to_request.empty());
@@ -818,9 +816,9 @@ TEST_F(V4GetHashProtocolManagerTest, GetCachedResults) {
 
     // Expire the full hash in the cache. (Case: 1-a-ii)
     CachedHashPrefixInfo* entry = &(*cache)[prefix];
-    entry->negative_expiry = now + base::TimeDelta::FromMinutes(5);
+    entry->negative_expiry = now + base::Minutes(5);
     entry->full_hash_infos.emplace_back(full_hash, GetUrlMalwareId(),
-                                        now - base::TimeDelta::FromMinutes(3));
+                                        now - base::Minutes(3));
     pm->GetFullHashCachedResults(matched_locally, now, &prefixes_to_request,
                                  &cached_full_hash_infos);
     ASSERT_EQ(1ul, prefixes_to_request.size());
@@ -845,13 +843,13 @@ TEST_F(V4GetHashProtocolManagerTest, TestUpdatesAreMerged) {
 
   FullHashCache* cache = pm->full_hash_cache_for_tests();
   CachedHashPrefixInfo* entry = &(*cache)[prefix_1];
-  entry->negative_expiry = now + base::TimeDelta::FromMinutes(100);
+  entry->negative_expiry = now + base::Minutes(100);
   // Put one unexpired full hash in the cache for a store we'll look in.
   entry->full_hash_infos.emplace_back(full_hash_1, GetUrlMalwareId(),
-                                      now + base::TimeDelta::FromSeconds(200));
+                                      now + base::Seconds(200));
   // Put one unexpired full hash in the cache for a store we'll not look in.
   entry->full_hash_infos.emplace_back(full_hash_1, GetUrlSocEngId(),
-                                      now + base::TimeDelta::FromSeconds(200));
+                                      now + base::Seconds(200));
 
   // Request full hash information from two stores.
   FullHashToStoreAndHashPrefixesMap matched_locally;
@@ -863,9 +861,9 @@ TEST_F(V4GetHashProtocolManagerTest, TestUpdatesAreMerged) {
   // Expect full hash information from both stores.
   std::vector<FullHashInfo> expected_results;
   expected_results.emplace_back(full_hash_1, GetUrlMalwareId(),
-                                now + base::TimeDelta::FromSeconds(200));
+                                now + base::Seconds(200));
   expected_results.emplace_back(full_hash_2, GetChromeUrlApiId(),
-                                now + base::TimeDelta::FromSeconds(300));
+                                now + base::Seconds(300));
   expected_results[1].metadata.api_permissions.insert("NOTIFICATIONS");
 
   pm->GetFullHashes(
@@ -882,15 +880,13 @@ TEST_F(V4GetHashProtocolManagerTest, TestUpdatesAreMerged) {
   // Verify the state of the cache.
   ASSERT_EQ(2u, cache->size());
   const CachedHashPrefixInfo& cached_result_1 = cache->at(prefix_1);
-  EXPECT_EQ(cached_result_1.negative_expiry,
-            now + base::TimeDelta::FromMinutes(100));
+  EXPECT_EQ(cached_result_1.negative_expiry, now + base::Minutes(100));
   ASSERT_EQ(2u, cached_result_1.full_hash_infos.size());
   EXPECT_EQ(full_hash_1, cached_result_1.full_hash_infos[0].full_hash);
   EXPECT_EQ(GetUrlMalwareId(), cached_result_1.full_hash_infos[0].list_id);
 
   const CachedHashPrefixInfo& cached_result_2 = cache->at(prefix_2);
-  EXPECT_EQ(cached_result_2.negative_expiry,
-            now + base::TimeDelta::FromSeconds(600));
+  EXPECT_EQ(cached_result_2.negative_expiry, now + base::Seconds(600));
   ASSERT_EQ(1u, cached_result_2.full_hash_infos.size());
   EXPECT_EQ(full_hash_2, cached_result_2.full_hash_infos[0].full_hash);
   EXPECT_EQ(GetChromeUrlApiId(), cached_result_2.full_hash_infos[0].list_id);

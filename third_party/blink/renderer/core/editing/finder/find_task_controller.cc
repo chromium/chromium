@@ -22,8 +22,7 @@
 namespace blink {
 
 namespace {
-constexpr base::TimeDelta kFindTaskTimeAllotment =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kFindTaskTimeAllotment = base::Milliseconds(10);
 
 // Check if we need to yield after this many matches have been found. We start
 // with Start matches and double them every time we yield until we are

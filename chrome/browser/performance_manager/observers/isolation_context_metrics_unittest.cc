@@ -70,7 +70,7 @@ class IsolationContextMetricsTest : public GraphTestHarness {
     metrics_ = new TestIsolationContextMetrics();
 
     // Sets a valid starting time.
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
     graph()->PassToGraph(base::WrapUnique(metrics_));
   }
 
@@ -221,7 +221,7 @@ TEST_F(IsolationContextMetricsTest, ProcessDataReporting) {
   {
     // Advance time and add another frame to a new site instance, as a child
     // of |frame1|.
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
     auto frame2 =
         CreateFrameNode(process.get(), page.get(), kBID1, kSID2, frame1.get());
     EXPECT_EQ(2u, data1->site_instance_frame_count.size());
@@ -252,7 +252,7 @@ TEST_F(IsolationContextMetricsTest, ProcessDataReporting) {
         metrics_->kSiteInstancesPerRendererByTimeHistogram, 2, 1);
 
     // Advance time.
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
   }
 
   // The second frame will be destroyed as it goes out of scope. Expect another
@@ -284,7 +284,7 @@ TEST_F(IsolationContextMetricsTest, ProcessDataReporting) {
   {
     // Advance time and add another frame to the same site instance, as a child
     // of |frame1|.
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
     auto frame2 =
         CreateFrameNode(process.get(), page.get(), kBID1, kSID1, frame1.get());
     EXPECT_EQ(1u, data1->site_instance_frame_count.size());
@@ -321,7 +321,7 @@ TEST_F(IsolationContextMetricsTest, ProcessDataReporting) {
         metrics_->kSiteInstancesPerRendererByTimeHistogram, 2, 1);
 
     // Advance time.
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
   }
 
   // The second frame will be destroyed as it goes out of scope. Expect another

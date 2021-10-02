@@ -343,7 +343,7 @@ TEST_F(AudioSystemToServiceAdapterConnectionLossTest, GetInputDeviceInfo) {
 
 namespace {
 
-static constexpr auto kResponseDelay = base::TimeDelta::FromMilliseconds(10);
+static constexpr auto kResponseDelay = base::Milliseconds(10);
 static constexpr char kSomeDeviceId[] = "Some device";
 static constexpr char kValidReplyId[] =
     "If you can read it you received the reply";

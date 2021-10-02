@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   // occurred yet.
   g_browser_process->local_state()->SetInt64(
       prefs::kSessionStartTime,
-      (base::Time::Now() - base::TimeDelta::FromHours(2)).ToInternalValue());
+      (base::Time::Now() - base::Hours(2)).ToInternalValue());
 }
 
 // Disabled, see http://crbug.com/554728.
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WaitForInitialUserActivitySatisfied) {
   // Indicate that initial user activity in this session occurred 2 hours ago.
   g_browser_process->local_state()->SetInt64(
       prefs::kSessionStartTime,
-      (base::Time::Now() - base::TimeDelta::FromHours(2)).ToInternalValue());
+      (base::Time::Now() - base::Hours(2)).ToInternalValue());
   g_browser_process->local_state()->SetBoolean(prefs::kSessionUserActivitySeen,
                                                true);
 }

@@ -82,9 +82,9 @@ class AutofillOfferManagerTest : public testing::Test {
     offer_data.offer_id = 4444;
     offer_data.offer_reward_amount = offer_reward_amount;
     if (expired) {
-      offer_data.expiry = AutofillClock::Now() - base::TimeDelta::FromDays(2);
+      offer_data.expiry = AutofillClock::Now() - base::Days(2);
     } else {
-      offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
+      offer_data.expiry = AutofillClock::Now() + base::Days(2);
     }
     offer_data.merchant_origins = std::move(merchant_origins);
     offer_data.eligible_instrument_id = {card.instrument_id()};
@@ -96,7 +96,7 @@ class AutofillOfferManagerTest : public testing::Test {
                                              GURL(kTestUrl)}) {
     AutofillOfferData offer_data;
     offer_data.offer_id = 5555;
-    offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
+    offer_data.expiry = AutofillClock::Now() + base::Days(2);
     offer_data.merchant_origins = std::move(merchant_origins);
     offer_data.offer_details_url = GURL(kOfferDetailsUrl);
     offer_data.promo_code = "5PCTOFFSHOES";

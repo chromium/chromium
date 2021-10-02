@@ -991,8 +991,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
   RegisterClient();
 
   const int kPublicKeyVersion = 42;
-  const base::Time kOldTimestamp(base::Time::UnixEpoch() +
-                                 base::TimeDelta::FromDays(20));
+  const base::Time kOldTimestamp(base::Time::UnixEpoch() + base::Days(20));
 
   em::DeviceManagementRequest policy_request = GetPolicyRequest();
   em::PolicyFetchRequest* policy_fetch_request =

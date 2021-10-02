@@ -1161,7 +1161,7 @@ TEST_F(WebTransportTest, IncomingMaxAgeIsObeyed) {
 
   test::RunPendingTasks();
 
-  constexpr base::TimeDelta kMaxAge = base::TimeDelta::FromMicroseconds(1);
+  constexpr base::TimeDelta kMaxAge = base::Microseconds(1);
   web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF());
 
   test::RunDelayedTasks(kMaxAge);
@@ -1741,8 +1741,7 @@ TEST_F(WebTransportTest, SetDatagramWritableQueueExpirationDuration) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   constexpr double kDuration = 40;
-  constexpr base::TimeDelta kDurationDelta =
-      base::TimeDelta::FromMillisecondsD(kDuration);
+  constexpr base::TimeDelta kDurationDelta = base::Milliseconds(kDuration);
   EXPECT_CALL(*mock_web_transport_,
               SetOutgoingDatagramExpirationDuration(kDurationDelta));
 
@@ -1758,8 +1757,7 @@ TEST_F(WebTransportTest, SetOutgoingMaxAgeBeforeConnectComplete) {
   auto* web_transport = Create(scope, "https://example.com/", EmptyOptions());
 
   constexpr double kDuration = 1000;
-  constexpr base::TimeDelta kDurationDelta =
-      base::TimeDelta::FromMillisecondsD(kDuration);
+  constexpr base::TimeDelta kDurationDelta = base::Milliseconds(kDuration);
 
   web_transport->datagrams()->setOutgoingMaxAge(kDuration);
 

@@ -16,7 +16,7 @@ namespace password_manager {
 
 // Maximum time since the last password check while the result is considered
 // up to date.
-constexpr auto kMaxTimeSinceLastCheck = base::TimeDelta::FromMinutes(30);
+constexpr auto kMaxTimeSinceLastCheck = base::Minutes(30);
 
 PostSaveCompromisedHelper::PostSaveCompromisedHelper(
     base::span<const InsecureCredential> compromised,

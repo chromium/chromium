@@ -152,7 +152,7 @@ TEST(HandwritingTypeConvertersTest,
 TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdl) {
   auto mojo_point = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point->location = gfx::PointF(0.3, 0.4);
-  mojo_point->t = base::TimeDelta::FromMilliseconds(123);
+  mojo_point->t = base::Milliseconds(123);
 
   auto* idl_point = mojo::ConvertTo<blink::HandwritingPoint*>(mojo_point);
   ASSERT_NE(idl_point, nullptr);
@@ -177,7 +177,7 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
   auto mojo_stroke = handwriting::mojom::blink::HandwritingStroke::New();
   auto mojo_point1 = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point1->location = gfx::PointF(2.1, 2.2);
-  mojo_point1->t = base::TimeDelta::FromMilliseconds(321);
+  mojo_point1->t = base::Milliseconds(321);
   mojo_stroke->points.push_back(std::move(mojo_point1));
   auto mojo_point2 = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point2->location = gfx::PointF(3.1, 3.2);

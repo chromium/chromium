@@ -300,8 +300,7 @@ void It2MeHostTest::StartHost(bool enable_dialogs, bool enable_notifications) {
 
   protocol::IceConfig ice_config;
   ice_config.stun_servers.push_back(rtc::SocketAddress(kTestStunServer, 100));
-  ice_config.expiration_time =
-      base::Time::Now() + base::TimeDelta::FromHours(2);
+  ice_config.expiration_time = base::Time::Now() + base::Hours(2);
 
   auto fake_signal_strategy =
       std::make_unique<FakeSignalStrategy>(SignalingAddress("fake_local_jid"));

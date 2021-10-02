@@ -29,8 +29,7 @@ namespace feedback {
 
 namespace {
 
-constexpr base::TimeDelta kTestRetryDelay =
-    base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kTestRetryDelay = base::Milliseconds(1);
 
 constexpr char kFeedbackPostUrl[] =
     "https://www.google.com/tools/feedback/chrome/__submit";

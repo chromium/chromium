@@ -490,8 +490,7 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
   mojo_options->public_key_parameters = std::move(parameters);
 
   if (options.hasTimeout()) {
-    mojo_options->timeout =
-        base::TimeDelta::FromMilliseconds(options.timeout());
+    mojo_options->timeout = base::Milliseconds(options.timeout());
   }
 
   // Adds the excludeCredentials members
@@ -655,8 +654,7 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
   mojo_options->challenge = ConvertTo<Vector<uint8_t>>(options.challenge());
 
   if (options.hasTimeout()) {
-    mojo_options->timeout =
-        base::TimeDelta::FromMilliseconds(options.timeout());
+    mojo_options->timeout = base::Milliseconds(options.timeout());
   }
 
   if (options.hasRpId()) {

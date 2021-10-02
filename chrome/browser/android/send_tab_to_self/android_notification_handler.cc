@@ -127,8 +127,7 @@ void AndroidNotificationHandler::DisplayNewEntries(
       JNIEnv* env = AttachCurrentThread();
 
       // Set the expiration to 10 days from when the notification is displayed.
-      base::Time expiraton_time =
-          entry->GetSharedTime() + base::TimeDelta::FromDays(10);
+      base::Time expiraton_time = entry->GetSharedTime() + base::Days(10);
 
       ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
           Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(

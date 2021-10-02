@@ -249,11 +249,11 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessAutoShutdown) {
 
   auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
-  mocked_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  mocked_task_runner->FastForwardBy(base::Seconds(20));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
   test::OobeJS().ExpectElementText(GetExpectedCountdownMessage(40),
                                    kOsInstallDialogSuccessSubtitile);
-  mocked_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(41));
+  mocked_task_runner->FastForwardBy(base::Seconds(41));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
 

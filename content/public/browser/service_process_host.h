@@ -49,7 +49,7 @@ inline sandbox::policy::SandboxType GetServiceSandboxType() {
 //
 // Typical usage might look something like:
 //
-//   constexpr auto kFooServiceIdleTimeout = base::TimeDelta::FromSeconds(5);
+//   constexpr auto kFooServiceIdleTimeout = base::Seconds(5);
 //   auto foo_service = ServiceProcessHost::Launch<foo::mojom::FooService>(
 //       ServiceProcessHost::Options()
 //           .WithDisplayName(IDS_FOO_SERVICE_DISPLAY_NAME)

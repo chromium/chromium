@@ -99,8 +99,8 @@ TEST_F(UserActivityDetectorTest, Basic) {
   EXPECT_EQ(1, observer_->num_invocations());
   observer_->reset_stats();
 
-  base::TimeDelta advance_delta = base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs);
+  base::TimeDelta advance_delta =
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs);
   AdvanceTime(advance_delta);
   ui::MouseEvent mouse_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
@@ -120,9 +120,8 @@ TEST_F(UserActivityDetectorTest, Basic) {
   EXPECT_EQ(0, observer_->num_invocations());
   observer_->reset_stats();
 
-  const base::TimeDelta kIgnoreMouseTime =
-      base::TimeDelta::FromMilliseconds(
-          UserActivityDetector::kDisplayPowerChangeIgnoreMouseMs);
+  const base::TimeDelta kIgnoreMouseTime = base::Milliseconds(
+      UserActivityDetector::kDisplayPowerChangeIgnoreMouseMs);
   AdvanceTime(kIgnoreMouseTime / 2);
   OnEvent(&mouse_event);
   EXPECT_FALSE(mouse_event.handled());
@@ -176,8 +175,7 @@ TEST_F(UserActivityDetectorTest, RateLimitNotifications) {
 
   // Advance the time, but not quite enough for another notification to be sent.
   AdvanceTime(
-      base::TimeDelta::FromMilliseconds(
-          UserActivityDetector::kNotifyIntervalMs - 100));
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs - 100));
   OnEvent(&event);
   EXPECT_FALSE(event.handled());
   EXPECT_EQ(0, observer_->num_invocations());
@@ -185,8 +183,7 @@ TEST_F(UserActivityDetectorTest, RateLimitNotifications) {
 
   // Advance time by the notification interval, definitely moving out of the
   // rate limit. This should let us trigger another notification.
-  AdvanceTime(base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs));
+  AdvanceTime(base::Milliseconds(UserActivityDetector::kNotifyIntervalMs));
 
   OnEvent(&event);
   EXPECT_FALSE(event.handled());
@@ -210,15 +207,15 @@ TEST_F(UserActivityDetectorTest, HandleExternalUserActivity) {
   EXPECT_EQ(1, observer_->num_invocations());
   observer_->reset_stats();
 
-  base::TimeDelta advance_delta = base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs);
+  base::TimeDelta advance_delta =
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs);
   AdvanceTime(advance_delta);
   detector_->HandleExternalUserActivity();
   EXPECT_EQ(1, observer_->num_invocations());
   observer_->reset_stats();
 
-  base::TimeDelta half_advance_delta = base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs / 2);
+  base::TimeDelta half_advance_delta =
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs / 2);
   AdvanceTime(half_advance_delta);
   detector_->HandleExternalUserActivity();
   EXPECT_EQ(0, observer_->num_invocations());

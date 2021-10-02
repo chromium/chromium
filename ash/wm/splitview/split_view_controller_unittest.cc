@@ -256,7 +256,7 @@ class SplitViewControllerTest : public AshTestBase {
     // is a next frame.
     ignore_result(ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::TimeDelta::FromMilliseconds(100)));
+        base::Milliseconds(100)));
 
     {
       SCOPED_TRACE(trace + std::string(".Enter"));

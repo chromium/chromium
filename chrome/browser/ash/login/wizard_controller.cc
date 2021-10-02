@@ -336,8 +336,7 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
   // can not be used here, because `histogram_name` is calculated dynamically
   // and changes from call to call.
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      histogram_name, base::TimeDelta::FromMilliseconds(10),
-      base::TimeDelta::FromMinutes(3), 50,
+      histogram_name, base::Milliseconds(10), base::Minutes(3), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTime(step_time);
 
@@ -347,9 +346,8 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
   std::string histogram_name_with_reason =
       "OOBE.StepCompletionTimeByExitReason." + screen_name + "." + exit_reason;
   base::HistogramBase* histogram_with_reason = base::Histogram::FactoryTimeGet(
-      histogram_name_with_reason, base::TimeDelta::FromMilliseconds(10),
-      base::TimeDelta::FromMinutes(10), 100,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
+      histogram_name_with_reason, base::Milliseconds(10), base::Minutes(10),
+      100, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram_with_reason->AddTime(step_time);
 }
 
@@ -1836,10 +1834,9 @@ void WizardController::StartNetworkTimezoneResolve() {
     return;
   }
 
-  DelayNetworkCall(
-      base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS),
-      base::BindOnce(&WizardController::StartTimezoneResolve,
-                     weak_factory_.GetWeakPtr()));
+  DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
+                   base::BindOnce(&WizardController::StartTimezoneResolve,
+                                  weak_factory_.GetWeakPtr()));
 }
 
 // Resolving the timezone consists of first determining the location,
@@ -1857,7 +1854,7 @@ void WizardController::StartTimezoneResolve() {
                       : g_browser_process->shared_url_loader_factory(),
       SimpleGeolocationProvider::DefaultGeolocationProviderURL());
   geolocation_provider_->RequestGeolocation(
-      base::TimeDelta::FromSeconds(kResolveTimeZoneTimeoutSeconds),
+      base::Seconds(kResolveTimeZoneTimeoutSeconds),
       false /* send_wifi_geolocation_data */,
       false /* send_cellular_geolocation_data */,
       base::BindOnce(&WizardController::OnLocationResolved,
@@ -1866,10 +1863,9 @@ void WizardController::StartTimezoneResolve() {
 
 void WizardController::PerformPostEulaActions() {
   StartNetworkTimezoneResolve();
-  DelayNetworkCall(
-      base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS),
-      ServicesCustomizationDocument::GetInstance()
-          ->EnsureCustomizationAppliedClosure());
+  DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
+                   ServicesCustomizationDocument::GetInstance()
+                       ->EnsureCustomizationAppliedClosure());
 
   // Now that EULA has been accepted (for official builds), enable portal check.
   // ChromiumOS builds would go though this code path too.
@@ -2344,8 +2340,7 @@ void WizardController::OnLocationResolved(const Geoposition& position,
                                           const base::TimeDelta elapsed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const base::TimeDelta timeout =
-      base::TimeDelta::FromSeconds(kResolveTimeZoneTimeoutSeconds);
+  const base::TimeDelta timeout = base::Seconds(kResolveTimeZoneTimeoutSeconds);
   // Ignore invalid position.
   if (!position.Valid())
     return;

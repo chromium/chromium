@@ -147,7 +147,7 @@ bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
   // The feature will start to show only for new users which we define as users
   // who haven't had an interaction with Assistant in the last 28 days.
   return interaction_controller->GetTimeDeltaSinceLastInteraction() >=
-         base::TimeDelta::FromDays(28);
+         base::Days(28);
 }
 
 }  // namespace ash

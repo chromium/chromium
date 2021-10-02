@@ -17,8 +17,7 @@ class TabWidthConstraints;
 // to animate that tab.
 class TabAnimation {
  public:
-  static constexpr base::TimeDelta kAnimationDuration =
-      base::TimeDelta::FromMilliseconds(200);
+  static constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
 
   // Creates a TabAnimation for a tab with no active animations.
   explicit TabAnimation(TabAnimationState static_state);

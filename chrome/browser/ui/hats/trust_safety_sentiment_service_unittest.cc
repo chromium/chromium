@@ -163,7 +163,7 @@ TEST_F(TrustSafetySentimentServiceTest, Eligibility_Time) {
       TrustSafetySentimentService::FeatureArea::kPrivacySettings, {});
   service()->OpenedNewTabPage();
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromMinutes(2));
+  task_environment()->AdvanceClock(base::Minutes(2));
   service()->TriggerOccurred(
       TrustSafetySentimentService::FeatureArea::kTrustedSurface, {});
   service()->OpenedNewTabPage();
@@ -171,7 +171,7 @@ TEST_F(TrustSafetySentimentServiceTest, Eligibility_Time) {
 
   // Moving the clock forward such that only the trusted surface trigger is
   // within the window should guarantee it is the survey shown.
-  task_environment()->AdvanceClock(base::TimeDelta::FromMinutes(9));
+  task_environment()->AdvanceClock(base::Minutes(9));
   EXPECT_CALL(
       *mock_hats_service(),
       LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _, _, _));
@@ -277,7 +277,7 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PrivacySettings) {
   EXPECT_CALL(
       *mock_hats_service(),
       LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings, _, _, _, _));
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(20));
+  task_environment()->AdvanceClock(base::Seconds(20));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
@@ -286,13 +286,13 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PrivacySettings) {
   // receiving a survey.
   EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _)).Times(0);
   service()->InteractedWithPrivacySettings(web_contents.get());
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(5));
+  task_environment()->AdvanceClock(base::Seconds(5));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
 
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL("http://unrelated.com"));
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(15));
+  task_environment()->AdvanceClock(base::Seconds(15));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
 }
@@ -330,7 +330,7 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PasswordManager) {
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyTransactions, _, _,
                            expected_psd, _));
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(20));
+  task_environment()->AdvanceClock(base::Seconds(20));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
@@ -339,13 +339,13 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PasswordManager) {
   // eligible.
   EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _)).Times(0);
   service()->OpenedPasswordManager(web_contents.get());
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(5));
+  task_environment()->AdvanceClock(base::Seconds(5));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
 
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL("http://unrelated.com"));
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(15));
+  task_environment()->AdvanceClock(base::Seconds(15));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
 }
@@ -574,7 +574,7 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
 
   // The second visit to the NTP should not trigger a survey if it takes place
   // less than the minimum time to prompt after closing an incognito session.
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(30));
+  task_environment()->AdvanceClock(base::Seconds(30));
   service()->OpenedNewTabPage();
 
   // Up to this point no attempt to show any survey should have been made.
@@ -586,7 +586,7 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
 
   // The next tab open which occurs after the required number of opens, and the
   // minimum time has passed, should trigger a survey.
-  task_environment()->AdvanceClock(base::TimeDelta::FromMinutes(1));
+  task_environment()->AdvanceClock(base::Minutes(1));
   service()->OpenedNewTabPage();
 
   CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,

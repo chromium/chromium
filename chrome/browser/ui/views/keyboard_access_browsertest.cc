@@ -106,7 +106,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
       SendKeyPress(browser_, ui::VKEY_ESCAPE);
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
-          base::TimeDelta::FromMilliseconds(200));
+          base::Milliseconds(200));
     } else {
       DCHECK(observation_.IsObserving());
       observation_.Reset();

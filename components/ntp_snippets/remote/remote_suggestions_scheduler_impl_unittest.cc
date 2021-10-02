@@ -622,7 +622,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   // UserClassifier defaults to UserClass::ACTIVE_NTP_USER - we work with the
   // default interval for this class here. This time would allow for a fetch on
   // NTP open but not on cold start.
-  test_clock()->Advance(base::TimeDelta::FromHours(13));
+  test_clock()->Advance(base::Hours(13));
   // This should *not* trigger a fetch.
   scheduler()->OnBrowserColdStart();
 
@@ -631,7 +631,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   scheduler()->OnProviderDeactivated();
   ResetProvider();  // Also resets the scheduler and test clock.
 
-  test_clock()->Advance(base::TimeDelta::FromHours(13));
+  test_clock()->Advance(base::Hours(13));
   EXPECT_CALL(*provider(), ready()).WillRepeatedly(Return(false));
   scheduler()->OnSuggestionsSurfaceOpened();
   scheduler()->OnBrowserColdStart();
@@ -732,8 +732,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   // Make the first soft fetch successful.
   scheduler()->OnBrowserForegrounded();
   std::move(signal_fetch_done).Run(Status::Success());
-  test_clock()->Advance(
-      base::TimeDelta::FromHours(kDefaultStartupIntervalHours));
+  test_clock()->Advance(base::Hours(kDefaultStartupIntervalHours));
   scheduler()->OnBrowserForegrounded();
 }
 
@@ -921,12 +920,11 @@ TEST_F(RemoteSuggestionsSchedulerImplTest, FetchIntervalForShownTriggerOnWifi) {
   // Open NTP again after too short delay (one minute missing). UserClassifier
   // defaults to UserClass::ACTIVE_NTP_USER - we work with the default interval
   // for this class here. This time no fetch is executed.
-  test_clock()->Advance(base::TimeDelta::FromHours(4) -
-                        base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(4) - base::Minutes(1));
   scheduler()->OnSuggestionsSurfaceOpened();
 
   // Open NTP after another delay, now together long enough to issue a fetch.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(2));
+  test_clock()->Advance(base::Minutes(2));
   EXPECT_CALL(*provider(), RefetchInTheBackground(_));
   scheduler()->OnSuggestionsSurfaceOpened();
 }
@@ -955,11 +953,11 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // Open NTP again after too short delay. This time no fetch is executed.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(20));
+  test_clock()->Advance(base::Minutes(20));
   scheduler()->OnSuggestionsSurfaceOpened();
 
   // Open NTP after another delay, now together long enough to issue a fetch.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(10));
+  test_clock()->Advance(base::Minutes(10));
   EXPECT_CALL(*provider(), RefetchInTheBackground(_));
   scheduler()->OnSuggestionsSurfaceOpened();
 }
@@ -986,12 +984,11 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // Open NTP again after too short delay. This time no fetch is executed.
-  test_clock()->Advance(base::TimeDelta::FromHours(4) -
-                        base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(4) - base::Minutes(1));
   scheduler()->OnSuggestionsSurfaceOpened();
 
   // Open NTP after another delay, now together long enough to issue a fetch.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(2));
+  test_clock()->Advance(base::Minutes(2));
   EXPECT_CALL(*provider(), RefetchInTheBackground(_));
   scheduler()->OnSuggestionsSurfaceOpened();
 }
@@ -1020,11 +1017,11 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // Open NTP again after too short delay. This time no fetch is executed.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(20));
+  test_clock()->Advance(base::Minutes(20));
   scheduler()->OnSuggestionsSurfaceOpened();
 
   // Open NTP after another delay, now together long enough to issue a fetch.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(10));
+  test_clock()->Advance(base::Minutes(10));
   EXPECT_CALL(*provider(), RefetchInTheBackground(_));
   scheduler()->OnSuggestionsSurfaceOpened();
 }
@@ -1038,13 +1035,13 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   scheduler()->OnHistoryCleared();
 
   // A trigger after 15 minutes is ignored.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(15));
+  test_clock()->Advance(base::Minutes(15));
   scheduler()->OnBrowserForegrounded();
 
   // A trigger after another 16 minutes is performed (more than 30m after
   // clearing the history).
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_));
-  test_clock()->Advance(base::TimeDelta::FromMinutes(16));
+  test_clock()->Advance(base::Minutes(16));
   scheduler()->OnBrowserForegrounded();
 }
 
@@ -1129,7 +1126,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
 
   // Foreground the browser again after a very long delay. Again, no fetch is
   // executed for neither Foregrounded, nor ColdStart.
-  test_clock()->Advance(base::TimeDelta::FromHours(100000));
+  test_clock()->Advance(base::Hours(100000));
   scheduler()->OnBrowserForegrounded();
   scheduler()->OnBrowserColdStart();
 }
@@ -1167,9 +1164,8 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // The staleness threshold by default equals to the startup interval.
-  test_clock()->Advance(
-      base::TimeDelta::FromHours(kDefaultStartupIntervalHours) -
-      base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(kDefaultStartupIntervalHours) -
+                        base::Minutes(1));
 
   // Not long enough: non-stale.
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_)).Times(0);
@@ -1194,9 +1190,8 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // The staleness threshold by default equals to the startup interval.
-  test_clock()->Advance(
-      base::TimeDelta::FromHours(kDefaultStartupIntervalHours) +
-      base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(kDefaultStartupIntervalHours) +
+                        base::Minutes(1));
 
   // Long enough: stale.
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_));
@@ -1224,8 +1219,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // The staleness threshold by default equals to the startup interval.
-  test_clock()->Advance(base::TimeDelta::FromHours(kStaleHours) -
-                        base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(kStaleHours) - base::Minutes(1));
 
   // Not long enough: non-stale.
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_)).Times(0);
@@ -1252,8 +1246,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   scheduler()->OnBrowserForegrounded();
   std::move(signal_fetch_done).Run(Status::Success());
 
-  test_clock()->Advance(base::TimeDelta::FromHours(kStaleHours) +
-                        base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(kStaleHours) + base::Minutes(1));
 
   // Long enough: stale.
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_));
@@ -1281,8 +1274,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   std::move(signal_fetch_done).Run(Status::Success());
 
   // The staleness threshold by default equals to the startup interval.
-  test_clock()->Advance(base::TimeDelta::FromHours(kStartupHours) -
-                        base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(kStartupHours) - base::Minutes(1));
 
   // Not long enough: non-stale.
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_)).Times(0);
@@ -1309,8 +1301,7 @@ TEST_F(RemoteSuggestionsSchedulerImplTest,
   scheduler()->OnBrowserForegrounded();
   std::move(signal_fetch_done).Run(Status::Success());
 
-  test_clock()->Advance(base::TimeDelta::FromHours(kStartupHours) +
-                        base::TimeDelta::FromMinutes(1));
+  test_clock()->Advance(base::Hours(kStartupHours) + base::Minutes(1));
 
   // Long enough: stale.
   EXPECT_CALL(*provider(), RefetchWhileDisplaying(_));

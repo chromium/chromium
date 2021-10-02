@@ -187,7 +187,7 @@ void PermissionChip::RestartTimersOnInteraction() {
 }
 
 void PermissionChip::StartCollapseTimer() {
-  constexpr auto kDelayBeforeCollapsingChip = base::TimeDelta::FromSeconds(12);
+  constexpr auto kDelayBeforeCollapsingChip = base::Seconds(12);
   collapse_timer_.Start(
       FROM_HERE, kDelayBeforeCollapsingChip,
       base::BindOnce(&PermissionChip::Collapse, base::Unretained(this),
@@ -198,14 +198,14 @@ void PermissionChip::StartDismissTimer() {
   if (should_expand_) {
     if (base::FeatureList::IsEnabled(
             permissions::features::kPermissionChipAutoDismiss)) {
-      auto delay = base::TimeDelta::FromMilliseconds(
+      auto delay = base::Milliseconds(
           permissions::features::kPermissionChipAutoDismissDelay.Get());
       dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Dismiss);
     }
   } else {
     // Abusive origins do not support expand animation, hence the dismiss timer
     // should be longer.
-    dismiss_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(18), this,
+    dismiss_timer_.Start(FROM_HERE, base::Seconds(18), this,
                          &PermissionChip::Dismiss);
   }
 }

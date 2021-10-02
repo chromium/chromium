@@ -131,7 +131,7 @@ void DisplayAnimator::StartFadeOutAnimation(base::OnceClosure callback) {
 
     ui::ScopedLayerAnimationSettings settings(hiding_layer->GetAnimator());
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kFadingAnimationDurationInMS));
+        base::Milliseconds(kFadingAnimationDurationInMS));
     observer->AddNewAnimator(hiding_layer->GetAnimator());
     hiding_layer->SetOpacity(1.0f);
     hiding_layer->SetVisible(true);
@@ -142,9 +142,8 @@ void DisplayAnimator::StartFadeOutAnimation(base::OnceClosure callback) {
   // canceled due to some unknown errors, we set a timer to clear these
   // hiding layers.
   timer_ = std::make_unique<base::OneShotTimer>();
-  timer_->Start(FROM_HERE,
-                base::TimeDelta::FromSeconds(kFadingTimeoutDurationInSeconds),
-                this, &DisplayAnimator::ClearHidingLayers);
+  timer_->Start(FROM_HERE, base::Seconds(kFadingTimeoutDurationInSeconds), this,
+                &DisplayAnimator::ClearHidingLayers);
 }
 
 void DisplayAnimator::StartFadeInAnimation() {
@@ -190,7 +189,7 @@ void DisplayAnimator::StartFadeInAnimation() {
 
     ui::ScopedLayerAnimationSettings settings(hiding_layer->GetAnimator());
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kFadingAnimationDurationInMS));
+        base::Milliseconds(kFadingAnimationDurationInMS));
     observer->AddNewAnimator(hiding_layer->GetAnimator());
     hiding_layer->SetOpacity(0.0f);
     hiding_layer->SetVisible(false);

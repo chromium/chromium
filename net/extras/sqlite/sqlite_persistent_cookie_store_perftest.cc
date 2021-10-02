@@ -83,9 +83,9 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
   }
 
   CanonicalCookie CookieFromIndices(int domain_num, int cookie_num) {
-    base::Time t(test_start_ +
-                 base::TimeDelta::FromMicroseconds(
-                     domain_num * kCookiesPerDomain + cookie_num));
+    base::Time t(
+        test_start_ +
+        base::Microseconds(domain_num * kCookiesPerDomain + cookie_num));
     std::string domain_name(base::StringPrintf(".domain_%d.com", domain_num));
     return *CanonicalCookie::CreateUnsafeCookieForTesting(
         base::StringPrintf("Cookie_%d", cookie_num), "1", domain_name, "/", t,

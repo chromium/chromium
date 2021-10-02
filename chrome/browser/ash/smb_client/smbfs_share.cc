@@ -26,8 +26,7 @@ namespace {
 
 constexpr char kMountDirPrefix[] = "smbfs-";
 constexpr char kMountIdHashSeparator[] = "#";
-constexpr base::TimeDelta kAllowCredentialsTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kAllowCredentialsTimeout = base::Seconds(5);
 
 SmbMountResult MountErrorToMountResult(smbfs::mojom::MountError mount_error) {
   switch (mount_error) {

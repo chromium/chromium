@@ -159,7 +159,7 @@ void CupsPrintJobNotification::UpdateNotification() {
                              *notification_, /*metadata=*/nullptr);
     if (print_job_->state() == CupsPrintJob::State::STATE_DOCUMENT_DONE) {
       success_timer_->Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(kSuccessTimeoutSeconds),
+          FROM_HERE, base::Seconds(kSuccessTimeoutSeconds),
           base::BindOnce(&CupsPrintJobNotification::CleanUpNotification,
                          base::Unretained(this)));
     }

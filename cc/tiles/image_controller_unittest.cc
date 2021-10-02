@@ -287,12 +287,11 @@ class ImageControllerTest : public testing::Test {
 
   // Convenience method to run the run loop with a timeout.
   void RunOrTimeout(base::RunLoop* run_loop) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ImageControllerTest::Timeout,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Unretained(run_loop)),
-        base::TimeDelta::FromSeconds(kDefaultTimeoutSeconds));
+    task_runner_->PostDelayedTask(FROM_HERE,
+                                  base::BindOnce(&ImageControllerTest::Timeout,
+                                                 weak_ptr_factory_.GetWeakPtr(),
+                                                 base::Unretained(run_loop)),
+                                  base::Seconds(kDefaultTimeoutSeconds));
     run_loop->Run();
   }
 

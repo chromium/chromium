@@ -32,10 +32,10 @@ namespace credential_provider {
 
 const base::TimeDelta
     AssociatedUserValidator::kDefaultTokenHandleValidationTimeout =
-        base::TimeDelta::FromMilliseconds(3000);
+        base::Milliseconds(3000);
 
 const base::TimeDelta AssociatedUserValidator::kTokenHandleValidityLifetime =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 const char AssociatedUserValidator::kTokenInfoUrl[] =
     "https://www.googleapis.com/oauth2/v2/tokeninfo";

@@ -364,8 +364,7 @@ void CheckClientDownloadRequestBase::StartTimeout() {
       DownloadCheckResult::UNKNOWN, REASON_REQUEST_CANCELED));
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
-      base::TimeDelta::FromMilliseconds(
-          service_->download_request_timeout_ms()));
+      base::Milliseconds(service_->download_request_timeout_ms()));
 }
 
 void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(

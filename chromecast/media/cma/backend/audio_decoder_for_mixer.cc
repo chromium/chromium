@@ -50,7 +50,7 @@ const int kInitialFillSizeFrames = 512;
 const double kPlaybackRateEpsilon = 0.001;
 
 const int64_t kDefaultInputQueueMs = 200;
-constexpr base::TimeDelta kFadeTime = base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kFadeTime = base::Milliseconds(5);
 const int kDefaultStartThresholdMs = 70;
 
 const CastAudioDecoder::OutputFormat kDecoderSampleFormat =
@@ -83,7 +83,7 @@ int MaxQueuedFrames(int sample_rate) {
       switches::kMixerSourceInputQueueMs, kDefaultInputQueueMs);
 
   return ::media::AudioTimestampHelper::TimeToFrames(
-      base::TimeDelta::FromMilliseconds(queue_ms), sample_rate);
+      base::Milliseconds(queue_ms), sample_rate);
 }
 
 int StartThreshold(int sample_rate) {
@@ -91,7 +91,7 @@ int StartThreshold(int sample_rate) {
       switches::kMixerSourceAudioReadyThresholdMs, kDefaultStartThresholdMs);
 
   return ::media::AudioTimestampHelper::TimeToFrames(
-      base::TimeDelta::FromMilliseconds(start_threshold_ms), sample_rate);
+      base::Milliseconds(start_threshold_ms), sample_rate);
 }
 
 }  // namespace

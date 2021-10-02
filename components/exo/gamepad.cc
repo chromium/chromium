@@ -39,7 +39,7 @@ void Gamepad::Vibrate(const std::vector<int64_t>& duration_millis,
 
   vibration_timer_.Stop();
   vibration_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(0),
+      FROM_HERE, base::Milliseconds(0),
       base::BindOnce(&Gamepad::HandleVibrate, base::Unretained(this),
                      duration_millis, amplitudes, repeat, /*index=*/0,
                      /*duration_already_vibrated=*/0));
@@ -67,7 +67,7 @@ void Gamepad::HandleVibrate(const std::vector<int64_t>& duration_millis,
     //  commands until the effect is complete.
     SendVibrate(amplitudes[index], kMaxDurationMillis);
     vibration_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kMaxDurationMillis),
+        FROM_HERE, base::Milliseconds(kMaxDurationMillis),
         base::BindOnce(&Gamepad::HandleVibrate, base::Unretained(this),
                        duration_millis, amplitudes, repeat, index,
                        /*duration_already_vibrated=*/duration_already_vibrated +
@@ -81,7 +81,7 @@ void Gamepad::HandleVibrate(const std::vector<int64_t>& duration_millis,
       index = repeat;
 
     vibration_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(duration_left_to_vibrate),
+        FROM_HERE, base::Milliseconds(duration_left_to_vibrate),
         base::BindOnce(&Gamepad::HandleVibrate, base::Unretained(this),
                        duration_millis, amplitudes, repeat, index,
                        /*duration_already_vibrated=*/0));

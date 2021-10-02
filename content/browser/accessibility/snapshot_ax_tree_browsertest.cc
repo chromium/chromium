@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Timeout) {
         ui::kAXModeComplete,
         /* exclude_offscreen= */ false,
         /* max_nodes= */ 0,
-        /* timeout= */ base::TimeDelta::FromMilliseconds(1));
+        /* timeout= */ base::Milliseconds(1));
     waiter.Wait();
 
     nodes_with_timeout = waiter.snapshot().nodes.size();

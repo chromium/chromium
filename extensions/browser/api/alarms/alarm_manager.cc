@@ -39,7 +39,7 @@ const int kSecondsPerMinute = 60;
 
 // The minimum period between polling for alarms to run.
 const base::TimeDelta kDefaultMinPollPeriod() {
-  return base::TimeDelta::FromDays(1);
+  return base::Days(1);
 }
 
 class DefaultAlarmDelegate : public AlarmManager::Delegate {
@@ -64,8 +64,8 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
 
 // Creates a TimeDelta from a delay as specified in the API.
 base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
-  return base::TimeDelta::FromMicroseconds(delay_in_minutes *
-                                           base::Time::kMicrosecondsPerMinute);
+  return base::Microseconds(delay_in_minutes *
+                            base::Time::kMicrosecondsPerMinute);
 }
 
 AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
@@ -84,7 +84,7 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
         // No else branch. It's okay to ignore the failure since we have
         // minimum granularity.
       }
-      alarm->minimum_granularity = base::TimeDelta::FromSecondsD(
+      alarm->minimum_granularity = base::Seconds(
           (is_unpacked ? alarms_api_constants::kDevDelayMinimum
                        : alarms_api_constants::kReleaseDelayMinimum) *
           kSecondsPerMinute);
@@ -349,8 +349,7 @@ void AlarmManager::ReadFromStorage(const std::string& extension_id,
 
 void AlarmManager::SetNextPollTime(const base::Time& time) {
   next_poll_time_ = time;
-  timer_.Start(FROM_HERE,
-               std::max(base::TimeDelta::FromSeconds(0), time - clock_->Now()),
+  timer_.Start(FROM_HERE, std::max(base::Seconds(0), time - clock_->Now()),
                this, &AlarmManager::PollAlarms);
 }
 

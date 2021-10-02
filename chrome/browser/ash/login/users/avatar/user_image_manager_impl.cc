@@ -592,12 +592,12 @@ void UserImageManagerImpl::UserProfileCreated() {
         FROM_HERE,
         g_ignore_profile_data_download_delay_
             ? base::TimeDelta()
-            : base::TimeDelta::FromSeconds(kProfileDataDownloadDelaySec),
+            : base::Seconds(kProfileDataDownloadDelaySec),
         base::BindOnce(&UserImageManagerImpl::DownloadProfileData,
                        base::Unretained(this)));
     // Schedule periodic refreshes of the profile data.
     profile_download_periodic_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kProfileRefreshIntervalSec),
+        FROM_HERE, base::Seconds(kProfileRefreshIntervalSec),
         base::BindRepeating(&UserImageManagerImpl::DownloadProfileData,
                             base::Unretained(this)));
   } else {
@@ -799,8 +799,7 @@ void UserImageManagerImpl::OnProfileDownloadFailure(
   if (reason == ProfileDownloaderDelegate::NETWORK_ERROR) {
     // Retry download after a delay if a network error occurred.
     profile_download_one_shot_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kProfileDataDownloadRetryIntervalSec),
+        FROM_HERE, base::Seconds(kProfileDataDownloadRetryIntervalSec),
         base::BindOnce(&UserImageManagerImpl::DownloadProfileData,
                        base::Unretained(this)));
   }

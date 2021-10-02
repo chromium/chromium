@@ -329,7 +329,7 @@ void PageTimingMetricsSender::EnsureSendTimer(bool urgent) {
     delay_ms = kInitialTimerDelayMillis;
   }
 
-  timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay_ms),
+  timer_->Start(FROM_HERE, base::Milliseconds(delay_ms),
                 base::BindOnce(&PageTimingMetricsSender::SendNow,
                                base::Unretained(this)));
 }
@@ -368,9 +368,8 @@ void PageTimingMetricsSender::DidObserveInputDelay(
   input_timing_delta_->num_input_events++;
   input_timing_delta_->total_input_delay += input_delay;
   input_timing_delta_->total_adjusted_input_delay +=
-      base::TimeDelta::FromMilliseconds(
-          std::max(int64_t(0),
-                   input_delay.InMilliseconds() - kInputDelayAdjustmentMillis));
+      base::Milliseconds(std::max(int64_t(0), input_delay.InMilliseconds() -
+                                                  kInputDelayAdjustmentMillis));
   EnsureSendTimer();
 }
 

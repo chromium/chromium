@@ -32,7 +32,7 @@ class ComputePressureSamplerTest : public testing::Test {
   ComputePressureSamplerTest()
       : sampler_(std::make_unique<ComputePressureSampler>(
             std::make_unique<FakeCpuProbe>(),
-            base::TimeDelta::FromMilliseconds(1),
+            base::Milliseconds(1),
             base::BindRepeating(&ComputePressureSamplerTest::SamplerCallback,
                                 base::Unretained(this)))) {}
 
@@ -154,8 +154,7 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
   };
 
   sampler_ = std::make_unique<ComputePressureSampler>(
-      std::make_unique<StreamingCpuProbe>(samples),
-      base::TimeDelta::FromMilliseconds(1),
+      std::make_unique<StreamingCpuProbe>(samples), base::Milliseconds(1),
       base::BindRepeating(&ComputePressureSamplerTest::SamplerCallback,
                           base::Unretained(this)));
   sampler_->EnsureStarted();
@@ -197,7 +196,7 @@ TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
   samples_.clear();
   cpu_probe().SetLastSample({.cpu_utilization = 0.25, .cpu_speed = 0.5});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
 
   sampler_->EnsureStarted();
   WaitForUpdate();
@@ -231,7 +230,7 @@ TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Delayed) {
   samples_.clear();
   cpu_probe().SetLastSample({.cpu_utilization = 0.25, .cpu_speed = 0.5});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
 
   sampler_->EnsureStarted();
   WaitForUpdate();

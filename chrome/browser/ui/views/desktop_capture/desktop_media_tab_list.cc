@@ -41,8 +41,7 @@ const int kListWidth = 346;
 // Delay after the selection is changed before clearing the preview, to allow a
 // direct switch from the old preview to the new one without flashing grey in
 // between.
-const base::TimeDelta kClearPreviewDelay =
-    base::TimeDelta::FromMilliseconds(200);
+const base::TimeDelta kClearPreviewDelay = base::Milliseconds(200);
 
 // ui::TableModel that wraps a DesktopMediaListController and listens for
 // updates from it.

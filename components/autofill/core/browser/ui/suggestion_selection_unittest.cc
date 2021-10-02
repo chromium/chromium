@@ -360,8 +360,8 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
       base::Time::FromUTCString("2017-01-02T00:00:01Z", &kCurrentTime);
   ASSERT_TRUE(result);
   constexpr size_t kNumProfiles = 10;
-  constexpr base::TimeDelta k30Days = base::TimeDelta::FromDays(30);
-  constexpr base::TimeDelta k5DaysBuffer = base::TimeDelta::FromDays(5);
+  constexpr base::TimeDelta k30Days = base::Days(30);
+  constexpr base::TimeDelta k5DaysBuffer = base::Days(5);
 
   // Set up the profile vectors with last use dates ranging from |kCurrentTime|
   // to 270 days ago, in 30 day increments.  Note that the profiles are sorted
@@ -486,7 +486,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(
-        kCurrentTime + base::TimeDelta::FromDays(1), &profiles);
+        kCurrentTime + base::Days(1), &profiles);
 
     // Validate that we get the expected filtered profiles and histograms.
     EXPECT_TRUE(profiles.empty());
@@ -503,8 +503,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(
-        kCurrentTime -
-            base::TimeDelta::FromDays(2 * kNumProfiles * k30Days.InDays()),
+        kCurrentTime - base::Days(2 * kNumProfiles * k30Days.InDays()),
         &profiles);
 
     // Validate that we get the expected filtered profiles and histograms.

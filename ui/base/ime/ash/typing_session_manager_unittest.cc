@@ -37,9 +37,9 @@ TEST_F(TypingSessionManagerTest, RecordMetricsForSimpleTypingSession) {
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(15);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(20);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   typing_session_manager_.EndAndRecordSession();
 
@@ -50,10 +50,10 @@ TEST_F(TypingSessionManagerTest, RecordMetricsForSimpleTypingSession) {
                                       1);
 
   typing_session_manager_.CommitCharacters(25);
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Milliseconds(500));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(30);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   typing_session_manager_.EndAndRecordSession();
 
@@ -71,9 +71,9 @@ TEST_F(TypingSessionManagerTest,
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(15);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(20);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(4));
+  test_clock_.Advance(base::Seconds(4));
 
   typing_session_manager_.CommitCharacters(25);
 
@@ -83,10 +83,10 @@ TEST_F(TypingSessionManagerTest,
   histogram_tester.ExpectUniqueSample("InputMethod.CharactersPerSession", 35,
                                       1);
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Milliseconds(500));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(30);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(4));
+  test_clock_.Advance(base::Seconds(4));
 
   typing_session_manager_.Heartbeat();
 
@@ -103,9 +103,9 @@ TEST_F(TypingSessionManagerTest, DoNotRecordInvalidTypingSessionManuallyEnded) {
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   typing_session_manager_.EndAndRecordSession();
 
@@ -113,10 +113,10 @@ TEST_F(TypingSessionManagerTest, DoNotRecordInvalidTypingSessionManuallyEnded) {
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(3);
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Milliseconds(500));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(4);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   typing_session_manager_.EndAndRecordSession();
 
@@ -132,19 +132,19 @@ TEST_F(TypingSessionManagerTest,
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(4));
+  test_clock_.Advance(base::Seconds(4));
 
   typing_session_manager_.CommitCharacters(3);
 
   histogram_tester.ExpectTotalCount("InputMethod.SessionDuration", 0);
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Milliseconds(500));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(4);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(4));
+  test_clock_.Advance(base::Seconds(4));
 
   typing_session_manager_.Heartbeat();
 
@@ -159,9 +159,9 @@ TEST_F(TypingSessionManagerTest, DoNotRecordTooShortTypingSession) {
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(15);
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
+  test_clock_.Advance(base::Milliseconds(500));
   typing_session_manager_.CommitCharacters(20);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   typing_session_manager_.EndAndRecordSession();
 
@@ -169,10 +169,10 @@ TEST_F(TypingSessionManagerTest, DoNotRecordTooShortTypingSession) {
   histogram_tester.ExpectTotalCount("InputMethod.CharactersPerSession", 0);
 
   typing_session_manager_.CommitCharacters(25);
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Milliseconds(500));
+  test_clock_.Advance(base::Seconds(1));
   typing_session_manager_.CommitCharacters(30);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   typing_session_manager_.EndAndRecordSession();
 

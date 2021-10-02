@@ -38,7 +38,7 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // The amount of time before the |inspection_results_cache_| is flushed to
   // disk while the ModuleDatabase is not idle.
   static constexpr base::TimeDelta kFlushInspectionResultsTimerTimeout =
-      base::TimeDelta::FromMinutes(5);
+      base::Minutes(5);
 
   using OnModuleInspectedCallback =
       base::RepeatingCallback<void(const ModuleInfoKey& module_key,

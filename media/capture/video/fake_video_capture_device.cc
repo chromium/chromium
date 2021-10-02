@@ -859,10 +859,9 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(
     base::TimeTicks expected_execution_time) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::TimeDelta beep_interval =
-      base::TimeDelta::FromMilliseconds(kBeepInterval);
+  const base::TimeDelta beep_interval = base::Milliseconds(kBeepInterval);
   const base::TimeDelta frame_interval =
-      base::TimeDelta::FromMicroseconds(1e6 / device_state_->format.frame_rate);
+      base::Microseconds(1e6 / device_state_->format.frame_rate);
   beep_time_ += frame_interval;
   elapsed_time_ += frame_interval;
 

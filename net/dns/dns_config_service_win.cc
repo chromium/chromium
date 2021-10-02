@@ -511,7 +511,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
       // Try again in a while in case DnsConfigWatcher missed the signal.
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, this),
-          base::TimeDelta::FromSeconds(kRetryIntervalSeconds));
+          base::Seconds(kRetryIntervalSeconds));
     }
   }
 

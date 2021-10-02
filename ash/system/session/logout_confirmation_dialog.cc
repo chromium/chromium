@@ -67,9 +67,8 @@ LogoutConfirmationDialog::LogoutConfirmationDialog(
   widget->Init(std::move(params));
   widget->Show();
 
-  update_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kCountdownUpdateIntervalMs),
-      this, &LogoutConfirmationDialog::UpdateLabel);
+  update_timer_.Start(FROM_HERE, base::Milliseconds(kCountdownUpdateIntervalMs),
+                      this, &LogoutConfirmationDialog::UpdateLabel);
 }
 
 LogoutConfirmationDialog::~LogoutConfirmationDialog() = default;
@@ -103,7 +102,7 @@ const char* LogoutConfirmationDialog::GetClassName() const {
 void LogoutConfirmationDialog::UpdateLabel() {
   const base::TimeDelta time_remaining =
       logout_time_ - controller_->clock()->NowTicks();
-  if (time_remaining >= base::TimeDelta::FromMilliseconds(kHalfSecondInMs)) {
+  if (time_remaining >= base::Milliseconds(kHalfSecondInMs)) {
     label_->SetText(l10n_util::GetStringFUTF16(
         IDS_ASH_LOGOUT_CONFIRMATION_WARNING,
         l10n_util::GetStringFUTF16Int(

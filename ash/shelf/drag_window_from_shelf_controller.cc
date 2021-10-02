@@ -61,7 +61,7 @@ constexpr float kMinYDisplayHeightRatio = 0.125f;
 // Amount of time to wait to show overview after the user slows down or stops
 // window dragging.
 constexpr base::TimeDelta kShowOverviewTimeWhenDragSuspend =
-    base::TimeDelta::FromMilliseconds(40);
+    base::Milliseconds(40);
 
 // The scroll update threshold to restart the show overview timer.
 constexpr float kScrollUpdateOverviewThreshold = 2.f;

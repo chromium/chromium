@@ -66,8 +66,7 @@ class MockTestRemoteCommandFactory : public RemoteCommandsFactory {
   MockTestRemoteCommandFactory() {
     ON_CALL(*this, BuildTestCommand())
         .WillByDefault(ReturnNew<TestRemoteCommandJob>(
-            true,
-            base::TimeDelta::FromSeconds(kTestCommandExecutionTimeInSeconds)));
+            true, base::Seconds(kTestCommandExecutionTimeInSeconds)));
   }
   MockTestRemoteCommandFactory(const MockTestRemoteCommandFactory&) = delete;
   MockTestRemoteCommandFactory& operator=(const MockTestRemoteCommandFactory&) =
@@ -158,8 +157,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
             &TestingCloudPolicyClientForRemoteCommands::DoFetchRemoteCommands,
             base::Unretained(this), std::move(last_command_id), command_results,
             std::move(callback), fetch_call_expectation),
-        base::TimeDelta::FromSeconds(
-            kTestClientServerCommunicationDelayInSeconds));
+        base::Seconds(kTestClientServerCommunicationDelayInSeconds));
   }
 
   void DoFetchRemoteCommands(
@@ -191,8 +189,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
         FROM_HERE,
         base::BindOnce(std::move(callback), DM_STATUS_SUCCESS, fetched_commands,
                        signed_commands),
-        base::TimeDelta::FromSeconds(
-            kTestClientServerCommunicationDelayInSeconds));
+        base::Seconds(kTestClientServerCommunicationDelayInSeconds));
   }
 
   base::queue<FetchCallExpectation> expected_fetch_commands_calls_;

@@ -97,8 +97,7 @@ PasswordForm GenerateExamplePasswordForm() {
   form.times_used = 1;
   form.form_data.name = u"form_name";
   form.date_last_used = base::Time::Now();
-  form.date_password_modified =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  form.date_password_modified = base::Time::Now() - base::Days(1);
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
@@ -877,9 +876,9 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   EXPECT_EQ(0U, result.size());
 
   base::Time now = base::Time::Now();
-  base::TimeDelta one_day = base::TimeDelta::FromDays(1);
-  base::Time back_30_days = now - base::TimeDelta::FromDays(30);
-  base::Time back_31_days = now - base::TimeDelta::FromDays(31);
+  base::TimeDelta one_day = base::Days(1);
+  base::Time back_30_days = now - base::Days(30);
+  base::Time back_31_days = now - base::Days(31);
 
   // Create one with a 0 time.
   EXPECT_TRUE(
@@ -1323,10 +1322,9 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
       ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
   form.submit_element = u"submit_element";
-  form.date_created = base::Time::Now() - base::TimeDelta::FromDays(3);
+  form.date_created = base::Time::Now() - base::Days(3);
   form.date_last_used = base::Time::Now();
-  form.date_password_modified =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  form.date_password_modified = base::Time::Now() - base::Days(1);
   form.blocked_by_user = true;
   form.scheme = PasswordForm::Scheme::kBasic;
   form.type = PasswordForm::Type::kGenerated;
@@ -1367,7 +1365,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
       ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
   form.submit_element = u"submit_element";
-  form.date_created = base::Time::Now() - base::TimeDelta::FromDays(3);
+  form.date_created = base::Time::Now() - base::Days(3);
   form.date_last_used = base::Time::Now();
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");

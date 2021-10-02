@@ -236,7 +236,7 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
     return;
 
   if (proxy_config_changed) {
-    ScheduleAttempt(base::TimeDelta::FromSeconds(kProxyChangeDelaySec));
+    ScheduleAttempt(base::Seconds(kProxyChangeDelaySec));
     return;
   }
 
@@ -442,7 +442,7 @@ void NetworkPortalDetectorImpl::Observe(
     NET_LOG(EVENT) << "Restarting portal detection due to auth change"
                    << " id=" << NetworkGuidId(default_network_id_);
     StopDetection();
-    ScheduleAttempt(base::TimeDelta::FromSeconds(kProxyChangeDelaySec));
+    ScheduleAttempt(base::Seconds(kProxyChangeDelaySec));
   }
 }
 

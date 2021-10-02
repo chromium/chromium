@@ -658,8 +658,7 @@ class MFVideoCallback final
     base::TimeTicks reference_time(base::TimeTicks::Now());
     LONGLONG raw_time_stamp = 0;
     sample->GetSampleTime(&raw_time_stamp);
-    base::TimeDelta timestamp =
-        base::TimeDelta::FromMicroseconds(raw_time_stamp / 10);
+    base::TimeDelta timestamp = base::Microseconds(raw_time_stamp / 10);
 
     DWORD count = 0;
     sample->GetBufferCount(&count);
@@ -754,8 +753,7 @@ HRESULT VideoCaptureDeviceMFWin::ExecuteHresultCallbackWithRetries(
   do {
     hr = callback.Run();
     if (FAILED(hr))
-      base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(retry_delay_in_ms_));
+      base::PlatformThread::Sleep(base::Milliseconds(retry_delay_in_ms_));
 
     // Give up after some amount of time
   } while (hr == MF_E_INVALIDREQUEST && retry_count++ < max_retry_count_);

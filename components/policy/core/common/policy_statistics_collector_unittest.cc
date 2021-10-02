@@ -62,7 +62,7 @@ const PolicyDetails kTestPolicyDetails[] = {
 class PolicyStatisticsCollectorTest : public testing::Test {
  protected:
   PolicyStatisticsCollectorTest()
-      : update_delay_(base::TimeDelta::FromMilliseconds(
+      : update_delay_(base::Milliseconds(
             PolicyStatisticsCollector::kStatisticsUpdateRate)),
         task_runner_(new base::TestSimpleTaskRunner()) {}
 
@@ -85,7 +85,7 @@ class PolicyStatisticsCollectorTest : public testing::Test {
         .WillRepeatedly(ReturnRef(policy_map_));
 
     // Arbitrary negative value (so it'll be different from |update_delay_|).
-    last_delay_ = base::TimeDelta::FromDays(-1);
+    last_delay_ = base::Days(-1);
     policy_map_.Clear();
     policy_statistics_collector_ = std::make_unique<PolicyStatisticsCollector>(
         policy_details_.GetCallback(), chrome_schema_, &policy_service_,

@@ -254,8 +254,8 @@ void SystemLogDelegate::ZipSystemLogs(
 
 // Returns the system log upload frequency.
 base::TimeDelta GetUploadFrequency() {
-  base::TimeDelta upload_frequency(base::TimeDelta::FromMilliseconds(
-      SystemLogUploader::kDefaultUploadDelayMs));
+  base::TimeDelta upload_frequency(
+      base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSystemLogUploadFrequency)) {
     std::string string_value =
@@ -263,7 +263,7 @@ base::TimeDelta GetUploadFrequency() {
             switches::kSystemLogUploadFrequency);
     int frequency;
     if (base::StringToInt(string_value, &frequency)) {
-      upload_frequency = base::TimeDelta::FromMilliseconds(frequency);
+      upload_frequency = base::Milliseconds(frequency);
     }
   }
   return upload_frequency;
@@ -291,7 +291,7 @@ const int64_t SystemLogUploader::kLogThrottleCount = 100;
 
 // Determines the time window for which the upload times should be stored.
 const base::TimeDelta SystemLogUploader::kLogThrottleWindowDuration =
-    base::TimeDelta::FromHours(24);
+    base::Hours(24);
 
 // String constant identifying the header field which stores the file type.
 const char* const SystemLogUploader::kFileTypeHeaderName = "File-Type";
@@ -385,8 +385,7 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
   if (retry_count_++ < kMaxNumRetries) {
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
                   << ", retrying later.";
-    ScheduleNextSystemLogUpload(
-        base::TimeDelta::FromMilliseconds(kErrorUploadDelayMs));
+    ScheduleNextSystemLogUpload(base::Milliseconds(kErrorUploadDelayMs));
   } else {
     // No more retries.
     SYSLOG(ERROR) << "Upload failed with error code " << error_code

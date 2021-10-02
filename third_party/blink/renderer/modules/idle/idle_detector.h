@@ -69,7 +69,7 @@ class IdleDetector final : public EventTargetWithInlineData,
 
   mojom::blink::IdleStatePtr state_;
 
-  base::TimeDelta threshold_ = base::TimeDelta::FromSeconds(60);
+  base::TimeDelta threshold_ = base::Seconds(60);
   Member<AbortSignal> signal_;
   Member<ScriptPromiseResolver> resolver_;
 

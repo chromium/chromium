@@ -411,14 +411,13 @@ TEST_F(DemoModeResourcesRemoverTest, RemoveAfterActiveUse) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(3) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(1) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(3) /*resources_removal_threshold*/,
+                        base::Seconds(1) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -428,7 +427,7 @@ TEST_F(DemoModeResourcesRemoverTest, RemoveAfterActiveUse) {
 
   // Advance time so it's longer than removal threshold, but under the idle
   // threshold (so it's not disregarded as idle time).
-  AdvanceTestTime(base::TimeDelta::FromSeconds(4));
+  AdvanceTestTime(base::Seconds(4));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -441,20 +440,19 @@ TEST_F(DemoModeResourcesRemoverTest, IgnoreUsageBeforeLogin) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(3) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(1) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(3) /*resources_removal_threshold*/,
+                        base::Seconds(1) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   activity_detector_.HandleExternalUserActivity();
 
   // Advance time so it's longer than removal threshold, but under the idle
   // threshold (so it's not disregarded as idle time).
-  AdvanceTestTime(base::TimeDelta::FromSeconds(4));
+  AdvanceTestTime(base::Seconds(4));
   activity_detector_.HandleExternalUserActivity();
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
@@ -471,14 +469,13 @@ TEST_F(DemoModeResourcesRemoverTest, RemoveAfterActiveUse_AccumulateActivity) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(3) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(1) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(3) /*resources_removal_threshold*/,
+                        base::Seconds(1) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -487,14 +484,14 @@ TEST_F(DemoModeResourcesRemoverTest, RemoveAfterActiveUse_AccumulateActivity) {
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Over update interval, but under removal threshold.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(2));
+  AdvanceTestTime(base::Seconds(2));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // This should get accumulated time over removal threshold.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(2));
+  AdvanceTestTime(base::Seconds(2));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -507,14 +504,13 @@ TEST_F(DemoModeResourcesRemoverTest, DoNotAccumulateIdleTimeUsage) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(8) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(3) /*update_interval*/,
-          base::TimeDelta::FromSeconds(4) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(8) /*resources_removal_threshold*/,
+                        base::Seconds(3) /*update_interval*/,
+                        base::Seconds(4) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -524,16 +520,16 @@ TEST_F(DemoModeResourcesRemoverTest, DoNotAccumulateIdleTimeUsage) {
 
   // Advance to the time just under removal threshold in small increments
   // (within the idle threshold)
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Simulate longer idle period.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(10));
+  AdvanceTestTime(base::Seconds(10));
   activity_detector_.HandleExternalUserActivity();
 
   // The resources should be still be here, as usage amount should not have been
@@ -543,7 +539,7 @@ TEST_F(DemoModeResourcesRemoverTest, DoNotAccumulateIdleTimeUsage) {
 
   // Advance time little bit more, so it's over the removal threshold (and over
   // the update interval).
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -556,14 +552,13 @@ TEST_F(DemoModeResourcesRemoverTest, ReportUsageBeforeIdlePeriod) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(12) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(7) /*update_interval*/,
-          base::TimeDelta::FromSeconds(5) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(12) /*resources_removal_threshold*/,
+                        base::Seconds(7) /*update_interval*/,
+                        base::Seconds(5) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -574,16 +569,16 @@ TEST_F(DemoModeResourcesRemoverTest, ReportUsageBeforeIdlePeriod) {
   // Advance to the time just under removal threshold in small increments
   // (within the idle threshold), that are under the update interval combined.
   // This will leave unrecorded usage before the idle period.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Simulate longer idle period.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(10));
+  AdvanceTestTime(base::Seconds(10));
   activity_detector_.HandleExternalUserActivity();
 
   // The resources should be still be here, as usage amount should not have been
@@ -592,9 +587,9 @@ TEST_F(DemoModeResourcesRemoverTest, ReportUsageBeforeIdlePeriod) {
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Advance time cummulatively over the update period.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(4));
+  AdvanceTestTime(base::Seconds(4));
   activity_detector_.HandleExternalUserActivity();
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   // When combined the accumulated active usage was above the removal threshold.
@@ -608,14 +603,13 @@ TEST_F(DemoModeResourcesRemoverTest, RemovalThresholdReachedBeforeIdlePeriod) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(9) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(5) /*update_interval*/,
-          base::TimeDelta::FromSeconds(7) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(9) /*resources_removal_threshold*/,
+                        base::Seconds(5) /*update_interval*/,
+                        base::Seconds(7) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -625,9 +619,9 @@ TEST_F(DemoModeResourcesRemoverTest, RemovalThresholdReachedBeforeIdlePeriod) {
 
   // Advance to the time just under removal threshold in small increments, but
   // with total over the update interval.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -635,14 +629,14 @@ TEST_F(DemoModeResourcesRemoverTest, RemovalThresholdReachedBeforeIdlePeriod) {
 
   // Advance time so total is over the remova threshold, but in increment under
   // the update interval.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Simulate longer idle period.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(10));
+  AdvanceTestTime(base::Seconds(10));
   activity_detector_.HandleExternalUserActivity();
 
   // Activity after the idle period ended should have flushed previous pending
@@ -657,31 +651,30 @@ TEST_F(DemoModeResourcesRemoverTest, UpdateInterval) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(3) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(1) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(3) /*resources_removal_threshold*/,
+                        base::Seconds(1) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
 
   // Test that local state is not updated on each detected user activity.
-  AdvanceTestTime(base::TimeDelta::FromMilliseconds(300));
+  AdvanceTestTime(base::Milliseconds(300));
   activity_detector_.HandleExternalUserActivity();
   EXPECT_EQ(0, local_state_.GetInteger(kAccumulatedUsagePref));
 
-  AdvanceTestTime(base::TimeDelta::FromMilliseconds(300));
+  AdvanceTestTime(base::Milliseconds(300));
   activity_detector_.HandleExternalUserActivity();
   EXPECT_EQ(0, local_state_.GetInteger(kAccumulatedUsagePref));
 
-  AdvanceTestTime(base::TimeDelta::FromMilliseconds(300));
+  AdvanceTestTime(base::Milliseconds(300));
   activity_detector_.HandleExternalUserActivity();
   EXPECT_EQ(0, local_state_.GetInteger(kAccumulatedUsagePref));
 
-  AdvanceTestTime(base::TimeDelta::FromMilliseconds(300));
+  AdvanceTestTime(base::Milliseconds(300));
   activity_detector_.HandleExternalUserActivity();
   EXPECT_EQ(1, local_state_.GetInteger(kAccumulatedUsagePref));
 }
@@ -692,14 +685,13 @@ TEST_F(DemoModeResourcesRemoverTest,
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(3) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(1) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(3) /*resources_removal_threshold*/,
+                        base::Seconds(1) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -708,7 +700,7 @@ TEST_F(DemoModeResourcesRemoverTest,
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Over update interval, but under removal threshold.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(2));
+  AdvanceTestTime(base::Seconds(2));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -718,15 +710,14 @@ TEST_F(DemoModeResourcesRemoverTest,
   remover = DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(3) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(1) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(3) /*resources_removal_threshold*/,
+                        base::Seconds(1) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
   AddAndLogInUser(TestUserType::kRegularSecond, remover.get());
 
   // This should get accumulated time over removal threshold.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(2));
+  AdvanceTestTime(base::Seconds(2));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -740,14 +731,13 @@ TEST_F(DemoModeResourcesRemoverTest,
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(4) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(2) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(4) /*resources_removal_threshold*/,
+                        base::Seconds(2) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kRegular, remover.get());
   activity_detector_.HandleExternalUserActivity();
@@ -756,7 +746,7 @@ TEST_F(DemoModeResourcesRemoverTest,
   EXPECT_TRUE(DemoModeResourcesExist());
 
   // Over update interval, but under removal threshold.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(3));
+  AdvanceTestTime(base::Seconds(3));
   activity_detector_.HandleExternalUserActivity();
 
   task_environment_.RunUntilIdle();
@@ -764,7 +754,7 @@ TEST_F(DemoModeResourcesRemoverTest,
 
   // This is under update interval, but should get accumulated time over
   // removal threshold.
-  AdvanceTestTime(base::TimeDelta::FromSeconds(1));
+  AdvanceTestTime(base::Seconds(1));
   activity_detector_.HandleExternalUserActivity();
 
   remover.reset();
@@ -773,11 +763,10 @@ TEST_F(DemoModeResourcesRemoverTest,
   // removal.
   remover = DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(4) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(2) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(4) /*resources_removal_threshold*/,
+                        base::Seconds(2) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
   AddAndLogInUser(TestUserType::kRegular, remover.get());
 
   task_environment_.RunUntilIdle();
@@ -893,18 +882,17 @@ TEST_F(DemoModeResourcesRemoverInLegacyDemoRetailModeTest,
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   ASSERT_TRUE(remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
+  AdvanceTestTime(base::Minutes(1));
 
   remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(4) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(2) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
+      &test_clock_, DemoModeResourcesRemover::UsageAccumulationConfig(
+                        base::Seconds(4) /*resources_removal_threshold*/,
+                        base::Seconds(2) /*update_interval*/,
+                        base::Seconds(9) /*idle_threshold*/));
 
   AddAndLogInUser(TestUserType::kPublicAccount, remover.get());
 
-  AdvanceTestTime(base::TimeDelta::FromSeconds(5));
+  AdvanceTestTime(base::Seconds(5));
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(DemoModeResourcesExist());

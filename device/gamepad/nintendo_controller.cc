@@ -81,8 +81,7 @@ const uint8_t kUsbDeviceTypeProController = 0x03;
 // The timeout duration was chosen through experimentation. A shorter duration
 // (~1 second) works for Pro controllers, but Joy-Cons sometimes fail to
 // initialize correctly.
-const base::TimeDelta kTimeoutDuration =
-    base::TimeDelta::FromMilliseconds(3000);
+const base::TimeDelta kTimeoutDuration = base::Milliseconds(3000);
 const size_t kMaxRetryCount = 3;
 
 const size_t kMaxVibrationEffectDurationMillis = 100;

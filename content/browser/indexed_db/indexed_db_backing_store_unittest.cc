@@ -499,16 +499,14 @@ class IndexedDBBackingStoreTestWithExternalObjects
     // useful keys and values during tests
     if (IncludesBlobs()) {
       external_objects_.push_back(CreateBlobInfo(u"blob type", 1));
-      external_objects_.push_back(
-          CreateBlobInfo(u"file name", u"file type",
-                         base::Time::FromDeltaSinceWindowsEpoch(
-                             base::TimeDelta::FromMicroseconds(kTime1)),
-                         kBlobFileData1.size()));
-      external_objects_.push_back(
-          CreateBlobInfo(u"file name", u"file type",
-                         base::Time::FromDeltaSinceWindowsEpoch(
-                             base::TimeDelta::FromMicroseconds(kTime2)),
-                         kBlobFileData2.size()));
+      external_objects_.push_back(CreateBlobInfo(
+          u"file name", u"file type",
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime1)),
+          kBlobFileData1.size()));
+      external_objects_.push_back(CreateBlobInfo(
+          u"file name", u"file type",
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime2)),
+          kBlobFileData2.size()));
     }
     if (IncludesFileSystemAccessHandles()) {
       external_objects_.push_back(CreateFileSystemAccessHandle());

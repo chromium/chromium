@@ -488,7 +488,7 @@ WebrtcLoggingPrivateStartAudioDebugRecordingsFunction::Run() {
           host, AudioDebugRecordingsHandler::kAudioDebugRecordingsHandlerKey));
 
   audio_debug_recordings_handler->StartAudioDebugRecordings(
-      host, base::TimeDelta::FromSeconds(params->seconds),
+      host, base::Seconds(params->seconds),
       base::BindOnce(
           &WebrtcLoggingPrivateStartAudioDebugRecordingsFunction::FireCallback,
           this),

@@ -116,7 +116,7 @@ bool HatsFinchHelper::HasPreviousCycleEnded() {
 
 base::Time HatsFinchHelper::ComputeNextEndDate() {
   base::Time start_date = first_survey_start_date_;
-  base::TimeDelta delta = base::TimeDelta::FromDays(survey_cycle_length_);
+  base::TimeDelta delta = base::Days(survey_cycle_length_);
   do {
     start_date += delta;
   } while (start_date < base::Time::Now());

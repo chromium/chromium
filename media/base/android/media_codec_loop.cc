@@ -15,10 +15,9 @@
 namespace media {
 namespace {
 
-constexpr base::TimeDelta kDecodePollDelay =
-    base::TimeDelta::FromMilliseconds(10);
-constexpr base::TimeDelta kNoWaitTimeout = base::TimeDelta::FromMicroseconds(0);
-constexpr base::TimeDelta kIdleTimerTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDecodePollDelay = base::Milliseconds(10);
+constexpr base::TimeDelta kNoWaitTimeout = base::Microseconds(0);
+constexpr base::TimeDelta kIdleTimerTimeout = base::Seconds(1);
 
 }  // namespace
 

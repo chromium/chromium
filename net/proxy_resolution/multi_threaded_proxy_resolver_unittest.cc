@@ -565,8 +565,7 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequestByDeleting) {
   // of the worker thread. The test will pass regardless, so this race doesn't
   // cause flakiness. However the destruction during execution is a more
   // interesting case to test.
-  factory().resolvers()[0]->SetResolveLatency(
-      base::TimeDelta::FromMilliseconds(100));
+  factory().resolvers()[0]->SetResolveLatency(base::Milliseconds(100));
 
   // Unblock the worker thread and delete the underlying
   // MultiThreadedProxyResolver immediately.

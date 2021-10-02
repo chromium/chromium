@@ -28,8 +28,7 @@ const char kDefaultStunServer[] = "stun.l.google.com";
 
 // TODO(crbug/1227877): Move support details to the UI.
 const char kSupportDetails[] = "https://support.google.com/a/answer/1279090";
-const base::TimeDelta kTimeoutAfterHostResolution =
-    base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kTimeoutAfterHostResolution = base::Seconds(10);
 
 VideoConferencingRoutine::VideoConferencingRoutine()
     : stun_server_hostname_(kDefaultStunServer),

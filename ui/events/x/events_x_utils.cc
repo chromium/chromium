@@ -337,8 +337,7 @@ base::TimeTicks TimeTicksFromXEventTime(x11::Time timestamp) {
 
   g_last_seen_timestamp_ms = timestamp64;
   if (!had_recent_rollover)
-    return base::TimeTicks() +
-           base::TimeDelta::FromMilliseconds(g_rollover_ms + timestamp32);
+    return base::TimeTicks() + base::Milliseconds(g_rollover_ms + timestamp32);
 
   DCHECK(timestamp64 <= UINT32_MAX)
       << "X11 Time does not roll over 32 bit, the below logic is likely wrong";
@@ -348,7 +347,7 @@ base::TimeTicks TimeTicksFromXEventTime(x11::Time timestamp) {
 
   g_rollover_ms = now_ms & ~static_cast<int64_t>(UINT32_MAX);
   uint32_t delta = static_cast<uint32_t>(now_ms - timestamp32);
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(now_ms - delta);
+  return base::TimeTicks() + base::Milliseconds(now_ms - delta);
 }
 
 base::TimeTicks TimeTicksFromXEvent(const x11::Event& xev) {

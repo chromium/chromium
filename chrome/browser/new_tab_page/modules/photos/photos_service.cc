@@ -71,8 +71,7 @@ const char PhotosService::kOptInAcknowledgedPrefName[] =
     "NewTabPage.Photos.OptInAcknowledged";
 
 // static
-const base::TimeDelta PhotosService::kDismissDuration =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta PhotosService::kDismissDuration = base::Days(1);
 
 PhotosService::~PhotosService() = default;
 

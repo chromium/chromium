@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   // creation of the main browser.
   ASSERT_TRUE(tab_stats_tracker_ != nullptr);
 
-  constexpr base::TimeDelta kValidLongInterval = base::TimeDelta::FromHours(12);
+  constexpr base::TimeDelta kValidLongInterval = base::Hours(12);
 
   TabStatsDataStore* data_store = tab_stats_tracker_->tab_stats_data_store();
   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =

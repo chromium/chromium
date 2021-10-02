@@ -16,7 +16,7 @@
 namespace {
 
 constexpr base::TimeDelta kContentSettingsFadeInDuration =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 }  // namespace
 

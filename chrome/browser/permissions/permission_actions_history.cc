@@ -39,8 +39,7 @@ constexpr char kPermissionActionEntryActionKey[] = "action";
 constexpr char kPermissionActionEntryTimestampKey[] = "time";
 
 // Entries in permission actions expire after they become this old.
-constexpr base::TimeDelta kPermissionActionMaxAge =
-    base::TimeDelta::FromDays(90);
+constexpr base::TimeDelta kPermissionActionMaxAge = base::Days(90);
 
 }  // namespace
 

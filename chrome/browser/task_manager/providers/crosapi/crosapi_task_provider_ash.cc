@@ -69,7 +69,7 @@ const TaskIdList& CrosapiTaskProviderAsh::GetSortedTaskIds() {
 
 void CrosapiTaskProviderAsh::StartUpdating() {
   refresh_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(1),
+      FROM_HERE, base::Seconds(1),
       base::BindRepeating(&CrosapiTaskProviderAsh::GetCrosapiTaskManagerTasks,
                           base::Unretained(this)));
 }

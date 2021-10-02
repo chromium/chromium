@@ -427,7 +427,7 @@ void SerialConnection::Send(const std::vector<uint8_t>& data,
                                             weak_factory_.GetWeakPtr()));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, send_timeout_task_.callback(),
-        base::TimeDelta::FromMilliseconds(send_timeout_));
+        base::Milliseconds(send_timeout_));
   }
 }
 
@@ -538,7 +538,7 @@ void SerialConnection::SetTimeoutCallback() {
         &SerialConnection::OnReceiveTimeout, weak_factory_.GetWeakPtr()));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, receive_timeout_task_.callback(),
-        base::TimeDelta::FromMilliseconds(receive_timeout_));
+        base::Milliseconds(receive_timeout_));
   }
 }
 

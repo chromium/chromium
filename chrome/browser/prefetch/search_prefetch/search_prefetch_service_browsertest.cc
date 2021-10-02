@@ -1525,7 +1525,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -1563,7 +1563,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -1593,13 +1593,13 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
-  WaitForDuration(base::TimeDelta::FromMilliseconds(100));
+  WaitForDuration(base::Milliseconds(100));
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -1634,7 +1634,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -1676,7 +1676,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -1726,7 +1726,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -1769,7 +1769,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -2195,7 +2195,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
     WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
                              SearchPrefetchStatus::kCanBeServed);
   } else {
-    WaitForDuration(base::TimeDelta::FromMilliseconds(100));
+    WaitForDuration(base::Milliseconds(100));
   }
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -2600,7 +2600,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroErrorTimeBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
 
-  WaitForDuration(base::TimeDelta::FromMilliseconds(30));
+  WaitForDuration(base::Milliseconds(30));
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query")));
@@ -2642,13 +2642,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDefaultMatchOnlyBrowserTest,
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   autocomplete_controller->Start(input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
-  WaitForDuration(base::TimeDelta::FromMilliseconds(100));
+  WaitForDuration(base::Milliseconds(100));
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(

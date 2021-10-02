@@ -34,8 +34,7 @@ class MonitoredVideoStubTest : public testing::Test {
   void SetUp() override {
     packet_ = std::make_unique<VideoPacket>();
     monitor_ = std::make_unique<MonitoredVideoStub>(
-        &video_stub_,
-        base::TimeDelta::FromMilliseconds(kTestOverrideDelayMilliseconds),
+        &video_stub_, base::Milliseconds(kTestOverrideDelayMilliseconds),
         base::BindRepeating(&MonitoredVideoStubTest::OnVideoChannelStatus,
                             base::Unretained(this)));
     EXPECT_CALL(video_stub_, ProcessVideoPacketPtr(_, _)).Times(AnyNumber());

@@ -263,7 +263,7 @@ TEST_F(CloudPolicyValidatorTest, SuccessfulRunValidationWithNoDeviceId) {
 
 TEST_F(CloudPolicyValidatorTest,
        SuccessfulRunValidationWithTimestampFromTheFuture) {
-  base::Time timestamp(timestamp_ + base::TimeDelta::FromHours(3));
+  base::Time timestamp(timestamp_ + base::Hours(3));
   policy_.policy_data().set_timestamp(
       (timestamp - base::Time::UnixEpoch()).InMilliseconds());
   Validate(CheckStatus(CloudPolicyValidatorBase::VALIDATION_OK));
@@ -297,7 +297,7 @@ TEST_F(CloudPolicyValidatorTest, IgnoreMissingTimestamp) {
 }
 
 TEST_F(CloudPolicyValidatorTest, ErrorOldTimestamp) {
-  base::Time timestamp(timestamp_ - base::TimeDelta::FromMinutes(5));
+  base::Time timestamp(timestamp_ - base::Minutes(5));
   policy_.policy_data().set_timestamp(timestamp.ToJavaTime());
   Validate(CheckStatus(CloudPolicyValidatorBase::VALIDATION_BAD_TIMESTAMP));
 }

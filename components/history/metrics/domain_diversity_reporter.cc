@@ -13,8 +13,7 @@
 
 namespace {
 // The interval between two successive domain metrics reports.
-constexpr base::TimeDelta kDomainDiversityReportingInterval =
-    base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kDomainDiversityReportingInterval = base::Days(1);
 
 // Pref name for the persistent timestamp of the last report. This pref is
 // per local profile but not synced.
@@ -91,7 +90,7 @@ void DomainDiversityReporter::ComputeDomainMetrics() {
     // The beginning and the end of a 7-day period may differ by at most
     // 24 * 8 + 1(DST offset) hours; round up to FromDays(9) here.
     if (time_current_report_triggered - time_last_report_triggered <
-        base::TimeDelta::FromDays(number_of_days_to_report + 2)) {
+        base::Days(number_of_days_to_report + 2)) {
       // Compute the number of days that needs to be reported for based on
       // the last report time and current time.
       base::TimeDelta report_time_range =
@@ -103,9 +102,9 @@ void DomainDiversityReporter::ComputeDomainMetrics() {
       // `report_time_range` so that the resulting time range is guaranteed to
       // be at least the correct number of days times 24. The number of days to
       // report is capped at 7 days.
-      number_of_days_to_report = std::min(
-          (report_time_range + base::TimeDelta::FromHours(4)).InDaysFloored(),
-          number_of_days_to_report);
+      number_of_days_to_report =
+          std::min((report_time_range + base::Hours(4)).InDaysFloored(),
+                   number_of_days_to_report);
     }
 
     if (number_of_days_to_report >= 1) {

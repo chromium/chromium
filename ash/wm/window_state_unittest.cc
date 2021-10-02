@@ -429,7 +429,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   // Wait for the snapped animation to complete and test that the window bound
   // is primary-snapped and the snap width ratio is updated.
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                       base::TimeDelta::FromSeconds(1));
+                                       base::Seconds(1));
   EXPECT_EQ(expected, window->GetBoundsInScreen());
   EXPECT_EQ(0.5f, *window_state->snap_ratio());
 

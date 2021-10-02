@@ -196,14 +196,13 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
 // credential. Verifies that the result is matching expectation.
 TEST_F(IOSChromePasswordCheckManagerTest, GetCompromisedCredentials) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername116);
-  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta::FromMinutes(1));
+  AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().AddLogin(form);
   RunUntilIdle();
 
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredential(
-                  kExampleCom, kUsername116, kPassword116,
-                  base::TimeDelta::FromMinutes(1),
+                  kExampleCom, kUsername116, kPassword116, base::Minutes(1),
                   InsecureCredentialTypeFlags::kCredentialLeaked)));
 }
 
@@ -234,8 +233,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, OnLeakFoundCreatesCredential) {
 
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredential(
-                  kExampleCom, kUsername116, kPassword116,
-                  base::TimeDelta::FromMinutes(0),
+                  kExampleCom, kUsername116, kPassword116, base::Minutes(0),
                   InsecureCredentialTypeFlags::kCredentialLeaked)));
 }
 
@@ -289,18 +287,16 @@ TEST_F(IOSChromePasswordCheckManagerTest,
   EXPECT_CALL(
       observer,
       CompromisedCredentialsChanged(ElementsAre(ExpectCompromisedCredential(
-          kExampleCom, kUsername116, kPassword116,
-          base::TimeDelta::FromMinutes(1),
+          kExampleCom, kUsername116, kPassword116, base::Minutes(1),
           InsecureCredentialTypeFlags::kCredentialLeaked))));
-  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta::FromMinutes(1));
+  AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().UpdateLogin(form);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
   manager().RemoveObserver(&observer);
   EXPECT_CALL(observer, CompromisedCredentialsChanged).Times(0);
-  AddIssueToForm(&form, InsecureType::kPhished,
-                 base::TimeDelta::FromMinutes(1));
+  AddIssueToForm(&form, InsecureType::kPhished, base::Minutes(1));
   store().UpdateLogin(form);
   RunUntilIdle();
 }
@@ -331,14 +327,13 @@ TEST_F(IOSChromePasswordCheckManagerTest, NotifyObserversAboutStateChanges) {
 // Tests password deleted.
 TEST_F(IOSChromePasswordCheckManagerTest, DeletePassword) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername116);
-  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta::FromMinutes(1));
+  AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().AddLogin(form);
   RunUntilIdle();
 
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredential(
-                  kExampleCom, kUsername116, kPassword116,
-                  base::TimeDelta::FromMinutes(1),
+                  kExampleCom, kUsername116, kPassword116, base::Minutes(1),
                   InsecureCredentialTypeFlags::kCredentialLeaked)));
 
   manager().DeleteCompromisedPasswordForm(form);
@@ -411,7 +406,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, EditUsernameAndPassword) {
 // Tests compromised password value is updated properly.
 TEST_F(IOSChromePasswordCheckManagerTest, EditCompromisedPassword) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername116);
-  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta::FromMinutes(1));
+  AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().AddLogin(form);
   RunUntilIdle();
 
@@ -436,14 +431,14 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
       .Times(0);
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
       ->OnStateChanged(BulkLeakCheckServiceInterface::State::kIdle);
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
 
   EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
       .Times(0);
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
 
   EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
       .Times(1);
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   manager().RemoveObserver(&observer);
 }

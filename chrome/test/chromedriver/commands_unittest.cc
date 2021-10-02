@@ -449,7 +449,7 @@ class FindElementWebView : public StubWebView {
 TEST(CommandsTest, SuccessfulFindElement) {
   FindElementWebView web_view(true, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id1", std::string());
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetStringKey("using", "css selector");
@@ -483,7 +483,7 @@ TEST(CommandsTest, FailedFindElement) {
 TEST(CommandsTest, SuccessfulFindElements) {
   FindElementWebView web_view(false, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id2", std::string());
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetStringKey("using", "css selector");
@@ -518,7 +518,7 @@ TEST(CommandsTest, FailedFindElements) {
 TEST(CommandsTest, SuccessfulFindChildElement) {
   FindElementWebView web_view(true, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id3", std::string());
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetStringKey("using", "css selector");
@@ -556,7 +556,7 @@ TEST(CommandsTest, FailedFindChildElement) {
 TEST(CommandsTest, SuccessfulFindChildElements) {
   FindElementWebView web_view(false, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id4", std::string());
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetStringKey("using", "css selector");
@@ -596,7 +596,7 @@ TEST(CommandsTest, FailedFindChildElements) {
 TEST(CommandsTest, TimeoutInFindElement) {
   Session session("id");
   FindElementWebView web_view(true, kElementExistsTimeout);
-  session.implicit_wait = base::TimeDelta::FromMilliseconds(2);
+  session.implicit_wait = base::Milliseconds(2);
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetStringKey("using", "css selector");
   params.SetStringKey("value", "#a");

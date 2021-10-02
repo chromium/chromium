@@ -274,7 +274,7 @@ TEST_F(DiceResponseHandlerTest, SupportOAuthOutageInDice) {
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_environment_.FastForwardBy(
-      base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours + 1));
+      base::Hours(kLockAccountReconcilorTimeoutHours + 1));
   // Check that the reconcilor was unblocked.
   EXPECT_EQ(1, reconcilor_unblocked_count_);
   EXPECT_EQ(1, reconcilor_blocked_count_);
@@ -297,21 +297,21 @@ TEST_F(DiceResponseHandlerTest, CheckTimersDuringOutageinDice) {
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Wait half of the timeout.
   task_environment_.FastForwardBy(
-      base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours / 2));
+      base::Hours(kLockAccountReconcilorTimeoutHours / 2));
   // Create params for the second header with no authorization code.
   DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
   dice_params_2.signin_info->authorization_code.clear();
   dice_params_2.signin_info->no_authorization_code = true;
   dice_response_handler_->ProcessDiceHeader(
       dice_params_2, std::make_unique<TestProcessDiceHeaderDelegate>(this));
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(
-      (kLockAccountReconcilorTimeoutHours + 1) / 2 + 1));
+  task_environment_.FastForwardBy(
+      base::Hours((kLockAccountReconcilorTimeoutHours + 1) / 2 + 1));
   // Check that the reconcilor was not unblocked after the first timeout
   // passed, timer should be restarted after getting the second header.
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_environment_.FastForwardBy(
-      base::TimeDelta::FromHours((kLockAccountReconcilorTimeoutHours + 1) / 2));
+      base::Hours((kLockAccountReconcilorTimeoutHours + 1) / 2));
   // Check that the reconcilor was unblocked.
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(1, reconcilor_unblocked_count_);
@@ -360,7 +360,7 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
                   ->FindExtendedAccountInfoByAccountId(account_id_2)
                   .is_under_advanced_protection);
   task_environment_.FastForwardBy(
-      base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours + 1));
+      base::Hours(kLockAccountReconcilorTimeoutHours + 1));
   // Check that the reconcilor was unblocked.
   EXPECT_EQ(1, reconcilor_unblocked_count_);
   EXPECT_EQ(1, reconcilor_blocked_count_);
@@ -591,7 +591,7 @@ TEST_F(DiceResponseHandlerTest, Timeout) {
       1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
   // Force a timeout.
   task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kDiceTokenFetchTimeoutSeconds + 1));
+      base::Seconds(kDiceTokenFetchTimeoutSeconds + 1));
   EXPECT_EQ(
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
   // Check that the token has not been inserted in the token service.

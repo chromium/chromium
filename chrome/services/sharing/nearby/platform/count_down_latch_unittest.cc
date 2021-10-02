@@ -102,7 +102,7 @@ TEST_F(CountDownLatchTest, InitializeCount0_AwaitTimed_DoesNotBlock) {
 
   base::RunLoop run_loop;
   base::UnguessableToken attempt_id = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop, attempt_id, base::TimeDelta::FromMilliseconds(1000));
+  PostAwaitTask(run_loop, attempt_id, base::Milliseconds(1000));
 
   run_loop.Run();
   EXPECT_EQ(1u, MapSize());
@@ -185,7 +185,7 @@ TEST_F(CountDownLatchTest, InitializeCount2_TimedAwaitTimesOut) {
 
   base::RunLoop run_loop;
   base::UnguessableToken attempt_id = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop, attempt_id, base::TimeDelta::FromMilliseconds(1000));
+  PostAwaitTask(run_loop, attempt_id, base::Milliseconds(1000));
 
   run_loop.Run();
   EXPECT_EQ(1u, MapSize());
@@ -197,12 +197,10 @@ TEST_F(CountDownLatchTest, InitializeCount2_LongerTimedAwaitDoesNotTimeOut) {
 
   base::RunLoop run_loop_1;
   base::UnguessableToken attempt_id_1 = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop_1, attempt_id_1,
-                base::TimeDelta::FromMilliseconds(100));
+  PostAwaitTask(run_loop_1, attempt_id_1, base::Milliseconds(100));
   base::RunLoop run_loop_2;
   base::UnguessableToken attempt_id_2 = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop_2, attempt_id_2,
-                base::TimeDelta::FromMilliseconds(1000));
+  PostAwaitTask(run_loop_2, attempt_id_2, base::Milliseconds(1000));
 
   run_loop_1.Run();
   ASSERT_EQ(1u, MapSize());

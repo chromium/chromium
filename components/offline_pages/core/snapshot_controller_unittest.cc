@@ -79,7 +79,7 @@ TEST_F(SnapshotControllerTest, OnLoad) {
   controller()->DocumentOnLoadCompletedInMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
 }
@@ -90,7 +90,7 @@ TEST_F(SnapshotControllerTest, OnDocumentAvailable) {
   controller()->DocumentAvailableInMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   EXPECT_EQ(1, snapshot_count());
 }
@@ -105,14 +105,14 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotIsTheLastOne) {
   EXPECT_EQ(0, snapshot_count());
   controller()->DocumentOnLoadCompletedInMainFrame();
   // Advance time to OnLoadCompleted delay to trigger snapshot.
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
   // Report that snapshot is completed.
   controller()->PendingSnapshotCompleted();
   // Even though previous snapshot is completed, new one should not start
   // when this DocumentAvailable delay expires.
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   EXPECT_EQ(1, snapshot_count());
 }
@@ -122,14 +122,14 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotAfterLongDelay) {
   controller()->DocumentAvailableInMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   EXPECT_EQ(1, snapshot_count());
   // Report that snapshot is completed.
   controller()->PendingSnapshotCompleted();
   // OnLoad should make 2nd snapshot after its delay.
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(2, snapshot_count());
 }
@@ -140,7 +140,7 @@ TEST_F(SnapshotControllerTest, Stop) {
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   controller()->Stop();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // Should not start snapshots
   EXPECT_EQ(0, snapshot_count());
@@ -153,18 +153,18 @@ TEST_F(SnapshotControllerTest, ClientReset) {
   controller()->DocumentAvailableInMainFrame();
 
   controller()->Reset();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // No snapshot since session was reset.
   EXPECT_EQ(0, snapshot_count());
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
 
   controller()->Reset();
   controller()->DocumentAvailableInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // No snapshot since session was reset.
   EXPECT_EQ(2, snapshot_count());
@@ -174,7 +174,7 @@ TEST_F(SnapshotControllerTest, ClientReset) {
 // as done later. That reporting should have no effect nor crash.
 TEST_F(SnapshotControllerTest, ClientResetWhileSnapshotting) {
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
   // This normally happens when navigation starts.
@@ -182,7 +182,7 @@ TEST_F(SnapshotControllerTest, ClientResetWhileSnapshotting) {
   controller()->PendingSnapshotCompleted();
   // Next snapshot should be initiated when new document is loaded.
   controller()->DocumentAvailableInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // No snapshot since session was reset.
   EXPECT_EQ(2, snapshot_count());

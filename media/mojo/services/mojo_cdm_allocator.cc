@@ -148,7 +148,7 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
             {static_cast<int32_t>(Stride(cdm::kYPlane)),
              static_cast<int32_t>(Stride(cdm::kUPlane)),
              static_cast<int32_t>(Stride(cdm::kVPlane))},
-            base::TimeDelta::FromMicroseconds(Timestamp()));
+            base::Microseconds(Timestamp()));
 
     // |frame| could fail to be created if the memory can't be mapped into
     // this address space.

@@ -19,8 +19,7 @@
 namespace {
 
 // The maximum amount of time to wait for the Safe Browsing response.
-constexpr base::TimeDelta kSafeBrowsingCheckTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kSafeBrowsingCheckTimeout = base::Seconds(2);
 
 }  // namespace
 

@@ -22,8 +22,7 @@
 namespace {
 // During playback of protected content, we need to request the keys at an
 // interval no greater than this. This allows updating of key usage data.
-constexpr base::TimeDelta kKeyRetrievalMaxPeriod =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kKeyRetrievalMaxPeriod = base::Minutes(1);
 // This increments the lower 64 bit counter of an 128 bit IV.
 void ctr128_inc64(uint8_t* counter) {
   uint32_t n = 16;

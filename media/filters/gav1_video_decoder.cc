@@ -208,8 +208,7 @@ scoped_refptr<VideoFrame> FormatVideoFrame(
     const VideoColorSpace& container_color_space) {
   scoped_refptr<VideoFrame> frame =
       static_cast<VideoFrame*>(buffer.buffer_private_data);
-  frame->set_timestamp(
-      base::TimeDelta::FromMicroseconds(buffer.user_private_data));
+  frame->set_timestamp(base::Microseconds(buffer.user_private_data));
 
   // AV1 color space defines match ISO 23001-8:2016 via ISO/IEC 23091-4/ITU-T
   // H.273. https://aomediacodec.github.io/av1-spec/#color-config-semantics

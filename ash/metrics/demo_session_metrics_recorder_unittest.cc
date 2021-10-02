@@ -680,14 +680,14 @@ TEST_F(DemoSessionMetricsRecorderTest, DwellTime) {
   // Simulate user activity for 10 seconds.
   SendUserActivity();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   SendUserActivity();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   SendUserActivity();
 
   // Simulate a session "timing out" after 60 seconds.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_environment()->FastForwardBy(base::Seconds(60));
   DeleteMetricsRecorder();
 
   // The recorded dwell time should be 10 seconds.

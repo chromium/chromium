@@ -50,7 +50,7 @@ void HostStopper::OnStopped(DaemonController::AsyncResult) {
     stopped =
         (daemon_controller_->GetState() == DaemonController::STATE_STOPPED);
     if (!stopped)
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+      base::PlatformThread::Sleep(base::Seconds(1));
   }
   if (!stopped)
     LOG(WARNING) << "Unable to stop existing host process. Setup will "

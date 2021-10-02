@@ -80,9 +80,8 @@ void DelegatedInkTrailData::PredictPoints(
            ++i) {
         base::TimeTicks timestamp =
             ink_points_to_draw->back().timestamp() +
-            base::TimeDelta::FromMilliseconds(
-                kPredictionConfigs[experiment]
-                    .milliseconds_into_future_per_point);
+            base::Milliseconds(kPredictionConfigs[experiment]
+                                   .milliseconds_into_future_per_point);
         std::unique_ptr<ui::InputPredictor::InputData> predicted_point =
             handler.predictor->GeneratePrediction(timestamp);
         if (predicted_point) {

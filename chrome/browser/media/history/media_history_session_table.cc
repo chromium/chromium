@@ -131,8 +131,8 @@ MediaHistorySessionTable::GetPlaybackSessions(
           .c_str()));
 
   while (statement.Step()) {
-    auto duration = base::TimeDelta::FromMilliseconds(statement.ColumnInt64(2));
-    auto position = base::TimeDelta::FromMilliseconds(statement.ColumnInt64(3));
+    auto duration = base::Milliseconds(statement.ColumnInt64(2));
+    auto position = base::Milliseconds(statement.ColumnInt64(3));
 
     // Skip any that should not be shown.
     if (filter.has_value() && !filter->Run(duration, position))
@@ -147,10 +147,9 @@ MediaHistorySessionTable::GetPlaybackSessions(
     session->metadata.artist = statement.ColumnString16(5);
     session->metadata.album = statement.ColumnString16(6);
     session->metadata.source_title = statement.ColumnString16(7);
-    session->last_updated_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromSeconds(statement.ColumnInt64(8)))
-            .ToJsTime();
+    session->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+                                     base::Seconds(statement.ColumnInt64(8)))
+                                     .ToJsTime();
 
     sessions.push_back(std::move(session));
 

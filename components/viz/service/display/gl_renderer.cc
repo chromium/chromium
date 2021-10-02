@@ -3133,7 +3133,7 @@ void GLRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {
     durations.emplace(duration, timer_queries_.front().second);
     queries_to_delete.push_back(timer_queries_.front().first);
     timer_queries_.pop();
-    start_time_ticks -= base::TimeDelta::FromNanoseconds(duration);
+    start_time_ticks -= base::Nanoseconds(duration);
   }
 
   // Delete all timer queries for which results have been retrieved.
@@ -3159,7 +3159,7 @@ void GLRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {
         TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"), "Composite Time",
         TRACE_ID_LOCAL(trace_unique_id), durations.front().second.c_str(),
         start_time_ticks);
-    start_time_ticks += base::TimeDelta::FromNanoseconds(duration);
+    start_time_ticks += base::Nanoseconds(duration);
     durations.pop();
   }
 

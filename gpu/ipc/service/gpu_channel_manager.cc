@@ -646,11 +646,9 @@ void GpuChannelManager::ScheduleWakeUpGpu() {
   TRACE_EVENT2("gpu", "GpuChannelManager::ScheduleWakeUp", "idle_time",
                (now - last_gpu_access_time_).InMilliseconds(),
                "keep_awake_time", (now - begin_wake_up_time_).InMilliseconds());
-  if (now - last_gpu_access_time_ <
-      base::TimeDelta::FromMilliseconds(kMaxGpuIdleTimeMs))
+  if (now - last_gpu_access_time_ < base::Milliseconds(kMaxGpuIdleTimeMs))
     return;
-  if (now - begin_wake_up_time_ >
-      base::TimeDelta::FromMilliseconds(kMaxKeepAliveTimeMs))
+  if (now - begin_wake_up_time_ > base::Milliseconds(kMaxKeepAliveTimeMs))
     return;
 
   DoWakeUpGpu();
@@ -659,7 +657,7 @@ void GpuChannelManager::ScheduleWakeUpGpu() {
       FROM_HERE,
       base::BindOnce(&GpuChannelManager::ScheduleWakeUpGpu,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kMaxGpuIdleTimeMs));
+      base::Milliseconds(kMaxGpuIdleTimeMs));
 }
 
 void GpuChannelManager::DoWakeUpGpu() {

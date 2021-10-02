@@ -78,7 +78,7 @@ class FakeActionTest : public testing::Test {
 };
 
 ACTION_P(Delay, delay) {
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(delay);
+  TimeTicksOverride::now_ticks_ += base::Seconds(delay);
 }
 
 TEST_F(FakeActionTest, WaitForDomActionTest) {
@@ -87,9 +87,8 @@ TEST_F(FakeActionTest, WaitForDomActionTest) {
   InSequence sequence;
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillOnce(DoAll(Delay(2), RunOnceCallback<1>(
-                                    OkClientStatus(),
-                                    base::TimeDelta::FromMilliseconds(500))));
+      .WillOnce(DoAll(Delay(2), RunOnceCallback<1>(OkClientStatus(),
+                                                   base::Milliseconds(500))));
 
   ProcessedActionProto processed_proto;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&processed_proto));
@@ -106,9 +105,9 @@ TEST_F(FakeActionTest, SlowWarningShownTest) {
   InSequence sequence;
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillOnce(DoAll(Delay(2), RunOnceCallback<1>(
-                                    ClientStatusWithWarning(WARNING_SHOWN),
-                                    base::TimeDelta::FromMilliseconds(500))));
+      .WillOnce(DoAll(Delay(2),
+                      RunOnceCallback<1>(ClientStatusWithWarning(WARNING_SHOWN),
+                                         base::Milliseconds(500))));
 
   ProcessedActionProto processed_proto;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&processed_proto));

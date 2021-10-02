@@ -41,9 +41,8 @@ constexpr int kBubbleBetweenChildSpacingDp = 16;
 constexpr int kBubbleBorderRadius = 8;
 constexpr int kButtonPaddingDp = 8;
 constexpr int kOffsetFromEdge = 32;
-constexpr base::TimeDelta kAlertDuration = base::TimeDelta::FromSeconds(4);
-constexpr base::TimeDelta kBubbleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kAlertDuration = base::Seconds(4);
+constexpr base::TimeDelta kBubbleAnimationDuration = base::Milliseconds(300);
 
 constexpr SkColor kAlertTextColor =
     SkColorSetA(gfx::kGoogleGrey200, SK_AlphaOPAQUE);

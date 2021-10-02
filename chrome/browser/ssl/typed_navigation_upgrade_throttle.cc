@@ -32,8 +32,7 @@ namespace {
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 constexpr base::FeatureParam<base::TimeDelta> kFallbackDelay{
     &omnibox::kDefaultTypedNavigationsToHttps,
-    omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam,
-    base::TimeDelta::FromSeconds(3)};
+    omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam, base::Seconds(3)};
 
 int g_https_port_for_testing = 0;
 

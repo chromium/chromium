@@ -33,7 +33,7 @@ namespace password_manager {
 
 namespace {
 
-constexpr base::TimeDelta kSyncTaskTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
 
 }  // namespace
 
@@ -526,7 +526,7 @@ bool PasswordStoreImpl::InitOnBackgroundSequence(
         FROM_HERE,
         base::BindOnce(&PasswordStoreImpl::ReportMetrics,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(30));
+        base::Seconds(30));
   }
 
   sync_bridge_ = base::WrapUnique(new PasswordSyncBridge(

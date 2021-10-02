@@ -169,7 +169,7 @@ PasswordGenerationManagerTest::SetUpOverwritingUI(
 }
 
 void PasswordGenerationManagerTest::ForwardByMinute() {
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 }
 
 // Check that accepting a generated password simply relays the message to the

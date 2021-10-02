@@ -1822,9 +1822,8 @@ void CrasAudioHandler::StartHDMIRediscoverGracePeriod() {
   hdmi_rediscover_timer_.Stop();
   hdmi_rediscover_timer_.Start(
       FROM_HERE,
-      base::TimeDelta::FromMilliseconds(
-          hdmi_rediscover_grace_period_duration_in_ms_),
-      this, &CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod);
+      base::Milliseconds(hdmi_rediscover_grace_period_duration_in_ms_), this,
+      &CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod);
 }
 
 void CrasAudioHandler::SetHDMIRediscoverGracePeriodForTesting(

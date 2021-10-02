@@ -961,7 +961,7 @@ void UsbDeviceHandleUsbfs::SetUpTimeoutCallback(Transfer* transfer,
   transfer->timeout_closure.Reset(
       base::BindOnce(&UsbDeviceHandleUsbfs::OnTimeout, this, transfer));
   task_runner_->PostDelayedTask(FROM_HERE, transfer->timeout_closure.callback(),
-                                base::TimeDelta::FromMilliseconds(timeout));
+                                base::Milliseconds(timeout));
 }
 
 void UsbDeviceHandleUsbfs::OnTimeout(Transfer* transfer) {

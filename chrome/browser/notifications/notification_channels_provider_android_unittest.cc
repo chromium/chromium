@@ -481,7 +481,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       ContentSettingsPattern::FromString(first_origin),
       ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
       std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
 
   base::Time last_modified = channels_provider_->GetWebsiteSettingLastModified(
       ContentSettingsPattern::FromString(first_origin),
@@ -490,7 +490,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   // Delete and recreate the same channel after some time has passed.
   // This simulates the user clearing data and regranting permisison.
-  clock.Advance(base::TimeDelta::FromSeconds(3));
+  clock.Advance(base::Seconds(3));
   base::Time t2 = clock.Now();
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString(first_origin),
@@ -507,7 +507,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   EXPECT_EQ(last_modified, t2);
 
   // Create an unrelated channel after some more time has passed.
-  clock.Advance(base::TimeDelta::FromSeconds(5));
+  clock.Advance(base::Seconds(5));
   std::string second_origin = "https://other.com";
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString(second_origin),

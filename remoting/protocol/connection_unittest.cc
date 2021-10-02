@@ -127,7 +127,7 @@ static constexpr int kSamplesPerAudioPacket =
     kAudioSampleRate * kAudioPacketDurationMs /
     base::Time::kMillisecondsPerSecond;
 static constexpr base::TimeDelta kAudioPacketDuration =
-    base::TimeDelta::FromMilliseconds(kAudioPacketDurationMs);
+    base::Milliseconds(kAudioPacketDurationMs);
 
 static const int kAudioChannels = 2;
 
@@ -577,8 +577,8 @@ TEST_P(ConnectionTest, MAYBE_Video) {
 // connection is being established.
 TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
   // Add signaling delay to slow down connection handshake.
-  host_session_->set_signaling_delay(base::TimeDelta::FromMilliseconds(100));
-  client_session_->set_signaling_delay(base::TimeDelta::FromMilliseconds(100));
+  host_session_->set_signaling_delay(base::Milliseconds(100));
+  client_session_->set_signaling_delay(base::Milliseconds(100));
 
   Connect();
 

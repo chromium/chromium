@@ -524,8 +524,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   }
 
   QueueOptions BuildStorageQueueOptionsImmediate(
-      base::TimeDelta upload_retry_delay =
-          base::TimeDelta::FromSeconds(1)) const {
+      base::TimeDelta upload_retry_delay = base::Seconds(1)) const {
     return QueueOptions(options_)
         .set_subdirectory(FILE_PATH_LITERAL("D1"))
         .set_file_prefix(FILE_PATH_LITERAL("F0001"))
@@ -533,7 +532,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   }
 
   QueueOptions BuildStorageQueueOptionsPeriodic(
-      base::TimeDelta upload_period = base::TimeDelta::FromSeconds(1)) const {
+      base::TimeDelta upload_period = base::Seconds(1)) const {
     return BuildStorageQueueOptionsImmediate().set_upload_period(upload_period);
   }
 
@@ -662,7 +661,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
@@ -689,7 +688,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
@@ -724,7 +723,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest,
@@ -773,7 +772,7 @@ TEST_P(StorageQueueTest,
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(
@@ -823,7 +822,7 @@ TEST_P(
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest,
@@ -916,7 +915,7 @@ TEST_P(StorageQueueTest,
   }
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
@@ -1028,7 +1027,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
   // Confirm #0 and forward time again, removing record #0
   ConfirmOrDie(/*sequencing_id=*/0);
@@ -1046,7 +1045,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing record #1
@@ -1063,7 +1062,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Add more data and verify that #2 and new data are returned.
@@ -1086,7 +1085,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing record #2
@@ -1106,7 +1105,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1133,7 +1132,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #0 and forward time again, removing record #0
@@ -1152,7 +1151,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing record #1
@@ -1169,7 +1168,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   ResetTestStorageQueue();
@@ -1197,7 +1196,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing record #2
@@ -1217,7 +1216,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1245,7 +1244,7 @@ TEST_P(StorageQueueTest,
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #0 and forward time again, removing record #0
@@ -1264,7 +1263,7 @@ TEST_P(StorageQueueTest,
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing record #1
@@ -1281,7 +1280,7 @@ TEST_P(StorageQueueTest,
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   ResetTestStorageQueue();
@@ -1314,7 +1313,7 @@ TEST_P(StorageQueueTest,
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing record #2
@@ -1337,7 +1336,7 @@ TEST_P(StorageQueueTest,
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1528,7 +1527,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
     WriteStringOrDie(kData[0]);  // Immediately uploads and fails.
 
     // Let it retry upload and verify.
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1561,7 +1560,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
           return Status::StatusOK();
         }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm 0 and make sure no retry happens (since everything is confirmed).
@@ -1570,7 +1569,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
       .Times(0);
 
   ConfirmOrDie(/*sequencing_id=*/0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
@@ -1609,7 +1608,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, possibly removing records #0 and #1
@@ -1627,7 +1626,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Now force confirm the very beginning and forward time again.
@@ -1656,7 +1655,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Force confirm #0 and forward time again.
@@ -1682,7 +1681,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 

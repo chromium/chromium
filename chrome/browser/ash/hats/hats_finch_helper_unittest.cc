@@ -105,19 +105,18 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
   HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   // Case 1
-  base::Time start_date = current_time - base::TimeDelta::FromDays(10);
+  base::Time start_date = current_time - base::Days(10);
   hats_finch_helper.first_survey_start_date_ = start_date;
   base::Time expected_date =
-      start_date +
-      base::TimeDelta::FromDays(2 * hats_finch_helper.survey_cycle_length_);
+      start_date + base::Days(2 * hats_finch_helper.survey_cycle_length_);
   EXPECT_EQ(expected_date.ToJsTime(),
             hats_finch_helper.ComputeNextEndDate().ToJsTime());
 
   // Case 2
-  base::Time future_time = current_time + base::TimeDelta::FromDays(10);
+  base::Time future_time = current_time + base::Days(10);
   hats_finch_helper.first_survey_start_date_ = future_time;
-  expected_date = future_time + base::TimeDelta::FromDays(
-                                    hats_finch_helper.survey_cycle_length_);
+  expected_date =
+      future_time + base::Days(hats_finch_helper.survey_cycle_length_);
   EXPECT_EQ(expected_date.ToJsTime(),
             hats_finch_helper.ComputeNextEndDate().ToJsTime());
 }

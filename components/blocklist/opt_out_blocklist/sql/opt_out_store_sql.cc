@@ -275,11 +275,10 @@ void LoadBlockListFromDataBase(
   int count = 0;
   while (statement.Step()) {
     ++count;
-    blocklist_data->AddEntry(statement.ColumnString(0), statement.ColumnBool(2),
-                             statement.ColumnInt64(3),
-                             base::Time() + base::TimeDelta::FromMicroseconds(
-                                                statement.ColumnInt64(1)),
-                             true);
+    blocklist_data->AddEntry(
+        statement.ColumnString(0), statement.ColumnBool(2),
+        statement.ColumnInt64(3),
+        base::Time() + base::Microseconds(statement.ColumnInt64(1)), true);
   }
 
   if (count > MaxRowsInOptOutDB()) {

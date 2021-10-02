@@ -36,27 +36,25 @@ void CalendarViewController::UpdateMonth(
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDay() const {
   return current_date_ -
-         base::TimeDelta::FromDays(
-             calendar_utils::GetExploded(current_date_).day_of_month - 1);
+         base::Days(calendar_utils::GetExploded(current_date_).day_of_month -
+                    1);
 }
 
 base::Time CalendarViewController::GetPreviousMonthFirstDay() const {
   const base::Time last_day_of_previous_month =
-      GetOnScreenMonthFirstDay() - base::TimeDelta::FromDays(1);
+      GetOnScreenMonthFirstDay() - base::Days(1);
   return last_day_of_previous_month -
-         base::TimeDelta::FromDays(
-             calendar_utils::GetExploded(last_day_of_previous_month)
-                 .day_of_month -
-             1);
+         base::Days(calendar_utils::GetExploded(last_day_of_previous_month)
+                        .day_of_month -
+                    1);
 }
 
 base::Time CalendarViewController::GetNextMonthFirstDay() const {
   // Adds over 31 days to make sure it goes to the next month.
-  const base::Time next_month_day =
-      GetOnScreenMonthFirstDay() + base::TimeDelta::FromDays(33);
+  const base::Time next_month_day = GetOnScreenMonthFirstDay() + base::Days(33);
   return next_month_day -
-         base::TimeDelta::FromDays(
-             calendar_utils::GetExploded(next_month_day).day_of_month - 1);
+         base::Days(calendar_utils::GetExploded(next_month_day).day_of_month -
+                    1);
 }
 
 std::u16string CalendarViewController::GetPreviousMonthName() {

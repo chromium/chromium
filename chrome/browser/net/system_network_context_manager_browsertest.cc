@@ -85,7 +85,7 @@ bool PollWithTimeout(base::TimeDelta timeout,
   while (base::TimeTicks::Now() <= deadline) {
     if (predicate.Run())
       return true;
-    Sleep(base::TimeDelta::FromMilliseconds(5));
+    Sleep(base::Milliseconds(5));
   }
   return false;
 }
@@ -254,12 +254,12 @@ IN_PROC_BROWSER_TEST_F(
   if (!content::IsOutOfProcessNetworkService())
     return;
 
-  PollForFirstPartySetEntryCount(base::TimeDelta::FromSeconds(5),
+  PollForFirstPartySetEntryCount(base::Seconds(5),
                                  /*expected_count=*/3);
 
   SimulateNetworkServiceCrash();
 
-  PollForFirstPartySetEntryCount(base::TimeDelta::FromSeconds(5),
+  PollForFirstPartySetEntryCount(base::Seconds(5),
                                  /*expected_count=*/3);
 }
 

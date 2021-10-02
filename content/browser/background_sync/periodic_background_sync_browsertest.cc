@@ -13,8 +13,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kMinGapBetweenPeriodicSyncEvents =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kMinGapBetweenPeriodicSyncEvents = base::Seconds(5);
 
 }  // namespace
 

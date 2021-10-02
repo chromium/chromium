@@ -298,13 +298,13 @@ void FakeGCMClient::SendFinished(const std::string& app_id,
         base::BindOnce(&FakeGCMClient::MessageSendError,
                        weak_ptr_factory_.GetWeakPtr(), app_id,
                        send_error_details),
-        base::TimeDelta::FromMilliseconds(200));
+        base::Milliseconds(200));
   } else if(message.id.find("ack") != std::string::npos) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FakeGCMClient::SendAcknowledgement,
                        weak_ptr_factory_.GetWeakPtr(), app_id, message.id),
-        base::TimeDelta::FromMilliseconds(200));
+        base::Milliseconds(200));
   }
 }
 

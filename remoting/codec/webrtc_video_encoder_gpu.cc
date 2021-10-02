@@ -184,7 +184,7 @@ void WebrtcVideoEncoderGpu::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   DCHECK(core_);
   DCHECK(frame);
   DCHECK(done);
-  DCHECK_GT(params.duration, base::TimeDelta::FromMilliseconds(0));
+  DCHECK_GT(params.duration, base::Milliseconds(0));
 
   hw_encode_task_runner_->PostTask(
       FROM_HERE,

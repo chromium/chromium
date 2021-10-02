@@ -234,8 +234,7 @@ void AppCacheGroup::ScheduleUpdateRestart(int delay_ms) {
   restart_update_task_.Reset(
       base::BindOnce(&AppCacheGroup::RunQueuedUpdates, this));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, restart_update_task_.callback(),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      FROM_HERE, restart_update_task_.callback(), base::Milliseconds(delay_ms));
 }
 
 void AppCacheGroup::HostDestructionImminent(AppCacheHost* host) {

@@ -49,11 +49,9 @@ namespace {
 const int kLayerAnimationsForMinimizeDurationMS = 200;
 
 // Amount of time for the cross fade animation.
-constexpr base::TimeDelta kCrossFadeDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kCrossFadeDuration = base::Milliseconds(200);
 
-constexpr base::TimeDelta kCrossFadeMaxDuration =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kCrossFadeMaxDuration = base::Milliseconds(400);
 
 // Durations for the brightness/grayscale fade animation, in milliseconds.
 const int kBrightnessGrayscaleFadeDurationMs = 1000;
@@ -69,8 +67,7 @@ const float kWindowAnimation_HideOpacity = 0.f;
 const float kWindowAnimation_ShowOpacity = 1.f;
 
 // Duration for gfx::Tween::ZERO animation of showing window.
-constexpr base::TimeDelta kZeroAnimationMs =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kZeroAnimationMs = base::Milliseconds(300);
 
 constexpr char kCrossFadeSmoothness[] =
     "Ash.Window.AnimationSmoothness.CrossFade";
@@ -449,7 +446,7 @@ void AnimateShowWindow_Minimize(aura::Window* window) {
   window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(kLayerAnimationsForMinimizeDurationMS);
+      base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
   settings.SetTransitionDuration(duration);
   AddLayerAnimationsForMinimize(window, true);
 
@@ -463,7 +460,7 @@ void AnimateHideWindow_Minimize(aura::Window* window) {
   // Property sets within this scope will be implicitly animated.
   ::wm::ScopedHidingAnimationSettings hiding_settings(window);
   base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(kLayerAnimationsForMinimizeDurationMS);
+      base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
   hiding_settings.layer_animation_settings()->SetTransitionDuration(duration);
   window->layer()->SetVisible(false);
 
@@ -489,7 +486,7 @@ void AnimateShowHideWindowCommon_BrightnessGrayscale(aura::Window* window,
   }
 
   base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(kBrightnessGrayscaleFadeDurationMs);
+      base::Milliseconds(kBrightnessGrayscaleFadeDurationMs);
 
   if (show) {
     ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
@@ -512,8 +509,7 @@ void AnimateShowWindow_BrightnessGrayscale(aura::Window* window) {
 void AnimateShowWindow_FadeIn(aura::Window* window) {
   window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
-  settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kFadeInAnimationMs));
+  settings.SetTransitionDuration(base::Milliseconds(kFadeInAnimationMs));
   window->layer()->SetVisible(true);
   window->layer()->SetOpacity(kWindowAnimation_ShowOpacity);
 }
@@ -524,7 +520,7 @@ void AnimateHideWindow_BrightnessGrayscale(aura::Window* window) {
 
 void AnimateHideWindow_SlideOut(aura::Window* window) {
   base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(PipPositioner::kPipDismissTimeMs);
+      base::Milliseconds(PipPositioner::kPipDismissTimeMs);
 
   ::wm::ScopedHidingAnimationSettings settings(window);
   settings.layer_animation_settings()->SetTransitionDuration(duration);

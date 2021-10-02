@@ -612,7 +612,7 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
         weak_factory_.GetWeakPtr()));
     gpu_task_runner_->PostDelayedTask(
         FROM_HERE, check_pending_presentation_callback_queue_task_.callback(),
-        base::TimeDelta::FromSeconds(1) / 60);
+        base::Seconds(1) / 60);
   }
 }
 
@@ -722,9 +722,8 @@ void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
       base::BindOnce(&GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
                          OnTransactionTimeout,
                      base::Unretained(this), current_transaction_id_));
-  gpu_task_runner_->PostDelayedTask(
-      FROM_HERE, hang_detection_cb_.callback(),
-      base::TimeDelta::FromSeconds(kIdleDelaySeconds));
+  gpu_task_runner_->PostDelayedTask(FROM_HERE, hang_detection_cb_.callback(),
+                                    base::Seconds(kIdleDelaySeconds));
 }
 
 void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::

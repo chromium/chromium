@@ -34,10 +34,8 @@ class ArcGraphicsTracingHandlerTest : public testing::Test {
 
 TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
   base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        return base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1);
-      },
-      nullptr, nullptr);
+      []() { return base::Time::UnixEpoch() + base::Seconds(1); }, nullptr,
+      nullptr);
 
   const base::FilePath download_path =
       file_manager::util::GetDownloadsFolderForProfile(profile());

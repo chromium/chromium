@@ -47,8 +47,7 @@ bool IsMouseMiddleClick(const blink::WebInputEvent& event) {
 
 constexpr const char kTracingCategory[] = "input,latency";
 
-constexpr base::TimeDelta kAsyncHitTestTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kAsyncHitTestTimeout = base::Seconds(5);
 
 }  // namespace
 

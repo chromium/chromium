@@ -85,8 +85,7 @@ void OneShotBackgroundSyncBrowserTest::WaitForTagRemoval(const std::string& tag,
   while (HasTag(tag)) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(pauses_ms));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(pauses_ms));
     run_loop.Run();
   }
 }

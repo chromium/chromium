@@ -48,7 +48,7 @@ using EnrollmentCheckType =
     em::DeviceAutoEnrollmentRequest::EnrollmentCheckType;
 
 // Timeout for running PSM protocol.
-constexpr base::TimeDelta kPsmTimeout = base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kPsmTimeout = base::Seconds(15);
 
 // Returns the power of the next power-of-2 starting at |value|.
 int NextPowerOf2(int64_t value) {
@@ -603,8 +603,8 @@ class PsmHelper {
   void RecordPsmSuccessTimeHistogram() {
     // These values determine bucketing of the histogram, they should not be
     // changed.
-    static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
-    static const base::TimeDelta kMax = base::TimeDelta::FromSeconds(25);
+    static const base::TimeDelta kMin = base::Milliseconds(1);
+    static const base::TimeDelta kMax = base::Seconds(25);
     static const int kBuckets = 50;
 
     base::TimeTicks now = base::TimeTicks::Now();
@@ -1371,10 +1371,10 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   // These values determine bucketing of the histogram, they should not be
   // changed.
   // The minimum time can't be 0, must be at least 1.
-  static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
-  static const base::TimeDelta kMax = base::TimeDelta::FromMinutes(5);
+  static const base::TimeDelta kMin = base::Milliseconds(1);
+  static const base::TimeDelta kMax = base::Minutes(5);
   // However, 0 can still be sampled.
-  static const base::TimeDelta kZero = base::TimeDelta::FromMilliseconds(0);
+  static const base::TimeDelta kZero = base::Milliseconds(0);
   static const int kBuckets = 50;
 
   base::TimeTicks now = base::TimeTicks::Now();
@@ -1405,8 +1405,8 @@ void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
 
   // These values determine bucketing of the histogram, they should not be
   // changed.
-  static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
-  static const base::TimeDelta kMax = base::TimeDelta::FromSeconds(25);
+  static const base::TimeDelta kMin = base::Milliseconds(1);
+  static const base::TimeDelta kMax = base::Seconds(25);
   static const int kBuckets = 50;
 
   base::TimeTicks now = base::TimeTicks::Now();

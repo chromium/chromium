@@ -350,7 +350,7 @@ TEST_F(VideoCaptureTest, StartAndCaptureAndError) {
   StartCapture();
   WaitForOneCapturedBuffer();
   SimulateError();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
 }
 
 TEST_F(VideoCaptureTest, StartAndPauseAndResumeAndStop) {

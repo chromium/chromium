@@ -30,8 +30,7 @@ void ServiceMetrics::HasNoConnections() {
   DCHECK_NE(base::TimeTicks(), has_connections_start_);
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioService.HasConnectionsDuration",
                              clock_->NowTicks() - has_connections_start_,
-                             base::TimeDelta(), base::TimeDelta::FromDays(7),
-                             50);
+                             base::TimeDelta(), base::Days(7), 50);
   has_connections_start_ = base::TimeTicks();
 }
 
@@ -44,8 +43,7 @@ void ServiceMetrics::LogHasNoConnectionsDuration() {
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioService.HasNoConnectionsDuration",
                              clock_->NowTicks() - has_no_connections_start_,
-                             base::TimeDelta(),
-                             base::TimeDelta::FromMinutes(10), 50);
+                             base::TimeDelta(), base::Minutes(10), 50);
   has_no_connections_start_ = base::TimeTicks();
 }
 

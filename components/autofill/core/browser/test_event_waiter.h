@@ -30,9 +30,8 @@ namespace autofill {
 template <typename Event>
 class EventWaiter {
  public:
-  explicit EventWaiter(
-      std::list<Event> expected_event_sequence,
-      base::TimeDelta timeout = base::TimeDelta::FromSeconds(0));
+  explicit EventWaiter(std::list<Event> expected_event_sequence,
+                       base::TimeDelta timeout = base::Seconds(0));
 
   EventWaiter(const EventWaiter&) = delete;
   EventWaiter& operator=(const EventWaiter&) = delete;

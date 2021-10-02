@@ -372,7 +372,7 @@ void FakeBluetoothAdapterClient::OnPropertyChanged(
 void FakeBluetoothAdapterClient::PostDelayedTask(base::OnceClosure callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, std::move(callback),
-      base::TimeDelta::FromMilliseconds(simulation_interval_ms_));
+      base::Milliseconds(simulation_interval_ms_));
 }
 
 }  // namespace bluez

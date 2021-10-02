@@ -718,7 +718,7 @@ std::string CoreAudioUtil::WaveFormatToString(const WaveFormatWrapper format) {
 
 base::TimeDelta CoreAudioUtil::ReferenceTimeToTimeDelta(REFERENCE_TIME time) {
   // Each unit of reference time is 100 nanoseconds <=> 0.1 microsecond.
-  return base::TimeDelta::FromMicroseconds(0.1 * time + 0.5);
+  return base::Microseconds(0.1 * time + 0.5);
 }
 
 uint32_t CoreAudioUtil::GetIAudioClientVersion() {

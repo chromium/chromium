@@ -336,7 +336,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
 
   absl::optional<std::string> oauth_token_;
-  base::TimeDelta idleness_cutoff_ = base::TimeDelta::FromSeconds(30);
+  base::TimeDelta idleness_cutoff_ = base::Seconds(30);
   bool terminate_upon_input_ = false;
   absl::optional<bool> acked_user_presence_;
 
@@ -575,8 +575,8 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   LogInAsAutoLaunchedKioskAppUser();
   SetOAuthToken(kTestOAuthToken);
 
-  const auto idleness_cutoff = base::TimeDelta::FromSeconds(10);
-  const auto device_idle_time = base::TimeDelta::FromSeconds(9);
+  const auto idleness_cutoff = base::Seconds(10);
+  const auto device_idle_time = base::Seconds(9);
 
   SetDeviceIdleTime(device_idle_time);
   SetIdlenessCutoff(idleness_cutoff);
@@ -592,8 +592,8 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   LogInAsAutoLaunchedKioskAppUser();
   SetOAuthToken(kTestOAuthToken);
 
-  const auto idleness_cutoff = base::TimeDelta::FromSeconds(10);
-  const auto device_idle_time = base::TimeDelta::FromSeconds(11);
+  const auto idleness_cutoff = base::Seconds(10);
+  const auto device_idle_time = base::Seconds(11);
 
   SetDeviceIdleTime(device_idle_time);
   SetIdlenessCutoff(idleness_cutoff);

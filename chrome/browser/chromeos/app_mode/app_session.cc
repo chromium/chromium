@@ -116,7 +116,7 @@ void DumpPluginProcess(const std::set<int>& child_ids) {
   const int kDumpWaitSeconds = 10;
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&RebootDevice),
-      base::TimeDelta::FromSeconds(dump_requested ? kDumpWaitSeconds : 0));
+      base::Seconds(dump_requested ? kDumpWaitSeconds : 0));
 }
 
 }  // namespace

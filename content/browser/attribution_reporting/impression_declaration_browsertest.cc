@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
             last_impression.conversion_destination);
   EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
             last_impression.reporting_origin);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000), *last_impression.expiry);
+  EXPECT_EQ(base::Milliseconds(1000), *last_impression.expiry);
 
   // Verify default attribution source priority.
   EXPECT_EQ(0, last_impression.priority);
@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
             last_impression.conversion_destination);
   EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
             last_impression.reporting_origin);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000), *last_impression.expiry);
+  EXPECT_EQ(base::Milliseconds(1000), *last_impression.expiry);
   EXPECT_EQ(10, last_impression.priority);
 }
 

@@ -657,7 +657,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   }
 
   // Check |url4| disappears from the list when its embargo expires.
-  clock.Advance(base::TimeDelta::FromDays(8));
+  clock.Advance(base::Days(8));
   handler()->HandleGetAllSites(&base::Value::AsListValue(get_all_sites_args));
 
   {
@@ -682,7 +682,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
           .content_setting);
-  clock.Advance(base::TimeDelta::FromDays(8));
+  clock.Advance(base::Days(8));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
@@ -711,7 +711,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
           .content_setting);
-  clock.Advance(base::TimeDelta::FromDays(8));
+  clock.Advance(base::Days(8));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
@@ -761,7 +761,7 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
   auto_blocker->SetClockForTesting(&clock);
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
 
   // Test recent permissions is empty when there are no preferences.
   handler()->HandleGetRecentSitePermissions(
@@ -786,14 +786,14 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
 
-  clock.Advance(base::TimeDelta::FromHours(2));
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(2));
+  clock.Advance(base::Hours(1));
   CreateIncognitoProfile();
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(&clock);
 
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   incognito_auto_blocker->SetClockForTesting(&clock);

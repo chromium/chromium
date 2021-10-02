@@ -44,7 +44,7 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                   GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
 
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
+  constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   animation_->SetSlideDuration(kAnimationDuration);
 
@@ -54,13 +54,13 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
 OmniboxChipButton::~OmniboxChipButton() = default;
 
 void OmniboxChipButton::AnimateCollapse() {
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(250);
+  constexpr auto kAnimationDuration = base::Milliseconds(250);
   animation_->SetSlideDuration(kAnimationDuration);
   animation_->Hide();
 }
 
 void OmniboxChipButton::AnimateExpand() {
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
+  constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_->SetSlideDuration(kAnimationDuration);
   animation_->Show();
 }

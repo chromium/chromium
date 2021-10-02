@@ -397,7 +397,7 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   // Respond with a failed presentation feedback for frame 1 and verify that the
   // callback is not called
   base::TimeTicks fail_timestamp =
-      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(2);
+      base::TimeTicks::Now() + base::Microseconds(2);
   gfx::PresentationFeedback fail_feedback(fail_timestamp, base::TimeDelta(),
                                           gfx::PresentationFeedback::kFailure);
   layer_tree_view.DidPresentCompositorFrame(1, fail_feedback);
@@ -406,8 +406,7 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   // Respond with a successful presentation feedback for frame 2 and verify that
   // the callback for frame 1 is now called with presentation timestamp for
   // frame 2.
-  base::TimeTicks success_timestamp =
-      fail_timestamp + base::TimeDelta::FromMicroseconds(3);
+  base::TimeTicks success_timestamp = fail_timestamp + base::Microseconds(3);
   gfx::PresentationFeedback success_feedback(success_timestamp,
                                              base::TimeDelta(), 0);
   layer_tree_view.DidPresentCompositorFrame(2, success_feedback);

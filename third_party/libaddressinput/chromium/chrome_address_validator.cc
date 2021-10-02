@@ -163,7 +163,7 @@ bool AddressValidator::AreRulesLoadedForRegion(const std::string& region_code) {
 AddressValidator::AddressValidator() : load_rules_listener_(nullptr) {}
 
 base::TimeDelta AddressValidator::GetBaseRetryPeriod() const {
-  return base::TimeDelta::FromSeconds(8);
+  return base::Seconds(8);
 }
 
 void AddressValidator::Validated(bool success,

@@ -39,7 +39,7 @@ void CompareDestructionCallbackValues(
 TEST(MojoSharedBufferVideoFrameTest, CreateFrameWithSharedMemoryI420) {
   const int kWidth = 16;
   const int kHeight = 9;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   // Create a MojoSharedBufferVideoFrame which will allocate enough space
   // to hold a 16x9 video frame.
@@ -71,7 +71,7 @@ TEST(MojoSharedBufferVideoFrameTest, CreateFrameWithSharedMemoryI420) {
 TEST(MojoSharedBufferVideoFrameTest, CreateFrameWithSharedMemoryNV12) {
   const int kWidth = 16;
   const int kHeight = 9;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   // Create a MojoSharedBufferVideoFrame which will allocate enough space
   // to hold a 16x9 video frame.
@@ -100,7 +100,7 @@ TEST(MojoSharedBufferVideoFrameTest, CreateFrameWithSharedMemoryNV12) {
 TEST(MojoSharedBufferVideoFrameTest, CreateFrameAndPassSharedMemoryI420) {
   const int kWidth = 32;
   const int kHeight = 18;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1338);
+  const base::TimeDelta kTimestamp = base::Microseconds(1338);
 
   // Some random values to use. Since we actually don't use the data inside the
   // frame, random values are fine (as long as the offsets are within the
@@ -150,7 +150,7 @@ TEST(MojoSharedBufferVideoFrameTest, CreateFrameAndPassSharedMemoryI420) {
 TEST(MojoSharedBufferVideoFrameTest, CreateFrameAndPassSharedMemoryNV12) {
   const int kWidth = 32;
   const int kHeight = 18;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1338);
+  const base::TimeDelta kTimestamp = base::Microseconds(1338);
 
   // Some random values to use. Since we actually don't use the data inside the
   // frame, random values are fine (as long as the offsets are within the
@@ -194,7 +194,7 @@ TEST(MojoSharedBufferVideoFrameTest, CreateFrameAndPassSharedMemoryNV12) {
 TEST(MojoSharedBufferVideoFrameTest, CreateFrameOddWidth) {
   const int kWidth = 15;
   const int kHeight = 9;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   VideoPixelFormat formats[] = {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12};
   for (auto format : formats) {
@@ -219,7 +219,7 @@ TEST(MojoSharedBufferVideoFrameTest, TestDestructionCallback) {
   const VideoPixelFormat format = PIXEL_FORMAT_I420;
   const int kWidth = 32;
   const int kHeight = 18;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1338);
+  const base::TimeDelta kTimestamp = base::Microseconds(1338);
 
   // Allocate some shared memory.
   gfx::Size size(kWidth, kHeight);
@@ -257,7 +257,7 @@ TEST(MojoSharedBufferVideoFrameTest, InterleavedData) {
   const VideoPixelFormat format = PIXEL_FORMAT_I420;
   const int kWidth = 32;
   const int kHeight = 18;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1338);
+  const base::TimeDelta kTimestamp = base::Microseconds(1338);
   gfx::Size size(kWidth, kHeight);
   gfx::Rect visible_rect(size);
 

@@ -439,7 +439,7 @@ BOOL WINAPI BrowserConsoleControlHandler(DWORD control_type) {
                                 control_type));
 
   // Block the control thread while waiting for SessionEnding to be handled.
-  base::PlatformThread::Sleep(base::TimeDelta::FromHours(1));
+  base::PlatformThread::Sleep(base::Hours(1));
 
   // This should never be hit. The process will be terminated either by
   // ContentBrowserClient::SessionEnding or by Windows, if the former takes too
@@ -451,7 +451,7 @@ BOOL WINAPI BrowserConsoleControlHandler(DWORD control_type) {
 // control thread. The event will be handled by the browser process.
 BOOL WINAPI OtherConsoleControlHandler(DWORD control_type) {
   // Block the control thread while waiting for the browser process.
-  base::PlatformThread::Sleep(base::TimeDelta::FromHours(1));
+  base::PlatformThread::Sleep(base::Hours(1));
 
   // This should never be hit. The process will be terminated by the browser
   // process or by Windows, if the former takes too long.

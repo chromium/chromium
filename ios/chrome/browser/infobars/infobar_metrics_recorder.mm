@@ -194,7 +194,7 @@ const char kInfobarReadingListBadgeTappedHistogram[] =
 }
 
 - (void)recordBannerOnScreenDuration:(double)duration {
-  base::TimeDelta timeDelta = base::TimeDelta::FromSecondsD(duration);
+  base::TimeDelta timeDelta = base::Seconds(duration);
   UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime", timeDelta);
 }
 

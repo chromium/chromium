@@ -336,8 +336,7 @@ void WorkerProcessLauncherTest::StartWorker() {
   launcher_ = std::make_unique<WorkerProcessLauncher>(
       std::move(launcher_delegate_), &server_listener_);
 
-  launcher_->SetKillProcessTimeoutForTest(
-      base::TimeDelta::FromMilliseconds(100));
+  launcher_->SetKillProcessTimeoutForTest(base::Milliseconds(100));
 }
 
 void WorkerProcessLauncherTest::StopWorker() {

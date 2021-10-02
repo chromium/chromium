@@ -715,19 +715,15 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocIdNextUpdateForDisplay) {
       prefs::kPrivacySandboxFlocEnabled, true);
 
   std::map<base::TimeDelta, std::u16string> offsets_to_expected_string = {
-      {base::TimeDelta::FromHours(23),
-       l10n_util::GetPluralStringFUTF16(
-           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 0)},
-      {base::TimeDelta::FromHours(25),
-       l10n_util::GetPluralStringFUTF16(
-           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 1)},
-      {base::TimeDelta::FromDays(2),
-       l10n_util::GetPluralStringFUTF16(
-           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 2)},
-      {base::TimeDelta::FromHours(60),
-       l10n_util::GetPluralStringFUTF16(
-           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 3)},
-      {base::TimeDelta::FromHours(167),  // 1 hour less than 7 days.
+      {base::Hours(23), l10n_util::GetPluralStringFUTF16(
+                            IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 0)},
+      {base::Hours(25), l10n_util::GetPluralStringFUTF16(
+                            IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 1)},
+      {base::Days(2), l10n_util::GetPluralStringFUTF16(
+                          IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 2)},
+      {base::Hours(60), l10n_util::GetPluralStringFUTF16(
+                            IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 3)},
+      {base::Hours(167),  // 1 hour less than 7 days.
        l10n_util::GetPluralStringFUTF16(
            IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 7)}};
 

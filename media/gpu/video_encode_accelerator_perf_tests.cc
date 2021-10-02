@@ -87,7 +87,7 @@ constexpr size_t kMaxSpatialLayers = 3;
 
 // The event timeout used in perf tests because encoding 2160p
 // |kNumFramesToEncodeForPerformance| frames take much time.
-constexpr base::TimeDelta kPerfEventTimeout = base::TimeDelta::FromSeconds(180);
+constexpr base::TimeDelta kPerfEventTimeout = base::Seconds(180);
 
 // Default output folder used to store performance metrics.
 constexpr const base::FilePath::CharType* kDefaultOutputFolder =
@@ -479,8 +479,7 @@ class VideoEncoderTest : public ::testing::Test {
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
     config.num_frames_to_encode = kNumFramesToEncodeForPerformance;
     if (encode_rate) {
-      config.encode_interval =
-          base::TimeDelta::FromSeconds(1u) / encode_rate.value();
+      config.encode_interval = base::Seconds(1u) / encode_rate.value();
     }
 
     auto video_encoder =

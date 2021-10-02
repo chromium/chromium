@@ -97,7 +97,7 @@ constexpr char kDefaultConfig[] = R"([libdefaults]
 // A long time delta, used to fast forward the task environment until all
 // pending operations are completed. This value should be equal to the maximum
 // time to delay requests on |kBackoffPolicyForManagedAccounts|.
-const base::TimeDelta kLongTimeDelay = base::TimeDelta::FromMinutes(10);
+const base::TimeDelta kLongTimeDelay = base::Minutes(10);
 
 // Fake observer used to test notifications sent by KerberosCredentialsManager
 // on accounts changes.

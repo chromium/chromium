@@ -865,8 +865,7 @@ void LoginDisplayHostWebUI::ScheduleFadeOutAnimation(int animation_speed_ms) {
   animation.AddObserver(new AnimationObserver(
       base::BindOnce(&LoginDisplayHostWebUI::ShutdownDisplayHost,
                      weak_factory_.GetWeakPtr())));
-  animation.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(animation_speed_ms));
+  animation.SetTransitionDuration(base::Milliseconds(animation_speed_ms));
   layer->SetOpacity(0);
 }
 
@@ -928,7 +927,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   }
 
   login_window_->SetVisibilityAnimationDuration(
-      base::TimeDelta::FromMilliseconds(kLoginFadeoutTransitionDurationMs));
+      base::Milliseconds(kLoginFadeoutTransitionDurationMs));
   login_window_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_HIDE);
 
   login_window_->AddObserver(this);
@@ -1137,7 +1136,7 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
   // Don't try to play startup sound if login prompt has been already visible
   // for a long time.
   if (time_since_login_prompt_visible >
-      base::TimeDelta::FromMilliseconds(kStartupSoundMaxDelayMs)) {
+      base::Milliseconds(kStartupSoundMaxDelayMs)) {
     return;
   }
   AccessibilityManager::Get()->PlayEarcon(Sound::kStartup,
@@ -1223,10 +1222,9 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   }
 
   if (StartupUtils::IsEulaAccepted()) {
-    DelayNetworkCall(
-        base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS),
-        ServicesCustomizationDocument::GetInstance()
-            ->EnsureCustomizationAppliedClosure());
+    DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
+                     ServicesCustomizationDocument::GetInstance()
+                         ->EnsureCustomizationAppliedClosure());
 
     g_browser_process->platform_part()
         ->GetTimezoneResolverManager()

@@ -371,7 +371,7 @@ void AppCacheUpdateJob::StartUpdate(AppCacheHost* host,
   MadeProgress();
   group_->SetUpdateAppCacheStatus(AppCacheGroup::CHECKING);
   if (group_->HasCache()) {
-    base::TimeDelta kFullUpdateInterval = base::TimeDelta::FromHours(24);
+    base::TimeDelta kFullUpdateInterval = base::Hours(24);
     update_type_ = UPGRADE_ATTEMPT;
     AppCache* cache = group_->newest_complete_cache();
     cached_manifest_parser_version_ = cache->manifest_parser_version();
@@ -437,7 +437,7 @@ void AppCacheUpdateJob::HandleCacheFailure(
     return;
   }
 
-  base::TimeDelta kMaxEvictableErrorDuration = base::TimeDelta::FromDays(14);
+  base::TimeDelta kMaxEvictableErrorDuration = base::Days(14);
   base::TimeDelta error_duration =
       base::Time::Now() - group_->first_evictable_error_time();
   if (error_duration > kMaxEvictableErrorDuration) {

@@ -97,7 +97,7 @@ void ProximityMonitorImpl::UpdatePollingState() {
         base::BindOnce(
             &ProximityMonitorImpl::PerformScheduledUpdatePollingState,
             polling_weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kPollingTimeoutMs));
+        base::Milliseconds(kPollingTimeoutMs));
     Poll();
   } else {
     polling_weak_ptr_factory_.InvalidateWeakPtrs();

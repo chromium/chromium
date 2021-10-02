@@ -54,7 +54,7 @@ int CloudPrintServiceProcessMain(
     for (int i = 0; i < 10; ++i) {
       if (service->Initialize())
         return true;
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(i * 100));
+      base::PlatformThread::Sleep(base::Milliseconds(i * 100));
     }
     return false;
   };

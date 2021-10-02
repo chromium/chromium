@@ -57,10 +57,9 @@ void LogMetricsOnReportSend(const AttributionReport& report) {
   base::Time original_report_time =
       ComputeReportTime(report.impression, report.conversion_time);
   base::TimeDelta time_since_original_report_time = now - original_report_time;
-  base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay2",
-                                time_since_original_report_time,
-                                base::TimeDelta::FromSeconds(1),
-                                base::TimeDelta::FromDays(24), /*buckets=*/100);
+  base::UmaHistogramCustomTimes(
+      "Conversions.ExtraReportDelay2", time_since_original_report_time,
+      base::Seconds(1), base::Days(24), /*buckets=*/100);
 
   base::TimeDelta time_from_conversion_to_report_send =
       report.report_time - report.conversion_time;
@@ -130,7 +129,7 @@ void ConversionNetworkSenderImpl::SendReport(AttributionReport report,
 
   auto it = loaders_in_progress_.insert(loaders_in_progress_.begin(),
                                         std::move(simple_url_loader));
-  simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
+  simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
   std::string report_body = report.ReportBody();
   simple_url_loader_ptr->AttachStringForUpload(report_body, "application/json");

@@ -23,7 +23,7 @@ namespace {
 
 // SCDynamicStore API does not exist on iOS.
 #if !defined(OS_IOS)
-const base::TimeDelta kRetryInterval = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kRetryInterval = base::Seconds(1);
 const int kMaxRetry = 5;
 
 // Maps SCError to an enum for UMA logging. These values are persisted to logs,
@@ -168,7 +168,7 @@ void NetworkConfigWatcherMacThread::Init() {
 
   // TODO(willchan): Look to see if there's a better signal for when it's ok to
   // initialize this, rather than just delaying it by a fixed time.
-  const base::TimeDelta kInitializationDelay = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kInitializationDelay = base::Seconds(1);
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NetworkConfigWatcherMacThread::InitNotifications,

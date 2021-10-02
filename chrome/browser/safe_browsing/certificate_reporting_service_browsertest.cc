@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
   factory()->SetClockForTesting(&clock);
 
   // The service should ignore reports older than 24 hours.
-  factory()->SetQueuedReportTTLForTesting(base::TimeDelta::FromHours(24));
+  factory()->SetQueuedReportTTLForTesting(base::Hours(24));
 
   certificate_reporting_test_utils::SetCertReportingOptIn(
       browser(), certificate_reporting_test_utils::EXTENDED_REPORTING_OPT_IN);
@@ -474,14 +474,14 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
       ReportExpectation::Failed({{"report0", RetryStatus::NOT_RETRIED}}));
 
   // Advance the clock a bit and trigger another failed report.
-  clock.Advance(base::TimeDelta::FromHours(5));
+  clock.Advance(base::Hours(5));
   SendReport("report1");
   test_helper()->WaitForRequestsDestroyed(
       ReportExpectation::Failed({{"report1", RetryStatus::NOT_RETRIED}}));
 
   // Advance the clock to 20 hours, putting it 25 hours ahead of the reference
   // time. This makes report0 older than 24 hours. report1 is now 20 hours.
-  clock.Advance(base::TimeDelta::FromHours(20));
+  clock.Advance(base::Hours(20));
 
   // Send pending reports. report0 should be discarded since it's too old.
   // report1 should be queued again.
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
       ReportExpectation::Failed({{"report2", RetryStatus::NOT_RETRIED}}));
 
   // Advance the clock 5 hours. report1 will now be 25 hours old.
-  clock.Advance(base::TimeDelta::FromHours(5));
+  clock.Advance(base::Hours(5));
 
   // Send pending reports. report1 should be discarded since it's too old.
   // report2 should be queued again.
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
 
   // Advance the clock 20 hours again so that report2 is 25 hours old and is
   // older than max age (24 hours).
-  clock.Advance(base::TimeDelta::FromHours(20));
+  clock.Advance(base::Hours(20));
 
   // Send pending reports. report2 should be discarded since it's too old. No
   // other reports remain. If any report is sent, test teardown will catch it.
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
 
   // The service should queue a maximum of 3 reports and ignore reports older
   // than 24 hours.
-  factory()->SetQueuedReportTTLForTesting(base::TimeDelta::FromHours(24));
+  factory()->SetQueuedReportTTLForTesting(base::Hours(24));
   factory()->SetMaxQueuedReportCountForTesting(3);
 
   certificate_reporting_test_utils::SetCertReportingOptIn(
@@ -563,13 +563,13 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
   // report1 is 5 hours after reference time (10 hours old).
   // report2 is 10 hours after reference time (5 hours old).
   // report3 is 15 hours after reference time (0 hours old).
-  clock.Advance(base::TimeDelta::FromHours(5));
+  clock.Advance(base::Hours(5));
   SendReport("report1");
 
-  clock.Advance(base::TimeDelta::FromHours(5));
+  clock.Advance(base::Hours(5));
   SendReport("report2");
 
-  clock.Advance(base::TimeDelta::FromHours(5));
+  clock.Advance(base::Hours(5));
   SendReport("report3");
 
   test_helper()->WaitForRequestsDestroyed(
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(CertificateReportingServiceBrowserTest,
   // report1 is 25 hours old.
   // report2 is 20 hours old.
   // report3 is 15 hours old.
-  clock.Advance(base::TimeDelta::FromHours(15));
+  clock.Advance(base::Hours(15));
 
   // Send pending reports. Only reports 2 and 3 should be sent, report 1
   // should be ignored because it's too old.

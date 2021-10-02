@@ -303,7 +303,7 @@ TEST_F(DeferredImageDecoderTest, singleFrameImageLoading) {
 TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
   repetition_count_ = 10;
   frame_count_ = 1;
-  frame_duration_ = base::TimeDelta::FromMilliseconds(10);
+  frame_duration_ = base::Milliseconds(10);
   status_ = ImageFrame::kFramePartial;
   lazy_decoder_->SetData(data_, false /* all_data_received */);
 
@@ -311,11 +311,10 @@ TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
   ASSERT_TRUE(image);
   EXPECT_FALSE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   // Anything <= 10ms is clamped to 100ms. See the implementaiton for details.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(100),
-            lazy_decoder_->FrameDurationAtIndex(0));
+  EXPECT_EQ(base::Milliseconds(100), lazy_decoder_->FrameDurationAtIndex(0));
 
   frame_count_ = 2;
-  frame_duration_ = base::TimeDelta::FromMilliseconds(20);
+  frame_duration_ = base::Milliseconds(20);
   status_ = ImageFrame::kFrameComplete;
   data_->Append(" ", 1u);
   lazy_decoder_->SetData(data_, false /* all_data_received */);
@@ -324,24 +323,20 @@ TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
   ASSERT_TRUE(image);
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(1));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(20),
-            lazy_decoder_->FrameDurationAtIndex(1));
+  EXPECT_EQ(base::Milliseconds(20), lazy_decoder_->FrameDurationAtIndex(1));
   EXPECT_TRUE(actual_decoder_);
 
   frame_count_ = 3;
-  frame_duration_ = base::TimeDelta::FromMilliseconds(30);
+  frame_duration_ = base::Milliseconds(30);
   status_ = ImageFrame::kFrameComplete;
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   EXPECT_FALSE(actual_decoder_);
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(1));
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(2));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(100),
-            lazy_decoder_->FrameDurationAtIndex(0));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(20),
-            lazy_decoder_->FrameDurationAtIndex(1));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(30),
-            lazy_decoder_->FrameDurationAtIndex(2));
+  EXPECT_EQ(base::Milliseconds(100), lazy_decoder_->FrameDurationAtIndex(0));
+  EXPECT_EQ(base::Milliseconds(20), lazy_decoder_->FrameDurationAtIndex(1));
+  EXPECT_EQ(base::Milliseconds(30), lazy_decoder_->FrameDurationAtIndex(2));
   EXPECT_EQ(10, lazy_decoder_->RepetitionCount());
 }
 
@@ -440,7 +435,7 @@ class MultiFrameDeferredImageDecoderTest : public DeferredImageDecoderTest {
 
 TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {
   frame_count_ = 2;
-  frame_duration_ = base::TimeDelta::FromMilliseconds(20);
+  frame_duration_ = base::Milliseconds(20);
   last_complete_frame_ = 0u;
   lazy_decoder_->SetData(data_, false /* all_data_received */);
 
@@ -492,17 +487,15 @@ TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {
 
 TEST_F(MultiFrameDeferredImageDecoderTest, FrameDurationOverride) {
   frame_count_ = 2;
-  frame_duration_ = base::TimeDelta::FromMilliseconds(5);
+  frame_duration_ = base::Milliseconds(5);
   last_complete_frame_ = 1u;
   lazy_decoder_->SetData(data_, true /* all_data_received */);
 
   // If the frame duration is below a threshold, we override it to a constant
   // value of 100 ms.
   PaintImage image = CreatePaintImage();
-  EXPECT_EQ(image.GetFrameMetadata()[0].duration,
-            base::TimeDelta::FromMilliseconds(100));
-  EXPECT_EQ(image.GetFrameMetadata()[1].duration,
-            base::TimeDelta::FromMilliseconds(100));
+  EXPECT_EQ(image.GetFrameMetadata()[0].duration, base::Milliseconds(100));
+  EXPECT_EQ(image.GetFrameMetadata()[1].duration, base::Milliseconds(100));
 }
 
 }  // namespace blink

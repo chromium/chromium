@@ -168,8 +168,7 @@ TEST(CookieUtilTest, ParseCookieExpirationTimeBeyond2038) {
 
     // It should either have an exact value, or be base::Time::Max(). For
     // simplicity just check that it is greater than an arbitray date.
-    base::Time almost_jan_2038 =
-        base::Time::UnixEpoch() + base::TimeDelta::FromDays(365 * 68);
+    base::Time almost_jan_2038 = base::Time::UnixEpoch() + base::Days(365 * 68);
     EXPECT_LT(almost_jan_2038, parsed_time);
   }
 }

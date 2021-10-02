@@ -210,7 +210,7 @@ TEST_F(SnapshotSessionControllerTest, StopSessionFailureDuration) {
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, apps_tracker()->start_tracking_num());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(40));
+  task_environment_.FastForwardBy(base::Minutes(40));
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());

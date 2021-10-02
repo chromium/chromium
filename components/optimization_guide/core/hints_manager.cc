@@ -64,7 +64,7 @@ constexpr char kManualConfigComponentVersion[] = "0.0.0";
 // Provides a random time delta in seconds between |kFetchRandomMinDelay| and
 // |kFetchRandomMaxDelay|.
 base::TimeDelta RandomFetchDelay() {
-  return base::TimeDelta::FromSeconds(base::RandInt(
+  return base::Seconds(base::RandInt(
       optimization_guide::features::ActiveTabsHintsFetchRandomMinDelaySecs(),
       optimization_guide::features::ActiveTabsHintsFetchRandomMaxDelaySecs()));
 }
@@ -821,7 +821,7 @@ void HintsManager::CleanUpFetcherForNavigation(const GURL& navigation_url) {
 base::Time HintsManager::GetLastHintsFetchAttemptTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(pref_service_->GetInt64(
+      base::Microseconds(pref_service_->GetInt64(
           optimization_guide::prefs::kHintsFetcherLastFetchAttempt)));
 }
 

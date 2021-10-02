@@ -273,7 +273,7 @@ absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
     return absl::nullopt;
 
   return absl::make_optional<base::TimeDelta>(
-      base::TimeDelta::FromDays(no_saml_offline_limit));
+      base::Days(no_saml_offline_limit));
 }
 
 absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
@@ -288,7 +288,7 @@ absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
     return absl::nullopt;
 
   return absl::make_optional<base::TimeDelta>(
-      base::TimeDelta::FromSeconds(saml_offline_limit));
+      base::Seconds(saml_offline_limit));
 }
 
 absl::optional<base::TimeDelta>
@@ -313,7 +313,7 @@ OfflineSigninLimiter::GetGaiaNoSamlLockScreenTimeLimit() {
   }
 
   return absl::make_optional<base::TimeDelta>(
-      base::TimeDelta::FromDays(no_saml_lock_screen_offline_limit));
+      base::Days(no_saml_lock_screen_offline_limit));
 }
 
 absl::optional<base::TimeDelta>
@@ -338,7 +338,7 @@ OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
   }
 
   return absl::make_optional<base::TimeDelta>(
-      base::TimeDelta::FromDays(saml_lock_screen_offline_limit));
+      base::Days(saml_lock_screen_offline_limit));
 }
 
 absl::optional<base::TimeDelta>
@@ -350,8 +350,7 @@ OfflineSigninLimiter::GetTimeLimitOverrideForTesting() {
             switches::kOfflineSignInTimeLimitInSecondsOverrideForTesting);
     int numeric_val = 0;
     if (base::StringToInt(ascii_value, &numeric_val) && numeric_val >= 0) {
-      return absl::make_optional<base::TimeDelta>(
-          base::TimeDelta::FromSeconds(numeric_val));
+      return absl::make_optional<base::TimeDelta>(base::Seconds(numeric_val));
     }
     LOG(WARNING)
         << "Manual offline signin time limit override requested but failed.";

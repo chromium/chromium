@@ -101,8 +101,7 @@ void ReportCdmTypeUMA(CrosCdmType cdm_type) {
 // The amount of time to allow the secondary Media Service instance to idle
 // before tearing it down. Only used if the Content embedder defines how to
 // launch a secondary Media Service instance.
-constexpr base::TimeDelta kSecondaryInstanceIdleTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSecondaryInstanceIdleTimeout = base::Seconds(5);
 
 void MaybeLaunchSecondaryMediaService(
     mojo::Remote<media::mojom::MediaService>* remote) {

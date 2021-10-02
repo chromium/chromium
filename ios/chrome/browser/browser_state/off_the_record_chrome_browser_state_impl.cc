@@ -48,9 +48,9 @@ OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {
     pref_proxy_config_tracker_->DetachFromPrefService();
 
   const base::TimeDelta duration = base::Time::Now() - start_time_;
-  base::UmaHistogramCustomCounts(
-      "Profile.Incognito.Lifetime", duration.InMinutes(), 1,
-      base::TimeDelta::FromDays(28).InMinutes(), 100);
+  base::UmaHistogramCustomCounts("Profile.Incognito.Lifetime",
+                                 duration.InMinutes(), 1,
+                                 base::Days(28).InMinutes(), 100);
 
   // Clears any data the network stack contains that may be related to the
   // OTR session.

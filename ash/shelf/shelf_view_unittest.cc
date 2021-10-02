@@ -205,8 +205,7 @@ class ShelfObserverIconTest : public AshTestBase {
     observer_ = std::make_unique<TestShelfObserver>(GetPrimaryShelf());
     shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
-    shelf_view_test_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+    shelf_view_test_->SetAnimationDuration(base::Milliseconds(1));
   }
 
   void TearDown() override {
@@ -372,7 +371,7 @@ class ShelfViewTest : public AshTestBase {
               500);
 
     test_api_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
-    test_api_->SetAnimationDuration(base::TimeDelta::FromMilliseconds(1));
+    test_api_->SetAnimationDuration(base::Milliseconds(1));
 
     // Add a browser shortcut shelf item, as chrome does, for testing.
     AddItem(TYPE_BROWSER_SHORTCUT, true);
@@ -1542,7 +1541,7 @@ TEST_P(LtrRtlShelfViewTest, TestShelfItemsAnimations) {
   ShelfID second_app_id = AddAppShortcut();
 
   // Set the animation duration for shelf items.
-  test_api_->SetAnimationDuration(base::TimeDelta::FromMilliseconds(100));
+  test_api_->SetAnimationDuration(base::Milliseconds(100));
 
   // The shelf items should animate if they are moved within the shelf, either
   // by swapping or if the items need to be rearranged due to an item getting
@@ -1868,8 +1867,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   EXPECT_FALSE(shelf_view_->drag_view());
   EXPECT_TRUE(button->state() & ShelfAppButton::STATE_DRAGGING);
 
-  generator->GestureScrollSequence(start, end,
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+  generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   generator->ReleaseTouch();
 
   // |first_add_id| has been moved to the end of the items in the shelf.
@@ -1941,8 +1939,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   EXPECT_FALSE(shelf_view_->drag_view());
   EXPECT_TRUE(button->state() & ShelfAppButton::STATE_DRAGGING);
 
-  generator->GestureScrollSequence(start, end,
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+  generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   generator->ReleaseTouch();
 
   // |first_add_id| has been moved to the end of the items in the shelf.
@@ -3181,11 +3178,11 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionAfterGestureLongPress) {
   GetEventGenerator()->PressTouch(app_icon1_center_point);
 
   // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment()->FastForwardBy(base::Milliseconds(200));
 
   // Fast forward to generate the ET_GESTURE_LONG_PRESS event to show the
   // context menu.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
   ASSERT_TRUE(shelf_view_->IsShowingMenu());
 
   // Mouse click at `app_icon2_` while gesture pressing `app_icon1_`.
@@ -3217,7 +3214,7 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {
   GetEventGenerator()->PressTouch(app_icon1_center_point);
 
   // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment()->FastForwardBy(base::Milliseconds(200));
 
   // Mouse click at `app_icon2_` while gesture pressing `app_icon1_`. Note that
   // we do not need to release the touch on `app_icon1_` because the gesture
@@ -3227,7 +3224,7 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {
   GetEventGenerator()->ClickLeftButton();
 
   // Fast forward until the callback is executed.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment()->FastForwardBy(base::Milliseconds(200));
 
   EXPECT_FALSE(shelf_view_->IsShowingMenu());
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());

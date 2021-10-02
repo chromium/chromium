@@ -195,8 +195,7 @@ void ReportAshPipEvents(AshPipEvents event) {
 
 void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
   UMA_HISTOGRAM_CUSTOM_TIMES(kAshPipAndroidPipUseTimeHistogramName, duration,
-                             base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromHours(10), 50);
+                             base::Seconds(1), base::Hours(10), 50);
 }
 
 // Notifies the window restore controller to write to file.

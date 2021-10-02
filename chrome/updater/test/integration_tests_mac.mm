@@ -92,7 +92,7 @@ void ExpectServiceAbsent(UpdaterScope scope, const std::string& service) {
   bool success = false;
   base::RunLoop loop;
   PollLaunchctlList(scope, service, LaunchctlPresence::kAbsent,
-                    base::TimeDelta::FromSeconds(7),
+                    base::Seconds(7),
                     base::BindLambdaForTesting([&](bool result) {
                       success = result;
                       loop.QuitClosure().Run();

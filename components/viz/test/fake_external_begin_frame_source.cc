@@ -100,7 +100,7 @@ void FakeExternalBeginFrameSource::PostTestOnBeginFrame() {
                      CreateBeginFrameArgs(BEGINFRAME_FROM_HERE)));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, begin_frame_task_.callback(),
-      base::TimeDelta::FromMilliseconds(milliseconds_per_frame_));
+      base::Milliseconds(milliseconds_per_frame_));
   next_begin_frame_number_++;
 }
 

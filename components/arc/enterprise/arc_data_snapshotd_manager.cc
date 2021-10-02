@@ -49,7 +49,7 @@ constexpr char kStarted[] = "started";
 constexpr char kTpmVersion[] = "tpm_version";
 
 // Snapshot muss automatically expire in 30 days if not updated.
-constexpr base::TimeDelta kSnapshotMaxLifetime = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kSnapshotMaxLifetime = base::Days(30);
 
 // Returns true if the Chrome session is restored after crash.
 bool IsRestoredSession() {

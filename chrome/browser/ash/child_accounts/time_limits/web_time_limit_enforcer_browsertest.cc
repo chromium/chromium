@@ -162,8 +162,7 @@ void WebTimeLimitEnforcerThrottleTest::AllowlistApp(
 }
 
 void WebTimeLimitEnforcerThrottleTest::BlockWeb() {
-  GetWebTimeLimitEnforcer()->OnWebTimeLimitReached(
-      base::TimeDelta::FromHours(1));
+  GetWebTimeLimitEnforcer()->OnWebTimeLimitReached(base::Hours(1));
 }
 
 app_time::WebTimeLimitEnforcer*

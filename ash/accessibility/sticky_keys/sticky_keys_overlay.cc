@@ -252,8 +252,7 @@ void StickyKeysOverlay::Show(bool visible) {
   settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   settings.SetTweenType(visible ? gfx::Tween::EASE_OUT : gfx::Tween::EASE_IN);
-  settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kSlideAnimationDurationMs));
+  settings.SetTransitionDuration(base::Milliseconds(kSlideAnimationDurationMs));
 
   overlay_widget_->GetLayer()->SetTransform(gfx::Transform());
 }

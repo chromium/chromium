@@ -47,7 +47,7 @@ const char kTestDevicePath[] = "/dev/input/test-device";
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks ToTestTimeTicks(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 void InitPixelTouchscreen(TouchEventConverterEvdev* device) {
@@ -316,9 +316,8 @@ class TouchEventConverterEvdevTest : public testing::Test {
   void DestroyDevice() { device_.reset(); }
 
   void SetTestNowTime(timeval time) {
-    base::TimeTicks ticks = base::TimeTicks() +
-                            base::TimeDelta::FromSeconds(time.tv_sec) +
-                            base::TimeDelta::FromMicroseconds(time.tv_usec);
+    base::TimeTicks ticks = base::TimeTicks() + base::Seconds(time.tv_sec) +
+                            base::Microseconds(time.tv_usec);
     test_clock_->SetNowTicks(ticks);
   }
 
@@ -2010,13 +2009,12 @@ TEST_F(TouchEventConverterEvdevTest, HeldEventNotSent) {
   device()->ReadNow();
   EXPECT_EQ(4u, size());
   const base::TimeTicks base_ticks =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(time.tv_sec);
+      base::TimeTicks() + base::Seconds(time.tv_sec);
 
   for (unsigned i = 0; i < size(); ++i) {
     ui::TouchEventParams event = dispatched_touch_event(i);
     EXPECT_EQ(1795 + i, event.location.x());
-    EXPECT_EQ(base::TimeDelta::FromMicroseconds(8000 * i),
-              (event.timestamp - base_ticks));
+    EXPECT_EQ(base::Microseconds(8000 * i), (event.timestamp - base_ticks));
   }
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   TouchEventConverterEvdev::kHoldCountAtReleaseEventName),
@@ -2141,7 +2139,7 @@ TEST_F(TouchEventConverterEvdevTest, SentHeldThenPalm) {
   // We expect the first 3 items to have been emitted, and then a cancel.
   EXPECT_EQ(4u, size());
   const base::TimeTicks base_ticks =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(time.tv_sec);
+      base::TimeTicks() + base::Seconds(time.tv_sec);
   for (unsigned i = 0; i < size(); ++i) {
     ui::TouchEventParams event = dispatched_touch_event(i);
     EventType expected_touch_type;
@@ -2156,8 +2154,7 @@ TEST_F(TouchEventConverterEvdevTest, SentHeldThenPalm) {
     EXPECT_EQ(expected_touch_type, event.type);
     if (i != size() - 1) {
       EXPECT_EQ(1795 + i, event.location.x());
-      EXPECT_EQ(base::TimeDelta::FromMicroseconds(8000 * i),
-                (event.timestamp - base_ticks));
+      EXPECT_EQ(base::Microseconds(8000 * i), (event.timestamp - base_ticks));
     }
   }
   EXPECT_THAT(histogram_tester_.GetAllSamples(

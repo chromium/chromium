@@ -99,8 +99,8 @@ void WriteTimes(const std::string base_name,
   base::Time last = times.back().time();
   base::TimeDelta total = last - first;
   base::HistogramBase* total_hist = base::Histogram::FactoryTimeGet(
-      uma_name, base::TimeDelta::FromMilliseconds(kMinTimeMillis),
-      base::TimeDelta::FromMilliseconds(kMaxTimeMillis), kNumBuckets,
+      uma_name, base::Milliseconds(kMinTimeMillis),
+      base::Milliseconds(kMaxTimeMillis), kNumBuckets,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   total_hist->AddTime(total);
   std::string output =
@@ -142,8 +142,8 @@ void WriteTimes(const std::string base_name,
     if (tm.send_to_uma()) {
       name = uma_prefix + tm.name();
       base::HistogramBase* prev_hist = base::Histogram::FactoryTimeGet(
-          name, base::TimeDelta::FromMilliseconds(kMinTimeMillis),
-          base::TimeDelta::FromMilliseconds(kMaxTimeMillis), kNumBuckets,
+          name, base::Milliseconds(kMinTimeMillis),
+          base::Milliseconds(kMaxTimeMillis), kNumBuckets,
           base::HistogramBase::kUmaTargetedHistogramFlag);
       prev_hist->AddTime(since_prev);
     } else {
@@ -355,7 +355,7 @@ void LoginEventRecorder::ScheduleWriteLoginTimes(const std::string base_name,
       FROM_HERE,
       base::BindOnce(&LoginEventRecorder::WriteLoginTimesDelayed,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kLoginTimeWriteDelayMs));
+      base::Milliseconds(kLoginTimeWriteDelayMs));
 }
 
 void LoginEventRecorder::RunScheduledWriteLoginTimes() {

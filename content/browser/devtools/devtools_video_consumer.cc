@@ -22,8 +22,7 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultMinCapturePeriod =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kDefaultMinCapturePeriod = base::Milliseconds(10);
 
 // Frame size can change every frame.
 constexpr base::TimeDelta kDefaultMinPeriod = base::TimeDelta();

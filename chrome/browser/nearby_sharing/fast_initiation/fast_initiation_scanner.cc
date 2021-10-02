@@ -18,12 +18,12 @@ namespace {
 // The length of time that a device must be in range before it is reported via a
 // "device found" event.
 constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
-    base::TimeDelta::FromSeconds(1);
+    base::Seconds(1);
 
 // The length of time that a device must be out of range before this is reported
 // via a "device lost" event.
 constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
-    base::TimeDelta::FromSeconds(7);
+    base::Seconds(7);
 
 }  // namespace
 

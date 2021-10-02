@@ -233,14 +233,14 @@ TEST_F(FrameSizeButtonTest, ButtonDrag) {
   // Snap right.
   generator->GestureScrollSequence(CenterPointInScreen(size_button()),
                                    CenterPointInScreen(close_button()),
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+                                   base::Milliseconds(100), 3);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasStateType(WindowStateType::kSecondarySnapped));
 
   // Snap left.
   generator->GestureScrollSequence(CenterPointInScreen(size_button()),
                                    CenterPointInScreen(minimize_button()),
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+                                   base::Milliseconds(100), 3);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
 

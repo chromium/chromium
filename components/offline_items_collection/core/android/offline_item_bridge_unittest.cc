@@ -51,8 +51,7 @@ TEST_F(OfflineItemBridgeTest, OfflineItemSchedule) {
       env, j_test(), j_offline_item, true /*only_on_wifi*/, 0);
 
   // OfflineItemSchedule with specific start time.
-  auto start_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1));
+  auto start_time = base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
   item.schedule = absl::make_optional<OfflineItemSchedule>(
       false /*only_on_wifi*/, start_time);
   EXPECT_EQ(start_time, item.schedule->start_time);

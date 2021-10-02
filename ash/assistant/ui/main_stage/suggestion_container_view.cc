@@ -38,10 +38,8 @@ using assistant::util::CreateOpacityElement;
 using assistant::util::StartLayerAnimationSequence;
 
 // Animation.
-constexpr base::TimeDelta kChipFadeInDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kChipFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kChipFadeInDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kChipFadeOutDuration = base::Milliseconds(200);
 
 // Appearance.
 constexpr int kPreferredHeightDip = 48;

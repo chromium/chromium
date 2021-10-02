@@ -1299,13 +1299,13 @@ TEST_F(DragDropControllerTest, TouchDragDropCompletesOnFling) {
 
   DispatchGesture(ui::ET_GESTURE_LONG_PRESS, start);
   UpdateDragData();
-  timestamp += base::TimeDelta::FromMilliseconds(10);
+  timestamp += base::Milliseconds(10);
   ui::TouchEvent move1(ui::ET_TOUCH_MOVED, mid, timestamp,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator.Dispatch(&move1);
   // Doing two moves instead of one will guarantee to generate a fling at the
   // end.
-  timestamp += base::TimeDelta::FromMilliseconds(10);
+  timestamp += base::Milliseconds(10);
   ui::TouchEvent move2(ui::ET_TOUCH_MOVED, end, timestamp,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator.Dispatch(&move2);

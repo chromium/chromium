@@ -230,7 +230,7 @@ BluetoothDeviceChooserController::BluetoothDeviceChooserController(
       render_frame_host_(render_frame_host),
       discovery_session_timer_(
           FROM_HERE,
-          base::TimeDelta::FromSeconds(scan_duration_),
+          base::Seconds(scan_duration_),
           base::BindRepeating(
               &BluetoothDeviceChooserController::StopDeviceDiscovery,
               // base::Timer guarantees it won't call back after its

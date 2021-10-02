@@ -63,7 +63,7 @@ base::TimeDelta EpsilonDeadline() {
 #else
   const int64_t deadline = (tiny_timeout * 2) / 10;
 #endif
-  return base::TimeDelta::FromMicroseconds(deadline);
+  return base::Microseconds(deadline);
 }
 
 // TODO(rockot): There are many uses of ASSERT where EXPECT would be more

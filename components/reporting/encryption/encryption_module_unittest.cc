@@ -196,14 +196,14 @@ TEST_F(EncryptionModuleTest, PublicKeyUpdate) {
   ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
 
   // Simulate short wait. Key is still available and not needed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(8));
+  task_environment_.FastForwardBy(base::Hours(8));
   ASSERT_TRUE(encryption_module_->has_encryption_key());
   ASSERT_FALSE(encryption_module_->need_encryption_key());
   encrypted_result = EncryptSync(kTestString);
   ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
 
   // Simulate long wait. Key is still available, but is needed now.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   ASSERT_TRUE(encryption_module_->has_encryption_key());
   ASSERT_TRUE(encryption_module_->need_encryption_key());
   encrypted_result = EncryptSync(kTestString);

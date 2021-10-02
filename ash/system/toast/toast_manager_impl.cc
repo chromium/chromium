@@ -103,7 +103,7 @@ void ToastManagerImpl::ShowLatest() {
         FROM_HERE,
         base::BindOnce(&ToastManagerImpl::OnDurationPassed,
                        weak_ptr_factory_.GetWeakPtr(), serial_),
-        base::TimeDelta::FromMilliseconds(duration_ms));
+        base::Milliseconds(duration_ms));
   }
 }
 

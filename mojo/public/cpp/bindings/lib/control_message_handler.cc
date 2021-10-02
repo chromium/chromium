@@ -140,7 +140,7 @@ bool ControlMessageHandler::RunOrClosePipe(Message* message) {
   if (input.is_require_version())
     return interface_version_ >= input.get_require_version()->version;
   if (input.is_enable_idle_tracking()) {
-    return owner_->AcceptEnableIdleTracking(base::TimeDelta::FromMicroseconds(
+    return owner_->AcceptEnableIdleTracking(base::Microseconds(
         input.get_enable_idle_tracking()->timeout_in_microseconds));
   }
   if (input.is_message_ack())

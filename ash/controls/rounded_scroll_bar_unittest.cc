@@ -90,7 +90,7 @@ TEST_F(RoundedScrollBarTest, ScrollingShowsDefaultOpacity) {
 
 TEST_F(RoundedScrollBarTest, FadesAfterScroll) {
   scroll_bar_->ScrollByAmount(views::ScrollBar::ScrollAmount::kNextLine);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 0.f);
 }
 

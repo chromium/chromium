@@ -1049,26 +1049,26 @@ LoadTimingInfo NormalLoadTimingInfo(base::TimeTicks now,
   load_timing.socket_log_id = 1;
 
   if (used_proxy) {
-    load_timing.proxy_resolve_start = now + base::TimeDelta::FromDays(1);
-    load_timing.proxy_resolve_end = now + base::TimeDelta::FromDays(2);
+    load_timing.proxy_resolve_start = now + base::Days(1);
+    load_timing.proxy_resolve_end = now + base::Days(2);
   }
 
   LoadTimingInfo::ConnectTiming& connect_timing = load_timing.connect_timing;
   if (connect_time_flags & CONNECT_TIMING_HAS_DNS_TIMES) {
-    connect_timing.dns_start = now + base::TimeDelta::FromDays(3);
-    connect_timing.dns_end = now + base::TimeDelta::FromDays(4);
+    connect_timing.dns_start = now + base::Days(3);
+    connect_timing.dns_end = now + base::Days(4);
   }
-  connect_timing.connect_start = now + base::TimeDelta::FromDays(5);
+  connect_timing.connect_start = now + base::Days(5);
   if (connect_time_flags & CONNECT_TIMING_HAS_SSL_TIMES) {
-    connect_timing.ssl_start = now + base::TimeDelta::FromDays(6);
-    connect_timing.ssl_end = now + base::TimeDelta::FromDays(7);
+    connect_timing.ssl_start = now + base::Days(6);
+    connect_timing.ssl_end = now + base::Days(7);
   }
-  connect_timing.connect_end = now + base::TimeDelta::FromDays(8);
+  connect_timing.connect_end = now + base::Days(8);
 
-  load_timing.send_start = now + base::TimeDelta::FromDays(9);
-  load_timing.send_end = now + base::TimeDelta::FromDays(10);
-  load_timing.receive_headers_start = now + base::TimeDelta::FromDays(11);
-  load_timing.receive_headers_end = now + base::TimeDelta::FromDays(12);
+  load_timing.send_start = now + base::Days(9);
+  load_timing.send_end = now + base::Days(10);
+  load_timing.receive_headers_start = now + base::Days(11);
+  load_timing.receive_headers_end = now + base::Days(12);
   return load_timing;
 }
 
@@ -1080,14 +1080,14 @@ LoadTimingInfo NormalLoadTimingInfoReused(base::TimeTicks now,
   load_timing.socket_reused = true;
 
   if (used_proxy) {
-    load_timing.proxy_resolve_start = now + base::TimeDelta::FromDays(1);
-    load_timing.proxy_resolve_end = now + base::TimeDelta::FromDays(2);
+    load_timing.proxy_resolve_start = now + base::Days(1);
+    load_timing.proxy_resolve_end = now + base::Days(2);
   }
 
-  load_timing.send_start = now + base::TimeDelta::FromDays(9);
-  load_timing.send_end = now + base::TimeDelta::FromDays(10);
-  load_timing.receive_headers_start = now + base::TimeDelta::FromDays(11);
-  load_timing.receive_headers_end = now + base::TimeDelta::FromDays(12);
+  load_timing.send_start = now + base::Days(9);
+  load_timing.send_end = now + base::Days(10);
+  load_timing.receive_headers_start = now + base::Days(11);
+  load_timing.receive_headers_end = now + base::Days(12);
   return load_timing;
 }
 
@@ -1194,14 +1194,12 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyProxyResolution) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_DNS_TIMES, true);
-  job_load_timing.proxy_resolve_start = now - base::TimeDelta::FromDays(6);
-  job_load_timing.proxy_resolve_end = now - base::TimeDelta::FromDays(5);
-  job_load_timing.connect_timing.dns_start = now - base::TimeDelta::FromDays(4);
-  job_load_timing.connect_timing.dns_end = now - base::TimeDelta::FromDays(3);
-  job_load_timing.connect_timing.connect_start =
-      now - base::TimeDelta::FromDays(2);
-  job_load_timing.connect_timing.connect_end =
-      now - base::TimeDelta::FromDays(1);
+  job_load_timing.proxy_resolve_start = now - base::Days(6);
+  job_load_timing.proxy_resolve_end = now - base::Days(5);
+  job_load_timing.connect_timing.dns_start = now - base::Days(4);
+  job_load_timing.connect_timing.dns_end = now - base::Days(3);
+  job_load_timing.connect_timing.connect_start = now - base::Days(2);
+  job_load_timing.connect_timing.connect_end = now - base::Days(1);
 
   LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
       job_load_timing, default_context(), interceptor());
@@ -1231,8 +1229,8 @@ TEST_F(URLRequestLoadTimingTest,
        InterceptLoadTimingEarlyProxyResolutionReused) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing = NormalLoadTimingInfoReused(now, true);
-  job_load_timing.proxy_resolve_start = now - base::TimeDelta::FromDays(4);
-  job_load_timing.proxy_resolve_end = now - base::TimeDelta::FromDays(3);
+  job_load_timing.proxy_resolve_start = now - base::Days(4);
+  job_load_timing.proxy_resolve_end = now - base::Days(3);
 
   LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
       job_load_timing, default_context(), interceptor());
@@ -1256,12 +1254,10 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyConnect) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_SSL_TIMES, false);
-  job_load_timing.connect_timing.connect_start =
-      now - base::TimeDelta::FromDays(1);
-  job_load_timing.connect_timing.ssl_start = now - base::TimeDelta::FromDays(2);
-  job_load_timing.connect_timing.ssl_end = now - base::TimeDelta::FromDays(3);
-  job_load_timing.connect_timing.connect_end =
-      now - base::TimeDelta::FromDays(4);
+  job_load_timing.connect_timing.connect_start = now - base::Days(1);
+  job_load_timing.connect_timing.ssl_start = now - base::Days(2);
+  job_load_timing.connect_timing.ssl_end = now - base::Days(3);
+  job_load_timing.connect_timing.connect_end = now - base::Days(4);
 
   LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
       job_load_timing, default_context(), interceptor());
@@ -1290,10 +1286,8 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyConnectWithProxy) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_CONNECT_TIMES_ONLY, true);
-  job_load_timing.connect_timing.connect_start =
-      now - base::TimeDelta::FromDays(1);
-  job_load_timing.connect_timing.connect_end =
-      now - base::TimeDelta::FromDays(2);
+  job_load_timing.connect_timing.connect_start = now - base::Days(1);
+  job_load_timing.connect_timing.connect_end = now - base::Days(2);
 
   LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
       job_load_timing, default_context(), interceptor());
@@ -9759,7 +9753,7 @@ TEST_F(HTTPSRequestTest, HSTSPreservesPosts) {
 
   // Force https for www.somewhere.com.
   TransportSecurityState transport_security_state;
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   transport_security_state.AddHSTS("www.somewhere.com", expiry,
                                    include_subdomains);
@@ -9812,7 +9806,7 @@ TEST_F(HTTPSRequestTest, HSTSCrossOriginAddHeaders) {
   MockHostResolver host_resolver;
 
   TransportSecurityState transport_security_state;
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiry = base::Time::Now() + base::Days(1);
   bool include_subdomains = false;
   transport_security_state.AddHSTS("example.net", expiry, include_subdomains);
 

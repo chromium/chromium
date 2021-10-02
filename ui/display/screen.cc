@@ -82,7 +82,7 @@ bool Screen::IsScreenSaverActive() const {
 
 base::TimeDelta Screen::CalculateIdleTime() const {
   NOTIMPLEMENTED_LOG_ONCE();
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 gfx::Rect Screen::ScreenToDIPRectInWindow(gfx::NativeWindow window,

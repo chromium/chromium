@@ -36,25 +36,21 @@ namespace {
 
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 
-constexpr base::TimeDelta kMinumumTryAgainLaterDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMinumumTryAgainLaterDelay = base::Seconds(10);
 
 // The delay after which a StartCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
-constexpr base::TimeDelta kRetryStartCsrRequestDelay =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRetryStartCsrRequestDelay = base::Hours(1);
 // The delay after which a FinishCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
-constexpr base::TimeDelta kRetryFinishCsrRequestDelay =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRetryFinishCsrRequestDelay = base::Hours(1);
 // The delay after which a DownloadCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
 // Note: This request retry delay is more than other delays as a DownloadCsr
 // request may not only fail because of a DM server or a CES server problem but
 // also because of a problem with the Google Certificate Connecter which may
 // take more time to solve.
-constexpr base::TimeDelta kRetryDownloadCsrRequestDelay =
-    base::TimeDelta::FromHours(8);
+constexpr base::TimeDelta kRetryDownloadCsrRequestDelay = base::Hours(8);
 
 constexpr net::BackoffEntry::Policy kBackoffPolicy{
     /*num_errors_to_ignore=*/0,
@@ -792,7 +788,7 @@ bool CertProvisioningWorkerImpl::ProcessResponseErrors(
   }
 
   if (try_later.has_value()) {
-    ScheduleNextStep(base::TimeDelta::FromMilliseconds(try_later.value()));
+    ScheduleNextStep(base::Milliseconds(try_later.value()));
     return false;
   }
 

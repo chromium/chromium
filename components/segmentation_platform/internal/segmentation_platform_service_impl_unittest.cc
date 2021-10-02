@@ -59,7 +59,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   {
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = kTestSegmentationKey1;
-    config->segment_selection_ttl = base::TimeDelta::FromDays(28);
+    config->segment_selection_ttl = base::Days(28);
     config->segment_ids = {
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
@@ -68,7 +68,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   {
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = kTestSegmentationKey2;
-    config->segment_selection_ttl = base::TimeDelta::FromDays(10);
+    config->segment_selection_ttl = base::Days(10);
     config->segment_ids = {
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE};
@@ -77,7 +77,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   {
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = kTestSegmentationKey3;
-    config->segment_selection_ttl = base::TimeDelta::FromDays(14);
+    config->segment_selection_ttl = base::Days(14);
     config->segment_ids = {
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB};
     configs.push_back(std::move(config));

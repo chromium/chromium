@@ -61,7 +61,7 @@ void TestHttpServer::Stop() {
 }
 
 bool TestHttpServer::WaitForConnectionsToClose() {
-  return all_closed_event_.TimedWait(base::TimeDelta::FromSeconds(10));
+  return all_closed_event_.TimedWait(base::Seconds(10));
 }
 
 void TestHttpServer::SetRequestAction(WebSocketRequestAction action) {

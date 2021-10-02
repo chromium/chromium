@@ -18,7 +18,7 @@ namespace media {
 namespace {
 
 // Maximum time for buffering before we error out the stream.
-constexpr base::TimeDelta kBufferingTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kBufferingTimeout = base::Minutes(1);
 
 }  // namespace
 

@@ -3856,7 +3856,7 @@ class TestLayerAnimator : public ui::LayerAnimator {
 };
 
 TestLayerAnimator::TestLayerAnimator()
-    : ui::LayerAnimator(base::TimeDelta::FromMilliseconds(0)) {}
+    : ui::LayerAnimator(base::Milliseconds(0)) {}
 
 void TestLayerAnimator::SetBounds(const gfx::Rect& bounds) {
   last_bounds_ = bounds;

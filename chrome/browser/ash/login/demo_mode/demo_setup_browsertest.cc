@@ -438,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   // Advance time to make interval in between taps longer than expected by
   // multi-tap gesture detector.
-  SetFakeTimeForMultiTapDetector(kFakeTime +
-                                 base::TimeDelta::FromMilliseconds(500));
+  SetFakeTimeForMultiTapDetector(kFakeTime + base::Milliseconds(500));
 
   MultiTapOobeContainer(5);
   IsConfirmationDialogHidden();

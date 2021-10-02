@@ -247,8 +247,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
     header_entity_data.id =
         "FakeId:" + header_entity_data.client_tag_hash.value();
     header_entity_data.specifics = header_entity;
-    header_entity_data.creation_time =
-        time_now - base::TimeDelta::FromSeconds(index);
+    header_entity_data.creation_time = time_now - base::Seconds(index);
     header_entity_data.modification_time = header_entity_data.creation_time;
 
     syncer::UpdateResponseData header_update;

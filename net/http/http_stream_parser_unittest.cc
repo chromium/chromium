@@ -1700,13 +1700,13 @@ TEST(HttpStreamParser, NonInformationalResponseStart) {
 
   EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
               IsError(ERR_IO_PENDING));
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=1 --> seq=2] The parser reads the first fragment of the response
   // headers and then pauses to advance the mock clock.
   base::TimeTicks first_response_start_time = task_environment.NowTicks();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=3] The parser reads the second fragment of the response headers.
   sequenced_socket_data.Resume();
@@ -1797,7 +1797,7 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
   // response headers and then pauses to advance the mock clock.
   base::TimeTicks first_response_start_time = task_environment.NowTicks();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=3] The parser reads the second fragment of the informational response
   // headers.
@@ -1813,7 +1813,7 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
 
   // [seq=4] The parser pauses to advance the clock.
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=5 --> seq=6] The parser reads the first fragment of the
   // non-informational response headers and then pauses to advance the mock
@@ -1822,13 +1822,13 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
       task_environment.NowTicks();
   sequenced_socket_data.Resume();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=7] The parser reads the second fragment of the non-informational
   // response headers.
   sequenced_socket_data.Resume();
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // Check the received headers.
   EXPECT_EQ(200, response.headers->response_code());
@@ -1930,13 +1930,13 @@ TEST(HttpStreamParser, EarlyHints) {
   // response headers and then pauses to advance the mock clock.
   base::TimeTicks first_response_start_time = task_environment.NowTicks();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=3 --> seq=4] The parser reads the second fragment of the informational
   // response headers and then pauses to advance the mock clock.
   sequenced_socket_data.Resume();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=5] The parser reads the third fragment of the informational response
   // headers.
@@ -1952,7 +1952,7 @@ TEST(HttpStreamParser, EarlyHints) {
 
   // [seq=6] The parser pauses to advance the clock.
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=7 --> seq=8] The parser reads the first fragment of the
   // non-informational response headers and then pauses to advance the mock
@@ -1961,13 +1961,13 @@ TEST(HttpStreamParser, EarlyHints) {
       task_environment.NowTicks();
   sequenced_socket_data.Resume();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=9] The parser reads the second fragment of the non-informational
   // response headers.
   sequenced_socket_data.Resume();
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // Check the received headers.
   EXPECT_EQ(200, response.headers->response_code());
@@ -2061,7 +2061,7 @@ TEST(HttpStreamParser, MixedResponseHeaders) {
   // response headers and then pauses to advance the mock clock.
   base::TimeTicks first_response_start_time = task_environment.NowTicks();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=3] The parser reads the second fragment of the informational response
   // headers.
@@ -2081,7 +2081,7 @@ TEST(HttpStreamParser, MixedResponseHeaders) {
   base::TimeTicks non_informational_response_start_time =
       task_environment.NowTicks();
   sequenced_socket_data.RunUntilPaused();
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment.AdvanceClock(base::Seconds(1));
 
   // [seq=5] The parser reads the second fragment of the non-informational
   // response headers.

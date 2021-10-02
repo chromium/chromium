@@ -80,7 +80,7 @@ TEST_F(NotificationTriggerSchedulerTest,
       data2.profile_->GetStoragePartitionForUrl(GURL("http://example.com"));
 
   auto now = base::Time::Now();
-  auto delta = base::TimeDelta::FromSeconds(3);
+  auto delta = base::Seconds(3);
   data1.service_->ScheduleTrigger(now + delta);
   data2.service_->ScheduleTrigger(now + delta);
   base::RunLoop().RunUntilIdle();

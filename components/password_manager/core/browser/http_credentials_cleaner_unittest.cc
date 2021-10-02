@@ -256,8 +256,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
     auto password_store = base::MakeRefCounted<TestPasswordStore>();
     ASSERT_TRUE(password_store->Init(nullptr));
 
-    double last_time =
-        (base::Time::Now() - base::TimeDelta::FromMinutes(10)).ToDoubleT();
+    double last_time = (base::Time::Now() - base::Minutes(10)).ToDoubleT();
     if (should_start_clean_up) {
       // Simulate that the clean-up was performed
       // (HttpCredentialCleaner::kCleanUpDelayInDays + 1) days ago.
@@ -266,8 +265,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
       // |HttpCredentialCleaner::kCleanUpDelayInDays| days between two
       // clean-ups)
       last_time = (base::Time::Now() -
-                   base::TimeDelta::FromDays(
-                       HttpCredentialCleaner::kCleanUpDelayInDays + 1))
+                   base::Days(HttpCredentialCleaner::kCleanUpDelayInDays + 1))
                       .ToDoubleT();
     }
 

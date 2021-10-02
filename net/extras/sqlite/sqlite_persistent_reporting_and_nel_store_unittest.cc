@@ -42,7 +42,7 @@ const std::string kHeader = "{\"report_to\":\"group\",\"max_age\":86400}";
 const std::string kHeaderMaxAge0 = "{\"report_to\":\"group\",\"max_age\":0}";
 const std::string kGroupName1 = "group1";
 const std::string kGroupName2 = "group2";
-const base::Time kExpires = base::Time::Now() + base::TimeDelta::FromDays(7);
+const base::Time kExpires = base::Time::Now() + base::Days(7);
 
 enum class Op { kAdd, kDelete, kUpdate, kUpdateDetails };
 
@@ -171,7 +171,7 @@ class SQLitePersistentReportingAndNelStoreTest
 
   bool WithinOneMicrosecond(base::Time t1, base::Time t2) {
     base::TimeDelta delta = t1 - t2;
-    return delta.magnitude() < base::TimeDelta::FromMicroseconds(1);
+    return delta.magnitude() < base::Microseconds(1);
   }
 
   void WaitOnEvent(base::WaitableEvent* event) {
@@ -377,7 +377,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, UpdateNelPolicyAccessTime) {
       kNik1_, url::Origin::Create(GURL("https://www.foo.test")), now);
   store_->AddNelPolicy(policy);
 
-  policy.last_used = now + base::TimeDelta::FromDays(1);
+  policy.last_used = now + base::Days(1);
   store_->UpdateNelPolicyAccessTime(policy);
 
   // Close and reopen the database.
@@ -436,7 +436,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   CreateStore();
   InitializeStore();
   base::Time now = base::Time::Now();
-  base::Time later = now + base::TimeDelta::FromDays(1);
+  base::Time later = now + base::Days(1);
 
   // Add 3 entries, 2 identical except for NIK, 2 identical except for origin.
   // Entries should not conflict with each other. These are added in lexical
@@ -708,7 +708,7 @@ class SQLitePersistNelTest : public SQLitePersistentReportingAndNelStoreTest {
     details.server_ip = kServerIP;
     details.method = "GET";
     details.status_code = 0;
-    details.elapsed_time = base::TimeDelta::FromSeconds(1);
+    details.elapsed_time = base::Seconds(1);
     details.type = error_type;
     details.reporting_upload_depth = 0;
 
@@ -775,7 +775,7 @@ TEST_F(SQLitePersistNelTest, ExpirationTimeIsPersisted) {
   RunUntilIdle();
 
   // Makes the policy we just added expired.
-  clock_.Advance(base::TimeDelta::FromSeconds(86401));
+  clock_.Advance(base::Seconds(86401));
 
   SimulateRestart();
 
@@ -806,7 +806,7 @@ TEST_F(SQLitePersistNelTest, OnRequestUpdatesAccessTime) {
   SimulateRestart();
 
   // Update the access time by sending a request.
-  clock_.Advance(base::TimeDelta::FromSeconds(100));
+  clock_.Advance(base::Seconds(100));
   service_->OnRequest(MakeRequestDetails(kNik1_, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
@@ -960,7 +960,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 
   store_->AddReportingEndpointGroup(group);
 
-  group.last_used = now + base::TimeDelta::FromDays(1);
+  group.last_used = now + base::Days(1);
   store_->UpdateReportingEndpointGroupAccessTime(group);
 
   // Close and reopen the database.
@@ -1020,8 +1020,8 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 
   store_->AddReportingEndpointGroup(group);
 
-  group.last_used = now + base::TimeDelta::FromDays(1);
-  group.expires = kExpires + base::TimeDelta::FromDays(1);
+  group.last_used = now + base::Days(1);
+  group.expires = kExpires + base::Days(1);
   group.include_subdomains = OriginSubdomains::INCLUDE;
   store_->UpdateReportingEndpointGroupDetails(group);
 
@@ -1191,7 +1191,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   InitializeStore();
 
   base::Time now = base::Time::Now();
-  base::Time later = now + base::TimeDelta::FromDays(7);
+  base::Time later = now + base::Days(7);
 
   // Add 3 entries, 2 identical except for NIK, 2 identical except for origin.
   // Entries should not conflict with each other. These are added in lexical

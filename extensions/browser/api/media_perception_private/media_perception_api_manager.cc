@@ -393,7 +393,7 @@ void MediaPerceptionAPIManager::UpstartStartProcessCallback(
       FROM_HERE,
       base::BindOnce(&MediaPerceptionAPIManager::SendMojoInvitation,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kStartupDelayMs));
+      base::Milliseconds(kStartupDelayMs));
 }
 
 void MediaPerceptionAPIManager::SendMojoInvitation(

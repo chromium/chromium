@@ -192,7 +192,7 @@ TEST_P(IdleTrackingTest, NonZeroTimeout) {
   Remote<mojom::TestService> remote;
   TestServiceImpl impl(remote.BindNewPipeAndPassReceiver());
 
-  constexpr auto kTimeout = base::TimeDelta::FromMilliseconds(500);
+  constexpr auto kTimeout = base::Milliseconds(500);
   base::ElapsedTimer timer;
   base::RunLoop loop;
   remote.set_idle_handler(kTimeout, base::BindLambdaForTesting([&] {

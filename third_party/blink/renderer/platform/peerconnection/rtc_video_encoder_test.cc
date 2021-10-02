@@ -649,7 +649,7 @@ TEST_F(RTCVideoEncoderTest, EncodeFrameWithAdapter) {
   // encoder.
   frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth * 2, kInputFrameHeight * 2));
-  frame->set_timestamp(base::TimeDelta::FromMilliseconds(123456));
+  frame->set_timestamp(base::Milliseconds(123456));
   frame_adapter = new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
       frame, std::vector<scoped_refptr<media::VideoFrame>>(),
       new WebRtcVideoFrameAdapter::SharedResources(nullptr));

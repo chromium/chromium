@@ -148,7 +148,7 @@ class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
     SiteIsolationPolicy::PersistIsolatedOrigin(
         browser_context(), url::Origin::Create(GURL(origin)),
         IsolatedOriginSource::WEB_TRIGGERED);
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    task_environment()->FastForwardBy(base::Milliseconds(1));
   }
 
   std::vector<std::string> GetStoredOrigins() {
@@ -287,8 +287,7 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, Expiration) {
   base::TimeDelta default_timeout =
       ::features::kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam
           .default_value;
-  task_environment()->FastForwardBy(default_timeout +
-                                    base::TimeDelta::FromDays(1));
+  task_environment()->FastForwardBy(default_timeout + base::Days(1));
 
   // foo1.com and foo2.com should still be in prefs. (Expired entries are only
   // removed when we try to load them from prefs.)

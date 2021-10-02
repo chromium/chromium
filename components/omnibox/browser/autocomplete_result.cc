@@ -493,9 +493,9 @@ void AutocompleteResult::ConvertOpenTabMatches(
   }
 
   base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Omnibox.TabMatchTime", time_delta, base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(5), 50);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Omnibox.TabMatchTime", time_delta,
+                                          base::Microseconds(1),
+                                          base::Milliseconds(5), 50);
 }
 
 bool AutocompleteResult::HasCopiedMatches() const {

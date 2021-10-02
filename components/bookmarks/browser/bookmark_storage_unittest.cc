@@ -48,12 +48,12 @@ TEST(BookmarkStorageTest, ShouldSaveFileToDiskAfterDelay) {
 
   // Advance clock until immediately before saving takes place.
   task_environment.FastForwardBy(BookmarkStorage::kSaveDelay -
-                                 base::TimeDelta::FromMilliseconds(10));
+                                 base::Milliseconds(10));
   EXPECT_TRUE(storage.HasScheduledSaveForTesting());
   EXPECT_FALSE(base::PathExists(temp_dir.GetPath().Append(kBookmarksFileName)));
 
   // Advance clock past the saving moment.
-  task_environment.FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment.FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(storage.HasScheduledSaveForTesting());
   EXPECT_TRUE(base::PathExists(temp_dir.GetPath().Append(kBookmarksFileName)));
 }

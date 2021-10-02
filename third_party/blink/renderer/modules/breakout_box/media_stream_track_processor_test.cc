@@ -181,7 +181,7 @@ TEST_F(MediaStreamTrackProcessorTest, AudioDataAreExposed) {
   pushable_source_ptr->PushAudioData(media::AudioBuffer::CreateEmptyBuffer(
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
       /*sample_rate=*/8000,
-      /*frame_count=*/100, base::TimeDelta::FromSeconds(1)));
+      /*frame_count=*/100, base::Seconds(1)));
 
   ScriptPromiseTester read_tester(script_state,
                                   reader->read(script_state, exception_state));

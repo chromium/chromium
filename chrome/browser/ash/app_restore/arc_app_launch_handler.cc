@@ -56,11 +56,10 @@ constexpr int kMaxCheckingNum = 3;
 
 // Time interval between each checking for the app launching condition, e.g. the
 // memory pressure level, or whether the app is ready.
-constexpr base::TimeDelta kAppLaunchCheckingDelay =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kAppLaunchCheckingDelay = base::Seconds(1);
 
 // Delay between each app launching.
-constexpr base::TimeDelta kAppLaunchDelay = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kAppLaunchDelay = base::Seconds(3);
 
 constexpr int kCpuUsageRefreshIntervalInSeconds = 1;
 
@@ -761,8 +760,7 @@ int ArcAppLaunchHandler::GetCpuUsageRate() {
 
 void ArcAppLaunchHandler::StartCpuUsageCount() {
   cpu_tick_count_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kCpuUsageRefreshIntervalInSeconds),
+      FROM_HERE, base::Seconds(kCpuUsageRefreshIntervalInSeconds),
       base::BindRepeating(&ArcAppLaunchHandler::UpdateCpuUsage,
                           weak_ptr_factory_.GetWeakPtr()));
 }

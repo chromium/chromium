@@ -204,7 +204,7 @@ static const float minScaleDifference = 0.01f;
 static const float doubleTapZoomContentDefaultMargin = 5;
 static const float doubleTapZoomContentMinimumMargin = 2;
 static constexpr base::TimeDelta kDoubleTapZoomAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 static const float doubleTapZoomAlreadyLegibleRatio = 1.2f;
 
 static constexpr base::TimeDelta kFindInPageAnimationDuration;
@@ -215,7 +215,7 @@ static const float viewportAnchorCoordY = 0;
 
 // Constants for zooming in on a focused text field.
 static constexpr base::TimeDelta kScrollAndScaleAnimationDuration =
-    base::TimeDelta::FromMicroseconds(200);
+    base::Microseconds(200);
 static const int minReadableCaretHeight = 16;
 static const int minReadableCaretHeightForTextArea = 13;
 static const float minScaleChangeToTriggerZoom = 1.5f;
@@ -3217,7 +3217,7 @@ void WebViewImpl::UpdateRendererPreferences(
   blink::SetCaretBlinkInterval(
       renderer_preferences_.caret_blink_interval.has_value()
           ? renderer_preferences_.caret_blink_interval.value()
-          : base::TimeDelta::FromMilliseconds(
+          : base::Milliseconds(
                 mojom::blink::kDefaultCaretBlinkIntervalInMilliseconds));
 
 #if defined(USE_AURA)

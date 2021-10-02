@@ -124,30 +124,28 @@ class AverageLagTrackerTest : public testing::Test {
 };
 
 base::TimeTicks MillisecondsToTimeTicks(float t_ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(t_ms);
+  return base::TimeTicks() + base::Milliseconds(t_ms);
 }
 
 // Simulate a simple situation that events at every 10ms and start at t=15ms,
 // frame swaps at every 10ms too and start at t=20ms and test we record one
 // UMA for ScrollUpdate in one second.
 TEST_F(AverageLagTrackerTest, OneSecondInterval) {
-  base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(5);
-  base::TimeTicks frame_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(10);
+  base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(5);
+  base::TimeTicks frame_time = base::TimeTicks() + base::Milliseconds(10);
   float scroll_delta = 10;
 
   // ScrollBegin
-  event_time += base::TimeDelta::FromMilliseconds(10);  // 15ms
-  frame_time += base::TimeDelta::FromMilliseconds(10);  // 20ms
+  event_time += base::Milliseconds(10);  // 15ms
+  frame_time += base::Milliseconds(10);  // 20ms
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
 
   // Send 101 ScrollUpdate events to verify that there is 1 AverageLag record
   // per 1 second.
   const int kUpdates = 101;
   for (int i = 0; i < kUpdates; i++) {
-    event_time += base::TimeDelta::FromMilliseconds(10);
-    frame_time += base::TimeDelta::FromMilliseconds(10);
+    event_time += base::Milliseconds(10);
+    frame_time += base::Milliseconds(10);
     // First 50 has positive delta, others negetive delta.
     const int sign = (i < kUpdates / 2) ? 1 : -1;
     SyntheticTouchScrollUpdate(event_time, frame_time, sign * scroll_delta);
@@ -156,10 +154,8 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   // ScrollBegin report_time is at 20ms, so the next ScrollUpdate report_time is
   // at 1020ms. The last event_time that finish this report should be later than
   // 1020ms.
-  EXPECT_EQ(event_time,
-            base::TimeTicks() + base::TimeDelta::FromMilliseconds(1025));
-  EXPECT_EQ(frame_time,
-            base::TimeTicks() + base::TimeDelta::FromMilliseconds(1030));
+  EXPECT_EQ(event_time, base::TimeTicks() + base::Milliseconds(1025));
+  EXPECT_EQ(frame_time, base::TimeTicks() + base::Milliseconds(1030));
 
   // ScrollBegin AverageLag are the area between the event original component
   // (time=15ms, delta=10px) to the frame swap time (time=20ms, expect finger
@@ -180,8 +176,8 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   ResetHistograms();
 
   // Send another ScrollBegin to end the unfinished ScrollUpdate report.
-  event_time += base::TimeDelta::FromMilliseconds(10);
-  frame_time += base::TimeDelta::FromMilliseconds(10);
+  event_time += base::Milliseconds(10);
+  frame_time += base::Milliseconds(10);
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
 
   // The last ScrollUpdate's lag is 8.75px and truncated to 8.
@@ -196,8 +192,7 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
 // event is at t=20ms).
 TEST_F(AverageLagTrackerTest, LargerLatency) {
   base::TimeTicks event_time = MillisecondsToTimeTicks(10);
-  base::TimeTicks frame_time =
-      event_time + base::TimeDelta::FromMilliseconds(20);
+  base::TimeTicks frame_time = event_time + base::Milliseconds(20);
   float scroll_delta = 10;
 
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
@@ -205,8 +200,8 @@ TEST_F(AverageLagTrackerTest, LargerLatency) {
   // Send 2 ScrollUpdate. The second one will record AverageLag.ScrollBegin as
   // it's event_time is larger or equal to ScrollBegin's frame_time.
   for (int i = 0; i < 2; i++) {
-    event_time += base::TimeDelta::FromMilliseconds(10);
-    frame_time = event_time + base::TimeDelta::FromMilliseconds(20);
+    event_time += base::Milliseconds(10);
+    frame_time = event_time + base::Milliseconds(20);
     SyntheticTouchScrollUpdate(event_time, frame_time, scroll_delta);
   }
 

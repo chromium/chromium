@@ -220,7 +220,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
     // has been released; poll for changes instead.
 #if defined(OS_MAC)
     polling_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+        FROM_HERE, base::Milliseconds(100),
         base::BindRepeating(&TestKeepAliveStateObserver::PollKeepAlive,
                             base::Unretained(this)));
 #endif
@@ -255,7 +255,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Error) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
   ScopedNativeMessagingErrorTimeoutOverrideForTest error_timeout_override(
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
       profile()->GetPath());

@@ -66,15 +66,14 @@ const int kAnimationDurationForBubblePopupMs = 200;
 
 // Duration of opacity animation for visibility changes.
 constexpr base::TimeDelta kAnimationDurationForVisibilityMs =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // Duration of opacity animation for hide animation.
-constexpr base::TimeDelta kAnimationDurationForHideMs =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kAnimationDurationForHideMs = base::Milliseconds(100);
 
 // Bounce animation constants
 const base::TimeDelta kAnimationDurationForBounceElement =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 const int kAnimationBounceUpDistance = 16;
 const int kAnimationBounceDownDistance = 8;
 const float kAnimationBounceScaleFactor = 0.5;
@@ -82,8 +81,7 @@ const float kAnimationBounceScaleFactor = 0.5;
 // When becoming visible delay the animation so that StatusAreaWidgetDelegate
 // can animate sibling views out of the position to be occupied by the
 // TrayBackgroundView.
-const base::TimeDelta kShowAnimationDelayMs =
-    base::TimeDelta::FromMilliseconds(100);
+const base::TimeDelta kShowAnimationDelayMs = base::Milliseconds(100);
 
 // Switches left and right insets if RTL mode is active.
 void MirrorInsetsIfNecessary(gfx::Insets* insets) {
@@ -304,8 +302,7 @@ void TrayBackgroundView::InitializeBubbleAnimations(
       window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
   ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_HIDE);
   ::wm::SetWindowVisibilityAnimationDuration(
-      window,
-      base::TimeDelta::FromMilliseconds(kAnimationDurationForBubblePopupMs));
+      window, base::Milliseconds(kAnimationDurationForBubblePopupMs));
 }
 
 void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {

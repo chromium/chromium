@@ -20,7 +20,7 @@ namespace bluetooth {
 
 class BleNotificationLogger : public GattClientManager::Observer {
  public:
-  static constexpr auto kMinLogInterval = base::TimeDelta::FromMinutes(1);
+  static constexpr auto kMinLogInterval = base::Minutes(1);
 
   explicit BleNotificationLogger(GattClientManager* gcm);
 

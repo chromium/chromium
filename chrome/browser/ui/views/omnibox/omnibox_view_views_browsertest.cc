@@ -124,10 +124,8 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
     if (press_location == release_location) {
       generator.GestureTapAt(press_location);
     } else {
-      generator.GestureScrollSequence(press_location,
-                                      release_location,
-                                      base::TimeDelta::FromMilliseconds(10),
-                                      1);
+      generator.GestureScrollSequence(press_location, release_location,
+                                      base::Milliseconds(10), 1);
     }
   }
 

@@ -624,7 +624,7 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnSuccess) {
   ASSERT_EQ(ProfileHelper::GetLockScreenAppProfilePath(),
             profile_manager()->pending_profile_creation()->path());
 
-  tick_clock()->Advance(base::TimeDelta::FromMilliseconds(20));
+  tick_clock()->Advance(base::Milliseconds(20));
 
   ASSERT_TRUE(profile_manager()
                   ->pending_profile_creation()
@@ -633,8 +633,8 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnSuccess) {
   EXPECT_TRUE(callback_run);
 
   histogram_tester->ExpectTimeBucketCount(
-      "Apps.LockScreen.AppsProfile.Creation.Duration",
-      base::TimeDelta::FromMilliseconds(20), 1);
+      "Apps.LockScreen.AppsProfile.Creation.Duration", base::Milliseconds(20),
+      1);
   histogram_tester->ExpectUniqueSample(
       "Apps.LockScreen.AppsProfile.Creation.Success", 1, 1);
 }
@@ -659,7 +659,7 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnFailure) {
   ASSERT_EQ(ProfileHelper::GetLockScreenAppProfilePath(),
             profile_manager()->pending_profile_creation()->path());
 
-  tick_clock()->Advance(base::TimeDelta::FromMilliseconds(20));
+  tick_clock()->Advance(base::Milliseconds(20));
 
   ASSERT_TRUE(profile_manager()
                   ->pending_profile_creation()

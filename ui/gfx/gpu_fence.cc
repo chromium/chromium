@@ -79,7 +79,7 @@ GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
     LOG(ERROR) << "No timestamp provided from sync_pt_info for fd : " << fd;
     return FenceStatus::kInvalid;
   }
-  *time = base::TimeTicks() + base::TimeDelta::FromNanoseconds(timestamp_ns);
+  *time = base::TimeTicks() + base::Nanoseconds(timestamp_ns);
   return FenceStatus::kSignaled;
 #endif
   NOTREACHED();

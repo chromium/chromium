@@ -213,8 +213,7 @@ void RecordProgressEventTimerState(ProgressEventTimerState state) {
   UMA_HISTOGRAM_ENUMERATION("Media.ProgressEventTimerState", state);
 }
 
-static const base::TimeDelta kStalledNotificationInterval =
-    base::TimeDelta::FromSeconds(3);
+static const base::TimeDelta kStalledNotificationInterval = base::Seconds(3);
 
 void ReportContentTypeResultToUMA(String content_type,
                                   MIMETypeRegistry::SupportsType result) {
@@ -1661,8 +1660,7 @@ void HTMLMediaElement::StartProgressEventTimer() {
 
   previous_progress_time_ = base::ElapsedTimer();
   // 350ms is not magic, it is in the spec!
-  progress_event_timer_.StartRepeating(base::TimeDelta::FromMilliseconds(350),
-                                       FROM_HERE);
+  progress_event_timer_.StartRepeating(base::Milliseconds(350), FROM_HERE);
 }
 
 void HTMLMediaElement::WaitForSourceChange() {
@@ -2950,7 +2948,7 @@ double HTMLMediaElement::EffectiveMediaVolume() const {
 // The spec says to fire periodic timeupdate events (those sent while playing)
 // every "15 to 250ms", we choose the slowest frequency
 static const base::TimeDelta kMaxTimeupdateEventFrequency =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 void HTMLMediaElement::StartPlaybackProgressTimer() {
   if (playback_progress_timer_.IsActive())
@@ -4574,8 +4572,7 @@ void HTMLMediaElement::DidBufferUnderflow() {
 void HTMLMediaElement::DidSeek() {
   // Send the seek updates to the browser process only once per second.
   if (last_seek_update_time_.is_null() ||
-      (base::TimeTicks::Now() - last_seek_update_time_ >=
-       base::TimeDelta::FromSeconds(1))) {
+      (base::TimeTicks::Now() - last_seek_update_time_ >= base::Seconds(1))) {
     last_seek_update_time_ = base::TimeTicks::Now();
     for (auto& observer : media_player_observer_remote_set_->Value())
       observer->OnSeek();

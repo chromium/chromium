@@ -21,8 +21,7 @@ int64_t FromTimeToMilliseconds(base::Time time) {
 
 // Converts a time stamp in milliseconds to base::Time.
 base::Time FromMillisecondsToTime(int64_t time_ms) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(time_ms));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Milliseconds(time_ms));
 }
 
 }  // namespace

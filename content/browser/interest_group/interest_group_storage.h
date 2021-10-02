@@ -32,20 +32,16 @@ namespace content {
 // within the same sequence.
 class CONTENT_EXPORT InterestGroupStorage {
  public:
-  static constexpr base::TimeDelta kHistoryLength =
-      base::TimeDelta::FromDays(30);
-  static constexpr base::TimeDelta kMaintenanceInterval =
-      base::TimeDelta::FromHours(1);
-  static constexpr base::TimeDelta kIdlePeriod =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kHistoryLength = base::Days(30);
+  static constexpr base::TimeDelta kMaintenanceInterval = base::Hours(1);
+  static constexpr base::TimeDelta kIdlePeriod = base::Seconds(30);
   // After a successful interest group update, delay the next update until
   // kUpdateSucceededBackoffPeriod time has passed.
   static constexpr base::TimeDelta kUpdateSucceededBackoffPeriod =
-      base::TimeDelta::FromDays(1);
+      base::Days(1);
   // After a failed interest group update, delay the next update until
   // kUpdateFailedBackoffPeriod time has passed.
-  static constexpr base::TimeDelta kUpdateFailedBackoffPeriod =
-      base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kUpdateFailedBackoffPeriod = base::Hours(1);
 
   // Constructs an interest group storage based on a SQLite database in the
   // `path`/InterestGroups file. If the path passed in is empty, then the

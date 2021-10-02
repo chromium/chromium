@@ -148,7 +148,7 @@ TEST_F(SiteDataImplTest, BasicTestEndToEnd) {
   // Advance the clock by a time lower than the minimum observation time for
   // the audio feature.
   AdvanceClock(SiteDataImpl::GetFeatureObservationWindowLengthForTesting() -
-               base::TimeDelta::FromSeconds(1));
+               base::Seconds(1));
 
   // The audio feature usage is still unknown as the observation window hasn't
   // expired.
@@ -203,20 +203,20 @@ TEST_F(SiteDataImplTest, LastLoadedTime) {
   base::TimeDelta last_loaded_time =
       local_site_data->last_loaded_time_for_testing();
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // Loading the site a second time shouldn't change the last loaded time.
   local_site_data2->NotifySiteLoaded();
   EXPECT_EQ(last_loaded_time, local_site_data2->last_loaded_time_for_testing());
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // Unloading the site shouldn't update the last loaded time as there's still
   // a loaded instance.
   local_site_data2->NotifySiteUnloaded(TabVisibility::kForeground);
   EXPECT_EQ(last_loaded_time, local_site_data->last_loaded_time_for_testing());
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   local_site_data->NotifySiteUnloaded(TabVisibility::kForeground);
   EXPECT_NE(last_loaded_time, local_site_data->last_loaded_time_for_testing());
@@ -231,7 +231,7 @@ TEST_F(SiteDataImplTest, GetFeatureUsageForUnloadedSite) {
   local_site_data->NotifyUsesAudioInBackground();
 
   AdvanceClock(SiteDataImpl::GetFeatureObservationWindowLengthForTesting() -
-               base::TimeDelta::FromSeconds(1));
+               base::Seconds(1));
   EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
             local_site_data->UsesAudioInBackground());
   EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
@@ -252,7 +252,7 @@ TEST_F(SiteDataImplTest, GetFeatureUsageForUnloadedSite) {
 
   // Advancing the clock shouldn't affect the observation duration for this
   // feature.
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ(observation_duration_before_unload,
             local_site_data->FeatureObservationDuration(
                 local_site_data->site_characteristics_for_testing()
@@ -263,7 +263,7 @@ TEST_F(SiteDataImplTest, GetFeatureUsageForUnloadedSite) {
   local_site_data->NotifySiteLoaded();
   local_site_data->NotifyLoadedSiteBackgrounded();
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
             local_site_data->UsesAudioInBackground());
@@ -279,7 +279,7 @@ TEST_F(SiteDataImplTest, AllDurationGetSavedOnUnload) {
   auto local_site_data =
       GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
 
-  const base::TimeDelta kInterval = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kInterval = base::Seconds(1);
   const auto kIntervalInternalRepresentation =
       TestSiteDataImpl::TimeDeltaToInternalRepresentation(kInterval);
   const auto kZeroIntervalInternalRepresentation =
@@ -374,18 +374,16 @@ TEST_F(SiteDataImplTest, OnInitCallbackMergePreviousObservations) {
 
   // Unload the site and save the last loaded time to make sure the
   // initialization doesn't overwrite it.
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   local_site_data->NotifySiteUnloaded(TabVisibility::kBackground);
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   auto last_loaded = local_site_data->last_loaded_time_for_testing();
 
   // Add a couple of performance samples.
   local_site_data->NotifyLoadTimePerformanceMeasurement(
-      base::TimeDelta::FromMicroseconds(100),
-      base::TimeDelta::FromMicroseconds(1000), 2000u);
+      base::Microseconds(100), base::Microseconds(1000), 2000u);
   local_site_data->NotifyLoadTimePerformanceMeasurement(
-      base::TimeDelta::FromMicroseconds(200),
-      base::TimeDelta::FromMicroseconds(500), 1000u);
+      base::Microseconds(200), base::Microseconds(500), 1000u);
 
   // Make sure the local performance samples are averaged as expected.
   EXPECT_EQ(2U, local_site_data->load_duration().num_datums());
@@ -535,7 +533,7 @@ TEST_F(SiteDataImplTest, BackgroundedCountTests) {
   EXPECT_EQ(0U, local_site_data->loaded_tabs_in_background_count_for_testing());
 
   local_site_data->NotifySiteLoaded();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   local_site_data->NotifyLoadedSiteBackgrounded();
 
   auto background_session_begin =
@@ -544,7 +542,7 @@ TEST_F(SiteDataImplTest, BackgroundedCountTests) {
 
   EXPECT_EQ(1U, local_site_data->loaded_tabs_in_background_count_for_testing());
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // Add a second instance of this object, this one pretending to be in
   // foreground.
@@ -555,7 +553,7 @@ TEST_F(SiteDataImplTest, BackgroundedCountTests) {
   EXPECT_EQ(background_session_begin,
             local_site_data->background_session_begin_for_testing());
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   local_site_data->NotifyLoadedSiteForegrounded();
   EXPECT_EQ(0U, local_site_data->loaded_tabs_in_background_count_for_testing());
@@ -570,7 +568,7 @@ TEST_F(SiteDataImplTest, BackgroundedCountTests) {
 
   EXPECT_EQ(expected_observation_duration, observed_observation_duration);
 
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   local_site_data->NotifyLoadedSiteBackgrounded();
   EXPECT_EQ(1U, local_site_data->loaded_tabs_in_background_count_for_testing());
@@ -633,9 +631,9 @@ TEST_F(SiteDataImplTest, FlushingStateToProtoDoesntAffectData) {
   local_site_data_ref->NotifySiteLoaded();
   local_site_data_ref->NotifyLoadedSiteBackgrounded();
 
-  AdvanceClock(base::TimeDelta::FromSeconds(15));
+  AdvanceClock(base::Seconds(15));
   local_site_data->FlushStateToProto();
-  AdvanceClock(base::TimeDelta::FromSeconds(15));
+  AdvanceClock(base::Seconds(15));
 
   local_site_data->NotifyUsesAudioInBackground();
   local_site_data_ref->NotifyUsesAudioInBackground();

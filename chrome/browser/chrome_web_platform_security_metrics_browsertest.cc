@@ -103,7 +103,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
       if (count == expected_count)
         return;
 
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+      base::PlatformThread::Sleep(base::Milliseconds(5));
     }
   }
 

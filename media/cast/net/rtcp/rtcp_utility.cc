@@ -252,8 +252,8 @@ bool RtcpParser::ParseCastReceiverLogFrameItem(
       return false;
 
     // We have 24 LSB of the event timestamp base on the wire.
-    base::TimeTicks event_timestamp_base = base::TimeTicks() +
-        base::TimeDelta::FromMilliseconds(data & 0xffffff);
+    base::TimeTicks event_timestamp_base =
+        base::TimeTicks() + base::Milliseconds(data & 0xffffff);
 
     size_t num_events = 1 + static_cast<uint8_t>(data >> 24);
 
@@ -272,13 +272,12 @@ bool RtcpParser::ParseCastReceiverLogFrameItem(
           static_cast<uint8_t>(event_type_and_timestamp_delta >> 12));
       event_log.event_timestamp =
           event_timestamp_base +
-          base::TimeDelta::FromMilliseconds(
-              event_type_and_timestamp_delta & 0xfff);
+          base::Milliseconds(event_type_and_timestamp_delta & 0xfff);
       if (event_log.type == PACKET_RECEIVED) {
         event_log.packet_id = delay_delta_or_packet_id;
       } else {
-        event_log.delay_delta = base::TimeDelta::FromMilliseconds(
-            static_cast<int16_t>(delay_delta_or_packet_id));
+        event_log.delay_delta =
+            base::Milliseconds(static_cast<int16_t>(delay_delta_or_packet_id));
       }
       frame_log.event_log_messages_.push_back(event_log);
     }
@@ -526,9 +525,9 @@ base::TimeTicks ConvertNtpToTimeTicks(uint32_t ntp_seconds,
       ntp_seconds * base::Time::kMicrosecondsPerSecond +
       static_cast<int64_t>(std::ceil(ntp_fractions / kMagicFractionalUnit));
 
-  base::TimeDelta elapsed_since_unix_epoch = base::TimeDelta::FromMicroseconds(
-      ntp_time_us -
-      (kUnixEpochInNtpSeconds * base::Time::kMicrosecondsPerSecond));
+  base::TimeDelta elapsed_since_unix_epoch =
+      base::Microseconds(ntp_time_us - (kUnixEpochInNtpSeconds *
+                                        base::Time::kMicrosecondsPerSecond));
   return base::TimeTicks::UnixEpoch() + elapsed_since_unix_epoch;
 }
 

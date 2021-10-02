@@ -40,8 +40,8 @@ const char kLargeBlobsKey[] = "largeBlobs";
 const char kAlwaysUvKey[] = "alwaysUv";
 const char kMakeCredUvNotRqdKey[] = "makeCredUvNotRqd";
 
-const base::TimeDelta kDeviceTimeout = base::TimeDelta::FromSeconds(20);
-const base::TimeDelta kU2fRetryDelay = base::TimeDelta::FromMilliseconds(200);
+const base::TimeDelta kDeviceTimeout = base::Seconds(20);
+const base::TimeDelta kU2fRetryDelay = base::Milliseconds(200);
 
 const char kFormatKey[] = "fmt";
 const char kAttestationStatementKey[] = "attStmt";
@@ -76,7 +76,6 @@ const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
 
-const base::TimeDelta kBleDevicePairingModeWaitingInterval =
-    base::TimeDelta::FromSeconds(2);
+const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 
 }  // namespace device

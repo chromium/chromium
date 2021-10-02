@@ -64,7 +64,7 @@ base::Time ConvertToBaseTime(uint64_t time) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       // Use FromDeltaSinceWindowsEpoch because create_time_us has
       // always used the Windows epoch.
-      base::TimeDelta::FromMicroseconds(time));
+      base::Microseconds(time));
 }
 
 PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
@@ -90,7 +90,7 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
     // For legacy passwords that don't have the |date_last_used| field set, we
     // should it similar to the logic in login database migration.
     password.date_last_used =
-        base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1));
+        base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
   }
   password.date_password_modified = ConvertToBaseTime(
       password_data.has_date_password_modified_windows_epoch_micros()

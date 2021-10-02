@@ -59,8 +59,7 @@ namespace {
 
 constexpr char kDMToken[] = "dm_token";
 constexpr char kClientId[] = "client_id";
-constexpr base::TimeDelta kDefaultUploadInterval =
-    base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kDefaultUploadInterval = base::Hours(24);
 
 #if !defined(OS_ANDROID)
 constexpr char kUploadTriggerMetricName[] =
@@ -428,7 +427,7 @@ TEST_P(ReportSchedulerFeatureTest, NoReportGenerate) {
 }
 
 TEST_P(ReportSchedulerFeatureTest, TimerDelayWithLastUploadTimestamp) {
-  const base::TimeDelta gap = base::TimeDelta::FromHours(10);
+  const base::TimeDelta gap = base::Hours(10);
   SetLastUploadInHour(gap);
 
   EXPECT_CALL_SetupRegistration();
@@ -441,10 +440,9 @@ TEST_P(ReportSchedulerFeatureTest, TimerDelayWithLastUploadTimestamp) {
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
   base::TimeDelta next_report_delay = kDefaultUploadInterval - gap;
-  task_environment_.FastForwardBy(next_report_delay -
-                                  base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(next_report_delay - base::Seconds(1));
   ExpectLastUploadTimestampUpdated(false);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ExpectLastUploadTimestampUpdated(true);
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
@@ -524,7 +522,7 @@ TEST_P(ReportSchedulerFeatureTest, ReportingIsDisabledWhileNewReportIsPosted) {
 TEST_P(ReportSchedulerFeatureTest, OnUpdate) {
   // Pretend that a periodic report was generated recently so that one isn't
   // kicked off during startup.
-  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+  SetLastUploadInHour(base::Hours(1));
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -547,7 +545,7 @@ TEST_P(ReportSchedulerFeatureTest, OnUpdate) {
 TEST_P(ReportSchedulerFeatureTest, OnUpdateAndPersistentError) {
   // Pretend that a periodic report was generated recently so that one isn't
   // kicked off during startup.
-  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+  SetLastUploadInHour(base::Hours(1));
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -633,7 +631,7 @@ TEST_P(ReportSchedulerFeatureTest, OnNewVersion) {
   SetLastUploadVersion(chrome::kChromeVersion + std::string("1"));
 
   // Pretend that a periodic report was generated recently.
-  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+  SetLastUploadInHour(base::Hours(1));
 
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
@@ -663,7 +661,7 @@ TEST_P(ReportSchedulerFeatureTest, OnNewVersionRegularReport) {
   SetLastUploadVersion(chrome::kChromeVersion + std::string("1"));
 
   // Pretend that a periodic report was last generated over a day ago.
-  SetLastUploadInHour(base::TimeDelta::FromHours(25));
+  SetLastUploadInHour(base::Hours(25));
 
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
@@ -694,7 +692,7 @@ TEST_F(ReportSchedulerTest, OnExtensionRequest) {
                              {{"with_erp", "false"}}}},
       /*disabled_features=*/{});
 
-  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+  SetLastUploadInHour(base::Hours(1));
 
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kExtensionRequest, _))
@@ -721,7 +719,7 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestWithPersistentError) {
       /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
                              {{"with_erp", "false"}}}},
       /*disabled_features=*/{});
-  base::TimeDelta last_report = base::TimeDelta::FromHours(23);
+  base::TimeDelta last_report = base::Hours(23);
   SetLastUploadInHour(last_report);
 
   EXPECT_CALL_SetupRegistration();
@@ -761,7 +759,7 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
       /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
                              {{"with_erp", "false"}}}},
       /*disabled_features=*/{});
-  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+  SetLastUploadInHour(base::Hours(1));
 
   ReportUploader::ReportCallback saved_callback;
   auto new_uploader = std::make_unique<MockReportUploader>();

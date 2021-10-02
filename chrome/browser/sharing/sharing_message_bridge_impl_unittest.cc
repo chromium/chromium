@@ -91,7 +91,7 @@ class SharingMessageBridgeTest : public testing::Test {
 
   void FastForwardThroughTimeout() {
     const base::TimeDelta time_delta =
-        base::TimeDelta::FromSeconds(kSharingMessageBridgeTimeoutSeconds.Get());
+        base::Seconds(kSharingMessageBridgeTimeoutSeconds.Get());
     task_environment_.FastForwardBy(time_delta);
   }
 

@@ -98,8 +98,7 @@ constexpr const size_t kArcSaltFileSize = 16;
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
-constexpr base::TimeDelta kWaitForPoliciesTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kWaitForPoliciesTimeout = base::Seconds(20);
 
 // Generates a unique, 20-character hex string from |chromeos_user| and
 // |salt| which can be used as Android's ro.boot.serialno and ro.serialno
@@ -132,9 +131,8 @@ bool IsValidHexSalt(const std::string& hex_salt) {
 // timeout expires, keep ARC running in case the user wants to file feedback,
 // but present the UI to try again.
 base::TimeDelta GetArcSignInTimeout() {
-  constexpr base::TimeDelta kArcSignInTimeout = base::TimeDelta::FromMinutes(5);
-  constexpr base::TimeDelta kArcVmSignInTimeoutForVM =
-      base::TimeDelta::FromMinutes(20);
+  constexpr base::TimeDelta kArcSignInTimeout = base::Minutes(5);
+  constexpr base::TimeDelta kArcVmSignInTimeoutForVM = base::Minutes(20);
 
   if (chromeos::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
       arc::IsArcVmEnabled()) {

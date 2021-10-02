@@ -116,7 +116,7 @@ class ResizingHostObserverTest : public testing::Test {
   void SetScreenResolution(const ScreenResolution& client_size) {
     resizing_host_observer_->SetScreenResolution(client_size);
     if (auto_advance_clock_)
-      clock_.Advance(base::TimeDelta::FromSeconds(1));
+      clock_.Advance(base::Seconds(1));
   }
 
   ScreenResolution GetBestResolution(const ScreenResolution& client_size) {
@@ -290,13 +290,13 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
 
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(100, 100)));
-  clock_.Advance(base::TimeDelta::FromMilliseconds(900));
+  clock_.Advance(base::Milliseconds(900));
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(200, 200)));
-  clock_.Advance(base::TimeDelta::FromMilliseconds(99));
+  clock_.Advance(base::Milliseconds(99));
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(300, 300)));
-  clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+  clock_.Advance(base::Milliseconds(1));
 
   // Due to the kMinimumResizeIntervalMs constant in resizing_host_observer.cc,
   // We need to wait a total of 1000ms for the final resize to be processed.
@@ -304,7 +304,7 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
   // additional 1ms. However, since RunLoop is not guaranteed to process tasks
   // with the same due time in FIFO order, wait an additional 1ms for safety.
   task_environment.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(2));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
   run_loop.Run();
 
   // If the QuitClosure fired before the final resize, it's a test failure.

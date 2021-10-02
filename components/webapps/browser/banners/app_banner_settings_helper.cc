@@ -337,9 +337,8 @@ bool AppBannerSettingsHelper::WasBannerRecentlyBlocked(
   DCHECK(!package_name_or_start_url.empty());
 
   absl::optional<bool> in_period = WasEventWithinPeriod(
-      APP_BANNER_EVENT_DID_BLOCK,
-      base::TimeDelta::FromDays(gDaysAfterDismissedToShow), web_contents,
-      origin_url, package_name_or_start_url, now);
+      APP_BANNER_EVENT_DID_BLOCK, base::Days(gDaysAfterDismissedToShow),
+      web_contents, origin_url, package_name_or_start_url, now);
   return in_period.value_or(true);
 }
 
@@ -351,9 +350,8 @@ bool AppBannerSettingsHelper::WasBannerRecentlyIgnored(
   DCHECK(!package_name_or_start_url.empty());
 
   absl::optional<bool> in_period = WasEventWithinPeriod(
-      APP_BANNER_EVENT_DID_SHOW,
-      base::TimeDelta::FromDays(gDaysAfterIgnoredToShow), web_contents,
-      origin_url, package_name_or_start_url, now);
+      APP_BANNER_EVENT_DID_SHOW, base::Days(gDaysAfterIgnoredToShow),
+      web_contents, origin_url, package_name_or_start_url, now);
 
   return in_period.value_or(true);
 }
@@ -415,7 +413,7 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
   // dictionaries per app path. If we find one that has been added to
   // homescreen recently, return true.
   base::TimeDelta recent_last_launch_in_days =
-      base::TimeDelta::FromDays(kRecentLastLaunchInDays);
+      base::Days(kRecentLastLaunchInDays);
   for (base::DictionaryValue::Iterator it(*origin_dict); !it.IsAtEnd();
        it.Advance()) {
     if (it.value().is_dict()) {
@@ -480,10 +478,8 @@ void AppBannerSettingsHelper::RecordInstallTextAnimationShown(
     const GURL& scope) {
   DCHECK(scope.is_valid());
 
-  constexpr base::TimeDelta kInitialAnimationSuppressionPeriod =
-      base::TimeDelta::FromDays(1);
-  constexpr base::TimeDelta kMaxAnimationSuppressionPeriod =
-      base::TimeDelta::FromDays(90);
+  constexpr base::TimeDelta kInitialAnimationSuppressionPeriod = base::Days(1);
+  constexpr base::TimeDelta kMaxAnimationSuppressionPeriod = base::Days(90);
   constexpr double kExponentialBackoffFactor = 2;
 
   NextInstallTextAnimation next_prompt = {AppBannerManager::GetCurrentTime(),

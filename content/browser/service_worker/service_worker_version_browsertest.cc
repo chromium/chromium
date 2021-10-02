@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, TimeoutStartingWorker) {
   // Simulate execution timeout. Use a delay to prevent killing the worker
   // before it's started execution.
   RunWithDelay(base::BindOnce(&self::TimeoutWorker, base::Unretained(this)),
-               base::TimeDelta::FromMilliseconds(100));
+               base::Milliseconds(100));
   start_run_loop.Run();
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout, status.value());
@@ -1096,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, TimeoutWorkerInEvent) {
   // Simulate execution timeout. Use a delay to prevent killing the worker
   // before it's started execution.
   RunWithDelay(base::BindOnce(&self::TimeoutWorker, base::Unretained(this)),
-               base::TimeDelta::FromMilliseconds(100));
+               base::Milliseconds(100));
   install_run_loop.Run();
 
   // Terminating a worker, even one in an infinite loop, is treated as if
@@ -1280,7 +1280,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
 
   // Set the last update time far in the past.
   {
-    last_update_time = base::Time::Now() - base::TimeDelta::FromHours(24);
+    last_update_time = base::Time::Now() - base::Hours(24);
     SetLastUpdateCheck(registration_id, last_update_time);
   }
 

@@ -133,8 +133,7 @@ class Timeout {
   void StopMonitoring() { weak_ptr_factory_.InvalidateWeakPtrs(); }
 
   base::TimeDelta GetInterval() {
-    return base::TimeDelta::FromMilliseconds(
-        dbus_timeout_get_interval(raw_timeout_));
+    return base::Milliseconds(dbus_timeout_get_interval(raw_timeout_));
   }
 
  private:
@@ -505,7 +504,7 @@ void Bus::ShutdownOnDBusThreadAndBlock() {
   // Wait until the shutdown is complete on the D-Bus thread.
   // The shutdown should not hang, but set timeout just in case.
   const int kTimeoutSecs = 3;
-  const base::TimeDelta timeout(base::TimeDelta::FromSeconds(kTimeoutSecs));
+  const base::TimeDelta timeout(base::Seconds(kTimeoutSecs));
   const bool signaled = on_shutdown_.TimedWait(timeout);
   LOG_IF(ERROR, !signaled) << "Failed to shutdown the bus";
 }
@@ -635,7 +634,7 @@ DBusMessage* Bus::SendWithReplyAndBlock(DBusMessage* request,
   DBusMessage* reply = dbus_connection_send_with_reply_and_block(
       connection_, request, timeout_ms, error);
 
-  constexpr base::TimeDelta kLongCall = base::TimeDelta::FromSeconds(1);
+  constexpr base::TimeDelta kLongCall = base::Seconds(1);
   LOG_IF(WARNING, elapsed.Elapsed() >= kLongCall)
       << "Bus::SendWithReplyAndBlock took "
       << elapsed.Elapsed().InMilliseconds() << "ms to process message: "

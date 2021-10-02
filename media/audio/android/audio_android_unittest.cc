@@ -84,9 +84,10 @@ std::string LayoutToString(ChannelLayout channel_layout) {
 }
 
 double ExpectedTimeBetweenCallbacks(AudioParameters params) {
-  return (base::TimeDelta::FromMicroseconds(
-              params.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
-              static_cast<double>(params.sample_rate()))).InMillisecondsF();
+  return (base::Microseconds(params.frames_per_buffer() *
+                             base::Time::kMicrosecondsPerSecond /
+                             static_cast<double>(params.sample_rate())))
+      .InMillisecondsF();
 }
 
 // Helper method which verifies that the device list starts with a valid
@@ -405,9 +406,9 @@ class FullDuplexAudioSinkSource
   // audio parameters.
   double BytesToMilliseconds(int bytes) const {
     const int frames = bytes / params_.GetBytesPerFrame(kSampleFormat);
-    return (base::TimeDelta::FromMicroseconds(
-                frames * base::Time::kMicrosecondsPerSecond /
-                static_cast<double>(params_.sample_rate()))).InMillisecondsF();
+    return (base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                               static_cast<double>(params_.sample_rate())))
+        .InMillisecondsF();
   }
 
   AudioParameters params_;
@@ -924,7 +925,7 @@ TEST_P(AudioAndroidInputTest,
            << "once per second during this test.";
   DVLOG(0) << ">> Speak into the mic and listen to the audio in loopback...";
   fflush(stdout);
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(20));
+  base::PlatformThread::Sleep(base::Seconds(20));
   printf("\n");
   StopAndCloseAudioOutputStreamOnAudioThread();
   StopAndCloseAudioInputStreamOnAudioThread();

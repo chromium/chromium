@@ -146,7 +146,7 @@ std::unique_ptr<SyncWebSocket> CreateMockSyncWebSocket() {
 
 class DevToolsClientImplTest : public testing::Test {
  protected:
-  DevToolsClientImplTest() : long_timeout_(base::TimeDelta::FromMinutes(5)) {}
+  DevToolsClientImplTest() : long_timeout_(base::Minutes(5)) {}
 
   const base::TimeDelta long_timeout_;
 };

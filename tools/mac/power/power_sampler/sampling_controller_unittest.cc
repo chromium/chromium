@@ -103,7 +103,7 @@ TEST(SamplingControllerTest, CallsSamplersAndMonitors) {
 
   last_seen_samples.clear();
 
-  task_environment.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+  task_environment.FastForwardBy(base::Milliseconds(1500));
   base::TimeTicks second_now = base::TimeTicks::Now();
   // Terminate the sampling session on the next sample.
   EXPECT_CALL(*monitor, OnSample(second_now, _))

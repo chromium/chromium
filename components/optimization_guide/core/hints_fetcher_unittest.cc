@@ -287,7 +287,7 @@ TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
 
   // Advancing the clock by a little bit more than 1 hour so that the hints are
   // now due for refresh.
-  test_clock.Advance(base::TimeDelta::FromMinutes(61));
+  test_clock.Advance(base::Minutes(61));
 
   EXPECT_TRUE(FetchHints({"foo.com"}, {} /* urls */));
   EXPECT_FALSE(FetchHints({"bar.com"}, {} /* urls */));
@@ -402,11 +402,10 @@ TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {
     // This reduces the necessary precision for the check on the expiry time for
     // the hosts stored in the pref. The exact time is not necessary, being
     // within 10 minutes is acceptable.
-    EXPECT_NEAR((base::Time::FromDeltaSinceWindowsEpoch(
-                     base::TimeDelta::FromSecondsD(*value)) -
+    EXPECT_NEAR((base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value)) -
                  GetMockClock()->Now())
                     .InMinutes(),
-                base::TimeDelta::FromDays(7).InMinutes(), 10);
+                base::Days(7).InMinutes(), 10);
   }
 }
 

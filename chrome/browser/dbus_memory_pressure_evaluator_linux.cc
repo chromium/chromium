@@ -55,7 +55,7 @@ const char DbusMemoryPressureEvaluatorLinux::kLowMemoryWarningSignal[] =
 // LMM emits signals every 15 seconds on pressure, so if we've been quiet for 20
 // seconds, the pressure is likely cleared up.
 const base::TimeDelta DbusMemoryPressureEvaluatorLinux::kResetVotePeriod =
-    base::TimeDelta::FromSeconds(20);
+    base::Seconds(20);
 
 DbusMemoryPressureEvaluatorLinux::DbusMemoryPressureEvaluatorLinux(
     std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)

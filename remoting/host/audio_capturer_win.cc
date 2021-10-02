@@ -141,7 +141,7 @@ bool AudioCapturerWin::Initialize() {
   // is not a whole number.
   int device_period_in_milliseconds =
       1 + ((device_period - 1) / k100nsPerMillisecond);
-  audio_device_period_ = base::TimeDelta::FromMilliseconds(
+  audio_device_period_ = base::Milliseconds(
       std::max(device_period_in_milliseconds, kMinTimerInterval));
 
   // Get the wave format.

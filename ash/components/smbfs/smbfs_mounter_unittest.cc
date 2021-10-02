@@ -172,8 +172,7 @@ TEST_F(SmbFsMounterTest, FilesystemMountTimeout) {
   // task, which is the mount timeout in this case.
   run_loop.Run();
 
-  EXPECT_GE(task_environment_.NowTicks() - start_time,
-            base::TimeDelta::FromSeconds(20));
+  EXPECT_GE(task_environment_.NowTicks() - start_time, base::Seconds(20));
 }
 
 TEST_F(SmbFsMounterTest, FilesystemMountFailure) {
@@ -231,8 +230,7 @@ TEST_F(SmbFsMounterTest, TimeoutAfterFilesystemMount) {
   // task, which is the mount timeout in this case.
   run_loop.Run();
 
-  EXPECT_GE(task_environment_.NowTicks() - start_time,
-            base::TimeDelta::FromSeconds(20));
+  EXPECT_GE(task_environment_.NowTicks() - start_time, base::Seconds(20));
 }
 
 TEST_F(SmbFsMounterTest, FilesystemMountAfterDestruction) {

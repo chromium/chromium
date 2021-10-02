@@ -200,7 +200,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   }
 
   base::TimeDelta TimeDeltaMillis(int64_t num_millis) {
-    return base::TimeDelta::FromMilliseconds(num_millis);
+    return base::Milliseconds(num_millis);
   }
 
   void OnAdapterRegisterAdvertisement(RegisterAdvertisementArgs* args) {

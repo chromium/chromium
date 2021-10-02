@@ -38,10 +38,9 @@
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_manager.h"
 
-#define UMA_HISTOGRAM_LOCK_TIMES(name, sample)                     \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                         \
-                             base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromSeconds(50), 100)
+#define UMA_HISTOGRAM_LOCK_TIMES(name, sample)                    \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(50), 100)
 
 namespace ash {
 
@@ -63,12 +62,11 @@ constexpr int kMaxShutdownSoundDurationMs = 1500;
 
 // Amount of time to wait for our lock requests to be honored before giving up.
 constexpr base::TimeDelta kLockFailTimeout =
-    base::TimeDelta::FromSeconds(8 * kTimeoutMultiplier);
+    base::Seconds(8 * kTimeoutMultiplier);
 
 // Additional time to wait after starting the fast-close shutdown animation
 // before actually requesting shutdown, to give the animation time to finish.
-constexpr base::TimeDelta kShutdownRequestDelay =
-    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 
 }  // namespace
 
@@ -237,7 +235,7 @@ void LockStateController::OnChromeTerminating() {
 
 void LockStateController::OnLockStateChanged(bool locked) {
   // Unpause if lock animations didn't start and ends in 3 seconds.
-  constexpr base::TimeDelta kPauseTimeout = base::TimeDelta::FromSeconds(3);
+  constexpr base::TimeDelta kPauseTimeout = base::Seconds(3);
 
   DCHECK((lock_fail_timer_.IsRunning() && lock_duration_timer_ != nullptr) ||
          (!lock_fail_timer_.IsRunning() && lock_duration_timer_ == nullptr));
@@ -307,7 +305,7 @@ void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
   // start real shutdown after a delay of |duration|.
   base::TimeDelta sound_duration =
       std::min(Shell::Get()->accessibility_controller()->PlayShutdownSound(),
-               base::TimeDelta::FromMilliseconds(kMaxShutdownSoundDurationMs));
+               base::Milliseconds(kMaxShutdownSoundDurationMs));
   duration = std::max(duration, sound_duration);
   real_shutdown_timer_.Start(FROM_HERE, duration, this,
                              &LockStateController::OnRealPowerTimeout);

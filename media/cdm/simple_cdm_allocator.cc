@@ -40,7 +40,7 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
             buffer->Data() + PlaneOffset(cdm::kYPlane),
             buffer->Data() + PlaneOffset(cdm::kUPlane),
             buffer->Data() + PlaneOffset(cdm::kVPlane),
-            base::TimeDelta::FromMicroseconds(Timestamp()));
+            base::Microseconds(Timestamp()));
 
     frame->set_color_space(MediaColorSpace().ToGfxColorSpace());
 

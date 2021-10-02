@@ -174,7 +174,7 @@ TEST_F(HostScannerOperationTest,
 
 TEST_F(HostScannerOperationTest, RecordsResponseDuration) {
   static constexpr base::TimeDelta kTetherAvailabilityResponseTime =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   // Advance the clock in order to verify a non-zero response duration is
   // recorded and verified (below).

@@ -39,8 +39,7 @@ constexpr int kBubbleBetweenChildSpacingDp = 16;
 constexpr int kBubbleBorderRadius = 8;
 
 // The amount of time for bubble show/hide animation.
-constexpr base::TimeDelta kBubbleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kBubbleAnimationDuration = base::Milliseconds(300);
 
 }  // namespace
 

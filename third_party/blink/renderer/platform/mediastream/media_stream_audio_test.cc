@@ -113,7 +113,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
                                                   base::TimeTicks::Now());
 
       // Sleep before producing the next chunk of audio.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(
+      base::PlatformThread::Sleep(base::Microseconds(
           base::Time::kMicrosecondsPerSecond * buffer_size / kSampleRate));
     }
   }

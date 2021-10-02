@@ -17,7 +17,7 @@ namespace blink {
 
 namespace {
 
-const base::TimeDelta kStatsReportingPeriod = base::TimeDelta::FromMinutes(1);
+const base::TimeDelta kStatsReportingPeriod = base::Minutes(1);
 
 enum class ThermalStateUMA {
   kNominal = 0,

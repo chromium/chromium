@@ -53,8 +53,7 @@ const int kTestFrameHeight3 = 64;
 
 const int kFrameRate = 30;
 
-constexpr base::TimeDelta kVirtualTestDurationSeconds =
-    base::TimeDelta::FromSeconds(100);
+constexpr base::TimeDelta kVirtualTestDurationSeconds = base::Seconds(100);
 
 // The value of the padding bytes in unpacked frames.
 const uint8_t kFramePaddingValue = 0;
@@ -611,7 +610,7 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
               // here in OnIncomingCapturedData is take into account for
               // the capture duration
               const base::TimeDelta device_capture_duration =
-                  base::TimeDelta::FromMicroseconds(static_cast<int64_t>(
+                  base::Microseconds(static_cast<int64_t>(
                       static_cast<double>(base::Time::kMicrosecondsPerSecond) /
                           kFrameRate +
                       0.5 /* round to nearest int */));

@@ -255,8 +255,7 @@ void VibrationController::DidVibrate() {
     pattern_.EraseAt(0);
   }
 
-  timer_do_vibrate_.StartOneShot(base::TimeDelta::FromMilliseconds(interval),
-                                 FROM_HERE);
+  timer_do_vibrate_.StartOneShot(base::Milliseconds(interval), FROM_HERE);
 }
 
 void VibrationController::Cancel() {

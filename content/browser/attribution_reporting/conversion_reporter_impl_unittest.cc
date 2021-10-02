@@ -135,7 +135,7 @@ TEST_F(ConversionReporterImplTest,
 TEST_F(ConversionReporterImplTest,
        ReportWithReportTimeBeforeCurrentTime_ReportSent) {
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() - base::TimeDelta::FromHours(10),
+      {GetReport(clock().Now(), clock().Now() - base::Hours(10),
                  AttributionReport::Id(1))});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
@@ -149,7 +149,7 @@ TEST_F(ConversionReporterImplTest,
 TEST_F(ConversionReporterImplTest,
        ReportWithReportTimeBeforeCurrentTime_DeletedReportNotSent) {
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() - base::TimeDelta::FromHours(10),
+      {GetReport(clock().Now(), clock().Now() - base::Hours(10),
                  AttributionReport::Id(1))});
 
   reporter_->RemoveAllReportsFromQueue();
@@ -163,30 +163,30 @@ TEST_F(ConversionReporterImplTest,
 
 TEST_F(ConversionReporterImplTest,
        ReportWithDelayedReportTime_NotSentUntilDelay) {
-  const base::TimeDelta delay = base::TimeDelta::FromMinutes(30);
+  const base::TimeDelta delay = base::Minutes(30);
 
   reporter_->AddReportsToQueue({GetReport(clock().Now(), clock().Now() + delay,
                                           AttributionReport::Id(1))});
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
-  task_environment_.FastForwardBy(delay - base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(delay - base::Seconds(1));
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1u, sender_->num_reports_sent());
 }
 
 TEST_F(ConversionReporterImplTest, DuplicateReportScheduled_Ignored) {
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
+      {GetReport(clock().Now(), clock().Now() + base::Minutes(1),
                  AttributionReport::Id(1))});
 
   // A duplicate report should not be scheduled.
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
+      {GetReport(clock().Now(), clock().Now() + base::Minutes(1),
                  AttributionReport::Id(1))});
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(1u, sender_->num_reports_sent());
 }
 
@@ -208,8 +208,7 @@ TEST_F(ConversionReporterImplTest,
 TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
   std::vector<AttributionReport> reports;
   for (int i = 1; i < 10; i++) {
-    reports.push_back(GetReport(clock().Now(),
-                                clock().Now() + base::TimeDelta::FromMinutes(i),
+    reports.push_back(GetReport(clock().Now(), clock().Now() + base::Minutes(i),
                                 AttributionReport::Id(i)));
   }
   reporter_->AddReportsToQueue(reports);
@@ -217,7 +216,7 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
   for (int i = 1; i < 10; i++) {
-    task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+    task_environment_.FastForwardBy(base::Minutes(1));
 
     EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
     EXPECT_EQ(static_cast<int64_t>(i), *sender_->last_sent_report_id());
@@ -228,15 +227,15 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
 
 TEST_F(ConversionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
   for (int i = 1; i < 10; i++) {
-    reporter_->AddReportsToQueue({GetReport(
-        clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(i),
-        AttributionReport::Id(i))});
+    reporter_->AddReportsToQueue(
+        {GetReport(clock().Now(), clock().Now() + base::Minutes(i),
+                   AttributionReport::Id(i))});
   }
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
   for (int i = 1; i < 10; i++) {
-    task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+    task_environment_.FastForwardBy(base::Minutes(1));
 
     EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
     EXPECT_EQ(static_cast<int64_t>(i), *sender_->last_sent_report_id());
@@ -326,34 +325,34 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
   SetOffline(true);
 
   reporter_->AddReportsToQueue({
-      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
+      GetReport(clock().Now(), clock().Now() + base::Minutes(1),
                 AttributionReport::Id(1)),
-      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(2),
+      GetReport(clock().Now(), clock().Now() + base::Minutes(2),
                 AttributionReport::Id(2)),
   });
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(0u, sender_->num_reports_sent());
   EXPECT_EQ(AttributionReport::Id(1),
             *last_sent_report_info()->report.conversion_id);
   EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(0u, sender_->num_reports_sent());
   EXPECT_EQ(AttributionReport::Id(2),
             *last_sent_report_info()->report.conversion_id);
   EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
 
   reporter_->AddReportsToQueue({
-      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
+      GetReport(clock().Now(), clock().Now() + base::Minutes(1),
                 AttributionReport::Id(1)),
-      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(2),
+      GetReport(clock().Now(), clock().Now() + base::Minutes(2),
                 AttributionReport::Id(2)),
   });
 
   SetOffline(false);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(1u, sender_->num_reports_sent());
   EXPECT_EQ(AttributionReport::Id(1),
             *last_sent_report_info()->report.conversion_id);
@@ -361,7 +360,7 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
 
   SetOffline(true);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(1u, sender_->num_reports_sent());
   EXPECT_EQ(AttributionReport::Id(2),
             *last_sent_report_info()->report.conversion_id);

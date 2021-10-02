@@ -27,7 +27,7 @@
 namespace {
 
 // Only keep track of the last response for a short period of time.
-constexpr base::TimeDelta kLastRequestDelta = base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kLastRequestDelta = base::Minutes(15);
 
 // Keep track of the last response. This is only kept in memory, so once Chrome
 // quits it is forgotten.

@@ -164,11 +164,11 @@ TEST_F(AutofillAblationStudyTestInUTC, GetAblationHash_DependsOnDay) {
 
   // 1 minute difference but not crossing the break of the day.
   EXPECT_EQ(GetAblationHash("seed", url, t),
-            GetAblationHash("seed", url, t + base::TimeDelta::FromMinutes(1)));
+            GetAblationHash("seed", url, t + base::Minutes(1)));
 
   // 1 day difference leads to crossing the break of the day.
   EXPECT_NE(GetAblationHash("seed", url, t),
-            GetAblationHash("seed", url, t + base::TimeDelta::FromHours(24)));
+            GetAblationHash("seed", url, t + base::Hours(24)));
 }
 
 // Ensure that if the feature is disabled, only kDefault is returned.

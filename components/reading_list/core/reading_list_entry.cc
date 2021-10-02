@@ -354,8 +354,7 @@ std::unique_ptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
   }
   base::TimeDelta estimated_read_time;
   if (pb_entry.estimated_read_time_seconds()) {
-    estimated_read_time =
-        base::TimeDelta::FromSeconds(pb_entry.estimated_read_time_seconds());
+    estimated_read_time = base::Seconds(pb_entry.estimated_read_time_seconds());
   }
 
   State state = UNSEEN;
@@ -490,8 +489,7 @@ std::unique_ptr<ReadingListEntry> ReadingListEntry::FromReadingListSpecifics(
   }
   base::TimeDelta estimated_read_time;
   if (pb_entry.has_estimated_read_time_seconds()) {
-    estimated_read_time =
-        base::TimeDelta::FromSeconds(pb_entry.estimated_read_time_seconds());
+    estimated_read_time = base::Seconds(pb_entry.estimated_read_time_seconds());
   }
 
   State state = UNSEEN;

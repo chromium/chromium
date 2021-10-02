@@ -224,25 +224,25 @@
 
 // Short timings - up to 10 seconds. For high-resolution (microseconds) timings,
 // see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES.
-#define UMA_HISTOGRAM_TIMES(name, sample) UMA_HISTOGRAM_CUSTOM_TIMES(          \
-    name, sample, base::TimeDelta::FromMilliseconds(1),                        \
-    base::TimeDelta::FromSeconds(10), 50)
+#define UMA_HISTOGRAM_TIMES(name, sample)                         \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(10), 50)
 
 // Medium timings - up to 3 minutes. Note this starts at 10ms (no good reason,
 // but not worth changing).
-#define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample) UMA_HISTOGRAM_CUSTOM_TIMES(   \
-    name, sample, base::TimeDelta::FromMilliseconds(10),                       \
-    base::TimeDelta::FromMinutes(3), 50)
+#define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                   \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(3), 50)
 
 // Long timings - up to an hour.
-#define UMA_HISTOGRAM_LONG_TIMES(name, sample) UMA_HISTOGRAM_CUSTOM_TIMES(     \
-    name, sample, base::TimeDelta::FromMilliseconds(1),                        \
-    base::TimeDelta::FromHours(1), 50)
+#define UMA_HISTOGRAM_LONG_TIMES(name, sample)                    \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Hours(1), 50)
 
 // Long timings with higher granularity - up to an hour with 100 buckets.
-#define UMA_HISTOGRAM_LONG_TIMES_100(name, sample) UMA_HISTOGRAM_CUSTOM_TIMES( \
-    name, sample, base::TimeDelta::FromMilliseconds(1),                        \
-    base::TimeDelta::FromHours(1), 100)
+#define UMA_HISTOGRAM_LONG_TIMES_100(name, sample)                \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Hours(1), 100)
 
 // This can be used when the default ranges are not sufficient. This macro lets
 // the metric developer customize the min and max of the sampled range, as well
@@ -250,7 +250,7 @@
 
 // Sample usage:
 //   UMA_HISTOGRAM_CUSTOM_TIMES("Very.Long.Timing.Histogram", time_delta,
-//       base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+//       base::Seconds(1), base::Days(1), 100);
 #define UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, min, max, bucket_count) \
   STATIC_HISTOGRAM_POINTER_BLOCK(                                        \
       name, AddTimeMillisecondsGranularity(sample),                      \
@@ -268,8 +268,8 @@
 // Sample usage:
 //  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
 //      "High.Resolution.TimingMicroseconds.Histogram", time_delta,
-//      base::TimeDelta::FromMicroseconds(1),
-//      base::TimeDelta::FromMilliseconds(10), 100);
+//      base::Microseconds(1),
+//      base::Milliseconds(10), 100);
 #define UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(name, sample, min, max, \
                                                 bucket_count)           \
   STATIC_HISTOGRAM_POINTER_BLOCK(                                       \
@@ -363,12 +363,11 @@ enum class ScopedHistogramTiming {
       INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY)               \
   (name, __VA_ARGS__, base::HistogramBase::kUmaStabilityHistogramFlag)
 
-#define UMA_STABILITY_HISTOGRAM_LONG_TIMES(name, sample) \
-  STATIC_HISTOGRAM_POINTER_BLOCK(                        \
-      name, AddTimeMillisecondsGranularity(sample),      \
-      base::Histogram::FactoryTimeGet(                   \
-          name, base::TimeDelta::FromMilliseconds(1),    \
-          base::TimeDelta::FromHours(1), 50,             \
+#define UMA_STABILITY_HISTOGRAM_LONG_TIMES(name, sample)   \
+  STATIC_HISTOGRAM_POINTER_BLOCK(                          \
+      name, AddTimeMillisecondsGranularity(sample),        \
+      base::Histogram::FactoryTimeGet(                     \
+          name, base::Milliseconds(1), base::Hours(1), 50, \
           base::HistogramBase::kUmaStabilityHistogramFlag))
 
 #define UMA_STABILITY_HISTOGRAM_PERCENTAGE(name, percent_as_int) \

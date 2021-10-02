@@ -60,8 +60,7 @@ void RunAnimationForLayer(ui::Layer* layer) {
   while (controller.animator()->is_animating()) {
     controller.StartThreadedAnimationsIfNeeded();
     base::TimeTicks step_time = controller.animator()->last_step_time();
-    controller.animator()->Step(step_time +
-                                base::TimeDelta::FromMilliseconds(1000));
+    controller.animator()->Step(step_time + base::Milliseconds(1000));
   }
 }
 
@@ -228,7 +227,7 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
   }
 
   void AddTimeToTransientBlurCounter(double seconds) {
-    controller_.time_of_last_blur_ -= base::TimeDelta::FromSecondsD(seconds);
+    controller_.time_of_last_blur_ -= base::Seconds(seconds);
   }
 
   void SetFocus(ui::TextInputClient* client) {

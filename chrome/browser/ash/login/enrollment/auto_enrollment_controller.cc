@@ -77,14 +77,13 @@ const int kMaxRequestStateKeysTries = 10;
 // be too short, because one of the steps `AutoEnrollmentController` performs -
 // downloading identifier hash buckets - can be non-negligible, especially on 2G
 // connections.
-constexpr base::TimeDelta kSafeguardTimeout = base::TimeDelta::FromSeconds(90);
+constexpr base::TimeDelta kSafeguardTimeout = base::Seconds(90);
 
 // Maximum time to wait for time sync before forcing a decision on whether
 // Initial Enrollment should be performed. This corresponds to at least seven
 // TCP retransmissions attempts to the remote server used to update the system
 // clock.
-constexpr base::TimeDelta kSystemClockSyncWaitTimeout =
-    base::TimeDelta::FromSeconds(45);
+constexpr base::TimeDelta kSystemClockSyncWaitTimeout = base::Seconds(45);
 
 // A callback that will be invoked when the system clock has been synchronized,
 // or if system clock synchronization has failed.

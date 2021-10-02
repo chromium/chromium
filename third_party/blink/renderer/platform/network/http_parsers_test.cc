@@ -255,40 +255,40 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
   EXPECT_FALSE(ParseHTTPRefresh("1e1 url=foo", nullptr, delay, url));
 
   EXPECT_TRUE(ParseHTTPRefresh("123 ", nullptr, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(123), delay);
+  EXPECT_EQ(base::Seconds(123), delay);
   EXPECT_TRUE(url.IsEmpty());
 
   EXPECT_TRUE(ParseHTTPRefresh("1 ; url=dest", nullptr, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
+  EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("1 ;\nurl=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
+  EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(ParseHTTPRefresh("1 ;\nurl=dest", nullptr, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
+  EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("url=dest", url);
 
   EXPECT_TRUE(ParseHTTPRefresh("1 url=dest", nullptr, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
+  EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
 
   EXPECT_TRUE(
       ParseHTTPRefresh("10\nurl=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10), delay);
+  EXPECT_EQ(base::Seconds(10), delay);
   EXPECT_EQ("dest", url);
 
   EXPECT_TRUE(
       ParseHTTPRefresh("1.5; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSecondsD(1.5), delay);
+  EXPECT_EQ(base::Seconds(1.5), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("1.5.9; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSecondsD(1.5), delay);
+  EXPECT_EQ(base::Seconds(1.5), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("7..; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(7), delay);
+  EXPECT_EQ(base::Seconds(7), delay);
   EXPECT_EQ("dest", url);
 }
 

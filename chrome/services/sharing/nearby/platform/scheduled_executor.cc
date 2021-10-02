@@ -111,10 +111,10 @@ std::shared_ptr<api::Cancelable> ScheduledExecutor::Schedule(
   }
 
   timer_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ScheduledExecutor::StartTimerWithId,
-                                base::Unretained(this), id,
-                                base::TimeDelta::FromMicroseconds(
-                                    absl::ToInt64Microseconds(duration))));
+      FROM_HERE,
+      base::BindOnce(&ScheduledExecutor::StartTimerWithId,
+                     base::Unretained(this), id,
+                     base::Microseconds(absl::ToInt64Microseconds(duration))));
 
   return std::make_shared<CancelableTask>(
       base::BindOnce(&TryCancelTask, weak_factory_.GetWeakPtr(), id));

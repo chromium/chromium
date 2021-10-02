@@ -26,8 +26,7 @@ namespace ash {
 namespace {
 
 // Default frequency for uploading status reports.
-constexpr base::TimeDelta kStatusUploadFrequency =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kStatusUploadFrequency = base::Minutes(10);
 
 }  // namespace
 

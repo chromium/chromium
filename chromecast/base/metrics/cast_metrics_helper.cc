@@ -36,7 +36,7 @@ namespace {
 
 const char kMetricsNameAppInfoDelimiter = '#';
 
-constexpr base::TimeDelta kAppLoadTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kAppLoadTimeout = base::Minutes(5);
 
 }  // namespace
 
@@ -206,12 +206,8 @@ void CastMetricsHelper::LogTimeToBufferAv(BufferingType buffering_type,
   // Histogram from 250ms to 30s with 50 buckets.
   // The ratio between 2 consecutive buckets is:
   // exp( (ln(30000) - ln(250)) / 50 ) = 1.1
-  LogTimeHistogramEvent(
-      uma_name,
-      time,
-      base::TimeDelta::FromMilliseconds(250),
-      base::TimeDelta::FromMilliseconds(30000),
-      50);
+  LogTimeHistogramEvent(uma_name, time, base::Milliseconds(250),
+                        base::Milliseconds(30000), 50);
 }
 
 std::string CastMetricsHelper::GetMetricsNameWithAppName(
@@ -285,9 +281,7 @@ void CastMetricsHelper::LogTimeHistogramEvent(const std::string& name,
 void CastMetricsHelper::LogMediumTimeHistogramEvent(const std::string& name,
                                                     base::TimeDelta value) {
   // Follow UMA_HISTOGRAM_MEDIUM_TIMES definition.
-  LogTimeHistogramEvent(name, value,
-                        base::TimeDelta::FromMilliseconds(10),
-                        base::TimeDelta::FromMinutes(3),
+  LogTimeHistogramEvent(name, value, base::Milliseconds(10), base::Minutes(3),
                         50);
 }
 

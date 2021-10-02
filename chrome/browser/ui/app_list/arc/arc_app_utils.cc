@@ -837,8 +837,7 @@ void RecordPlayStoreLaunchWithinAWeek(PrefService* prefs, bool launched) {
   auto time_oobe_finished = prefs->GetTime(ash::prefs::kOobeOnboardingTime);
   if (!time_oobe_finished.is_null())
     return;
-  bool within_a_week =
-      base::Time::Now() - time_oobe_finished < base::TimeDelta::FromDays(7);
+  bool within_a_week = base::Time::Now() - time_oobe_finished < base::Days(7);
   if (within_a_week && !launched)
     return;
   base::UmaHistogramBoolean("Arc.PlayStoreLaunchWithinAWeek", within_a_week);

@@ -90,9 +90,8 @@ class TestMetricCollector : public internal::MetricCollector {
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 
 // Allows access to some private methods for testing.
 class TestProfileProvider : public ProfileProvider {
@@ -225,7 +224,7 @@ TEST_F(ProfileProviderTest, UserLoginLogout) {
 
 TEST_F(ProfileProviderTest, SuspendDone_NoUserLoggedIn_NoCollection) {
   // No user is logged in, so no collection is done on resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -245,7 +244,7 @@ TEST_F(ProfileProviderTest, CanceledSuspend_NoCollection) {
   }
 
   // Trigger a canceled suspend (zero sleep duration).
-  profile_provider_->SuspendDone(base::TimeDelta::FromSeconds(0));
+  profile_provider_->SuspendDone(base::Seconds(0));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -263,7 +262,7 @@ TEST_F(ProfileProviderTest, SuspendDone) {
       chromeos::LoginState::LOGGED_IN_USER_REGULAR);
 
   // Trigger a resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -354,7 +353,7 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
   // Fast forward time to 1 second before the throttling duration is over.
   task_environment_.FastForwardBy(
       profile_provider_->jankiness_collection_min_interval() -
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   // This collection within the minimum interval should be throttled.
   profile_provider_->OnJankStarted();
@@ -365,7 +364,7 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
 
   // Move the clock forward past the throttling duration. The next JANKY_TASK
   // collection should succeed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   profile_provider_->OnJankStarted();
   task_environment_.RunUntilIdle();
@@ -408,7 +407,7 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_UI) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // This is a janky task that runs for 2 seconds.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+        task_environment_.FastForwardBy(base::Seconds(2));
       }));
   task_environment_.RunUntilIdle();
 
@@ -426,7 +425,7 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_IO) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // This is a janky task that runs for 2 seconds.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+        task_environment_.FastForwardBy(base::Seconds(2));
       }));
   task_environment_.RunUntilIdle();
 
@@ -455,7 +454,7 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
 
   // Get default minimum interval is expected to be 30 minutes.
   EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::TimeDelta::FromMinutes(30));
+            base::Minutes(30));
 
   profile_provider.reset();
 
@@ -472,7 +471,7 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
   profile_provider = std::make_unique<TestProfileProvider>();
   profile_provider->Init();
   EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::TimeDelta::FromSeconds(180));
+            base::Seconds(180));
 
   profile_provider.reset();
 

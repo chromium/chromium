@@ -181,7 +181,7 @@ class HistoryClustersServiceTest : public testing::Test {
     EXPECT_EQ(visit.visit_row.visit_id, 2);
     EXPECT_EQ(visit.visit_row.visit_time,
               GetHardcodedTestVisits()[1].visit_row.visit_time);
-    EXPECT_EQ(visit.visit_row.visit_duration, base::TimeDelta::FromSeconds(20));
+    EXPECT_EQ(visit.visit_row.visit_duration, base::Seconds(20));
     EXPECT_EQ(visit.url_row.url(), "https://github.com/");
     EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
 
@@ -189,8 +189,7 @@ class HistoryClustersServiceTest : public testing::Test {
     EXPECT_EQ(visit.visit_row.visit_id, 1);
     EXPECT_EQ(visit.visit_row.visit_time,
               GetHardcodedTestVisits()[0].visit_row.visit_time);
-    EXPECT_EQ(visit.visit_row.visit_duration,
-              base::TimeDelta::FromMilliseconds(5600));
+    EXPECT_EQ(visit.visit_row.visit_duration, base::Milliseconds(5600));
     EXPECT_EQ(visit.url_row.url(), "https://google.com/");
     EXPECT_EQ(visit.context_annotations.page_end_reason, 3);
 
@@ -392,9 +391,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   // Create persisted visits 1, 2, & 3.
   AddHardcodedTestDataToHistoryService();
 
-  auto days_ago = [](int days) {
-    return base::Time::Now() - base::TimeDelta::FromDays(days);
-  };
+  auto days_ago = [](int days) { return base::Time::Now() - base::Days(days); };
 
   // Create incomplete visits; only 3 & 4 should be returned by the query.
   AddIncompleteVisit(4, 4, days_ago(1));

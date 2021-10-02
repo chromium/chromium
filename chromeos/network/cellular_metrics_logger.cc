@@ -81,11 +81,11 @@ const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
 
 // static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
-    base::TimeDelta::FromSeconds(15);
+    base::Seconds(15);
 
 // static
 const base::TimeDelta CellularMetricsLogger::kDisconnectRequestTimeout =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // static
 CellularMetricsLogger::SimPinOperationResult

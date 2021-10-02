@@ -317,7 +317,7 @@ TEST_F(WorkerThreadTest, SyncTerminate_ImmediatelyAfterStart) {
 }
 
 TEST_F(WorkerThreadTest, AsyncTerminate_WhileTaskIsRunning) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -353,7 +353,7 @@ TEST_F(WorkerThreadTest, SyncTerminate_WhileTaskIsRunning) {
 
 TEST_F(WorkerThreadTest,
        AsyncTerminateAndThenSyncTerminate_WhileTaskIsRunning) {
-  SetForcibleTerminationDelay(base::TimeDelta::FromMilliseconds(10));
+  SetForcibleTerminationDelay(base::Milliseconds(10));
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
@@ -373,7 +373,7 @@ TEST_F(WorkerThreadTest,
 }
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
@@ -445,7 +445,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
 }
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCalls();
@@ -518,7 +518,7 @@ TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
 
 // Tests terminating a worker when debugger is paused.
 TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -539,7 +539,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
 }
 
 TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -567,7 +567,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
 }
 
 TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -606,7 +606,7 @@ TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
 }
 
 TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreezeNoInterrupts) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCalls();

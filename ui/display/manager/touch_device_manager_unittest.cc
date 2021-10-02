@@ -33,7 +33,7 @@ ui::TouchscreenDevice CreateTouchscreenDevice(int id,
 TouchDeviceManager::TouchAssociationInfo CreateTouchAssociationInfo(
     int days_old) {
   TouchDeviceManager::TouchAssociationInfo info;
-  info.timestamp = base::Time::Now() - base::TimeDelta::FromDays(days_old);
+  info.timestamp = base::Time::Now() - base::Days(days_old);
   return info;
 }
 

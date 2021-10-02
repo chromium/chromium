@@ -218,7 +218,7 @@ TEST_F(VideoFrameCompositorTest, PaintSingleFrame) {
 TEST_F(VideoFrameCompositorTest, RenderFiresPresentationCallback) {
   // Advance the clock so we can differentiate between base::TimeTicks::Now()
   // and base::TimeTicks().
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock_.Advance(base::Seconds(1));
 
   scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
@@ -254,7 +254,7 @@ TEST_F(VideoFrameCompositorTest, PresentationCallbackForcesBeginFrames) {
 TEST_F(VideoFrameCompositorTest, MultiplePresentationCallbacks) {
   // Advance the clock so we can differentiate between base::TimeTicks::Now()
   // and base::TimeTicks().
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock_.Advance(base::Seconds(1));
 
   // Create frames of different sizes so we can differentiate them.
   constexpr int kSize1 = 8;
@@ -406,7 +406,7 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
 
   // Since we have a client, this call should not call background render, even
   // if a lot of time has elapsed between calls.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock_.Advance(base::Seconds(1));
   EXPECT_CALL(*this, Render(_, _, _)).Times(0);
   compositor()->UpdateCurrentFrameIfStale();
 
@@ -430,7 +430,7 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
   EXPECT_EQ(opaque_frame_2, compositor()->GetCurrentFrame());
 
   // Advancing the tick clock should allow a new frame to be requested.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+  tick_clock_.Advance(base::Milliseconds(10));
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
       .WillOnce(Return(opaque_frame_1));
   compositor()->UpdateCurrentFrameIfStale();
@@ -441,7 +441,7 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
   compositor()->SetVideoFrameProviderClient(nullptr);
 
   // Advancing the tick clock should allow a new frame to be requested.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+  tick_clock_.Advance(base::Milliseconds(10));
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
       .WillOnce(Return(opaque_frame_2));
   compositor()->UpdateCurrentFrameIfStale();
@@ -462,7 +462,7 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
 
   // Move the clock forward. Otherwise, the current time will be 0, will appear
   // null, and will cause DCHECKs.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock_.Advance(base::Seconds(1));
 
   // Starting the video renderer should return a single frame.
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
@@ -472,7 +472,7 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
 
   // This call should return true even if we have a client that is driving frame
   // updates.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock_.Advance(base::Seconds(1));
   EXPECT_CALL(*this, Render(_, _, _)).WillOnce(Return(opaque_frame_2));
   compositor()->UpdateCurrentFrameIfStale(
       VideoFrameCompositor::UpdateType::kBypassClient);
@@ -482,7 +482,7 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
 }
 
 TEST_F(VideoFrameCompositorTest, PreferredRenderInterval) {
-  preferred_render_interval_ = base::TimeDelta::FromSeconds(1);
+  preferred_render_interval_ = base::Seconds(1);
   compositor_->Start(this);
   EXPECT_EQ(compositor_->GetPreferredRenderInterval(),
             preferred_render_interval_);

@@ -55,7 +55,7 @@ constexpr int kSecondaryActionIconSize = 16;
 
 // Animation.
 constexpr base::TimeDelta kInProgressImageScaleDuration =
-    base::TimeDelta::FromMilliseconds(150);
+    base::Milliseconds(150);
 constexpr float kInProgressImageScaleFactor = 0.7f;
 
 // Helpers ---------------------------------------------------------------------

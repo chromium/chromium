@@ -404,8 +404,7 @@ bool ExperimentStorage::StoreMetricsUnsafe(const ExperimentMetrics& metrics) {
   ExperimentLabels experiment_labels(value);
 
   experiment_labels.SetValueForLabel(kExperimentLabelName,
-                                     EncodeMetrics(metrics),
-                                     base::TimeDelta::FromDays(182));
+                                     EncodeMetrics(metrics), base::Days(182));
 
   return GoogleUpdateSettings::SetExperimentLabels(experiment_labels.value());
 }

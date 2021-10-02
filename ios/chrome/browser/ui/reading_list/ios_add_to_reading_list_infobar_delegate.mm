@@ -60,7 +60,7 @@ std::u16string IOSAddToReadingListInfobarDelegate::GetMessageText() const {
 bool IOSAddToReadingListInfobarDelegate::Accept() {
   model_->AddEntry(url_, base::UTF16ToUTF8(title_),
                    reading_list::ADDED_VIA_CURRENT_APP,
-                   base::TimeDelta::FromMinutes(estimated_read_time_));
+                   base::Minutes(estimated_read_time_));
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state_);
   if (sourceID != ukm::kInvalidSourceId) {
     ukm::builders::IOS_PageAddedToReadingList(sourceID)

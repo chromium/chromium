@@ -127,7 +127,7 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
     RuntimeAPI* runtime_api =
         RuntimeAPI::GetFactoryInstance()->Get(browser_context());
     runtime_api->set_min_duration_between_restarts_for_testing(
-        base::TimeDelta::FromSeconds(2));
+        base::Seconds(2));
     runtime_api->AllowNonKioskAppsInRestartAfterDelayForTesting();
 
     RuntimeAPI::RegisterPrefs(
@@ -198,14 +198,14 @@ TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
   base::TimeTicks now = base::TimeTicks::Now();
   RunRestartAfterDelayFunction("[3]", "");
   ASSERT_TRUE(IsDelayedRestartTimerRunning());
-  ASSERT_GE(desired_restart_time() - now, base::TimeDelta::FromSeconds(3));
+  ASSERT_GE(desired_restart_time() - now, base::Seconds(3));
 
   // Request another restart after 4 seconds. It should reschedule the previous
   // request.
   now = base::TimeTicks::Now();
   RunRestartAfterDelayFunction("[4]", "");
   ASSERT_TRUE(IsDelayedRestartTimerRunning());
-  ASSERT_GE(desired_restart_time() - now, base::TimeDelta::FromSeconds(4));
+  ASSERT_GE(desired_restart_time() - now, base::Seconds(4));
 
   // Create another extension and make it attempt to use the api, and expect a
   // failure.
@@ -224,10 +224,10 @@ TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
   now = base::TimeTicks::Now();
   RunRestartAfterDelayFunction("[1]", "");
   ASSERT_TRUE(IsDelayedRestartTimerRunning());
-  ASSERT_GE(desired_restart_time() - now, base::TimeDelta::FromSeconds(1));
+  ASSERT_GE(desired_restart_time() - now, base::Seconds(1));
   base::TimeTicks last_restart_time = WaitForSuccessfulRestart();
   ASSERT_FALSE(IsDelayedRestartTimerRunning());
-  ASSERT_GE(base::TimeTicks::Now() - now, base::TimeDelta::FromSeconds(1));
+  ASSERT_GE(base::TimeTicks::Now() - now, base::Seconds(1));
 
   // This is a restart request that will be throttled, because it happens too
   // soon after a successful restart.
@@ -237,7 +237,7 @@ TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
   // Restart will happen 2 seconds later, even though the request was just one
   // second.
   ASSERT_NEAR((desired_restart_time() - last_restart_time).InSecondsF(),
-              base::TimeDelta::FromSeconds(2).InSecondsF(), 0.5);
+              base::Seconds(2).InSecondsF(), 0.5);
 
   // Calling chrome.runtime.restart() will not clear the throttle, and any
   // subsequent calls to chrome.runtime.restartAfterDelay will still be
@@ -251,7 +251,7 @@ TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
   // Restart will happen 2 seconds later, even though the request was just one
   // second.
   ASSERT_NEAR((desired_restart_time() - last_restart_time).InSecondsF(),
-              base::TimeDelta::FromSeconds(2).InSecondsF(), 0.5);
+              base::Seconds(2).InSecondsF(), 0.5);
 }
 
 }  // namespace extensions

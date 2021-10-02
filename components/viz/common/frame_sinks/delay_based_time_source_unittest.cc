@@ -15,8 +15,7 @@ namespace viz {
 namespace {
 
 base::TimeDelta Interval() {
-  return base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                           60);
+  return base::Microseconds(base::Time::kMicrosecondsPerSecond / 60);
 }
 
 class DelayBasedTimeSourceTest : public ::testing::Test {
@@ -55,7 +54,7 @@ TEST_F(DelayBasedTimeSourceTest, TaskPostedAndTickCalled) {
   EXPECT_TRUE(timer()->Active());
   EXPECT_TRUE(task_runner()->HasPendingTask());
 
-  SetNow(timer()->Now() + base::TimeDelta::FromMilliseconds(16));
+  SetNow(timer()->Now() + base::Milliseconds(16));
   task_runner()->RunPendingTasks();
   EXPECT_TRUE(timer()->Active());
   EXPECT_TRUE(client()->TickCalled());
@@ -115,7 +114,7 @@ TEST_F(DelayBasedTimeSourceTest, NextDelaySaneWhenSlightlyAfterRequestedTime) {
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + Interval() + base::TimeDelta::FromMicroseconds(1));
+  SetNow(timer()->Now() + Interval() + base::Microseconds(1));
   task_runner()->RunPendingTasks();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
@@ -149,8 +148,7 @@ TEST_F(DelayBasedTimeSourceTest,
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + 2 * Interval() +
-         base::TimeDelta::FromMicroseconds(1));
+  SetNow(timer()->Now() + 2 * Interval() + base::Microseconds(1));
   task_runner()->RunPendingTasks();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
@@ -166,7 +164,7 @@ TEST_F(DelayBasedTimeSourceTest, NextDelaySaneWhenHalfAfterRequestedTime) {
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + Interval() + base::TimeDelta::FromMilliseconds(8));
+  SetNow(timer()->Now() + Interval() + base::Milliseconds(8));
   task_runner()->RunPendingTasks();
 
   EXPECT_EQ(8, task_runner()->NextPendingTaskDelay().InMilliseconds());
@@ -183,7 +181,7 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   base::TimeTicks future_timebase = timer()->Now() + Interval() * 10;
 
   // 1ms jitter
-  base::TimeDelta jitter1 = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta jitter1 = base::Milliseconds(1);
 
   // Tick with +1ms of jitter
   future_timebase += Interval();
@@ -214,7 +212,7 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // 8 ms jitter
-  base::TimeDelta jitter8 = base::TimeDelta::FromMilliseconds(8);
+  base::TimeDelta jitter8 = base::Milliseconds(8);
 
   // Tick with +8ms of jitter
   future_timebase += Interval();
@@ -245,7 +243,7 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // 15 ms jitter
-  base::TimeDelta jitter15 = base::TimeDelta::FromMilliseconds(15);
+  base::TimeDelta jitter15 = base::Milliseconds(15);
 
   // Tick with +15ms jitter
   future_timebase += Interval();
@@ -290,7 +288,7 @@ TEST_F(DelayBasedTimeSourceTest, AchievesTargetRateWithNoNoise) {
     total_frame_time += delay_ms / 1000.0;
 
     // Run the callback exactly when asked
-    SetNow(timer()->Now() + base::TimeDelta::FromMilliseconds(delay_ms));
+    SetNow(timer()->Now() + base::Milliseconds(delay_ms));
     task_runner()->RunPendingTasks();
   }
   double average_interval =
@@ -323,7 +321,7 @@ TEST_F(DelayBasedTimeSourceTest,
 
   // Start the timer() again, but before the next tick time the timer()
   // previously planned on using. That same tick time should still be targeted.
-  SetNow(timer()->Now() + base::TimeDelta::FromMilliseconds(4));
+  SetNow(timer()->Now() + base::Milliseconds(4));
   timer()->SetActive(true);
   EXPECT_EQ(12, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -343,7 +341,7 @@ TEST_F(DelayBasedTimeSourceTest, TestDeactivateAndReactivateAfterNextTickTime) {
 
   // Start the timer() again, but before the next tick time the timer()
   // previously planned on using. That same tick time should still be targeted.
-  SetNow(timer()->Now() + base::TimeDelta::FromMilliseconds(20));
+  SetNow(timer()->Now() + base::Milliseconds(20));
   timer()->SetActive(true);
   EXPECT_EQ(13, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }

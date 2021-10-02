@@ -35,13 +35,13 @@ namespace remoting {
 namespace {
 
 // The moving time window to track the media time and statistics updates.
-constexpr base::TimeDelta kTrackingWindow = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTrackingWindow = base::Seconds(5);
 
 // The allowed delay for the remoting playback. When continuously exceeds this
 // limit for |kPlaybackDelayCountThreshold| times, the user experience is likely
 // poor and the controller is notified.
 constexpr base::TimeDelta kMediaPlaybackDelayThreshold =
-    base::TimeDelta::FromMilliseconds(750);
+    base::Milliseconds(750);
 constexpr int kPlaybackDelayCountThreshold = 10;
 
 // The allowed percentage of the number of video frames dropped vs. the number
@@ -51,13 +51,11 @@ constexpr int kMaxNumVideoFramesDroppedPercentage = 3;
 
 // The time period to allow receiver get stable after playback rate change or
 // Flush().
-constexpr base::TimeDelta kStabilizationPeriod =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kStabilizationPeriod = base::Seconds(2);
 
 // The amount of time between polling the DemuxerStreamAdapters to measure their
 // data flow rates for metrics.
-constexpr base::TimeDelta kDataFlowPollPeriod =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDataFlowPollPeriod = base::Seconds(10);
 
 }  // namespace
 
@@ -517,8 +515,8 @@ void CourierRenderer::OnTimeUpdate(
   {
     // Updates current time information.
     base::AutoLock auto_lock(time_lock_);
-    current_media_time_ = base::TimeDelta::FromMicroseconds(time_usec);
-    current_max_time_ = base::TimeDelta::FromMicroseconds(max_time_usec);
+    current_media_time_ = base::Microseconds(time_usec);
+    current_max_time_ = base::Microseconds(max_time_usec);
   }
 
   metrics_recorder_.OnEvidenceOfPlayoutAtReceiver();

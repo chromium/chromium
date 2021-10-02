@@ -15,10 +15,9 @@ const base::Feature kReclaimInactiveWebCodecs{"ReclaimInactiveWebCodecs",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
-constexpr base::TimeDelta kInactivityReclamationThreshold =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kInactivityReclamationThreshold = base::Minutes(1);
 
-constexpr base::TimeDelta kTimerPeriod = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kTimerPeriod = base::Seconds(30);
 }  // namespace
 
 ReclaimableCodec::ReclaimableCodec()

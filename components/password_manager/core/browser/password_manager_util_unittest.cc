@@ -163,8 +163,8 @@ TEST(PasswordManagerUtil, GetMatchType_Web) {
 
 TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time kNow = base::Time::Now();
-  const base::Time kYesterday = kNow - base::TimeDelta::FromDays(1);
-  const base::Time k2DaysAgo = kNow - base::TimeDelta::FromDays(2);
+  const base::Time kYesterday = kNow - base::Days(1);
+  const base::Time k2DaysAgo = kNow - base::Days(2);
   const int kNotFound = -1;
   struct TestMatch {
     bool is_psl_match;

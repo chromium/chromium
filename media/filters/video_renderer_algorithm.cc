@@ -35,8 +35,8 @@ VideoRendererAlgorithm::VideoRendererAlgorithm(
     const TimeSource::WallClockTimeCB& wall_clock_time_cb,
     MediaLog* media_log)
     : media_log_(media_log),
-      cadence_estimator_(base::TimeDelta::FromSeconds(
-          kMinimumAcceptableTimeBetweenGlitchesSecs)),
+      cadence_estimator_(
+          base::Seconds(kMinimumAcceptableTimeBetweenGlitchesSecs)),
       wall_clock_time_cb_(wall_clock_time_cb),
       frame_duration_calculator_(kMovingAverageSamples),
       frame_dropping_disabled_(false) {
@@ -313,7 +313,7 @@ void VideoRendererAlgorithm::Reset(ResetFlag reset_flag) {
 
   // Default to ATSC IS/191 recommendations for maximum acceptable drift before
   // we have enough frames to base the maximum on frame duration.
-  max_acceptable_drift_ = base::TimeDelta::FromMilliseconds(15);
+  max_acceptable_drift_ = base::Milliseconds(15);
 }
 
 int64_t VideoRendererAlgorithm::GetMemoryUsage() const {
@@ -364,7 +364,7 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
       new_frame_index > 0
           ? timestamp - frame_queue_[new_frame_index - 1].frame->timestamp()
           : base::TimeDelta::Max());
-  if (delta < base::TimeDelta::FromMilliseconds(1)) {
+  if (delta < base::Milliseconds(1)) {
     DVLOG(2) << "Dropping frame too close to an already enqueued frame: "
              << delta.InMicroseconds() << " us";
     ++frames_dropped_during_enqueue_;
@@ -559,8 +559,8 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
   // We'll always allow at least 16.66ms of drift since literature suggests it's
   // well below the floor of detection and is high enough to ensure stability
   // for 60fps content.
-  max_acceptable_drift_ = std::max(average_frame_duration_ / 2,
-                                   base::TimeDelta::FromSecondsD(1.0 / 60));
+  max_acceptable_drift_ =
+      std::max(average_frame_duration_ / 2, base::Seconds(1.0 / 60));
 
   // If we were called via RemoveExpiredFrames() and Render() was never called,
   // we may not have a render interval yet.
@@ -670,8 +670,7 @@ int VideoRendererAlgorithm::FindBestFrameByCoverage(
   // ensure proper coverage calculation for 24fps in 60Hz where +/- 100us of
   // jitter is present within the |render_interval_|. At 60Hz this works out to
   // an allowed jitter of 3%.
-  const base::TimeDelta kAllowableJitter =
-      base::TimeDelta::FromMicroseconds(500);
+  const base::TimeDelta kAllowableJitter = base::Microseconds(500);
   if (*second_best >= 0 && best_frame_by_coverage > *second_best &&
       (best_coverage - coverage[*second_best]).magnitude() <=
           kAllowableJitter) {

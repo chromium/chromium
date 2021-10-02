@@ -235,14 +235,14 @@ TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_IsObsolete) {
   request.AddCallback(base::DoNothing());
   EXPECT_FALSE(request.IsObsolete(
       request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
-      base::TimeDelta::FromMicroseconds(1)));
+      base::Microseconds(1)));
 
   // A request is obsolete once it is too old and has no callbacks.
   // Whether paste is allowed or not is not important.
   request.Complete(ClipboardHostImpl::ClipboardPasteContentAllowed(true));
   EXPECT_TRUE(request.IsObsolete(
       request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
-      base::TimeDelta::FromMicroseconds(1)));
+      base::Microseconds(1)));
 }
 
 TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
@@ -377,7 +377,7 @@ TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
   // It should be cleaned up.
   task_environment()->FastForwardBy(
       FakeClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
-      base::TimeDelta::FromMicroseconds(1));
+      base::Microseconds(1));
   clipboard_host_impl()->CleanupObsoleteRequests();
   EXPECT_EQ(
       0u,

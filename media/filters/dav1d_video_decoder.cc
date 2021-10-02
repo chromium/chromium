@@ -444,7 +444,7 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
       config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size)),
       pic->stride[0], uv_plane_stride, uv_plane_stride,
       static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
-      base::TimeDelta::FromMicroseconds(pic->m.timestamp));
+      base::Microseconds(pic->m.timestamp));
   if (!frame)
     return nullptr;
 

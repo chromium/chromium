@@ -865,18 +865,18 @@ TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
   // Store the time and check for the result. Allow for a difference one second
   // because the 64-bit integral representation in base::Time is rounded off to
   // a double, which is what base::Value stores. http://crbug.com/346827
-  base::Time lower_bound = base::Time::Now() - base::TimeDelta::FromSeconds(1);
+  base::Time lower_bound = base::Time::Now() - base::Seconds(1);
   entry->SetActiveTimeToNow();
-  base::Time upper_bound = base::Time::Now() + base::TimeDelta::FromSeconds(1);
+  base::Time upper_bound = base::Time::Now() + base::Seconds(1);
   EXPECT_TRUE(entry->IsDouble(kActiveTimeKey));
   EXPECT_LE(lower_bound, entry->GetActiveTime());
   EXPECT_GE(upper_bound, entry->GetActiveTime());
 
   // If the active time was less than one hour ago, SetActiveTimeToNow should do
   // nothing.
-  base::Time past = base::Time::Now() - base::TimeDelta::FromMinutes(10);
-  lower_bound = past - base::TimeDelta::FromSeconds(1);
-  upper_bound = past + base::TimeDelta::FromSeconds(1);
+  base::Time past = base::Time::Now() - base::Minutes(10);
+  lower_bound = past - base::Seconds(1);
+  upper_bound = past + base::Seconds(1);
   ASSERT_TRUE(entry->SetDouble(kActiveTimeKey, past.ToDoubleT()));
   base::Time stored_time = entry->GetActiveTime();
   ASSERT_LE(lower_bound, stored_time);

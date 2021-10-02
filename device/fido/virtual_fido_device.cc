@@ -564,8 +564,7 @@ VirtualFidoDevice::GenerateAttestationCertificate(
 
   // https://w3c.github.io/webauthn/#sctn-packed-attestation-cert-requirements
   // Make the certificate expire about 20 years from now.
-  base::Time expiry_date =
-      base::Time::Now() + base::TimeDelta::FromDays(365 * 20);
+  base::Time expiry_date = base::Time::Now() + base::Days(365 * 20);
   std::string attestation_cert;
   if (!net::x509_util::CreateSelfSignedCert(
           attestation_private_key->key(), net::x509_util::DIGEST_SHA256,

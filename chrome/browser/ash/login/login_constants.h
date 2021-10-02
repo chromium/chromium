@@ -26,8 +26,7 @@ constexpr int kLockScreenOfflineSigninTimeLimitDaysMatchLogin = -2;
 
 constexpr int kDefaultGaiaOfflineSigninTimeLimitDays =
     kOfflineSigninTimeLimitNotSet;
-constexpr int kDefaultSAMLOfflineSigninTimeLimit =
-    base::TimeDelta::FromDays(14).InSeconds();
+constexpr int kDefaultSAMLOfflineSigninTimeLimit = base::Days(14).InSeconds();
 
 constexpr int kDefaultGaiaLockScreenOfflineSigninTimeLimitDays =
     kLockScreenOfflineSigninTimeLimitDaysMatchLogin;

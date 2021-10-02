@@ -406,9 +406,8 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
   bool load_system_info =
       (params->load_system_info && *params->load_system_info);
   if (params->form_open_time) {
-    const auto form_open_time =
-        base::TimeTicks::UnixEpoch() +
-        base::TimeDelta::FromMilliseconds(*params->form_open_time);
+    const auto form_open_time = base::TimeTicks::UnixEpoch() +
+                                base::Milliseconds(*params->form_open_time);
     base::UmaHistogramLongTimes("Feedback.Duration.FormOpenToSubmit",
                                 base::TimeTicks::Now() - form_open_time);
   }

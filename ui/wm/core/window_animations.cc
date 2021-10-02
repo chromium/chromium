@@ -211,8 +211,7 @@ base::TimeDelta GetWindowVisibilityAnimationDuration(
       window.GetProperty(kWindowVisibilityAnimationDurationKey);
   if (duration.is_zero() &&
       window.GetType() == aura::client::WINDOW_TYPE_MENU) {
-    return base::TimeDelta::FromMilliseconds(
-        kDefaultAnimationDurationForMenuMS);
+    return base::Milliseconds(kDefaultAnimationDurationForMenuMS);
   }
   return duration;
 }
@@ -389,9 +388,9 @@ std::unique_ptr<ui::LayerAnimationElement> CreateGrowShrinkElement(
   std::unique_ptr<ui::LayerAnimationElement> transition =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
           std::move(scale_about_pivot),
-          base::TimeDelta::FromMilliseconds(
-              kWindowAnimation_Bounce_DurationMS *
-              kWindowAnimation_Bounce_GrowShrinkDurationPercent / 100));
+          base::Milliseconds(kWindowAnimation_Bounce_DurationMS *
+                             kWindowAnimation_Bounce_GrowShrinkDurationPercent /
+                             100));
   transition->set_tween_type(grow ? gfx::Tween::EASE_OUT : gfx::Tween::EASE_IN);
   return transition;
 }
@@ -406,10 +405,10 @@ void AnimateBounce(aura::Window* window) {
   sequence->AddElement(CreateGrowShrinkElement(window, true));
   sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
       ui::LayerAnimationElement::BOUNDS,
-      base::TimeDelta::FromMilliseconds(
-        kWindowAnimation_Bounce_DurationMS *
-            (100 - 2 * kWindowAnimation_Bounce_GrowShrinkDurationPercent) /
-            100)));
+      base::Milliseconds(
+          kWindowAnimation_Bounce_DurationMS *
+          (100 - 2 * kWindowAnimation_Bounce_GrowShrinkDurationPercent) /
+          100)));
   sequence->AddElement(CreateGrowShrinkElement(window, false));
   window->layer()->GetAnimator()->StartAnimation(sequence.release());
 }
@@ -451,8 +450,8 @@ void AddLayerAnimationsForRotate(aura::Window* window, bool show) {
   if (show)
     window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
 
-  base::TimeDelta duration = base::TimeDelta::FromMilliseconds(
-      kWindowAnimation_Rotate_DurationMS);
+  base::TimeDelta duration =
+      base::Milliseconds(kWindowAnimation_Rotate_DurationMS);
 
   if (!show) {
     window->layer()->GetAnimator()->SchedulePauseForProperties(

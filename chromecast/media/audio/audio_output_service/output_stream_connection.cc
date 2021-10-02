@@ -16,7 +16,7 @@ namespace audio_output_service {
 
 namespace {
 
-constexpr base::TimeDelta kHeartbeatTimeout = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kHeartbeatTimeout = base::Seconds(2);
 
 enum MessageTypes : int {
   kInitial = 1,

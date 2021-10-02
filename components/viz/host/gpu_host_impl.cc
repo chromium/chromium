@@ -513,7 +513,7 @@ void GpuHostImpl::DidDestroyAllChannels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!channel_requests_.empty())
     return;
-  constexpr base::TimeDelta kShutDownTimeout = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kShutDownTimeout = base::Seconds(10);
   shutdown_timeout_.Start(FROM_HERE, kShutDownTimeout,
                           base::BindOnce(&GpuHostImpl::MaybeShutdownGpuProcess,
                                          base::Unretained(this)));

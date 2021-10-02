@@ -184,8 +184,7 @@ void ClickOnView(const views::View* view,
 void WaitForMilliseconds(int milliseconds) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(milliseconds));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(milliseconds));
   run_loop.Run();
 }
 
@@ -1758,7 +1757,7 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   // Set the time to 00:00:00 local time the next day, override the current
   // desk's clock and reset its visited metrics.
   test_clock.SetNow(base::Time::Now().LocalMidnight());
-  test_clock.Advance(base::TimeDelta::FromHours(1));
+  test_clock.Advance(base::Hours(1));
   auto* active_desk = desks_controller->active_desk();
   desks_restore_util::OverrideClockForTesting(&test_clock);
   DesksTestApi::ResetDeskVisitedMetrics(const_cast<Desk*>(active_desk));
@@ -1775,7 +1774,7 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   // entry for two days since we stayed on the active desk the whole time.
   // Additionally, there shouldn't be a record for the desk we switch to since
   // we haven't visited it yet.
-  test_clock.Advance(base::TimeDelta::FromDays(2));
+  test_clock.Advance(base::Days(2));
   RemoveDesk(active_desk);
   histogram_tester.ExpectBucketCount(kConsecutiveDailyVisitsHistogram, 3, 1);
   EXPECT_EQ(
@@ -1797,7 +1796,7 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   // a one day entry should be recorded for the previous desk.
   NewDesk();
   ActivateDesk(desks_controller->GetNextDesk());
-  test_clock.Advance(base::TimeDelta::FromDays(2));
+  test_clock.Advance(base::Days(2));
   ActivateDesk(desks_controller->GetPreviousDesk());
   histogram_tester.ExpectBucketCount(kConsecutiveDailyVisitsHistogram, 1, 2);
   EXPECT_EQ(
@@ -1807,7 +1806,7 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   // Go back in time to simulate a user switching timezones and then switch to
   // the next desk. Since the current time is before the |last_day_visited_|
   // field of the next desk, its visited fields should be reset.
-  test_clock.Advance(base::TimeDelta::FromDays(-2));
+  test_clock.Advance(base::Days(-2));
   ActivateDesk(desks_controller->GetNextDesk());
   active_desk = desks_controller->active_desk();
   const int current_date = desks_restore_util::GetDaysFromLocalEpoch();
@@ -5707,7 +5706,7 @@ TEST_F(DesksTest, PrimaryUserHasUsedDesksRecently) {
   EXPECT_TRUE(desks_restore_util::HasPrimaryUserUsedDesksRecently());
 
   // `kUserHasUsedDesksRecently` should be kept as true after setting.
-  test_clock.Advance(base::TimeDelta::FromDays(50));
+  test_clock.Advance(base::Days(50));
   EXPECT_TRUE(desks_restore_util::HasPrimaryUserUsedDesksRecently());
   desks_restore_util::OverrideClockForTesting(nullptr);
 }
@@ -5748,7 +5747,7 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
 
   // Let a week elapse. There should be a new entry for four since there were
   // three created desks and the initial active desk.
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->AdvanceClock(base::Days(7));
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 4, 1);
   EXPECT_EQ(1u,
@@ -5760,7 +5759,7 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
   EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
   ActivateDesk(desk_2);
   ActivateDesk(desk_1);
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->AdvanceClock(base::Days(7));
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1, 1);
   EXPECT_EQ(2u,
@@ -5772,11 +5771,11 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
   // twice.
   EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
   ActivateDesk(desk_2);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   ActivateDesk(desk_1);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   ActivateDesk(desk_2);
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->AdvanceClock(base::Days(7));
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 2, 1);
   EXPECT_EQ(3u,
@@ -5797,7 +5796,7 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
       win2.get(), desk_4, win2->GetRootWindow(),
       DesksMoveWindowFromActiveDeskSource::kSendToDesk);
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->AdvanceClock(base::Days(7));
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 3, 1);
   EXPECT_EQ(4u,
@@ -5810,14 +5809,14 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
   EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
   const int number_of_one_bucket_entries =
       histogram_tester.GetBucketCount(kWeeklyActiveDesksHistogram, 1);
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(6));
+  task_environment()->AdvanceClock(base::Days(6));
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1,
                                      number_of_one_bucket_entries);
 
   // Wait one more day and it should now report an entry for one, accounting for
   // the current active desk.
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1,
                                      number_of_one_bucket_entries + 1);

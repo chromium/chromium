@@ -55,8 +55,7 @@ namespace {
 using ::ui::mojom::DragOperation;
 
 // Animation.
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -681,7 +680,7 @@ void HoldingSpaceTray::SchedulePreviewsIconUpdate() {
   // previews so items added in quick succession are handled together.
   base::TimeDelta delay = use_zero_previews_update_delay_
                               ? base::TimeDelta()
-                              : base::TimeDelta::FromMilliseconds(50);
+                              : base::Milliseconds(50);
   previews_update_.Start(FROM_HERE, delay,
                          base::BindOnce(&HoldingSpaceTray::UpdatePreviewsIcon,
                                         base::Unretained(this)));

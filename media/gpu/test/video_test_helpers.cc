@@ -418,8 +418,8 @@ AlignedDataHelper::AlignedDataHelper(
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       visible_rect_(visible_rect),
       natural_size_(natural_size),
-      time_stamp_interval_(base::TimeDelta::FromSeconds(/*secs=*/0u)),
-      elapsed_frame_time_(base::TimeDelta::FromSeconds(/*secs=*/0u)) {
+      time_stamp_interval_(base::Seconds(/*secs=*/0u)),
+      elapsed_frame_time_(base::Seconds(/*secs=*/0u)) {
   // If the frame_rate is passed in, then use that timing information
   // to generate timestamps that increment according the frame_rate.
   // Otherwise timestamps will be generated when GetNextFrame() is called
@@ -454,10 +454,9 @@ bool AlignedDataHelper::AtEndOfStream() const {
 
 void AlignedDataHelper::UpdateFrameRate(uint32_t frame_rate) {
   if (frame_rate == 0) {
-    time_stamp_interval_ = base::TimeDelta::FromSeconds(/*secs=*/0u);
+    time_stamp_interval_ = base::Seconds(/*secs=*/0u);
   } else {
-    time_stamp_interval_ =
-        base::TimeDelta::FromSeconds(/*secs=*/1u) / frame_rate;
+    time_stamp_interval_ = base::Seconds(/*secs=*/1u) / frame_rate;
   }
 }
 

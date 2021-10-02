@@ -69,8 +69,7 @@ class CrOSActionRecorder {
   friend class CrOSActionRecorderTabTrackerTest;
 
   // kSaveInternal controls how often we save the action history to disk.
-  static constexpr base::TimeDelta kSaveInternal =
-      base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kSaveInternal = base::Hours(1);
 
   // Private constructor used for testing purpose. Which basically calls the
   // Init function.

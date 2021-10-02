@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, NullTestWithAlert) {
 
   // TODO(timvolodine): investigate if it is possible to test this without
   // delay, crbug.com/360044.
-  WaitForAlertDialogAndQuitAfterDelay(base::TimeDelta::FromMilliseconds(500));
+  WaitForAlertDialogAndQuitAfterDelay(base::Milliseconds(500));
 
   same_tab_observer.Wait();
   EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());

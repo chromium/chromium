@@ -153,10 +153,8 @@ TEST_F(NativeFileUtilTest, TouchFileAndGetFileInfo) {
   ASSERT_EQ(info.last_accessed, native_info.last_accessed);
   ASSERT_EQ(info.creation_time, native_info.creation_time);
 
-  const base::Time new_accessed =
-      info.last_accessed + base::TimeDelta::FromHours(10);
-  const base::Time new_modified =
-      info.last_modified + base::TimeDelta::FromHours(5);
+  const base::Time new_accessed = info.last_accessed + base::Hours(10);
+  const base::Time new_modified = info.last_modified + base::Hours(5);
 
   EXPECT_EQ(base::File::FILE_OK,
             NativeFileUtil::Touch(file_name, new_accessed, new_modified));

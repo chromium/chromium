@@ -410,7 +410,7 @@ absl::optional<base::TimeDelta> ResourceResponse::Age() const {
     if (!ok) {
       age_ = absl::nullopt;
     } else {
-      age_ = base::TimeDelta::FromSecondsD(seconds);
+      age_ = base::Seconds(seconds);
     }
     have_parsed_age_header_ = true;
   }

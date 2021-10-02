@@ -282,7 +282,7 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
   void SetAlternativeService(const HttpRequestInfo& request_info,
                              AlternativeService alternative_service) {
     url::SchemeHostPort server(request_info.url);
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     if (alternative_service.protocol == kProtoQUIC) {
       session_->http_server_properties()->SetQuicAlternativeService(
           server, NetworkIsolationKey(), alternative_service, expiration,
@@ -775,7 +775,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       {quic::ParsedQuicVersion::Unsupported()});
@@ -807,7 +807,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       quic_context_.params()->supported_versions);
@@ -865,7 +865,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       quic_context_.params()->supported_versions);
@@ -1776,7 +1776,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
-  stats1.srtt = base::TimeDelta::FromMicroseconds(10);
+  stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
       NetworkIsolationKey(), stats1);
@@ -1800,7 +1800,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   // Since the alt job has not finished host resolution, there should be no
   // delayed task posted to resume the main job.
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(50));
+  FastForwardBy(base::Microseconds(50));
   EXPECT_TRUE(JobControllerPeer::main_job_is_blocked(job_controller_));
 
   // Allow alt job host resolution to complete.
@@ -1809,9 +1809,9 @@ TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   // Task to resume main job in 15 microseconds should be posted.
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(14));
+  FastForwardBy(base::Microseconds(14));
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+  FastForwardBy(base::Microseconds(1));
 
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_TRUE(job_controller_->alternative_job());
@@ -1849,7 +1849,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCP) {
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
-  stats1.srtt = base::TimeDelta::FromMicroseconds(10);
+  stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
       NetworkIsolationKey(), stats1);
@@ -1876,9 +1876,9 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCP) {
   // Task to resume main job in 15us should be posted.
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(14));
+  FastForwardBy(base::Microseconds(14));
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+  FastForwardBy(base::Microseconds(1));
 
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_TRUE(job_controller_->alternative_job());
@@ -1913,7 +1913,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
-  stats1.srtt = base::TimeDelta::FromMicroseconds(10);
+  stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
       NetworkIsolationKey(), stats1);
@@ -1936,7 +1936,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
       .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
   job_controller_->OnStreamFailed(job_factory_.alternative_job(),
                                   ERR_QUIC_PROTOCOL_ERROR, SSLConfig());
-  FastForwardBy(base::TimeDelta::FromMicroseconds(0));
+  FastForwardBy(base::Microseconds(0));
   run_loop.Run();
   EXPECT_FALSE(job_controller_->alternative_job());
 
@@ -1960,7 +1960,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   // There shouldn't be any ResumeMainJobLater() delayed tasks.
   // This EXPECT_CALL will fail before crbug.com/789560 fix.
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(15));
+  FastForwardBy(base::Microseconds(15));
 
   EXPECT_TRUE(job_controller_->main_job());
   request_.reset();
@@ -1972,7 +1972,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
 // delayed tcp case.
 TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   // The max delay time should be in sync with .cc file.
-  base::TimeDelta kMaxDelayTimeForMainJob = base::TimeDelta::FromSeconds(3);
+  base::TimeDelta kMaxDelayTimeForMainJob = base::Seconds(3);
 
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -1991,7 +1991,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
-  stats1.srtt = base::TimeDelta::FromSeconds(100);
+  stats1.srtt = base::Seconds(100);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
       NetworkIsolationKey(), stats1);
@@ -2017,9 +2017,9 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   // Task to resume main job in 3 seconds should be posted.
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(kMaxDelayTimeForMainJob - base::TimeDelta::FromMicroseconds(1));
+  FastForwardBy(kMaxDelayTimeForMainJob - base::Microseconds(1));
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+  FastForwardBy(base::Microseconds(1));
 
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_TRUE(job_controller_->alternative_job());
@@ -2053,7 +2053,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
-  stats1.srtt = base::TimeDelta::FromMicroseconds(10);
+  stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
       NetworkIsolationKey(), stats1);
@@ -2081,7 +2081,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
 
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+  FastForwardBy(base::Microseconds(1));
 
   // Now unpause the mock quic data to fail the alt job. This should immediately
   // resume the main job.
@@ -2097,7 +2097,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   // not call Resume() on the main job as main job has been resumed.
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  FastForwardBy(base::TimeDelta::FromMicroseconds(15));
+  FastForwardBy(base::Microseconds(15));
 
   FastForwardUntilNoTasksRemain();
 }
@@ -2532,8 +2532,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequestsFirstRequestHang) {
   }
 
   EXPECT_GT(GetPendingMainThreadTaskCount(), 0u);
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
-      HttpStreamFactory::Job::kHTTP2ThrottleMs));
+  FastForwardBy(base::Milliseconds(HttpStreamFactory::Job::kHTTP2ThrottleMs));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -2909,7 +2908,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
 
   // Set alternative service with no advertised version.
   session_->http_server_properties()->SetQuicAlternativeService(
@@ -3101,7 +3100,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
 
   // Set alternative service for www.google.com to be www.example.com over QUIC.
   url::SchemeHostPort server(request_info.url);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   quic::ParsedQuicVersionVector supported_versions =
       quic_context_.params()->supported_versions;
   session_->http_server_properties()->SetQuicAlternativeService(

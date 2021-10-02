@@ -559,7 +559,7 @@ class WaylandBufferManagerHost::Surface {
         wp_presentation_feedback,
         gfx::PresentationFeedback(self->connection_->ConvertPresentationTime(
                                       tv_sec_hi, tv_sec_lo, tv_nsec),
-                                  base::TimeDelta::FromNanoseconds(refresh),
+                                  base::Nanoseconds(refresh),
                                   GetPresentationKindFlags(flags)));
   }
 

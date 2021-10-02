@@ -2215,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, IPListDedup) {
   std::string test_server_host(embedded_test_server()->base_url().host());
   ip_map->insert(
       std::make_pair(test_server_host, std::vector<ResolvedIPAddress>()));
-  base::Time yesterday(base::Time::Now() - base::TimeDelta::FromDays(1));
+  base::Time yesterday(base::Time::Now() - base::Days(1));
   (*ip_map)[test_server_host].push_back(ResolvedIPAddress(
       yesterday, embedded_test_server()->host_port_pair().host()));
   ASSERT_EQ(1U, (*ip_map)[test_server_host].size());

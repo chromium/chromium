@@ -10,7 +10,7 @@ ClipboardImageModelFactoryImpl::ClipboardImageModelFactoryImpl(
     Profile* primary_profile)
     : primary_profile_(primary_profile),
       idle_timer_(FROM_HERE,
-                  base::TimeDelta::FromMinutes(2),
+                  base::Minutes(2),
                   this,
                   &ClipboardImageModelFactoryImpl::OnRequestIdle) {
   DCHECK(primary_profile_);

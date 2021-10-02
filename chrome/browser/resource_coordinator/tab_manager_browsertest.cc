@@ -62,7 +62,7 @@ namespace resource_coordinator {
 
 namespace {
 
-constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
 bool IsTabDiscarded(content::WebContents* web_contents) {
   return TabLifecycleUnitExternal::FromWebContents(web_contents)->IsDiscarded();
@@ -434,8 +434,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   ASSERT_FALSE(tab_manager->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
 
   // Advance the clock for more than the protection time.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime / 2 +
-                      base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(kBackgroundUrgentProtectionTime / 2 + base::Seconds(1));
 
   // Should be able to discard the background tab now.
   EXPECT_TRUE(tab_manager->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
@@ -1024,8 +1023,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest, OomPressureListener) {
   const int kIntervalTimeInMS = 5;
   int timeout = kTimeoutTimeInMS / kIntervalTimeInMS;
   while (--timeout) {
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(kIntervalTimeInMS));
+    base::PlatformThread::Sleep(base::Milliseconds(kIntervalTimeInMS));
     base::RunLoop().RunUntilIdle();
     if (IsTabDiscarded(GetWebContentsAt(0)))
       break;

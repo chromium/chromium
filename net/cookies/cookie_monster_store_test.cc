@@ -205,7 +205,7 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
     int num_old_non_secure_cookies,
     int days_old) {
   base::Time current(base::Time::Now());
-  base::Time past_creation(base::Time::Now() - base::TimeDelta::FromDays(1000));
+  base::Time past_creation(base::Time::Now() - base::Days(1000));
   scoped_refptr<MockSimplePersistentCookieStore> store(
       new MockSimplePersistentCookieStore);
   int total_cookies = num_secure_cookies + num_non_secure_cookies;
@@ -222,13 +222,11 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
       num_old_cookies = num_old_non_secure_cookies;
       secure = false;
     }
-    base::Time creation_time =
-        past_creation + base::TimeDelta::FromMicroseconds(i);
-    base::Time expiration_time = current + base::TimeDelta::FromDays(30);
-    base::Time last_access_time =
-        ((i - base) < num_old_cookies)
-            ? current - base::TimeDelta::FromDays(days_old)
-            : current;
+    base::Time creation_time = past_creation + base::Microseconds(i);
+    base::Time expiration_time = current + base::Days(30);
+    base::Time last_access_time = ((i - base) < num_old_cookies)
+                                      ? current - base::Days(days_old)
+                                      : current;
 
     // The URL must be HTTPS since |secure| can be true or false, and because
     // strict secure cookies are enforced, the cookie will fail to be created if

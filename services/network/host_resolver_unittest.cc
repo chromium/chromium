@@ -572,7 +572,7 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
   // MockHostResolver gives cache entries a 1 min TTL, so simulate a day
   // passing, which is more than long enough for the cached results to become
   // stale.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
 
   // Fetching stale results returns the original cached value.
   base::RunLoop cached_run_loop;

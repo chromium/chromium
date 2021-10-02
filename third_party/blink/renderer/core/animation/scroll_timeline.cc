@@ -346,8 +346,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     return {TimelinePhase::kBefore, base::TimeDelta(), resolved_offsets};
   }
 
-  base::TimeDelta duration =
-      base::TimeDelta::FromSecondsD(GetDuration()->InSecondsF());
+  base::TimeDelta duration = base::Seconds(GetDuration()->InSecondsF());
 
   // 3.2 If current scroll offset is greater than or equal to effective end
   // offset:
@@ -367,10 +366,9 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   // 3.3.2 The current time is the result of evaluating the following
   // expression:
   //     progress × effective time range
-  absl::optional<base::TimeDelta> calculated_current_time =
-      base::TimeDelta::FromMillisecondsD(scroll_timeline_util::ComputeProgress(
-                                             current_offset, resolved_offsets) *
-                                         duration.InMillisecondsF());
+  absl::optional<base::TimeDelta> calculated_current_time = base::Milliseconds(
+      scroll_timeline_util::ComputeProgress(current_offset, resolved_offsets) *
+      duration.InMillisecondsF());
   return {TimelinePhase::kActive, calculated_current_time, resolved_offsets};
 }
 

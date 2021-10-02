@@ -274,9 +274,8 @@ KeyRepeatSettings KeyboardControllerImpl::GetKeyRepeatSettings() {
   bool enabled = prefs->GetBoolean(ash::prefs::kXkbAutoRepeatEnabled);
   int delay_in_ms = prefs->GetInteger(ash::prefs::kXkbAutoRepeatDelay);
   int interval_in_ms = prefs->GetInteger(ash::prefs::kXkbAutoRepeatInterval);
-  return KeyRepeatSettings{enabled,
-                           base::TimeDelta::FromMilliseconds(delay_in_ms),
-                           base::TimeDelta::FromMilliseconds(interval_in_ms)};
+  return KeyRepeatSettings{enabled, base::Milliseconds(delay_in_ms),
+                           base::Milliseconds(interval_in_ms)};
 }
 
 // SessionObserver

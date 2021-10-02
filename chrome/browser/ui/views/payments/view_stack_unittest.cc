@@ -51,9 +51,9 @@ class ViewStackTest : public ChromeViewsTestBase {
     view_stack_->SetBounds(0, 0, 10, 10);
     view_stack_->Push(std::make_unique<TestStackView>(), false);
     view_stack_->slide_in_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
     view_stack_->slide_out_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
 
   ViewStackTest(const ViewStackTest&) = delete;

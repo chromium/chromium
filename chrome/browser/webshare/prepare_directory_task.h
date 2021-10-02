@@ -17,8 +17,7 @@ namespace webshare {
 // Deletes any old files remaining from past shares.
 class PrepareDirectoryTask {
  public:
-  static constexpr base::TimeDelta kSharedFileLifetime =
-      base::TimeDelta::FromMinutes(10);
+  static constexpr base::TimeDelta kSharedFileLifetime = base::Minutes(10);
 
   PrepareDirectoryTask(base::FilePath directory, uint64_t required_space);
   PrepareDirectoryTask(base::FilePath directory,

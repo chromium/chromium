@@ -50,7 +50,7 @@ VideoFramePump::VideoFramePump(
       video_stub_(video_stub),
       keep_alive_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kKeepAlivePacketIntervalMs),
+          base::Milliseconds(kKeepAlivePacketIntervalMs),
           base::BindRepeating(&VideoFramePump::SendKeepAlivePacket,
                               base::Unretained(this))),
       capture_scheduler_(base::BindRepeating(&VideoFramePump::CaptureNextFrame,

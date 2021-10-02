@@ -21,7 +21,7 @@ TEST(ContentTestUtils, NestedRunAllTasksUntilIdleWithPendingThreadPoolWork) {
   bool thread_pool_task_completed = false;
   base::ThreadPool::PostTask(
       FROM_HERE, {}, base::BindLambdaForTesting([&]() {
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+        base::PlatformThread::Sleep(base::Milliseconds(100));
         thread_pool_task_completed = true;
       }));
 
@@ -47,7 +47,7 @@ TEST(ContentTestUtils, FlushRealIOThread) {
   bool io_task_completed = false;
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+        base::PlatformThread::Sleep(base::Milliseconds(100));
         io_task_completed = true;
       }));
 
@@ -62,7 +62,7 @@ TEST(ContentTestUtils, NestedFlushRealIOThread) {
   bool io_task_completed = false;
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+        base::PlatformThread::Sleep(base::Milliseconds(100));
         io_task_completed = true;
       }));
 
@@ -85,11 +85,10 @@ TEST(ContentTestUtils, FlushRealIOThreadWithPendingBestEffortTask) {
 
   bool io_task_completed = false;
   content::GetIOThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE, base::BindLambdaForTesting([&]() {
-            base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
-            io_task_completed = true;
-          }));
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                   base::PlatformThread::Sleep(base::Milliseconds(100));
+                   io_task_completed = true;
+                 }));
 
   content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
   EXPECT_TRUE(io_task_completed);
@@ -103,11 +102,10 @@ TEST(ContentTestUtils, FlushFakeIOThread) {
 
   bool io_task_completed = false;
   content::GetIOThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE, base::BindLambdaForTesting([&]() {
-            base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
-            io_task_completed = true;
-          }));
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                   base::PlatformThread::Sleep(base::Milliseconds(100));
+                   io_task_completed = true;
+                 }));
 
   content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
   EXPECT_TRUE(io_task_completed);
@@ -118,11 +116,10 @@ TEST(ContentTestUtils, FlushUIThread) {
 
   bool ui_task_completed = false;
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE, base::BindLambdaForTesting([&]() {
-            base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
-            ui_task_completed = true;
-          }));
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                   base::PlatformThread::Sleep(base::Milliseconds(100));
+                   ui_task_completed = true;
+                 }));
 
   content::RunAllPendingInMessageLoop(content::BrowserThread::UI);
   EXPECT_TRUE(ui_task_completed);

@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
                    bool app_cache_has_trailer_prefetch_size);
 
   static base::TimeDelta GetLowerEpsilonForTimeComparisons() {
-    return base::TimeDelta::FromSeconds(1);
+    return base::Seconds(1);
   }
   static base::TimeDelta GetUpperEpsilonForTimeComparisons() {
     return base::TimeDelta();

@@ -66,7 +66,7 @@ class ShareHistoryTest : public testing::Test {
     // These tests often want to place events/history "in the past", but the
     // mock time source starts at the epoch, which breaks a bunch of those
     // computations; give ourselves some margin to work with here.
-    environment_.FastForwardBy(base::TimeDelta::FromDays(7));
+    environment_.FastForwardBy(base::Days(7));
     Init();
   }
 
@@ -227,8 +227,8 @@ TEST_F(ShareHistoryTest, ClearYesterdayOnly) {
     EXPECT_EQ(result[1].count, 2);
   }
 
-  auto start_offset = base::TimeDelta::FromDays(DaysSinceUnixEpoch() - 1);
-  auto end_offset = start_offset + base::TimeDelta::FromSeconds(3600);
+  auto start_offset = base::Days(DaysSinceUnixEpoch() - 1);
+  auto end_offset = start_offset + base::Seconds(3600);
   db()->Clear(base::Time::UnixEpoch() + start_offset,
               base::Time::UnixEpoch() + end_offset);
 

@@ -54,28 +54,28 @@ constexpr int kSeparatorWidthDip = 64;
 
 // Footer entry animation.
 constexpr base::TimeDelta kFooterEntryAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(283);
+    base::Milliseconds(283);
 constexpr base::TimeDelta kFooterEntryAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(167);
 
 // Divider animation.
 constexpr base::TimeDelta kDividerAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(233);
+    base::Milliseconds(233);
 constexpr base::TimeDelta kDividerAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(167);
 constexpr base::TimeDelta kDividerAnimationFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(83);
+    base::Milliseconds(83);
 
 // Zero state animation.
 constexpr base::TimeDelta kZeroStateAnimationFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(83);
+    base::Milliseconds(83);
 constexpr int kZeroStateAnimationTranslationDip = 115;
 constexpr base::TimeDelta kZeroStateAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(33);
+    base::Milliseconds(33);
 constexpr base::TimeDelta kZeroStateAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(167);
 constexpr base::TimeDelta kZeroStateAnimationTranslateUpDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -377,7 +377,7 @@ void AppListAssistantMainStage::OnPendingQueryChanged(
   // Animate the opacity to 100% with delay equal to |zero_state_view_| fade out
   // animation duration to avoid the two views displaying at the same time.
   constexpr base::TimeDelta kQueryAnimationFadeInDuration =
-      base::TimeDelta::FromMilliseconds(433);
+      base::Milliseconds(433);
   query_view_->layer()->SetOpacity(0.f);
   query_view_->layer()->GetAnimator()->StartAnimation(
       CreateLayerAnimationSequence(

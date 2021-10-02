@@ -211,7 +211,7 @@ void CPUFreqMonitor::Sample(
       FROM_HERE,
       base::BindOnce(&CPUFreqMonitor::Sample, weak_ptr_factory_.GetWeakPtr(),
                      std::move(fds)),
-      base::TimeDelta::FromMilliseconds(kDefaultCPUFreqSampleIntervalMs));
+      base::Milliseconds(kDefaultCPUFreqSampleIntervalMs));
 }
 
 bool CPUFreqMonitor::IsEnabledForTesting() {

@@ -181,7 +181,7 @@ void TerminateSelfOnDisconnect() {
   // Some sanitizer tools rely on exit handlers (e.g. to run leak detection,
   // or dump code coverage data to disk). Instead of exiting the process
   // immediately, we give it 60 seconds to run exit handlers.
-  CHECK(CreateWaitAndExitThread(base::TimeDelta::FromSeconds(60)));
+  CHECK(CreateWaitAndExitThread(base::Seconds(60)));
 #if defined(LEAK_SANITIZER)
   // Invoke LeakSanitizer early to avoid detecting shutdown-only leaks. If
   // leaks are found, the process will exit here.
@@ -712,7 +712,7 @@ void ChildThreadImpl::Init(const Options& options) {
       FROM_HERE,
       base::BindOnce(&ChildThreadImpl::EnsureConnected,
                      channel_connected_factory_->GetWeakPtr()),
-      base::TimeDelta::FromSeconds(connection_timeout));
+      base::Seconds(connection_timeout));
 
   // In single-process mode, there is no need to synchronize trials to the
   // browser process (because it's the same process).

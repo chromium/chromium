@@ -167,7 +167,7 @@ absl::optional<AvailabilityProberCacheEntry> DecodeCacheEntryValue(
 base::Time LastModifiedTimeFromCacheEntry(
     const AvailabilityProberCacheEntry& entry) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(entry.last_modified()));
+      base::Microseconds(entry.last_modified()));
 }
 
 void RemoveOldestDictionaryEntry(base::DictionaryValue* dict) {
@@ -552,9 +552,9 @@ void AvailabilityProber::ProcessProbeFailure() {
     base::TimeDelta active_time = clock_->Now() - time_when_set_active_.value();
     base::Histogram::FactoryTimeGet(
         AppendNameToHistogram(kTimeUntilFailure),
-        base::TimeDelta::FromMilliseconds(0) /* minimum */,
-        base::TimeDelta::FromMilliseconds(60000) /* maximum */,
-        50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
+        base::Milliseconds(0) /* minimum */,
+        base::Milliseconds(60000) /* maximum */, 50 /* bucket_count */,
+        base::HistogramBase::kUmaTargetedHistogramFlag)
         ->Add(active_time.InMilliseconds());
   }
 
@@ -597,9 +597,9 @@ void AvailabilityProber::ProcessProbeSuccess() {
     base::TimeDelta active_time = clock_->Now() - time_when_set_active_.value();
     base::Histogram::FactoryTimeGet(
         AppendNameToHistogram(kTimeUntilSuccess),
-        base::TimeDelta::FromMilliseconds(0) /* minimum */,
-        base::TimeDelta::FromMilliseconds(30000) /* maximum */,
-        50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
+        base::Milliseconds(0) /* minimum */,
+        base::Milliseconds(30000) /* maximum */, 50 /* bucket_count */,
+        base::HistogramBase::kUmaTargetedHistogramFlag)
         ->Add(active_time.InMilliseconds());
   }
 
@@ -625,9 +625,8 @@ absl::optional<bool> AvailabilityProber::LastProbeWasSuccessful() {
 
   base::LinearHistogram::FactoryTimeGet(
       AppendNameToHistogram(kCacheEntryAgeHistogram),
-      base::TimeDelta::FromHours(0) /* minimum */,
-      base::TimeDelta::FromHours(72) /* maximum */, 50 /* bucket_count */,
-      base::HistogramBase::kUmaTargetedHistogramFlag)
+      base::Hours(0) /* minimum */, base::Hours(72) /* maximum */,
+      50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(cache_entry_age.InHours());
 
   // Check if the cache entry should be revalidated because it has expired or

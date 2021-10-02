@@ -17,12 +17,10 @@ using ::media::learning::FeatureVector;
 using ::media::learning::LearningTaskController;
 using ::media::learning::TargetValue;
 
-static constexpr base::TimeDelta kSegmentSize =
-    base::TimeDelta::FromSeconds(5);
+static constexpr base::TimeDelta kSegmentSize = base::Seconds(5);
 
 // Maximum distance between NNRs for them to be consecutive.
-static constexpr base::TimeDelta kMaxNNRDistance =
-    base::TimeDelta::FromSeconds(60);
+static constexpr base::TimeDelta kMaxNNRDistance = base::Seconds(60);
 
 // Max proportion of dropped frames in a window before we call it "not smooth".
 static constexpr float kMaxDroppedFramesPerWindow = 0.2;

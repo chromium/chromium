@@ -72,10 +72,8 @@ constexpr float kDistanceForMaxRadius = 116.f;
 // |kMaxRippleRadius|.
 constexpr float kDragDistanceForMaxRadius = 260.f;
 
-constexpr base::TimeDelta kAbortAnimationTimeout =
-    base::TimeDelta::FromMilliseconds(300);
-constexpr base::TimeDelta kCompleteAnimationTimeout =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAbortAnimationTimeout = base::Milliseconds(300);
+constexpr base::TimeDelta kCompleteAnimationTimeout = base::Milliseconds(200);
 
 // Y-axis drag distance to achieve full y drag progress.
 constexpr float kDistanceForFullYProgress = 80.f;

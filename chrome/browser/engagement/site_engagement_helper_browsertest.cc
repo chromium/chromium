@@ -38,7 +38,7 @@ class TestOneShotTimer : public base::OneShotTimer {
   void Start(const base::Location& posted_from,
              base::TimeDelta delay,
              base::OnceClosure user_task) override {
-    base::OneShotTimer::Start(posted_from, base::TimeDelta::FromSeconds(0),
+    base::OneShotTimer::Start(posted_from, base::Seconds(0),
                               std::move(user_task));
 
     // Updates |restarted_| if the timer is restarted.

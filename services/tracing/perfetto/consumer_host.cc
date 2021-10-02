@@ -227,8 +227,8 @@ ConsumerHost::TracingSession::TracingSession(
     // ACK our EnableTracing request eventually, so we'll add a timeout for that
     // case.
     enable_tracing_ack_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kEnableTracingTimeoutSeconds),
-        this, &ConsumerHost::TracingSession::OnEnableTracingTimeout);
+        FROM_HERE, base::Seconds(kEnableTracingTimeoutSeconds), this,
+        &ConsumerHost::TracingSession::OnEnableTracingTimeout);
   }
 }
 

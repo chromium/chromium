@@ -315,7 +315,7 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
           /*first_cluster_id=*/0,
           kTestTimeEpoch -
               GetFeedConfig().GetStalenessThreshold(kForYouStream) -
-              base::TimeDelta::FromMinutes(1)),
+              base::Minutes(1)),
       base::DoNothing());
 
   // Store is stale, so we should fallback to a network request.
@@ -348,7 +348,7 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
           /*first_cluster_id=*/0,
           kTestTimeEpoch -
               GetFeedConfig().GetStalenessThreshold(kForYouStream) -
-              base::TimeDelta::FromMinutes(1)),
+              base::Minutes(1)),
       base::DoNothing());
 
   // Store is stale, so we should fallback to a network request.

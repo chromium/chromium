@@ -203,8 +203,8 @@ base::Time TimestampDelegate::FetchChromeCleanerScanCompletionTimestamp() {
   // TODO(crbug.com/1139806): Part of the above workaround. If the timestamp in
   // prefs is null or older than the one from the registry, then return the one
   // from the registry. Otherwise return the one from prefs.
-  base::Time end_time_from_registry = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(end_time));
+  base::Time end_time_from_registry =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(end_time));
   if (end_time_from_prefs.is_null() ||
       end_time_from_prefs < end_time_from_registry) {
     return end_time_from_registry;
@@ -368,7 +368,7 @@ void SafetyCheckHandler::HandlePerformSafetyCheck(const base::ListValue* args) {
       FROM_HERE,
       base::BindOnce(&SafetyCheckHandler::PerformSafetyCheck,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void SafetyCheckHandler::HandleGetParentRanDisplayString(
@@ -788,7 +788,7 @@ std::u16string SafetyCheckHandler::GetStringForTimePassed(
   base::Time::Exploded system_time_exploded;
   system_time.LocalExplode(&system_time_exploded);
 
-  const base::Time time_yesterday = system_time - base::TimeDelta::FromDays(1);
+  const base::Time time_yesterday = system_time - base::Days(1);
   base::Time::Exploded time_yesterday_exploded;
   time_yesterday.LocalExplode(&time_yesterday_exploded);
 

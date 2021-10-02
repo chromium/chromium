@@ -105,7 +105,7 @@ void LogoutButtonTray::UpdateShowLogoutButtonInTray() {
 void LogoutButtonTray::UpdateLogoutDialogDuration() {
   const int duration_ms = pref_change_registrar_->prefs()->GetInteger(
       prefs::kLogoutDialogDurationMs);
-  dialog_duration_ = base::TimeDelta::FromMilliseconds(duration_ms);
+  dialog_duration_ = base::Milliseconds(duration_ms);
 }
 
 void LogoutButtonTray::UpdateAfterLoginStatusChange() {

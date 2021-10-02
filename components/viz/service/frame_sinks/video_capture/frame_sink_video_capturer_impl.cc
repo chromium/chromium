@@ -40,8 +40,7 @@ using media::VideoFrameMetadata;
   UMA_HISTOGRAM_CUSTOM_TIMES(                                             \
       base::StringPrintf("Viz.FrameSinkVideoCapturer.%s.CaptureDuration", \
                          name),                                           \
-      sample, base::TimeDelta::FromMilliseconds(1),                       \
-      base::TimeDelta::FromSeconds(1), 50)
+      sample, base::Milliseconds(1), base::Seconds(1), 50)
 
 namespace viz {
 
@@ -165,9 +164,8 @@ void FrameSinkVideoCapturerImpl::SetMinCapturePeriod(
     base::TimeDelta min_capture_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  constexpr base::TimeDelta kMinMinCapturePeriod =
-      base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                        media::limits::kMaxFramesPerSecond);
+  constexpr base::TimeDelta kMinMinCapturePeriod = base::Microseconds(
+      base::Time::kMicrosecondsPerSecond / media::limits::kMaxFramesPerSecond);
   if (min_capture_period < kMinMinCapturePeriod) {
     min_capture_period = kMinMinCapturePeriod;
   }
@@ -177,8 +175,7 @@ void FrameSinkVideoCapturerImpl::SetMinCapturePeriod(
   // advance between two successive frames.
   if (!base::TimeTicks::IsHighResolution()) {
     constexpr base::TimeDelta kMinLowResCapturePeriod =
-        base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                          30);
+        base::Microseconds(base::Time::kMicrosecondsPerSecond / 30);
     if (min_capture_period < kMinLowResCapturePeriod) {
       min_capture_period = kMinLowResCapturePeriod;
     }

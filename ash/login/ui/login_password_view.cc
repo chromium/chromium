@@ -130,19 +130,16 @@ constexpr const int kPasswordRowCornerRadiusDp = 4;
 // Delay after which the password gets cleared if nothing has been typed. It is
 // only running if the display password button is shown, as there is no
 // potential security threat otherwise.
-constexpr base::TimeDelta kClearPasswordAfterDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kClearPasswordAfterDelay = base::Seconds(30);
 
 // Delay after which the password gets back to hidden state, for security.
-constexpr base::TimeDelta kHidePasswordAfterDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
 
 constexpr const char kLoginPasswordViewName[] = "LoginPasswordView";
 
 struct FrameParams {
   FrameParams(int duration_in_ms, float opacity_param)
-      : duration(base::TimeDelta::FromMilliseconds(duration_in_ms)),
-        opacity(opacity_param) {}
+      : duration(base::Milliseconds(duration_in_ms)), opacity(opacity_param) {}
 
   base::TimeDelta duration;
   float opacity;
@@ -350,10 +347,9 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
       if (immediately_hover_for_test_) {
         on_hovered_.Run();
       } else {
-        invoke_hover_.Start(
-            FROM_HERE,
-            base::TimeDelta::FromMilliseconds(kDelayBeforeShowingTooltipMs),
-            on_hovered_);
+        invoke_hover_.Start(FROM_HERE,
+                            base::Milliseconds(kDelayBeforeShowingTooltipMs),
+                            on_hovered_);
       }
     }
   }

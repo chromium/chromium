@@ -41,8 +41,7 @@ constexpr char kUserActionConfirmDeleteUsersData[] = "confirm-delete-users";
 // Delay before showing error message if captive portal is detected.
 // We wait for this delay to let captive portal to perform redirect and show
 // its login page before error message appears.
-constexpr const base::TimeDelta kDelayErrorMessage =
-    base::TimeDelta::FromSeconds(10);
+constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
 
 }  // namespace
 

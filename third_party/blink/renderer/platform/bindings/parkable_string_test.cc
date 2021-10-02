@@ -78,8 +78,8 @@ class ParkableStringTest : public ::testing::Test {
     if (base::FeatureList::IsEnabled(features::kCompressParkableStrings)) {
       EXPECT_GT(task_environment_.GetPendingMainThreadTaskCount(), 0u);
     }
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(
-        ParkableStringManager::kAgingIntervalInSeconds));
+    task_environment_.FastForwardBy(
+        base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
   }
 
   void WaitForDelayedParking() {
@@ -1147,8 +1147,7 @@ TEST_F(ParkableStringTestWithQueuedThreadPool, AgingParkingInProgress) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromSeconds(
-          ParkableStringManager::kAgingIntervalInSeconds));
+      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
   run_loop.Run();
 
   // The aging task is rescheduled.

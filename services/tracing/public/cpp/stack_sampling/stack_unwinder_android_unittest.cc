@@ -128,7 +128,7 @@ TEST_F(StackUnwinderTest, UnwindOtherThreadOnJNICall) {
       FROM_HERE,
       base::BindOnce(callback, base::Unretained(unwinder()),
                      base::PlatformThread::CurrentId(), GetCurrentPC()),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UnwindTestHelper_blockCurrentThread(env);
 }

@@ -163,7 +163,7 @@ class TabTest : public ChromeViewsTestBase {
  public:
   TabTest() {
     // Prevent the fake clock from starting at 0 which is the null time.
-    fake_clock_.Advance(base::TimeDelta::FromMilliseconds(2000));
+    fake_clock_.Advance(base::Milliseconds(2000));
   }
   ~TabTest() override {}
 
@@ -595,11 +595,11 @@ TEST_F(TabTest, LayeredThrobber) {
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   tab_controller->set_paint_throbber_to_layer(false);
-  tab->StepLoadingAnimation(base::TimeDelta::FromMilliseconds(100));
+  tab->StepLoadingAnimation(base::Milliseconds(100));
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_FALSE(icon->layer());
   tab_controller->set_paint_throbber_to_layer(true);
-  tab->StepLoadingAnimation(base::TimeDelta::FromMilliseconds(100));
+  tab->StepLoadingAnimation(base::Milliseconds(100));
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   data.network_state = TabNetworkState::kNone;

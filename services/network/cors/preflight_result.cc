@@ -32,12 +32,12 @@ namespace {
 
 // Default cache expiry time for an entry that does not have
 // Access-Control-Max-Age header in its CORS-preflight response.
-constexpr base::TimeDelta kDefaultTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDefaultTimeout = base::Seconds(5);
 
 // Maximum cache expiry time. Even if a CORS-preflight response contains
 // Access-Control-Max-Age header that specifies a longer expiry time, this
 // maximum time is applied.
-constexpr base::TimeDelta kMaxTimeout = base::TimeDelta::FromHours(2);
+constexpr base::TimeDelta kMaxTimeout = base::Hours(2);
 
 // Holds TickClock instance to overwrite TimeTicks::Now() for testing.
 const base::TickClock* tick_clock_for_testing = nullptr;
@@ -69,14 +69,13 @@ base::TimeDelta ParseAccessControlMaxAge(
   }
   // To avoid integer overflow, we compare seconds instead of comparing
   // TimeDeltas.
-  static_assert(
-      kMaxTimeout == base::TimeDelta::FromSeconds(kMaxTimeout.InSeconds()),
-      "`kMaxTimeout` must be a multiple of one second.");
+  static_assert(kMaxTimeout == base::Seconds(kMaxTimeout.InSeconds()),
+                "`kMaxTimeout` must be a multiple of one second.");
   if (seconds >= kMaxTimeout.InSeconds()) {
     return kMaxTimeout;
   }
 
-  return base::TimeDelta::FromSeconds(seconds);
+  return base::Seconds(seconds);
 }
 
 // Parses |string| as a Access-Control-Allow-* header value, storing the result

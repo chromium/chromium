@@ -269,8 +269,7 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
       kNetworkTimeHistogram,
       ssl_errors::NETWORK_CLOCK_STATE_UNKNOWN_NO_SYNC_ATTEMPT, 1);
 
-  ssl_errors::SetBuildTimeForTesting(base::Time::Now() -
-                                     base::TimeDelta::FromDays(367));
+  ssl_errors::SetBuildTimeForTesting(base::Time::Now() - base::Days(367));
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_FUTURE,
       ssl_errors::GetClockState(base::Time::Now(), &network_time_tracker));
@@ -282,8 +281,7 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
       kNetworkTimeHistogram,
       ssl_errors::NETWORK_CLOCK_STATE_UNKNOWN_NO_SYNC_ATTEMPT, 2);
 
-  ssl_errors::SetBuildTimeForTesting(base::Time::Now() +
-                                     base::TimeDelta::FromDays(3));
+  ssl_errors::SetBuildTimeForTesting(base::Time::Now() + base::Days(3));
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_PAST,
       ssl_errors::GetClockState(base::Time::Now(), &network_time_tracker));
@@ -298,10 +296,10 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
   // Intentionally leave the build time alone.  It should be ignored
   // in favor of network time.
   network_time_tracker.UpdateNetworkTime(
-      base::Time::Now() + base::TimeDelta::FromHours(1),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      base::TimeTicks::Now());                 // posting time
+      base::Time::Now() + base::Hours(1),
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      base::TimeTicks::Now());  // posting time
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_PAST,
       ssl_errors::GetClockState(base::Time::Now(), &network_time_tracker));
@@ -311,10 +309,10 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
       kNetworkTimeHistogram, ssl_errors::NETWORK_CLOCK_STATE_CLOCK_IN_PAST, 1);
 
   network_time_tracker.UpdateNetworkTime(
-      base::Time::Now() - base::TimeDelta::FromHours(1),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      base::TimeTicks::Now());                 // posting time
+      base::Time::Now() - base::Hours(1),
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      base::TimeTicks::Now());  // posting time
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_FUTURE,
       ssl_errors::GetClockState(base::Time::Now(), &network_time_tracker));
@@ -326,9 +324,9 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
 
   network_time_tracker.UpdateNetworkTime(
       base::Time::Now(),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      base::TimeTicks::Now());                 // posting time
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      base::TimeTicks::Now());  // posting time
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_OK,
       ssl_errors::GetClockState(base::Time::Now(), &network_time_tracker));
@@ -341,11 +339,10 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
   // itself.
   network_time_tracker.UpdateNetworkTime(
       base::Time(),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      base::TimeTicks::Now());                 // posting time
-  ssl_errors::SetBuildTimeForTesting(base::Time::Now() +
-                                     base::TimeDelta::FromDays(3));
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      base::TimeTicks::Now());  // posting time
+  ssl_errors::SetBuildTimeForTesting(base::Time::Now() + base::Days(3));
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_PAST,
       ssl_errors::GetClockState(base::Time::Now(), &network_time_tracker));
@@ -377,8 +374,8 @@ TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
   base::SimpleTestTickClock* tick_clock = new base::SimpleTestTickClock;
   base::SimpleTestClock* clock = new base::SimpleTestClock;
   // Do this to be sure that |is_null| returns false.
-  clock->Advance(base::TimeDelta::FromDays(111));
-  tick_clock->Advance(base::TimeDelta::FromDays(222));
+  clock->Advance(base::Days(111));
+  tick_clock->Advance(base::Days(222));
 
   network_time::NetworkTimeTracker network_time_tracker(
       std::unique_ptr<base::Clock>(clock),
@@ -434,9 +431,9 @@ TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
   // System clock is correct.
   network_time_tracker.UpdateNetworkTime(
       clock->Now(),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      tick_clock->NowTicks());                 // posting time
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      tick_clock->NowTicks());  // posting time
   EXPECT_EQ(ssl_errors::ClockState::CLOCK_STATE_OK,
             ssl_errors::GetClockState(clock->Now(), &network_time_tracker));
   histograms.ExpectTotalCount(kNetworkTimeHistogram, 5);
@@ -445,10 +442,10 @@ TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
 
   // System clock is in the past.
   network_time_tracker.UpdateNetworkTime(
-      clock->Now() + base::TimeDelta::FromHours(1),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      tick_clock->NowTicks());                 // posting time
+      clock->Now() + base::Hours(1),
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      tick_clock->NowTicks());  // posting time
   EXPECT_EQ(ssl_errors::ClockState::CLOCK_STATE_PAST,
             ssl_errors::GetClockState(clock->Now(), &network_time_tracker));
   histograms.ExpectTotalCount(kNetworkTimeHistogram, 6);
@@ -457,10 +454,10 @@ TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
 
   // System clock is in the future.
   network_time_tracker.UpdateNetworkTime(
-      clock->Now() - base::TimeDelta::FromHours(1),
-      base::TimeDelta::FromSeconds(1),         // resolution
-      base::TimeDelta::FromMilliseconds(250),  // latency
-      tick_clock->NowTicks());                 // posting time
+      clock->Now() - base::Hours(1),
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      tick_clock->NowTicks());  // posting time
   EXPECT_EQ(ssl_errors::ClockState::CLOCK_STATE_FUTURE,
             ssl_errors::GetClockState(clock->Now(), &network_time_tracker));
   histograms.ExpectTotalCount(kNetworkTimeHistogram, 7);
@@ -469,8 +466,8 @@ TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
                                1);
 
   // Sync has been lost.
-  tick_clock->Advance(base::TimeDelta::FromSeconds(1));
-  clock->Advance(base::TimeDelta::FromDays(1));
+  tick_clock->Advance(base::Seconds(1));
+  clock->Advance(base::Days(1));
   // GetClockState() will fall back to the build time heuristic.
   ssl_errors::GetClockState(clock->Now(), &network_time_tracker);
   histograms.ExpectTotalCount(kNetworkTimeHistogram, 8);

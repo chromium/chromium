@@ -561,8 +561,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
     // Wait until the observer receives the file. We increase the timeout to 60
     // seconds here since the file is on the larger side.
     {
-      base::test::ScopedRunLoopTimeout file_download_timeout(
-          FROM_HERE, base::TimeDelta::FromSeconds(60));
+      base::test::ScopedRunLoopTimeout file_download_timeout(FROM_HERE,
+                                                             base::Seconds(60));
       run_loop->Run();
     }
 
@@ -678,8 +678,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   // Wait until the observer receives the file. We increase the timeout to 60
   // seconds here since the file is on the larger side.
   {
-    base::test::ScopedRunLoopTimeout file_download_timeout(
-        FROM_HERE, base::TimeDelta::FromSeconds(60));
+    base::test::ScopedRunLoopTimeout file_download_timeout(FROM_HERE,
+                                                           base::Seconds(60));
     run_loop->Run();
   }
 
@@ -724,8 +724,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   // Wait until the observer receives the file. We increase the timeout to 60
   // seconds here since the file is on the larger side.
   {
-    base::test::ScopedRunLoopTimeout file_download_timeout(
-        FROM_HERE, base::TimeDelta::FromSeconds(60));
+    base::test::ScopedRunLoopTimeout file_download_timeout(FROM_HERE,
+                                                           base::Seconds(60));
     run_loop->Run();
   }
 

@@ -3140,7 +3140,7 @@ void TabStrip::UpdateStackedLayoutFromMouseEvent(views::View* source,
 //
 // TODO(sky): revisit this when touch events are really plumbed through.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  constexpr auto kMouseMoveTime = base::TimeDelta::FromMilliseconds(200);
+  constexpr auto kMouseMoveTime = base::Milliseconds(200);
   constexpr int kMouseMoveCountBeforeConsiderReal = 3;
 #endif
 
@@ -3377,7 +3377,7 @@ void TabStrip::ResizeLayoutTabsFromTouch() {
 
 void TabStrip::StartResizeLayoutTabsFromTouchTimer() {
   // Amount of time we delay before resizing after a close from a touch.
-  constexpr auto kTouchResizeLayoutTime = base::TimeDelta::FromSeconds(2);
+  constexpr auto kTouchResizeLayoutTime = base::Seconds(2);
 
   resize_layout_timer_.Stop();
   resize_layout_timer_.Start(FROM_HERE, kTouchResizeLayoutTime, this,

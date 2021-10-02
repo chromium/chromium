@@ -448,10 +448,10 @@ class WatchTimeReporterTest
     // InSequence macro for ease of use, but we don't want the watch time
     // expectations to be in sequence (or expectations would depend on sorted
     // order of histogram names).
-    constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(10);
-    constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(12);
-    constexpr base::TimeDelta kWatchTime3 = base::TimeDelta::FromSeconds(15);
-    constexpr base::TimeDelta kWatchTime4 = base::TimeDelta::FromSeconds(30);
+    constexpr base::TimeDelta kWatchTime1 = base::Seconds(10);
+    constexpr base::TimeDelta kWatchTime2 = base::Seconds(12);
+    constexpr base::TimeDelta kWatchTime3 = base::Seconds(15);
+    constexpr base::TimeDelta kWatchTime4 = base::Seconds(30);
     {
       testing::InSequence s;
 
@@ -707,8 +707,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterInfiniteStartTime) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTimeEarly))
@@ -738,8 +738,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
-  constexpr base::TimeDelta kUnderflowDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kUnderflowDuration = base::Milliseconds(250);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
   wtr_->OnUnderflow();
   EXPECT_WATCH_TIME(Ac, kWatchTimeLate);
@@ -757,8 +756,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTimeEarly))
@@ -795,8 +794,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
-  constexpr base::TimeDelta kUnderflowDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kUnderflowDuration = base::Milliseconds(250);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
   wtr_->OnUnderflow();
   EXPECT_WATCH_TIME(Ac, kWatchTimeLate);
@@ -814,8 +812,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterDuration) {
-  constexpr base::TimeDelta kDuration1 = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kDuration2 = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kDuration1 = base::Seconds(5);
+  constexpr base::TimeDelta kDuration2 = base::Seconds(10);
   Initialize(true, true, kSizeJustRight);
 
   EXPECT_CALL(*this, OnDurationChanged(kDuration1))
@@ -831,9 +829,9 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterDuration) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
-  constexpr base::TimeDelta kWatchTimeFirst = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(15);
+  constexpr base::TimeDelta kWatchTimeFirst = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(10);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(15);
   if (has_audio_ && has_video_) {
     EXPECT_CALL(*this, GetCurrentMediaTime())
         .WillOnce(testing::Return(base::TimeDelta()))
@@ -866,8 +864,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
   wtr_->OnUnderflow();
   wtr_->OnVolumeChange(0);
 
-  constexpr base::TimeDelta kUnderflowDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kUnderflowDuration = base::Milliseconds(250);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
 
   // This underflow call should be ignored since it happens after the finalize.
@@ -905,9 +902,9 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowSpansFinalize) {
-  constexpr base::TimeDelta kWatchTimeFirst = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(15);
+  constexpr base::TimeDelta kWatchTimeFirst = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(10);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(15);
   if (has_audio_ && has_video_) {
     EXPECT_CALL(*this, GetCurrentMediaTime())
         .WillOnce(testing::Return(base::TimeDelta()))
@@ -965,16 +962,15 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowSpansFinalize) {
 
   // This underflow completion should be dropped since we've lost the original
   // underflow it corresponded to in the finalize.
-  constexpr base::TimeDelta kUnderflowDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kUnderflowDuration = base::Milliseconds(250);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
   wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
-  constexpr base::TimeDelta kWatchTimeFirst = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(15);
+  constexpr base::TimeDelta kWatchTimeFirst = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(10);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(15);
   if (has_audio_ && has_video_) {
     EXPECT_CALL(*this, GetCurrentMediaTime())
         .WillOnce(testing::Return(base::TimeDelta()))
@@ -1008,8 +1004,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
   wtr_->OnVolumeChange(0);
 
   // This underflow took too long to complete so is dropped.
-  constexpr base::TimeDelta kUnderflowDuration =
-      base::TimeDelta::FromMinutes(2);
+  constexpr base::TimeDelta kUnderflowDuration = base::Minutes(2);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
 
   EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
@@ -1038,9 +1033,9 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
-  constexpr base::TimeDelta kWatchTimeFirst = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(15);
+  constexpr base::TimeDelta kWatchTimeFirst = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(10);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(15);
   if (has_audio_ && has_video_) {
     EXPECT_CALL(*this, GetCurrentMediaTime())
         .WillOnce(testing::Return(base::TimeDelta()))
@@ -1082,8 +1077,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
   // This cycle should not report another underflow.
   CycleReportingTimer();
 
-  constexpr base::TimeDelta kUnderflowDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kUnderflowDuration = base::Milliseconds(250);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
   EXPECT_CALL(*this, OnUnderflowDurationUpdate(1, kUnderflowDuration));
 
@@ -1190,8 +1184,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterAutoplayInitiated) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHidden) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(25);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(25);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTimeEarly))
@@ -1227,8 +1221,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHidden) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterBackgroundHysteresis) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))  // 2x for playing
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1269,8 +1263,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBackgroundHysteresis) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHiddenBackground) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1308,7 +1302,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHiddenBackground) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPausedBackground) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(8);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(8);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1333,7 +1327,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPausedBackground) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenSeekedBackground) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(8);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(8);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1357,8 +1351,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenSeekedBackground) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPowerBackground) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1393,8 +1387,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPowerBackground) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenControlsBackground) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1429,8 +1423,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenControlsBackground) {
 
 TEST_P(DisplayTypeWatchTimeReporterTest,
        WatchTimeReporterHiddenDisplayTypeBackground) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -1464,8 +1458,8 @@ TEST_P(DisplayTypeWatchTimeReporterTest,
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenMuted) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(25);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(25);
 
   // Expectations for when muted watch time is recorded and when it isn't.
   if (has_audio_ && has_video_) {
@@ -1522,8 +1516,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenMuted) {
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
 
   // Transition controls and battery.
   {
@@ -1649,8 +1643,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
 
 // Tests that starting from a non-zero base works.
 TEST_P(WatchTimeReporterTest, WatchTimeReporterNonZeroStart) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(15);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(5);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(15);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(kWatchTime1))
       .WillRepeatedly(testing::Return(kWatchTime2));
@@ -1673,7 +1667,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNonZeroStart) {
 
 // Tests that seeking causes an immediate finalization.
 TEST_P(WatchTimeReporterTest, SeekFinalizes) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTime));
@@ -1693,7 +1687,7 @@ TEST_P(WatchTimeReporterTest, SeekFinalizes) {
 
 // Tests that seeking can't be undone by anything other than OnPlaying().
 TEST_P(WatchTimeReporterTest, SeekOnlyClearedByPlaying) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillRepeatedly(testing::Return(kWatchTime));
@@ -1732,7 +1726,7 @@ TEST_P(WatchTimeReporterTest, SeekOnlyClearedByPlaying) {
 // Tests that seeking causes an immediate finalization, but does not trample a
 // previously set finalize time.
 TEST_P(WatchTimeReporterTest, SeekFinalizeDoesNotTramplePreviousFinalize) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTime));
@@ -1753,7 +1747,7 @@ TEST_P(WatchTimeReporterTest, SeekFinalizeDoesNotTramplePreviousFinalize) {
 
 // Tests that watch time is finalized upon destruction.
 TEST_P(WatchTimeReporterTest, WatchTimeReporterFinalizeOnDestruction) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTime));
@@ -1774,7 +1768,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterFinalizeOnDestruction) {
 
 // Tests that watch time categories are mapped correctly.
 TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(10);
 
   // Verify ac, all, src, non-native controls
   EXPECT_CALL(*this, GetCurrentMediaTime())
@@ -2107,8 +2101,8 @@ TEST_P(WatchTimeReporterTest, HysteresisPartialExitStillFinalizes) {
 class MutedWatchTimeReporterTest : public WatchTimeReporterTest {};
 
 TEST_P(MutedWatchTimeReporterTest, MutedHysteresis) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))  // 2x for playing
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -2154,8 +2148,8 @@ TEST_P(MutedWatchTimeReporterTest, MutedHysteresis) {
 }
 
 TEST_P(MutedWatchTimeReporterTest, MuteUnmute) {
-  constexpr base::TimeDelta kWatchTimeEarly = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTimeLate = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTimeLate = base::Seconds(10);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -2195,7 +2189,7 @@ TEST_P(MutedWatchTimeReporterTest, MuteUnmute) {
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedPaused) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(8);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(8);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -2222,7 +2216,7 @@ TEST_P(MutedWatchTimeReporterTest, MutedPaused) {
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedSeeked) {
-  constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(8);
+  constexpr base::TimeDelta kWatchTime = base::Seconds(8);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -2248,8 +2242,8 @@ TEST_P(MutedWatchTimeReporterTest, MutedSeeked) {
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedPower) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -2288,8 +2282,8 @@ TEST_P(MutedWatchTimeReporterTest, MutedPower) {
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedControls) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))
@@ -2329,8 +2323,8 @@ TEST_P(MutedWatchTimeReporterTest, MutedControls) {
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedDisplayType) {
-  constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(8);
-  constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(16);
+  constexpr base::TimeDelta kWatchTime1 = base::Seconds(8);
+  constexpr base::TimeDelta kWatchTime2 = base::Seconds(16);
   EXPECT_CALL(*this, GetCurrentMediaTime())
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(base::TimeDelta()))

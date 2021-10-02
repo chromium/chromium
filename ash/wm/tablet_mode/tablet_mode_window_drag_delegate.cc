@@ -55,8 +55,7 @@ constexpr float kMinimumDragToSnapDistanceDp = 96.f;
 // least the duration of the split view divider snap animation, or else issues
 // like crbug.com/946601, crbug.com/997764, and https://crbug.com/997765, which
 // all refer to dragging from overview, will apply to dragging from the top.
-constexpr base::TimeDelta kIsWindowMovedTimeoutMs =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kIsWindowMovedTimeoutMs = base::Milliseconds(300);
 
 constexpr char kSwipeDownDragWindowHistogram[] =
     "Ash.SwipeDownDrag.Window.PresentationTime.TabletMode";

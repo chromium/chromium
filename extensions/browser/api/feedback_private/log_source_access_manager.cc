@@ -33,7 +33,7 @@ constexpr int kDefaultMaxNumBurstAccesses = 10;
 // The minimum time between consecutive reads of a log source by a particular
 // extension.
 constexpr base::TimeDelta kDefaultRateLimitingTimeout =
-    base::TimeDelta::FromMilliseconds(1000);
+    base::Milliseconds(1000);
 
 // The maximum number of accesses on a single log source that can be allowed
 // before the next recharge increment. See access_rate_limiter.h for more info.

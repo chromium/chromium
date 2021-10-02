@@ -147,7 +147,7 @@ void TabManagerStatsCollector::CreateAndInitSwapMetricsDriverIfNeeded() {
   swap_metrics_driver_ = content::SwapMetricsDriver::Create(
       base::WrapUnique<content::SwapMetricsDriver::Delegate>(
           new SwapMetricsDelegate(this)),
-      base::TimeDelta::FromSeconds(0));
+      base::Seconds(0));
   // The driver could still be null on a platform with no swap driver support.
   if (swap_metrics_driver_)
     swap_metrics_driver_->InitializeMetrics();

@@ -246,9 +246,9 @@ TEST_F(AndroidWebViewStateSerializerTest,
   EXPECT_EQ(base_url_for_data_url, copy->GetBaseURLForDataURL());
   EXPECT_FALSE(copy->GetDataURLAsString());
   EXPECT_EQ(is_overriding_user_agent, copy->GetIsOverridingUserAgent());
-  EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromMicroseconds(timestamp)),
-            copy->GetTimestamp());
+  EXPECT_EQ(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp)),
+      copy->GetTimestamp());
   EXPECT_EQ(http_status_code, copy->GetHttpStatusCode());
 }
 

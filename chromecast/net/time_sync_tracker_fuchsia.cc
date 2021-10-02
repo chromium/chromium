@@ -63,8 +63,8 @@ void TimeSyncTrackerFuchsia::Poll() {
 
   if (!is_time_synced_) {
     task_runner_->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&TimeSyncTrackerFuchsia::Poll, weak_this_),
-      base::TimeDelta::FromSeconds(kPollPeriodSeconds));
+        FROM_HERE, base::BindOnce(&TimeSyncTrackerFuchsia::Poll, weak_this_),
+        base::Seconds(kPollPeriodSeconds));
     return;
   }
 

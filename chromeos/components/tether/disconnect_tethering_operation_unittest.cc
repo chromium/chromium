@@ -30,8 +30,7 @@ namespace tether {
 
 namespace {
 
-constexpr base::TimeDelta kDisconnectTetheringRequestTime =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDisconnectTetheringRequestTime = base::Seconds(3);
 
 // Used to verify the DisonnectTetheringOperation notifies the observer when
 // appropriate.

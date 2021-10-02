@@ -208,7 +208,7 @@ void CommandBufferStub::PerformWork() {
       base::TimeDelta time_since_idle =
           base::TimeTicks::Now() - last_idle_time_;
       base::TimeDelta max_time_since_idle =
-          base::TimeDelta::FromMilliseconds(kMaxTimeSinceIdleMs);
+          base::Milliseconds(kMaxTimeSinceIdleMs);
 
       // Force idle when it's been too long since last time we were idle.
       if (time_since_idle > max_time_since_idle)
@@ -224,8 +224,7 @@ void CommandBufferStub::PerformWork() {
     decoder_context_->PerformPollingWork();
   }
 
-  ScheduleDelayedWork(
-      base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodBusyMs));
+  ScheduleDelayedWork(base::Milliseconds(kHandleMoreWorkPeriodBusyMs));
 }
 
 bool CommandBufferStub::HasUnprocessedCommands() {
@@ -767,8 +766,7 @@ CommandBufferStub::ScopedContextOperation::~ScopedContextOperation() {
   if (have_context_) {
     if (stub_.decoder_context_)
       stub_.decoder_context_->ProcessPendingQueries(/*did_finish=*/false);
-    stub_.ScheduleDelayedWork(
-        base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodMs));
+    stub_.ScheduleDelayedWork(base::Milliseconds(kHandleMoreWorkPeriodMs));
   }
 }
 

@@ -54,7 +54,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
  public:
   // The default duration for an animation between two sets of bounds.
   static constexpr base::TimeDelta kBoundsChangeSlideDuration =
-      base::TimeDelta::FromMilliseconds(120);
+      base::Milliseconds(120);
 
   // A subclass of State class represents one of the window's states
   // that corresponds to chromeos::WindowStateType in Ash environment, e.g.

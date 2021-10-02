@@ -497,9 +497,9 @@ base::TimeDelta GtkUi::GetCursorBlinkInterval() const {
   gboolean cursor_blink = TRUE;
   g_object_get(gtk_settings_get_default(), "gtk-cursor-blink-time",
                &cursor_blink_time, "gtk-cursor-blink", &cursor_blink, nullptr);
-  return cursor_blink ? base::TimeDelta::FromSecondsD(
-                            cursor_blink_time / kGtkCursorBlinkCycleFactor)
-                      : base::TimeDelta();
+  return cursor_blink
+             ? base::Seconds(cursor_blink_time / kGtkCursorBlinkCycleFactor)
+             : base::TimeDelta();
 }
 
 ui::NativeTheme* GtkUi::GetNativeTheme(aura::Window* window) const {

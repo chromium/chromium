@@ -280,7 +280,7 @@ bool PopularSitesImpl::MaybeStartFetch(bool force_download,
   const base::TimeDelta time_since_last_download =
       base::Time::Now() - last_download_time;
   const base::TimeDelta redownload_interval =
-      base::TimeDelta::FromHours(kPopularSitesRedownloadIntervalHours);
+      base::Hours(kPopularSitesRedownloadIntervalHours);
   const bool download_time_is_future = base::Time::Now() < last_download_time;
 
   pending_url_ = GetURLToFetch();

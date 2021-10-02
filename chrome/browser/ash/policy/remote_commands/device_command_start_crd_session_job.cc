@@ -246,8 +246,8 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   if (!root->is_dict())
     return false;
 
-  idleness_cutoff_ = base::TimeDelta::FromSeconds(
-      root->FindIntKey(kIdlenessCutoffFieldName).value_or(0));
+  idleness_cutoff_ =
+      base::Seconds(root->FindIntKey(kIdlenessCutoffFieldName).value_or(0));
 
   if (root->FindBoolKey(kAckedUserPresenceFieldName).has_value()) {
     acked_user_presence_ =

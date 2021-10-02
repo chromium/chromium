@@ -194,7 +194,7 @@ TEST_F(BackgroundDownloadServiceImplTest, InitDbPruned) {
   entry_expired.client = DownloadClient::TEST;
   entry_expired.state = Entry::State::COMPLETE;
   entry_expired.guid = kGuid2;
-  entry_expired.create_time = clock_.Now() - base::TimeDelta::FromDays(300);
+  entry_expired.create_time = clock_.Now() - base::Days(300);
   entries->emplace_back(std::move(entry_expired));
 
   // Build a completed entry that should be kept.
@@ -279,7 +279,7 @@ TEST_F(BackgroundDownloadServiceImplTest, OnDownloadUpdated) {
   service()->StartDownload(std::move(download_params));
 
   // Advance the time to make sure the update is not throttled.
-  clock_.Advance(base::TimeDelta::FromSeconds(11));
+  clock_.Advance(base::Seconds(11));
   store_->TriggerUpdate(/*success=*/true);
   EXPECT_EQ(kGuid, store_->LastUpdatedEntry()->guid);
   EXPECT_EQ(10u, store_->LastUpdatedEntry()->bytes_downloaded);

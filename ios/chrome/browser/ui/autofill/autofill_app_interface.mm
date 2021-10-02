@@ -170,7 +170,7 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager) {
   };
   base::test::ios::TimeUntilCondition(
       nil, conditionBlock, false,
-      base::TimeDelta::FromSeconds(base::test::ios::kWaitForActionTimeout));
+      base::Seconds(base::test::ios::kWaitForActionTimeout));
 }
 
 }  // namespace
@@ -376,7 +376,7 @@ class SaveCardInfobarEGTestHelper
   };
   base::test::ios::TimeUntilCondition(
       nil, conditionBlock, false,
-      base::TimeDelta::FromSeconds(base::test::ios::kWaitForActionTimeout));
+      base::Seconds(base::test::ios::kWaitForActionTimeout));
 
   autofill::prefs::SetAutofillProfileEnabled(browserState->GetPrefs(), YES);
 }
@@ -416,8 +416,7 @@ class SaveCardInfobarEGTestHelper
   };
   base::test::ios::TimeUntilCondition(
       nil, conditionBlock, false,
-      base::TimeDelta::FromSeconds(
-          base::test::ios::kWaitForFileOperationTimeout));
+      base::Seconds(base::test::ios::kWaitForFileOperationTimeout));
   personalDataManager->NotifyPersonalDataObserver();
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }

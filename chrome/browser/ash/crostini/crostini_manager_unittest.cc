@@ -69,7 +69,7 @@ constexpr int64_t kDiskSizeBytes = 4ll * 1024 * 1024 * 1024;  // 4 GiB
 const char kTerminaKernelVersion[] =
     "4.19.56-05556-gca219a5b1086 #3 SMP PREEMPT Mon Jul 1 14:36:38 CEST 2019";
 const char kCrostiniCorruptionHistogram[] = "Crostini.FilesystemCorruption";
-constexpr auto kLongTime = base::TimeDelta::FromDays(10);
+constexpr auto kLongTime = base::Days(10);
 
 void ExpectFailure(base::OnceClosure closure, bool success) {
   EXPECT_FALSE(success);
@@ -1137,12 +1137,12 @@ TEST_F(CrostiniManagerRestartTest, HeartbeatKeepsCreateContainerFromTimingOut) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
   crostini_manager_->OnLxdContainerDownloading(signal);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
   ASSERT_EQ(0, restart_crostini_callback_count_);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(6));
+  task_environment_.FastForwardBy(base::Minutes(6));
   ASSERT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
@@ -1561,7 +1561,7 @@ TEST_F(CrostiniManagerRestartTest, ComponentUpdateInProgress) {
           &CrostiniManager::set_component_manager_load_error_for_testing,
           base::Unretained(crostini_manager()),
           component_updater::CrOSComponentManager::Error::NONE),
-      base::TimeDelta::FromSeconds(3));
+      base::Seconds(3));
 
   run_loop()->Run();
 

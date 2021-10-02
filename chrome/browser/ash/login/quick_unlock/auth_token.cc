@@ -20,7 +20,7 @@ AuthToken::AuthToken(const chromeos::UserContext& user_context)
       user_context_(std::make_unique<chromeos::UserContext>(user_context)) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AuthToken::Reset, weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kTokenExpirationSeconds));
+      base::Seconds(kTokenExpirationSeconds));
 }
 
 AuthToken::~AuthToken() = default;

@@ -91,9 +91,8 @@ unsigned long RoundRtt(const std::string& host,
 
   // Limit the maximum reported value and the granularity to reduce
   // fingerprinting.
-  constexpr base::TimeDelta kMaxRtt = base::TimeDelta::FromSeconds(3);
-  constexpr base::TimeDelta kGranularity =
-      base::TimeDelta::FromMilliseconds(50);
+  constexpr base::TimeDelta kMaxRtt = base::Seconds(3);
+  constexpr base::TimeDelta kGranularity = base::Milliseconds(50);
 
   const base::TimeDelta modified_rtt =
       std::min(rtt.value() * GetRandomMultiplier(host), kMaxRtt);
@@ -819,9 +818,8 @@ void PersistAcceptCH(const GURL& url,
   // base::TimeDelta::Max cannot be used. As this will be removed once the
   // FeaturePolicyForClientHints feature is shipped, a reasonably large value
   // was chosen instead.
-  base::TimeDelta duration = use_persist_duration
-                                 ? *persist_duration
-                                 : base::TimeDelta::FromDays(1000000);
+  base::TimeDelta duration =
+      use_persist_duration ? *persist_duration : base::Days(1000000);
 
   delegate->PersistClientHints(url::Origin::Create(url), hints,
                                std::move(duration));

@@ -2875,7 +2875,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
           base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
               FROM_HERE,
               base::BindOnce([](base::RunLoop* loop) { loop->Quit(); }, &loop),
-              base::TimeDelta::FromSeconds(1));
+              base::Seconds(1));
           // loop.Quit();
         });
     new_browser->tab_strip_model()->ActivateTabAt(0);

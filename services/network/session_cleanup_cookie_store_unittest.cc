@@ -98,7 +98,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestPersistence) {
 
   base::Time t = base::Time::Now();
   AddCookie("A", "B", "foo.com", "/", t);
-  t += base::TimeDelta::FromDays(10);
+  t += base::Days(10);
   AddCookie("A", "B", "persistent.com", "/", t);
 
   // Replace the store, which forces the current store to flush data to
@@ -191,9 +191,9 @@ TEST_F(SessionCleanupCookieStoreTest, TestDeleteSessionCookies) {
 
   base::Time t = base::Time::Now();
   AddCookie("A", "B", "foo.com", "/", t);
-  t += base::TimeDelta::FromDays(10);
+  t += base::Days(10);
   AddCookie("A", "B", "persistent.com", "/", t);
-  t += base::TimeDelta::FromDays(10);
+  t += base::Days(10);
   AddCookie("A", "B", "nonpersistent.com", "/", t);
 
   // Replace the store, which forces the current store to flush data to
@@ -206,7 +206,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestDeleteSessionCookies) {
   cookies = CreateAndLoad();
   EXPECT_EQ(3u, cookies.size());
 
-  t += base::TimeDelta::FromDays(10);
+  t += base::Days(10);
   AddCookie("A", "B", "nonpersistent.com", "/second", t);
 
   // Cookies from "nonpersistent.com" should be deleted.
@@ -241,9 +241,9 @@ TEST_F(SessionCleanupCookieStoreTest, ForceKeepSessionState) {
   cookies = CreateAndLoad();
   EXPECT_EQ(1u, cookies.size());
 
-  t += base::TimeDelta::FromDays(10);
+  t += base::Days(10);
   AddCookie("A", "B", "persistent.com", "/", t);
-  t += base::TimeDelta::FromDays(10);
+  t += base::Days(10);
   AddCookie("A", "B", "nonpersistent.com", "/", t);
 
   store_->SetForceKeepSessionState();

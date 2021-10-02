@@ -199,8 +199,7 @@ void DatabaseMaintenanceImpl::CompactSamples(
     base::OnceClosure next_action) {
   for (uint64_t days_ago = kFirstCompactionDay;
        days_ago <= kMaxSignalStorageDays; ++days_ago) {
-    base::Time compaction_day =
-        clock_->Now() - base::TimeDelta::FromDays(days_ago);
+    base::Time compaction_day = clock_->Now() - base::Days(days_ago);
     for (auto signal_id : signal_ids) {
       signal_database_->CompactSamplesForDay(
           signal_id.second, signal_id.first, compaction_day,

@@ -67,7 +67,7 @@ std::vector<FileSearchProvider::PathInfo> SearchFilesByPattern(
       base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES,
       CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
 
-  const auto time_limit = base::TimeDelta::FromMilliseconds(kSearchTimeoutMs);
+  const auto time_limit = base::Milliseconds(kSearchTimeoutMs);
   bool timed_out = false;
   std::vector<FileSearchProvider::PathInfo> matched_paths;
   for (base::FilePath path = enumerator.Next(); !path.empty();

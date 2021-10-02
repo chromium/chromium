@@ -218,8 +218,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions_;
 
   // The time between consecutive evaluations of dynamic trigger conditions.
-  base::TimeDelta trigger_condition_check_interval_ =
-      base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta trigger_condition_check_interval_ = base::Milliseconds(1000);
 
   // The number of times the trigger condition may be evaluated. If this reaches
   // 0, the trigger script stops with |TRIGGER_CONDITION_TIMEOUT|.

@@ -419,7 +419,7 @@ void ImmersiveFullscreenController::UpdateTopEdgeHoverTimer(
   top_edge_hover_timer_.Stop();
   // Timer is stopped when |this| is destroyed, hence Unretained() is safe.
   top_edge_hover_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kMouseRevealDelayMs),
+      FROM_HERE, base::Milliseconds(kMouseRevealDelayMs),
       base::BindOnce(
           &ImmersiveFullscreenController::AcquireLocatedEventRevealedLock,
           base::Unretained(this)));
@@ -545,9 +545,9 @@ base::TimeDelta ImmersiveFullscreenController::GetAnimationDuration(
     case ANIMATE_NO:
       return base::TimeDelta();
     case ANIMATE_SLOW:
-      return base::TimeDelta::FromMilliseconds(400);
+      return base::Milliseconds(400);
     case ANIMATE_FAST:
-      return base::TimeDelta::FromMilliseconds(200);
+      return base::Milliseconds(200);
   }
   NOTREACHED();
   return base::TimeDelta();

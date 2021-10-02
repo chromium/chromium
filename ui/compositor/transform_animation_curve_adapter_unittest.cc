@@ -12,7 +12,7 @@ namespace ui {
 namespace {
 
 TEST(TransformAnimationCurveAdapterTest, MaximumAnimationScale) {
-  auto duration = base::TimeDelta::FromSeconds(1);
+  auto duration = base::Seconds(1);
   float kArbitraryScale = 123.f;
   float scale = kArbitraryScale;
   EXPECT_TRUE(TransformAnimationCurveAdapter(gfx::Tween::LINEAR,

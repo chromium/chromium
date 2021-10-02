@@ -229,7 +229,7 @@ TEST_F(VelocityTrackerTest, NoDirectionReversal) {
   VelocityTrackerState state_unrestricted(VelocityTracker::LSQ2);
   VelocityTrackerState state_restricted(VelocityTracker::LSQ2_RESTRICTED);
   const base::TimeTicks t0 = base::TimeTicks::Now();
-  const base::TimeDelta dt = base::TimeDelta::FromMilliseconds(1);
+  const base::TimeDelta dt = base::Milliseconds(1);
   const size_t samples = 60;
 
   gfx::PointF p(0, 0);

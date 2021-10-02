@@ -616,9 +616,8 @@ void Scheduler::RunNextTask() {
   base::AutoLock auto_lock(lock_);
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.Scheduler.ThreadSuspendedTime",
-      base::TimeTicks::Now() - run_next_task_scheduled_,
-      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
-      100);
+      base::TimeTicks::Now() - run_next_task_scheduled_, base::Microseconds(10),
+      base::Seconds(30), 100);
   auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
 
   SchedulingState state;
@@ -645,15 +644,13 @@ void Scheduler::RunNextTask() {
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.Scheduler.TaskDependencyTime",
-      sequence->FrontTaskWaitingDependencyDelta(),
-      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
-      100);
+      sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
+      base::Seconds(30), 100);
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.Scheduler.TaskSchedulingDelayTime",
-      sequence->FrontTaskSchedulingDelay(),
-      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
-      100);
+      sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
+      base::Seconds(30), 100);
 
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);
@@ -708,9 +705,8 @@ void Scheduler::RunNextTask() {
   }
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(),
-      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
-      100);
+      "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(), base::Microseconds(10),
+      base::Seconds(30), 100);
 
   // Avoid scheduling another RunNextTask if we're done with all tasks.
   auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(task_runner);

@@ -107,7 +107,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
                       views::LayoutAlignment::kEnd);
   AddChildView(std::move(button));
 
-  base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(30000);
+  base::TimeDelta kTimeoutMs = base::Milliseconds(30000);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SendTabToSelfToolbarBubbleView::Timeout,

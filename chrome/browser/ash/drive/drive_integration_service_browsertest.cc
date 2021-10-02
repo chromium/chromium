@@ -131,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   base::FilePath mount_path = drive_service->GetMountPointPath();
   ASSERT_TRUE(base::WriteFile(mount_path.Append("bar"), ""));
   ASSERT_TRUE(base::WriteFile(mount_path.Append("baz"), ""));
-  auto base_time = base::Time::Now() - base::TimeDelta::FromSeconds(10);
-  auto earlier_time = base_time - base::TimeDelta::FromSeconds(10);
+  auto base_time = base::Time::Now() - base::Seconds(10);
+  auto earlier_time = base_time - base::Seconds(10);
   ASSERT_TRUE(base::TouchFile(mount_path.Append("bar"), base_time, base_time));
   ASSERT_TRUE(
       base::TouchFile(mount_path.Append("baz"), earlier_time, earlier_time));

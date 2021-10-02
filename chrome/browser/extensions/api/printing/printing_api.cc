@@ -20,8 +20,7 @@ PrintingSubmitJobFunction::~PrintingSubmitJobFunction() = default;
 void PrintingSubmitJobFunction::GetQuotaLimitHeuristics(
     QuotaLimitHeuristics* heuristics) const {
   QuotaLimitHeuristic::Config config = {
-      api::printing::MAX_SUBMIT_JOB_CALLS_PER_MINUTE,
-      base::TimeDelta::FromMinutes(1)};
+      api::printing::MAX_SUBMIT_JOB_CALLS_PER_MINUTE, base::Minutes(1)};
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       config, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
       "MAX_SUBMIT_JOB_CALLS_PER_MINUTE"));
@@ -90,8 +89,7 @@ PrintingGetPrinterInfoFunction::~PrintingGetPrinterInfoFunction() = default;
 void PrintingGetPrinterInfoFunction::GetQuotaLimitHeuristics(
     QuotaLimitHeuristics* heuristics) const {
   QuotaLimitHeuristic::Config config = {
-      api::printing::MAX_GET_PRINTER_INFO_CALLS_PER_MINUTE,
-      base::TimeDelta::FromMinutes(1)};
+      api::printing::MAX_GET_PRINTER_INFO_CALLS_PER_MINUTE, base::Minutes(1)};
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       config, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
       "MAX_GET_PRINTER_INFO_CALLS_PER_MINUTE"));

@@ -54,8 +54,7 @@ AppPauseDialogView::AppPauseDialogView(
       ui::TimeFormat::Detailed(
           ui::TimeFormat::Format::FORMAT_DURATION,
           ui::TimeFormat::Length::LENGTH_LONG, cutoff,
-          base::TimeDelta::FromHours(pause_data.hours) +
-              base::TimeDelta::FromMinutes(pause_data.minutes)));
+          base::Hours(pause_data.hours) + base::Minutes(pause_data.minutes)));
 
   InitializeView(heading_text);
 

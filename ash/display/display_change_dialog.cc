@@ -65,7 +65,7 @@ DisplayChangeDialog::DisplayChangeDialog(
   // TODO(baileyberro): Verify behavior in kiosk mode.
   widget->Show();
 
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+  timer_.Start(FROM_HERE, base::Seconds(1), this,
                &DisplayChangeDialog::OnTimerTick);
 }
 
@@ -99,7 +99,7 @@ void DisplayChangeDialog::OnTimerTick() {
 std::u16string DisplayChangeDialog::GetRevertTimeoutString() const {
   const std::u16string timer = ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
-      base::TimeDelta::FromSeconds(timeout_count_));
+      base::Seconds(timeout_count_));
   return base::ReplaceStringPlaceholders(timeout_message_with_placeholder_,
                                          timer, /*offset=*/nullptr);
 }

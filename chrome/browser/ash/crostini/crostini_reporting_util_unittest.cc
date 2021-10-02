@@ -128,13 +128,13 @@ TEST_F(CrostiniReportingUtilTest, GetThreeDayWindowStart) {
   base::Time next_window_start;
   EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2018 00:00:00 GMT",
                                      &next_window_start));
-  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  test_clock_.Advance(base::Days(1));
   EXPECT_EQ(next_window_start, GetThreeDayWindowStart(test_clock_.Now()));
 
-  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  test_clock_.Advance(base::Days(1));
   EXPECT_EQ(next_window_start, GetThreeDayWindowStart(test_clock_.Now()));
 
-  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  test_clock_.Advance(base::Days(1));
   EXPECT_EQ(next_window_start, GetThreeDayWindowStart(test_clock_.Now()));
 
   // After three consecutive days logged with the same value, we now expect
@@ -142,7 +142,7 @@ TEST_F(CrostiniReportingUtilTest, GetThreeDayWindowStart) {
   base::Time three_days_later;
   EXPECT_TRUE(base::Time::FromString("Tue, 4 Sep 2018 00:00:00 GMT",
                                      &three_days_later));
-  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  test_clock_.Advance(base::Days(1));
   EXPECT_EQ(three_days_later, GetThreeDayWindowStart(test_clock_.Now()));
 }
 

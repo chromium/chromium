@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelDuringBody) {
   // recieved by the time Stop() is called, the test should still pass, however.
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
   run_loop.Run();
 
   active_web_contents()->Stop();
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
   // recieved by the time Stop() is called, the test should still pass, however.
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
   run_loop.Run();
 
   // Stop navigation to record histograms.

@@ -173,8 +173,7 @@ class CONTENT_EXPORT MouseCursorOverlayController {
 
   // Amount of time to elapse with no mouse activity before the cursor should
   // stop showing.
-  static constexpr base::TimeDelta kIdleTimeout =
-      base::TimeDelta::FromSeconds(2);
+  static constexpr base::TimeDelta kIdleTimeout = base::Seconds(2);
 };
 
 }  // namespace content

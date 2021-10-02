@@ -27,8 +27,7 @@ namespace {
 
 // The period to send the TimeUpdate RPC message to update the media time on
 // sender side.
-constexpr base::TimeDelta kTimeUpdateInterval =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kTimeUpdateInterval = base::Milliseconds(250);
 
 }  // namespace
 
@@ -241,8 +240,7 @@ void Receiver::RpcStartPlayingFrom(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  base::TimeDelta time =
-      base::TimeDelta::FromMicroseconds(message->integer64_value());
+  base::TimeDelta time = base::Microseconds(message->integer64_value());
   renderer_->StartPlayingFrom(time);
   ScheduleMediaTimeUpdates();
 }

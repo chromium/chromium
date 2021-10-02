@@ -77,13 +77,13 @@ TEST_F(ExtensionCacheTest, SizePolicy) {
   // The extension cache only has enough space for two of the three extensions.
   const base::FilePath file1 =
       CreateExtensionFile(cache_path, kTestExtensionId1, "1.0", kExtensionSize1,
-                          now - base::TimeDelta::FromSeconds(1));
+                          now - base::Seconds(1));
   const base::FilePath file2 =
       CreateExtensionFile(cache_path, kTestExtensionId2, "2.0", kExtensionSize2,
-                          now - base::TimeDelta::FromSeconds(2));
+                          now - base::Seconds(2));
   const base::FilePath file3 =
       CreateExtensionFile(cache_path, kTestExtensionId3, "3.0", kExtensionSize3,
-                          now - base::TimeDelta::FromSeconds(3));
+                          now - base::Seconds(3));
 
   ExtensionCacheImpl cache_impl(
       std::make_unique<ChromeOSExtensionCacheDelegate>(cache_path));

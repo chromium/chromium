@@ -90,8 +90,8 @@ base::TimeDelta GetRetryDelay() {
       command_line->GetSwitchValueNative(kExperimentRetryDelay);
   int seconds;
   if (!value.empty() && base::StringToInt(value, &seconds))
-    return base::TimeDelta::FromSeconds(seconds);
-  return base::TimeDelta::FromMinutes(5);
+    return base::Seconds(seconds);
+  return base::Minutes(5);
 }
 
 // Overrides the participation value for testing if a value is provided via
@@ -167,8 +167,7 @@ bool MayShowNotifications() {
 }
 
 bool UserSessionIsNotYoung() {
-  static constexpr base::TimeDelta kMinSessionLength =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kMinSessionLength = base::Minutes(5);
   base::Time session_start_time = GetConsoleSessionStartTime();
   if (session_start_time.is_null())
     return true;

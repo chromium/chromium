@@ -424,7 +424,7 @@ void PipelineIntegrationTestBase::QuitAfterCurrentTimeTask(
       base::BindOnce(&PipelineIntegrationTestBase::QuitAfterCurrentTimeTask,
                      base::Unretained(this), quit_time,
                      std::move(quit_closure)),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 }
 
 bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
@@ -438,7 +438,7 @@ bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
       FROM_HERE,
       base::BindOnce(&PipelineIntegrationTestBase::QuitAfterCurrentTimeTask,
                      base::Unretained(this), wait_time, run_loop.QuitClosure()),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
   RunUntilQuitOrEndedOrError(&run_loop);
 
@@ -479,7 +479,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
 
   // Simulate a 60Hz rendering sink.
   video_sink_ = std::make_unique<NullVideoSink>(
-      clockless_playback_, base::TimeDelta::FromSecondsD(1.0 / 60),
+      clockless_playback_, base::Seconds(1.0 / 60),
       base::BindRepeating(&PipelineIntegrationTestBase::OnVideoFramePaint,
                           base::Unretained(this)),
       task_environment_.GetMainThreadTaskRunner());

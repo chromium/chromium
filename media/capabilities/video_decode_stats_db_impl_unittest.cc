@@ -214,7 +214,7 @@ TEST_F(VideoDecodeStatsDBImplTest, InitializeTimedOut) {
 
   // Move time forward enough to trigger timeout.
   EXPECT_CALL(*this, OnInitialize(_)).Times(0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_environment_.FastForwardBy(base::Seconds(100));
   task_environment_.RunUntilIdle();
 
   // Verify we didn't get an init callback and task is no longer considered
@@ -337,15 +337,15 @@ TEST_F(VideoDecodeStatsDBImplTest, ConfigureExpireDays) {
       new_max_days_to_keep_stats - half_days_to_keep_stats;
 
   // Advance time half way through grace period. Verify stats not expired.
-  clock.Advance(base::TimeDelta::FromDays(half_days_to_keep_stats));
+  clock.Advance(base::Days(half_days_to_keep_stats));
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(200, 20, 2));
 
   // Advance time 1 day beyond grace period, verify stats are expired.
-  clock.Advance(base::TimeDelta::FromDays((remaining_days_to_keep_stats) + 1));
+  clock.Advance(base::Days((remaining_days_to_keep_stats) + 1));
   VerifyEmptyStats(kStatsKeyVp9);
 
   // Advance the clock 100 extra days. Verify stats still expired.
-  clock.Advance(base::TimeDelta::FromDays(100));
+  clock.Advance(base::Days(100));
   VerifyEmptyStats(kStatsKeyVp9);
 }
 
@@ -539,20 +539,18 @@ TEST_F(VideoDecodeStatsDBImplTest, NoWriteDateReadAndExpire) {
   // don't want to immediately expire all the existing data).
   base::SimpleTestClock clock;
   SetDBClock(&clock);
-  clock.SetNow(kDefaultWriteTime - base::TimeDelta::FromDays(10));
+  clock.SetNow(kDefaultWriteTime - base::Days(10));
   // Verify the stats are readable (not expired).
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(100, 10, 1));
 
   // Set "now" to be in the middle of the grace period. Verify stats are still
   // readable (not expired).
-  clock.SetNow(kDefaultWriteTime +
-               base::TimeDelta::FromDays(GetMaxDaysToKeepStats() / 2));
+  clock.SetNow(kDefaultWriteTime + base::Days(GetMaxDaysToKeepStats() / 2));
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(100, 10, 1));
 
   // Set the clock 1 day beyond the expiry date. Verify stats are no longer
   // readable due to expiration.
-  clock.SetNow(kDefaultWriteTime +
-               base::TimeDelta::FromDays(GetMaxDaysToKeepStats() + 1));
+  clock.SetNow(kDefaultWriteTime + base::Days(GetMaxDaysToKeepStats() + 1));
   VerifyEmptyStats(kStatsKeyVp9);
 
   // Write some stats to the entry. Verify we get back exactly what's written
@@ -577,7 +575,7 @@ TEST_F(VideoDecodeStatsDBImplTest, NoWriteDateAppendReadAndExpire) {
   // don't want to immediately expire all the existing data).
   base::SimpleTestClock clock;
   SetDBClock(&clock);
-  clock.SetNow(kDefaultWriteTime - base::TimeDelta::FromDays(10));
+  clock.SetNow(kDefaultWriteTime - base::Days(10));
   // Verify the stats are readable (not expired).
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(100, 10, 1));
 
@@ -588,14 +586,12 @@ TEST_F(VideoDecodeStatsDBImplTest, NoWriteDateAppendReadAndExpire) {
 
   // Set "now" to be in the middle of the grace period. Verify stats are still
   // readable (not expired).
-  clock.SetNow(kDefaultWriteTime +
-               base::TimeDelta::FromDays(GetMaxDaysToKeepStats() / 2));
+  clock.SetNow(kDefaultWriteTime + base::Days(GetMaxDaysToKeepStats() / 2));
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(300, 30, 3));
 
   // Set the clock 1 day beyond the expiry date. Verify stats are no longer
   // readable due to expiration.
-  clock.SetNow(kDefaultWriteTime +
-               base::TimeDelta::FromDays(GetMaxDaysToKeepStats() + 1));
+  clock.SetNow(kDefaultWriteTime + base::Days(GetMaxDaysToKeepStats() + 1));
   VerifyEmptyStats(kStatsKeyVp9);
 }
 
@@ -612,15 +608,15 @@ TEST_F(VideoDecodeStatsDBImplTest, AppendAndExpire) {
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(200, 20, 2));
 
   // Advance time half way through grace period. Verify stats not expired.
-  clock.Advance(base::TimeDelta::FromDays(GetMaxDaysToKeepStats() / 2));
+  clock.Advance(base::Days(GetMaxDaysToKeepStats() / 2));
   VerifyReadStats(kStatsKeyVp9, DecodeStatsEntry(200, 20, 2));
 
   // Advance time 1 day beyond grace period, verify stats are expired.
-  clock.Advance(base::TimeDelta::FromDays((GetMaxDaysToKeepStats() / 2) + 1));
+  clock.Advance(base::Days((GetMaxDaysToKeepStats() / 2) + 1));
   VerifyEmptyStats(kStatsKeyVp9);
 
   // Advance the clock 100 days. Verify stats still expired.
-  clock.Advance(base::TimeDelta::FromDays(100));
+  clock.Advance(base::Days(100));
   VerifyEmptyStats(kStatsKeyVp9);
 }
 
@@ -773,8 +769,7 @@ TEST_F(VideoDecodeStatsDBImplTest, DiscardCorruptedDBData) {
 
   // Make an invalid  proto with a last write date in the future.
   DecodeStatsProto protoG(protoA);
-  protoG.set_last_write_date(
-      (clock.Now() + base::TimeDelta::FromDays(1)).ToJsTime());
+  protoG.set_last_write_date((clock.Now() + base::Days(1)).ToJsTime());
   AppendToProtoDB(keyG, &protoG);
   VerifyEmptyStats(keyG);
 }

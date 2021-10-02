@@ -265,10 +265,9 @@ LogoClickType LoggingEventToLogoClick(NTPLoggingEventType event) {
 // Helper macro to log a load time to UMA. There's no good reason why we don't
 // use one of the standard UMA_HISTORAM_*_TIMES macros, but all their ranges are
 // different, and it's not worth changing all the existing histograms.
-#define UMA_HISTOGRAM_LOAD_TIME(name, sample)                      \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                         \
-                             base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromSeconds(60), 100)
+#define UMA_HISTOGRAM_LOAD_TIME(name, sample)                     \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(60), 100)
 
 NTPUserDataLogger::NTPUserDataLogger(Profile* profile, const GURL& ntp_url)
     : has_emitted_(false),

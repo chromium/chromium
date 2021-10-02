@@ -181,9 +181,9 @@ TEST_F(ResizeToggleMenuTest, TestDelayedAutoClose) {
 
   ClickButton(ResizeCompatMode::kPhone);
   EXPECT_TRUE(IsMenuRunning());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsMenuRunning());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsMenuRunning());
 }
 
@@ -193,13 +193,13 @@ TEST_F(ResizeToggleMenuTest, TestDelayedAutoCloseCancel) {
 
   ClickButton(ResizeCompatMode::kPhone);
   EXPECT_TRUE(IsMenuRunning());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsMenuRunning());
   ClickButton(ResizeCompatMode::kTablet);
   EXPECT_TRUE(IsMenuRunning());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsMenuRunning());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsMenuRunning());
 }
 

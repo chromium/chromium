@@ -493,7 +493,7 @@ MediaCodecStatus MediaCodecBridgeImpl::DequeueOutputBuffer(
   *size = base::checked_cast<size_t>(
       Java_DequeueOutputResult_numBytes(env, result));
   if (presentation_time) {
-    *presentation_time = base::TimeDelta::FromMicroseconds(
+    *presentation_time = base::Microseconds(
         Java_DequeueOutputResult_presentationTimeMicroseconds(env, result));
   }
   int flags = Java_DequeueOutputResult_flags(env, result);

@@ -405,7 +405,7 @@ void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
   if (is_console_info_shown_ || pending_request_map_.IsEmpty())
     return;
 
-  const base::Time limit = clock_->Now() - base::TimeDelta::FromSeconds(60);
+  const base::Time limit = clock_->Now() - base::Seconds(60);
   if ((pending_queue_update_times_[ThrottleOption::kThrottleable] >= limit ||
        IsPendingRequestEffectivelyEmpty(ThrottleOption::kThrottleable)) &&
       (pending_queue_update_times_[ThrottleOption::kStoppable] >= limit ||

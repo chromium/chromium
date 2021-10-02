@@ -1599,8 +1599,7 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_NoChange) {
 
 TEST_F(ServiceWorkerUpdateJobTest, Update_BumpLastUpdateCheckTime) {
   const base::Time kToday = base::Time::Now();
-  const base::Time kYesterday =
-      kToday - base::TimeDelta::FromDays(1) - base::TimeDelta::FromHours(1);
+  const base::Time kYesterday = kToday - base::Days(1) - base::Hours(1);
   const GURL kNewVersionOrigin("https://newversion/");
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -2108,8 +2107,7 @@ Cross-Origin-Embedder-Policy: none
 )";
 
   const base::Time kToday = base::Time::Now();
-  const base::Time kYesterday =
-      kToday - base::TimeDelta::FromDays(1) - base::TimeDelta::FromHours(1);
+  const base::Time kYesterday = kToday - base::Days(1) - base::Hours(1);
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       update_helper_->SetupInitialRegistration(kNewVersionOrigin);
@@ -2212,7 +2210,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorTimeout,
                        &registration1, loop1.QuitClosure()));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Make a job that gets stuck due to a worker that doesn't finish the install
   // event. The callback is called with kOk, but the job will be stuck until
@@ -2228,7 +2226,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                        loop2.QuitClosure()));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Make a normal job.
   base::RunLoop loop3;
@@ -2240,10 +2238,10 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration3,
                        loop3.QuitClosure()));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Timeout the first job.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
   loop1.Run();
 
   // Let the second job run until the install event is dispatched, then
@@ -2253,7 +2251,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       registration2->installing_version();
   ASSERT_TRUE(version);
   EXPECT_EQ(ServiceWorkerVersion::INSTALLING, version->status());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version->status());
 
   // Let the third job finish successfully. It might have already been

@@ -112,7 +112,7 @@ TEST_F(ShowShareUIForWindowOperationTest, AsyncFailure) {
   operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
 
   task_environment_.FastForwardBy(

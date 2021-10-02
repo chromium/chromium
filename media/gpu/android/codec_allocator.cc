@@ -193,8 +193,7 @@ bool CodecAllocator::IsPrimaryTaskRunnerLikelyHung() const {
   // typically take 100-200ms on a N5, so 800ms is expected to very rarely
   // result in false positives. Also, false positives have low impact because we
   // resume using the thread when the task completes.
-  constexpr base::TimeDelta kHungTaskDetectionTimeout =
-      base::TimeDelta::FromMilliseconds(800);
+  constexpr base::TimeDelta kHungTaskDetectionTimeout = base::Milliseconds(800);
 
   return !pending_operations_.empty() &&
          tick_clock_->NowTicks() - *pending_operations_.begin() >

@@ -41,10 +41,10 @@ TabLoadingFrameNavigationThrottlesParams::
 TabLoadingFrameNavigationThrottlesParams
 TabLoadingFrameNavigationThrottlesParams::GetParams() {
   TabLoadingFrameNavigationThrottlesParams params;
-  params.minimum_throttle_timeout = base::TimeDelta::FromMilliseconds(
-      kMinimumThrottleTimeoutMilliseconds.Get());
-  params.maximum_throttle_timeout = base::TimeDelta::FromMilliseconds(
-      kMaximumThrottleTimeoutMilliseconds.Get());
+  params.minimum_throttle_timeout =
+      base::Milliseconds(kMinimumThrottleTimeoutMilliseconds.Get());
+  params.maximum_throttle_timeout =
+      base::Milliseconds(kMaximumThrottleTimeoutMilliseconds.Get());
   params.fcp_multiple = kFCPMultiple.Get();
   return params;
 }
@@ -102,7 +102,7 @@ BFCachePerformanceManagerPolicyParams::GetParams() {
   BFCachePerformanceManagerPolicyParams params;
   params.flush_on_moderate_pressure_ =
       BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure.Get();
-  params.delay_to_flush_background_tab_ = base::TimeDelta::FromSeconds(
+  params.delay_to_flush_background_tab_ = base::Seconds(
       BFCachePerformanceManagerPolicyParams::kDelayToFlushBackgroundTabInSeconds
           .Get());
   return params;

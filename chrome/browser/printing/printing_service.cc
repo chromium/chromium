@@ -25,7 +25,7 @@ const mojo::Remote<printing::mojom::PrintingService>& GetPrintingService() {
     // one -- then we will reset |remote|, causing the service process to be
     // terminated if it isn't already.
     remote->reset_on_disconnect();
-    remote->reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote->reset_on_idle_timeout(base::Seconds(5));
   }
 
   return *remote;

@@ -10,7 +10,7 @@
 namespace enterprise_reporting {
 
 ScopedExtensionRequestReportThrottler::ScopedExtensionRequestReportThrottler()
-    : ScopedExtensionRequestReportThrottler(base::TimeDelta::FromSeconds(10),
+    : ScopedExtensionRequestReportThrottler(base::Seconds(10),
                                             base::DoNothing()) {}
 
 ScopedExtensionRequestReportThrottler::ScopedExtensionRequestReportThrottler(

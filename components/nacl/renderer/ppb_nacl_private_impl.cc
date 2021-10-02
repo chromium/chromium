@@ -1293,7 +1293,7 @@ class ProgressEventRateLimiter {
                       int64_t total_bytes_received,
                       int64_t total_bytes_to_be_received) {
     base::Time now = base::Time::Now();
-    if (now - last_event_ > base::TimeDelta::FromMilliseconds(10)) {
+    if (now - last_event_ > base::Milliseconds(10)) {
       DispatchProgressEvent(instance_,
                             ProgressEvent(PP_NACL_EVENT_PROGRESS,
                                           url,

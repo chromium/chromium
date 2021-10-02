@@ -82,7 +82,7 @@ void OverscrollConfig::ResetTouchpadOverscrollHistoryNavigationEnabled() {
 // static
 base::TimeDelta
 OverscrollConfig::MaxInertialEventsBeforeOverscrollCancellation() {
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       g_max_inertial_events_before_overscroll_cancellation_in_ms);
 }
 

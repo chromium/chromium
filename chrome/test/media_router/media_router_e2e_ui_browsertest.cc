@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest,
   test_ui_->StartCastingFromCastDialog(receiver_);
 
   // Play the file for 10 seconds.
-  Wait(base::TimeDelta::FromSeconds(10));
+  Wait(base::Seconds(10));
 
   // Expect that the current tab has the file open in it.
   ASSERT_EQ(file_url, web_contents->GetURL());
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest,
   test_ui_->WaitForSink(receiver_);
   test_ui_->StopCastingFromCastDialog(receiver_);
   // Wait 15s for Chromecast to back to home screen and ready to use status.
-  Wait(base::TimeDelta::FromSeconds(15));
+  Wait(base::Seconds(15));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
   test_ui_->StartCastingFromCastDialog(receiver_);
 
   // Mirror tab for 10s.
-  Wait(base::TimeDelta::FromSeconds(10));
+  Wait(base::Seconds(10));
 
   // Check the mirroring session has started successfully.
   ASSERT_FALSE(test_ui_->GetRouteIdForSink(receiver_).empty());
@@ -82,23 +82,23 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
   // Play the video on loop and wait 5s for it to play smoothly.
   std::string script = "document.getElementsByTagName('video')[0].loop=true;";
   ExecuteScript(web_contents, script);
-  Wait(base::TimeDelta::FromSeconds(5));
+  Wait(base::Seconds(5));
 
   // Go to full screen and wait 5s for it to play smoothly.
   script =
       "document.getElementsByTagName('video')[0]."
       "webkitRequestFullScreen();";
   ExecuteScript(web_contents, script);
-  Wait(base::TimeDelta::FromSeconds(5));
+  Wait(base::Seconds(5));
   if (!test_ui_->IsCastDialogShown()) {
     test_ui_->ShowCastDialog();
     // Wait 5s for the dialog to be fully loaded and usable.
-    Wait(base::TimeDelta::FromSeconds(5));
+    Wait(base::Seconds(5));
   }
 
   // Check the mirroring session is still live.
   ASSERT_FALSE(test_ui_->GetRouteIdForSink(receiver_).empty());
-  Wait(base::TimeDelta::FromSeconds(20));
+  Wait(base::Seconds(20));
   if (!test_ui_->IsCastDialogShown())
     test_ui_->ShowCastDialog();
   test_ui_->WaitForSink(receiver_);

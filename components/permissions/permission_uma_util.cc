@@ -839,10 +839,10 @@ void PermissionUmaUtil::RecordPromptDecided(
 void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
     ContentSettingsType type,
     base::TimeDelta delta) {
-  base::UmaHistogramCustomCounts(
-      "Permissions.Usage.ElapsedTimeSinceGrant." +
-          PermissionUtil::GetPermissionString(type),
-      delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
+  base::UmaHistogramCustomCounts("Permissions.Usage.ElapsedTimeSinceGrant." +
+                                     PermissionUtil::GetPermissionString(type),
+                                 delta.InSeconds(), 1,
+                                 base::Days(365).InSeconds(), 100);
 }
 
 void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
@@ -851,7 +851,7 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
   base::UmaHistogramCustomCounts(
       "Permissions.Revocation.ElapsedTimeSinceGrant." +
           PermissionUtil::GetPermissionString(type),
-      delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
+      delta.InSeconds(), 1, base::Days(365).InSeconds(), 100);
 }
 
 // static

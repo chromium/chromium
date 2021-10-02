@@ -469,7 +469,7 @@ TEST_F(FrameNodeImplTest, FirstContentfulPaint) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  base::TimeDelta fcp = base::TimeDelta::FromMilliseconds(1364);
+  base::TimeDelta fcp = base::Milliseconds(1364);
   EXPECT_CALL(obs, OnFirstContentfulPaint(frame_node.get(), fcp));
   frame_node->OnFirstContentfulPaint(fcp);
 

@@ -1146,8 +1146,7 @@ void AwContents::OnComputeScroll(JNIEnv* env,
                                  jlong animation_time_millis) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.OnComputeScroll(
-      base::TimeTicks() +
-      base::TimeDelta::FromMilliseconds(animation_time_millis));
+      base::TimeTicks() + base::Milliseconds(animation_time_millis));
 }
 
 jlong AwContents::ReleasePopupAwContents(JNIEnv* env,
@@ -1263,9 +1262,8 @@ void AwContents::SmoothScroll(JNIEnv* env,
     scale *= browser_view_renderer_.dip_scale();
 
   DCHECK_GE(duration_ms, 0);
-  render_view_host_ext_->SmoothScroll(
-      target_x / scale, target_y / scale,
-      base::TimeDelta::FromMilliseconds(duration_ms));
+  render_view_host_ext_->SmoothScroll(target_x / scale, target_y / scale,
+                                      base::Milliseconds(duration_ms));
 }
 
 void AwContents::OnWebLayoutPageScaleFactorChanged(float page_scale_factor) {

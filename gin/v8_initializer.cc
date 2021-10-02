@@ -179,8 +179,7 @@ base::File OpenV8File(const char* file_name,
       result = OpenV8FileResult::FAILED_OTHER;
       break;
     } else if (kMaxOpenAttempts - 1 != attempt) {
-      base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(kOpenRetryDelayMillis));
+      base::PlatformThread::Sleep(base::Milliseconds(kOpenRetryDelayMillis));
     }
   }
 #endif  // defined(OS_ANDROID)

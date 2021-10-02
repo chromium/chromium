@@ -4321,7 +4321,7 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
 
     // value.
     DCHECK(it.second.is_int());
-    base::TimeDelta delta = base::TimeDelta::FromMinutes(it.second.GetInt());
+    base::TimeDelta delta = base::Minutes(it.second.GetInt());
     base::Time expiration_time = base::Time::FromDeltaSinceWindowsEpoch(delta);
 
     expiration_times[service] = expiration_time;
@@ -6179,7 +6179,7 @@ base::TimeDelta ChromeContentBrowserClient::GetKeepaliveTimerTimeout(
   // we have minimum/maximum values on it.
   DCHECK_LE(0, seconds);
   DCHECK_LE(seconds, 5);
-  return base::TimeDelta::FromSeconds(seconds);
+  return base::Seconds(seconds);
 }
 
 void ChromeContentBrowserClient::OnKeepaliveTimerFired(

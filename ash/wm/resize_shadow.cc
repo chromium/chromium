@@ -154,7 +154,7 @@ void ResizeShadow::UpdateBoundsAndVisibility() {
   ui::ScopedLayerAnimationSettings settings(layer_->GetAnimator());
   if (!visible_)
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(params_.hide_duration_ms));
+        base::Milliseconds(params_.hide_duration_ms));
   layer_->SetOpacity(visible_ ? params_.opacity : 0.f);
   layer_->SetVisible(visible_);
 }

@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 static constexpr base::TimeDelta kMaxScheduledDelay =
-    base::TimeDelta::FromSeconds(INT32_MAX / 1000);
+    base::Seconds(INT32_MAX / 1000);
 
 namespace blink {
 
@@ -118,7 +118,7 @@ void HttpRefreshScheduler::NavigateTask() {
     request.GetResourceRequest().SetCacheMode(
         mojom::FetchCacheMode::kValidateCache);
     load_type = WebFrameLoadType::kReload;
-  } else if (refresh->delay <= base::TimeDelta::FromSeconds(1)) {
+  } else if (refresh->delay <= base::Seconds(1)) {
     load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
 

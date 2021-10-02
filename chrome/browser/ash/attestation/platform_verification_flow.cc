@@ -106,7 +106,7 @@ PlatformVerificationFlow::PlatformVerificationFlow()
     : attestation_flow_(NULL),
       attestation_client_(AttestationClient::Get()),
       delegate_(NULL),
-      timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
+      timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
   default_attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
@@ -123,7 +123,7 @@ PlatformVerificationFlow::PlatformVerificationFlow(
     : attestation_flow_(attestation_flow),
       attestation_client_(attestation_client),
       delegate_(delegate),
-      timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
+      timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!delegate_) {
     default_delegate_ = std::make_unique<DefaultDelegate>();
@@ -359,7 +359,7 @@ PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
       return EXPIRY_STATUS_EXPIRED;
     }
     base::TimeDelta threshold =
-        base::TimeDelta::FromDays(kOpportunisticRenewalThresholdInDays);
+        base::Days(kOpportunisticRenewalThresholdInDays);
     if (x509->valid_expiry() - base::Time::Now() < threshold) {
       is_expiring_soon = true;
     }

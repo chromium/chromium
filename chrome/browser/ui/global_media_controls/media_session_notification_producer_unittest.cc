@@ -50,8 +50,7 @@ class MediaSessionNotificationProducerTest : public testing::Test {
 
  protected:
   void AdvanceClockMilliseconds(int milliseconds) {
-    task_environment_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(milliseconds));
+    task_environment_.FastForwardBy(base::Milliseconds(milliseconds));
   }
 
   void AdvanceClockMinutes(int minutes) {
@@ -484,16 +483,14 @@ TEST_F(MediaSessionNotificationProducerTest, InactiveBecomesActive_PlayPause) {
   EXPECT_FALSE(HasActiveItems());
   EXPECT_TRUE(IsSessionInactive(id));
 
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(70),
-                                            0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(70), 0);
 
   // Then, play the media. The notification should become active.
   SimulatePlaybackStateChanged(id, true);
 
   // We should have recorded an interaction even though the timer has
   // finished.
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(70),
-                                            1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(70), 1);
   EXPECT_TRUE(HasActiveItems());
   EXPECT_FALSE(IsSessionInactive(id));
 }
@@ -513,16 +510,14 @@ TEST_F(MediaSessionNotificationProducerTest, InactiveBecomesActive_Seeking) {
   EXPECT_FALSE(HasActiveItems());
   EXPECT_TRUE(IsSessionInactive(id));
 
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(70),
-                                            0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(70), 0);
 
   // Then, seek the media. The notification should become active.
   SimulateMediaSeeked(id);
 
   // We should have recorded an interaction even though the timer has
   // finished.
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(70),
-                                            1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(70), 1);
   EXPECT_TRUE(HasActiveItems());
   EXPECT_FALSE(IsSessionInactive(id));
 
@@ -549,11 +544,9 @@ TEST_F(MediaSessionNotificationProducerTest,
 
   // If we start playing again, we should not hide the notification, even
   // after an hour.
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(59),
-                                            0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(59), 0);
   SimulatePlaybackStateChanged(id, true);
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(59),
-                                            1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(59), 1);
   AdvanceClockMinutes(2);
   EXPECT_TRUE(HasActiveItems());
 
@@ -578,21 +571,17 @@ TEST_F(MediaSessionNotificationProducerTest,
   EXPECT_TRUE(HasActiveItems());
 
   // If the user clicks to go back to the tab, it should reset the hide timer.
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(59),
-                                            0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(59), 0);
   SimulateNotificationClicked(id);
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(59),
-                                            1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(59), 1);
   AdvanceClockMinutes(50);
   EXPECT_TRUE(HasActiveItems());
 
   // If the user seeks the media before an hour is up, it should reset the
   // hide timer.
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(50),
-                                            0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(50), 0);
   SimulateMediaSeeked(id);
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(50),
-                                            1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(50), 1);
   AdvanceClockMinutes(59);
   EXPECT_TRUE(HasActiveItems());
 
@@ -626,11 +615,9 @@ TEST_F(MediaSessionNotificationProducerTest,
   // should not have recorded any post-pause interactions.
   ExpectEmptyInteractionHistogram();
 
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(61),
-                                            0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(61), 0);
   SimulatePlaybackStateChanged(id, true);
-  ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(61),
-                                            1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(61), 1);
 }
 
 TEST_F(MediaSessionNotificationProducerTest, HidingNotification_TimerParams) {
@@ -657,11 +644,11 @@ TEST_F(MediaSessionNotificationProducerTest, HidingNotification_TimerParams) {
 
   // If we start playing again, we should not hide the notification, even
   // after kTimerInMinutes.
-  ExpectHistogramInteractionDelayAfterPause(
-      base::TimeDelta::FromMinutes(kTimerInMinutes - 1), 0);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(kTimerInMinutes - 1),
+                                            0);
   SimulatePlaybackStateChanged(id, true);
-  ExpectHistogramInteractionDelayAfterPause(
-      base::TimeDelta::FromMinutes(kTimerInMinutes - 1), 1);
+  ExpectHistogramInteractionDelayAfterPause(base::Minutes(kTimerInMinutes - 1),
+                                            1);
   AdvanceClockMinutes(2);
   EXPECT_TRUE(HasActiveItems());
 

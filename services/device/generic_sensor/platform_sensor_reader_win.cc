@@ -371,7 +371,7 @@ std::unique_ptr<PlatformSensorReaderWinBase> PlatformSensorReaderWin32::Create(
                                    min_interval.Receive());
   if (SUCCEEDED(hr) && min_interval.get().vt == VT_UI4) {
     params->min_reporting_interval =
-        base::TimeDelta::FromMilliseconds(min_interval.get().ulVal);
+        base::Milliseconds(min_interval.get().ulVal);
   }
 
   GUID interests[] = {SENSOR_EVENT_STATE_CHANGED, SENSOR_EVENT_DATA_UPDATED};

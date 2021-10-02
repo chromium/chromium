@@ -126,7 +126,7 @@ void PolicyStatisticsCollector::CollectStatistics() {
 
   // Take care of next update.
   prefs_->SetTime(policy_prefs::kLastPolicyStatisticsUpdate, base::Time::Now());
-  ScheduleUpdate(base::TimeDelta::FromMilliseconds(kStatisticsUpdateRate));
+  ScheduleUpdate(base::Milliseconds(kStatisticsUpdateRate));
 }
 
 void PolicyStatisticsCollector::ScheduleUpdate(base::TimeDelta delay) {

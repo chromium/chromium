@@ -668,7 +668,7 @@ void ThemeService::OnExtensionServiceReady() {
       FROM_HERE,
       base::BindOnce(&ThemeService::RemoveUnusedThemes,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kRemoveUnusedThemesStartupDelay));
+      base::Seconds(kRemoveUnusedThemesStartupDelay));
 }
 
 void ThemeService::MigrateTheme() {

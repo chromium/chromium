@@ -91,22 +91,22 @@ class IdleDeadlineTest : public testing::Test {
 
 TEST_F(IdleDeadlineTest, DeadlineInFuture) {
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1.25),
+      base::TimeTicks() + base::Seconds(1.25),
       /*cross_origin_isolated_capability=*/false,
       IdleDeadline::CallbackType::kCalledWhenIdle);
   deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   // Note: the deadline is computed with reduced resolution.
   EXPECT_FLOAT_EQ(250.0, deadline->timeRemaining());
 }
 
 TEST_F(IdleDeadlineTest, DeadlineInPast) {
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(0.75),
+      base::TimeTicks() + base::Seconds(0.75),
       /*cross_origin_isolated_capability=*/false,
       IdleDeadline::CallbackType::kCalledWhenIdle);
   deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_FLOAT_EQ(0, deadline->timeRemaining());
 }
 
@@ -115,11 +115,11 @@ TEST_F(IdleDeadlineTest, YieldForHighPriorityWork) {
   ScopedSchedulerOverrider scheduler_overrider(&scheduler);
 
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1.25),
+      base::TimeTicks() + base::Seconds(1.25),
       /*cross_origin_isolated_capability=*/false,
       IdleDeadline::CallbackType::kCalledWhenIdle);
   deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_FLOAT_EQ(0, deadline->timeRemaining());
 }
 

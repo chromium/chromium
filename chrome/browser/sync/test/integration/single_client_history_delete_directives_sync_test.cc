@@ -98,7 +98,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
     base::CancelableTaskTracker task_tracker;
     history_service->GetHistoryCount(
         /*begin_time=*/time,
-        /*end_time=*/time + base::TimeDelta::FromMicroseconds(1),
+        /*end_time=*/time + base::Microseconds(1),
         base::BindLambdaForTesting([&](history::HistoryCountResult result) {
           ASSERT_TRUE(result.success);
           exists = (result.count != 0);

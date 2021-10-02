@@ -184,12 +184,12 @@ absl::optional<base::TimeDelta> CalculateStartTime(
   // SetPlaybackRateInternal has a DCHECK for that.
   DCHECK_NE(playback_rate, 0);
   if (current_time.is_max())
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
   if (current_time.is_min())
     return base::TimeDelta::Max();
   absl::optional<double> timeline_current_time_ms =
       timeline.CurrentTimeMilliseconds();
-  return base::TimeDelta::FromMillisecondsD(timeline_current_time_ms.value()) -
+  return base::Milliseconds(timeline_current_time_ms.value()) -
          (current_time / playback_rate);
 }
 
@@ -765,8 +765,7 @@ absl::optional<base::TimeDelta> WorkletAnimation::InitialCurrentTime() const {
     return absl::nullopt;
   }
 
-  return (base::TimeDelta::FromMillisecondsD(current_time.value()) -
-          starting_time.value()) *
+  return (base::Milliseconds(current_time.value()) - starting_time.value()) *
          playback_rate_;
 }
 
@@ -826,8 +825,7 @@ absl::optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
   if (!timeline_time_ms)
     return absl::nullopt;
 
-  base::TimeDelta timeline_time =
-      base::TimeDelta::FromMillisecondsD(timeline_time_ms.value());
+  base::TimeDelta timeline_time = base::Milliseconds(timeline_time_ms.value());
   DCHECK(start_time_);
   return (timeline_time - start_time_.value()) * playback_rate_;
 }

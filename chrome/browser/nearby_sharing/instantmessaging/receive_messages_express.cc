@@ -25,8 +25,7 @@
 
 namespace {
 
-const base::TimeDelta kFastPathReadyTimeout =
-    base::TimeDelta::FromMilliseconds(2500);
+const base::TimeDelta kFastPathReadyTimeout = base::Milliseconds(2500);
 
 // Timeout for the receive messages stream, from when the stream first opens.
 // This timeout applies to the Tachyon signaling process, so once we establish
@@ -34,7 +33,7 @@ const base::TimeDelta kFastPathReadyTimeout =
 // are other timeouts in the WebRTC medium that will cancel the signaling
 // process sooner than 60s, so this is just a failsafe to make sure we clean up
 // the ReceiveMessagesExpress if something goes wrong.
-const base::TimeDelta kStreamTimeout = base::TimeDelta::FromSeconds(60);
+const base::TimeDelta kStreamTimeout = base::Seconds(60);
 
 // TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =

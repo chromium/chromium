@@ -53,19 +53,18 @@ void SystemTimeChangeNotifierPeriodicMonitor::ResetTimeAndLimits(
     base::Time now) {
   // ScheduleNextMonitor() will adjust actual expected_system_time.
   expected_system_time_ = now;
-  monitoring_limit_time_1sec_ =
-      now + base::TimeDelta::FromSeconds(kLimitForMonitorPer1Sec);
+  monitoring_limit_time_1sec_ = now + base::Seconds(kLimitForMonitorPer1Sec);
   monitoring_limit_time_10sec_ =
-      monitoring_limit_time_1sec_ +
-      base::TimeDelta::FromSeconds(kLimitForMonitorPer10Sec);
+      monitoring_limit_time_1sec_ + base::Seconds(kLimitForMonitorPer10Sec);
 }
 
 void SystemTimeChangeNotifierPeriodicMonitor::ScheduleNextMonitor(
     base::Time now) {
   base::TimeDelta next_checking_interval =
-      now <= monitoring_limit_time_1sec_ ? base::TimeDelta::FromSeconds(1) :
-      now <= monitoring_limit_time_10sec_ ? base::TimeDelta::FromSeconds(10) :
-      base::TimeDelta::FromMinutes(10);
+      now <= monitoring_limit_time_1sec_
+          ? base::Seconds(1)
+          : now <= monitoring_limit_time_10sec_ ? base::Seconds(10)
+                                                : base::Minutes(10);
   // Adjusting expected_system_time based on now cannot detect continuous system
   // time drift (false negative), but tolerates task delay (false positive).
   // Task delay is expected more than system time drift.
@@ -79,7 +78,7 @@ void SystemTimeChangeNotifierPeriodicMonitor::ScheduleNextMonitor(
 
 void SystemTimeChangeNotifierPeriodicMonitor::CheckSystemTime() {
   base::Time now = Now();
-  const base::TimeDelta kInterval10Seconds(base::TimeDelta::FromSeconds(10));
+  const base::TimeDelta kInterval10Seconds(base::Seconds(10));
   if (now < expected_system_time_ - kInterval10Seconds ||
       now > expected_system_time_ + kInterval10Seconds) {  // Time changed!
     ResetTimeAndLimits(now);

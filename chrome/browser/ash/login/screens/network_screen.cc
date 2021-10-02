@@ -22,7 +22,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kConnectionTimeout = base::TimeDelta::FromSeconds(40);
+constexpr base::TimeDelta kConnectionTimeout = base::Seconds(40);
 
 constexpr char kUserActionBackButtonClicked[] = "back";
 constexpr char kUserActionContinueButtonClicked[] = "continue";

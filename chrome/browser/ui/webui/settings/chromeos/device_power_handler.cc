@@ -310,9 +310,8 @@ void PowerHandler::SendBatteryStatus() {
   bool show_time = false;
 
   if (!calculating) {
-    time_left = base::TimeDelta::FromSeconds(
-        charging ? proto->battery_time_to_full_sec()
-                 : proto->battery_time_to_empty_sec());
+    time_left = base::Seconds(charging ? proto->battery_time_to_full_sec()
+                                       : proto->battery_time_to_empty_sec());
     show_time = ash::power_utils::ShouldDisplayBatteryTime(time_left);
   }
 

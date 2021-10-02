@@ -58,8 +58,7 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   };
   using Parts = std::vector<Part>;
 
-  static constexpr auto kDefaultTimerInterval =
-      base::TimeDelta::FromMilliseconds(20);
+  static constexpr auto kDefaultTimerInterval = base::Milliseconds(20);
 
   explicit MultiAnimation(
       const Parts& parts,

@@ -265,8 +265,7 @@ void AvPipelineImpl::PushReadyBuffer(scoped_refptr<DecoderBufferBase> buffer) {
   DCHECK(!pushed_buffer_);
 
   if (!buffer->end_of_stream() && buffering_state_.get()) {
-    base::TimeDelta timestamp =
-        base::TimeDelta::FromMicroseconds(buffer->timestamp());
+    base::TimeDelta timestamp = base::Microseconds(buffer->timestamp());
     if (timestamp != ::media::kNoTimestamp)
       buffering_state_->SetMaxRenderingTime(timestamp);
   }
@@ -370,9 +369,8 @@ void AvPipelineImpl::OnDataBuffered(
 
   if (!buffer->end_of_stream() &&
       (buffered_time_ == ::media::kNoTimestamp ||
-       buffered_time_ <
-           base::TimeDelta::FromMicroseconds(buffer->timestamp()))) {
-    buffered_time_ = base::TimeDelta::FromMicroseconds(buffer->timestamp());
+       buffered_time_ < base::Microseconds(buffer->timestamp()))) {
+    buffered_time_ = base::Microseconds(buffer->timestamp());
   }
 
   if (is_at_max_capacity)
@@ -409,10 +407,10 @@ void AvPipelineImpl::UpdatePlayableFrames() {
       }
 
       if (playable_buffered_time_ == ::media::kNoTimestamp ||
-          playable_buffered_time_ < base::TimeDelta::FromMicroseconds(
-                                        non_playable_frame->timestamp())) {
+          playable_buffered_time_ <
+              base::Microseconds(non_playable_frame->timestamp())) {
         playable_buffered_time_ =
-            base::TimeDelta::FromMicroseconds(non_playable_frame->timestamp());
+            base::Microseconds(non_playable_frame->timestamp());
         buffering_state_->SetBufferedTime(playable_buffered_time_);
       }
     }

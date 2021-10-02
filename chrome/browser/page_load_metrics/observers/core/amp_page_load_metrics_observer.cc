@@ -448,15 +448,13 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelay),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
-            base::TimeDelta::FromMilliseconds(1),
-            base::TimeDelta::FromSeconds(60), 50);
+            base::Milliseconds(1), base::Seconds(60), 50);
       } else {
         UMA_HISTOGRAM_CUSTOM_TIMES(
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelayFullNavigation),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
-            base::TimeDelta::FromMilliseconds(1),
-            base::TimeDelta::FromSeconds(60), 50);
+            base::Milliseconds(1), base::Seconds(60), 50);
       }
     }
   }

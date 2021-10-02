@@ -199,7 +199,7 @@ void RemotingRegisterSupportHostRequest::OnRegisterHostResult(
   }
   state_ = State::REGISTERED;
   base::TimeDelta lifetime =
-      base::TimeDelta::FromSeconds(response->support_id_lifetime_seconds());
+      base::Seconds(response->support_id_lifetime_seconds());
   RunCallback(response->support_id(), lifetime, protocol::ErrorCode::OK);
 }
 

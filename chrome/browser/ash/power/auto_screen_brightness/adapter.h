@@ -75,8 +75,7 @@ class Adapter : public AlsReader::Observer,
     // Average ambient value is calculated over the past
     // |auto_brightness_als_horizon|. This is only used for brightness update,
     // which can be different from the horizon used in model training.
-    base::TimeDelta auto_brightness_als_horizon =
-        base::TimeDelta::FromSeconds(4);
+    base::TimeDelta auto_brightness_als_horizon = base::Seconds(4);
 
     UserAdjustmentEffect user_adjustment_effect =
         UserAdjustmentEffect::kPauseAuto;
@@ -410,7 +409,7 @@ class Adapter : public AlsReader::Observer,
   // ALS data that arrives soon after lid is reopened tends to be inaccurate.
   // Hence we do not store any ALS data that arrives less than
   // |lid_open_delay_time_| from |lid_reopen_time_|.
-  base::TimeDelta lid_open_delay_time_ = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta lid_open_delay_time_ = base::Seconds(2);
 };
 
 }  // namespace auto_screen_brightness

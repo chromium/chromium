@@ -157,6 +157,6 @@ PhysicsBasedFlingCurve::CalculateDurationAndConfigureControlPoints(
     p1_.set_x(p1_.y() / slope);
   }
 
-  return base::TimeDelta::FromSecondsD(duration);
+  return base::Seconds(duration);
 }
 }  // namespace ui

@@ -264,7 +264,7 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
   EXPECT_TRUE(GetFoundShortcutItems().empty());
   // Type a letter and show the search results.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  auto time_out = base::TimeDelta::FromMilliseconds(300);
+  auto time_out = base::Milliseconds(300);
   task_environment()->FastForwardBy(time_out);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetFoundShortcutItems().empty());

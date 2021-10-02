@@ -17,7 +17,7 @@ base::Time ComputeReportTime(const StorableSource& impression,
   base::TimeDelta expiry_deadline =
       impression.expiry_time() - impression.impression_time();
 
-  constexpr base::TimeDelta kMinExpiryDeadline = base::TimeDelta::FromDays(2);
+  constexpr base::TimeDelta kMinExpiryDeadline = base::Days(2);
   if (expiry_deadline < kMinExpiryDeadline)
     expiry_deadline = kMinExpiryDeadline;
 
@@ -38,14 +38,13 @@ base::Time ComputeReportTime(const StorableSource& impression,
   //
   // Note that only navigation (not event) sources have early reporting
   // deadlines.
-  constexpr base::TimeDelta kWindowDeadlineOffset =
-      base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 
   std::vector<base::TimeDelta> early_deadlines;
   switch (impression.source_type()) {
     case StorableSource::SourceType::kNavigation:
-      early_deadlines = {base::TimeDelta::FromDays(2) - kWindowDeadlineOffset,
-                         base::TimeDelta::FromDays(7) - kWindowDeadlineOffset};
+      early_deadlines = {base::Days(2) - kWindowDeadlineOffset,
+                         base::Days(7) - kWindowDeadlineOffset};
       break;
     case StorableSource::SourceType::kEvent:
       early_deadlines = {};

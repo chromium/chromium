@@ -58,7 +58,7 @@ namespace {
 
 using LoadingState = TabLoadTracker::LoadingState;
 
-constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
 class MockTabLifecycleObserver : public TabLifecycleObserver {
  public:
@@ -104,7 +104,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
 
   TabLifecycleUnitTest() : scoped_set_tick_clock_for_testing_(&test_clock_) {
     // Advance the clock so that it doesn't yield null time ticks.
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     observers_.AddObserver(&observer_);
   }
 

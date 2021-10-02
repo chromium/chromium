@@ -189,8 +189,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   static constexpr uint32_t kDesiredAmountOfFreeMemoryMb = 150;
 
   // The maximum time since last use of a tab in order for it to be loaded.
-  static constexpr base::TimeDelta kMaxTimeSinceLastUseToLoad =
-      base::TimeDelta::FromDays(30);
+  static constexpr base::TimeDelta kMaxTimeSinceLastUseToLoad = base::Days(30);
 
   // Lower bound for the maximum number of tabs to load simultaneously.
   static constexpr uint32_t kMinSimultaneousTabLoads = 1;

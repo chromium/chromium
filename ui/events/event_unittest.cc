@@ -85,8 +85,8 @@ TEST(EventTest, RepeatedClick) {
   LocatedEventTestApi test_event2(&event2);
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeTicks soon = start + base::TimeDelta::FromMilliseconds(1);
-  base::TimeTicks later = start + base::TimeDelta::FromMilliseconds(1000);
+  base::TimeTicks soon = start + base::Milliseconds(1);
+  base::TimeTicks later = start + base::Milliseconds(1000);
 
   // Same time stamp (likely the same native event).
   test_event1.set_location(gfx::Point(0, 0));
@@ -124,9 +124,9 @@ TEST(EventTest, RepeatedClick) {
 // and reliable.
 TEST(EventTest, RepeatedKeyEvent) {
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeTicks time1 = start + base::TimeDelta::FromMilliseconds(1);
-  base::TimeTicks time2 = start + base::TimeDelta::FromMilliseconds(2);
-  base::TimeTicks time3 = start + base::TimeDelta::FromMilliseconds(3);
+  base::TimeTicks time1 = start + base::Milliseconds(1);
+  base::TimeTicks time2 = start + base::Milliseconds(2);
+  base::TimeTicks time3 = start + base::Milliseconds(3);
 
   KeyEvent event1(ET_KEY_PRESSED, VKEY_A, 0, start);
   KeyEvent event2(ET_KEY_PRESSED, VKEY_A, 0, time1);
@@ -155,9 +155,9 @@ TEST(EventTest, NoRepeatedKeyEvent) {
   KeyEvent::SetSynthesizeKeyRepeatEnabled(false);
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeTicks time1 = start + base::TimeDelta::FromMilliseconds(1);
-  base::TimeTicks time2 = start + base::TimeDelta::FromMilliseconds(2);
-  base::TimeTicks time3 = start + base::TimeDelta::FromMilliseconds(3);
+  base::TimeTicks time1 = start + base::Milliseconds(1);
+  base::TimeTicks time2 = start + base::Milliseconds(2);
+  base::TimeTicks time3 = start + base::Milliseconds(3);
 
   KeyEvent event1(ET_KEY_PRESSED, VKEY_A, 0, start);
   KeyEvent event2(ET_KEY_PRESSED, VKEY_A, 0, time1);
@@ -181,7 +181,7 @@ TEST(EventTest, NoRepeatedKeyEvent) {
 TEST(EventTest, DoubleClickRequiresUniqueTimestamp) {
   const gfx::Point point(0, 0);
   base::TimeTicks time1 = base::TimeTicks::Now();
-  base::TimeTicks time2 = time1 + base::TimeDelta::FromMilliseconds(1);
+  base::TimeTicks time2 = time1 + base::Milliseconds(1);
 
   // Re-processing the same press doesn't yield a double-click.
   MouseEvent event(ET_MOUSE_PRESSED, point, point, time1, 0, 0);
@@ -222,8 +222,8 @@ TEST(EventTest, DoubleClickRequiresUniqueTimestamp) {
 TEST(EventTest, SingleClickRightLeft) {
   const gfx::Point point(0, 0);
   base::TimeTicks time1 = base::TimeTicks::Now();
-  base::TimeTicks time2 = time1 + base::TimeDelta::FromMilliseconds(1);
-  base::TimeTicks time3 = time1 + base::TimeDelta::FromMilliseconds(2);
+  base::TimeTicks time2 = time1 + base::Milliseconds(1);
+  base::TimeTicks time3 = time1 + base::Milliseconds(2);
 
   MouseEvent event(ET_MOUSE_PRESSED, point, point, time1,
                    ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON);
@@ -955,8 +955,7 @@ class EventLatencyTest : public ::testing::Test {
 
  protected:
   void UpdateTickClock(DWORD timestamp) {
-    tick_clock_.SetNowTicks(base::TimeTicks() +
-                            base::TimeDelta::FromMilliseconds(timestamp));
+    tick_clock_.SetNowTicks(base::TimeTicks() + base::Milliseconds(timestamp));
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -992,12 +991,11 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
                                         base::TimeTicks::Now());
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample(
-        "Event.Latency.OS.TOUCH_PRESSED",
-        base::TimeDelta::FromMilliseconds(5).InMicroseconds(), 2);
-    histogram_tester.ExpectUniqueTimeSample(
-        "Event.Latency.OS2.TOUCH_PRESSED", base::TimeDelta::FromMilliseconds(5),
-        2);
+    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
+                                        base::Milliseconds(5).InMicroseconds(),
+                                        2);
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            base::Milliseconds(5), 2);
   }
 
   // Simulate ::GetTickCount advancing 15 msec, which wraps around past 0.
@@ -1011,12 +1009,11 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
                                         base::TimeTicks::Now());
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample(
-        "Event.Latency.OS.TOUCH_PRESSED",
-        base::TimeDelta::FromMilliseconds(15).InMicroseconds(), 2);
-    histogram_tester.ExpectUniqueTimeSample(
-        "Event.Latency.OS2.TOUCH_PRESSED",
-        base::TimeDelta::FromMilliseconds(15), 2);
+    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
+                                        base::Milliseconds(15).InMicroseconds(),
+                                        2);
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            base::Milliseconds(15), 2);
   }
 
   // Simulate an event with a bogus timestamp. The delta should be recorded as
@@ -1037,7 +1034,7 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
 TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
   // Make sure there's enough time before Now() to create an event that's
   // several minutes old.
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(5));
+  task_environment_.AdvanceClock(base::Minutes(5));
 
   // Convert the current time to units directly compatible with the Performance
   // Counter.
@@ -1063,11 +1060,10 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample(
-        "Event.Latency.OS.TOUCH_PRESSED",
-        base::TimeDelta::FromSeconds(1).InMicroseconds(), 1);
+    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
+                                        base::Seconds(1).InMicroseconds(), 1);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
-                                            base::TimeDelta::FromSeconds(1), 1);
+                                            base::Seconds(1), 1);
   }
 
   // Event created several minutes before now (IsValidTimebase should return
@@ -1127,11 +1123,10 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample(
-        "Event.Latency.OS.TOUCH_PRESSED",
-        base::TimeDelta::FromSeconds(1).InMicroseconds(), 1);
+    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
+                                        base::Seconds(1).InMicroseconds(), 1);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
-                                            base::TimeDelta::FromSeconds(1), 1);
+                                            base::Seconds(1), 1);
   }
 }
 

@@ -77,8 +77,8 @@ class ConfigureBottomSheetActionTest : public testing::Test {
   // Fast forward time enough for an action created by RunWithTimeout() to time
   // out.
   void ForceTimeout() {
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+    task_env_.FastForwardBy(base::Milliseconds(100));
+    task_env_.FastForwardBy(base::Milliseconds(100));
   }
 
   // task_env_ must be first to guarantee other field

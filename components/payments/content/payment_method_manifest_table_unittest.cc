@@ -298,8 +298,8 @@ TEST_F(PaymentMethodManifestTableTest, ClearInstruments) {
                                           "relying-party.example")));
 
   table->ClearSecurePaymentConfirmationInstruments(
-      base::Time::Now() - base::TimeDelta::FromMinutes(1),
-      base::Time::Now() + base::TimeDelta::FromMinutes(1));
+      base::Time::Now() - base::Minutes(1),
+      base::Time::Now() + base::Minutes(1));
 
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
@@ -322,7 +322,7 @@ TEST_F(PaymentMethodManifestTableTest,
                                           "relying-party.example")));
 
   table->ClearSecurePaymentConfirmationInstruments(
-      base::Time(), base::Time::Now() - base::TimeDelta::FromMinutes(1));
+      base::Time(), base::Time::Now() - base::Minutes(1));
 
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));

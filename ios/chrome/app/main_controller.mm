@@ -724,7 +724,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)activateFirstUserActionRecorderWithBackgroundTime:
     (NSTimeInterval)backgroundTime {
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(backgroundTime);
+  base::TimeDelta delta = base::Seconds(backgroundTime);
   _firstUserActionRecorder.reset(new FirstUserActionRecorder(delta));
 }
 
@@ -1080,9 +1080,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     // performance.
     ExternalFileRemoverFactory::GetForBrowserState(
         self.appState.mainBrowserState)
-        ->RemoveAfterDelay(
-            base::TimeDelta::FromSeconds(kExternalFilesCleanupDelaySeconds),
-            base::OnceClosure());
+        ->RemoveAfterDelay(base::Seconds(kExternalFilesCleanupDelaySeconds),
+                           base::OnceClosure());
   }
 }
 

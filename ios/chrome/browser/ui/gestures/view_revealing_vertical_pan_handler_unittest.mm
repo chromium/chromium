@@ -153,8 +153,7 @@ void SimulatePanGesture(ViewRevealingVerticalPanHandler* pan_handler,
   // The runloop needs to be spun between the end of a gesture and the begining
   // of another one, because the current state of the pan_handler needs to be
   // updated to its next state before starting a new transition.
-  base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromMilliseconds(kAnimationDelay));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(kAnimationDelay));
 }
 
 // Simulates 4 transitions of state in a ViewRevealingVerticalPanHandler (Hidden
@@ -290,8 +289,7 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, ConflictingGestures) {
   // The runloop needs to be spun between the end of a gesture and the begining
   // of another one, because the current state of the pan_handler needs to be
   // updated to its next state before starting a new transition.
-  base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromMilliseconds(kAnimationDelay));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(kAnimationDelay));
 
   EXPECT_NE(ViewRevealState::Revealed, fake_animatee.state);
 }

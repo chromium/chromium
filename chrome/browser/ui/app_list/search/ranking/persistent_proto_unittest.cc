@@ -39,7 +39,7 @@ bool ProtoEquals(const TestProto* actual, const TestProto* expected) {
 }
 
 base::TimeDelta WriteDelay() {
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 }  // namespace

@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, PopulatedResponse) {
   status->feature_interest_cohort_api_origin_trial = false;
   status->feature_interest_cohort_feature_policy = true;
   status->feature_param_scheduled_update_interval =
-      base::TimeDelta::FromDays(7) + base::TimeDelta::FromSeconds(1);
+      base::Days(7) + base::Seconds(1);
   status->feature_param_minimum_history_domain_size_required = 99;
   status->feature_param_finch_config_version = 2;
 

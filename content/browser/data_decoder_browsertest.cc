@@ -67,8 +67,7 @@ bool GetSingleMeasurement(const base::HistogramTester& histograms,
     return false;
 
   EXPECT_EQ(1u, buckets.size());
-  out_measurement_value =
-      base::TimeDelta::FromMilliseconds(buckets.front().min);
+  out_measurement_value = base::Milliseconds(buckets.front().min);
   return true;
 }
 

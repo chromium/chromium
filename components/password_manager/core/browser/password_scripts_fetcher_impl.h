@@ -85,8 +85,7 @@ class PasswordScriptsFetcherImpl
 
 #if defined(UNIT_TEST)
   void make_cache_stale_for_testing() {
-    last_fetch_timestamp_ =
-        base::TimeTicks::Now() - base::TimeDelta::FromDays(1);
+    last_fetch_timestamp_ = base::TimeTicks::Now() - base::Days(1);
   }
 #endif
 

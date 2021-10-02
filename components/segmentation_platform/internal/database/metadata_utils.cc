@@ -127,9 +127,8 @@ bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info,
   if (!segment_info.has_prediction_result())
     return true;
 
-  base::Time last_result_timestamp =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromMicroseconds(
-          segment_info.prediction_result().timestamp_us()));
+  base::Time last_result_timestamp = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(segment_info.prediction_result().timestamp_us()));
 
   base::TimeDelta result_ttl =
       segment_info.model_metadata().result_time_to_live() *
@@ -146,9 +145,8 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info,
   const proto::SegmentationModelMetadata& metadata =
       segment_info.model_metadata();
 
-  base::Time last_result_timestamp =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromMicroseconds(
-          segment_info.prediction_result().timestamp_us()));
+  base::Time last_result_timestamp = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(segment_info.prediction_result().timestamp_us()));
   base::TimeDelta result_ttl =
       metadata.result_time_to_live() * GetTimeUnit(metadata);
 
@@ -160,19 +158,19 @@ base::TimeDelta GetTimeUnit(
   proto::TimeUnit time_unit = model_metadata.time_unit();
   switch (time_unit) {
     case proto::TimeUnit::YEAR:
-      return base::TimeDelta::FromDays(365);
+      return base::Days(365);
     case proto::TimeUnit::MONTH:
-      return base::TimeDelta::FromDays(30);
+      return base::Days(30);
     case proto::TimeUnit::WEEK:
-      return base::TimeDelta::FromDays(7);
+      return base::Days(7);
     case proto::TimeUnit::DAY:
-      return base::TimeDelta::FromDays(1);
+      return base::Days(1);
     case proto::TimeUnit::HOUR:
-      return base::TimeDelta::FromHours(1);
+      return base::Hours(1);
     case proto::TimeUnit::MINUTE:
-      return base::TimeDelta::FromMinutes(1);
+      return base::Minutes(1);
     case proto::TimeUnit::SECOND:
-      return base::TimeDelta::FromSeconds(1);
+      return base::Seconds(1);
     case proto::TimeUnit::UNKNOWN_TIME_UNIT:
       FALLTHROUGH;
     default:

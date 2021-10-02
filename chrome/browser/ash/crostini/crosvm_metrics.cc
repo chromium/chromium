@@ -28,8 +28,7 @@ constexpr char kCrosvmCpuPercentageHistogram[] =
 constexpr char kCrosvmRssPercentageHistogram[] =
     "Crostini.Crosvm.RssPercentage";
 
-constexpr base::TimeDelta kCrosvmMetricsInterval =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kCrosvmMetricsInterval = base::Minutes(10);
 
 }  // namespace
 

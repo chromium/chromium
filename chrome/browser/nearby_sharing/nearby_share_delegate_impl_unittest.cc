@@ -119,7 +119,7 @@ TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
 
   // DisableHighVisibility will be called automatically after the timer fires.
-  FastForward(base::TimeDelta::FromMinutes(10));
+  FastForward(base::Minutes(10));
   SetHighVisibilityOn(false);
 }
 

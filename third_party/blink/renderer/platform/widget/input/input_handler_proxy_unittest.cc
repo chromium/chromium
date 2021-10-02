@@ -528,7 +528,7 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
   }
 
   void DeliverInputForBeginFrame() {
-    constexpr base::TimeDelta interval = base::TimeDelta::FromMilliseconds(16);
+    constexpr base::TimeDelta interval = base::Milliseconds(16);
     base::TimeTicks frame_time =
         WebInputEvent::GetStaticTimeStampForTests() +
         (next_begin_frame_number_ - viz::BeginFrameArgs::kStartingFrameNumber) *
@@ -2026,7 +2026,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   }
 
   void BeginFrame() {
-    constexpr base::TimeDelta interval = base::TimeDelta::FromMilliseconds(16);
+    constexpr base::TimeDelta interval = base::Milliseconds(16);
     base::TimeTicks frame_time =
         TimeForInputEvents() +
         (next_begin_frame_number_ - viz::BeginFrameArgs::kStartingFrameNumber) *
@@ -2744,17 +2744,17 @@ TEST_F(InputHandlerProxyEventQueueTest, VSyncAlignedQueueingTime) {
   EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(1);
 
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
-  tick_clock.Advance(base::TimeDelta::FromMicroseconds(10));
+  tick_clock.Advance(base::Microseconds(10));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -20);
-  tick_clock.Advance(base::TimeDelta::FromMicroseconds(40));
+  tick_clock.Advance(base::Microseconds(40));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -40);
-  tick_clock.Advance(base::TimeDelta::FromMicroseconds(20));
+  tick_clock.Advance(base::Microseconds(20));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
-  tick_clock.Advance(base::TimeDelta::FromMicroseconds(10));
+  tick_clock.Advance(base::Microseconds(10));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollEnd);
 
   // Dispatch all queued events.
-  tick_clock.Advance(base::TimeDelta::FromMicroseconds(70));
+  tick_clock.Advance(base::Microseconds(70));
   DeliverInputForBeginFrame();
   EXPECT_EQ(0ul, event_queue().size());
   EXPECT_EQ(5ul, event_disposition_recorder_.size());
@@ -3181,15 +3181,15 @@ TEST_F(InputHandlerProxyEventQueueTest, ScrollPredictorTest) {
       .WillOnce(testing::Return(scroll_result_did_scroll_));
 
   // No prediction when start with a GSB
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(8));
+  tick_clock.Advance(base::Milliseconds(8));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   DeliverInputForBeginFrame();
   EXPECT_FALSE(GestureScrollEventPredictionAvailable());
 
   // Test predictor returns last GSU delta.
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(8));
+  tick_clock.Advance(base::Milliseconds(8));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -20);
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(8));
+  tick_clock.Advance(base::Milliseconds(8));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -15);
   DeliverInputForBeginFrame();
   auto result = GestureScrollEventPredictionAvailable();
@@ -3212,7 +3212,7 @@ TEST_F(InputHandlerProxyEventQueueTest, ScrollPredictorTest) {
       mock_input_handler_,
       RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
       .Times(1);
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(8));
+  tick_clock.Advance(base::Milliseconds(8));
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   DeliverInputForBeginFrame();
   EXPECT_FALSE(GestureScrollEventPredictionAvailable());
@@ -3934,7 +3934,7 @@ class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
   }
 
   void AdvanceClock(uint32_t milliseconds) {
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(milliseconds));
+    tick_clock_.Advance(base::Milliseconds(milliseconds));
   }
 
   void AddNonJankyEvents(uint32_t count) {
@@ -3946,7 +3946,7 @@ class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
   }
 
   void DeliverInputForBeginFrame() {
-    constexpr base::TimeDelta interval = base::TimeDelta::FromMilliseconds(16);
+    constexpr base::TimeDelta interval = base::Milliseconds(16);
     base::TimeTicks frame_time =
         base::TimeTicks() +
         (next_begin_frame_number_ - viz::BeginFrameArgs::kStartingFrameNumber) *

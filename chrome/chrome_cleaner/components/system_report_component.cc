@@ -697,7 +697,7 @@ void ReportInstalledExtensions(JsonParserAPI* json_parser,
   // phases combined.
   const base::TimeTicks end_time =
       base::TimeTicks::Now() +
-      base::TimeDelta::FromMilliseconds(kParseAttemptTimeoutMilliseconds);
+      base::Milliseconds(kParseAttemptTimeoutMilliseconds);
   extension_settings_done.TimedWait(end_time - base::TimeTicks::Now());
   master_preferences_done.TimedWait(end_time - base::TimeTicks::Now());
   default_extensions_done.TimedWait(end_time - base::TimeTicks::Now());

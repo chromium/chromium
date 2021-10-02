@@ -15,7 +15,7 @@
 
 namespace media {
 
-constexpr base::TimeDelta kPauseDelay = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kPauseDelay = base::Seconds(10);
 
 AudioRendererMixer::AudioRendererMixer(const AudioParameters& output_params,
                                        scoped_refptr<AudioRendererSink> sink)

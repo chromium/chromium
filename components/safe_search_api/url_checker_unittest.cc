@@ -152,7 +152,7 @@ TEST_F(SafeSearchURLCheckerTest, CoalesceRequestsToSameURL) {
 TEST_F(SafeSearchURLCheckerTest, CacheTimeout) {
   GURL url(GetNewURL());
 
-  checker_->SetCacheTimeoutForTesting(base::TimeDelta::FromSeconds(0));
+  checker_->SetCacheTimeoutForTesting(base::Seconds(0));
 
   EXPECT_CALL(*this, OnCheckDone(url, Classification::SAFE, false));
   ASSERT_FALSE(SendResponse(url, Classification::SAFE, false));

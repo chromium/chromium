@@ -117,8 +117,8 @@ void HandleCapturedBitmap(
 TabDesktopMediaList::TabDesktopMediaList(
     DesktopMediaList::WebContentsFilter includable_web_contents_filter,
     bool include_chrome_app_windows)
-    : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
-          kDefaultTabDesktopMediaListUpdatePeriod)),
+    : DesktopMediaListBase(
+          base::Milliseconds(kDefaultTabDesktopMediaListUpdatePeriod)),
       includable_web_contents_filter_(
           std::move(includable_web_contents_filter)),
       include_chrome_app_windows_(include_chrome_app_windows) {
@@ -303,8 +303,7 @@ void TabDesktopMediaList::ScreenshotReceived(
 
   // TODO(crbug.com/1224342): Listen for a newly drawn frame to be ready when a
   // hidden tab is woken up,rather than just retrying after an arbitrary delay.
-  constexpr base::TimeDelta kScreenshotRetryDelayMs =
-      base::TimeDelta::FromMilliseconds(20);
+  constexpr base::TimeDelta kScreenshotRetryDelayMs = base::Milliseconds(20);
 
   // It can take a little time after we tell a WebContents it's being captured
   // by calling IncrementCapturerCount before it starts painting actual frames,

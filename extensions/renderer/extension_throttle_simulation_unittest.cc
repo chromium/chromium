@@ -637,10 +637,9 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
     Stats stats;
 
     void PrintTrialDescription() {
-      const double duration_minutes =
-          duration / base::TimeDelta::FromMinutes(1);
+      const double duration_minutes = duration / base::Minutes(1);
       const double interval_minutes =
-          average_client_interval / base::TimeDelta::FromMinutes(1);
+          average_client_interval / base::Minutes(1);
       VerboseOut("Trial with %.2f min downtime, avg. interval %.2f min.\n",
                  duration_minutes, interval_minutes);
     }

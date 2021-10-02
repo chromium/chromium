@@ -47,7 +47,7 @@ using ClientIdToSpecifics =
 
 namespace {
 
-constexpr base::TimeDelta kExpirationThreshold = base::TimeDelta::FromDays(56);
+constexpr base::TimeDelta kExpirationThreshold = base::Days(56);
 
 // Find the timestamp for the last time this |device_info| was edited.
 Time GetLastUpdateTime(const DeviceInfoSpecifics& specifics) {

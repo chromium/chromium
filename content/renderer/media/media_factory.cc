@@ -235,9 +235,8 @@ void LogRoughness(
       measurement.frame_size.height() > 700) {
     base::UmaHistogramCustomTimes(
         base::JoinString({kRoughnessHistogramName, suffix}, "."),
-        base::TimeDelta::FromMillisecondsD(measurement.roughness),
-        base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromMilliseconds(99), 100);
+        base::Milliseconds(measurement.roughness), base::Milliseconds(1),
+        base::Milliseconds(99), 100);
     // TODO(liberato): Record freezing, once we're sure that we're computing the
     // score we want.  For now, don't record anything so we don't have a mis-
     // match of UMA values.

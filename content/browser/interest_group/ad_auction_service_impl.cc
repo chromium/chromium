@@ -43,7 +43,7 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kMaxExpiry = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMaxExpiry = base::Days(30);
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("auction_report_sender", R"(

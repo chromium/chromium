@@ -295,8 +295,7 @@ void ThreadWatcher::OnPongMessage(uint64_t ping_sequence_number) {
   // On ChromeOS, we log when the response time is long on the UI thread as part
   // of an effort to debug extreme jank reported by some users. This log message
   // can be used to correlate the period of jank with other system logs.
-  if (response_time > base::TimeDelta::FromSeconds(1) &&
-      thread_id_ == BrowserThread::UI) {
+  if (response_time > base::Seconds(1) && thread_id_ == BrowserThread::UI) {
     LOG(WARNING) << "Long response time on the UI thread: " << response_time;
   }
 #endif
@@ -361,18 +360,14 @@ void ThreadWatcher::Initialize() {
   const std::string response_time_histogram_name =
       "ThreadWatcher.ResponseTime." + thread_name_;
   response_time_histogram_ = base::Histogram::FactoryTimeGet(
-      response_time_histogram_name,
-      base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(100), 50,
-      base::Histogram::kUmaTargetedHistogramFlag);
+      response_time_histogram_name, base::Milliseconds(1), base::Seconds(100),
+      50, base::Histogram::kUmaTargetedHistogramFlag);
 
   const std::string unresponsive_time_histogram_name =
       "ThreadWatcher.Unresponsive." + thread_name_;
   unresponsive_time_histogram_ = base::Histogram::FactoryTimeGet(
-      unresponsive_time_histogram_name,
-      base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(100), 50,
-      base::Histogram::kUmaTargetedHistogramFlag);
+      unresponsive_time_histogram_name, base::Milliseconds(1),
+      base::Seconds(100), 50, base::Histogram::kUmaTargetedHistogramFlag);
 
   const std::string responsive_count_histogram_name =
       "ThreadWatcher.ResponsiveThreads." + thread_name_;
@@ -502,7 +497,7 @@ void ThreadWatcherList::StartWatchingAll(
                    &crash_on_hang_threads);
 
   ThreadWatcherObserver::Start(
-      base::TimeDelta::FromSeconds(kSleepSeconds * unresponsive_threshold));
+      base::Seconds(kSleepSeconds * unresponsive_threshold));
 
   WatchDogThread::PostTask(
       FROM_HERE, base::BindOnce(&ThreadWatcherList::SetStopped, false));
@@ -511,7 +506,7 @@ void ThreadWatcherList::StartWatchingAll(
       FROM_HERE,
       base::BindOnce(&ThreadWatcherList::InitializeAndStartWatching,
                      unresponsive_threshold, crash_on_hang_threads),
-      base::TimeDelta::FromSeconds(g_initialize_delay_seconds));
+      base::Seconds(g_initialize_delay_seconds));
 }
 
 // static
@@ -672,10 +667,8 @@ void ThreadWatcherList::InitializeAndStartWatching(
     return;
   }
 
-  const base::TimeDelta kSleepTime =
-      base::TimeDelta::FromSeconds(kSleepSeconds);
-  const base::TimeDelta kUnresponsiveTime =
-      base::TimeDelta::FromSeconds(kUnresponsiveSeconds);
+  const base::TimeDelta kSleepTime = base::Seconds(kSleepSeconds);
+  const base::TimeDelta kUnresponsiveTime = base::Seconds(kUnresponsiveSeconds);
 
   StartWatching(BrowserThread::UI, "UI", kSleepTime, kUnresponsiveTime,
                 unresponsive_threshold, crash_on_hang_threads);

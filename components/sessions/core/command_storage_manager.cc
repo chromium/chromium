@@ -22,7 +22,7 @@ namespace {
 
 // Delay between when a command is received, and when we save it to the
 // backend.
-constexpr base::TimeDelta kSaveDelay = base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 
 void AdaptGetLastSessionCommands(
     CommandStorageManager::GetCommandsCallback callback,

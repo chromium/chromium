@@ -313,8 +313,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstallationTimedOut) {
 TEST_F(ForceInstalledMetricsTest, ExtensionsManifestDownloadTime) {
   SetupForceList(ExtensionOrigin::kWebStore);
   ReportDownloadingManifestStage();
-  const base::TimeDelta manifest_download_time =
-      base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta manifest_download_time = base::Milliseconds(200);
   task_environment_.FastForwardBy(manifest_download_time);
   install_stage_tracker()->ReportDownloadingStage(
       kExtensionId1, ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED);
@@ -335,7 +334,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsManifestDownloadTime) {
 TEST_F(ForceInstalledMetricsTest, ExtensionsCrxDownloadTime) {
   SetupForceList(ExtensionOrigin::kWebStore);
   ReportDownloadingManifestStage();
-  const base::TimeDelta install_time = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta install_time = base::Milliseconds(200);
   ReportInstallationStarted(install_time);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
@@ -380,8 +379,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsReportInstallationStageTimes) {
   install_stage_tracker()->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kVerification);
 
-  const base::TimeDelta installation_stage_time =
-      base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta installation_stage_time = base::Milliseconds(200);
   task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker()->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kCopying);

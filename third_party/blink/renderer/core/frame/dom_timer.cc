@@ -45,8 +45,7 @@ namespace {
 // that a timeout less than 4ms is increased to 4ms when the nesting level is
 // greater than 5.
 constexpr int kMaxTimerNestingLevel = 5;
-constexpr base::TimeDelta kMinimumInterval =
-    base::TimeDelta::FromMilliseconds(4);
+constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
 
 }  // namespace
 
@@ -108,7 +107,7 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   MoveToNewTaskRunner(context->GetTaskRunner(task_type));
 
   // Clamping up to 1ms for historical reasons crbug.com/402694.
-  timeout = std::max(timeout, base::TimeDelta::FromMilliseconds(1));
+  timeout = std::max(timeout, base::Milliseconds(1));
 
   if (single_shot)
     StartOneShot(timeout, FROM_HERE);

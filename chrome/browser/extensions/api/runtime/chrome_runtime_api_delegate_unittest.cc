@@ -292,14 +292,14 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
 
   // Check again after a short delay - we should be throttled because
   // not enough time has passed.
-  clock_.Advance(base::TimeDelta::FromMinutes(15));
+  clock_.Advance(base::Minutes(15));
   downloader_test_delegate_.AddNoUpdateResponse(id);
   DoUpdateCheck(id, "throttled", "");
 
   // Now simulate checking a few times at a 6 hour interval - none of these
   // should be throttled.
   for (int i = 0; i < 5; i++) {
-    clock_.Advance(base::TimeDelta::FromHours(6));
+    clock_.Advance(base::Hours(6));
     downloader_test_delegate_.AddNoUpdateResponse(id);
     DoUpdateCheck(id, "no_update", "");
   }
@@ -307,13 +307,13 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
   // Run an update check that should get an "update_available" response. This
   // actually causes the new version to be downloaded/unpacked, but the install
   // will not complete until we reload the extension.
-  clock_.Advance(base::TimeDelta::FromDays(1));
+  clock_.Advance(base::Days(1));
   downloader_test_delegate_.AddUpdateResponse(id, v2_path, "2.0");
   DoUpdateCheck(id, "update_available", "2.0");
 
   // Call again after short delay - it should be throttled instead of getting
   // another "update_available" response.
-  clock_.Advance(base::TimeDelta::FromMinutes(30));
+  clock_.Advance(base::Minutes(30));
   downloader_test_delegate_.AddUpdateResponse(id, v2_path, "2.0");
   DoUpdateCheck(id, "throttled", "");
 
@@ -324,16 +324,16 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
       ExtensionRegistry::Get(browser_context())->GetInstalledExtension(id);
   ASSERT_NE(nullptr, current);
   EXPECT_EQ("2.0", current->VersionString());
-  clock_.Advance(base::TimeDelta::FromSeconds(10));
+  clock_.Advance(base::Seconds(10));
   downloader_test_delegate_.AddNoUpdateResponse(id);
   DoUpdateCheck(id, "no_update", "");
 
   // Check again after short delay; we should be throttled.
-  clock_.Advance(base::TimeDelta::FromMinutes(5));
+  clock_.Advance(base::Minutes(5));
   DoUpdateCheck(id, "throttled", "");
 
   // Call again after a longer delay, we should should be unthrottled.
-  clock_.Advance(base::TimeDelta::FromHours(8));
+  clock_.Advance(base::Hours(8));
   downloader_test_delegate_.AddNoUpdateResponse(id);
   DoUpdateCheck(id, "no_update", "");
 }
@@ -446,7 +446,7 @@ TEST_F(ChromeRuntimeAPIDelegateReloadTest,
 
   // Reload one more time after the time threshold for a suspiciously fast
   // reload has passed.
-  clock_.Advance(base::TimeDelta::FromSeconds(1000));
+  clock_.Advance(base::Seconds(1000));
 
   ReloadExtensionAndWait();
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id()));

@@ -72,7 +72,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
 
   // Advance the test clock to make sure that the modification date of the new
   // profile gets updated.
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
   // Create the import process for the scenario that there aren't any other
@@ -261,7 +261,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
 
   // Set a modification date and subsequently advance the test clock.
   mergeable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
   std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
@@ -313,7 +313,7 @@ TEST_F(AutofillProfileImportProcessTest,
 
   // Set a modification date and subsequently advance the test clock.
   mergeable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
   std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
@@ -406,7 +406,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   // changed.
   mergeable_profile.set_modification_date(AutofillClock::Now());
   base::Time earlier_time = AutofillClock::Now();
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
 
   std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
   personal_data_manager_.SetProfiles(&existing_profiles);
@@ -457,7 +457,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
 
   // Set a modification date and subsequently advance the test clock.
   updateable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
   std::vector<AutofillProfile> existing_profiles = {updateable_profile};
@@ -699,7 +699,7 @@ TEST_F(AutofillProfileImportProcessTest,
 
   // Set a modification date and subsequently advance the test clock.
   updateable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
   std::vector<AutofillProfile> existing_profiles = {updateable_profile};

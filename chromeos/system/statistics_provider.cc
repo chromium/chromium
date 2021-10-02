@@ -340,7 +340,7 @@ bool StatisticsProviderImpl::WaitForStatisticsLoaded() {
   // happen except during OOBE.
   base::Time start_time = base::Time::Now();
   base::ScopedAllowBaseSyncPrimitives allow_wait;
-  statistics_loaded_.TimedWait(base::TimeDelta::FromSeconds(kTimeoutSecs));
+  statistics_loaded_.TimedWait(base::Seconds(kTimeoutSecs));
 
   base::TimeDelta dtime = base::Time::Now() - start_time;
   if (statistics_loaded_.IsSignaled()) {

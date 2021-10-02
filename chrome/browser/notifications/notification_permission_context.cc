@@ -155,7 +155,7 @@ void NotificationPermissionContext::DecidePermission(
                            requesting_origin, embedding_origin,
                            std::move(callback), /*persist=*/true,
                            CONTENT_SETTING_BLOCK, /*is_one_time=*/false),
-            base::TimeDelta::FromSecondsD(delay_seconds));
+            base::Seconds(delay_seconds));
     return;
   }
 

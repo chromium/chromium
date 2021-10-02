@@ -36,8 +36,7 @@
 #include "ui/base/l10n/time_format.h"
 
 namespace {
-constexpr base::TimeDelta kTabsChangeDelay =
-    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kTabsChangeDelay = base::Milliseconds(50);
 
 std::string GetLastActiveElapsedText(
     const base::TimeTicks& last_active_time_ticks) {

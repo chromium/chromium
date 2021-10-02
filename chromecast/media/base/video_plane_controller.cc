@@ -92,7 +92,7 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
     base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta elapsed = now - last_set_geometry_time_;
 
-    if (elapsed < base::TimeDelta::FromMilliseconds(min_calling_interval_ms_)) {
+    if (elapsed < base::Milliseconds(min_calling_interval_ms_)) {
       if (!pending_set_geometry_) {
         pending_set_geometry_ = true;
 
@@ -101,7 +101,7 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
             base::BindOnce(
                 &RateLimitedSetVideoPlaneGeometry::ApplyPendingSetGeometry,
                 this),
-            base::TimeDelta::FromMilliseconds(2 * min_calling_interval_ms_));
+            base::Milliseconds(2 * min_calling_interval_ms_));
       }
 
       pending_display_rect_ = display_rect;

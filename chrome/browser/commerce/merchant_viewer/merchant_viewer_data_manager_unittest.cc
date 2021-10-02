@@ -185,13 +185,13 @@ TEST_F(MerchantViewerDataManagerTest, DeleteMerchantViewerDataForTimeRange) {
       service_->GetDB();
 
   base::Time start_time = base::Time::Now();
-  base::Time end_time = start_time + base::TimeDelta::FromDays(3);
+  base::Time end_time = start_time + base::Days(3);
 
   merchant_signal_db::MerchantSignalContentProto protoA =
-      BuildProto(kMockMerchantA, start_time + base::TimeDelta::FromDays(1));
+      BuildProto(kMockMerchantA, start_time + base::Days(1));
 
   merchant_signal_db::MerchantSignalContentProto protoB =
-      BuildProto(kMockMerchantB, start_time + base::TimeDelta::FromDays(2));
+      BuildProto(kMockMerchantB, start_time + base::Days(2));
 
   base::RunLoop run_loop[4];
 
@@ -237,13 +237,13 @@ TEST_F(MerchantViewerDataManagerTest,
       service_->GetDB();
 
   base::Time start_time = base::Time::Now();
-  base::Time end_time = start_time + base::TimeDelta::FromDays(3);
+  base::Time end_time = start_time + base::Days(3);
 
   merchant_signal_db::MerchantSignalContentProto protoA =
-      BuildProto(kMockMerchantA, start_time - base::TimeDelta::FromDays(1));
+      BuildProto(kMockMerchantA, start_time - base::Days(1));
 
   merchant_signal_db::MerchantSignalContentProto protoB =
-      BuildProto(kMockMerchantB, start_time - base::TimeDelta::FromDays(1));
+      BuildProto(kMockMerchantB, start_time - base::Days(1));
 
   base::RunLoop run_loop[4];
 
@@ -285,13 +285,13 @@ TEST_F(MerchantViewerDataManagerTest,
       service_->GetDB();
 
   base::Time start_time = base::Time::Now();
-  base::Time end_time = start_time + base::TimeDelta::FromDays(3);
+  base::Time end_time = start_time + base::Days(3);
 
   merchant_signal_db::MerchantSignalContentProto protoA =
-      BuildProto(kMockMerchantA, start_time - base::TimeDelta::FromDays(1));
+      BuildProto(kMockMerchantA, start_time - base::Days(1));
 
   merchant_signal_db::MerchantSignalContentProto protoB =
-      BuildProto(kMockMerchantB, start_time + base::TimeDelta::FromDays(1));
+      BuildProto(kMockMerchantB, start_time + base::Days(1));
 
   base::RunLoop run_loop[4];
 
@@ -460,13 +460,13 @@ TEST_F(MerchantViewerDataManagerTest,
       service_->GetDB();
 
   base::Time start_time = base::Time::Now();
-  base::Time end_time = start_time + base::TimeDelta::FromDays(3);
+  base::Time end_time = start_time + base::Days(3);
 
   merchant_signal_db::MerchantSignalContentProto protoA =
-      BuildProto(kMockMerchantA, start_time - base::TimeDelta::FromDays(4));
+      BuildProto(kMockMerchantA, start_time - base::Days(4));
 
   merchant_signal_db::MerchantSignalContentProto protoB =
-      BuildProto(kMockMerchantB, start_time + base::TimeDelta::FromDays(1));
+      BuildProto(kMockMerchantB, start_time + base::Days(1));
 
   base::RunLoop run_loop[4];
 

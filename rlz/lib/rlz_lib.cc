@@ -445,12 +445,10 @@ bool SendFinancialPing(Product product,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const net::BackoffEntry::Policy policy = {
       0,  // Number of initial errors to ignore.
-      static_cast<int>(
-          base::TimeDelta::FromSeconds(5).InMilliseconds()),  // Initial delay.
+      static_cast<int>(base::Seconds(5).InMilliseconds()),  // Initial delay.
       2,    // Factor to increase delay.
       0.1,  // Delay fuzzing.
-      static_cast<int>(
-          base::TimeDelta::FromMinutes(5).InMilliseconds()),  // Maximum delay.
+      static_cast<int>(base::Minutes(5).InMilliseconds()),  // Maximum delay.
       -1,  // Time to keep entries.  -1 == never discard.
   };
   net::BackoffEntry backoff(&policy);

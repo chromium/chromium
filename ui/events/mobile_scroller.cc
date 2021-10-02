@@ -218,7 +218,7 @@ void MobileScroller::StartScroll(float start_x,
                                  float dy,
                                  base::TimeTicks start_time) {
   StartScroll(start_x, start_y, dx, dy, start_time,
-              base::TimeDelta::FromMilliseconds(kDefaultDurationMs));
+              base::Milliseconds(kDefaultDurationMs));
 }
 
 void MobileScroller::StartScroll(float start_x,
@@ -463,8 +463,7 @@ base::TimeDelta MobileScroller::GetSplineFlingDuration(float velocity) const {
   const double l = GetSplineDeceleration(velocity);
   const double decel_minus_one = kDecelerationRate - 1.0;
   const double time_seconds = std::exp(l / decel_minus_one);
-  return base::TimeDelta::FromMicroseconds(time_seconds *
-                                           base::Time::kMicrosecondsPerSecond);
+  return base::Microseconds(time_seconds * base::Time::kMicrosecondsPerSecond);
 }
 
 double MobileScroller::GetSplineFlingDistance(float velocity) const {

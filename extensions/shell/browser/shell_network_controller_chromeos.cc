@@ -128,9 +128,7 @@ void ShellNetworkController::SetScanningEnabled(bool enabled) {
   VLOG(1) << (enabled ? "Starting" : "Stopping") << " scanning";
   if (enabled) {
     RequestScan();
-    scan_timer_.Start(FROM_HERE,
-                      base::TimeDelta::FromSeconds(kScanIntervalSec),
-                      this,
+    scan_timer_.Start(FROM_HERE, base::Seconds(kScanIntervalSec), this,
                       &ShellNetworkController::RequestScan);
   } else {
     scan_timer_.Stop();

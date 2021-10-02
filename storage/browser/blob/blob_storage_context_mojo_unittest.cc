@@ -170,7 +170,7 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFile) {
 
   // Create a 'last modified' that is different from now.
   base::Time last_modified =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
 
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
@@ -193,7 +193,7 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFile) {
   // Because Mac rounds file modification time to the nearest second, make sure
   // the difference is within that range.
   base::TimeDelta difference = file_info.last_modified - last_modified;
-  EXPECT_LT(difference.magnitude(), base::TimeDelta::FromSeconds(1));
+  EXPECT_LT(difference.magnitude(), base::Seconds(1));
 
   base::DeleteFile(file_path);
   ASSERT_TRUE(temp_dir_.Delete());
@@ -238,7 +238,7 @@ TEST_F(BlobStorageContextMojoTest, SaveEmptyBlobToFile) {
 
   // Create a 'last modified' that is different from now.
   base::Time last_modified =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
 
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
@@ -261,7 +261,7 @@ TEST_F(BlobStorageContextMojoTest, SaveEmptyBlobToFile) {
   // Because Mac rounds file modification time to the nearest second, make sure
   // the difference is within that range.
   base::TimeDelta difference = file_info.last_modified - last_modified;
-  EXPECT_LT(difference.magnitude(), base::TimeDelta::FromSeconds(1));
+  EXPECT_LT(difference.magnitude(), base::Seconds(1));
 
   base::DeleteFile(file_path);
   ASSERT_TRUE(temp_dir_.Delete());
@@ -276,7 +276,7 @@ TEST_F(BlobStorageContextMojoTest, FileCopyOptimization) {
 
   // Create a file to copy from.
   base::Time modification_time =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
   CreateFile(copy_from_file, kData, modification_time);
 
   std::unique_ptr<BlobDataBuilder> builder =
@@ -313,7 +313,7 @@ TEST_F(BlobStorageContextMojoTest, FileCopyOptimization) {
   // Because Mac rounds file modification time to the nearest second, make sure
   // the difference is within that range.
   base::TimeDelta difference = file_info.last_modified - modification_time;
-  EXPECT_LT(difference.magnitude(), base::TimeDelta::FromSeconds(1));
+  EXPECT_LT(difference.magnitude(), base::Seconds(1));
 
   base::DeleteFile(file_path);
   ASSERT_TRUE(temp_dir_.Delete());
@@ -330,7 +330,7 @@ TEST_F(BlobStorageContextMojoTest, FileCopyOptimizationOffsetSize) {
 
   // Create a file to copy from.
   base::Time modification_time =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
   CreateFile(copy_from_file, kData, modification_time);
 
   std::unique_ptr<BlobDataBuilder> builder =
@@ -366,7 +366,7 @@ TEST_F(BlobStorageContextMojoTest, FileCopyOptimizationOffsetSize) {
   // Because Mac rounds file modification time to the nearest second, make sure
   // the difference is within that range.
   base::TimeDelta difference = file_info.last_modified - modification_time;
-  EXPECT_LT(difference.magnitude(), base::TimeDelta::FromSeconds(1));
+  EXPECT_LT(difference.magnitude(), base::Seconds(1));
 
   base::DeleteFile(file_path);
   ASSERT_TRUE(temp_dir_.Delete());
@@ -381,7 +381,7 @@ TEST_F(BlobStorageContextMojoTest, FileCopyEmptyFile) {
 
   // Create a file to copy from.
   base::Time modification_time =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
   CreateFile(copy_from_file, kData, modification_time);
 
   std::unique_ptr<BlobDataBuilder> builder =
@@ -418,7 +418,7 @@ TEST_F(BlobStorageContextMojoTest, FileCopyEmptyFile) {
   // Because Mac rounds file modification time to the nearest second, make sure
   // the difference is within that range.
   base::TimeDelta difference = file_info.last_modified - modification_time;
-  EXPECT_LT(difference.magnitude(), base::TimeDelta::FromSeconds(1));
+  EXPECT_LT(difference.magnitude(), base::Seconds(1));
 
   base::DeleteFile(file_path);
   ASSERT_TRUE(temp_dir_.Delete());
@@ -433,7 +433,7 @@ TEST_F(BlobStorageContextMojoTest, InvalidInputFileSize) {
 
   // Create a file to copy from.
   base::Time modification_time =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
   CreateFile(copy_from_file, kData, modification_time);
 
   std::unique_ptr<BlobDataBuilder> builder =
@@ -471,14 +471,14 @@ TEST_F(BlobStorageContextMojoTest, InvalidInputFileTimeModified) {
       temp_dir_.GetPath().AppendASCII("SourceFile.txt");
 
   base::Time file_modified_time =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
   CreateFile(copy_from_file, kData, file_modified_time);
 
   // Create the blob but give it the wrong modification time.
   std::unique_ptr<BlobDataBuilder> builder =
       std::make_unique<BlobDataBuilder>("1234");
   base::Time bad_modified_time =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(2));
+      TruncateToSeconds(base::Time::Now() - base::Days(2));
   builder->AppendFile(copy_from_file, 0ll, kData.size(), bad_modified_time);
   std::unique_ptr<BlobDataHandle> blob_handle =
       context_->AddFinishedBlob(std::move(builder));
@@ -580,7 +580,7 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFileNoDirectory) {
 
   // Create a 'last modified' that is different from now.
   base::Time last_modified =
-      TruncateToSeconds(base::Time::Now() - base::TimeDelta::FromDays(1));
+      TruncateToSeconds(base::Time::Now() - base::Days(1));
 
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath()

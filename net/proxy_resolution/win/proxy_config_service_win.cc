@@ -38,7 +38,7 @@ void FreeIEConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_config) {
 
 ProxyConfigServiceWin::ProxyConfigServiceWin(
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : PollingProxyConfigService(base::TimeDelta::FromSeconds(kPollIntervalSec),
+    : PollingProxyConfigService(base::Seconds(kPollIntervalSec),
                                 &ProxyConfigServiceWin::GetCurrentProxyConfig,
                                 traffic_annotation) {
   NetworkChangeNotifier::AddNetworkChangeObserver(this);

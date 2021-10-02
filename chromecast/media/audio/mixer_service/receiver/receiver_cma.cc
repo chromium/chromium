@@ -22,7 +22,7 @@ namespace mixer_service {
 
 namespace {
 
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Seconds(5);
 
 enum MessageTypes : int {
   kPushResult = 1,

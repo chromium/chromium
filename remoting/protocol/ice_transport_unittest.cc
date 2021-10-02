@@ -302,7 +302,7 @@ TEST_F(IceTransportTest, TestBrokenTransport) {
   // transport unusable. Also reduce connection timeout so the test finishes
   // quickly.
   network_settings_ = NetworkSettings(NetworkSettings::NAT_TRAVERSAL_DISABLED);
-  network_settings_.ice_timeout = base::TimeDelta::FromSeconds(1);
+  network_settings_.ice_timeout = base::Seconds(1);
   network_settings_.ice_reconnect_attempts = 1;
 
   InitializeConnection();
@@ -350,7 +350,7 @@ TEST_F(IceTransportTest, TestCancelChannelCreation) {
 // Verify that we can still connect even when there is a delay in signaling
 // messages delivery.
 TEST_F(IceTransportTest, MAYBE_TestDelayedSignaling) {
-  transport_info_delay_ = base::TimeDelta::FromMilliseconds(100);
+  transport_info_delay_ = base::Milliseconds(100);
 
   InitializeConnection();
 

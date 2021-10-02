@@ -304,8 +304,7 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   // URLs are nullopt.
   blink::InterestGroup CreateInterestGroup() {
     blink::InterestGroup interest_group;
-    interest_group.expiry =
-        base::Time::Now() + base::TimeDelta::FromSeconds(300);
+    interest_group.expiry = base::Time::Now() + base::Seconds(300);
     interest_group.name = kInterestGroupName;
     interest_group.owner = kOriginA;
     return interest_group;
@@ -1318,8 +1317,8 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // has not. Time order:
   // (*NOW*, group expiration, db maintenance).
   const base::TimeDelta kExpiryDelta =
-      InterestGroupStorage::kIdlePeriod - base::TimeDelta::FromSeconds(2);
-  ASSERT_GT(kExpiryDelta, base::TimeDelta::FromSeconds(0));
+      InterestGroupStorage::kIdlePeriod - base::Seconds(2);
+  ASSERT_GT(kExpiryDelta, base::Seconds(0));
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.expiry = base::Time::Now() + kExpiryDelta;
   interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
@@ -1340,8 +1339,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // Start an interest group update and then advance time to ensure the interest
   // group expires before a response is returned.
   UpdateInterestGroupNoFlush();
-  task_environment()->FastForwardBy(kExpiryDelta +
-                                    base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(kExpiryDelta + base::Seconds(1));
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
@@ -1368,8 +1366,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // bring it back -- also, advance past the rate limit window to ensure the
   // update actually happens.
   task_environment()->FastForwardBy(
-      InterestGroupStorage::kUpdateSucceededBackoffPeriod +
-      base::TimeDelta::FromSeconds(1));
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod + base::Seconds(1));
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
                                             kServerResponse);
   UpdateInterestGroupNoFlush();
@@ -1402,8 +1399,8 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // (*NOW*, group expiration, db maintenance).
   const base::Time now = base::Time::Now();
   const base::TimeDelta kExpiryDelta =
-      InterestGroupStorage::kIdlePeriod - base::TimeDelta::FromSeconds(1);
-  ASSERT_GT(kExpiryDelta, base::TimeDelta::FromSeconds(0));
+      InterestGroupStorage::kIdlePeriod - base::Seconds(1);
+  ASSERT_GT(kExpiryDelta, base::Seconds(0));
   const base::Time next_maintenance_time =
       now + InterestGroupStorage::kIdlePeriod;
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -1428,7 +1425,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // is returned.
   UpdateInterestGroupNoFlush();
   task_environment()->FastForwardBy(InterestGroupStorage::kIdlePeriod +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
@@ -1455,8 +1452,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // bring it back -- also, advance past the rate limit window to ensure the
   // update actually happens.
   task_environment()->FastForwardBy(
-      InterestGroupStorage::kUpdateSucceededBackoffPeriod +
-      base::TimeDelta::FromSeconds(1));
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod + base::Seconds(1));
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
                                             kServerResponse);
   UpdateInterestGroupNoFlush();
@@ -1595,7 +1591,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
   // period without the interest group expiring.
-  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
@@ -1644,8 +1640,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting.
   task_environment()->FastForwardBy(
-      InterestGroupStorage::kUpdateSucceededBackoffPeriod -
-      base::TimeDelta::FromSeconds(1));
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod - base::Seconds(1));
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -1663,7 +1658,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -1698,7 +1693,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
   // period without the interest group expiring.
-  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
@@ -1750,8 +1745,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // do nothing due to rate limiting. Invalid responses use the longer
   // "successful" backoff period.
   task_environment()->FastForwardBy(
-      InterestGroupStorage::kUpdateSucceededBackoffPeriod -
-      base::TimeDelta::FromSeconds(1));
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod - base::Seconds(1));
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -1770,7 +1764,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -1803,7 +1797,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
   // period without the interest group expiring.
-  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
@@ -1854,8 +1848,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting.
   task_environment()->FastForwardBy(
-      InterestGroupStorage::kUpdateFailedBackoffPeriod -
-      base::TimeDelta::FromSeconds(1));
+      InterestGroupStorage::kUpdateFailedBackoffPeriod - base::Seconds(1));
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -1874,7 +1867,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -1907,7 +1900,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
   // period without the interest group expiring.
-  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
@@ -1970,7 +1963,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateRateLimitedTightLoop) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
   // period without the interest group expiring.
-  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;

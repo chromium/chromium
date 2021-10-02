@@ -133,8 +133,8 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 
     for (size_t i = 0; i < scenario.num_durations; ++i) {
       const bool simulate_missing_data = scenario.durations_in_ms[i] < 0;
-      const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(
-          std::abs(scenario.durations_in_ms[i]));
+      const base::TimeDelta duration =
+          base::Milliseconds(std::abs(scenario.durations_in_ms[i]));
       receiver_->SetCaptureTimeBounds(
           testing_clock_.NowTicks() - frame_duration,
           testing_clock_.NowTicks() + duration);

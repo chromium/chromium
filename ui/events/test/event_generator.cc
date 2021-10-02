@@ -44,8 +44,7 @@ class TestTickClock : public base::TickClock {
   // Unconditionally returns a tick count that is 1ms later than the previous
   // call, starting at 1ms.
   base::TimeTicks NowTicks() const override {
-    static constexpr base::TimeDelta kOneMillisecond =
-        base::TimeDelta::FromMilliseconds(1);
+    static constexpr base::TimeDelta kOneMillisecond = base::Milliseconds(1);
     return ticks_ += kOneMillisecond;
   }
 
@@ -324,7 +323,7 @@ void EventGenerator::GestureTapAt(const gfx::Point& location) {
 
   ui::TouchEvent release(
       ui::ET_TOUCH_RELEASED, converted_location,
-      press.time_stamp() + base::TimeDelta::FromMilliseconds(50),
+      press.time_stamp() + base::Milliseconds(50),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
   Dispatch(&release);
 }
@@ -342,7 +341,7 @@ void EventGenerator::GestureTapDownAndUp(const gfx::Point& location) {
 
   ui::TouchEvent release(
       ui::ET_TOUCH_RELEASED, converted_location,
-      press.time_stamp() + base::TimeDelta::FromMilliseconds(1000),
+      press.time_stamp() + base::Milliseconds(1000),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
   Dispatch(&release);
 }
@@ -354,7 +353,7 @@ base::TimeDelta EventGenerator::CalculateScrollDurationForFlingVelocity(
     int steps) {
   const float kGestureDistance = (start - end).Length();
   const float kFlingStepDelay = (kGestureDistance / velocity) / steps * 1000000;
-  return base::TimeDelta::FromMicroseconds(kFlingStepDelay);
+  return base::Microseconds(kFlingStepDelay);
 }
 
 void EventGenerator::GestureScrollSequence(const gfx::Point& start,
@@ -439,17 +438,16 @@ void EventGenerator::GestureMultiFingerScrollWithDelays(
   bool pressed[kMaxTouchPoints];
   for (int i = 0; i < count; ++i) {
     pressed[i] = false;
-    press_time[i] = press_time_first +
-        base::TimeDelta::FromMilliseconds(delay_adding_finger_ms[i]);
-    release_time[i] = press_time_first + base::TimeDelta::FromMilliseconds(
-                                             delay_releasing_finger_ms[i]);
+    press_time[i] =
+        press_time_first + base::Milliseconds(delay_adding_finger_ms[i]);
+    release_time[i] =
+        press_time_first + base::Milliseconds(delay_releasing_finger_ms[i]);
     DCHECK_LE(press_time[i], release_time[i]);
   }
 
   for (int step = 0; step < steps; ++step) {
     base::TimeTicks move_time =
-        press_time_first +
-        base::TimeDelta::FromMilliseconds(event_separation_time_ms * step);
+        press_time_first + base::Milliseconds(event_separation_time_ms * step);
 
     for (int i = 0; i < count; ++i) {
       if (!pressed[i] && move_time >= press_time[i]) {
@@ -485,8 +483,7 @@ void EventGenerator::GestureMultiFingerScrollWithDelays(
   }
 
   base::TimeTicks default_release_time =
-      press_time_first +
-      base::TimeDelta::FromMilliseconds(event_separation_time_ms * steps);
+      press_time_first + base::Milliseconds(event_separation_time_ms * steps);
   // Ensures that all pressed fingers are released in the end.
   for (int i = 0; i < count; ++i) {
     if (pressed[i]) {

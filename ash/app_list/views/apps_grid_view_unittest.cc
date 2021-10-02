@@ -323,11 +323,9 @@ class AppsGridViewTest : public AshTestBase {
   }
 
   void SetPageFlipDurationForTest(PagedAppsGridView* apps_grid_view) {
-    apps_grid_view->set_page_flip_delay_for_testing(
-        base::TimeDelta::FromMilliseconds(3));
+    apps_grid_view->set_page_flip_delay_for_testing(base::Milliseconds(3));
     apps_grid_view->pagination_model()->SetTransitionDurations(
-        base::TimeDelta::FromMilliseconds(2),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(2), base::Milliseconds(1));
   }
 
   bool HasPendingPageFlip(PagedAppsGridView* apps_grid_view) {

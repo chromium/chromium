@@ -82,8 +82,7 @@ class AccessTokenFetcherTest : public testing::Test {
     OAuth2AccessTokenConsumer::TokenResponse::Builder builder;
     builder.WithAccessToken(access_token);
     builder.WithRefreshToken(refresh_token);
-    builder.WithExpirationTime(base::Time::Now() +
-                               base::TimeDelta::FromDays(1));
+    builder.WithExpirationTime(base::Time::Now() + base::Days(1));
     builder.WithIdToken("id token");
     return builder.build();
   }

@@ -141,7 +141,7 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
     repeat_timer_.Stop();
   } else if (ShouldRepeatKey(event)) {
     repeat_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(180),
+        FROM_HERE, base::Milliseconds(180),
         base::BindRepeating(
             &WindowCycleController::HandleCycleWindow,
             base::Unretained(Shell::Get()->window_cycle_controller()),

@@ -508,8 +508,8 @@ void XDragDropClient::StopRepeatMouseMoveTimer() {
 }
 
 void XDragDropClient::StartEndMoveLoopTimer() {
-  end_move_loop_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1000),
-                             this, &XDragDropClient::EndMoveLoop);
+  end_move_loop_timer_.Start(FROM_HERE, base::Milliseconds(1000), this,
+                             &XDragDropClient::EndMoveLoop);
 }
 
 void XDragDropClient::StopEndMoveLoopTimer() {
@@ -673,7 +673,7 @@ void XDragDropClient::SendXdndPosition(x11::Window dest_window,
   // the Xdnd protocol both recommend that drag events should be sent
   // periodically.
   repeat_mouse_move_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(350),
+      FROM_HERE, base::Milliseconds(350),
       base::BindOnce(&XDragDropClient::ProcessMouseMove, base::Unretained(this),
                      screen_point, event_time));
 }

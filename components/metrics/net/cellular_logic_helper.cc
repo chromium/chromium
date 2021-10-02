@@ -27,8 +27,7 @@ const int kStandardUploadIntervalSeconds = 30 * 60;  // Thirty minutes.
 const base::Feature kMoreFrequentUmaUploads{"MoreFrequentUmaUploads",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 // The interval between these more-frequent uploads.
-constexpr base::TimeDelta kMoreFrequentUploadInterval =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMoreFrequentUploadInterval = base::Minutes(5);
 #endif  // IS_CHROMEOS_ASH
 
 #if defined(OS_ANDROID)
@@ -42,13 +41,13 @@ const bool kDefaultCellularLogicEnabled = false;
 base::TimeDelta GetUploadInterval(bool use_cellular_upload_interval) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
   if (use_cellular_upload_interval)
-    return base::TimeDelta::FromSeconds(kStandardUploadIntervalCellularSeconds);
+    return base::Seconds(kStandardUploadIntervalCellularSeconds);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(kMoreFrequentUmaUploads)) {
     return kMoreFrequentUploadInterval;
   }
 #endif
-  return base::TimeDelta::FromSeconds(kStandardUploadIntervalSeconds);
+  return base::Seconds(kStandardUploadIntervalSeconds);
 }
 
 bool ShouldUseCellularUploadInterval() {

@@ -28,8 +28,7 @@ namespace {
 
 // The time that InitiateUserRemoval waits on the passed callback to do a log
 // out, otherwise it does the log out itself.
-constexpr base::TimeDelta kFailsafeTimerTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(60);
 
 // Override for the LogOut function inside of tests.
 base::OnceClosure& GetLogOutOverrideCallbackForTest() {

@@ -77,7 +77,7 @@ void BufferingFrameProviderTest::Configure(
   std::vector<FrameGeneratorForTest::FrameSpec> frame_specs(frame_count);
   for (size_t k = 0; k < frame_specs.size() - 1; k++) {
     frame_specs[k].has_config = (k == 0);
-    frame_specs[k].timestamp = base::TimeDelta::FromMilliseconds(40) * k;
+    frame_specs[k].timestamp = base::Milliseconds(40) * k;
     frame_specs[k].size = 512;
     frame_specs[k].has_decrypt_config = ((k % 3) == 0);
   }

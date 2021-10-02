@@ -370,7 +370,7 @@ void BackgroundContentsService::OnExtensionLoaded(
           base::BindOnce(&BackgroundContentsService::MaybeClearBackoffEntry,
                          weak_ptr_factory_.GetWeakPtr(), extension->id(),
                          entry->failure_count()),
-          base::TimeDelta::FromSeconds(60));
+          base::Seconds(60));
     }
   }
 
@@ -453,7 +453,7 @@ void BackgroundContentsService::RestartForceInstalledExtensionOnCrash(
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&ReloadExtension, extension->id(), profile_),
-      base::TimeDelta::FromMilliseconds(restart_delay));
+      base::Milliseconds(restart_delay));
 }
 
 // Loads all background contents whose urls have been stored in prefs.

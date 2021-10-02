@@ -65,7 +65,7 @@ void AnalyzeZipFile(base::File zip_file,
       continue;
     }
     if (base::Time::Now() - start_time >
-        base::TimeDelta::FromMilliseconds(kZipAnalysisTimeoutMs)) {
+        base::Milliseconds(kZipAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

@@ -253,9 +253,7 @@ class SingleClientWalletSyncTest : public SyncTest {
         .Wait();
   }
 
-  void AdvanceAutofillClockByOneDay() {
-    test_clock_.Advance(base::TimeDelta::FromDays(1));
-  }
+  void AdvanceAutofillClockByOneDay() { test_clock_.Advance(base::Days(1)); }
 
   testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
   base::HistogramTester histogram_tester_;

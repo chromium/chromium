@@ -44,12 +44,12 @@ namespace {
 // triggered animation observer is drawn. Wait 50ms in attempt to let its draw
 // and swap finish.
 constexpr base::TimeDelta kOcclusionPauseDurationForStart =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Wait longer when exiting overview mode in case when a user may re-enter
 // overview mode immediately, contents are ready.
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =

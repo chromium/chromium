@@ -145,7 +145,7 @@ class CupsPrintersManagerImpl
         FROM_HERE,
         base::BindOnce(&SendScannerCountToUMA,
                        ash::ZeroconfScannerDetector::Create()),
-        base::TimeDelta::FromMinutes(5));
+        base::Minutes(5));
 
     print_servers_manager_->AddObserver(this);
 

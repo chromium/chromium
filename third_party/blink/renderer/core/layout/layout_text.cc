@@ -120,8 +120,7 @@ class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
   void RestartWithNewText(unsigned last_typed_character_offset) {
     last_typed_character_offset_ = last_typed_character_offset;
     if (Settings* settings = layout_text_->GetDocument().GetSettings()) {
-      StartOneShot(base::TimeDelta::FromSecondsD(
-                       settings->GetPasswordEchoDurationInSeconds()),
+      StartOneShot(base::Seconds(settings->GetPasswordEchoDurationInSeconds()),
                    FROM_HERE);
     }
   }

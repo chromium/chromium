@@ -298,7 +298,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
             // Use a delay to allow the main frame to start if it would. This
             // should cause failures (or flakiness) if we fail to wait for the
             // activation before starting the main frame.
-            base::TimeDelta::FromMilliseconds(16 * 4));
+            base::Milliseconds(16 * 4));
         break;
       }
       case 1:
@@ -415,9 +415,8 @@ class LayerTreeHostProxyTestCommitWaitsForActivationMFBA
           base::BindOnce(&LayerTreeHostProxyTestCommitWaitsForActivationMFBA::
                              UnblockActivation,
                          base::Unretained(this), impl);
-      ImplThreadTaskRunner()->PostDelayedTask(
-          FROM_HERE, std::move(unblock),
-          base::TimeDelta::FromMilliseconds(16 * 4));
+      ImplThreadTaskRunner()->PostDelayedTask(FROM_HERE, std::move(unblock),
+                                              base::Milliseconds(16 * 4));
     }
   }
 

@@ -235,7 +235,7 @@ void TermsOfServiceScreen::StartDownload() {
                                      base::Unretained(this)));
 
   // Abort the download attempt if it takes longer than one minute.
-  download_timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(1), this,
+  download_timer_.Start(FROM_HERE, base::Minutes(1), this,
                         &TermsOfServiceScreen::OnDownloadTimeout);
 }
 

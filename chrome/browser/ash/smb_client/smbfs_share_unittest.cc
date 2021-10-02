@@ -339,7 +339,7 @@ TEST_F(SmbFsShareTest, DisallowCredentialsDialogAfterTimeout) {
   share.AllowCredentialsRequest();
   // Fast-forward time for the allow state to timeout. The timeout is 5 seconds,
   // so moving forward by 6 will ensure the timeout runs.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment_.FastForwardBy(base::Seconds(6));
 
   base::RunLoop run_loop;
   delegate->RequestCredentials(base::BindLambdaForTesting(

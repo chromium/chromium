@@ -29,8 +29,7 @@ class CheckWaiter {
   CheckWaiter(base::RepeatingCallback<bool()> callback, bool expected)
       : callback_(callback),
         expected_(expected),
-        timeout_(base::Time::NowFromSystemTime() +
-                 base::TimeDelta::FromSeconds(1)) {}
+        timeout_(base::Time::NowFromSystemTime() + base::Seconds(1)) {}
 
   CheckWaiter(const CheckWaiter&) = delete;
   CheckWaiter& operator=(const CheckWaiter&) = delete;

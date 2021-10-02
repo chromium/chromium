@@ -251,8 +251,8 @@ Response InspectorLogAgent::startViolationsReport(
     PerformanceMonitor::Violation violation = ParseViolation(name);
     if (violation == PerformanceMonitor::kAfterLast)
       continue;
-    performance_monitor_->Subscribe(
-        violation, base::TimeDelta::FromMillisecondsD(threshold), this);
+    performance_monitor_->Subscribe(violation, base::Milliseconds(threshold),
+                                    this);
     violation_thresholds_.Set(name, threshold);
   }
   return Response::Success();

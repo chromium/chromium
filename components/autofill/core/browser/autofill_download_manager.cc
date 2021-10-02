@@ -164,8 +164,7 @@ GURL GetAutofillServerURL() {
 }
 
 base::TimeDelta GetThrottleResetPeriod() {
-  return base::TimeDelta::FromDays(
-      std::max(1, kAutofillUploadThrottlingPeriodInDays.Get()));
+  return base::Days(std::max(1, kAutofillUploadThrottlingPeriodInDays.Get()));
 }
 
 // Returns true if |id| is within |kAutofillExperimentRanges|.

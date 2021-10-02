@@ -48,8 +48,7 @@ constexpr int kPreferredTitleHorizontalMargins = 16;
 constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
 
-constexpr base::TimeDelta kImpressionThreshold =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kImpressionThreshold = base::Seconds(3);
 
 // TODO(crbug.com/1199206): Move this into SharedAppListConfig once the UI for
 // categories is more developed.

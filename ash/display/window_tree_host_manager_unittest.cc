@@ -1290,9 +1290,8 @@ TEST_F(WindowTreeHostManagerTest, TouchScale) {
   EXPECT_EQ(0.5, event_handler.touch_radius_x());
   EXPECT_EQ(0.5, event_handler.touch_radius_y());
 
-  generator.ScrollSequence(gfx::Point(0, 0),
-                           base::TimeDelta::FromMilliseconds(100), 10.0, 1.0, 5,
-                           1);
+  generator.ScrollSequence(gfx::Point(0, 0), base::Milliseconds(100), 10.0, 1.0,
+                           5, 1);
 
   // ordinal_offset is invariant to the device scale factor.
   EXPECT_EQ(event_handler.scroll_x_offset(),

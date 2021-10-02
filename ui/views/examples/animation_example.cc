@@ -156,7 +156,7 @@ void SquaresLayoutManager::LayoutImpl() {
 
 void SquaresLayoutManager::OnInstalled(View* host) {
   bounds_animator_ = std::make_unique<BoundsAnimator>(host, true);
-  bounds_animator_->SetAnimationDuration(base::TimeDelta::FromSeconds(1));
+  bounds_animator_->SetAnimationDuration(base::Seconds(1));
 }
 
 void AnimationExample::CreateExampleView(View* container) {
@@ -181,13 +181,13 @@ void AnimationExample::CreateExampleView(View* container) {
       // Property setting calls on the builder would be replaced with
       // view->SetOpacity(..) after animation integration with view::View class
       b.Once()
-          .SetDuration(base::TimeDelta::FromSeconds(10))
+          .SetDuration(base::Seconds(10))
           .SetRoundedCorners(view, rounded_corners);
       b.Repeatedly()
-          .SetDuration(base::TimeDelta::FromSeconds(2))
+          .SetDuration(base::Seconds(2))
           .SetOpacity(view, 0.4f, gfx::Tween::LINEAR_OUT_SLOW_IN)
           .Then()
-          .SetDuration(base::TimeDelta::FromSeconds(2))
+          .SetDuration(base::Seconds(2))
           .SetOpacity(view, 0.9f, gfx::Tween::EASE_OUT_3);
     }
   }

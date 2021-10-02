@@ -212,7 +212,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   const base::TimeDelta suggested_reclaim_time =
       FeatureList::IsEnabled(kUseFiveMinutesThreadReclaimTime)
-          ? base::TimeDelta::FromMinutes(5)
+          ? base::Minutes(5)
           : init_params.suggested_reclaim_time;
 
 #if HAS_NATIVE_THREAD_POOL()

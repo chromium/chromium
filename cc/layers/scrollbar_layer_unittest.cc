@@ -106,10 +106,8 @@ class BaseScrollbarLayerTest : public testing::Test {
     layer_tree_settings_.single_thread_proxy_scheduler = false;
     layer_tree_settings_.use_zero_copy = true;
     layer_tree_settings_.scrollbar_animator = animator;
-    layer_tree_settings_.scrollbar_fade_delay =
-        base::TimeDelta::FromMilliseconds(20);
-    layer_tree_settings_.scrollbar_fade_duration =
-        base::TimeDelta::FromMilliseconds(20);
+    layer_tree_settings_.scrollbar_fade_delay = base::Milliseconds(20);
+    layer_tree_settings_.scrollbar_fade_duration = base::Milliseconds(20);
 
     animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
 

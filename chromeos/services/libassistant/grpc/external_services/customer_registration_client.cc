@@ -28,8 +28,7 @@ using ::assistant::api::ServiceRegistrationResponse;
 
 // Period at which CustomerRegistrationClient sends requests to the assistant's
 // customer registration service until it receives the first heartbeat.
-constexpr base::TimeDelta kRegistrationPollingPeriod =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kRegistrationPollingPeriod = base::Seconds(3);
 
 chromeos::libassistant::StateConfig BuildCustomerRegistrationStateConfig() {
   StateConfig state_config;

@@ -42,8 +42,7 @@ const char16_t kTextContent[] = u"This is a test notification";
 const char kNotificationCustomViewType[] = "phonehub";
 
 // Time to wait until we enable the reply button
-constexpr base::TimeDelta kWaitForEnableButton =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kWaitForEnableButton = base::Seconds(1);
 
 chromeos::phonehub::Notification CreateNotification(int64_t id) {
   return chromeos::phonehub::Notification(

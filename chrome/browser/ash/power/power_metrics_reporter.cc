@@ -16,8 +16,7 @@ namespace ash {
 namespace {
 
 // Interval for asking metrics::DailyEvent to check whether a day has passed.
-constexpr base::TimeDelta kCheckDailyEventInternal =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kCheckDailyEventInternal = base::Seconds(60);
 
 // Information about a daily count that should be tracked and reported.
 struct DailyCountInfo {

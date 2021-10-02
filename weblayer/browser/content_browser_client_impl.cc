@@ -493,8 +493,7 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
         net::DefineNetworkTrafficAnnotation("undefined", "Nothing here yet."));
   }
   if (command_line->HasSwitch(embedder_support::kShortReportingDelay)) {
-    context_params->reporting_delivery_interval =
-        base::TimeDelta::FromMilliseconds(100);
+    context_params->reporting_delivery_interval = base::Milliseconds(100);
   }
 }
 

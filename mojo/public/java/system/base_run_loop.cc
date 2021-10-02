@@ -61,7 +61,7 @@ static void JNI_BaseRunLoop_PostDelayedTask(
       ->task_runner()
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&RunJavaRunnable, runnable_ref),
-                        base::TimeDelta::FromMicroseconds(delay));
+                        base::Microseconds(delay));
 }
 
 static void JNI_BaseRunLoop_DeleteMessageLoop(

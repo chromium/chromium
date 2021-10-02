@@ -32,7 +32,7 @@ class CONTENT_EXPORT ComputePressureHost
     : public blink::mojom::ComputePressureHost {
  public:
   static constexpr base::TimeDelta kDefaultVisibleObserverRateLimit =
-      base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
 
   // `did_connection_change` is called on changes to the mojo connections
   // handled by this host are changed. The callback will not be Run() after

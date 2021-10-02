@@ -97,8 +97,7 @@ class HourAppLaunchPredictorTest : public testing::Test {
   // Sets local time according to |day_of_week| and |hour_of_day|.
   void SetLocalTime(const int day_of_week, const int hour_of_day) {
     AdvanceToNextLocalSunday();
-    const auto advance = base::TimeDelta::FromDays(day_of_week) +
-                         base::TimeDelta::FromHours(hour_of_day);
+    const auto advance = base::Days(day_of_week) + base::Hours(hour_of_day);
     if (advance > base::TimeDelta()) {
       time_.Advance(advance);
     }
@@ -111,8 +110,8 @@ class HourAppLaunchPredictorTest : public testing::Test {
   void AdvanceToNextLocalSunday() {
     base::Time::Exploded now;
     base::Time::Now().LocalExplode(&now);
-    const auto advance = base::TimeDelta::FromDays(6 - now.day_of_week) +
-                         base::TimeDelta::FromHours(24 - now.hour);
+    const auto advance =
+        base::Days(6 - now.day_of_week) + base::Hours(24 - now.hour);
     if (advance > base::TimeDelta()) {
       time_.Advance(advance);
     }
@@ -296,12 +295,12 @@ TEST_F(HourAppLaunchPredictorTest, FromProtoDecay) {
   EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
 
   // FromProto will not decay since last_decay_timestamp is within 7 days.
-  time_.Advance(base::TimeDelta::FromDays(6));
+  time_.Advance(base::Days(6));
   predictor.FromProto(proto);
   EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
 
   // FromProto will decay since last_decay_timestamp is over 7 days.
-  time_.Advance(base::TimeDelta::FromDays(2));
+  time_.Advance(base::Days(2));
   predictor.FromProto(proto);
   const int new_frequency1 =
       static_cast<int>(frequency1 * HourAppLaunchPredictor::kWeeklyDecayCoeff);

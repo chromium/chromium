@@ -111,14 +111,14 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   // These are how long the browser is run with trace event recording taking
   // place.
   static constexpr base::TimeDelta kFullRunObservationPeriod =
-      base::TimeDelta::FromSeconds(15);
+      base::Seconds(15);
   static constexpr base::TimeDelta kQuickRunObservationPeriod =
-      base::TimeDelta::FromSeconds(4);
+      base::Seconds(4);
 
   // If sending a message to the extension fails, because the extension has not
   // started its message listener yet, how long before the next retry?
   static constexpr base::TimeDelta kSendMessageRetryPeriod =
-      base::TimeDelta::FromMilliseconds(250);
+      base::Milliseconds(250);
 
   // Note: The hostname must match the pattern found in the Extension's manifest
   // file, or it will not be able to send/receive messaging from the test web

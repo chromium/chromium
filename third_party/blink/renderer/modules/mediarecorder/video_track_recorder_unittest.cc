@@ -524,7 +524,7 @@ TEST_F(VideoTrackRecorderTest, RequiredRefreshRate) {
 
   EXPECT_EQ(video_track_recorder_->GetRequiredMinFramesPerSec(), 1);
 
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::Seconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

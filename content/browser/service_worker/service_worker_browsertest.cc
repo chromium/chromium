@@ -782,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, IdleTimerWithDevTools) {
   // In production code, WakeUp() as the result of
   // RequestTermination() doesn't happen when the idle timer delay is
   // set to zero. Instead, activating a new worker will be triggered.
-  version->endpoint()->SetIdleDelay(base::TimeDelta::FromSeconds(0));
+  version->endpoint()->SetIdleDelay(base::Seconds(0));
 
   // Trigger another sub resource request. The sub resource request will
   // directly go to the worker thread and be queued because the worker is

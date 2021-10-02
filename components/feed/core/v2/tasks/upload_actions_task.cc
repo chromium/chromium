@@ -30,8 +30,7 @@ namespace {
 bool ShouldUpload(const StoredAction& action) {
   base::Time action_time =
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(
-          action.action().client_data().timestamp_seconds());
+      base::Seconds(action.action().client_data().timestamp_seconds());
   base::TimeDelta age = base::Time::Now() - action_time;
   if (age < base::TimeDelta())
     age = base::TimeDelta();

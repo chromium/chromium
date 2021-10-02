@@ -348,7 +348,7 @@ SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager(
       pref_service_(pref_service) {
   // Schedule clean up in 2 minutes.
   ScheduleNextCleanUpAfterInterval(
-      base::TimeDelta::FromSecondsD(kNavigationFootprintTTLInSecond));
+      base::Seconds(kNavigationFootprintTTLInSecond));
 }
 
 void SafeBrowsingNavigationObserverManager::RecordNavigationEvent(
@@ -437,7 +437,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpStaleNavigationFootprints() {
   CleanUpUserGestures();
   CleanUpIpAddresses();
   ScheduleNextCleanUpAfterInterval(
-      base::TimeDelta::FromSecondsD(kNavigationFootprintTTLInSecond));
+      base::Seconds(kNavigationFootprintTTLInSecond));
 }
 
 SafeBrowsingNavigationObserverManager::AttributionResult

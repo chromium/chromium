@@ -325,8 +325,8 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
   // Negative ping delay means to send ping immediately after a first search is
   // recorded.
   bool send_ping_immediately = ping_delay < 0;
-  base::TimeDelta delay = base::TimeDelta::FromSeconds(abs(ping_delay)) -
-                          params.time_since_oobe_completion;
+  base::TimeDelta delay =
+      base::Seconds(abs(ping_delay)) - params.time_since_oobe_completion;
   rlz::RLZTracker::SetRlzDelegate(
       base::WrapUnique(new ChromeRLZTrackerDelegate));
   rlz::RLZTracker::InitRlzDelayed(

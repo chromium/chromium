@@ -196,8 +196,7 @@ namespace content {
 namespace {
 
 // The window which we dobounce load info updates in.
-constexpr auto kUpdateLoadStatesInterval =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
@@ -2179,8 +2178,7 @@ void WebContentsImpl::WasHidden() {
 }
 
 bool WebContentsImpl::HasRecentInteractiveInputEvent() {
-  static constexpr base::TimeDelta kMaxInterval =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kMaxInterval = base::Seconds(5);
   base::TimeDelta delta =
       ui::EventTimeForNow() - last_interactive_input_event_time_;
   // Note: the expectation is that the caller is typically expecting an input
@@ -7256,7 +7254,7 @@ void WebContentsImpl::DidChangeLoadProgress() {
   if (loading_weak_factory_.HasWeakPtrs())
     return;
 
-  if (min_delay == base::TimeDelta::FromMilliseconds(0)) {
+  if (min_delay == base::Milliseconds(0)) {
     SendChangeLoadProgress();
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -8661,8 +8659,7 @@ void WebContentsImpl::BindScreenOrientation(
 }
 
 bool WebContentsImpl::HasSeenRecentScreenOrientationChange() {
-  static constexpr base::TimeDelta kMaxInterval =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kMaxInterval = base::Seconds(1);
   base::TimeDelta delta =
       ui::EventTimeForNow() - last_screen_orientation_change_time_;
   // Return whether a screen orientation change happened in the last 1 second.

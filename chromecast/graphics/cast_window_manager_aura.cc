@@ -240,7 +240,7 @@ void CastWindowManagerAura::Setup() {
 
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
   window_tree_host_->compositor()->SetDisplayVSyncParameters(
-      base::TimeTicks(), base::TimeDelta::FromMilliseconds(250));
+      base::TimeTicks(), base::Milliseconds(250));
 #endif
 
   // Chromecast devices do not support cut/copy/paste.

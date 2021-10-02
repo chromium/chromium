@@ -252,7 +252,7 @@ TEST_F(BluetoothUtilsTest, TestUserAttemptedReconnectionMetric) {
   RecordUserInitiatedReconnectionAttemptDuration(
       device::ConnectionFailureReason::kFailed,
       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
 
   histogram_tester.ExpectBucketCount(
       "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure",

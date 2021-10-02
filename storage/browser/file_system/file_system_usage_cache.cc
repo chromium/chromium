@@ -20,7 +20,7 @@
 namespace storage {
 
 namespace {
-constexpr base::TimeDelta kCloseDelay = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kCloseDelay = base::Seconds(5);
 const size_t kMaxHandleCacheSize = 2;
 }  // namespace
 

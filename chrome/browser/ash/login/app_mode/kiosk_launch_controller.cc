@@ -39,19 +39,16 @@ namespace ash {
 namespace {
 
 // Web Kiosk splash screen minimum show time.
-constexpr base::TimeDelta kKioskSplashScreenMinTime =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kKioskSplashScreenMinTime = base::Seconds(10);
 
 // Time of waiting for the network to be ready to start installation. Can be
 // changed in tests.
-constexpr base::TimeDelta kKioskNetworkWaitTime =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
 // Time of waiting for the force-installed extension to be ready to start
 // application window. Can be changed in tests.
-constexpr base::TimeDelta kKioskExtensionWaitTime =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kKioskExtensionWaitTime = base::Minutes(2);
 base::TimeDelta g_extension_wait_time = kKioskExtensionWaitTime;
 
 // Whether we should skip the wait for minimum screen show time.

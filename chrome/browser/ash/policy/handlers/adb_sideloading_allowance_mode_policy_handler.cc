@@ -28,7 +28,7 @@
 namespace {
 
 constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
-    base::TimeDelta::FromDays(1);
+    base::Days(1);
 
 absl::optional<policy::AdbSideloadingAllowanceMode>
 GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,

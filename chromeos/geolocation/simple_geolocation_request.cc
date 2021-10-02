@@ -33,12 +33,9 @@
 
 // Location resolve timeout is usually 1 minute, so 2 minutes with 50 buckets
 // should be enough.
-#define UMA_HISTOGRAM_LOCATION_RESPONSE_TIMES(name, sample)         \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name,                                  \
-                             sample,                                \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromMinutes(2),       \
-                             50)
+#define UMA_HISTOGRAM_LOCATION_RESPONSE_TIMES(name, sample)        \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(2), 50)
 
 namespace chromeos {
 
@@ -368,10 +365,10 @@ SimpleGeolocationRequest::SimpleGeolocationRequest(
     std::unique_ptr<CellTowerVector> cell_tower_data)
     : shared_url_loader_factory_(std::move(factory)),
       service_url_(service_url),
-      retry_sleep_on_server_error_(base::TimeDelta::FromSeconds(
-          kResolveGeolocationRetrySleepOnServerErrorSeconds)),
-      retry_sleep_on_bad_response_(base::TimeDelta::FromSeconds(
-          kResolveGeolocationRetrySleepBadResponseSeconds)),
+      retry_sleep_on_server_error_(
+          base::Seconds(kResolveGeolocationRetrySleepOnServerErrorSeconds)),
+      retry_sleep_on_bad_response_(
+          base::Seconds(kResolveGeolocationRetrySleepBadResponseSeconds)),
       timeout_(timeout),
       retries_(0),
       wifi_data_(wifi_data.release()),

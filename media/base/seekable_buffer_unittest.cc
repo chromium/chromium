@@ -338,10 +338,8 @@ TEST_F(SeekableBufferTest, GetTime) {
   scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(data_, kWriteSize);
 
   for (size_t i = 0; i < base::size(tests); ++i) {
-    buffer->set_timestamp(base::TimeDelta::FromMicroseconds(
-        tests[i].first_time_useconds));
-    buffer->set_duration(base::TimeDelta::FromMicroseconds(
-        tests[i].duration_useconds));
+    buffer->set_timestamp(base::Microseconds(tests[i].first_time_useconds));
+    buffer->set_duration(base::Microseconds(tests[i].duration_useconds));
     buffer_.Append(buffer.get());
     EXPECT_TRUE(buffer_.Seek(tests[i].consume_bytes));
 

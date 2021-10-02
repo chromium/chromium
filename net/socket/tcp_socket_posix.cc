@@ -124,8 +124,7 @@ base::TimeDelta GetTransportRtt(SocketDescriptor fd) {
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMicroseconds(
-      std::max(info.tcpi_rtt, kMinValidRttMicros));
+  return base::Microseconds(std::max(info.tcpi_rtt, kMinValidRttMicros));
 }
 
 #endif  // defined(TCP_INFO)

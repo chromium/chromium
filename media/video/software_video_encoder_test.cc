@@ -271,7 +271,7 @@ TEST_P(SoftwareVideoEncoderTest, ForceAllKeyFrames) {
   int frames = 10;
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
-  auto frame_duration = base::TimeDelta::FromSecondsD(1.0 / 60);
+  auto frame_duration = base::Seconds(1.0 / 60);
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
@@ -299,7 +299,7 @@ TEST_P(SoftwareVideoEncoderTest, ResizeFrames) {
   int outputs_count = 0;
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
-  auto sec = base::TimeDelta::FromSeconds(1);
+  auto sec = base::Seconds(1);
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
@@ -333,8 +333,7 @@ TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
       options.framerate.value() * 10;  // total duration 20s
   int outputs_count = 0;
 
-  auto frame_duration =
-      base::TimeDelta::FromSecondsD(1.0 / options.framerate.value());
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
@@ -377,8 +376,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   int total_frames_count =
       options.framerate.value() * 10;  // total duration 10s
 
-  auto frame_duration =
-      base::TimeDelta::FromSecondsD(1.0 / options.framerate.value());
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
@@ -442,8 +440,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   size_t total_frames_count = 80;
 
   // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
-  auto frame_duration =
-      base::TimeDelta::FromSecondsD(1.0 / options.framerate.value());
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
@@ -524,7 +521,7 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
   int outputs_count = 0;
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
-  auto sec = base::TimeDelta::FromSeconds(1);
+  auto sec = base::Seconds(1);
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
@@ -569,7 +566,7 @@ TEST_P(H264VideoEncoderTest, AnnexB) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
   options.avc.produce_annexb = true;
-  auto sec = base::TimeDelta::FromSeconds(1);
+  auto sec = base::Seconds(1);
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
@@ -621,8 +618,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
   std::vector<scoped_refptr<VideoFrame>> decoded_frames;
   std::vector<ChunkWithConfig> chunks;
   size_t total_frames_count = 30;
-  auto frame_duration =
-      base::TimeDelta::FromSecondsD(1.0 / options.framerate.value());
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,

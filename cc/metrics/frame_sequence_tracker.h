@@ -228,7 +228,7 @@ class CC_EXPORT FrameSequenceTracker {
   base::flat_set<uint32_t> ignored_frame_tokens_;
 
   // Report the throughput metrics every 5 seconds.
-  const base::TimeDelta time_delta_to_report_ = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta time_delta_to_report_ = base::Seconds(5);
 
   uint64_t last_started_impl_sequence_ = 0;
   uint64_t last_processed_impl_sequence_ = 0;

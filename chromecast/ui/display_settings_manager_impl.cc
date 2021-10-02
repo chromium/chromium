@@ -23,7 +23,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kAnimationDuration = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAnimationDuration = base::Seconds(2);
 
 const float kMinApiBrightness = 0.0f;
 const float kMaxApiBrightness = 1.0f;
@@ -132,7 +132,7 @@ void DisplaySettingsManagerImpl::ResetColorTemperature() {
 }
 
 void DisplaySettingsManagerImpl::SetBrightness(float brightness) {
-  SetBrightnessSmooth(brightness, base::TimeDelta::FromSeconds(0));
+  SetBrightnessSmooth(brightness, base::Seconds(0));
 }
 
 void DisplaySettingsManagerImpl::SetBrightnessSmooth(float brightness,

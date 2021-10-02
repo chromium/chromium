@@ -27,7 +27,7 @@ using State = password_manager::BulkLeakCheckServiceInterface::State;
 // Key used to attach UserData to a LeakCheckCredential.
 constexpr char kPasswordCheckDataKey[] = "password-check-manager-data-key";
 // Minimum time the check should be running.
-constexpr base::TimeDelta kDelay = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDelay = base::Seconds(3);
 
 // Class which ensures that IOSChromePasswordCheckManager will stay alive
 // until password check is completed even if class what initially created

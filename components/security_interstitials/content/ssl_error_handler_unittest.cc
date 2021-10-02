@@ -675,8 +675,8 @@ class SSLErrorHandlerDateInvalidTest
         std::unique_ptr<base::TickClock>(tick_clock_), &pref_service_,
         shared_url_loader_factory_);
     // Do this to be sure that |is_null| returns false.
-    clock_->Advance(base::TimeDelta::FromDays(111));
-    tick_clock_->Advance(base::TimeDelta::FromDays(222));
+    clock_->Advance(base::Days(111));
+    tick_clock_->Advance(base::Days(222));
 
     SSLErrorHandler::SetInterstitialDelayForTesting(base::TimeDelta());
     ssl_info_.cert =
@@ -1117,8 +1117,7 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryStarted) {
   base::HistogramTester histograms;
   base::Time network_time;
   base::TimeDelta uncertainty;
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
   EXPECT_EQ(network_time::NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
             tracker()->GetNetworkTime(&network_time, &uncertainty));
 

@@ -55,8 +55,7 @@ static base::TimeDelta DoubleToTimeDelta(double time) {
   if (time >= max_time_in_seconds)
     return base::TimeDelta::FiniteMax();
 
-  return base::TimeDelta::FromMicroseconds(
-      time * base::Time::kMicrosecondsPerSecond);
+  return base::Microseconds(time * base::Time::kMicrosecondsPerSecond);
 }
 
 WebSourceBufferImpl::WebSourceBufferImpl(const std::string& id,
@@ -119,10 +118,8 @@ double WebSourceBufferImpl::HighestPresentationTimestamp() {
 
 bool WebSourceBufferImpl::EvictCodedFrames(double currentPlaybackTime,
                                            size_t newDataSize) {
-  return demuxer_->EvictCodedFrames(
-      id_,
-      base::TimeDelta::FromSecondsD(currentPlaybackTime),
-      newDataSize);
+  return demuxer_->EvictCodedFrames(id_, base::Seconds(currentPlaybackTime),
+                                    newDataSize);
 }
 
 bool WebSourceBufferImpl::Append(const unsigned char* data,

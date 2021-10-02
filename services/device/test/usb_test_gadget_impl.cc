@@ -242,7 +242,7 @@ class UsbGadgetFactory : public UsbService::Observer {
           FROM_HERE,
           base::BindOnce(&UsbGadgetFactory::EnumerateDevices,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kReenumeratePeriod));
+          base::Milliseconds(kReenumeratePeriod));
     }
   }
 
@@ -399,7 +399,7 @@ class UsbGadgetFactory : public UsbService::Observer {
         FROM_HERE,
         base::BindOnce(&UsbGadgetFactory::EnumerateDevices,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kReenumeratePeriod));
+        base::Milliseconds(kReenumeratePeriod));
   }
 
   UsbService* usb_service_ = nullptr;

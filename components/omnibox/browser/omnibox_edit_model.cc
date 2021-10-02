@@ -821,8 +821,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   const bool popup_open = PopupIsOpen();
   if (input_.focus_type() != OmniboxFocusType::DEFAULT || !popup_open ||
       !pasted_text.empty()) {
-    const base::TimeDelta default_time_delta =
-        base::TimeDelta::FromMilliseconds(-1);
+    const base::TimeDelta default_time_delta = base::Milliseconds(-1);
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
     elapsed_time_since_last_change_to_default_match = default_time_delta;
   }

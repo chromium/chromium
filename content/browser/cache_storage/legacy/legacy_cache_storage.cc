@@ -864,8 +864,7 @@ void LegacyCacheStorage::ScheduleWriteIndex() {
                                          weak_factory_.GetWeakPtr(),
                                          base::DoNothing()));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, index_write_task_.callback(),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      FROM_HERE, index_write_task_.callback(), base::Milliseconds(delay_ms));
 }
 
 void LegacyCacheStorage::WriteIndex(base::OnceCallback<void(bool)> callback) {

@@ -88,7 +88,7 @@ void KeyboardLayoutMonitorChromeOs::OnLayoutChanging(
       FROM_HERE,
       base::BindOnce(&KeyboardLayoutMonitorChromeOs::QueryLayout,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void KeyboardLayoutMonitorChromeOs::QueryLayout() {

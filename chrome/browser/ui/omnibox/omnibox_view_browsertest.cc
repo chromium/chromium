@@ -327,7 +327,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
     for (size_t i = 0; i < base::size(kHistoryEntries); i++) {
       // Add everything in order of time. We don't want to have a time that
       // is "right now" or it will nondeterministically appear in the results.
-      base::Time t = base::Time::Now() - base::TimeDelta::FromHours(i + 1);
+      base::Time t = base::Time::Now() - base::Hours(i + 1);
       ASSERT_NO_FATAL_FAILURE(AddHistoryEntry(kHistoryEntries[i], t));
     }
   }

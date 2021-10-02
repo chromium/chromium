@@ -354,8 +354,8 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
   ASSERT_EQ(fake_audio_consumer_service_.num_instances(), 1U);
 
   auto pos = fake_audio_consumer_service_.instance(0)->GetMediaPosition();
-  EXPECT_GT(pos, base::TimeDelta::FromSecondsD(2.0));
-  EXPECT_LT(pos, base::TimeDelta::FromSecondsD(2.5));
+  EXPECT_GT(pos, base::Seconds(2.0));
+  EXPECT_LT(pos, base::Seconds(2.5));
 
   EXPECT_EQ(fake_audio_consumer_service_.instance(0)->session_id(),
             kTestMediaSessionId);

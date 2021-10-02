@@ -20,12 +20,9 @@ namespace {
 using ::testing::_;
 
 // These constants should be the same as screen_power_controller_aura.cc.
-constexpr base::TimeDelta kScreenOnOffDuration =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kDisplayPowerOnDelay =
-    base::TimeDelta::FromMilliseconds(35);
-constexpr base::TimeDelta kDisplayPowerOffDelay =
-    base::TimeDelta::FromMilliseconds(85);
+constexpr base::TimeDelta kScreenOnOffDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kDisplayPowerOnDelay = base::Milliseconds(35);
+constexpr base::TimeDelta kDisplayPowerOffDelay = base::Milliseconds(85);
 
 class MockScreenPowerControllerDelegate
     : public ScreenPowerController::Delegate {

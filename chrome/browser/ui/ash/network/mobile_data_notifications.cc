@@ -156,7 +156,7 @@ void MobileDataNotifications::DelayedShowOptionalMobileDataNotification() {
     return;
   }
   one_shot_notification_check_delay_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kNotificationCheckDelayInSeconds),
+      FROM_HERE, base::Seconds(kNotificationCheckDelayInSeconds),
       base::BindOnce(
           &MobileDataNotifications::ShowOptionalMobileDataNotification,
           // Callbacks won't run after this object is destroyed by using weak

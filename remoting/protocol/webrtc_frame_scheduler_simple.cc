@@ -24,7 +24,7 @@ namespace {
 const int kStatsWindow = 5;
 
 constexpr base::TimeDelta kTargetFrameInterval =
-    base::TimeDelta::FromMilliseconds(1000 / kTargetFrameRate);
+    base::Milliseconds(1000 / kTargetFrameRate);
 
 // Target quantizer at which stop the encoding top-off.
 const int kTargetQuantizerForTopOff = 10;
@@ -57,8 +57,7 @@ const int kEstimatedBytesPerMegapixel = 100000;
 // 3-second period. This is effectively a minimum frame-rate, so the value
 // should not be too small, otherwise the client may waste CPU cycles on
 // processing and rendering lots of identical frames.
-constexpr base::TimeDelta kKeepAliveInterval =
-    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kKeepAliveInterval = base::Milliseconds(2000);
 
 // Baseline bandwidth to use for scheduling captures. This is only used
 // until the next OnTargetBitrateChanged() notification, typically after
@@ -205,10 +204,10 @@ bool WebrtcFrameSchedulerSimple::OnFrameCaptured(
     int expected_frame_size =
         updated_area * kEstimatedBytesPerMegapixel / kPixelsPerMegapixel;
     base::TimeDelta expected_send_delay =
-        pacing_bucket_.rate() ? base::TimeDelta::FromMicroseconds(
-                                    base::Time::kMicrosecondsPerSecond *
-                                    expected_frame_size / pacing_bucket_.rate())
-                              : base::TimeDelta::Max();
+        pacing_bucket_.rate()
+            ? base::Microseconds(base::Time::kMicrosecondsPerSecond *
+                                 expected_frame_size / pacing_bucket_.rate())
+            : base::TimeDelta::Max();
     if (expected_send_delay > kTargetFrameInterval) {
       params_out->vpx_min_quantizer = kMaxQuantizer;
     }

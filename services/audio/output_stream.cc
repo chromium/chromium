@@ -197,11 +197,9 @@ void OutputStream::OnControllerPlaying() {
   if (OutputController::will_monitor_audio_levels()) {
     DCHECK(!poll_timer_.IsRunning());
     // base::Unretained is safe because |this| owns |poll_timer_|.
-    poll_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(1) / kPowerMeasurementsPerSecond,
-        base::BindRepeating(&OutputStream::PollAudioLevel,
-                            base::Unretained(this)));
+    poll_timer_.Start(FROM_HERE, base::Seconds(1) / kPowerMeasurementsPerSecond,
+                      base::BindRepeating(&OutputStream::PollAudioLevel,
+                                          base::Unretained(this)));
     return;
   }
 

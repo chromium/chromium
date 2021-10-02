@@ -79,29 +79,25 @@ constexpr int kNotificationsToSkipUnderHeavyLoad = 2;
 // The delay before updating the JumpList for users who haven't used it in a
 // session. A delay of 2000 ms is chosen to coalesce more updates when tabs are
 // closed rapidly.
-constexpr base::TimeDelta kLongDelayForUpdate =
-    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kLongDelayForUpdate = base::Milliseconds(2000);
 
 // The delay before updating the JumpList for users who have used it in a
 // session. A delay of 500 ms is used to not only make the update happen almost
 // immediately, but also prevent update storms when tabs are closed rapidly via
 // Ctrl-W.
-constexpr base::TimeDelta kShortDelayForUpdate =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kShortDelayForUpdate = base::Milliseconds(500);
 
 // The maximum allowed time for JumpListUpdater::BeginUpdate. Updates taking
 // longer than this are discarded to prevent bogging down slow machines.
-constexpr base::TimeDelta kTimeOutForBeginUpdate =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kTimeOutForBeginUpdate = base::Milliseconds(500);
 
 // The maximum allowed time for adding most visited pages custom category via
 // JumpListUpdater::AddCustomCategory.
 constexpr base::TimeDelta kTimeOutForAddCustomCategory =
-    base::TimeDelta::FromMilliseconds(320);
+    base::Milliseconds(320);
 
 // The maximum allowed time for JumpListUpdater::CommitUpdate.
-constexpr base::TimeDelta kTimeOutForCommitUpdate =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kTimeOutForCommitUpdate = base::Milliseconds(1000);
 
 // Appends the common switches to each shell link.
 void AppendCommonSwitches(const base::FilePath& cmd_line_profile_dir,

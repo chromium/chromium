@@ -268,7 +268,7 @@ class SyncSchedulerImplTest : public testing::Test {
         std::vector<SyncEngineEventListener*>(), nullptr,
         model_type_registry_.get(), "fake_invalidator_client_id",
         "fake_cache_guid", "fake_birthday", "fake_bag_of_chips",
-        /*poll_interval=*/base::TimeDelta::FromMinutes(30));
+        /*poll_interval=*/base::Minutes(30));
     context_->set_notifications_enabled(true);
     context_->set_account_name("Test");
     RebuildScheduler();
@@ -1989,9 +1989,9 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
 
 TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterLongPause) {
   base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::TimeDelta::FromHours(4);
+  base::TimeDelta poll_interval = base::Hours(4);
   base::Time last_reset = ComputeLastPollOnStart(
-      /*last_poll=*/now - base::TimeDelta::FromDays(1), poll_interval, now);
+      /*last_poll=*/now - base::Days(1), poll_interval, now);
   EXPECT_THAT(last_reset, Gt(now - poll_interval));
   // The max poll delay is 1% of the poll_interval.
   EXPECT_THAT(last_reset, Lt(now - 0.99 * poll_interval));
@@ -1999,8 +1999,8 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterLongPause) {
 
 TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
   base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::TimeDelta::FromHours(4);
-  base::Time last_poll = now - base::TimeDelta::FromHours(2);
+  base::TimeDelta poll_interval = base::Hours(4);
+  base::Time last_poll = now - base::Hours(2);
   EXPECT_THAT(ComputeLastPollOnStart(last_poll, poll_interval, now),
               Eq(last_poll));
 }
@@ -2009,8 +2009,8 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
 // random number generation.
 TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
   base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::TimeDelta::FromHours(4);
-  base::Time last_poll = now - base::TimeDelta::FromDays(2);
+  base::TimeDelta poll_interval = base::Hours(4);
+  base::Time last_poll = now - base::Days(2);
   bool found_delay_greater_than_5_permille = false;
   bool found_delay_less_or_equal_5_permille = false;
   for (int i = 0; i < 10000; ++i) {
@@ -2035,8 +2035,8 @@ TEST_F(SyncSchedulerImplTest, TestResetPollIntervalOnStartFeatureFlag) {
   feature_list.InitAndEnableFeature(switches::kSyncResetPollIntervalOnStart);
   base::Time now = base::Time::Now();
   EXPECT_THAT(ComputeLastPollOnStart(
-                  /*last_poll=*/now - base::TimeDelta::FromDays(1),
-                  /*poll_interval=*/base::TimeDelta::FromHours(4), now),
+                  /*last_poll=*/now - base::Days(1),
+                  /*poll_interval=*/base::Hours(4), now),
               Eq(now));
 }
 

@@ -172,9 +172,8 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
   data.specifics = specifics;
   // These elements should have no effect on behavior, but we set them anyway
   // so we can test they are properly copied around the system if we want to.
-  data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  data.modification_time =
-      data.creation_time + base::TimeDelta::FromSeconds(version);
+  data.creation_time = base::Time::UnixEpoch() + base::Days(1);
+  data.modification_time = data.creation_time + base::Seconds(version);
   data.name = data.specifics.has_encrypted()
                   ? "encrypted"
                   : data.specifics.preference().name();
@@ -224,9 +223,8 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateTombstoneUpdateData(
   data.client_tag_hash = tag_hash;
   // These elements should have no effect on behavior, but we set them anyway
   // so we can test they are properly copied around the system if we want to.
-  data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  data.modification_time =
-      data.creation_time + base::TimeDelta::FromSeconds(version);
+  data.creation_time = base::Time::UnixEpoch() + base::Days(1);
+  data.modification_time = data.creation_time + base::Seconds(version);
   data.name = "Name Non Unique";
 
   UpdateResponseData response_data;

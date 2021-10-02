@@ -283,7 +283,7 @@ void VelocityTracker::AddMovement(const TimeTicks& event_time,
 
   if ((current_pointer_id_bits_.value & id_bits.value) &&
       (event_time - last_event_time_) >=
-          base::TimeDelta::FromMilliseconds(kAssumePointerMoveStoppedTimeMs)) {
+          base::Milliseconds(kAssumePointerMoveStoppedTimeMs)) {
     // We have not received any movements for too long. Assume that all pointers
     // have stopped.
     strategy_->Clear();
@@ -328,7 +328,7 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
       // because of (difficult albeit possible) prolonged stationary screen
       // contact, assume that motion has stopped.
       if ((event.GetEventTime() - last_event_time_) >=
-          base::TimeDelta::FromMilliseconds(kAssumePointerUpStoppedTimeMs))
+          base::Milliseconds(kAssumePointerUpStoppedTimeMs))
         strategy_->Clear();
       return;
     default:
@@ -600,7 +600,7 @@ bool LeastSquaresVelocityTrackerStrategy::GetEstimator(
   float time[kHistorySize];
   uint32_t m = 0;
   uint32_t index = index_;
-  const base::TimeDelta horizon = base::TimeDelta::FromMilliseconds(kHorizonMS);
+  const base::TimeDelta horizon = base::Milliseconds(kHorizonMS);
   const Movement& newest_movement = movements_[index_];
   const Movement* first_movement = nullptr;
 

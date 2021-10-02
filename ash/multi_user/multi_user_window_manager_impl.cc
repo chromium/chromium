@@ -30,16 +30,13 @@ namespace ash {
 namespace {
 
 // The animation time for a single window that is fading in / out.
-constexpr base::TimeDelta kAnimationTime =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kAnimationTime = base::Milliseconds(100);
 
 // The animation time for the fade in and / or out when switching users.
-constexpr base::TimeDelta kUserFadeTime =
-    base::TimeDelta::FromMilliseconds(110);
+constexpr base::TimeDelta kUserFadeTime = base::Milliseconds(110);
 
 // The animation time in ms for a window which get teleported to another screen.
-constexpr base::TimeDelta kTeleportAnimationTime =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kTeleportAnimationTime = base::Milliseconds(300);
 
 MultiUserWindowManagerImpl* g_instance = nullptr;
 
@@ -566,7 +563,7 @@ base::TimeDelta MultiUserWindowManagerImpl::GetAdjustedAnimationTime(
   return animation_speed_ == ANIMATION_SPEED_NORMAL
              ? default_time
              : (animation_speed_ == ANIMATION_SPEED_FAST
-                    ? base::TimeDelta::FromMilliseconds(10)
+                    ? base::Milliseconds(10)
                     : base::TimeDelta());
 }
 

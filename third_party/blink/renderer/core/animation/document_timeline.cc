@@ -70,8 +70,7 @@ DocumentTimeline* DocumentTimeline::Create(
     const DocumentTimelineOptions* options) {
   Document* document = To<LocalDOMWindow>(execution_context)->document();
   return MakeGarbageCollected<DocumentTimeline>(
-      document, base::TimeDelta::FromMillisecondsD(options->originTime()),
-      nullptr);
+      document, base::Milliseconds(options->originTime()), nullptr);
 }
 
 DocumentTimeline::DocumentTimeline(Document* document,
@@ -102,7 +101,7 @@ absl::optional<base::TimeDelta>
 DocumentTimeline::InitialStartTimeForAnimations() {
   absl::optional<double> current_time_ms = CurrentTimeMilliseconds();
   if (current_time_ms.has_value()) {
-    return base::TimeDelta::FromMillisecondsD(current_time_ms.value());
+    return base::Milliseconds(current_time_ms.value());
   }
   return absl::nullopt;
 }
@@ -129,8 +128,7 @@ void DocumentTimeline::ScheduleNextService() {
   if (next_effect_delay < kMinimumDelay) {
     ScheduleServiceOnNextFrame();
   } else {
-    timing_->WakeAfter(
-        base::TimeDelta::FromSecondsD(next_effect_delay - kMinimumDelay));
+    timing_->WakeAfter(base::Seconds(next_effect_delay - kMinimumDelay));
   }
 }
 

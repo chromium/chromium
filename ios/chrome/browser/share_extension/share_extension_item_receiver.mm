@@ -250,9 +250,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     return NO;
   }
 
-  UMA_HISTOGRAM_TIMES("IOS.ShareExtension.ReceivedEntryDelay",
-                      base::TimeDelta::FromSecondsD(
-                          [[NSDate date] timeIntervalSinceDate:entryDate]));
+  UMA_HISTOGRAM_TIMES(
+      "IOS.ShareExtension.ReceivedEntryDelay",
+      base::Seconds([[NSDate date] timeIntervalSinceDate:entryDate]));
 
   UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.Source",
                             SourceIDFromSource(entrySource),

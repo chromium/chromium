@@ -393,8 +393,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->win_platform_debug_info =
       cert_verifier::mojom::WinPlatformVerifierDebugInfo::New();
   debug_info->win_platform_debug_info->authroot_this_update =
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(8675309));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(8675309));
   debug_info->win_platform_debug_info->authroot_sequence_number = {
       'J', 'E', 'N', 'N', 'Y'};
 #endif

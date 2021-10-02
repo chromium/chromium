@@ -126,30 +126,29 @@ class ClientSideDetectionServiceTest : public testing::Test {
 
     base::Time now = base::Time::Now();
     base::Time time =
-        now - base::TimeDelta::FromDays(
-            ClientSideDetectionService::kNegativeCacheIntervalDays) +
-        base::TimeDelta::FromMinutes(5);
+        now -
+        base::Days(ClientSideDetectionService::kNegativeCacheIntervalDays) +
+        base::Minutes(5);
     cache[GURL("http://first.url.com/")] =
         std::make_unique<ClientSideDetectionService::CacheState>(false, time);
 
-    time =
-        now - base::TimeDelta::FromDays(
-            ClientSideDetectionService::kNegativeCacheIntervalDays) -
-        base::TimeDelta::FromHours(1);
+    time = now -
+           base::Days(ClientSideDetectionService::kNegativeCacheIntervalDays) -
+           base::Hours(1);
     cache[GURL("http://second.url.com/")] =
         std::make_unique<ClientSideDetectionService::CacheState>(false, time);
 
-    time =
-        now - base::TimeDelta::FromMinutes(
-            ClientSideDetectionService::kPositiveCacheIntervalMinutes) -
-        base::TimeDelta::FromMinutes(5);
+    time = now -
+           base::Minutes(
+               ClientSideDetectionService::kPositiveCacheIntervalMinutes) -
+           base::Minutes(5);
     cache[GURL("http://third.url.com/")] =
         std::make_unique<ClientSideDetectionService::CacheState>(true, time);
 
-    time =
-        now - base::TimeDelta::FromMinutes(
-            ClientSideDetectionService::kPositiveCacheIntervalMinutes) +
-        base::TimeDelta::FromMinutes(5);
+    time = now -
+           base::Minutes(
+               ClientSideDetectionService::kPositiveCacheIntervalMinutes) +
+           base::Minutes(5);
     cache[GURL("http://fourth.url.com/")] =
         std::make_unique<ClientSideDetectionService::CacheState>(true, time);
 
@@ -328,7 +327,7 @@ TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
   base::Time now = base::Time::Now();
-  base::TimeDelta twenty_five_hours = base::TimeDelta::FromHours(25);
+  base::TimeDelta twenty_five_hours = base::Hours(25);
   csd_service_->AddPhishingReport(now - twenty_five_hours);
   csd_service_->AddPhishingReport(now - twenty_five_hours);
   csd_service_->AddPhishingReport(now);

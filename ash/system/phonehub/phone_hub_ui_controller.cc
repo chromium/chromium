@@ -31,8 +31,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kConnectingViewGracePeriod =
-    base::TimeDelta::FromSeconds(40);
+constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
 }  // namespace
 

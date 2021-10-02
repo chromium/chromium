@@ -141,13 +141,13 @@ void MediaPlayerImpl::Seek(zx_duration_t position) {
 }
 
 void MediaPlayerImpl::SkipForward() {
-  media_session_->Seek(base::TimeDelta::FromSeconds(
-      media_session::mojom::kDefaultSeekTimeSeconds));
+  media_session_->Seek(
+      base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds));
 }
 
 void MediaPlayerImpl::SkipReverse() {
-  media_session_->Seek(-base::TimeDelta::FromSeconds(
-      media_session::mojom::kDefaultSeekTimeSeconds));
+  media_session_->Seek(
+      -base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds));
 }
 
 void MediaPlayerImpl::NextItem() {

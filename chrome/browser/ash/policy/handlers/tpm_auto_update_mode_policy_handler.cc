@@ -25,11 +25,9 @@
 namespace {
 
 // Timeout for the TPM firmware update availability check.
-const base::TimeDelta kFirmwareAvailabilityCheckerTimeout =
-    base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kFirmwareAvailabilityCheckerTimeout = base::Seconds(20);
 
-const base::TimeDelta kTPMUpdatePlannedNotificationWaitTime =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta kTPMUpdatePlannedNotificationWaitTime = base::Days(1);
 
 // Reads the value of the the device setting key
 // TPMFirmwareUpdateSettings.AutoUpdateMode from a trusted store. If the value

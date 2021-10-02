@@ -786,7 +786,7 @@ class QuicNetworkTransactionTest
     crypto_client_stream_factory_.set_handshake_mode(handshake_mode);
     url::SchemeHostPort server(request_.url);
     AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_->SetQuicAlternativeService(
         server, network_isolation_key, alternative_service, expiration,
         supported_versions_);
@@ -799,7 +799,7 @@ class QuicNetworkTransactionTest
     url::SchemeHostPort server(request_.url);
     AlternativeService alternative_service(kProtoQUIC, alternative.host(),
                                            alternative.port());
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_->SetQuicAlternativeService(
         server, NetworkIsolationKey(), alternative_service, expiration,
         supported_versions_);
@@ -1726,7 +1726,7 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   url::SchemeHostPort server(request_.url);
   AlternativeService alternative_service(kProtoQUIC, kDefaultServerHostName,
                                          443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       {unsupported_version});
@@ -1839,7 +1839,7 @@ TEST_P(QuicNetworkTransactionTest, RetryMisdirectedRequest) {
   url::SchemeHostPort server(request_.url);
   AlternativeService alternative_service(kProtoQUIC, kDefaultServerHostName,
                                          443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       supported_versions_);
@@ -3161,7 +3161,7 @@ TEST_P(QuicNetworkTransactionTest,
 // return QUIC_PROTOCOL_ERROR.
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
-  context_.params()->idle_connection_timeout = base::TimeDelta::FromSeconds(5);
+  context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
@@ -3379,7 +3379,7 @@ TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterHandshakeConfirmed) {
 // connection times out, then QUIC will be marked as broken and the request
 // retried over TCP.
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
-  context_.params()->idle_connection_timeout = base::TimeDelta::FromSeconds(5);
+  context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
@@ -3547,7 +3547,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
 // retried over TCP and the QUIC will be marked as broken.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBroken) {
-  context_.params()->idle_connection_timeout = base::TimeDelta::FromSeconds(5);
+  context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
@@ -3661,7 +3661,7 @@ TEST_P(QuicNetworkTransactionTest,
   // one.
   http_server_properties_ = std::make_unique<HttpServerProperties>();
 
-  context_.params()->idle_connection_timeout = base::TimeDelta::FromSeconds(5);
+  context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
@@ -3927,7 +3927,7 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
   // Set up alternative service for |origin1|.
   AlternativeService local_alternative(kProtoQUIC, "mail.example.org", 443);
   AlternativeService remote_alternative(kProtoQUIC, "www.example.org", 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   AlternativeServiceInfoVector alternative_services;
   alternative_services.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
@@ -3979,7 +3979,7 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternativeOnlyRecordedOnce) {
 
   // Set up alternative service for |origin1|.
   AlternativeService local_alternative(kProtoQUIC, "mail.example.org", 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   AlternativeServiceInfoVector alternative_services;
   alternative_services.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
@@ -4111,7 +4111,7 @@ TEST_P(QuicNetworkTransactionTest,
                                                  context_.clock()));
 
   // Set up alternative service for |origin1|.
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   AlternativeService alternative1(kProtoQUIC, origin1.host(), 443);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin1), NetworkIsolationKey(), alternative1,
@@ -4316,7 +4316,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
   // Set up alternative service entry to destination1.
   url::SchemeHostPort server(request_.url);
   AlternativeService alternative_service(kProtoQUIC, destination1, 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       supported_versions_);
@@ -4412,7 +4412,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
 
   // Set up alternative service for |origin1|.
   AlternativeService alternative_service1(kProtoQUIC, destination1, 443);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin1), NetworkIsolationKey(), alternative_service1,
       expiration, supported_versions_);
@@ -7010,7 +7010,7 @@ class QuicNetworkTransactionWithDestinationTest
         break;
     }
     AlternativeService alternative_service(kProtoQUIC, destination);
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_.SetQuicAlternativeService(
         url::SchemeHostPort("https", origin, 443), NetworkIsolationKey(),
         alternative_service, expiration, supported_versions_);
@@ -9454,7 +9454,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   AddQuicAlternateProtocolMapping(
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
   ServerNetworkStats stats1;
-  stats1.srtt = base::TimeDelta::FromMicroseconds(10);
+  stats1.srtt = base::Microseconds(10);
   http_server_properties_->SetServerNetworkStats(
       url::SchemeHostPort(request_.url), NetworkIsolationKey(), stats1);
 

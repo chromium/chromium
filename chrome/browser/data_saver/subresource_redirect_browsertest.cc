@@ -367,7 +367,7 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
     } else if (compression_server_failure_mode_ ==
                CompressionServerFailureMode::TIMEOUT) {
       return std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::TimeDelta::FromSeconds(10));
+          base::Seconds(10));
     }
 
     // For the purpose of this browsertest, a redirect to the compression server
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   // The third navigation should attempt subresource redirect, once the bypass
   // is cleared.
-  VerifyAndClearBypassTimeout(base::TimeDelta::FromSeconds(4));
+  VerifyAndClearBypassTimeout(base::Seconds(4));
   url = HttpsURLWithPath("/load_image/image_delayed_load.html?third");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
   base::RunLoop().RunUntilIdle();
@@ -1301,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   // The third navigation should attempt subresource redirect, once the bypass
   // is cleared.
-  VerifyAndClearBypassTimeout(base::TimeDelta::FromSeconds(4));
+  VerifyAndClearBypassTimeout(base::Seconds(4));
   url = HttpsURLWithPath("/load_image/image_delayed_load.html?third");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
   base::RunLoop().RunUntilIdle();
@@ -1556,7 +1556,7 @@ class SubresourceRedirectWithHintsServerBrowserTest
     switch (hint_fetch_mode_) {
       case HintFetchMode::HINT_FETCH_AFTER_IMAGES_LOADED: {
         auto response = std::make_unique<net::test_server::DelayedHttpResponse>(
-            base::TimeDelta::FromSeconds(3));
+            base::Seconds(3));
         response->set_content(get_hints_response_);
         response->set_code(net::HTTP_OK);
         return std::move(response);

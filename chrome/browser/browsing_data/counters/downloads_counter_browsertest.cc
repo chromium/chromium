@@ -152,9 +152,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
-  void RevertTimeInHours(int days) {
-    time_ -= base::TimeDelta::FromHours(days);
-  }
+  void RevertTimeInHours(int days) { time_ -= base::Hours(days); }
 
   // Waiting for downloads to be stored. ---------------------------------------
 

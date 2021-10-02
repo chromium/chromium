@@ -33,8 +33,7 @@ const char kDefaultCellularDevicePath[] = "stub_cellular_device";
 const char kInhibitOperationResultHistogram[] =
     "Network.Cellular.InhibitResult";
 
-constexpr base::TimeDelta kScanningChangeTimeout =
-    base::TimeDelta::FromSeconds(120);
+constexpr base::TimeDelta kScanningChangeTimeout = base::Seconds(120);
 
 enum class GetInhibitedPropertyResult { kTrue, kFalse, kOperationFailed };
 

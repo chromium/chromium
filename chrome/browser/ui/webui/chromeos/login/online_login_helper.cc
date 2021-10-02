@@ -27,7 +27,7 @@ namespace {
 const char kGAPSCookie[] = "GAPS";
 const char kOAUTHCodeCookie[] = "oauth_code";
 const char kRAPTCookie[] = "RAPT";
-constexpr base::TimeDelta kCookieDelay = base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kCookieDelay = base::Seconds(20);
 
 }  // namespace
 

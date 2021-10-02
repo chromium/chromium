@@ -186,7 +186,7 @@ void CastMediaNotificationItem::SetView(
         FROM_HERE,
         base::BindOnce(&CastMediaNotificationItem::RecordMetadataMetrics,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(3));
+        base::Seconds(3));
   }
 }
 

@@ -72,7 +72,7 @@ class ClipboardNudgeControllerTest : public AshTestBase {
     nudge_controller_ =
         Shell::Get()->clipboard_history_controller()->nudge_controller();
     nudge_controller_->OverrideClockForTesting(&test_clock_);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(360));
+    test_clock_.Advance(base::Seconds(360));
   }
 
   void TearDown() override {

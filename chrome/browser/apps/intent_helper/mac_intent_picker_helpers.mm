@@ -65,8 +65,7 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
     SFUniversalLink* link =
         [[[SFUniversalLink alloc] initWithWebpageURL:nsurl] autorelease];
     base::TimeDelta api_duration = timer.Elapsed();
-    static constexpr auto kHowFastIsFastEnough =
-        base::TimeDelta::FromMilliseconds(100);
+    static constexpr auto kHowFastIsFastEnough = base::Milliseconds(100);
     if (api_duration > kHowFastIsFastEnough) {
       api_is_fast_enough = false;
       // In doing metrics, allow for hangs up to an hour. This is exceptionally

@@ -12,9 +12,8 @@
 namespace metrics {
 namespace {
 
-const base::TimeDelta kZeroTime = base::TimeDelta::FromSeconds(0);
-const base::TimeDelta kInactivityTimeoutForTesting =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kZeroTime = base::Seconds(0);
+const base::TimeDelta kInactivityTimeoutForTesting = base::Seconds(1);
 
 // Mock class for |DesktopSessionDurationTracker| for testing.
 class MockDesktopSessionDurationTracker : public DesktopSessionDurationTracker {
@@ -227,7 +226,7 @@ TEST_F(DesktopSessionDurationTrackerTest, TestVisibilityTimeoutDiscount) {
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   // Sleep a little while.
-  base::TimeDelta kDelay = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta kDelay = base::Seconds(2);
   while (true) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - before_session_start;
     if (elapsed >= kDelay)

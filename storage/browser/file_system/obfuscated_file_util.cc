@@ -1285,8 +1285,8 @@ void ObfuscatedFileUtil::InvalidateUsageCache(
 void ObfuscatedFileUtil::MarkUsed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(db_flush_delay_seconds_),
-               this, &ObfuscatedFileUtil::DropDatabases);
+  timer_.Start(FROM_HERE, base::Seconds(db_flush_delay_seconds_), this,
+               &ObfuscatedFileUtil::DropDatabases);
 }
 
 void ObfuscatedFileUtil::DropDatabases() {

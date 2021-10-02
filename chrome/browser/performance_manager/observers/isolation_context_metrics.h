@@ -49,8 +49,7 @@ class IsolationContextMetrics : public FrameNode::ObserverDefaultImpl,
   // collection and not on its own timer, but UMA collection lives on the UI
   // thread. This wants to be something on the same order of magnitude as UMA
   // collection but not so fast as to cause pointless wakeups.
-  static constexpr base::TimeDelta kReportingInterval =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kReportingInterval = base::Minutes(5);
 
   // This histogram records the cumulative amount of time a process spends
   // hosting only frames from distinct site instances, versus hosting more than

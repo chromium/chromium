@@ -60,9 +60,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 
   // To aid in testing that the "Memory.ParkableImage.*.5min" metrics are
   // correctly recorded.
-  void Wait5MinForStatistics() {
-    task_env_.FastForwardBy(base::TimeDelta::FromMinutes(5));
-  }
+  void Wait5MinForStatistics() { task_env_.FastForwardBy(base::Minutes(5)); }
 
   void DescribeCurrentTasks() { task_env_.DescribeCurrentTasks(); }
 

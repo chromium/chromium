@@ -139,7 +139,7 @@ class FullRestoreSaveHandlerTestApi {
     // session id record is removed. So set the record time as 601 seconds ago,
     // so that CheckTasksForAppLaunching can remove the session id record to
     // simulate the task is not created for the session id.
-    it->second.second = it->second.second - base::TimeDelta::FromSeconds(601);
+    it->second.second = it->second.second - base::Seconds(601);
   }
 
   base::RepeatingTimer* GetArcCheckTimer() {

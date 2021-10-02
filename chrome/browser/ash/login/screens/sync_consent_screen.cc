@@ -41,12 +41,10 @@ namespace {
 
 // Delay showing chrome sync settings by this amount of time to make them
 // show on top of the restored tabs and windows.
-constexpr base::TimeDelta kSyncConsentSettingsShowDelay =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kSyncConsentSettingsShowDelay = base::Seconds(3);
 
-constexpr base::TimeDelta kWaitTimeout = base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kWaitTimeoutForTest =
-    base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kWaitTimeout = base::Seconds(10);
+constexpr base::TimeDelta kWaitTimeoutForTest = base::Milliseconds(1);
 
 absl::optional<bool> sync_disabled_by_policy_for_test;
 absl::optional<bool> sync_engine_initialized_for_test;
@@ -402,8 +400,7 @@ void SyncConsentScreen::UpdateScreen() {
     timeout_waiter_.AbandonAndStop();
     base::UmaHistogramCustomTimes("OOBE.SyncConsentScreen.LoadingTime",
                                   base::TimeTicks::Now() - start_time_,
-                                  base::TimeDelta::FromMilliseconds(1),
-                                  base::TimeDelta::FromSeconds(10), 50);
+                                  base::Milliseconds(1), base::Seconds(10), 50);
   } else {
     MaybeEnableSyncForSkip();
     Finish(Result::NEXT);

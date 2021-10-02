@@ -49,7 +49,7 @@ class PrimaryAccountAccessTokenFetcherTest
   PrimaryAccountAccessTokenFetcherTest()
       : identity_test_env_(std::make_unique<IdentityTestEnvironment>()),
         access_token_info_("access token",
-                           base::Time::Now() + base::TimeDelta::FromHours(1),
+                           base::Time::Now() + base::Hours(1),
                            "id_token") {}
 
   ~PrimaryAccountAccessTokenFetcherTest() override = default;

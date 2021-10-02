@@ -163,8 +163,7 @@ bool OfflineItemModel::IsPaused() const {
 bool OfflineItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   if (!offline_item_ || offline_item_->time_remaining_ms == -1)
     return false;
-  *remaining =
-      base::TimeDelta::FromMilliseconds(offline_item_->time_remaining_ms);
+  *remaining = base::Milliseconds(offline_item_->time_remaining_ms);
   return true;
 }
 

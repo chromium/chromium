@@ -104,8 +104,7 @@ class LifetimeTestObject : public base::SupportsWeakPtr<LifetimeTestObject> {
   ~LifetimeTestObject() = default;
 };
 
-constexpr base::TimeDelta kMinTimeBetweenRequests =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kMinTimeBetweenRequests = base::Seconds(30);
 
 }  // namespace
 
@@ -320,7 +319,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
 
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 1ULL;
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
 
@@ -333,11 +332,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
       }));
 
   // Verify that the request is sent but the reply is not yet received.
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_env().FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&mock_reporter);
 
   doomed_request.reset();
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_env().FastForwardBy(base::Seconds(5));
 
   // Create a request that is deleted from within its own callback and make
   // sure nothing explodes.
@@ -365,7 +364,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 3ULL;
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
   auto lifetime_test = std::make_unique<LifetimeTestObject>();
@@ -382,13 +381,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
           std::move(lifetime_test)));
 
   // Verify that requests are sent but reply is not yet received.
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_env().FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&mock_reporter);
   ASSERT_TRUE(weak_lifetime_test);
 
   process.reset();
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_env().FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(weak_lifetime_test);
 }
 
@@ -406,7 +405,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetimeAtExit) {
 
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 1ULL;
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
 
@@ -424,13 +423,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetimeAtExit) {
           std::move(lifetime_test)));
 
   // Verify that requests are sent but reply is not yet received.
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_env().FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&mock_reporter);
   ASSERT_TRUE(weak_lifetime_test);
 
   internal::DestroyV8DetailedMemoryDecoratorForTesting(graph());
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_env().FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(weak_lifetime_test);
 }
 
@@ -695,8 +694,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
 }
 
 TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
-  constexpr base::TimeDelta kLazyRequestLength =
-      base::TimeDelta::FromSeconds(30);
+  constexpr base::TimeDelta kLazyRequestLength = base::Seconds(30);
   V8DetailedMemoryRequest lazy_request(kLazyRequestLength,
                                        MeasurementMode::kLazy, graph());
 
@@ -711,13 +709,12 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
       content::PROCESS_TYPE_RENDERER,
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   Mock::VerifyAndClearExpectations(&reporter);
 
   // If a lazy request takes too long to respond it should be upgraded to a
   // bounded request if one is in the queue.
-  constexpr base::TimeDelta kLongBoundedRequestLength =
-      base::TimeDelta::FromSeconds(45);
+  constexpr base::TimeDelta kLongBoundedRequestLength = base::Seconds(45);
   V8DetailedMemoryRequest long_bounded_request(kLongBoundedRequestLength,
                                                bounded_mode_, graph());
   auto* decorator = V8DetailedMemoryDecorator::GetFromGraph(graph());
@@ -732,8 +729,8 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
     // should arrive in time to prevent upgrading the request.
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 1U;
-    ExpectQueryAndDelayReply(&reporter, base::TimeDelta::FromSeconds(10),
-                             std::move(data), ExpectedMode::LAZY);
+    ExpectQueryAndDelayReply(&reporter, base::Seconds(10), std::move(data),
+                             ExpectedMode::LAZY);
   }
 
   // Wait long enough for the upgraded request to be sent, to verify that it
@@ -741,8 +738,7 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
   task_env().FastForwardBy(kLongBoundedRequestLength);
   Mock::VerifyAndClearExpectations(&reporter);
 
-  constexpr base::TimeDelta kUpgradeRequestLength =
-      base::TimeDelta::FromSeconds(40);
+  constexpr base::TimeDelta kUpgradeRequestLength = base::Seconds(40);
   V8DetailedMemoryRequest bounded_request_upgrade(kUpgradeRequestLength,
                                                   bounded_mode_, graph());
   ASSERT_TRUE(decorator->GetNextRequest());
@@ -757,8 +753,8 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
     // so a second upgraded request should be sent.
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 2U;
-    ExpectQueryAndDelayReply(&reporter, base::TimeDelta::FromSeconds(10),
-                             std::move(data), ExpectedMode::LAZY);
+    ExpectQueryAndDelayReply(&reporter, base::Seconds(10), std::move(data),
+                             ExpectedMode::LAZY);
 
     auto data2 = NewPerProcessV8MemoryUsage(1);
     data2->isolates[0]->shared_bytes_used = 3U;
@@ -824,7 +820,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
   EXPECT_FALSE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   // All the following FastForwardBy calls will place the clock 1 sec after a
   // measurement is expected.
 
@@ -902,7 +898,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
   EXPECT_EQ(kLongInterval,
             decorator->GetNextRequest()->min_time_between_requests());
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   EXPECT_EQ(5U, V8DetailedMemoryProcessData::ForProcessNode(process.get())
                     ->shared_v8_bytes_used());
 
@@ -1033,7 +1029,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
 
   // Make measurements take long enough that a second request could be sent.
   constexpr base::TimeDelta kMeasurementLength(1.5 * kShortInterval);
-  constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
+  constexpr base::TimeDelta kOneSecond = base::Seconds(1);
 
   auto long_memory_request =
       std::make_unique<V8DetailedMemoryRequest>(kLongInterval, graph());
@@ -1200,7 +1196,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestOutlivesDecorator) {
   auto process = CreateNode<ProcessNodeImpl>(
       content::PROCESS_TYPE_RENDERER,
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   ASSERT_EQ(1U, V8DetailedMemoryProcessData::ForProcessNode(process.get())
                     ->shared_v8_bytes_used())
       << "First measurement didn't happen when expected";
@@ -1319,7 +1315,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, ObserverOutlivesDecorator) {
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
   observer.ExpectObservationOnProcess(process.get(), 1U);
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
 
   Mock::VerifyAndClearExpectations(&reporter);
   Mock::VerifyAndClearExpectations(&observer);
@@ -1382,7 +1378,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
 
   // All the following FastForwardBy calls will place the clock 1 sec after a
   // measurement is expected.
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
   testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
 
@@ -1434,7 +1430,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   process1_request->AddObserver(&mock_observer);
   mock_observer.ExpectObservationOnProcess(process1.get(), 4U);
 
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
   testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1490,7 +1486,7 @@ TEST_P(V8DetailedMemoryDecoratorSingleProcessModeTest,
 
   // All the following FastForwardBy calls will place the clock 1 sec after a
   // measurement is expected.
-  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env().FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(&mock_reporter);
 
   // Delay next lazy reply and expect |bounded_request| to be sent while
@@ -1716,8 +1712,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, MAYBE_SingleProcessRequest) {
       ExpectBindReceiver(&mock_reporter1, main_process_id());
       auto data = NewPerProcessV8MemoryUsage(1);
       data->isolates[0]->shared_bytes_used = 1U;
-      ExpectQueryAndDelayReply(&mock_reporter1,
-                               base::TimeDelta::FromMilliseconds(1),
+      ExpectQueryAndDelayReply(&mock_reporter1, base::Milliseconds(1),
                                std::move(data));
     }
 
@@ -1844,7 +1839,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetime) {
 
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 1ULL;
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
 
@@ -1859,11 +1854,11 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetime) {
           }));
 
   // Verify that requests are sent but reply is not received.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&mock_reporter);
 
   doomed_request.reset();
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
 
   // Create a request that is deleted from within its own callback and make
   // sure nothing explodes.
@@ -1892,7 +1887,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetime) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 3ULL;
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
   auto lifetime_test = std::make_unique<LifetimeTestObject>();
@@ -1910,13 +1905,13 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetime) {
           std::move(lifetime_test)));
 
   // Verify that requests are sent but reply is not yet received.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&mock_reporter);
   ASSERT_TRUE(weak_lifetime_test);
 
   content::RenderFrameHostTester::For(child_frame())->Detach();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(weak_lifetime_test);
 }
 
@@ -1930,7 +1925,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetimeAtExit) {
 
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 1ULL;
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
 
@@ -1949,7 +1944,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetimeAtExit) {
           std::move(lifetime_test)));
 
   // Verify that requests are sent but reply is not yet received.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&mock_reporter);
   ASSERT_TRUE(weak_lifetime_test);
 
@@ -1961,7 +1956,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetimeAtExit) {
   PerformanceManager::CallOnGraph(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(weak_lifetime_test);
 }
 

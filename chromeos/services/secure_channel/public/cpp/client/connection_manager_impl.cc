@@ -16,8 +16,7 @@
 namespace chromeos {
 namespace secure_channel {
 namespace {
-constexpr base::TimeDelta kConnectionTimeoutSeconds(
-    base::TimeDelta::FromSeconds(15u));
+constexpr base::TimeDelta kConnectionTimeoutSeconds(base::Seconds(15u));
 
 void RecordConnectionSuccessMetric(const std::string& metric_name_result,
                                    bool success) {

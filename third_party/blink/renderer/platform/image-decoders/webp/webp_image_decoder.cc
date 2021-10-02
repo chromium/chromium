@@ -629,8 +629,7 @@ void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
                      animated_frame.width, animated_frame.height);
   buffer->SetOriginalFrameRect(
       Intersection(frame_rect, IntRect(IntPoint(), Size())));
-  buffer->SetDuration(
-      base::TimeDelta::FromMilliseconds(animated_frame.duration));
+  buffer->SetDuration(base::Milliseconds(animated_frame.duration));
   buffer->SetDisposalMethod(animated_frame.dispose_method ==
                                     WEBP_MUX_DISPOSE_BACKGROUND
                                 ? ImageFrame::kDisposeOverwriteBgcolor

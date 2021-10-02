@@ -193,8 +193,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInit(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&BrowserStateSizeTask, path),
-      base::TimeDelta::FromSeconds(112));
+      base::BindOnce(&BrowserStateSizeTask, path), base::Seconds(112));
 
   LogNumberOfBrowserStates(
       GetApplicationContext()->GetChromeBrowserStateManager());

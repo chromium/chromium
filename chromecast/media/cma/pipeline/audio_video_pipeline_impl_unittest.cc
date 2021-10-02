@@ -204,8 +204,7 @@ class PipelineHelper {
         .Times(1)
         .WillOnce(Return(true));
 
-    media_pipeline_->StartPlayingFrom(
-        base::TimeDelta::FromMilliseconds(start_pts));
+    media_pipeline_->StartPlayingFrom(base::Milliseconds(start_pts));
     media_pipeline_->SetPlaybackRate(1.0f);
   }
   void SetCdm() { media_pipeline_->SetCdm(cdm_context_.get()); }
@@ -234,8 +233,7 @@ class PipelineHelper {
     frame_specs.resize(kNumFrames);
     for (size_t k = 0; k < frame_specs.size() - 1; k++) {
       frame_specs[k].has_config = (k == 0);
-      frame_specs[k].timestamp =
-          base::TimeDelta::FromMicroseconds(kFrameDurationUs) * k;
+      frame_specs[k].timestamp = base::Microseconds(kFrameDurationUs) * k;
       frame_specs[k].size = kFrameSize;
       frame_specs[k].has_decrypt_config = encrypted_;
     }

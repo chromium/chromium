@@ -272,8 +272,7 @@ void BleAdvertiserImpl::AddActiveAdvertisementRequest(size_t index_to_add) {
   std::unique_ptr<base::OneShotTimer> timer =
       timer_factory_->CreateOneShotTimer();
   timer->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kNumSecondsPerAdvertisementTimeslot),
+      FROM_HERE, base::Seconds(kNumSecondsPerAdvertisementTimeslot),
       base::BindOnce(
           &BleAdvertiserImpl::StopAdvertisementRequestAndUpdateActiveRequests,
           base::Unretained(this), index_to_add,

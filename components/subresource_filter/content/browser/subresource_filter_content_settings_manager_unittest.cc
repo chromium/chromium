@@ -163,7 +163,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
 
   task_environment()->FastForwardBy(
       SubresourceFilterContentSettingsManager::kMaxPersistMetadataDuration -
-      base::TimeDelta::FromMinutes(1));
+      base::Minutes(1));
 
   // Setting metadata in safe browsing does not overwrite the existing
   // expiration set by the ads intervention.
@@ -175,7 +175,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
   EXPECT_NE(dict, nullptr);
 
   // Advance the clock, metadata should be cleared.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment()->FastForwardBy(base::Minutes(1));
 
   dict = settings_manager()->GetSiteMetadata(url);
   EXPECT_EQ(dict, nullptr);

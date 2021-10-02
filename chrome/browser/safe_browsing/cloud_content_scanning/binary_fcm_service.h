@@ -119,8 +119,7 @@ class BinaryFCMService : public gcm::GCMAppHandler {
 
   // Delay between attempts to dequeue pending operations. Not constant so we
   // can override it in tests.
-  base::TimeDelta delay_between_pending_attempts_ =
-      base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delay_between_pending_attempts_ = base::Seconds(1);
 
   base::flat_map<std::string, OnMessageCallback> message_token_map_;
 

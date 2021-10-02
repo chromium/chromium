@@ -113,7 +113,7 @@ TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
     recorder.LogCrash(unclean_time);
 
     // Record a crash with no system crash.
-    recorder.LogCrash(unclean_time - base::TimeDelta::FromMinutes(1));
+    recorder.LogCrash(unclean_time - base::Minutes(1));
   }
 
   {

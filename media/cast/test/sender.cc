@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
   // CastTransport initialization.
   std::unique_ptr<media::cast::CastTransport> transport_sender =
       media::cast::CastTransport::Create(
-          cast_environment->Clock(), base::TimeDelta::FromSeconds(1),
+          cast_environment->Clock(), base::Seconds(1),
           std::make_unique<TransportClient>(cast_environment->logger()),
           std::make_unique<media::cast::UdpTransportImpl>(
               io_task_executor.task_runner(), net::IPEndPoint(),
@@ -275,7 +275,7 @@ int main(int argc, char** argv) {
                      std::move(video_event_subscriber),
                      std::move(audio_event_subscriber),
                      std::move(video_log_file), std::move(audio_log_file)),
-      base::TimeDelta::FromSeconds(logging_duration_seconds));
+      base::Seconds(logging_duration_seconds));
 
   io_task_executor.task_runner()->PostDelayedTask(
       FROM_HERE,
@@ -283,7 +283,7 @@ int main(int argc, char** argv) {
                      std::move(video_stats_subscriber),
                      std::move(audio_stats_subscriber),
                      std::move(offset_estimator)),
-      base::TimeDelta::FromSeconds(logging_duration_seconds));
+      base::Seconds(logging_duration_seconds));
 
   // CastSender initialization.
   std::unique_ptr<media::cast::CastSender> cast_sender =

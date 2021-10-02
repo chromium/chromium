@@ -194,8 +194,7 @@ class HourBinPredictorTest : public testing::Test {
   // Sets local time according to |day_of_week| and |hour_of_day|.
   void SetLocalTime(const int day_of_week, const int hour_of_day) {
     AdvanceToNextLocalSunday();
-    const auto advance = base::TimeDelta::FromDays(day_of_week) +
-                         base::TimeDelta::FromHours(hour_of_day);
+    const auto advance = base::Days(day_of_week) + base::Hours(hour_of_day);
     if (advance > base::TimeDelta()) {
       time_.Advance(advance);
     }
@@ -230,8 +229,8 @@ class HourBinPredictorTest : public testing::Test {
   void AdvanceToNextLocalSunday() {
     base::Time::Exploded now;
     base::Time::Now().LocalExplode(&now);
-    const auto advance = base::TimeDelta::FromDays(6 - now.day_of_week) +
-                         base::TimeDelta::FromHours(24 - now.hour);
+    const auto advance =
+        base::Days(6 - now.day_of_week) + base::Hours(24 - now.hour);
     if (advance > base::TimeDelta()) {
       time_.Advance(advance);
     }

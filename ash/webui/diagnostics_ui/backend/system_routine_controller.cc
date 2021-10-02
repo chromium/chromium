@@ -527,7 +527,7 @@ void SystemRoutineController::ScheduleCheckRoutineStatus(
     uint32_t duration_in_seconds,
     mojom::RoutineType routine_type) {
   inflight_routine_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(duration_in_seconds),
+      FROM_HERE, base::Seconds(duration_in_seconds),
       base::BindOnce(&SystemRoutineController::CheckRoutineStatus,
                      weak_factory_.GetWeakPtr(), routine_type));
 }

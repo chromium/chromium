@@ -9,7 +9,7 @@ namespace nqe {
 namespace internal {
 
 base::TimeDelta InvalidRTT() {
-  return base::TimeDelta::FromMilliseconds(INVALID_RTT_THROUGHPUT);
+  return base::Milliseconds(INVALID_RTT_THROUGHPUT);
 }
 
 NetworkQuality::NetworkQuality()

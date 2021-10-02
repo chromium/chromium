@@ -104,8 +104,7 @@ IN_PROC_BROWSER_TEST_P(ScrollingIntegrationTest,
     // https://crbug.com/897520
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(3000));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(3000));
     run_loop.Run();
   }
 

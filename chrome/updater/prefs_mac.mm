@@ -23,8 +23,7 @@ constexpr char kPrefsLockMachServiceName[] =
 
 // Interval to poll for lock availability if it is not immediately available.
 // Final interval will be truncated to fit the available timeout.
-constexpr base::TimeDelta kPrefsLockPollingInterval =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kPrefsLockPollingInterval = base::Seconds(3);
 
 //
 // Attempts to acquire the receive right to a named Mach service.

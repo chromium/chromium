@@ -125,8 +125,7 @@ class KeepAliveSchedulerTest : public testing::Test {
     EXPECT_EQ(is_running, mock_timer_->IsRunning());
 
     if (is_running) {
-      EXPECT_EQ(base::TimeDelta::FromMinutes(
-                    KeepAliveScheduler::kKeepAliveIntervalMinutes),
+      EXPECT_EQ(base::Minutes(KeepAliveScheduler::kKeepAliveIntervalMinutes),
                 mock_timer_->GetCurrentDelay());
     }
   }

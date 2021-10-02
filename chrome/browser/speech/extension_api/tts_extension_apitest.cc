@@ -201,7 +201,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
           base::BindOnce(&MockTtsPlatformImpl::SendEvent,
                          ptr_factory_.GetWeakPtr(), true, utterance_id,
                          event_type, char_index, length, message),
-          base::TimeDelta::FromMilliseconds(100));
+          base::Milliseconds(100));
       return;
     }
 

@@ -34,7 +34,7 @@ struct TestFunctor {
 }  // namespace
 
 TEST(ExpiringCacheTest, Basic) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   Cache cache(kMaxCacheEntries);
 
@@ -49,7 +49,7 @@ TEST(ExpiringCacheTest, Basic) {
   EXPECT_EQ(1U, cache.size());
 
   // Advance to t=5.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   // Add an entry at t=5.
   EXPECT_FALSE(cache.Get("entry2", now));
@@ -58,14 +58,14 @@ TEST(ExpiringCacheTest, Basic) {
   EXPECT_EQ(2U, cache.size());
 
   // Advance to t=9.
-  now += base::TimeDelta::FromSeconds(4);
+  now += base::Seconds(4);
 
   // Verify that the entries added are still retrievable and usable.
   EXPECT_THAT(cache.Get("entry1", now), Pointee(StrEq("test1")));
   EXPECT_THAT(cache.Get("entry2", now), Pointee(StrEq("test2")));
 
   // Advance to t=10; entry1 is now expired.
-  now += base::TimeDelta::FromSeconds(1);
+  now += base::Seconds(1);
 
   EXPECT_FALSE(cache.Get("entry1", now));
   EXPECT_THAT(cache.Get("entry2", now), Pointee(StrEq("test2")));
@@ -82,14 +82,14 @@ TEST(ExpiringCacheTest, Basic) {
   EXPECT_THAT(cache.Get("entry2", now), Pointee(StrEq("test2")));
 
   // Advance to t=20; both entries are now expired.
-  now += base::TimeDelta::FromSeconds(10);
+  now += base::Seconds(10);
 
   EXPECT_FALSE(cache.Get("entry1", now));
   EXPECT_FALSE(cache.Get("entry2", now));
 }
 
 TEST(ExpiringCacheTest, Compact) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   Cache cache(kMaxCacheEntries);
 
@@ -156,7 +156,7 @@ TEST(ExpiringCacheTest, Compact) {
 
 // Add entries while the cache is at capacity, causing evictions.
 TEST(ExpiringCacheTest, SetWithCompact) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   Cache cache(3);
 
@@ -193,7 +193,7 @@ TEST(ExpiringCacheTest, SetWithCompact) {
 }
 
 TEST(ExpiringCacheTest, Clear) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   Cache cache(kMaxCacheEntries);
 
@@ -213,7 +213,7 @@ TEST(ExpiringCacheTest, Clear) {
 }
 
 TEST(ExpiringCacheTest, GetTruncatesExpiredEntries) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   Cache cache(kMaxCacheEntries);
 

@@ -136,12 +136,12 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestOmniboxPasteShowsPromo) {
 
   // First advance the timer by a small delay. This should not trigger the
   // promo.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 
   // Then advance the timer by the remaining post-load delay. This should
   // trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_env_.FastForwardBy(base::Seconds(2));
 
   [promo_commands_handler_ verify];
 }
@@ -160,12 +160,12 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
   // First advance the timer by a small delay. This should not trigger the
   // promo.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 
   // Then advance the timer by the remaining post-load delay. This should
   // trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_env_.FastForwardBy(base::Seconds(2));
 
   [promo_commands_handler_ verify];
 }
@@ -182,7 +182,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestShareCompletedShowsPromo) {
 
   // Advance the timer by the post-share delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 
   [promo_commands_handler_ verify];
 }
@@ -200,7 +200,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
 
@@ -208,7 +208,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
   // promo.
   [[promo_commands_handler_ expect]
       dismissDefaultBrowserNonModalPromoAnimated:YES];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
   [promo_commands_handler_ verify];
 
   // Check that NSUserDefaults has been updated.
@@ -227,7 +227,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestActionDismissesPromo) {
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
 
@@ -262,7 +262,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
       1, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Advance the timer and the mock handler should not have any interactions.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
 }
 
 // Tests that if a message is triggered on page load, the promo is not shown.
@@ -297,7 +297,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
   [promo_commands_handler_ verify];
 
   // Advance the timer and the mock handler not have any interaction.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
 }
 
 // Tests that backgrounding the app with the promo showing hides the promo but
@@ -314,7 +314,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
 
@@ -342,7 +342,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTabGridDismissesPromo) {
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
 
@@ -395,7 +395,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
   [promo_commands_handler_ verify];
 
   [[promo_commands_handler_ expect]
@@ -427,13 +427,13 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
   [promo_commands_handler_ verify];
 
   [[promo_commands_handler_ expect]
       dismissDefaultBrowserNonModalPromoAnimated:YES];
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_env_.FastForwardBy(base::Seconds(100));
 
   [[promo_commands_handler_ expect]
       dismissDefaultBrowserNonModalPromoAnimated:NO];
@@ -470,10 +470,10 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
   // Advance the timer by the post-load delay. This should not trigger the
   // promo.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
   // Advance the timer by the post-load delay. This should not dismiss the
   // promo.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_env_.FastForwardBy(base::Seconds(100));
 
   [[promo_commands_handler_ expect]
       dismissDefaultBrowserNonModalPromoAnimated:NO];
@@ -503,7 +503,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
   test_web_state_->SetLoading(false);
 
   // Advance the timer and the mock handler should not have any interactions.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
 }
 
 // Tests that if the promo can't be shown, the state is cleaned up, so a
@@ -529,7 +529,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoDCHECKIfPromoNotShown) {
 
   // Advance the timer and the mock handler should not have any interactions and
   // there should be no DCHECK.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
 }
 
 }  // namespace

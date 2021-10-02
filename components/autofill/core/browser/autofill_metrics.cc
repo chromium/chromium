@@ -1881,9 +1881,8 @@ void AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
 // static
 void AutofillMetrics::LogFormFillDuration(const std::string& metric,
                                           const base::TimeDelta& duration) {
-  base::UmaHistogramCustomTimes(metric, duration,
-                                base::TimeDelta::FromMilliseconds(100),
-                                base::TimeDelta::FromMinutes(10), 50);
+  base::UmaHistogramCustomTimes(metric, duration, base::Milliseconds(100),
+                                base::Minutes(10), 50);
 }
 
 // static

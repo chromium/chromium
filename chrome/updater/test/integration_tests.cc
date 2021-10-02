@@ -380,8 +380,7 @@ TEST_F(IntegrationTest, ReportsActive) {
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
   // Install, and RegisterApp cannot make progress until it shut downs and
   // releases the global prefs lock. We give it at most 18 seconds to be safe.
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
-                                           base::TimeDelta::FromSeconds(18));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(18));
 
   ScopedServer test_server(test_commands_);
   Install();

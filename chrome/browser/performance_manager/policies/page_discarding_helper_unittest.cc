@@ -302,15 +302,15 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesThreeCandidates) {
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
 
   page_node2->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node2->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
 
   // |page_node3| is the most recently visible page.
   page_node3->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node3->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
 
   process_node()->set_resident_set_kb(1024);
   process_node2->set_resident_set_kb(1024);
@@ -351,15 +351,15 @@ TEST_F(PageDiscardingHelperTest,
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
 
   page_node2->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node2->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
 
   // |page_node3| is the most recently visible page.
   page_node3->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node3->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
 
   process_node()->set_resident_set_kb(1024);
   process_node2->set_resident_set_kb(1024);
@@ -463,9 +463,9 @@ TEST_P(ParameterizedPageDiscardingHelperTest,
 
   // Pretend that |page_node2| is the most recently visible page.
   page_node2->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node2->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   EXPECT_TRUE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
           page_node2.get()));
@@ -572,9 +572,9 @@ TEST_P(ParameterizedPageDiscardingHelperTest,
 
   // Pretend that |page_node()| is the most recently visible page.
   page_node()->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node()->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   EXPECT_TRUE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
           page_node()));
@@ -604,9 +604,9 @@ TEST_P(ParameterizedPageDiscardingHelperTest,
 
   // Pretend that |page_node()| is the most recently visible page.
   page_node()->SetIsVisible(true);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   page_node()->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
   EXPECT_TRUE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
           page_node()));

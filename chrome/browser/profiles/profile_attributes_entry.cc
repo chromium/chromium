@@ -597,7 +597,7 @@ void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {
 
 void ProfileAttributesEntry::SetActiveTimeToNow() {
   if (IsDouble(kActiveTimeKey) &&
-      base::Time::Now() - GetActiveTime() < base::TimeDelta::FromHours(1)) {
+      base::Time::Now() - GetActiveTime() < base::Hours(1)) {
     return;
   }
   SetDouble(kActiveTimeKey, base::Time::Now().ToDoubleT());

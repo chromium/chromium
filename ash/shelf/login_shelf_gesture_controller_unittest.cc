@@ -87,7 +87,7 @@ class LoginShelfGestureControllerTest : public LoginTestBase {
 
   void SwipeOnShelf(const gfx::Point& start, const gfx::Vector2d& direction) {
     const gfx::Point end(start + direction);
-    const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(500);
+    const base::TimeDelta kTimeDelta = base::Milliseconds(500);
     const int kNumScrollSteps = 4;
     GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                                kNumScrollSteps);
@@ -95,7 +95,7 @@ class LoginShelfGestureControllerTest : public LoginTestBase {
 
   void FlingOnShelf(const gfx::Point& start, const gfx::Vector2d& direction) {
     const gfx::Point end(start + direction);
-    const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(10);
+    const base::TimeDelta kTimeDelta = base::Milliseconds(10);
     const int kNumScrollSteps = 4;
     GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                                kNumScrollSteps);

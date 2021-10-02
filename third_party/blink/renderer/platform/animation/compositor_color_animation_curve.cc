@@ -54,7 +54,7 @@ void CompositorColorAnimationCurve::SetScaledDuration(double scaled_duration) {
 }
 
 SkColor CompositorColorAnimationCurve::GetValue(double time) const {
-  return curve_->GetValue(base::TimeDelta::FromSecondsD(time));
+  return curve_->GetValue(base::Seconds(time));
 }
 
 std::unique_ptr<gfx::AnimationCurve>

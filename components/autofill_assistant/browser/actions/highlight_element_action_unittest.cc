@@ -62,8 +62,7 @@ TEST_F(HighlightElementActionTest, ActionFailsForNonExistentElement) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT), base::Seconds(0)));
 
   EXPECT_CALL(callback_,
               Run(Pointee(Property(&ProcessedActionProto::status, TIMED_OUT))));
@@ -79,8 +78,7 @@ TEST_F(HighlightElementActionTest, CheckExpectedCallChain) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_web_controller_,

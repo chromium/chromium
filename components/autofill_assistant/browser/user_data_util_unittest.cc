@@ -86,7 +86,7 @@ TEST(UserDataUtilTest, SortsCompleteContactsByUseDate) {
   autofill::test::SetProfileInfo(profile_old.get(), "Adam", "", "West",
                                  "adam.west@gmail.com", "", "", "", "", "", "",
                                  "", "");
-  profile_old->set_use_date(current - base::TimeDelta::FromDays(2));
+  profile_old->set_use_date(current - base::Days(2));
 
   auto profile_new = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_new.get(), "Adam", "", "West",
@@ -162,7 +162,7 @@ TEST(UserDataUtilTest, GetDefaultContactSelectionForCompleteProfiles) {
   autofill::test::SetProfileInfo(profile_old.get(), "Adam", "", "West",
                                  "adam.west@gmail.com", "", "", "", "", "", "",
                                  "", "");
-  profile_old->set_use_date(current - base::TimeDelta::FromDays(2));
+  profile_old->set_use_date(current - base::Days(2));
 
   auto profile_new = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_new.get(), "Adam", "", "West",
@@ -227,7 +227,7 @@ TEST(UserDataUtilTest, SortsCompleteAddressesByUseDate) {
   autofill::test::SetProfileInfo(profile_old.get(), "Adam", "", "West", "", "",
                                  "Brandschenkestrasse 110", "", "Zurich", "",
                                  "8002", "CH", "");
-  profile_old->set_use_date(current - base::TimeDelta::FromDays(2));
+  profile_old->set_use_date(current - base::Days(2));
 
   auto profile_new = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_new.get(), "Adam", "", "West", "", "",
@@ -318,8 +318,7 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
                                  "adam.west@gmail.com", "West", "", "",
                                  "Brandschenkestrasse 110", "", "Zurich", "",
                                  "8002", "CH", "+41");
-  profile_with_irrelevant_details->set_use_date(current -
-                                                base::TimeDelta::FromDays(2));
+  profile_with_irrelevant_details->set_use_date(current - base::Days(2));
 
   auto profile_complete = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_complete.get(), "Adam", "", "West", "",
@@ -376,7 +375,7 @@ TEST(UserDataUtilTest, SortsEquallyValidCardsByCardUseDate) {
   autofill::test::SetCreditCardInfo(old_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
                                     /* billing_address_id= */ "");
-  old_card->set_use_date(current - base::TimeDelta::FromDays(2));
+  old_card->set_use_date(current - base::Days(2));
   auto old_instrument =
       std::make_unique<PaymentInstrument>(std::move(old_card), nullptr);
 
@@ -524,7 +523,7 @@ TEST(UserDataUtilTest, GetDefaultSelectionForCompletePaymentInstruments) {
   autofill::test::SetCreditCardInfo(old_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
                                     /* billing_address_id= */ "");
-  old_card->set_use_date(current - base::TimeDelta::FromDays(2));
+  old_card->set_use_date(current - base::Days(2));
   auto old_instrument =
       std::make_unique<PaymentInstrument>(std::move(old_card), nullptr);
 

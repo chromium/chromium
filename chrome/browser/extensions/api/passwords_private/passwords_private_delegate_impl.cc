@@ -65,8 +65,7 @@ const char kReauthenticationFailed[] = "reauth-failed";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::TimeDelta kShowPasswordAuthTokenLifetime =
     password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod;
-constexpr base::TimeDelta kExportPasswordsAuthTokenLifetime =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kExportPasswordsAuthTokenLifetime = base::Seconds(5);
 #endif
 
 // Map password_manager::ExportProgressStatus to

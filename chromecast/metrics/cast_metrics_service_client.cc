@@ -242,7 +242,7 @@ CastMetricsServiceClient::CreateUploader(
 }
 
 base::TimeDelta CastMetricsServiceClient::GetStandardUploadInterval() {
-  return base::TimeDelta::FromMinutes(kStandardUploadIntervalMinutes);
+  return base::Minutes(kStandardUploadIntervalMinutes);
 }
 
 ::metrics::MetricsLogStore::StorageLimits

@@ -11,8 +11,7 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kQueryInterval =
-    base::TimeDelta::FromMilliseconds(750);
+constexpr base::TimeDelta kQueryInterval = base::Milliseconds(750);
 
 }  // namespace
 

@@ -224,7 +224,7 @@ void ConnectivityCheckerImpl::CheckInternal() {
   const int timeout = kRequestTimeoutInSeconds
                       << (check_errors_ > 2 ? 2 : check_errors_);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, timeout_.callback(), base::TimeDelta::FromSeconds(timeout));
+      FROM_HERE, timeout_.callback(), base::Seconds(timeout));
 }
 
 void ConnectivityCheckerImpl::SetCastMetricsHelperForTesting(
@@ -245,7 +245,7 @@ void ConnectivityCheckerImpl::OnConnectionChanged(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::OnConnectionChangedInternal,
                      weak_this_),
-      base::TimeDelta::FromSeconds(kNetworkChangedDelayInSeconds));
+      base::Seconds(kNetworkChangedDelayInSeconds));
 }
 
 void ConnectivityCheckerImpl::OnConnectionChangedInternal() {
@@ -314,7 +314,7 @@ void ConnectivityCheckerImpl::OnConnectivityCheckComplete(
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::CheckInternal, weak_this_),
-      base::TimeDelta::FromSeconds(kConnectivitySuccessPeriodSeconds));
+      base::Seconds(kConnectivitySuccessPeriodSeconds));
 }
 
 void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
@@ -333,7 +333,7 @@ void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
   // Check again.
   task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&ConnectivityCheckerImpl::Check, weak_this_),
-      base::TimeDelta::FromSeconds(kConnectivityPeriodSeconds));
+      base::Seconds(kConnectivityPeriodSeconds));
 }
 
 void ConnectivityCheckerImpl::OnUrlRequestTimeout() {

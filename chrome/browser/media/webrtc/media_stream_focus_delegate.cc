@@ -208,15 +208,15 @@ bool MediaStreamFocusDelegate::UpdateUMA(bool focus,
       // Note that 1s corresponds to the value GetConditionalFocusWindow()
       // returns by default.
       UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.ExplicitOnTimeCall",
-                                 delay, base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromSeconds(1), 100);
+                                 delay, base::Milliseconds(1), base::Seconds(1),
+                                 100);
     } else if (timer_expired_) {  // Late (compared to browser-side timer).
       // Record the delay of this late explicit API invocation.
       // Note that 1s corresponds to the value GetConditionalFocusWindow()
       // returns by default.
       UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.ExplicitLateCall",
-                                 delay, base::TimeDelta::FromSeconds(1),
-                                 base::TimeDelta::FromSeconds(5), 100);
+                                 delay, base::Seconds(1), base::Seconds(5),
+                                 100);
     } else {  // microtask_fired_
       // The case of |microtask_fired_| is not currently measured.
       // It's an error on the Web-application's part and addressable by the app.
@@ -229,8 +229,7 @@ bool MediaStreamFocusDelegate::UpdateUMA(bool focus,
     }
 
     UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.MicrotaskDelay", delay,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromSeconds(5), 100);
+                               base::Milliseconds(1), base::Seconds(5), 100);
 
     microtask_fired_ = true;
   }

@@ -32,7 +32,7 @@ void BasicTaskScheduler::ScheduleTask(download::DownloadTaskType task_type,
                      weak_factory_.GetWeakPtr(), task_type));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, scheduled_tasks_[task_type].callback(),
-      base::TimeDelta::FromSeconds(window_start_time_seconds));
+      base::Seconds(window_start_time_seconds));
 }
 
 void BasicTaskScheduler::CancelTask(download::DownloadTaskType task_type) {

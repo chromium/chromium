@@ -50,8 +50,7 @@ IntranetRedirectDetector::IntranetRedirectDetector()
   // Ideally, instead of this timer, we'd do something like "check if the
   // browser is starting up, and if so, come back later", but there is currently
   // no function to do this.
-  static constexpr base::TimeDelta kStartFetchDelay =
-      base::TimeDelta::FromSeconds(7);
+  static constexpr base::TimeDelta kStartFetchDelay = base::Seconds(7);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IntranetRedirectDetector::FinishSleep,
@@ -97,8 +96,7 @@ void IntranetRedirectDetector::Restart() {
   // Since presumably many programs open connections after network changes,
   // delay this a little bit.
   in_sleep_ = true;
-  static constexpr base::TimeDelta kRestartDelay =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kRestartDelay = base::Seconds(1);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IntranetRedirectDetector::FinishSleep,

@@ -90,7 +90,7 @@ void RetryDataLoadOnError(
       FROM_HERE,
       base::BindOnce(&LoadDataForUser, account_id, next_backoff_ms,
                      std::move(callback)),
-      base::TimeDelta::FromMilliseconds(next_backoff_ms));
+      base::Milliseconds(next_backoff_ms));
 }
 
 // Loads device data list associated with the user's Easy unlock keys.

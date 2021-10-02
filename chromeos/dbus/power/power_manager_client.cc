@@ -1014,7 +1014,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
       // Set |max_dark_suspend_delay_timeout_| to the minimum time power manager
       // guarantees before resuspending.
       max_dark_suspend_delay_timeout_ =
-          base::TimeDelta::FromMilliseconds(protobuf.min_delay_timeout_ms());
+          base::Milliseconds(protobuf.min_delay_timeout_ms());
 
       POWER_LOG(EVENT) << "Registered dark suspend delay "
                        << dark_suspend_delay_id_;
@@ -1254,8 +1254,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     has_dark_suspend_delay_id_ = false;
 
     power_manager::RegisterSuspendDelayRequest protobuf_request;
-    base::TimeDelta timeout =
-        base::TimeDelta::FromMilliseconds(kSuspendDelayTimeoutMs);
+    base::TimeDelta timeout = base::Milliseconds(kSuspendDelayTimeoutMs);
     protobuf_request.set_timeout(timeout.ToInternalValue());
     protobuf_request.set_description(kSuspendDelayDescription);
 

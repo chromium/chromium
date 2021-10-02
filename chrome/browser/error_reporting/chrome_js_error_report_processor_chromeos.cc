@@ -96,8 +96,8 @@ void ChromeJsErrorReportProcessor::WaitForCrashReporter(
     base::ScopedClosureRunner file_cleanup,
     base::ScopedClosureRunner external_callback_runner) {
   int return_code = 0;
-  bool process_done = process.WaitForExitWithTimeout(
-      base::TimeDelta::FromSeconds(0), &return_code);
+  bool process_done =
+      process.WaitForExitWithTimeout(base::Seconds(0), &return_code);
 
   if (process_done) {
     if (return_code != 0) {

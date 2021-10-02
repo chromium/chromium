@@ -73,8 +73,7 @@ using ExitCode = WorkerThread::ExitCode;
 
 namespace {
 
-constexpr base::TimeDelta kForcibleTerminationDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kForcibleTerminationDelay = base::Seconds(2);
 
 }  // namespace
 

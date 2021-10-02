@@ -91,8 +91,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       {
         base::RunLoop heart_beat;
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-            FROM_HERE, heart_beat.QuitClosure(),
-            base::TimeDelta::FromSeconds(3));
+            FROM_HERE, heart_beat.QuitClosure(), base::Seconds(3));
         heart_beat.Run();
       }
       bool page_is_loading =
@@ -1460,7 +1459,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        DISABLED_TapElementAfterPageIsIdle) {
   // Set a very long timeout to make sure either the page is idle or the test
   // timeout.
-  WaitTillPageIsIdle(base::TimeDelta::FromHours(1));
+  WaitTillPageIsIdle(base::Hours(1));
 
   Selector selector({"#touch_area_one"});
   ClickOrTapElement(selector, ClickType::TAP);
@@ -2591,15 +2590,13 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
         }, 100);
       })())"));
   EXPECT_EQ(ELEMENT_UNSTABLE,
-            WaitUntilElementIsStable(element, 10,
-                                     base::TimeDelta::FromMilliseconds(100))
+            WaitUntilElementIsStable(element, 10, base::Milliseconds(100))
                 .proto_status());
 
   // Stop moving the element.
   EXPECT_TRUE(ExecJs(shell(), "clearInterval(document.browserTestInterval);"));
-  EXPECT_TRUE(WaitUntilElementIsStable(element, 10,
-                                       base::TimeDelta::FromMilliseconds(100))
-                  .ok());
+  EXPECT_TRUE(
+      WaitUntilElementIsStable(element, 10, base::Milliseconds(100)).ok());
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
@@ -2611,8 +2608,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   FindElement(Selector({"#emptydiv"}), &element_status, &empty_element);
   ASSERT_TRUE(element_status.ok());
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
-            WaitUntilElementIsStable(empty_element, 10,
-                                     base::TimeDelta::FromMilliseconds(10))
+            WaitUntilElementIsStable(empty_element, 10, base::Milliseconds(10))
                 .proto_status());
 
   // The element is always hidden and has no box model.
@@ -2620,8 +2616,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   FindElement(Selector({"#hidden"}), &element_status, &hidden_element);
   ASSERT_TRUE(element_status.ok());
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
-            WaitUntilElementIsStable(hidden_element, 10,
-                                     base::TimeDelta::FromMilliseconds(10))
+            WaitUntilElementIsStable(hidden_element, 10, base::Milliseconds(10))
                 .proto_status());
 }
 
@@ -2633,8 +2628,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   element.container_frame_host = web_contents()->GetMainFrame();
 
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
-            WaitUntilElementIsStable(element, 10,
-                                     base::TimeDelta::FromMilliseconds(100))
+            WaitUntilElementIsStable(element, 10, base::Milliseconds(100))
                 .proto_status());
 }
 

@@ -37,12 +37,11 @@ constexpr int kIdleRepeatingTimerWait = 10;  // Minutes (seconds if testing).
 constexpr int kIdleAmount = 2;  // Hours (or seconds, if testing).
 
 // Maximum duration for a relaunch window.
-constexpr base::TimeDelta kRelaunchWindowMaxDuration =
-    base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kRelaunchWindowMaxDuration = base::Hours(24);
 
 // The default amount of time between the detector's annoyance level change
 // from UPGRADE_ANNOYANCE_GRACE to UPGRADE_ANNOYANCE_HIGH.
-constexpr auto kDefaultGracePeriod = base::TimeDelta::FromHours(1);
+constexpr auto kDefaultGracePeriod = base::Hours(1);
 
 bool UseTestingIntervals() {
   // If a command line parameter specifying how long the upgrade check should
@@ -84,8 +83,7 @@ base::Time ComputeRelaunchWindowStartForDay(
 
 // Returns random TimeDelta uniformly selected between zero and `max`.
 base::TimeDelta GenRandomTimeDelta(base::TimeDelta max) {
-  return base::TimeDelta::FromMicroseconds(
-      base::RandGenerator(max.InMicroseconds()));
+  return base::Microseconds(base::RandGenerator(max.InMicroseconds()));
 }
 
 }  // namespace
@@ -185,10 +183,10 @@ base::TimeDelta UpgradeDetector::GetRelaunchNotificationPeriod() {
       local_state->FindPreference(prefs::kRelaunchNotificationPeriod);
   const int value = preference->GetValue()->GetInt();
   // Enforce the preference's documented minimum value.
-  constexpr base::TimeDelta kMinValue = base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kMinValue = base::Hours(1);
   if (preference->IsDefaultValue() || value < kMinValue.InMilliseconds())
     return base::TimeDelta();
-  return base::TimeDelta::FromMilliseconds(value);
+  return base::Milliseconds(value);
 }
 
 // static
@@ -223,24 +221,23 @@ base::Time UpgradeDetector::AdjustDeadline(base::Time deadline,
     // Push the deadline forward into a random interval in the next day's
     // window. The next day may be 25, 24 or 23 hours in the future. Take a stab
     // at 24 hours (the norm) and retry once if needed.
-    base::Time next_window_start = ComputeRelaunchWindowStartForDay(
-        window, deadline + base::TimeDelta::FromHours(24));
+    base::Time next_window_start =
+        ComputeRelaunchWindowStartForDay(window, deadline + base::Hours(24));
     if (next_window_start == window_start) {
       // The clocks must be set back, yielding a longer day. For example, 24
       // hours after a deadline of 00:30 could be at 23:30 on the same day due
       // to a DST change in the interim that sets clocks backward by one hour.
       // Try again. Use 26 rather than 25 in case some jurisdiction decides to
       // implement a shift of greater than 1 hour.
-      next_window_start = ComputeRelaunchWindowStartForDay(
-          window, deadline + base::TimeDelta::FromHours(26));
-    } else if (next_window_start - window_start >=
-               base::TimeDelta::FromHours(26)) {
+      next_window_start =
+          ComputeRelaunchWindowStartForDay(window, deadline + base::Hours(26));
+    } else if (next_window_start - window_start >= base::Hours(26)) {
       // The clocks must be set forward, yielding a shorter day, and we jumped
       // two days rather than one. For example, 24 hours after a deadline of
       // 23:30 could be at 00:30 two days later due to a DST change in the
       // interim that sets clocks forward by one hour". Try again.
-      next_window_start = ComputeRelaunchWindowStartForDay(
-          window, deadline + base::TimeDelta::FromHours(23));
+      next_window_start =
+          ComputeRelaunchWindowStartForDay(window, deadline + base::Hours(23));
     }
     return next_window_start + GenRandomTimeDelta(duration);
   }
@@ -251,8 +248,8 @@ base::Time UpgradeDetector::AdjustDeadline(base::Time deadline,
 
   // Compute the relaunch window starting on the day prior to the deadline for
   // cases where the relaunch window straddles midnight.
-  base::Time prev_window_start = ComputeRelaunchWindowStartForDay(
-      window, deadline - base::TimeDelta::FromHours(24));
+  base::Time prev_window_start =
+      ComputeRelaunchWindowStartForDay(window, deadline - base::Hours(24));
   // The above cases do not apply here:
   // a) Previous day window jumped two days rather than one - This could arise
   // if, for example, 24 hours before the deadline of 00:30 is 23:30 two days
@@ -300,7 +297,7 @@ UpgradeDetector::GetRelaunchWindowPolicyValue() {
     return absl::nullopt;
 
   return RelaunchWindow(hour.value(), minute.value(),
-                        base::TimeDelta::FromMinutes(duration_mins.value()));
+                        base::Minutes(duration_mins.value()));
 }
 
 // static
@@ -379,9 +376,8 @@ void UpgradeDetector::NotifyRelaunchOverriddenToRequired(bool overridden) {
 void UpgradeDetector::TriggerCriticalUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::TimeDelta idle_timer =
-      UseTestingIntervals()
-          ? base::TimeDelta::FromSeconds(kIdleRepeatingTimerWait)
-          : base::TimeDelta::FromMinutes(kIdleRepeatingTimerWait);
+      UseTestingIntervals() ? base::Seconds(kIdleRepeatingTimerWait)
+                            : base::Minutes(kIdleRepeatingTimerWait);
   idle_check_timer_.Start(FROM_HERE, idle_timer, this,
                           &UpgradeDetector::CheckIdle);
 }

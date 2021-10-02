@@ -192,7 +192,7 @@ void MediaRouterIntegrationBrowserTest::StartSessionAndAssertNotFoundError() {
   ExecuteJavaScriptAPI(web_contents, kStartSessionScript);
 
   // Wait to simulate the user waiting for any sinks to be displayed.
-  Wait(base::TimeDelta::FromSeconds(1));
+  Wait(base::Seconds(1));
   if (GlobalMediaControlsCastStartStopEnabled()) {
     test_ui_->HideGMCDialog();
   } else {
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                                            /*stay_awake=*/true);
 
   // Wait for capture poll timer to pick up change.
-  Wait(base::TimeDelta::FromSeconds(3));
+  Wait(base::Seconds(3));
 
   // Expect that fullscreen was entered.
   ASSERT_TRUE(
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   OpenDialogAndCastFile();
 
   // Wait for file to start playing (but not being captured).
-  Wait(base::TimeDelta::FromSeconds(3));
+  Wait(base::Seconds(3));
 
   // Expect no capture is ongoing.
   content::WebContents* web_contents = GetActiveWebContents();

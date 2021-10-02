@@ -370,8 +370,8 @@ class DownloadHistoryTest : public testing::Test {
     row->tab_referrer_url = GURL("http://example.com/tab-referrer-url");
     row->mime_type = "application/octet-stream";
     row->original_mime_type = "application/octet-stream";
-    row->start_time = now - base::TimeDelta::FromMinutes(10);
-    row->end_time = now - base::TimeDelta::FromMinutes(1);
+    row->start_time = now - base::Minutes(10);
+    row->end_time = now - base::Minutes(1);
     row->etag = "Etag";
     row->last_modified = "abc";
     row->received_bytes = 100;

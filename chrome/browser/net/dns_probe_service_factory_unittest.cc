@@ -235,7 +235,7 @@ TEST_F(DnsProbeServiceTest, Cache) {
                   FakeHostResolver::kNoResponse}});
   RunTest(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
   // Advance clock, but not enough to expire the cache.
-  AdvanceTime(base::TimeDelta::FromSeconds(4));
+  AdvanceTime(base::Seconds(4));
   // Cached NXDOMAIN result should persist, not the result from the new rules.
   RunTest(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
 }
@@ -253,7 +253,7 @@ TEST_F(DnsProbeServiceTest, Expire) {
                   FakeHostResolver::kNoResponse}});
   RunTest(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
   // Advance clock enough to trigger cache expiration.
-  AdvanceTime(base::TimeDelta::FromSeconds(6));
+  AdvanceTime(base::Seconds(6));
   // New rules should apply, since a new probe should be run.
   RunTest(error_page::DNS_PROBE_FINISHED_NO_INTERNET);
 }

@@ -34,7 +34,7 @@ const int kVerticalTilePadding = 8;
 constexpr int kAutoScrollMargin = 32;
 
 // How often to auto-scroll when the mouse is held in the auto-scroll margin.
-constexpr base::TimeDelta kAutoScrollInterval = base::TimeDelta::FromHz(60.0);
+constexpr base::TimeDelta kAutoScrollInterval = base::Hertz(60.0);
 
 // How much to auto-scroll the view per second. Empirically chosen.
 const int kAutoScrollDipsPerSecond = 400;

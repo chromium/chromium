@@ -65,51 +65,49 @@ class TimeLimitNotifierTest : public testing::Test {
 
 TEST_F(TimeLimitNotifierTest, ShowLockNotifications) {
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kScreenTime,
-      base::TimeDelta::FromMinutes(20));
+      TimeLimitNotifier::LimitType::kScreenTime, base::Minutes(20));
 
   // Fast forward a bit, but not far enough to show a notification.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_runner_->FastForwardBy(base::Minutes(10));
   EXPECT_FALSE(HasLockNotification());
 
   // Fast forward to the 5-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_runner_->FastForwardBy(base::Minutes(5));
   EXPECT_TRUE(HasLockNotification());
 
   // Fast forward to the 1-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_runner_->FastForwardBy(base::Minutes(4));
   EXPECT_TRUE(HasLockNotification());
 }
 
 TEST_F(TimeLimitNotifierTest, DismisLocksNotification) {
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kBedTime, base::TimeDelta::FromMinutes(10));
+      TimeLimitNotifier::LimitType::kBedTime, base::Minutes(10));
 
   // Fast forward to the 5-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_runner_->FastForwardBy(base::Minutes(5));
   EXPECT_TRUE(HasLockNotification());
   RemoveNotification();
 
   // Fast forward one minute; the same notification is not reshown.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_runner_->FastForwardBy(base::Minutes(1));
   EXPECT_FALSE(HasLockNotification());
 
   // Fast forward to the 1-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_runner_->FastForwardBy(base::Minutes(3));
   EXPECT_TRUE(HasLockNotification());
 }
 
 TEST_F(TimeLimitNotifierTest, OnlyExiLocktNotification) {
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kScreenTime,
-      base::TimeDelta::FromMinutes(3));
+      TimeLimitNotifier::LimitType::kScreenTime, base::Minutes(3));
 
   // Fast forward a bit, but not far enough to show a notification.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_runner_->FastForwardBy(base::Minutes(1));
   EXPECT_FALSE(HasLockNotification());
 
   // Fast forward to the 1-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_runner_->FastForwardBy(base::Minutes(1));
   EXPECT_TRUE(HasLockNotification());
   RemoveNotification();
 
@@ -120,7 +118,7 @@ TEST_F(TimeLimitNotifierTest, OnlyExiLocktNotification) {
 
 TEST_F(TimeLimitNotifierTest, NoLockNotifications) {
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kBedTime, base::TimeDelta::FromSeconds(30));
+      TimeLimitNotifier::LimitType::kBedTime, base::Seconds(30));
 
   task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(HasLockNotification());
@@ -128,11 +126,10 @@ TEST_F(TimeLimitNotifierTest, NoLockNotifications) {
 
 TEST_F(TimeLimitNotifierTest, UnscheduleLockNotifications) {
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kScreenTime,
-      base::TimeDelta::FromMinutes(10));
+      TimeLimitNotifier::LimitType::kScreenTime, base::Minutes(10));
 
   // Fast forward to the 5-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_runner_->FastForwardBy(base::Minutes(5));
   EXPECT_TRUE(HasLockNotification());
   RemoveNotification();
 
@@ -144,25 +141,23 @@ TEST_F(TimeLimitNotifierTest, UnscheduleLockNotifications) {
 
 TEST_F(TimeLimitNotifierTest, RescheduleLockNotifications) {
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kScreenTime,
-      base::TimeDelta::FromMinutes(20));
+      TimeLimitNotifier::LimitType::kScreenTime, base::Minutes(20));
 
   // Update the notifier with a new limit.
   notifier_.MaybeScheduleLockNotifications(
-      TimeLimitNotifier::LimitType::kScreenTime,
-      base::TimeDelta::FromMinutes(30));
+      TimeLimitNotifier::LimitType::kScreenTime, base::Minutes(30));
 
   // Fast forward a bit, but not far enough to show a notification.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(20));
+  task_runner_->FastForwardBy(base::Minutes(20));
   EXPECT_FALSE(HasLockNotification());
 
   // Fast forward to the 5-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_runner_->FastForwardBy(base::Minutes(5));
   EXPECT_TRUE(HasLockNotification());
   RemoveNotification();
 
   // Fast forward to the 1-minute warning time.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_runner_->FastForwardBy(base::Minutes(4));
   EXPECT_TRUE(HasLockNotification());
 }
 

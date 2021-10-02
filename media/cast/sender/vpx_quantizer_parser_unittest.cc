@@ -51,7 +51,7 @@ class VpxQuantizerParserTest : public ::testing::Test {
         next_frame_timestamp_);
     const base::TimeTicks reference_time =
         base::TimeTicks::UnixEpoch() + next_frame_timestamp_;
-    next_frame_timestamp_ += base::TimeDelta::FromSeconds(1) / kFrameRate;
+    next_frame_timestamp_ += base::Seconds(1) / kFrameRate;
     PopulateVideoFrameWithNoise(video_frame.get());
     vp8_encoder_->Encode(video_frame, reference_time, encoded_frame);
   }

@@ -312,15 +312,13 @@ WebPagePtr DocumentMetadataExtractor::Extract(const Document& document) {
 
   if (status != ExtractionStatus::kOK) {
     base::UmaHistogramCustomMicrosecondsTimes(
-        "CopylessPaste.ExtractionFailedUs", elapsed_time,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(1),
-        50);
+        "CopylessPaste.ExtractionFailedUs", elapsed_time, base::Microseconds(1),
+        base::Seconds(1), 50);
     return nullptr;
   }
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "CopylessPaste.ExtractionUs", elapsed_time,
-      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(1),
-      50);
+  base::UmaHistogramCustomMicrosecondsTimes("CopylessPaste.ExtractionUs",
+                                            elapsed_time, base::Microseconds(1),
+                                            base::Seconds(1), 50);
 
   page->url = document.Url();
   page->title = document.title();

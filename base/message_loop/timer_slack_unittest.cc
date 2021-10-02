@@ -48,7 +48,7 @@ void TestMessagePumpKqueue::SetWakeupTimerEvent(
 
 TEST(TimerSlackTest, LudicrousTimerSlackDefaultsOff) {
   EXPECT_FALSE(IsLudicrousTimerSlackEnabled());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500), GetLudicrousTimerSlack());
+  EXPECT_EQ(base::Milliseconds(1500), GetLudicrousTimerSlack());
 
 #if defined(OS_MAC)
   MessagePumpCFRunLoop message_pump_cf_run_loop;
@@ -78,7 +78,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackObservesFeature) {
       base::features::kLudicrousTimerSlack);
 
   EXPECT_TRUE(IsLudicrousTimerSlackEnabled());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500), GetLudicrousTimerSlack());
+  EXPECT_EQ(base::Milliseconds(1500), GetLudicrousTimerSlack());
 
 #if defined(OS_MAC)
   MessagePumpCFRunLoop message_pump_cf_run_loop;
@@ -180,7 +180,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackSlackObservesFeatureParam) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       base::features::kLudicrousTimerSlack, parameters);
 
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(12345), GetLudicrousTimerSlack());
+  EXPECT_EQ(base::Milliseconds(12345), GetLudicrousTimerSlack());
 }
 
 TEST(TimerSlackTest, LudicrousTimerSlackSlackSuspendResume) {

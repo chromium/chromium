@@ -129,7 +129,7 @@ void ShowCastAction::ScrollToElement(
           base::BindOnce(&WebController::WaitUntilElementIsStable,
                          delegate_->GetWebController()->GetWeakPtr(),
                          proto_.show_cast().stable_check_max_rounds(),
-                         base::TimeDelta::FromMilliseconds(
+                         base::Milliseconds(
                              proto_.show_cast().stable_check_interval_ms()))),
       actions.get());
   action_delegate_util::AddStepWithoutCallback(

@@ -1110,7 +1110,7 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
 
   // On move We will get TOUCH_MOVED, GESTURE_TAP_CANCEL,
   // GESTURE_SCROLL_START and GESTURE_SCROLL_UPDATE.
-  time += base::TimeDelta::FromMilliseconds(kTimeDelta);
+  time += base::Milliseconds(kTimeDelta);
   ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(10, 20), time,
                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&move);
@@ -1125,7 +1125,7 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   delegate.ResetCounts();
 
   // On move we still get TOUCH_MOVED and GESTURE_SCROLL_UPDATE.
-  time += base::TimeDelta::FromMilliseconds(kTimeDelta);
+  time += base::Milliseconds(kTimeDelta);
   ui::TouchEvent move2(ui::ET_TOUCH_MOVED, gfx::Point(10, 30), time,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&move2);
@@ -1134,7 +1134,7 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   delegate.ResetCounts();
 
   // And on release we get TOUCH_RELEASED, GESTURE_SCROLL_END, GESTURE_END
-  time += base::TimeDelta::FromMilliseconds(kTimeDelta);
+  time += base::Milliseconds(kTimeDelta);
   ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(10, 20), time,
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&release);
@@ -1960,7 +1960,7 @@ TEST_F(WindowTest, SetBoundsInternalShouldCheckTargetBounds) {
   base::TimeTicks start_time =
       w1->layer()->GetAnimator()->last_step_time();
 
-  animator->Step(start_time + base::TimeDelta::FromMilliseconds(1000));
+  animator->Step(start_time + base::Milliseconds(1000));
 
   EXPECT_EQ("0,0 100x100", w1->bounds().ToString());
 }
@@ -2902,7 +2902,7 @@ TEST_F(WindowTest, RootWindowSetWhenReparenting) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ui::ScopedLayerAnimationSettings settings1(child.layer()->GetAnimator());
-  settings1.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+  settings1.SetTransitionDuration(base::Milliseconds(100));
   gfx::Rect new_bounds(gfx::Rect(35, 35, 50, 50));
   child.SetBounds(new_bounds);
 
@@ -3080,7 +3080,7 @@ TEST_F(WindowTest, DelegateNotifiedAsBoundsChange) {
   base::TimeTicks start_time =
       window->layer()->GetAnimator()->last_step_time();
   ui::LayerAnimator* animator = window->layer()->GetAnimator();
-  animator->Step(start_time + base::TimeDelta::FromMilliseconds(1000));
+  animator->Step(start_time + base::Milliseconds(1000));
   EXPECT_TRUE(delegate.bounds_changed());
   EXPECT_NE("0,0 100x100", window->bounds().ToString());
 }
@@ -3121,7 +3121,7 @@ TEST_F(WindowTest, DelegateNotifiedAsBoundsChangeInHiddenLayer) {
   base::TimeTicks start_time =
       window->layer()->GetAnimator()->last_step_time();
   ui::LayerAnimator* animator = window->layer()->GetAnimator();
-  animator->Step(start_time + base::TimeDelta::FromMilliseconds(1000));
+  animator->Step(start_time + base::Milliseconds(1000));
 
   // No bounds changed notification at the end of animation since layer
   // delegate is NULL.

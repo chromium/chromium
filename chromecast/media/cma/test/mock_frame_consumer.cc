@@ -95,7 +95,7 @@ void MockFrameConsumer::OnNewFrame(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockFrameConsumer::ReadFrame, base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

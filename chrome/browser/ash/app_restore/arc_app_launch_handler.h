@@ -98,7 +98,7 @@ constexpr char kRestoredAppWindowCountHistogram[] =
 // pressure, CPU rate, etc. However we don't want to have the restoration
 // process taking too long to interact the normal usage. So if the restoration
 // has finished in `kAppLaunchDelay` timeframe, we stop the restoration process.
-constexpr base::TimeDelta kStopRestoreDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kStopRestoreDelay = base::Minutes(1);
 
 // The ArcAppLaunchHandler class restores ARC apps during the system startup
 // phase.

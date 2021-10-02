@@ -554,7 +554,7 @@ void PosixSystemProducer::DelayedReconnect() {
             }
           },
           weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(connection_backoff_ms_));
+      base::Milliseconds(connection_backoff_ms_));
 
   connection_backoff_ms_ =
       IncreaseBackoff(connection_backoff_ms_, kMaxConnectionBackoffMs);

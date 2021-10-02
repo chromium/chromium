@@ -256,7 +256,7 @@ void ResetScreen::ShowImpl() {
     tpm_firmware_update_checker_.Run(
         base::BindOnce(&ResetScreen::OnTPMFirmwareUpdateAvailableCheck,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(10));
+        base::Seconds(10));
   }
 
   if (view_) {
@@ -347,7 +347,7 @@ void ResetScreen::OnPowerwash() {
     tpm_firmware_update_checker_.Run(
         base::BindOnce(&StartTPMFirmwareUpdate,
                        view_->GetTpmFirmwareUpdateMode()),
-        base::TimeDelta::FromSeconds(10));
+        base::Seconds(10));
   } else {
     VLOG(1) << "Starting Powerwash";
     SessionManagerClient::Get()->StartDeviceWipe();

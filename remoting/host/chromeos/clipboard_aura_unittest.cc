@@ -32,8 +32,7 @@ namespace remoting {
 
 namespace {
 
-const base::TimeDelta kTestOverridePollingInterval =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kTestOverridePollingInterval = base::Milliseconds(1);
 
 class ClientClipboard : public protocol::ClipboardStub {
  public:

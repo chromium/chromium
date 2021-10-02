@@ -89,28 +89,27 @@ TEST_F(NotificationHeaderViewTest, UpdatesTimestampOverTime) {
   auto* timestamp_view =
       notification_header_view_->timestamp_view_for_testing();
 
-  notification_header_view_->SetTimestamp(base::Time::Now() +
-                                          base::TimeDelta::FromHours(3) +
-                                          base::TimeDelta::FromMinutes(30));
+  notification_header_view_->SetTimestamp(base::Time::Now() + base::Hours(3) +
+                                          base::Minutes(30));
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST_FUTURE, 3),
             timestamp_view->GetText());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment()->FastForwardBy(base::Hours(3));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST_FUTURE, 30),
             timestamp_view->GetText());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment()->FastForwardBy(base::Minutes(30));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST),
       timestamp_view->GetText());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(2));
+  task_environment()->FastForwardBy(base::Days(2));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(

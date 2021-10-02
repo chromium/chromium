@@ -29,7 +29,7 @@ const char kTestPermanentConsistencyCountry[] = "US";
 const char kTestSessionConsistencyCountry[] = "CA";
 
 base::Time GetTestFetchTime() {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(123));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Days(123));
 }
 
 // A simple fake data store.

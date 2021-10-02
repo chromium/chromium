@@ -545,7 +545,7 @@ TEST_F(DownloadTaskImplTest, Cookie) {
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "name", "value", cookie_url.host(), cookie_url.path(),
           /*creation=*/now,
-          /*expire_date=*/now + base::TimeDelta::FromHours(2),
+          /*expire_date=*/now + base::Hours(2),
           /*last_access=*/now,
           /*secure=*/false,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,

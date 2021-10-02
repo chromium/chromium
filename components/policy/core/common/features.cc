@@ -21,8 +21,7 @@ const base::Feature kPolicyBlocklistThrottleRequiresPoliciesLoaded{
 const base::FeatureParam<base::TimeDelta>
     kPolicyBlocklistThrottlePolicyLoadTimeout{
         &kPolicyBlocklistThrottleRequiresPoliciesLoaded,
-        "PolicyBlocklistThrottlePolicyLoadTimeout",
-        base::TimeDelta::FromSeconds(20)};
+        "PolicyBlocklistThrottlePolicyLoadTimeout", base::Seconds(20)};
 
 const base::Feature kUploadBrowserDeviceIdentifier{
     "UploadBrowserDeviceIdentifier", base::FEATURE_ENABLED_BY_DEFAULT};

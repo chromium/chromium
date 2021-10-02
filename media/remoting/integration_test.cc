@@ -60,7 +60,7 @@ TEST_F(MediaRemotingIntegrationTest, MediaSource_ConfigChange_WebM) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(gfx::Size(640, 360))).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360.webm");
-  ASSERT_TRUE(source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
+  ASSERT_TRUE(source.AppendAtTime(base::Seconds(kAppendTimeSec),
                                   second_file->data(),
                                   second_file->data_size()));
   source.EndOfStream();

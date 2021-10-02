@@ -72,7 +72,7 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   // browser start-up into web sites using Android credentials.
   // TODO(engedy): See if we can tie this instead to some meaningful event.
   static constexpr base::TimeDelta kInitializationDelayOnStartup =
-      base::TimeDelta::FromSeconds(8);
+      base::Seconds(8);
 
   AffiliationService* get_affiliation_service() { return affiliation_service_; }
 

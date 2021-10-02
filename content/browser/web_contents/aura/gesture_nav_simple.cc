@@ -59,8 +59,7 @@ constexpr SkColor kRippleColor = SkColorSetA(gfx::kGoogleBlue600, 0x4C);  // 30%
 constexpr int kMaxRippleBurstRadius = 48;
 constexpr gfx::Tween::Type kBurstAnimationTweenType =
     gfx::Tween::FAST_OUT_SLOW_IN;
-constexpr auto kRippleBurstAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr auto kRippleBurstAnimationDuration = base::Milliseconds(200);
 
 // Offset of the affordance when it is at the activation threshold. Since the
 // affordance is initially out of content bounds, this is the offset of the
@@ -80,7 +79,7 @@ constexpr float kExtraAffordanceRatio =
 // Parameters defining animation when the affordance is aborted.
 constexpr gfx::Tween::Type kAbortAnimationTweenType =
     gfx::Tween::FAST_OUT_SLOW_IN;
-constexpr auto kAbortAnimationDuration = base::TimeDelta::FromMilliseconds(300);
+constexpr auto kAbortAnimationDuration = base::Milliseconds(300);
 
 bool ShouldNavigateForward(NavigationController* controller,
                            OverscrollMode mode) {

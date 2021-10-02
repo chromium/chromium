@@ -146,7 +146,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
   void OffsetNotificationTimestamp(const std::string& id,
                                    const int milliseconds) {
     MessageCenter::Get()->FindVisibleNotificationById(id)->set_timestamp(
-        base::Time::Now() - base::TimeDelta::FromMilliseconds(milliseconds));
+        base::Time::Now() - base::Milliseconds(milliseconds));
   }
 
   void CreateMessageListView() {

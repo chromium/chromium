@@ -39,7 +39,7 @@ constexpr int kResponseErrorNotFirstTimeChromebookUser = 6;
 // further parsing.
 constexpr base::StringPiece kJsonXssPreventionPrefix = ")]}'";
 
-constexpr base::TimeDelta kDownloadTimeOut = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kDownloadTimeOut = base::Minutes(1);
 
 constexpr const int64_t kMaxDownloadBytes = 1024 * 1024;  // 1Mb
 

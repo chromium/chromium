@@ -36,8 +36,7 @@ using ::testing::Return;
 const char kSamlToken1[] = "saml-token-1";
 const char kSamlToken2[] = "saml-token-2";
 
-constexpr base::TimeDelta kLoginOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
 
 }  // namespace
 

@@ -76,7 +76,7 @@ class WebAppUrlLoader {
 
   // Exposed for testing.
   static constexpr base::TimeDelta kSecondsToWaitForWebContentsLoad =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 };
 
 }  // namespace web_app

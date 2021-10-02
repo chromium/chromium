@@ -28,9 +28,9 @@ namespace {
 
 // Dialog plate animation.
 constexpr base::TimeDelta kDialogPlateAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(283);
+    base::Milliseconds(283);
 constexpr base::TimeDelta kDialogPlateAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(167);
 
 }  // namespace
 

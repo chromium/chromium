@@ -522,7 +522,7 @@ void AutofillManager::OnLoadedServerPredictions(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(query_result_delay_task_.callback(), queried_forms),
-        base::TimeDelta::FromSeconds(delay));
+        base::Seconds(delay));
   } else {
     PropagateAutofillPredictionsToDriver(queried_forms);
   }

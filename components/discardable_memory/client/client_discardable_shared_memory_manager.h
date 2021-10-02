@@ -78,15 +78,13 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     bytes_allocated_limit_for_testing_ = limit;
   }
 
-  static constexpr base::TimeDelta kMinAgeForScheduledPurge =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kMinAgeForScheduledPurge = base::Minutes(5);
 
   // The expected cost of purging should be very small (< 1ms), so it can be
   // scheduled frequently. However, we don't purge memory that has been touched
   // recently (see: |BackgroundPurge()| and |kMinAgeForScheduledPurge|), so
   // there is no benefit to scheduling this more than once per minute.
-  static constexpr base::TimeDelta kScheduledPurgeInterval =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kScheduledPurgeInterval = base::Minutes(1);
 
   // These fields are only protected for testing, they would otherwise be
   // private. Everything else should be either public or private.

@@ -85,7 +85,7 @@ TEST_F(FeaturePromoBubbleViewTest, AutoDismissIfNoButtons) {
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(1);
   bubble->GetWidget()->AddObserver(&dismiss_observer);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment()->FastForwardBy(base::Minutes(1));
   task_environment()->RunUntilIdle();
 }
 
@@ -95,7 +95,7 @@ TEST_F(FeaturePromoBubbleViewTest, NoAutoDismissWithButtons) {
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(0);
   bubble->GetWidget()->AddObserver(&dismiss_observer);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment()->FastForwardBy(base::Minutes(1));
   task_environment()->RunUntilIdle();
   // WidgetObserver checks if it is in an observer list in its destructor.
   // Need to remove it from widget manually.
@@ -107,14 +107,14 @@ TEST_F(FeaturePromoBubbleViewTest, TimeoutCallback) {
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::TimeDelta::FromSeconds(10);
-  params.timeout_after_interaction = base::TimeDelta::FromSeconds(10);
+  params.timeout_no_interaction = base::Seconds(10);
+  params.timeout_after_interaction = base::Seconds(10);
   params.timeout_callback = timeout_callback.Get();
 
   FeaturePromoBubbleView::Create(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(1);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
@@ -131,7 +131,7 @@ TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
   EXPECT_CALL(timeout_callback, Run()).Times(0);
 
   // Fast forward by a long time to check bubble does not time out.
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment()->FastForwardBy(base::Hours(1));
 }
 
 TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeHover) {
@@ -139,17 +139,17 @@ TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeHover) {
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::TimeDelta::FromSeconds(20);
-  params.timeout_after_interaction = base::TimeDelta::FromSeconds(5);
+  params.timeout_no_interaction = base::Seconds(20);
+  params.timeout_after_interaction = base::Seconds(5);
   params.timeout_callback = timeout_callback.Get();
 
   FeaturePromoBubbleView::Create(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(19));
+  task_environment()->FastForwardBy(base::Seconds(19));
 
   EXPECT_CALL(timeout_callback, Run()).Times(1);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterHover) {
@@ -157,14 +157,14 @@ TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterHover) {
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::TimeDelta::FromSeconds(20);
-  params.timeout_after_interaction = base::TimeDelta::FromSeconds(5);
+  params.timeout_no_interaction = base::Seconds(20);
+  params.timeout_after_interaction = base::Seconds(5);
   params.timeout_callback = timeout_callback.Get();
 
   FeaturePromoBubbleView* bubble =
       FeaturePromoBubbleView::Create(std::move(params));
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(19));
+  task_environment()->FastForwardBy(base::Seconds(19));
 
   // Simulate mouse hovering and leaving bubble.
   ui::MouseEvent mouse_enter(ui::ET_MOUSE_ENTERED, gfx::Point(), gfx::Point(),
@@ -177,8 +177,8 @@ TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterHover) {
 
   // The bubble should time out with the shorter interval.
   EXPECT_CALL(timeout_callback, Run()).Times(0);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  task_environment()->FastForwardBy(base::Seconds(4));
 
   EXPECT_CALL(timeout_callback, Run()).Times(1);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 }

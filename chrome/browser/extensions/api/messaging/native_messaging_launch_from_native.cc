@@ -38,8 +38,7 @@ namespace {
 ScopedAllowNativeAppConnectionForTest* g_allow_native_app_connection_for_test =
     nullptr;
 
-constexpr base::TimeDelta kNativeMessagingHostErrorTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kNativeMessagingHostErrorTimeout = base::Seconds(10);
 
 ScopedNativeMessagingErrorTimeoutOverrideForTest*
     g_native_messaging_host_timeout_override = nullptr;

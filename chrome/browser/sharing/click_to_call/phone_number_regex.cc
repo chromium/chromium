@@ -39,7 +39,7 @@ const re2::RE2& GetPhoneNumberRegex() {
 }
 
 void PrecompilePhoneNumberRegexesAsync() {
-  constexpr auto kParseDelay = base::TimeDelta::FromSeconds(15);
+  constexpr auto kParseDelay = base::Seconds(15);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,

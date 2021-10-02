@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
   base::TimeDelta recovery_time =
       GetSyncService(0)->GetLastCycleSnapshotForDebugging().sync_start_time() -
       network_notification_time;
-  EXPECT_LE(recovery_time, base::TimeDelta::FromSeconds(2));
+  EXPECT_LE(recovery_time, base::Seconds(2));
 }
 
 IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, ServerRedirect) {

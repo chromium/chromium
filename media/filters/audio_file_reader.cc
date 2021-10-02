@@ -246,8 +246,8 @@ bool AudioFileReader::OnNewFrame(
     const base::TimeDelta pkt_duration = ConvertFromTimeBase(
         glue_->format_context()->streams[stream_index_]->time_base,
         frame->pkt_duration + std::min(static_cast<int64_t>(0), frame->pts));
-    const base::TimeDelta frame_duration = base::TimeDelta::FromSecondsD(
-        frames_read / static_cast<double>(sample_rate_));
+    const base::TimeDelta frame_duration =
+        base::Seconds(frames_read / static_cast<double>(sample_rate_));
 
     if (pkt_duration < frame_duration && pkt_duration > base::TimeDelta()) {
       const int new_frames_read =

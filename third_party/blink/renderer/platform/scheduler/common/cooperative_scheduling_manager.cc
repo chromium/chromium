@@ -19,8 +19,7 @@ namespace scheduler {
 
 namespace {
 // Minimum time interval between nested loop runs.
-constexpr base::TimeDelta kNestedLoopMinimumInterval =
-    base::TimeDelta::FromMilliseconds(15);
+constexpr base::TimeDelta kNestedLoopMinimumInterval = base::Milliseconds(15);
 }  // namespace
 
 // static

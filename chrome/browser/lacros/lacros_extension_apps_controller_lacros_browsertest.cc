@@ -153,8 +153,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
         }
       },
       &run_loop, profile());
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-              std::move(wait_for_window));
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_window));
   run_loop.Run();
 
   // Now we must unpin the item to ensure ash-chrome is in consistent state.

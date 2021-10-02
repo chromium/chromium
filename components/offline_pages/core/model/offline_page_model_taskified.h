@@ -55,12 +55,10 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   // Delay between the scheduling and actual running of maintenance tasks. To
   // not cause the re-opening of the metadata store this delay should be kept
   // smaller than OfflinePageMetadataStore::kClosingDelay.
-  static constexpr base::TimeDelta kMaintenanceTasksDelay =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kMaintenanceTasksDelay = base::Seconds(10);
 
   // Minimum delay between runs of maintenance tasks during a Chrome session.
-  static constexpr base::TimeDelta kClearStorageInterval =
-      base::TimeDelta::FromMinutes(30);
+  static constexpr base::TimeDelta kClearStorageInterval = base::Minutes(30);
 
   OfflinePageModelTaskified(
       std::unique_ptr<OfflinePageMetadataStore> store,

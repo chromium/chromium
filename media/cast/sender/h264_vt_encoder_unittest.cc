@@ -232,9 +232,8 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
   }
 
   void AdvanceClockAndVideoFrameTimestamp() {
-    clock_.Advance(base::TimeDelta::FromMilliseconds(33));
-    frame_->set_timestamp(frame_->timestamp() +
-                          base::TimeDelta::FromMilliseconds(33));
+    clock_.Advance(base::Milliseconds(33));
+    frame_->set_timestamp(frame_->timestamp() + base::Milliseconds(33));
   }
 
   static void SetUpTestCase() {

@@ -30,9 +30,9 @@ namespace app_time {
 
 namespace {
 
-constexpr base::TimeDelta kFiveMinutes = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kZeroMinutes = base::TimeDelta::FromMinutes(0);
+constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
+constexpr base::TimeDelta kZeroMinutes = base::Minutes(0);
 
 enterprise_management::AppActivity::AppState AppStateForReporting(
     AppState state) {
@@ -150,12 +150,12 @@ AppActivityRegistry::AppActivityRegistry(
   DCHECK(pref_service_);
 
   if (ShouldCleanUpStoredPref())
-    CleanRegistry(base::Time::Now() - base::TimeDelta::FromDays(30));
+    CleanRegistry(base::Time::Now() - base::Days(30));
 
   InitializeRegistryFromPref();
 
-  save_data_to_pref_service_.Start(FROM_HERE, base::TimeDelta::FromMinutes(5),
-                                   this, &AppActivityRegistry::SaveAppActivity);
+  save_data_to_pref_service_.Start(FROM_HERE, base::Minutes(5), this,
+                                   &AppActivityRegistry::SaveAppActivity);
 
   app_service_wrapper_->AddObserver(this);
 }
@@ -1029,7 +1029,7 @@ bool AppActivityRegistry::ShowLimitUpdatedNotificationIfNeeded(
 }
 
 base::TimeDelta AppActivityRegistry::GetWebActiveRunningTime() const {
-  base::TimeDelta active_running_time = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta active_running_time = base::Seconds(0);
   for (const auto& app_info : activity_registry_) {
     const AppId& app_id = app_info.first;
     const AppDetails& details = app_info.second;
@@ -1065,7 +1065,7 @@ void AppActivityRegistry::InitializeRegistryFromPref() {
       pref_service_->GetInt64(prefs::kPerAppTimeLimitsLatestLimitUpdateTime);
 
   latest_app_limit_update_ = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(last_limits_updates));
+      base::Microseconds(last_limits_updates));
 
   InitializeAppActivities();
 }
@@ -1126,10 +1126,10 @@ bool AppActivityRegistry::ShouldCleanUpStoredPref() {
   if (last_time == 0)
     return false;
 
-  base::Time time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(last_time));
+  base::Time time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(last_time));
 
-  return time < base::Time::Now() - base::TimeDelta::FromDays(30);
+  return time < base::Time::Now() - base::Days(30);
 }
 
 void AppActivityRegistry::SendSystemNotificationsForApp(const AppId& app_id) {

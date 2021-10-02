@@ -807,7 +807,7 @@ TEST_F(PlatformNotificationContextTest, SynchronizeNotifications) {
 
   // Let some time pass so the stored notification is not considered new anymore
   // and gets deleted in the next synchronize pass.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // Delete the notification from the display service without removing it from
   // the database. It should automatically synchronize on the next read.
@@ -847,7 +847,7 @@ TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
   WriteNotificationDataSync(context.get(), origin, data);
 
   // Let some time pass but not enough to delete the notification yet.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(5));
+  task_environment_.FastForwardBy(base::Days(5));
   context->TriggerNotifications();
   // Allow for closing notifications on the UI thread.
   base::RunLoop().RunUntilIdle();
@@ -864,7 +864,7 @@ TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
 
   // Let some more time pass so the first notification is not considered new
   // anymore and should get closed while the second one should stay.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(2));
+  task_environment_.FastForwardBy(base::Days(2));
   context->TriggerNotifications();
   // Allow for closing notifications on the UI thread.
   base::RunLoop().RunUntilIdle();
@@ -957,7 +957,7 @@ TEST_F(PlatformNotificationContextTest, ReDisplayNotifications) {
   NotificationDatabaseData data1;
   data1.notification_resources = blink::NotificationResources();
   data1.notification_data.show_trigger_timestamp =
-      base::Time::Now() + base::TimeDelta::FromDays(10);
+      base::Time::Now() + base::Days(10);
   WriteNotificationDataSync(context.get(), origin, data1);
   // 1 notification with stored resources.
   NotificationDatabaseData data2;
@@ -1020,7 +1020,7 @@ TEST_F(PlatformNotificationContextTest, CountVisibleNotification) {
       WriteNotificationDataSync(context.get(), origin, data);
   // Scheduled notification won't be visible.
   data.notification_data.show_trigger_timestamp =
-      base::Time::Now() + base::TimeDelta::FromDays(10);
+      base::Time::Now() + base::Days(10);
   WriteNotificationDataSync(context.get(), origin, data);
 
   // Expect to see three notifications.
@@ -1153,7 +1153,7 @@ TEST_F(PlatformNotificationContextTest, GetOldestNotificationTime) {
 
     // This is done to simulate a change in time to have notifications from
     // different times and days.
-    task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+    task_environment_.FastForwardBy(base::Days(1));
   }
 
   // Verify that the 5 notifications are present.

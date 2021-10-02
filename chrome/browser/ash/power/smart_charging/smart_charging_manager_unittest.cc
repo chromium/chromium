@@ -122,7 +122,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void FastForwardTimeBySecs(const int seconds) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(seconds));
+    task_environment()->FastForwardBy(base::Seconds(seconds));
   }
 
   base::TimeDelta GetDurationRecentVideoPlaying() {

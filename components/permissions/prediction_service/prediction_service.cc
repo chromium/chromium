@@ -28,7 +28,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kURLLookupTimeout = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kURLLookupTimeout = base::Seconds(2);
 
 constexpr float kRoundToMultiplesOf = 0.1f;
 

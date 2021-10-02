@@ -424,7 +424,7 @@ TEST_F(PacFileFetcherImplTest, Hang) {
 
   // Set the timeout period to 0.5 seconds.
   base::TimeDelta prev_timeout =
-      pac_fetcher->SetTimeoutConstraint(base::TimeDelta::FromMilliseconds(500));
+      pac_fetcher->SetTimeoutConstraint(base::Milliseconds(500));
 
   // Try fetching a URL which takes 1.2 seconds. We should abort the request
   // after 500 ms, and fail with a timeout error.

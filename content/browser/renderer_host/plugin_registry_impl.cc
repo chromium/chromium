@@ -16,7 +16,7 @@
 namespace content {
 
 namespace {
-constexpr auto kPluginRefreshThreshold = base::TimeDelta::FromSeconds(3);
+constexpr auto kPluginRefreshThreshold = base::Seconds(3);
 }  // namespace
 
 PluginRegistryImpl::PluginRegistryImpl(int render_process_id)

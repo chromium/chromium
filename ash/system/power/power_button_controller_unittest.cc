@@ -82,7 +82,7 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
     // avoid events being ignored.
     tick_clock_.Advance(
         PowerButtonController::kIgnorePowerButtonAfterResumeDelay +
-        base::TimeDelta::FromMilliseconds(2));
+        base::Milliseconds(2));
 
     // Run the event loop so that PowerButtonDisplayController can receive the
     // initial backlights-forced-off state.
@@ -445,7 +445,7 @@ TEST_F(PowerButtonControllerTest,
 
   // Send the power button event after a short delay and check that backlights
   // are not forced off.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
+  tick_clock_.Advance(base::Milliseconds(500));
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
   ReleasePowerButton();
@@ -454,7 +454,7 @@ TEST_F(PowerButtonControllerTest,
 
   // Send the power button event after a longer delay and check that backlights
   // are forced off.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1600));
+  tick_clock_.Advance(base::Milliseconds(1600));
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
   ReleasePowerButton();
@@ -481,7 +481,7 @@ TEST_F(PowerButtonControllerTest,
 
   // Send the power button event after a short delay and check that backlights
   // are not forced off.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(500));
+  tick_clock_.Advance(base::Milliseconds(500));
   PressPowerButton();
   SendBrightnessChange(kNonZeroBrightness, kUserCause);
   EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
@@ -491,7 +491,7 @@ TEST_F(PowerButtonControllerTest,
 
   // Send the power button event after a longer delay and check that backlights
   // are forced off.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1600));
+  tick_clock_.Advance(base::Milliseconds(1600));
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
   ReleasePowerButton();
@@ -585,7 +585,7 @@ TEST_F(PowerButtonControllerTest, LeaveTabletModeWhilePressingPowerButton) {
   EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
   EnableTabletMode(false);
   EXPECT_FALSE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1500));
+  tick_clock_.Advance(base::Milliseconds(1500));
   ReleasePowerButton();
   EXPECT_FALSE(power_manager_client()->backlights_forced_off());
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
@@ -602,7 +602,7 @@ TEST_F(PowerButtonControllerTest, IgnoreRepeatedPowerButtonReleases) {
 
   // Test that a pressing-releasing operation after a short duration, backlights
   // forced off is stopped since we don't drop request for power button pressed.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(200));
+  tick_clock_.Advance(base::Milliseconds(200));
   PressPowerButton();
   SendBrightnessChange(kNonZeroBrightness, kUserCause);
   ReleasePowerButton();
@@ -610,13 +610,13 @@ TEST_F(PowerButtonControllerTest, IgnoreRepeatedPowerButtonReleases) {
 
   // Test that after another short duration, backlights will not be forced off
   // since this immediately following forcing off request needs to be dropped.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(200));
+  tick_clock_.Advance(base::Milliseconds(200));
   PressPowerButton();
   ReleasePowerButton();
   EXPECT_FALSE(power_manager_client()->backlights_forced_off());
 
   // Test that after another long duration, backlights should be forced off.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(800));
+  tick_clock_.Advance(base::Milliseconds(800));
   PressPowerButton();
   ReleasePowerButton();
   SendBrightnessChange(0, kUserCause);
@@ -638,7 +638,7 @@ TEST_F(PowerButtonControllerTest,
   ReleasePowerButton();
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
 
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(200));
+  tick_clock_.Advance(base::Milliseconds(200));
   PressPowerButton();
   ReleasePowerButton();
   // Showing menu animation should be cancelled and menu is not shown.
@@ -751,7 +751,7 @@ TEST_F(PowerButtonControllerTest, IgnoreForcingOffWhenDisplayIsTurningOn) {
 
   // Since display could still be off, ignore additional button presses.
   tick_clock_.Advance(PowerButtonController::kScreenStateChangeDelay -
-                      base::TimeDelta::FromMilliseconds(1));
+                      base::Milliseconds(1));
   EnableTabletMode(true);
   PressPowerButton();
   ReleasePowerButton();

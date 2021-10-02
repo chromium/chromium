@@ -543,8 +543,7 @@ void SyncWorker::DidApplyLocalChange(LocalToRemoteSyncer* syncer,
     should_check_remote_change_ = false;
     listing_remote_changes_ = true;
     time_to_check_changes_ =
-        base::TimeTicks::Now() +
-        base::TimeDelta::FromSeconds(kListChangesRetryDelaySeconds);
+        base::TimeTicks::Now() + base::Seconds(kListChangesRetryDelaySeconds);
   }
 
   if (status == SYNC_STATUS_OK)
@@ -586,8 +585,7 @@ bool SyncWorker::MaybeStartFetchChanges() {
                          weak_ptr_factory_.GetWeakPtr()))) {
     should_check_remote_change_ = false;
     listing_remote_changes_ = true;
-    time_to_check_changes_ =
-        now + base::TimeDelta::FromSeconds(kListChangesRetryDelaySeconds);
+    time_to_check_changes_ = now + base::Seconds(kListChangesRetryDelaySeconds);
     return true;
   }
   return false;

@@ -1882,7 +1882,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Default value is set to 100ms between LoadProgressChanged events.
   base::TimeDelta minimum_delay_between_loading_updates_ms_ =
-      base::TimeDelta::FromMilliseconds(100);
+      base::Milliseconds(100);
 
   // Upload progress, for displaying in the status bar.
   // Set to zero when there is no significant upload happening.

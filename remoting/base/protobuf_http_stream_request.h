@@ -35,7 +35,7 @@ class ProtobufHttpStreamRequest final
       base::OnceCallback<void(const ProtobufHttpStatus& status)>;
 
   static constexpr base::TimeDelta kStreamReadyTimeoutDuration =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 
   explicit ProtobufHttpStreamRequest(
       std::unique_ptr<ProtobufHttpRequestConfig> config);

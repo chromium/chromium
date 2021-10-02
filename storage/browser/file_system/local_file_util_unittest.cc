@@ -184,10 +184,8 @@ TEST_F(LocalFileUtilTest, TouchFile) {
 
   base::File::Info info;
   ASSERT_TRUE(base::GetFileInfo(LocalPath(file_name), &info));
-  const base::Time new_accessed =
-      info.last_accessed + base::TimeDelta::FromHours(10);
-  const base::Time new_modified =
-      info.last_modified + base::TimeDelta::FromHours(5);
+  const base::Time new_accessed = info.last_accessed + base::Hours(10);
+  const base::Time new_modified = info.last_modified + base::Hours(5);
 
   EXPECT_EQ(base::File::FILE_OK,
             file_util()->Touch(context.get(), CreateURL(file_name),
@@ -208,10 +206,8 @@ TEST_F(LocalFileUtilTest, TouchDirectory) {
 
   base::File::Info info;
   ASSERT_TRUE(base::GetFileInfo(LocalPath(dir_name), &info));
-  const base::Time new_accessed =
-      info.last_accessed + base::TimeDelta::FromHours(10);
-  const base::Time new_modified =
-      info.last_modified + base::TimeDelta::FromHours(5);
+  const base::Time new_accessed = info.last_accessed + base::Hours(10);
+  const base::Time new_modified = info.last_modified + base::Hours(5);
 
   EXPECT_EQ(base::File::FILE_OK,
             file_util()->Touch(context.get(), CreateURL(dir_name), new_accessed,

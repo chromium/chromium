@@ -77,11 +77,9 @@ constexpr double kMinZoom = 0.01;
 
 // A delay to wait between each accessibility page to keep the system
 // responsive.
-constexpr base::TimeDelta kAccessibilityPageDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
-constexpr base::TimeDelta kFindResultCooldown =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
 constexpr char kChromePrintHost[] = "chrome://print/";
 constexpr char kChromeExtensionHost[] =

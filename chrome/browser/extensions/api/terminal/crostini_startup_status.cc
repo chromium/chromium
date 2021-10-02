@@ -100,7 +100,7 @@ void CrostiniStartupStatus::OnCrostiniConnected(
 void CrostiniStartupStatus::ShowProgressAtInterval() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   show_progress_timer_ = std::make_unique<base::RepeatingTimer>();
-  show_progress_timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(300),
+  show_progress_timer_->Start(FROM_HERE, base::Milliseconds(300),
                               base::BindRepeating(
                                   [](CrostiniStartupStatus* self) {
                                     self->spinner_index_++;

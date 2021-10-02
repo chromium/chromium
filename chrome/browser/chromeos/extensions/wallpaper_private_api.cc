@@ -77,7 +77,7 @@ namespace {
 // The time and retry limit to re-check the profile sync service status. The
 // sync extension function can get the correct value of the "syncThemes" user
 // preference only after the profile sync service has been configured.
-constexpr base::TimeDelta kRetryDelay = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kRetryDelay = base::Seconds(10);
 constexpr int kRetryLimit = 3;
 
 // TODO(https://crbug.com/1037624): Update "themes" terminology after sync-split

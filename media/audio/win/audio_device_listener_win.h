@@ -45,8 +45,7 @@ class MEDIA_EXPORT AudioDeviceListenerWin : public IMMNotificationClient {
   friend class AudioDeviceListenerWinTest;
 
   // Minimum allowed time between device change notifications.
-  static constexpr base::TimeDelta kDeviceChangeLimit =
-      base::TimeDelta::FromMilliseconds(250);
+  static constexpr base::TimeDelta kDeviceChangeLimit = base::Milliseconds(250);
 
   // IMMNotificationClient implementation.
   IFACEMETHODIMP_(ULONG) AddRef() override;

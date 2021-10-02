@@ -33,11 +33,10 @@ const int kOverDataUsageIntervalMinutes = 5;
 // where the server is having issues.
 base::TimeDelta BackOffUploadInterval(base::TimeDelta interval) {
   DCHECK_GT(kBackoffMultiplier, 1.0);
-  interval = base::TimeDelta::FromMicroseconds(static_cast<int64_t>(
-      kBackoffMultiplier * interval.InMicroseconds()));
+  interval = base::Microseconds(
+      static_cast<int64_t>(kBackoffMultiplier * interval.InMicroseconds()));
 
-  base::TimeDelta max_interval =
-      base::TimeDelta::FromHours(kMaxBackoffIntervalHours);
+  base::TimeDelta max_interval = base::Hours(kMaxBackoffIntervalHours);
   if (interval > max_interval || interval.InSeconds() < 0) {
     interval = max_interval;
   }
@@ -48,12 +47,12 @@ base::TimeDelta BackOffUploadInterval(base::TimeDelta interval) {
 // On mobile, keeping the radio on is very expensive, so prefer to keep this
 // short and send in bursts.
 base::TimeDelta GetUnsentLogsInterval() {
-  return base::TimeDelta::FromSeconds(3);
+  return base::Seconds(3);
 }
 
 // Initial time delay after a log uploaded fails before retrying it.
 base::TimeDelta GetInitialBackoffInterval() {
-  return base::TimeDelta::FromMinutes(5);
+  return base::Minutes(5);
 }
 
 }  // namespace
@@ -87,7 +86,7 @@ void MetricsUploadScheduler::StopAndUploadCancelled() {
 }
 
 void MetricsUploadScheduler::UploadOverDataUsageCap() {
-  TaskDone(base::TimeDelta::FromMinutes(kOverDataUsageIntervalMinutes));
+  TaskDone(base::Minutes(kOverDataUsageIntervalMinutes));
 }
 
 }  // namespace metrics

@@ -29,7 +29,7 @@ class OnboardingUserActivityCounterTest : public ::testing::Test {
 
  protected:
   void SetUpCounter() {
-    base::TimeDelta pref_activity_time = base::TimeDelta::FromMinutes(30);
+    base::TimeDelta pref_activity_time = base::Minutes(30);
     base::TimeDelta required_activity_time = pref_activity_time * 2;
 
     // Mark for start.
@@ -63,19 +63,16 @@ TEST_F(OnboardingUserActivityCounterTest, NoShouldStart) {
 }
 
 TEST_F(OnboardingUserActivityCounterTest, ShouldStart) {
-  prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
-                      base::TimeDelta::FromMinutes(10));
+  prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding, base::Minutes(10));
   EXPECT_TRUE(OnboardingUserActivityCounter::ShouldStart(&prefs_));
 }
 
 // Do not start the counter if the onboarding happened too early in the past.
 TEST_F(OnboardingUserActivityCounterTest, ExpiredAfterOnboarding) {
-  prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
-                      base::TimeDelta::FromMinutes(10));
+  prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding, base::Minutes(10));
 
   base::Time now = base::Time::Now();
-  prefs_.SetTime(prefs::kOobeOnboardingTime,
-                 now - base::TimeDelta::FromDays(2));
+  prefs_.SetTime(prefs::kOobeOnboardingTime, now - base::Days(2));
   EXPECT_FALSE(OnboardingUserActivityCounter::ShouldStart(&prefs_));
 }
 
@@ -138,8 +135,7 @@ TEST_F(OnboardingUserActivityCounterTest,
   session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
 
   base::Time now = base::Time::Now();
-  prefs_.SetTime(prefs::kOobeOnboardingTime,
-                 now - base::TimeDelta::FromDays(2));
+  prefs_.SetTime(prefs::kOobeOnboardingTime, now - base::Days(2));
 
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
 

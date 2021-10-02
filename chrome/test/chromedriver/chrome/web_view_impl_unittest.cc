@@ -317,7 +317,7 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
 
   // child_view gets no socket...
   ASSERT_NO_FATAL_FAILURE(child_view->WaitForPendingNavigations(
-      "1234", Timeout(base::TimeDelta::FromMilliseconds(10)), true));
+      "1234", Timeout(base::Milliseconds(10)), true));
 }
 
 TEST(CreateChild, IsPendingNavigation_NoErrors) {
@@ -335,7 +335,7 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
 
-  Timeout timeout(base::TimeDelta::FromMilliseconds(10));
+  Timeout timeout(base::Milliseconds(10));
   bool result;
   ASSERT_NO_FATAL_FAILURE(child_view->IsPendingNavigation(&timeout, &result));
 }

@@ -267,12 +267,12 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
 
   UmaHistogramCustomMicrosecondsTimes(
       "PlatformThread.Mac.AttemptedRealtimePeriod", realtime_period,
-      base::TimeDelta(), base::TimeDelta::FromMilliseconds(100), 100);
+      base::TimeDelta(), base::Milliseconds(100), 100);
 
   if (result == KERN_SUCCESS) {
     UmaHistogramCustomMicrosecondsTimes(
         "PlatformThread.Mac.SucceededRealtimePeriod", realtime_period,
-        base::TimeDelta(), base::TimeDelta::FromMilliseconds(100), 100);
+        base::TimeDelta(), base::Milliseconds(100), 100);
   }
   return;
 }

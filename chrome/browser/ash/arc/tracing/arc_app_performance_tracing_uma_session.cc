@@ -15,15 +15,15 @@ namespace {
 // Defines the delay to start tracing after ARC++ window gets activated.
 // This is done to avoid likely redundant statistics collection during the app
 // initialization/loading time.
-constexpr base::TimeDelta kInitTracingDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kInitTracingDelay = base::Minutes(1);
 
 // Defines the delay to start next session of capturing statistics for the same
 // active app or in case the app was already reported.
-constexpr base::TimeDelta kNextTracingDelay = base::TimeDelta::FromMinutes(20);
+constexpr base::TimeDelta kNextTracingDelay = base::Minutes(20);
 
 // Defines the period to capture tracing results. Can be overwritten for
 // testing.
-base::TimeDelta tracing_period = base::TimeDelta::FromSeconds(15);
+base::TimeDelta tracing_period = base::Seconds(15);
 
 std::string GetHistogramName(const std::string& category,
                              const std::string& name) {

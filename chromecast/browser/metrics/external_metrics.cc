@@ -178,7 +178,7 @@ void ExternalMetrics::ScheduleCollection() {
       FROM_HERE,
       base::BindOnce(&ExternalMetrics::CollectEventsAndReschedule,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kExternalMetricsCollectionIntervalSeconds));
+      base::Seconds(kExternalMetricsCollectionIntervalSeconds));
 }
 
 }  // namespace metrics

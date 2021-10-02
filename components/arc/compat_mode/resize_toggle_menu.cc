@@ -296,7 +296,7 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
 
   auto_close_closure_.Reset(base::BindOnce(&ResizeToggleMenu::CloseBubble,
                                            weak_ptr_factory_.GetWeakPtr()));
-  constexpr auto kAutoCloseDelay = base::TimeDelta::FromSeconds(2);
+  constexpr auto kAutoCloseDelay = base::Seconds(2);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, auto_close_closure_.callback(), kAutoCloseDelay);
 }

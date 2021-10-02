@@ -68,7 +68,7 @@ class FakeFileHandlingExpiryService
     : public blink::mojom::FileHandlingExpiryInterceptorForTesting {
  public:
   FakeFileHandlingExpiryService()
-      : expiry_time_(base::Time::Now() + base::TimeDelta::FromDays(1)) {}
+      : expiry_time_(base::Time::Now() + base::Days(1)) {}
 
   blink::mojom::FileHandlingExpiry* GetForwardingInterface() override {
     NOTREACHED();

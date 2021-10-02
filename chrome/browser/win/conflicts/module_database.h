@@ -54,8 +54,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
 
   // The Module Database becomes idle after this timeout expires without any
   // module events.
-  static constexpr base::TimeDelta kIdleTimeout =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kIdleTimeout = base::Seconds(10);
 
   // Creates the ModuleDatabase. Must be created and set on the sequence
   // returned by GetTaskRunner().

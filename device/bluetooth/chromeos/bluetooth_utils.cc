@@ -29,8 +29,7 @@ const char kHIDServiceUUID[] = "1812";
 // https://www.bluetooth.com/specifications/assigned-numbers/16-bit-uuids-for-sdos.
 const char kSecurityKeyServiceUUID[] = "FFFD";
 
-constexpr base::TimeDelta kMaxDeviceSelectionDuration =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kMaxDeviceSelectionDuration = base::Seconds(30);
 
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -145,9 +144,8 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
 void RecordPairingDuration(const std::string& histogram_name,
                            base::TimeDelta pairing_duration) {
   base::UmaHistogramCustomTimes(histogram_name, pairing_duration,
-                                base::TimeDelta::FromMilliseconds(1) /* min */,
-                                base::TimeDelta::FromSeconds(30) /* max */,
-                                50 /* buckets */);
+                                base::Milliseconds(1) /* min */,
+                                base::Seconds(30) /* max */, 50 /* buckets */);
 }
 
 void RecordPairingTransport(BluetoothTransport transport) {
@@ -177,7 +175,7 @@ void RecordPairingTransport(BluetoothTransport transport) {
 void RecordDeviceSelectionDuration(const std::string& histogram_name,
                                    base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(
-      histogram_name, duration, base::TimeDelta::FromMilliseconds(1) /* min */,
+      histogram_name, duration, base::Milliseconds(1) /* min */,
       kMaxDeviceSelectionDuration /* max */, 50 /* buckets */);
 }
 

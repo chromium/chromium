@@ -77,8 +77,8 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
           hardware_params.sample_rate(), hardware_params.frames_per_buffer());
     case media::AudioLatency::LATENCY_EXACT_MS:
       return media::AudioLatency::GetExactBufferSize(
-          base::TimeDelta::FromSecondsD(latency_hint.Seconds()),
-          hardware_params.sample_rate(), hardware_params.frames_per_buffer(),
+          base::Seconds(latency_hint.Seconds()), hardware_params.sample_rate(),
+          hardware_params.frames_per_buffer(),
           hardware_capabilities.min_frames_per_buffer,
           hardware_capabilities.max_frames_per_buffer,
           media::limits::kMaxWebAudioBufferSize);
@@ -196,8 +196,7 @@ void RendererWebAudioDeviceImpl::Start() {
   // since it has special connotations for Blink and garbage collection. Timeout
   // value chosen to be highly unlikely in the normal case.
   webaudio_suspender_ = std::make_unique<media::SilentSinkSuspender>(
-      this, base::TimeDelta::FromSeconds(30), sink_params_, sink_,
-      GetSuspenderTaskRunner());
+      this, base::Seconds(30), sink_params_, sink_, GetSuspenderTaskRunner());
   sink_->Initialize(sink_params_, webaudio_suspender_.get());
 
   sink_->Start();

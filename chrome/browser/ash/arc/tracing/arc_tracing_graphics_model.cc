@@ -1281,7 +1281,7 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
 
   for (const auto& it : pulse_events) {
     jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(it.timestamp)));
+        base::Microseconds(it.timestamp)));
     if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive)
       break;
   }
@@ -1293,7 +1293,7 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
   jank_detector.SetPeriodFixed(jank_detector.period());
   for (const auto& it : pulse_events) {
     jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(it.timestamp)));
+        base::Microseconds(it.timestamp)));
   }
 }
 

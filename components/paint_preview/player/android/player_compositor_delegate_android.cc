@@ -115,7 +115,7 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
       static_cast<bool>(j_main_frame_mode),
       base::BindOnce(&base::android::RunIntCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_compositor_error_callback)),
-      base::TimeDelta::FromSeconds(15),
+      base::Seconds(15),
       (static_cast<bool>(j_is_low_mem) ? kMaxParallelBitmapRequestsLowMemory
                                        : kMaxParallelBitmapRequests));
 

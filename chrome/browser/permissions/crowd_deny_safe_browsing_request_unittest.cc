@@ -124,7 +124,7 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, Timeout) {
 
   // Verify the request doesn't time out unreasonably fast.
   EXPECT_CALL(mock_callback_receiver, Run(testing::_)).Times(0);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   testing::Mock::VerifyAndClearExpectations(&mock_callback_receiver);
 
   // But that it eventually does.
@@ -168,7 +168,7 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, AbandonedWhileCheckPending) {
       fake_database_manager(), test_clock(),
       url::Origin::Create(GURL(kTestOriginFoo)), mock_callback_receiver.Get());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Permissions."),
               testing::IsEmpty());
 }

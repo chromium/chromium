@@ -25,20 +25,18 @@ using EventWithLatencyInfoTest = testing::Test;
 TouchEventWithLatencyInfo CreateTouchEvent(WebInputEvent::Type type,
                                            double timestamp,
                                            unsigned touch_count = 1) {
-  TouchEventWithLatencyInfo touch(
-      type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+  TouchEventWithLatencyInfo touch(type, WebInputEvent::kNoModifiers,
+                                  base::TimeTicks() + base::Seconds(timestamp),
+                                  ui::LatencyInfo());
   touch.event.touches_length = touch_count;
   return touch;
 }
 
 MouseEventWithLatencyInfo CreateMouseEvent(WebInputEvent::Type type,
                                            double timestamp) {
-  return MouseEventWithLatencyInfo(
-      type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+  return MouseEventWithLatencyInfo(type, WebInputEvent::kNoModifiers,
+                                   base::TimeTicks() + base::Seconds(timestamp),
+                                   ui::LatencyInfo());
 }
 
 MouseWheelEventWithLatencyInfo CreateMouseWheelEvent(
@@ -48,8 +46,7 @@ MouseWheelEventWithLatencyInfo CreateMouseWheelEvent(
     int modifiers = WebInputEvent::kNoModifiers) {
   MouseWheelEventWithLatencyInfo mouse_wheel(
       WebInputEvent::Type::kMouseWheel, modifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+      base::TimeTicks() + base::Seconds(timestamp), ui::LatencyInfo());
   mouse_wheel.event.delta_x = deltaX;
   mouse_wheel.event.delta_y = deltaY;
   return mouse_wheel;
@@ -61,8 +58,7 @@ GestureEventWithLatencyInfo CreateGestureEvent(WebInputEvent::Type type,
                                                float y = 0.0f) {
   GestureEventWithLatencyInfo gesture(
       type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+      base::TimeTicks() + base::Seconds(timestamp), ui::LatencyInfo());
   gesture.event.SetPositionInWidget(gfx::PointF(x, y));
   return gesture;
 }

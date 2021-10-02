@@ -122,8 +122,7 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
       {mailbox}, sync_token, GL_TEXTURE_2D, coded_size, visible_rect,
-      visible_rect.size(), base::TimeDelta::FromSeconds(1),
-      std::move(destroyed_callback));
+      visible_rect.size(), base::Seconds(1), std::move(destroyed_callback));
 }
 
 scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
@@ -186,7 +185,7 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_I420,
       {y_mailbox, u_mailbox, v_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
-      visible_rect, visible_rect.size(), base::TimeDelta::FromSeconds(1),
+      visible_rect, visible_rect.size(), base::Seconds(1),
       std::move(destroyed_callback));
 }
 
@@ -247,7 +246,7 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_NV12,
       {y_mailbox, uv_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
-      visible_rect, visible_rect.size(), base::TimeDelta::FromSeconds(1),
+      visible_rect, visible_rect.size(), base::Seconds(1),
       std::move(destroyed_callback));
 }
 

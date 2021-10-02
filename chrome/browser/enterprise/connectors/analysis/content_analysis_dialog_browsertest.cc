@@ -29,9 +29,9 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr base::TimeDelta kNoDelay = base::TimeDelta::FromSeconds(0);
-constexpr base::TimeDelta kSmallDelay = base::TimeDelta::FromMilliseconds(300);
-constexpr base::TimeDelta kNormalDelay = base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kNoDelay = base::Seconds(0);
+constexpr base::TimeDelta kSmallDelay = base::Milliseconds(300);
+constexpr base::TimeDelta kNormalDelay = base::Milliseconds(500);
 
 constexpr char kBlockingScansForDlpAndMalware[] = R"(
 {
@@ -794,8 +794,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
   enterprise_connectors::ContentAnalysisDialog::
-      SetMinimumPendingDialogTimeForTesting(
-          base::TimeDelta::FromMilliseconds(0));
+      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
 
   std::unique_ptr<MockCustomMessageDelegate> delegate =
       std::make_unique<MockCustomMessageDelegate>(

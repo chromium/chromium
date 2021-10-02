@@ -225,7 +225,7 @@ constexpr char kBatchResponse[] = R"(
   ]
 })";
 
-constexpr base::TimeDelta kThrottle = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kThrottle = base::Seconds(1);
 
 // The minimum dimension required for description annotation.
 constexpr int32_t kDescDim = Annotator::kDescMinDimension;
@@ -452,7 +452,7 @@ TEST(AnnotatorTest, OcrSuccessAndCache) {
     // No request should be sent yet (because service is waiting to batch up
     // multiple requests).
     EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-    test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    test_task_env.FastForwardBy(base::Seconds(1));
     test_task_env.RunUntilIdle();
 
     // HTTP request should have been made.
@@ -556,7 +556,7 @@ TEST(AnnotatorTest, DescriptionSuccess) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
   test_task_env.RunUntilIdle();
 
   // HTTP request should have been made.
@@ -664,7 +664,7 @@ TEST(AnnotatorTest, DoubleOcrResult) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
   test_task_env.RunUntilIdle();
 
   // HTTP request should have been made.
@@ -780,7 +780,7 @@ TEST(AnnotatorTest, HttpError) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -837,7 +837,7 @@ TEST(AnnotatorTest, BackendError) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -921,7 +921,7 @@ TEST(AnnotatorTest, OcrBackendError) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1016,7 +1016,7 @@ TEST(AnnotatorTest, DescriptionBackendError) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1107,7 +1107,7 @@ TEST(AnnotatorTest, ServerError) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request should have been made; respond with nonsense string.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1166,7 +1166,7 @@ TEST(AnnotatorTest, AdultError) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1257,7 +1257,7 @@ TEST(AnnotatorTest, ProcessorFails) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request for image 1 should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1340,7 +1340,7 @@ TEST(AnnotatorTest, ProcessorFailedPreviously) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request for image 1 should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1407,7 +1407,7 @@ TEST(AnnotatorTest, ProcessorDies) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // HTTP request for image 1 should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1484,7 +1484,7 @@ TEST(AnnotatorTest, ConcurrentSameBatch) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // A single HTTP request for all images should have been sent.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1560,7 +1560,7 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // Request OCR for image 2.
   annotator.AnnotateImage(
@@ -1610,7 +1610,7 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
       net::HTTP_OK);
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
 
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // Now the HTTP request for image 2 should have been made.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -1733,7 +1733,7 @@ TEST(AnnotatorTest, DuplicateWork) {
 
   // Allow batch HTTP request to be sent off and then request annotation of the
   // image with processor 4.
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
   EXPECT_THAT(test_url_factory.requests(), SizeIs(1));
   annotator.AnnotateImage(
       kImage1Url, kDescLang, processor[3].GetPendingRemote(),
@@ -1839,7 +1839,7 @@ TEST(AnnotatorTest, DescPolicy) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // A single HTTP request for all images should have been sent.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -2033,7 +2033,7 @@ TEST(AnnotatorTest, DescLanguage) {
   // No request should be sent yet (because service is waiting to batch up
   // multiple requests).
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // A single HTTP request for all images should have been sent.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -2208,7 +2208,7 @@ TEST(AnnotatorTest, LanguageFallback) {
 
   // Fast-forward time so that server sends batch.
   EXPECT_THAT(test_url_factory.requests(), IsEmpty());
-  test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_env.FastForwardBy(base::Seconds(1));
 
   // A single HTTP request for all images should have been sent.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -2305,7 +2305,7 @@ TEST(AnnotatorTest, ApiKey) {
     // Send back image data.
     std::move(processor.callbacks()[0]).Run({1, 2, 3}, kDescDim, kDescDim);
     processor.callbacks().pop_back();
-    test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    test_task_env.FastForwardBy(base::Seconds(1));
     test_task_env.RunUntilIdle();
 
     // HTTP request should have been made with the API key included.
@@ -2339,7 +2339,7 @@ TEST(AnnotatorTest, ApiKey) {
     // Send back image data.
     std::move(processor.callbacks()[0]).Run({1, 2, 3}, kDescDim, kDescDim);
     processor.callbacks().pop_back();
-    test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    test_task_env.FastForwardBy(base::Seconds(1));
     test_task_env.RunUntilIdle();
 
     // HTTP request should have been made without the API key included.
@@ -2370,7 +2370,7 @@ TEST(AnnotatorTest, ApiKey) {
     // Send back image data.
     std::move(processor.callbacks()[0]).Run({1, 2, 3}, kDescDim, kDescDim);
     processor.callbacks().pop_back();
-    test_task_env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    test_task_env.FastForwardBy(base::Seconds(1));
     test_task_env.RunUntilIdle();
 
     // HTTP request should have been made without the API key included.

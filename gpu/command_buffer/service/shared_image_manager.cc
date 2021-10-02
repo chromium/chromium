@@ -61,9 +61,8 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
     if (manager->is_thread_safe()) {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "GPU.SharedImageManager.TimeToAcquireLock",
-          base::TimeTicks::Now() - start_time_,
-          base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(1),
-          50);
+          base::TimeTicks::Now() - start_time_, base::Microseconds(1),
+          base::Seconds(1), 50);
     }
   }
 

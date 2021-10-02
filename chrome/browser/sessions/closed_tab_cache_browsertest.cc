@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, EvictEntryOnTimeout) {
   EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
   // Fast forward to just before eviction is due.
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta delta = base::Milliseconds(1);
   base::TimeDelta ttl = ClosedTabCache::GetTimeToLiveInClosedTabCache();
   task_runner->FastForwardBy(ttl - delta);
 

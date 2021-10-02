@@ -116,7 +116,7 @@ class ProfileWriterTest : public testing::Test {
     row.set_visit_count(visit_count);
     row.set_typed_count(typed_count);
     row.set_last_visit(base::Time::NowFromSystemTime() -
-                       base::TimeDelta::FromDays(days_since_last_visit));
+                       base::Days(days_since_last_visit));
     return row;
   }
 

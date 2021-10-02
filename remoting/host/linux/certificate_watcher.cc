@@ -177,7 +177,7 @@ CertificateWatcher::CertificateWatcher(
     : restart_action_(restart_action),
       caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       io_task_runner_(io_task_runner),
-      delay_(base::TimeDelta::FromSeconds(kReadDelayInSeconds)) {
+      delay_(base::Seconds(kReadDelayInSeconds)) {
   if (!base::PathService::Get(base::DIR_HOME, &cert_watch_path_)) {
     LOG(FATAL) << "Failed to get path of the home directory.";
   }

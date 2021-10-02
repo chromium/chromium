@@ -489,8 +489,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   [mediator_ handleLinkToTextSelection];
 
   // Advance time to skip waiting for the timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(
-      link_to_text::kLinkGenerationTimeoutInMs + 10));
+  task_environment_.FastForwardBy(
+      base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs + 10));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^BOOL {
     base::RunLoop().RunUntilIdle();

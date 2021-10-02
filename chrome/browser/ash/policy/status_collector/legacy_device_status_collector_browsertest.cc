@@ -1001,8 +1001,8 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
         base::BindRepeating(&GetEmptyGraphicsStatus);
     options->crash_report_info_fetcher =
         base::BindRepeating(&GetEmptyCrashReportInfo);
-    options->app_info_generator = std::make_unique<policy::AppInfoGenerator>(
-        nullptr, base::TimeDelta::FromDays(0));
+    options->app_info_generator =
+        std::make_unique<policy::AppInfoGenerator>(nullptr, base::Days(0));
     return options;
   }
 
@@ -3063,7 +3063,7 @@ TEST_F(LegacyDeviceStatusCollectorTest, TestCrashReportInfo) {
   const int report_cnt = 5;
 
   for (int i = 0; i < report_cnt; ++i) {
-    base::Time timestamp = now - base::TimeDelta::FromHours(30) * i;
+    base::Time timestamp = now - base::Hours(30) * i;
 
     em::CrashReportInfo info;
     info.set_capture_timestamp(timestamp.ToJavaTime());
@@ -3118,7 +3118,7 @@ TEST_F(LegacyDeviceStatusCollectorTest,
   const int report_cnt = 5;
 
   for (int i = 0; i < report_cnt; ++i) {
-    base::Time timestamp = now - base::TimeDelta::FromHours(30) * i;
+    base::Time timestamp = now - base::Hours(30) * i;
 
     em::CrashReportInfo info;
     info.set_capture_timestamp(timestamp.ToJavaTime());
@@ -3152,7 +3152,7 @@ TEST_F(LegacyDeviceStatusCollectorTest,
   const int report_cnt = 5;
 
   for (int i = 0; i < report_cnt; ++i) {
-    base::Time timestamp = now - base::TimeDelta::FromHours(30) * i;
+    base::Time timestamp = now - base::Hours(30) * i;
 
     em::CrashReportInfo info;
     info.set_capture_timestamp(timestamp.ToJavaTime());
@@ -3183,7 +3183,7 @@ TEST_F(LegacyDeviceStatusCollectorTest, TestCrashReportInfo_DeviceRestartOnly) {
   // lead to device restart, the third doesn't.
   std::vector<std::string> causes = {kTestCauseKernel, kTestCauseEC,
                                      kTestCauseOther};
-  base::Time timestamp = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time timestamp = base::Time::Now() - base::Hours(1);
   std::stringstream stream;
   for (int i = 0; i <= 2; ++i) {
     stream << "{";
@@ -3231,8 +3231,7 @@ TEST_F(LegacyDeviceStatusCollectorTest,
   // Create a test uploads.log file. One |upload_time| is within last 24 hours,
   // the other is not.
   base::Time now = base::Time::Now();
-  base::Time timestamps[] = {now - base::TimeDelta::FromHours(22),
-                             now - base::TimeDelta::FromHours(24)};
+  base::Time timestamps[] = {now - base::Hours(22), now - base::Hours(24)};
 
   std::stringstream stream;
   for (int i = 0; i <= 1; ++i) {
@@ -3274,7 +3273,7 @@ TEST_F(LegacyDeviceStatusCollectorTest,
        TestCrashReportInfo_CrashReportEntryMaxSize) {
   // Create a test uploads.log file with 200 entries. Only the last 100 is
   // included.
-  base::Time timestamp = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time timestamp = base::Time::Now() - base::Hours(1);
   const int report_cnt = 200;
   std::stringstream stream;
   for (int i = 1; i <= report_cnt; ++i) {
@@ -3318,7 +3317,7 @@ TEST_F(LegacyDeviceStatusCollectorTest,
 TEST_F(LegacyDeviceStatusCollectorTest, TestCrashReportInfo_LegacyCSV) {
   // Create a test uploads.log file in the legacy CSV format. All such kind of
   // record will be ignored because the required source filed is not existing.
-  base::Time timestamp = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time timestamp = base::Time::Now() - base::Hours(1);
   std::string test_entry =
       base::StringPrintf("%" PRId64, static_cast<int64_t>(timestamp.ToTimeT()));
   test_entry += ",";

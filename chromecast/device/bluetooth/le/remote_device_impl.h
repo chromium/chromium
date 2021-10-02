@@ -35,8 +35,7 @@ class RemoteDeviceImpl : public RemoteDevice {
  public:
   // If commands take longer than this amount of time, we will disconnect the
   // device.
-  static constexpr base::TimeDelta kCommandTimeout =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kCommandTimeout = base::Seconds(30);
 
   // RemoteDevice implementation
   void Connect(ConnectCallback cb, bluetooth_v2_shlib::Gatt::Client::Transport transport) override;

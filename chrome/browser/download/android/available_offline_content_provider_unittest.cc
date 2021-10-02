@@ -69,8 +69,7 @@ OfflineItem SuggestedOfflinePageItem() {
   item.description = "snippet";
   // Using Time::Now() isn't ideal, but this should result in "4 hours ago"
   // even if the test takes 1 hour to run.
-  item.creation_time =
-      base::Time::Now() - base::TimeDelta::FromMinutes(60 * 3.5);
+  item.creation_time = base::Time::Now() - base::Minutes(60 * 3.5);
   item.last_accessed_time = base::Time::Now();
   item.attribution = "attribution";
   return item;

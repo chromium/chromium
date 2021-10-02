@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   EXPECT_EQ(0u, GetInfobarCount(tab1));
 
   // Move clock ahead 8 days.
-  clock->Advance(base::TimeDelta::FromDays(8));
+  clock->Advance(base::Days(8));
 
   // Trigger the infobar again -- infobar should show again.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));

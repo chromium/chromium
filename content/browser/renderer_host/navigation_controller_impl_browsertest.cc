@@ -12046,8 +12046,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   HistoryNavigationBeforeCommitInjector trigger(web_contents, cross_origin_url);
 
   // Trigger OnCommitTimeout by setting commit timeout to 1 microsecond.
-  NavigationRequest::SetCommitTimeoutForTesting(
-      base::TimeDelta::FromMicroseconds(1));
+  NavigationRequest::SetCommitTimeoutForTesting(base::Microseconds(1));
 
   // Navigate cross-origin, waiting for the commit to occur.
   UrlCommitObserver cross_origin_commit_observer(root, cross_origin_url);

@@ -109,7 +109,7 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   // callers to use a reasonable default value instead.
   // This fixes a past bug where stored pref values were accidentally
   // re-interpreted from "seconds" to "microseconds"; see crbug.com/1246850.
-  if (poll_interval < base::TimeDelta::FromMinutes(1) &&
+  if (poll_interval < base::Minutes(1) &&
       base::FeatureList::IsEnabled(kSyncResetVeryShortPollInterval)) {
     pref_service_->ClearPref(kSyncPollIntervalSeconds);
     return base::TimeDelta();

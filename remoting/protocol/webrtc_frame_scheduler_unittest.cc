@@ -96,7 +96,7 @@ TEST_F(WebrtcFrameSchedulerTest, Capturer_RunsAt30Fps) {
   // repeated captures.
   scheduler_->OnKeyFrameRequested();
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // There should be approximately 30 captures in 1 second.
   EXPECT_LE(29, capture_callback_count_);
@@ -108,10 +108,10 @@ TEST_F(WebrtcFrameSchedulerTest, RttReportedInFrameStats) {
   scheduler_->OnKeyFrameRequested();
   scheduler_->OnTargetBitrateChanged(100);
   frame_.mutable_updated_region()->SetRect(DesktopRect::MakeWH(1, 1));
-  auto rtt = base::TimeDelta::FromMilliseconds(123);
+  auto rtt = base::Milliseconds(123);
   scheduler_->OnRttUpdate(rtt);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   EXPECT_EQ(rtt, frame_stats_.rtt_estimate);
 }

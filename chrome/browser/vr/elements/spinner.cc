@@ -15,10 +15,8 @@
 
 namespace vr {
 
-static constexpr base::TimeDelta kSweepDuration =
-    base::TimeDelta::FromSecondsD(2.0 / 3.0);
-static constexpr base::TimeDelta kRotationDuration =
-    base::TimeDelta::FromMilliseconds(1568);
+static constexpr base::TimeDelta kSweepDuration = base::Seconds(2.0 / 3.0);
+static constexpr base::TimeDelta kRotationDuration = base::Milliseconds(1568);
 static constexpr float kMinAngle = 0.0f;
 static constexpr float kMaxAngle = 135.0f;
 static constexpr float kThicknessFactor = 0.078125f;

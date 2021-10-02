@@ -53,12 +53,10 @@ class VIEWS_EXPORT RepeatController {
 
  private:
   // Initial time required before the first callback occurs.
-  static constexpr base::TimeDelta kInitialWait =
-      base::TimeDelta::FromMilliseconds(250);
+  static constexpr base::TimeDelta kInitialWait = base::Milliseconds(250);
 
   // Period of callbacks after the first callback.
-  static constexpr base::TimeDelta kRepeatingWait =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kRepeatingWait = base::Milliseconds(50);
 
   // Called when the timer expires.
   void Run();

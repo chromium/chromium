@@ -721,8 +721,7 @@ void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeLoadDBQueueWait",
                              base::Time::Now() - posted_at,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(1), 50);
+                             base::Milliseconds(1), base::Minutes(1), 50);
 
   if (!InitializeDatabase()) {
     PostClientTask(FROM_HERE,
@@ -742,8 +741,7 @@ void SQLitePersistentCookieStore::Backend::LoadKeyAndNotifyInBackground(
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeKeyLoadDBQueueWait",
                              base::Time::Now() - posted_at,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(1), 50);
+                             base::Milliseconds(1), base::Minutes(1), 50);
 
   bool success = false;
   if (InitializeDatabase()) {
@@ -771,8 +769,7 @@ void SQLitePersistentCookieStore::Backend::CompleteLoadForKeyInForeground(
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeKeyLoadTotalWait",
                              base::Time::Now() - requested_at,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(1), 50);
+                             base::Milliseconds(1), base::Minutes(1), 50);
 
   Notify(std::move(loaded_callback), load_success);
 
@@ -788,8 +785,7 @@ void SQLitePersistentCookieStore::Backend::CompleteLoadForKeyInForeground(
 
 void SQLitePersistentCookieStore::Backend::ReportMetricsInBackground() {
   UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeLoad", cookie_load_duration_,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(1), 50);
+                             base::Milliseconds(1), base::Minutes(1), 50);
 }
 
 void SQLitePersistentCookieStore::Backend::ReportMetrics() {
@@ -802,9 +798,8 @@ void SQLitePersistentCookieStore::Backend::ReportMetrics() {
   {
     base::AutoLock locked(metrics_lock_);
     UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.PriorityBlockingTime",
-                               priority_wait_duration_,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(1), 50);
+                               priority_wait_duration_, base::Milliseconds(1),
+                               base::Minutes(1), 50);
 
     UMA_HISTOGRAM_COUNTS_100("Cookie.PriorityLoadCount",
                              total_priority_requests_);
@@ -897,7 +892,7 @@ void SQLitePersistentCookieStore::Backend::ChainLoadCookies(
         FROM_HERE,
         base::BindOnce(&Backend::ChainLoadCookies, this,
                        std::move(loaded_callback)),
-        base::TimeDelta::FromMilliseconds(kLoadDelayMilliseconds));
+        base::Milliseconds(kLoadDelayMilliseconds));
     if (!success) {
       LOG(WARNING) << "Failed to post task from " << FROM_HERE.ToString()
                    << " to background_task_runner().";
@@ -1418,7 +1413,7 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     // We've gotten our first entry for this batch, fire off the timer.
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
-            base::TimeDelta::FromMilliseconds(kCommitIntervalMs))) {
+            base::Milliseconds(kCommitIntervalMs))) {
       NOTREACHED() << "background_task_runner() is not running.";
     }
   } else if (num_pending == kCommitAfterBatchSize) {

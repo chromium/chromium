@@ -26,7 +26,7 @@ std::vector<InsecureCredential> StatementToInsecureCredential(
     std::u16string username = s->ColumnString16(2);
     InsecureType insecurity_type = static_cast<InsecureType>(s->ColumnInt64(3));
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
-        (base::TimeDelta::FromMicroseconds(s->ColumnInt64(4))));
+        (base::Microseconds(s->ColumnInt64(4))));
     bool is_muted = !!s->ColumnInt64(5);
     InsecureCredential issue(std::move(signon_realm), std::move(username),
                              create_time, insecurity_type, IsMuted(is_muted));

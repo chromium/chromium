@@ -83,7 +83,7 @@ WorkletAnimation* CreateWorkletAnimation(
 }
 
 base::TimeDelta ToTimeDelta(double milliseconds) {
-  return base::TimeDelta::FromMillisecondsD(milliseconds);
+  return base::Milliseconds(milliseconds);
 }
 
 }  // namespace

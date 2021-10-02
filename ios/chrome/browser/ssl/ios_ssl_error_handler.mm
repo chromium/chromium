@@ -112,9 +112,8 @@ void IOSSSLErrorHandler::StartHandlingError() {
 
   // Default to presenting the SSL interstitial if Captive Portal detection
   // takes too long.
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromSeconds(kSSLInterstitialDelayInSeconds),
-               this, &IOSSSLErrorHandler::ShowSSLInterstitial);
+  timer_.Start(FROM_HERE, base::Seconds(kSSLInterstitialDelayInSeconds), this,
+               &IOSSSLErrorHandler::ShowSSLInterstitial);
 }
 
 void IOSSSLErrorHandler::HandleCaptivePortalDetectionResult(

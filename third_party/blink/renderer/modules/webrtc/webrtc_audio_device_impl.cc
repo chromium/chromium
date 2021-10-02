@@ -103,7 +103,7 @@ void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
   TRACE_EVENT_END2("audio", "VoE::PullRenderData", "elapsed_time_ms",
                    elapsed_time_ms, "ntp_time_ms", ntp_time_ms);
   if (elapsed_time_ms >= 0)
-    *current_time = base::TimeDelta::FromMilliseconds(elapsed_time_ms);
+    *current_time = base::Milliseconds(elapsed_time_ms);
 
   // De-interleave each channel and convert to 32-bit floating-point
   // with nominal range -1.0 -> +1.0 to match the callback format.

@@ -29,7 +29,7 @@ constexpr base::FilePath::CharType kImageRoot[] =
 // the delay is t * (n + 1), where t is the default on-screen display time for
 // an Action Center notification (6 seconds) and n is the number of
 // notifications that can be shown on-screen at once (1).
-constexpr base::TimeDelta kDeletionDelay = base::TimeDelta::FromSeconds(12);
+constexpr base::TimeDelta kDeletionDelay = base::Seconds(12);
 
 // Returns the temporary directory within the user data directory. The regular
 // temporary directory is not used to minimize the risk of files getting deleted

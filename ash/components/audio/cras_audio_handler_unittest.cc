@@ -518,7 +518,7 @@ class HDMIRediscoverWaiter {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(wait_duration_in_ms));
+        base::Milliseconds(wait_duration_in_ms));
     run_loop.Run();
   }
 
@@ -531,7 +531,7 @@ class HDMIRediscoverWaiter {
         FROM_HERE,
         base::BindOnce(&HDMIRediscoverWaiter::CheckHDMIRediscoverGracePeriodEnd,
                        base::Unretained(this), std::move(quit_loop_func)),
-        base::TimeDelta::FromMilliseconds(grace_period_duration_in_ms_ / 4));
+        base::Milliseconds(grace_period_duration_in_ms_ / 4));
   }
 
   void WaitUntilHDMIRediscoverGracePeriodEnd() {

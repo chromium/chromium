@@ -130,7 +130,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
 
 base::TimeDelta SyntheticGestureTargetBase::PointerAssumedStoppedTime()
     const {
-  return base::TimeDelta::FromMilliseconds(kPointerAssumedStoppedTimeMs);
+  return base::Milliseconds(kPointerAssumedStoppedTimeMs);
 }
 
 float SyntheticGestureTargetBase::GetSpanSlopInDips() const {

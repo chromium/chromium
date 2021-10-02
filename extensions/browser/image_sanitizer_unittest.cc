@@ -302,8 +302,7 @@ TEST_F(ImageSanitizerTest, NoCallbackAfterDelete) {
   // Wait a bit and ensure no callback has been called.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(200));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
   run_loop.Run();
   EXPECT_FALSE(done_callback_called());
   EXPECT_FALSE(decoded_image_callback_called());

@@ -64,8 +64,7 @@ TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT), base::Seconds(0)));
   EXPECT_CALL(mock_action_delegate_, StoreScrolledToElement(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_)).Times(0);
 
@@ -82,15 +81,13 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
 
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(1)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(2)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(2)));
   EXPECT_CALL(mock_action_delegate_,
               StoreScrolledToElement(EqualsElement(expected_element)));
   EXPECT_CALL(mock_web_controller_,
@@ -117,8 +114,7 @@ TEST_F(ShowCastActionTest, ScrollContainerIfSpecified) {
 
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(1)));
 
   auto expected_container = test_util::MockFindElement(
       mock_action_delegate_, expected_container_selector);
@@ -127,8 +123,7 @@ TEST_F(ShowCastActionTest, ScrollContainerIfSpecified) {
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(2)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(2)));
   EXPECT_CALL(mock_action_delegate_,
               StoreScrolledToElement(EqualsElement(expected_element)));
   EXPECT_CALL(
@@ -155,23 +150,20 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
 
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(mock_web_controller_,
               ScrollIntoViewIfNeeded(true, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
       mock_web_controller_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(1)));
   EXPECT_CALL(mock_action_delegate_,
               StoreScrolledToElement(EqualsElement(expected_element)));
   EXPECT_CALL(mock_web_controller_,

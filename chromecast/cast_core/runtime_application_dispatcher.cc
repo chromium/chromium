@@ -22,8 +22,7 @@
 namespace chromecast {
 namespace {
 
-base::TimeDelta kDefaultMetricsReportInterval =
-    base::TimeDelta::FromSeconds(60);
+base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
 
 }  // namespace
 
@@ -247,7 +246,7 @@ void RuntimeApplicationDispatcher::SendHeartbeat() {
         FROM_HERE,
         base::BindOnce(&RuntimeApplicationDispatcher::SendHeartbeat,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(heartbeat_period_));
+        base::Seconds(heartbeat_period_));
   }
 }
 

@@ -253,9 +253,9 @@ base::Value ConvertExtensionEventToValue(
 
   if (extension_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format
-    base::Time timestamp = base::Time::UnixEpoch() +
-                           base::TimeDelta::FromMicroseconds(
-                               extension_install_report_log_event.timestamp());
+    base::Time timestamp =
+        base::Time::UnixEpoch() +
+        base::Microseconds(extension_install_report_log_event.timestamp());
     wrapper.SetStringKey(kTime, GetTimeString(timestamp));
   }
 
@@ -354,8 +354,8 @@ base::Value ConvertArcAppEventToValue(
   if (app_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format
     base::Time timestamp =
-        base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(
-                                      app_install_report_log_event.timestamp());
+        base::Time::UnixEpoch() +
+        base::Microseconds(app_install_report_log_event.timestamp());
     wrapper.SetStringKey(kTime, GetTimeString(timestamp));
   }
 

@@ -138,8 +138,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
 
   std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
-  base::TimeDelta stop_interaction_delay_ =
-      base::TimeDelta::FromMilliseconds(500);
+  base::TimeDelta stop_interaction_delay_ = base::Milliseconds(500);
 
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<ConversationController> weak_factory_{this};

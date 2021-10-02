@@ -69,7 +69,7 @@ void StartWorkerToDispatchExtendableMessageEvent(
     PrepareExtendableMessageEventCallback prepare_callback) {
   // If not enough time is left to actually process the event don't even
   // bother starting the worker and sending the event.
-  if (timeout && *timeout < base::TimeDelta::FromMilliseconds(100)) {
+  if (timeout && *timeout < base::Milliseconds(100)) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorTimeout);
     return;
   }

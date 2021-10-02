@@ -116,17 +116,14 @@ class VisibilityMetricsLogger {
 
   struct WebViewDurationTracker {
     // Duration any WebView meets the tracking criteria
-    base::TimeDelta any_webview_tracked_duration_ =
-        base::TimeDelta::FromSeconds(0);
+    base::TimeDelta any_webview_tracked_duration_ = base::Seconds(0);
     // Duration no WebViews meet the tracking criteria
-    base::TimeDelta no_webview_tracked_duration_ =
-        base::TimeDelta::FromSeconds(0);
+    base::TimeDelta no_webview_tracked_duration_ = base::Seconds(0);
     // Total duration that WebViews meet the tracking criteria (i.e. if
     // 2x WebViews meet the criteria for 1 second then increment by 2 seconds)
-    base::TimeDelta per_webview_duration_ = base::TimeDelta::FromSeconds(0);
+    base::TimeDelta per_webview_duration_ = base::Seconds(0);
     // Total duration that WebViews exist but do not meet the tracking criteria
-    base::TimeDelta per_webview_untracked_duration_ =
-        base::TimeDelta::FromSeconds(0);
+    base::TimeDelta per_webview_untracked_duration_ = base::Seconds(0);
   };
 
   WebViewDurationTracker visible_duration_tracker_;

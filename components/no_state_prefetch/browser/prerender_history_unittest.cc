@@ -85,9 +85,9 @@ TEST(PrerenderHistoryTest, GetAsValue) {
   const char* const kSecondUrl = "http://www.beta.com/";
   const FinalStatus kSecondFinalStatus = FINAL_STATUS_DUPLICATE;
   const Origin kSecondOrigin = ORIGIN_OMNIBOX;
-  PrerenderHistory::Entry entry_second(
-      GURL(kSecondUrl), kSecondFinalStatus, kSecondOrigin,
-      epoch_start + base::TimeDelta::FromMilliseconds(1));
+  PrerenderHistory::Entry entry_second(GURL(kSecondUrl), kSecondFinalStatus,
+                                       kSecondOrigin,
+                                       epoch_start + base::Milliseconds(1));
   history.AddEntry(entry_second);
   entry_value = history.CopyEntriesAsValue();
   ASSERT_TRUE(entry_value.get() != nullptr);
@@ -102,9 +102,9 @@ TEST(PrerenderHistoryTest, GetAsValue) {
   const char* const kThirdUrl = "http://www.gamma.com/";
   const FinalStatus kThirdFinalStatus = FINAL_STATUS_AUTH_NEEDED;
   const Origin kThirdOrigin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
-  PrerenderHistory::Entry entry_third(
-      GURL(kThirdUrl), kThirdFinalStatus, kThirdOrigin,
-      epoch_start + base::TimeDelta::FromMilliseconds(2));
+  PrerenderHistory::Entry entry_third(GURL(kThirdUrl), kThirdFinalStatus,
+                                      kThirdOrigin,
+                                      epoch_start + base::Milliseconds(2));
   history.AddEntry(entry_third);
   entry_value = history.CopyEntriesAsValue();
   ASSERT_TRUE(entry_value.get() != nullptr);

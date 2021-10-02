@@ -784,7 +784,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest, HistogramTester) {
   // Block Responses until all requests have been queued.
   mutator->BlockWorkletThread();
 
-  base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta time_delta = base::Milliseconds(10);
 
   // Expected Elapsed time is the sum of all clock advancements until unblocked,
   // which totals to 30 ms.

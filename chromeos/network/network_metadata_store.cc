@@ -382,7 +382,7 @@ base::TimeDelta NetworkMetadataStore::GetLastConnectedTimestamp(
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMillisecondsD(timestamp->GetDouble());
+  return base::Milliseconds(timestamp->GetDouble());
 }
 
 void NetworkMetadataStore::SetLastConnectedTimestamp(

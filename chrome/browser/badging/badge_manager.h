@@ -59,13 +59,11 @@ constexpr uint64_t kMaxBadgeContent = 99u;
 
 // We don't show a badge in response to notifications if the
 // Badging API has been used recently.
-constexpr base::TimeDelta kBadgingOverrideLifetime =
-    base::TimeDelta::FromDays(14);
+constexpr base::TimeDelta kBadgingOverrideLifetime = base::Days(14);
 
 // We record when the Badging API was last used, but rate limit
 // our updates to minimize load on the Web App database,
-constexpr base::TimeDelta kBadgingMinimumUpdateInterval =
-    base::TimeDelta::FromHours(2);
+constexpr base::TimeDelta kBadgingMinimumUpdateInterval = base::Hours(2);
 
 // Maintains a record of badge contents and dispatches badge changes to a
 // delegate.

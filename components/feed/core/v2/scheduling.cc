@@ -79,7 +79,7 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
   // Attempt to detect system clock changes. If |anchor_time| is in the future,
   // or too far in the past, we reset |anchor_time| to now.
   if (now < schedule->anchor_time ||
-      schedule->anchor_time + base::TimeDelta::FromDays(7) < now) {
+      schedule->anchor_time + base::Days(7) < now) {
     schedule->anchor_time = now;
   }
   while (!schedule->refresh_offsets.empty()) {
@@ -110,8 +110,7 @@ bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     staleness_threshold = GetThresholdTime(
         staleness_threshold,
-        base::TimeDelta::FromMilliseconds(
-            stream_metadata->content_lifetime().stale_age_ms()));
+        base::Milliseconds(stream_metadata->content_lifetime().stale_age_ms()));
   }
 
   return content_age > staleness_threshold;
@@ -128,7 +127,7 @@ bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     content_expiration_threshold = GetThresholdTime(
         content_expiration_threshold,
-        base::TimeDelta::FromMilliseconds(
+        base::Milliseconds(
             stream_metadata->content_lifetime().invalid_age_ms()));
   }
 

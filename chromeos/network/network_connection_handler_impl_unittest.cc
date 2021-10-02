@@ -238,10 +238,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    helper_.hermes_euicc_test()->SetInteractiveDelay(
-        base::TimeDelta::FromSeconds(0));
-    helper_.manager_test()->SetInteractiveDelay(
-        base::TimeDelta::FromSeconds(0));
+    helper_.hermes_euicc_test()->SetInteractiveDelay(base::Seconds(0));
+    helper_.manager_test()->SetInteractiveDelay(base::Seconds(0));
     managed_config_handler_.reset();
     network_profile_handler_.reset();
     network_connection_handler_->RemoveObserver(
@@ -266,7 +264,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void Connect(const std::string& service_path) {
     const base::TimeDelta kProfileRefreshCallbackDelay =
-        base::TimeDelta::FromMilliseconds(150);
+        base::Milliseconds(150);
     network_connection_handler_->ConnectToNetwork(
         service_path,
         base::BindOnce(&NetworkConnectionHandlerImplTest::SuccessCallback,
@@ -827,8 +825,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
 TEST_F(NetworkConnectionHandlerImplTest,
        ConnectWithCertificateRequestedBeforeCertsAreLoaded_NeverLoaded) {
-  const base::TimeDelta kMaxCertLoadTimeSeconds =
-      base::TimeDelta::FromSeconds(15);
+  const base::TimeDelta kMaxCertLoadTimeSeconds = base::Seconds(15);
 
   Init();
 
@@ -1208,7 +1205,7 @@ TEST_F(NetworkConnectionHandlerImplTest, MultipleCellularConnect) {
   // Delay hermes operation so that first connect will be waiting in
   // CellularConnectionHandler.
   HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   Connect(kTestCellularServicePath);
   Connect(kTestCellularServicePath2);
 
@@ -1219,14 +1216,13 @@ TEST_F(NetworkConnectionHandlerImplTest, MultipleCellularConnect) {
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, CellularConnectTimeout) {
-  const base::TimeDelta kCellularConnectTimeout =
-      base::TimeDelta::FromSeconds(150);
+  const base::TimeDelta kCellularConnectTimeout = base::Seconds(150);
   Init();
   AddNonConnectablePSimService();
   SetCellularServiceConnectable(kTestCellularServicePath);
 
   ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      base::TimeDelta::FromSeconds(200));
+      base::Seconds(200));
   Connect(kTestCellularServicePath);
   AdvanceClock(kCellularConnectTimeout);
   EXPECT_EQ(NetworkConnectionHandler::kErrorConnectTimeout,
@@ -1235,8 +1231,7 @@ TEST_F(NetworkConnectionHandlerImplTest, CellularConnectTimeout) {
 
 TEST_F(NetworkConnectionHandlerImplTest,
        CellularConnectTimeout_StubToShillBacked) {
-  const base::TimeDelta kCellularConnectTimeout =
-      base::TimeDelta::FromSeconds(150);
+  const base::TimeDelta kCellularConnectTimeout = base::Seconds(150);
   Init();
   AddCellularServiceWithESimProfile(/*is_stub=*/true);
 
@@ -1246,7 +1241,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   // Now, Create a shill backed service for the same network.
   ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      base::TimeDelta::FromSeconds(200));
+      base::Seconds(200));
   AddNonConnectableESimService();
   SetCellularServiceConnectable();
 

@@ -118,7 +118,7 @@ base::Time GetEmbargoStartTime(base::Value* permission_dict,
       permission_dict->FindKeyOfType(key, base::Value::Type::DOUBLE);
   if (found && base::FeatureList::IsEnabled(feature)) {
     return base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(found->GetDouble()));
+        base::Microseconds(found->GetDouble()));
   }
   return base::Time();
 }
@@ -191,14 +191,14 @@ PermissionResult PermissionDecisionAutoBlocker::GetEmbargoResult(
 
   if (IsUnderEmbargo(permission_dict, features::kBlockPromptsIfDismissedOften,
                      kPermissionDismissalEmbargoKey, current_time,
-                     base::TimeDelta::FromDays(g_dismissal_embargo_days))) {
+                     base::Days(g_dismissal_embargo_days))) {
     return PermissionResult(CONTENT_SETTING_BLOCK,
                             PermissionStatusSource::MULTIPLE_DISMISSALS);
   }
 
   if (IsUnderEmbargo(permission_dict, features::kBlockPromptsIfIgnoredOften,
                      kPermissionIgnoreEmbargoKey, current_time,
-                     base::TimeDelta::FromDays(g_ignore_embargo_days))) {
+                     base::Days(g_ignore_embargo_days))) {
     return PermissionResult(CONTENT_SETTING_BLOCK,
                             PermissionStatusSource::MULTIPLE_IGNORES);
   }

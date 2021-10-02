@@ -772,7 +772,7 @@ void BrowserTestBase::WaitUntilJavaIsReady(
     return;
   }
 
-  base::TimeDelta retry_interval = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta retry_interval = base::Milliseconds(100);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,

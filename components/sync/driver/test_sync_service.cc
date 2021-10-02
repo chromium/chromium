@@ -30,7 +30,7 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
       /*num_to_delete_entries_by_type=*/
       std::vector<int>(GetNumModelTypes(), 0),
       /*get_updates_origin=*/sync_pb::SyncEnums::UNKNOWN_ORIGIN,
-      /*poll_interval=*/base::TimeDelta::FromMinutes(30),
+      /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
 }
 

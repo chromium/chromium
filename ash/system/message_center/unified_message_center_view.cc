@@ -39,9 +39,8 @@ namespace ash {
 namespace {
 
 constexpr base::TimeDelta kHideStackingBarAnimationDuration =
-    base::TimeDelta::FromMilliseconds(330);
-constexpr base::TimeDelta kCollapseAnimationDuration =
-    base::TimeDelta::FromMilliseconds(640);
+    base::Milliseconds(330);
+constexpr base::TimeDelta kCollapseAnimationDuration = base::Milliseconds(640);
 
 class ScrollerContentsView : public views::View {
  public:

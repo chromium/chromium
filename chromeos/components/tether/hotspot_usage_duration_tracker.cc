@@ -60,11 +60,11 @@ void HotspotUsageDurationTracker::OnActiveHostChanged(
 
       PA_LOG(VERBOSE) << "Connection to hotspot has ended. Duration was "
                       << duration.InSeconds() << " second(s).";
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "InstantTethering.HotspotUsageDuration", duration,
-          base::TimeDelta::FromSeconds(kMinDurationSeconds) /* min */,
-          base::TimeDelta::FromHours(kMaxDurationHours) /* max */,
-          kNumMetricsBuckets /* bucket_count */);
+      UMA_HISTOGRAM_CUSTOM_TIMES("InstantTethering.HotspotUsageDuration",
+                                 duration,
+                                 base::Seconds(kMinDurationSeconds) /* min */,
+                                 base::Hours(kMaxDurationHours) /* max */,
+                                 kNumMetricsBuckets /* bucket_count */);
       break;
     }
     default:

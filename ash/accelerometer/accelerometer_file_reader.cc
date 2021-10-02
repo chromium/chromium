@@ -95,16 +95,14 @@ constexpr size_t kDataSize = 2;
 constexpr int kSizeOfReading = kDataSize * kNumberOfAxes;
 
 // The time to wait between reading the accelerometer.
-constexpr base::TimeDelta kDelayBetweenReads =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kDelayBetweenReads = base::Milliseconds(100);
 
 // The TimeDelta before giving up on initialization. This is needed because the
 // sensor hub might not be online when the Initialize function is called.
-constexpr base::TimeDelta kInitializeTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInitializeTimeout = base::Seconds(5);
 
 // The time between initialization checks.
-constexpr base::TimeDelta kDelayBetweenInitChecks =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kDelayBetweenInitChecks = base::Milliseconds(500);
 
 // Reads |path| to the unsigned int pointed to by |value|. Returns true on
 // success or false on failure.

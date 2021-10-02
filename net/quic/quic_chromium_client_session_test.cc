@@ -1710,7 +1710,7 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolExpectCT) {
 
   // Adding Expect-CT data for different NetworkIsolationKeys should have no
   // effect.
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiry = base::Time::Now() + base::Days(1);
   transport_security_state_->AddExpectCT(
       "www.example.org", expiry, true /* enforce */, GURL() /* report_url */,
       NetworkIsolationKey::CreateTransient());

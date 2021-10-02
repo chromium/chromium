@@ -130,7 +130,7 @@ TEST_F(DarkResumeControllerTest, CheckSuspendAfterDarkResumeWakeLocksHeld) {
 
   // Move time forward by < |dark_resume_hard_timeout_| and release the
   // partial wake lock. This should instantaneously re-suspend the device.
-  base::TimeDelta small_delay = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta small_delay = base::Seconds(1);
   ASSERT_GT(dark_resume_controller_->GetHardTimeoutForTesting(), small_delay);
   task_environment_.FastForwardBy(
       dark_resume_controller_->GetHardTimeoutForTesting() - small_delay);

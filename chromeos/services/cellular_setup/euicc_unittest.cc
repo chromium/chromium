@@ -252,8 +252,7 @@ TEST_F(EuiccTest, RequestPendingProfiles) {
       /*expected_count=*/1);
   EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
 
-  constexpr base::TimeDelta kHermesInteractiveDelay =
-      base::TimeDelta::FromMilliseconds(3000);
+  constexpr base::TimeDelta kHermesInteractiveDelay = base::Milliseconds(3000);
   HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
       kHermesInteractiveDelay);
 

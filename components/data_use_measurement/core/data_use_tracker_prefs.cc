@@ -73,7 +73,7 @@ void DataUseTrackerPrefs::RemoveExpiredEntriesForPref(
   const base::DictionaryValue* user_pref_dict =
       pref_service_->GetDictionary(pref_name);
   const base::Time current_date = GetCurrentMeasurementDate();
-  const base::Time last_date = current_date - base::TimeDelta::FromDays(60);
+  const base::Time last_date = current_date - base::Days(60);
 
   base::DictionaryValue user_pref_new_dict;
   for (auto it : user_pref_dict->DictItems()) {

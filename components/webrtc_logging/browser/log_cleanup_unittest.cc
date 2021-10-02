@@ -21,7 +21,7 @@ class WebRtcLogCleanupTest : public testing::Test {
   WebRtcLogCleanupTest() = default;
 
   void SetUp() override {
-    ASSERT_GT(kTimeToKeepLogs, base::TimeDelta::FromDays(2));
+    ASSERT_GT(kTimeToKeepLogs, base::Days(2));
 
     // Create three files. One with modified date as of now, one with date one
     // day younger than the keep limit, one with date one day older than the
@@ -32,11 +32,11 @@ class WebRtcLogCleanupTest : public testing::Test {
     ASSERT_TRUE(CreateTemporaryFileInDir(dir_.GetPath(), &file));
     ASSERT_TRUE(CreateTemporaryFileInDir(dir_.GetPath(), &file));
     base::Time time_expect_to_keep =
-        base::Time::Now() - kTimeToKeepLogs + base::TimeDelta::FromDays(1);
+        base::Time::Now() - kTimeToKeepLogs + base::Days(1);
     TouchFile(file, time_expect_to_keep, time_expect_to_keep);
     ASSERT_TRUE(CreateTemporaryFileInDir(dir_.GetPath(), &file));
     base::Time time_expect_to_delete =
-        base::Time::Now() - kTimeToKeepLogs + -base::TimeDelta::FromDays(1);
+        base::Time::Now() - kTimeToKeepLogs + -base::Days(1);
     TouchFile(file, time_expect_to_delete, time_expect_to_delete);
   }
 
@@ -63,8 +63,7 @@ TEST_F(WebRtcLogCleanupTest, DeleteOldWebRtcLogFiles) {
 }
 
 TEST_F(WebRtcLogCleanupTest, DeleteOldAndRecentWebRtcLogFiles) {
-  base::Time delete_begin_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time delete_begin_time = base::Time::Now() - base::Days(1);
   DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
   VerifyFiles(1);
 }
@@ -141,20 +140,18 @@ TEST_F(WebRtcTextLogIndexCleanupTest, ExpiredLinesDeleted) {
   const base::Time now = base::Time::Now();
 
   const std::string expired_capture_timestamp_line =
-      base::NumberToString((now - base::TimeDelta::FromHours(1)).ToDoubleT()) +
+      base::NumberToString((now - base::Hours(1)).ToDoubleT()) +
       ",report_id_3,local_id_3,101.3\n";
 
   const std::string not_expired_line =
-      base::NumberToString((now - base::TimeDelta::FromHours(2)).ToDoubleT()) +
+      base::NumberToString((now - base::Hours(2)).ToDoubleT()) +
       ",report_id_2,local_id_2," +
-      base::NumberToString((now - base::TimeDelta::FromHours(3)).ToDoubleT()) +
-      "\n";
+      base::NumberToString((now - base::Hours(3)).ToDoubleT()) + "\n";
 
   // Note: Would only happen if the clock is changed in between.
   const std::string expired_upload_timestamp_line =
       "100.1,report_id_1,local_id_1," +
-      base::NumberToString((now - base::TimeDelta::FromHours(4)).ToDoubleT()) +
-      "\n";
+      base::NumberToString((now - base::Hours(4)).ToDoubleT()) + "\n";
 
   const std::string contents = expired_capture_timestamp_line +  //
                                not_expired_line +                //

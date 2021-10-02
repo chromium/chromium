@@ -30,7 +30,7 @@ void CheckResult(base::OnceClosure quit,
       FROM_HERE,
       base::BindOnce(CheckResult<T>, std::move(quit), expected_value,
                      value_callback),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 }
 
 }  // namespace

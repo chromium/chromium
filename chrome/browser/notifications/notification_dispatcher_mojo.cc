@@ -26,15 +26,13 @@ namespace {
 // The initial delay for restarting the notification service. An exponential
 // backoff will double this value whenever the OneShotTimer reschedules.
 constexpr base::TimeDelta kInitialServiceRestartTimerDelay =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 // Maximum delay between restart attempts. We don't want this to be too low to
 // avoid heavy resource usage but also not too high keep notifications working.
-constexpr base::TimeDelta kMaximumServiceRestartTimerDelay =
-    base::TimeDelta::FromSeconds(256);
+constexpr base::TimeDelta kMaximumServiceRestartTimerDelay = base::Seconds(256);
 // If the service ran for more than this time we will reset the restart delay to
 // |kInitialServiceRestartTimerDelay|.
-constexpr base::TimeDelta kServiceRestartTimerResetDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kServiceRestartTimerResetDelay = base::Seconds(10);
 
 }  // namespace
 
@@ -159,15 +157,15 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
 
   // Log utility process runtime metrics to UMA.
   if (service_ && !provider_factory_->in_process()) {
-    base::UmaHistogramCustomTimes(
-        "Notifications.macOS.ServiceProcessRuntime", elapsed,
-        base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromHours(8),
-        /*buckets=*/50);
+    base::UmaHistogramCustomTimes("Notifications.macOS.ServiceProcessRuntime",
+                                  elapsed, base::Milliseconds(100),
+                                  base::Hours(8),
+                                  /*buckets=*/50);
     if (!gracefully) {
-      base::UmaHistogramCustomTimes(
-          "Notifications.macOS.ServiceProcessKilled", elapsed,
-          base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromHours(8),
-          /*buckets=*/50);
+      base::UmaHistogramCustomTimes("Notifications.macOS.ServiceProcessKilled",
+                                    elapsed, base::Milliseconds(100),
+                                    base::Hours(8),
+                                    /*buckets=*/50);
     }
   }
 

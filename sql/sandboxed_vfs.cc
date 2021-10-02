@@ -215,7 +215,7 @@ int SandboxedVfs::Randomness(int result_size, char* result) {
 
 int SandboxedVfs::Sleep(int microseconds) {
   DCHECK_GE(microseconds, 0);
-  base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(microseconds));
+  base::PlatformThread::Sleep(base::Microseconds(microseconds));
   return SQLITE_OK;
 }
 

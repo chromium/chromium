@@ -46,7 +46,7 @@ const int kSoundDelayInMS = 150;
 
 // How long the user must stay in the same anchor point in touch exploration
 // before a right-click is triggered.
-const base::TimeDelta kLongPressTimerDelay = base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kLongPressTimerDelay = base::Seconds(5);
 
 void SetTouchAccessibilityFlag(ui::Event* event) {
   // This flag is used to identify mouse move events that were generated from
@@ -711,8 +711,7 @@ ui::EventDispatchDetails TouchExplorationController::InSlideGesture(
   // This can occur if the user leaves the screen edge and then returns to it to
   // continue adjusting the sound.
   if (!sound_timer_.IsRunning()) {
-    sound_timer_.Start(FROM_HERE,
-                       base::TimeDelta::FromMilliseconds(kSoundDelayInMS), this,
+    sound_timer_.Start(FROM_HERE, base::Milliseconds(kSoundDelayInMS), this,
                        &TouchExplorationController::PlaySoundForTimer);
     delegate_->PlayVolumeAdjustEarcon();
   }

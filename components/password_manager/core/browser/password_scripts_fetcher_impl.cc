@@ -167,7 +167,7 @@ bool PasswordScriptsFetcherImpl::IsScriptAvailable(
 
 void PasswordScriptsFetcherImpl::StartFetch() {
   static const base::TimeDelta kFetchTimeout(
-      base::TimeDelta::FromSeconds(kFetchTimeoutInSeconds));
+      base::Seconds(kFetchTimeoutInSeconds));
   if (url_loader_)
     return;
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -270,7 +270,7 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
 
 bool PasswordScriptsFetcherImpl::IsCacheStale() const {
   static const base::TimeDelta kCacheTimeout(
-      base::TimeDelta::FromMinutes(kCacheTimeoutInMinutes));
+      base::Minutes(kCacheTimeoutInMinutes));
   return last_fetch_timestamp_.is_null() ||
          base::TimeTicks::Now() - last_fetch_timestamp_ >= kCacheTimeout;
 }

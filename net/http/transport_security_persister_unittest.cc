@@ -44,7 +44,7 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
     // Mock out time so that entries with hard-coded json data can be
     // successfully loaded. Use a large enough value that dynamically created
     // entries have at least somewhat interesting expiration times.
-    FastForwardBy(base::TimeDelta::FromDays(3660));
+    FastForwardBy(base::Days(3660));
   }
 
   ~TransportSecurityPersisterTest() override {
@@ -96,7 +96,7 @@ TEST_P(TransportSecurityPersisterTest, LoadEntriesClearsExistingState) {
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::ExpectCTState expect_ct_state;
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = current_time + base::Seconds(1000);
   static const char kYahooDomain[] = "yahoo.com";
 
   EXPECT_FALSE(state_->GetDynamicSTSState(kYahooDomain, &sts_state));
@@ -132,7 +132,7 @@ TEST_P(TransportSecurityPersisterTest, SerializeData1) {
 TEST_P(TransportSecurityPersisterTest, SerializeData2) {
   TransportSecurityState::STSState sts_state;
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = current_time + base::Seconds(1000);
   static const char kYahooDomain[] = "yahoo.com";
 
   EXPECT_FALSE(state_->GetDynamicSTSState(kYahooDomain, &sts_state));
@@ -164,16 +164,14 @@ TEST_P(TransportSecurityPersisterTest, SerializeData3) {
       TransportSecurityState::kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   // Add an entry.
-  base::Time expiry =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1000);
+  base::Time expiry = base::Time::Now() + base::Seconds(1000);
   bool include_subdomains = false;
   state_->AddHSTS("www.example.com", expiry, include_subdomains);
   state_->AddExpectCT("www.example.com", expiry, true /* enforce */, GURL(),
                       NetworkIsolationKey());
 
   // Add another entry.
-  expiry =
-      base::Time::Now() + base::TimeDelta::FromSeconds(3000);
+  expiry = base::Time::Now() + base::Seconds(3000);
   state_->AddHSTS("www.example.net", expiry, include_subdomains);
   state_->AddExpectCT("www.example.net", expiry, false /* enforce */,
                       report_uri, NetworkIsolationKey());
@@ -321,7 +319,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
       kTestDomain, NetworkIsolationKey(), &expect_ct_state));
 
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = current_time + base::Seconds(1000);
   state_->AddExpectCT(kTestDomain, expiry, true /* enforce */, GURL(),
                       NetworkIsolationKey());
   std::string serialized;
@@ -364,7 +362,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
       kTestDomain, NetworkIsolationKey(), &expect_ct_state));
 
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = current_time + base::Seconds(1000);
   state_->AddHSTS(kTestDomain, expiry, false /* include subdomains */);
   state_->AddExpectCT(kTestDomain, expiry, true /* enforce */, GURL(),
                       NetworkIsolationKey());
@@ -402,7 +400,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTDisabled) {
       kTestDomain, NetworkIsolationKey(), &expect_ct_state));
 
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = current_time + base::Seconds(1000);
   state_->AddExpectCT(kTestDomain, expiry, true /* enforce */, GURL(),
                       NetworkIsolationKey());
   std::string serialized;
@@ -432,9 +430,9 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
       NetworkIsolationKey::CreateTransient();
 
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry1 = current_time + base::TimeDelta::FromSeconds(1000);
-  const base::Time expiry2 = current_time + base::TimeDelta::FromSeconds(2000);
-  const base::Time expiry3 = current_time + base::TimeDelta::FromSeconds(3000);
+  const base::Time expiry1 = current_time + base::Seconds(1000);
+  const base::Time expiry2 = current_time + base::Seconds(2000);
+  const base::Time expiry3 = current_time + base::Seconds(3000);
 
   // Serialize data with kPartitionExpectCTStateByNetworkIsolationKey enabled,
   // and then revert the feature to its previous value.
@@ -519,8 +517,8 @@ TEST_P(TransportSecurityPersisterTest,
   const NetworkIsolationKey network_isolation_key(kSite /* top_frame_site */,
                                                   kSite /* frame_site */);
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry1 = current_time + base::TimeDelta::FromSeconds(1000);
-  const base::Time expiry2 = current_time + base::TimeDelta::FromSeconds(2000);
+  const base::Time expiry1 = current_time + base::Seconds(1000);
+  const base::Time expiry2 = current_time + base::Seconds(2000);
 
   // Serialize data.
   std::string serialized;

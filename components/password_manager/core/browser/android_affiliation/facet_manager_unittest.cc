@@ -57,7 +57,7 @@ class TestFacetManagerNotifier {
       // This formula is a simple stateless solution for notifying FacetManagers
       // prematurely multiple times in a row while also ensuring that the tests
       // are still fast, with no more than log2(delay.InSeconds()) repetitions.
-      delay = std::min(delay, delay / 2 + base::TimeDelta::FromSeconds(1));
+      delay = std::min(delay, delay / 2 + base::Seconds(1));
     } else if (accuracy_ == NotificationAccuracy::NEVER_CALLED) {
       return;
     }
@@ -172,20 +172,20 @@ AffiliatedFacetsWithUpdateTime GetTestEquivalenceClassWithUpdateTime(
 }
 
 base::TimeDelta GetCacheHardExpiryPeriod() {
-  return base::TimeDelta::FromHours(FacetManager::kCacheHardExpiryInHours);
+  return base::Hours(FacetManager::kCacheHardExpiryInHours);
 }
 
 base::TimeDelta GetCacheSoftExpiryPeriod() {
-  return base::TimeDelta::FromHours(FacetManager::kCacheSoftExpiryInHours);
+  return base::Hours(FacetManager::kCacheSoftExpiryInHours);
 }
 
 base::TimeDelta GetShortTestPeriod() {
-  return base::TimeDelta::FromHours(1);
+  return base::Hours(1);
 }
 
 // Returns a smallest time difference that this test cares about.
 base::TimeDelta Epsilon() {
-  return base::TimeDelta::FromMicroseconds(1);
+  return base::Microseconds(1);
 }
 
 // Returns |time| + |delay| or the maximum time if |delay| is the maximum delta.

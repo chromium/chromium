@@ -75,7 +75,7 @@ TEST_F(LuciTestResultTest, Basic) {
       base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
   result.set_start_time(start_time);
 
-  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+  result.set_duration(base::Milliseconds(1500));
 
   result.AddOutputArtifactContents("plain", "plain data", "text/plain");
   result.AddOutputArtifactContents("new_line", "first\nsecond", "text/plain");
@@ -173,7 +173,7 @@ TEST_P(LuciTestResultParameterizedTest, Variant) {
       base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
   result.set_start_time(start_time);
 
-  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+  result.set_duration(base::Milliseconds(1500));
 
   const std::string json_template =
       R"({
@@ -215,7 +215,7 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
       base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
   result.set_start_time(start_time);
 
-  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+  result.set_duration(base::Milliseconds(1500));
 
   std::string test_suite_name =
       testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();

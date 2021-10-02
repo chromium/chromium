@@ -178,8 +178,7 @@ base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
       return mark->UnsafeTimeForTraces();
     }
   }
-  return performance_->GetTimeOriginInternal() +
-         base::TimeDelta::FromMillisecondsD(start_time);
+  return performance_->GetTimeOriginInternal() + base::Milliseconds(start_time);
 }
 
 PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,

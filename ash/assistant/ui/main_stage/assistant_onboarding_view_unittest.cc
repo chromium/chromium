@@ -207,13 +207,12 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
     CreateAndSwitchActiveUser(test_case.display_email, test_case.given_name);
 
     // Advance clock to midnight tomorrow.
-    AdvanceClock(base::Time::Now().LocalMidnight() +
-                 base::TimeDelta::FromHours(24) - base::Time::Now());
+    AdvanceClock(base::Time::Now().LocalMidnight() + base::Hours(24) -
+                 base::Time::Now());
 
     {
       // Verify 4:59 AM.
-      AdvanceClock(base::TimeDelta::FromHours(4) +
-                   base::TimeDelta::FromMinutes(59));
+      AdvanceClock(base::Hours(4) + base::Minutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_night);
@@ -221,7 +220,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 5:00 AM.
-      AdvanceClock(base::TimeDelta::FromMinutes(1));
+      AdvanceClock(base::Minutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_morning);
@@ -229,8 +228,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 11:59 AM.
-      AdvanceClock(base::TimeDelta::FromHours(6) +
-                   base::TimeDelta::FromMinutes(59));
+      AdvanceClock(base::Hours(6) + base::Minutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_morning);
@@ -238,7 +236,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 12:00 PM.
-      AdvanceClock(base::TimeDelta::FromMinutes(1));
+      AdvanceClock(base::Minutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_afternoon);
@@ -246,8 +244,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 4:59 PM.
-      AdvanceClock(base::TimeDelta::FromHours(4) +
-                   base::TimeDelta::FromMinutes(59));
+      AdvanceClock(base::Hours(4) + base::Minutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_afternoon);
@@ -255,7 +252,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 5:00 PM.
-      AdvanceClock(base::TimeDelta::FromMinutes(1));
+      AdvanceClock(base::Minutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_evening);
@@ -263,8 +260,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 10:59 PM.
-      AdvanceClock(base::TimeDelta::FromHours(5) +
-                   base::TimeDelta::FromMinutes(59));
+      AdvanceClock(base::Hours(5) + base::Minutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_evening);
@@ -272,7 +268,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 
     {
       // Verify 11:00 PM.
-      AdvanceClock(base::TimeDelta::FromMinutes(1));
+      AdvanceClock(base::Minutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
                 test_case.expected_greeting.for_night);

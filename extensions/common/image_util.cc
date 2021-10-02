@@ -218,8 +218,7 @@ struct ScopedUmaMicrosecondHistogramTimer {
   ~ScopedUmaMicrosecondHistogramTimer() {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Extensions.IsRenderedIconSufficientlyVisibleTime", timer.Elapsed(),
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(5),
-        50);
+        base::Microseconds(1), base::Seconds(5), 50);
   }
 
   const base::ElapsedTimer timer;

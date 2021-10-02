@@ -49,7 +49,7 @@ class MockCompositorLockClient : public ui::CompositorLockClient {
 TEST_F(CompositorLockTest, LocksTimeOut) {
   std::unique_ptr<CompositorLock> lock;
 
-  base::TimeDelta timeout = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta timeout = base::Milliseconds(100);
 
   {
     testing::StrictMock<MockCompositorLockClient> lock_client;
@@ -81,7 +81,7 @@ TEST_F(CompositorLockTest, MultipleLockClients) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta timeout = base::Milliseconds(1);
   // Both locks are grabbed from the Compositor with a separate client.
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout, nullptr);
   lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout, nullptr);
@@ -100,7 +100,7 @@ TEST_F(CompositorLockTest, ExtendingLifeOfLockDoesntUseDeadClient) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta timeout = base::Milliseconds(1);
 
   // One lock is grabbed from the compositor with a client. The other
   // extends its lifetime past that of the first.
@@ -126,8 +126,8 @@ TEST_F(CompositorLockTest, AddingLocksDoesNotExtendTimeout) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout1 = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta timeout2 = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta timeout1 = base::Milliseconds(1);
+  base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
@@ -150,8 +150,8 @@ TEST_F(CompositorLockTest, AllowAndExtendTimeout) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout1 = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta timeout2 = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta timeout1 = base::Milliseconds(1);
+  base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
@@ -182,14 +182,14 @@ TEST_F(CompositorLockTest, ExtendingTimeoutStartingCreatedTime) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout1 = base::TimeDelta::FromMilliseconds(5);
-  base::TimeDelta timeout2 = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta timeout1 = base::Milliseconds(5);
+  base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
   EXPECT_TRUE(lock_manager()->IsLocked());
 
-  base::TimeDelta time_elapse = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta time_elapse = base::Milliseconds(1);
   task_runner()->FastForwardBy(time_elapse);
   task_runner()->RunUntilIdle();
 
@@ -219,8 +219,8 @@ TEST_F(CompositorLockTest, AllowButNotExtendTimeout) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout1 = base::TimeDelta::FromMilliseconds(10);
-  base::TimeDelta timeout2 = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta timeout1 = base::Milliseconds(10);
+  base::TimeDelta timeout2 = base::Milliseconds(1);
 
   // The first lock has a longer timeout.
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
@@ -251,8 +251,8 @@ TEST_F(CompositorLockTest, AllowingExtendDoesNotUseDeadClient) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout1 = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta timeout2 = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta timeout1 = base::Milliseconds(1);
+  base::TimeDelta timeout2 = base::Milliseconds(10);
 
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
   EXPECT_TRUE(lock_manager()->IsLocked());
@@ -276,7 +276,7 @@ TEST_F(CompositorLockTest, AllowingExtendDoesNotUseDeadClient) {
 }
 
 TEST_F(CompositorLockTest, LockIsDestroyedDoesntTimeout) {
-  base::TimeDelta timeout = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta timeout = base::Milliseconds(1);
 
   testing::StrictMock<MockCompositorLockClient> lock_client1;
   std::unique_ptr<CompositorLock> lock1;
@@ -297,8 +297,8 @@ TEST_F(CompositorLockTest, TimeoutEndsWhenLockEnds) {
   testing::StrictMock<MockCompositorLockClient> lock_client2;
   std::unique_ptr<CompositorLock> lock2;
 
-  base::TimeDelta timeout1 = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta timeout2 = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta timeout1 = base::Milliseconds(1);
+  base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);

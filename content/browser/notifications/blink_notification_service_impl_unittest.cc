@@ -778,7 +778,7 @@ TEST_F(BlinkNotificationServiceImplTest, GetTriggeredNotificationsWithFilter) {
   scoped_refptr<ServiceWorkerRegistration> registration;
   RegisterServiceWorker(&registration);
 
-  base::Time timestamp = base::Time::Now() + base::TimeDelta::FromSeconds(10);
+  base::Time timestamp = base::Time::Now() + base::Seconds(10);
   blink::PlatformNotificationData platform_notification_data;
   platform_notification_data.tag = "tagA";
   platform_notification_data.show_trigger_timestamp = timestamp;
@@ -818,7 +818,7 @@ TEST_F(BlinkNotificationServiceImplTest, ResourcesStoredForTriggered) {
   scoped_refptr<ServiceWorkerRegistration> registration;
   RegisterServiceWorker(&registration);
 
-  base::Time timestamp = base::Time::Now() + base::TimeDelta::FromSeconds(10);
+  base::Time timestamp = base::Time::Now() + base::Seconds(10);
   blink::PlatformNotificationData scheduled_notification_data;
   scheduled_notification_data.tag = "tagA";
   scheduled_notification_data.show_trigger_timestamp = timestamp;
@@ -869,7 +869,7 @@ TEST_F(BlinkNotificationServiceImplTest, NotCallingDisplayForTriggered) {
   scoped_refptr<ServiceWorkerRegistration> registration;
   RegisterServiceWorker(&registration);
 
-  base::Time timestamp = base::Time::Now() + base::TimeDelta::FromSeconds(10);
+  base::Time timestamp = base::Time::Now() + base::Seconds(10);
   blink::PlatformNotificationData scheduled_notification_data;
   scheduled_notification_data.show_trigger_timestamp = timestamp;
   blink::NotificationResources resources;
@@ -896,7 +896,7 @@ TEST_F(BlinkNotificationServiceImplTest, RejectsTriggerTimestampOverAYear) {
 
   base::Time timestamp = base::Time::Now() +
                          blink::kMaxNotificationShowTriggerDelay +
-                         base::TimeDelta::FromDays(1);
+                         base::Days(1);
 
   blink::PlatformNotificationData scheduled_notification_data;
   scheduled_notification_data.show_trigger_timestamp = timestamp;

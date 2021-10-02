@@ -35,7 +35,7 @@ TEST_F(CoreTest, GetTimeTicksNow) {
   const MojoTimeTicks start = core()->GetTimeTicksNow();
   ASSERT_NE(static_cast<MojoTimeTicks>(0), start)
       << "GetTimeTicksNow should return nonzero value";
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(15));
+  base::PlatformThread::Sleep(base::Milliseconds(15));
   const MojoTimeTicks finish = core()->GetTimeTicksNow();
   // Allow for some fuzz in sleep.
   ASSERT_GE((finish - start), static_cast<MojoTimeTicks>(8000))

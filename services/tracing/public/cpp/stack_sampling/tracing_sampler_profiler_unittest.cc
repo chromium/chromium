@@ -114,9 +114,7 @@ class TracingSampleProfilerTest : public TracingUnitTest {
     TracingSamplerProfiler::StartTracingForTesting(producer_.get());
   }
 
-  void WaitForEvents() {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
-  }
+  void WaitForEvents() { base::PlatformThread::Sleep(base::Milliseconds(200)); }
 
   void EndTracing() {
     TracingSamplerProfiler::StopTracingForTesting();

@@ -740,7 +740,7 @@ void EnrollmentHandler::HandleLockDeviceResult(
             FROM_HERE,
             base::BindOnce(&EnrollmentHandler::StartLockDevice,
                            weak_ptr_factory_.GetWeakPtr()),
-            base::TimeDelta::FromMilliseconds(kLockRetryIntervalMs));
+            base::Milliseconds(kLockRetryIntervalMs));
         lockbox_init_duration_ += kLockRetryIntervalMs;
       } else {
         HandleLockDeviceResult(chromeos::InstallAttributes::LOCK_TIMEOUT);

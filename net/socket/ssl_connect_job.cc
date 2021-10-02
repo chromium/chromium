@@ -41,8 +41,7 @@ namespace net {
 namespace {
 
 // Timeout for the SSL handshake portion of the connect.
-constexpr base::TimeDelta kSSLHandshakeTimeout(
-    base::TimeDelta::FromSeconds(30));
+constexpr base::TimeDelta kSSLHandshakeTimeout(base::Seconds(30));
 
 }  // namespace
 
@@ -422,8 +421,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     base::TimeDelta connect_duration =
         connect_timing_.ssl_end - connect_timing_.ssl_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(1), 100);
+                               base::Milliseconds(1), base::Minutes(1), 100);
 
     SSLInfo ssl_info;
     bool has_ssl_info = ssl_socket_->GetSSLInfo(&ssl_info);

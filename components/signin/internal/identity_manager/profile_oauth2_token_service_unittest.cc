@@ -736,7 +736,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, FixRequestErrorIfPossible) {
        max_reties >= 0 && consumer_.number_of_successful_tokens_ != 1;
        --max_reties) {
     base::RunLoop().RunUntilIdle();
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
   EXPECT_EQ(1, consumer_.number_of_successful_tokens_);

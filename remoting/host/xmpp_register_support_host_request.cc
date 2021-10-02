@@ -94,8 +94,7 @@ void XmppRegisterSupportHostRequest::OnSignalStrategyStateChange(
       return;
     }
 
-    request_->SetTimeout(
-        base::TimeDelta::FromSeconds(kRegisterRequestTimeoutInSeconds));
+    request_->SetTimeout(base::Seconds(kRegisterRequestTimeoutInSeconds));
 
   } else if (state == SignalStrategy::DISCONNECTED) {
     // We will reach here if signaling fails to connect.
@@ -226,7 +225,7 @@ void XmppRegisterSupportHostRequest::ParseResponse(const XmlElement* response,
   }
 
   *support_id = support_id_element->BodyText();
-  *lifetime = base::TimeDelta::FromSeconds(lifetime_int);
+  *lifetime = base::Seconds(lifetime_int);
   return;
 }
 

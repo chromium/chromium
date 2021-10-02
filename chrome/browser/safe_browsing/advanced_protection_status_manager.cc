@@ -31,10 +31,9 @@ namespace safe_browsing {
 
 namespace {
 
-const base::TimeDelta kRefreshAdvancedProtectionDelay =
-    base::TimeDelta::FromDays(1);
-const base::TimeDelta kRetryDelay = base::TimeDelta::FromMinutes(5);
-const base::TimeDelta kMinimumRefreshDelay = base::TimeDelta::FromMinutes(1);
+const base::TimeDelta kRefreshAdvancedProtectionDelay = base::Days(1);
+const base::TimeDelta kRetryDelay = base::Minutes(5);
+const base::TimeDelta kMinimumRefreshDelay = base::Minutes(1);
 
 const char kForceTreatUserAsAdvancedProtection[] =
     "safe-browsing-treat-user-as-advanced-protection";
@@ -65,9 +64,8 @@ void AdvancedProtectionStatusManager::MaybeRefreshOnStartUp() {
   is_under_advanced_protection_ = core_info.is_under_advanced_protection;
 
   if (pref_service_->HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs)) {
-    last_refreshed_ = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(pref_service_->GetInt64(
-            prefs::kAdvancedProtectionLastRefreshInUs)));
+    last_refreshed_ = base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+        pref_service_->GetInt64(prefs::kAdvancedProtectionLastRefreshInUs)));
     if (is_under_advanced_protection_)
       ScheduleNextRefresh();
   } else {

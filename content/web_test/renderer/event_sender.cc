@@ -396,7 +396,7 @@ WebMouseWheelEvent::Phase GetMouseWheelEventPhaseFromV8(
 
 // Maximum distance (in space and time) for a mouse click to register as a
 // double or triple click.
-constexpr base::TimeDelta kMultipleClickTime = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kMultipleClickTime = base::Seconds(1);
 const int kMultipleClickRadiusPixels = 5;
 const char kSubMenuDepthIdentifier[] = "_";
 const char kSubMenuIdentifier[] = " >";
@@ -2166,7 +2166,7 @@ base::TimeTicks EventSender::GetCurrentEventTime() const {
 }
 
 void EventSender::DoLeapForward(int milliseconds) {
-  time_offset_ += base::TimeDelta::FromMilliseconds(milliseconds);
+  time_offset_ += base::Milliseconds(milliseconds);
 }
 
 uint32_t EventSender::GetUniqueTouchEventId(gin::Arguments* args) {

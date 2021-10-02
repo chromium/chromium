@@ -57,8 +57,7 @@ class OverviewAnimationsTest
                        additional_browsers * cost_per_browser;
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromSeconds(wait_seconds));
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(wait_seconds));
     run_loop.Run();
   }
 

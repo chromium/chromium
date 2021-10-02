@@ -87,11 +87,9 @@ namespace vr {
 namespace {
 vr::VrShell* g_vr_shell_instance;
 
-constexpr base::TimeDelta kPollCapturingStateInterval =
-    base::TimeDelta::FromSecondsD(0.2);
+constexpr base::TimeDelta kPollCapturingStateInterval = base::Seconds(0.2);
 
-constexpr base::TimeDelta kAssetsComponentWaitDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAssetsComponentWaitDelay = base::Seconds(2);
 
 static constexpr float kInchesToMeters = 0.0254f;
 // Screen pixel density of the Google Pixel phone in pixels per inch.

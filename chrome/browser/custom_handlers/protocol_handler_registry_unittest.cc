@@ -354,8 +354,8 @@ TEST_F(ProtocolHandlerRegistryTest, Encode) {
 
 TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
-  base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
+  base::Time one_hour_ago = now - base::Hours(1);
+  base::Time two_hours_ago = now - base::Hours(2);
   ProtocolHandler handler1("bitcoin", GURL("https://example.com"),
                            two_hours_ago,
                            blink::ProtocolHandlerSecurityLevel::kStrict);
@@ -379,8 +379,8 @@ TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
 
 TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
-  base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
+  base::Time one_hour_ago = now - base::Hours(1);
+  base::Time two_hours_ago = now - base::Hours(2);
   GURL url("https://example.com");
   ProtocolHandler handler1("bitcoin", url, two_hours_ago,
                            blink::ProtocolHandlerSecurityLevel::kStrict);

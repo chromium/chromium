@@ -88,8 +88,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
   void GiveItSomeTime() {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(200));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
     run_loop.Run();
   }
 

@@ -38,7 +38,7 @@ absl::optional<base::TimeDelta> GetFieldTrialIdleTimeout() {
   int timeout_s = 0;
   if (!base::StringToInt(timeout_str, &timeout_s))
     return absl::nullopt;
-  return base::TimeDelta::FromSeconds(timeout_s);
+  return base::Seconds(timeout_s);
 }
 
 absl::optional<base::TimeDelta> GetCommandLineIdleTimeout() {
@@ -49,7 +49,7 @@ absl::optional<base::TimeDelta> GetCommandLineIdleTimeout() {
   int timeout_ms = 0;
   if (!base::StringToInt(timeout_str, &timeout_ms))
     return absl::nullopt;
-  return base::TimeDelta::FromMilliseconds(timeout_ms);
+  return base::Milliseconds(timeout_ms);
 }
 
 absl::optional<base::TimeDelta> GetAudioServiceProcessIdleTimeout() {
@@ -171,7 +171,7 @@ audio::mojom::AudioService& GetAudioService() {
 }
 
 std::unique_ptr<media::AudioSystem> CreateAudioSystemForAudioService() {
-  constexpr auto kServiceDisconnectTimeout = base::TimeDelta::FromSeconds(1);
+  constexpr auto kServiceDisconnectTimeout = base::Seconds(1);
   return std::make_unique<audio::AudioSystemToServiceAdapter>(
       base::BindRepeating(&BindSystemInfoFromAnySequence),
       kServiceDisconnectTimeout);

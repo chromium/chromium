@@ -205,7 +205,7 @@ class DebugContextScope {
 }  // namespace
 
 constexpr base::TimeDelta AuctionV8Helper::kScriptTimeout =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 const int AuctionV8Helper::kNoDebugContextGroupId;
 

@@ -237,7 +237,7 @@ class MessageTransferOperationTest : public testing::Test {
   void VerifyTimerCreatedForDevice(multidevice::RemoteDeviceRef remote_device,
                                    uint32_t timeout_seconds) {
     EXPECT_TRUE(GetTimerForDevice(remote_device));
-    EXPECT_EQ(base::TimeDelta::FromSeconds(timeout_seconds),
+    EXPECT_EQ(base::Seconds(timeout_seconds),
               GetTimerForDevice(remote_device)->GetCurrentDelay());
   }
 

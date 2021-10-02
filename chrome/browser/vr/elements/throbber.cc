@@ -60,8 +60,7 @@ void Throbber::SetCircleGrowAnimationEnabled(bool enabled) {
   curve->AddKeyframe(
       gfx::FloatKeyframe::Create(base::TimeDelta(), kStartScale, nullptr));
   curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      base::TimeDelta::FromMilliseconds(kCircleGrowAnimationTimeMs), kEndScale,
-      nullptr));
+      base::Milliseconds(kCircleGrowAnimationTimeMs), kEndScale, nullptr));
   curve->set_target(this);
 
   std::unique_ptr<gfx::KeyframeModel> keyframe_model(gfx::KeyframeModel::Create(

@@ -397,14 +397,14 @@ TEST_F(ProtobufHttpClientTest, RequestTimeout_ReturnsDeadlineExceeded) {
       .WillOnce([&]() { run_loop.Quit(); });
 
   auto request = CreateDefaultTestRequest();
-  request->SetTimeoutDuration(base::TimeDelta::FromSeconds(15));
+  request->SetTimeoutDuration(base::Seconds(15));
   request->SetResponseCallback(response_callback.Get());
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(16));
+  task_environment_.FastForwardBy(base::Seconds(16));
 
   run_loop.Run();
   ASSERT_FALSE(client_.HasPendingRequests());
@@ -665,7 +665,7 @@ TEST_F(ProtobufHttpClientTest, StreamReadyTimeout) {
 
   task_environment_.FastForwardBy(
       ProtobufHttpStreamRequest::kStreamReadyTimeoutDuration +
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   ASSERT_FALSE(client_.HasPendingRequests());
 }
 

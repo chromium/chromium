@@ -68,7 +68,7 @@ void ReportProbeResult(int frame_tree_node_id,
 void RecordCookieWaitTime(base::TimeDelta wait_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", wait_time,
-      base::TimeDelta(), base::TimeDelta::FromSeconds(5), 50);
+      base::TimeDelta(), base::Seconds(5), 50);
 }
 
 void NotifySubresourceManagerOfBadProbe(int frame_tree_node_id,

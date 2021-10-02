@@ -66,15 +66,15 @@ class DecodeTimestamp {
   int64_t IntDiv(base::TimeDelta rhs) const { return ts_.IntDiv(rhs); }
 
   static DecodeTimestamp FromSecondsD(double seconds) {
-    return DecodeTimestamp(base::TimeDelta::FromSecondsD(seconds));
+    return DecodeTimestamp(base::Seconds(seconds));
   }
 
   static DecodeTimestamp FromMilliseconds(int64_t milliseconds) {
-    return DecodeTimestamp(base::TimeDelta::FromMilliseconds(milliseconds));
+    return DecodeTimestamp(base::Milliseconds(milliseconds));
   }
 
   static DecodeTimestamp FromMicroseconds(int64_t microseconds) {
-    return DecodeTimestamp(base::TimeDelta::FromMicroseconds(microseconds));
+    return DecodeTimestamp(base::Microseconds(microseconds));
   }
 
   // This method is used to explicitly call out when presentation timestamps

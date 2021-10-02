@@ -296,7 +296,7 @@ class TabScrubberTest : public InProcessBrowserTest,
     }
 
     void GenerateScroll(int x_offset) {
-      time_for_next_event_ += base::TimeDelta::FromMilliseconds(100);
+      time_for_next_event_ += base::Milliseconds(100);
       ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), time_for_next_event_,
                              0, x_offset, 0, x_offset, 0,
                              kScrubbingGestureFingerCount);

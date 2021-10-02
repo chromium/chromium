@@ -135,7 +135,7 @@ DnsConfig GetFuzzedDnsConfig(FuzzedDataProvider* data_provider) {
   // Fallback periods don't really work for fuzzing. Even a period of 0
   // milliseconds will be increased after the first expiration, resulting in
   // inconsistent behavior.
-  config.fallback_period = base::TimeDelta::FromDays(10);
+  config.fallback_period = base::Days(10);
 
   config.rotate = data_provider->ConsumeBool();
 

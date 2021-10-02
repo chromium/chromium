@@ -19,32 +19,31 @@ namespace {
 // Period of inactivity after which we stop listening for MediaServer crashes.
 // NOTE: Server crashes don't count as activity. Only calls to
 // GetDelayForClientCreation() do.
-constexpr auto kReleaseInactivityDelay = base::TimeDelta::FromMinutes(1);
+constexpr auto kReleaseInactivityDelay = base::Minutes(1);
 
 // Elapsed time between crashes needed to completely reset the media server
 // crash count.
-constexpr auto kTimeUntilCrashReset = base::TimeDelta::FromMinutes(1);
+constexpr auto kTimeUntilCrashReset = base::Minutes(1);
 
 // Elapsed time between schedule calls needed to completely reset the
 // scheduling clock.
-constexpr auto kTimeUntilScheduleReset = base::TimeDelta::FromMinutes(1);
+constexpr auto kTimeUntilScheduleReset = base::Minutes(1);
 
 // Rate at which client creations will be exponentially throttled based on the
 // number of media server crashes.
 // NOTE: Since our exponential delay formula is 2^(server crashes), 0 server
 // crashes still result in this delay being added once.
-constexpr auto kBaseExponentialDelay = base::TimeDelta::FromMilliseconds(120);
+constexpr auto kBaseExponentialDelay = base::Milliseconds(120);
 
 // Base rate at which we schedule client creations.
 // The minimal delay is |kLinearThrottlingDelay| + |kBaseExponentialDelay|.
 constexpr auto kLinearThrottlingDelay =
-    base::TimeDelta::FromSecondsD(0.2) - kBaseExponentialDelay;
+    base::Seconds(0.2) - kBaseExponentialDelay;
 
 // Max exponential throttling rate from media server crashes.
 // The max delay will still be |kLinearThrottlingDelay| +
 // |kMaxExponentialDelay|.
-constexpr auto kMaxExponentialDelay =
-    base::TimeDelta::FromSeconds(3) - kLinearThrottlingDelay;
+constexpr auto kMaxExponentialDelay = base::Seconds(3) - kLinearThrottlingDelay;
 
 // Max number of clients to schedule immediately (e.g when loading a new page).
 const uint32_t kMaxBurstClients = 10;
@@ -172,8 +171,8 @@ void MediaServiceThrottler::UpdateServerCrashes() {
     current_crashes_ = 0.0;
   } else {
     // Decay at the rate of 1 crash/minute otherwise.
-    const double decay = (now - last_current_crash_update_time_) /
-                         base::TimeDelta::FromMinutes(1);
+    const double decay =
+        (now - last_current_crash_update_time_) / base::Minutes(1);
     current_crashes_ = std::max(0.0, current_crashes_ - decay);
   }
 

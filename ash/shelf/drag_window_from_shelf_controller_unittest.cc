@@ -110,8 +110,7 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
                ->is_animating()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(200));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
       run_loop.Run();
     }
   }
@@ -1090,7 +1089,7 @@ TEST_F(DragWindowFromShelfControllerTest,
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   overview_controller->set_delayed_animation_task_delay_for_test(
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =

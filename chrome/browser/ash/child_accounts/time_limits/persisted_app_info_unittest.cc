@@ -18,10 +18,10 @@ using PersistedAppInfoTest = testing::Test;
 TEST_F(PersistedAppInfoTest, RemoveActiveTimes) {
   AppId app = AppId(apps::mojom::AppType::kArc, "1");
   AppState app_state = AppState::kAvailable;
-  base::TimeDelta running_active_time = base::TimeDelta::FromHours(5);
+  base::TimeDelta running_active_time = base::Hours(5);
 
   base::Time start_time = base::Time::Now();
-  base::TimeDelta activity = base::TimeDelta::FromHours(1);
+  base::TimeDelta activity = base::Hours(1);
 
   AppActivity::ActiveTime to_remove =
       AppActivity::ActiveTime(start_time, start_time + activity);
@@ -51,10 +51,10 @@ TEST_F(PersistedAppInfoTest, RemoveActiveTimes) {
 TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
   AppId app = AppId(apps::mojom::AppType::kArc, "1");
   AppState app_state = AppState::kAvailable;
-  base::TimeDelta running_active_time = base::TimeDelta::FromHours(5);
+  base::TimeDelta running_active_time = base::Hours(5);
 
   base::Time start_time = base::Time::Now();
-  base::TimeDelta activity = base::TimeDelta::FromHours(1);
+  base::TimeDelta activity = base::Hours(1);
 
   AppActivity::ActiveTime entry1 =
       AppActivity::ActiveTime(start_time, start_time + activity);

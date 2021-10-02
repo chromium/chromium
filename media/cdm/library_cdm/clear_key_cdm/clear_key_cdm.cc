@@ -91,8 +91,7 @@ static scoped_refptr<media::DecoderBuffer> CopyDecoderBufferFrom(
   // TODO(xhwang): Get rid of this copy.
   scoped_refptr<media::DecoderBuffer> output_buffer =
       media::DecoderBuffer::CopyFrom(input_buffer.data, input_buffer.data_size);
-  output_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(input_buffer.timestamp));
+  output_buffer->set_timestamp(base::Microseconds(input_buffer.timestamp));
 
   if (input_buffer.encryption_scheme == cdm::EncryptionScheme::kUnencrypted)
     return output_buffer;
@@ -457,7 +456,7 @@ void ClearKeyCdm::OnUpdateSuccess(uint32_t promise_id,
 
     if (!has_set_timer_) {
       // Make sure the CDM can get time and sleep if necessary.
-      constexpr auto kSleepDuration = base::TimeDelta::FromSeconds(1);
+      constexpr auto kSleepDuration = base::Seconds(1);
       auto start_time = base::Time::Now();
       base::PlatformThread::Sleep(kSleepDuration);
       auto time_elapsed = base::Time::Now() - start_time;

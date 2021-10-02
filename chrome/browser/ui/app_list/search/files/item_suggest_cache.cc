@@ -179,8 +179,7 @@ ItemSuggestCache::ItemSuggestCache(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
-      min_time_between_updates_(
-          base::TimeDelta::FromMinutes(kMinMinutesBetweenUpdates.Get())),
+      min_time_between_updates_(base::Minutes(kMinMinutesBetweenUpdates.Get())),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

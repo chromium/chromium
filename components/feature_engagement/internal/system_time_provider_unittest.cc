@@ -66,26 +66,26 @@ TEST_F(SystemTimeProviderTest, EpochIs0Days) {
 TEST_F(SystemTimeProviderTest, TestDeltasFromEpoch) {
   base::Time epoch = base::Time::UnixEpoch();
 
-  time_provider_.SetCurrentTime(epoch + base::TimeDelta::FromDays(1));
+  time_provider_.SetCurrentTime(epoch + base::Days(1));
   EXPECT_EQ(1u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch + base::TimeDelta::FromDays(2));
+  time_provider_.SetCurrentTime(epoch + base::Days(2));
   EXPECT_EQ(2u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch + base::TimeDelta::FromDays(100));
+  time_provider_.SetCurrentTime(epoch + base::Days(100));
   EXPECT_EQ(100u, time_provider_.GetCurrentDay());
 }
 
 TEST_F(SystemTimeProviderTest, TestNegativeDeltasFromEpoch) {
   base::Time epoch = base::Time::UnixEpoch();
 
-  time_provider_.SetCurrentTime(epoch - base::TimeDelta::FromDays(1));
+  time_provider_.SetCurrentTime(epoch - base::Days(1));
   EXPECT_EQ(0u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch - base::TimeDelta::FromDays(2));
+  time_provider_.SetCurrentTime(epoch - base::Days(2));
   EXPECT_EQ(0u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch - base::TimeDelta::FromDays(100));
+  time_provider_.SetCurrentTime(epoch - base::Days(100));
   EXPECT_EQ(0u, time_provider_.GetCurrentDay());
 }
 

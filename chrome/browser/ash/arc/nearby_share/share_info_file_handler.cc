@@ -39,8 +39,7 @@ constexpr int kStreamReaderBufSizeInBytes = 32 * 1024;
 // before Nearby Share can consume it.  Since we don't have limit on number
 // of files or size of files users can share via Nearby Share, set to some
 // reasonable number of minutes per GB of transfer.
-constexpr base::TimeDelta kFileStreamingTimeoutPerGB =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kFileStreamingTimeoutPerGB = base::Minutes(2);
 
 int64_t GetTimeoutInSecondsFromBytes(uint64_t transfer_bytes) {
   constexpr double kGBInBytes = 1 * 1024 * 1024 * 1024;
@@ -318,7 +317,7 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
       timeout_seconds);
   if (!file_streaming_timer_.IsRunning()) {
     file_streaming_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(timeout_seconds),
+        FROM_HERE, base::Seconds(timeout_seconds),
         base::BindOnce(&ShareInfoFileHandler::OnFileStreamingTimeout,
                        weak_ptr_factory_.GetWeakPtr(), timeout_message));
   }

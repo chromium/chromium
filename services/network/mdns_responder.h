@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
 
   // Delay between throttled attempts to start the `MdnsResponderManager`.
   constexpr static base::TimeDelta kManagerStartThrottleDelay =
-      base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
 
   MdnsResponderManager();
   explicit MdnsResponderManager(net::MDnsSocketFactory* socket_factory);

@@ -760,8 +760,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
           net_log_.AddEvent(NetLogEventType::HTTP_STREAM_JOB_THROTTLED);
           next_state_ = STATE_INIT_CONNECTION;
           base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-              FROM_HERE, resume_callback,
-              base::TimeDelta::FromMilliseconds(kHTTP2ThrottleMs));
+              FROM_HERE, resume_callback, base::Milliseconds(kHTTP2ThrottleMs));
           return ERR_IO_PENDING;
         }
       } else if (enable_ip_based_pooling_) {

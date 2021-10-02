@@ -29,11 +29,11 @@ namespace {
 
 using ::message_center::Notification;
 
-constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
-constexpr base::TimeDelta kAdvanceWarningTime = base::TimeDelta::FromDays(14);
-constexpr base::TimeDelta kOneYear = base::TimeDelta::FromDays(365);
-constexpr base::TimeDelta kTenYears = base::TimeDelta::FromDays(10 * 365);
+constexpr base::TimeDelta kOneHour = base::Hours(1);
+constexpr base::TimeDelta kOneDay = base::Days(1);
+constexpr base::TimeDelta kAdvanceWarningTime = base::Days(14);
+constexpr base::TimeDelta kOneYear = base::Days(365);
+constexpr base::TimeDelta kTenYears = base::Days(10 * 365);
 
 inline std::u16string utf16(const char* ascii) {
   return base::ASCIIToUTF16(ascii);

@@ -118,7 +118,7 @@ class LogoutConfirmationController::LastWindowClosedObserver
     // No more windows except currently removing. Show logout time.
     Shell::Get()->logout_confirmation_controller()->ConfirmLogout(
         base::TimeTicks::Now() +
-            base::TimeDelta::FromSeconds(kLogoutConfirmationDelayInSeconds),
+            base::Seconds(kLogoutConfirmationDelayInSeconds),
         Source::kCloseAllWindows);
   }
 

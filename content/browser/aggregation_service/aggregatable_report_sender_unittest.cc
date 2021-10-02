@@ -144,7 +144,7 @@ TEST_F(AggregatableReportSenderTest, ReportRequestHangs_Timeout) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // The request should time out after 30 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }

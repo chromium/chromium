@@ -608,7 +608,7 @@ bool V4GetHashProtocolManager::ParseHashResponse(
       positive_expiry = clock_->Now() + TimeDelta::FromSeconds(
                                             match.cache_duration().seconds());
     } else {
-      positive_expiry = clock_->Now() - base::TimeDelta::FromSeconds(1);
+      positive_expiry = clock_->Now() - base::Seconds(1);
     }
     FullHashInfo full_hash_info(match.threat().hash(), list_id,
                                 positive_expiry);

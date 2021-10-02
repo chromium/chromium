@@ -70,8 +70,7 @@ void WaitForWindow(const std::string& id, bool exists) {
 
   // Wait for the window to be available.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-              std::move(wait_for_window));
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_window));
   outer_loop.Run();
 }
 
@@ -131,8 +130,7 @@ void WaitForShelfItem(const std::string& id, bool exists) {
 
   // Wait for the window to be available.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-              std::move(wait_for_shelf_item));
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_shelf_item));
   outer_loop.Run();
 }
 

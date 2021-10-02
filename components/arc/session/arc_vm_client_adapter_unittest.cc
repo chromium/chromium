@@ -352,9 +352,9 @@ class ArcVmClientAdapterTest : public testing::Test,
     SetArcVmBootNotificationServerAddressForTesting(
         abstract_addr,
         // connect_timeout_limit
-        base::TimeDelta::FromMilliseconds(100),
+        base::Milliseconds(100),
         // connect_sleep_duration_initial
-        base::TimeDelta::FromMilliseconds(20));
+        base::Milliseconds(20));
 
     chromeos::SessionManagerClient::InitializeFake();
 
@@ -1787,8 +1787,7 @@ TEST_F(ArcVmClientAdapterTest, TestConnectToBootNotificationServer) {
 TEST_F(ArcVmClientAdapterTest, TestBootNotificationServerIsNotListening) {
   boot_notification_server()->Stop();
   // Change timeout to 26 seconds to allow for exponential backoff.
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
-                                           base::TimeDelta::FromSeconds(26));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(26));
 
   StartMiniArcWithParams(false, {});
 }

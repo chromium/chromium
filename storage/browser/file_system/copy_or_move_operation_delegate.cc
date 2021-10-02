@@ -589,7 +589,7 @@ class StreamCopyOrMoveImpl
             dest_url_.mount_option().flush_policy(), kReadBufferSize,
             base::BindRepeating(&StreamCopyOrMoveImpl::OnCopyOrMoveFileProgress,
                                 weak_factory_.GetWeakPtr()),
-            base::TimeDelta::FromMilliseconds(
+            base::Milliseconds(
                 kMinProgressCallbackInvocationSpanInMilliseconds));
     copy_helper_->Run(base::BindOnce(&StreamCopyOrMoveImpl::RunAfterStreamCopy,
                                      weak_factory_.GetWeakPtr(),

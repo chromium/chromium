@@ -204,7 +204,7 @@ DhcpPacFileAdapterFetcher::ImplCreateDhcpQuery() {
 }
 
 base::TimeDelta DhcpPacFileAdapterFetcher::ImplGetTimeout() const {
-  return base::TimeDelta::FromMilliseconds(kTimeoutMs);
+  return base::Milliseconds(kTimeoutMs);
 }
 
 // static

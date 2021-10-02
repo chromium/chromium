@@ -218,19 +218,13 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
                                           : MediaSessionImpl::State::INACTIVE);
   }
 
-  void UISeekForward() {
-    media_session_->Seek(base::TimeDelta::FromSeconds(1));
-  }
+  void UISeekForward() { media_session_->Seek(base::Seconds(1)); }
 
-  void UISeekBackward() {
-    media_session_->Seek(base::TimeDelta::FromSeconds(-1));
-  }
+  void UISeekBackward() { media_session_->Seek(base::Seconds(-1)); }
 
-  void UISeekTo() { media_session_->SeekTo(base::TimeDelta::FromSeconds(10)); }
+  void UISeekTo() { media_session_->SeekTo(base::Seconds(10)); }
 
-  void UIScrubTo() {
-    media_session_->ScrubTo(base::TimeDelta::FromSeconds(10));
-  }
+  void UIScrubTo() { media_session_->ScrubTo(base::Seconds(10)); }
 
   void UISetAudioSink(const std::string& sink_id) {
     media_session_->SetAudioSinkId(sink_id);
@@ -2200,7 +2194,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock.Advance(base::Milliseconds(1000));
   media_session_->Stop(MediaSession::SuspendType::kUI);
 
   std::unique_ptr<base::HistogramSamples> samples(
@@ -2223,14 +2217,14 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock.Advance(base::Milliseconds(1000));
   UISuspend();
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(2000));
+  clock.Advance(base::Milliseconds(2000));
   UIResume();
   ResolveAudioFocusSuccess();
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock.Advance(base::Milliseconds(1000));
   media_session_->Stop(MediaSession::SuspendType::kUI);
 
   std::unique_ptr<base::HistogramSamples> samples(
@@ -2253,13 +2247,13 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock.Advance(base::Milliseconds(1000));
   SystemSuspend(true);
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(2000));
+  clock.Advance(base::Milliseconds(2000));
   SystemResume();
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock.Advance(base::Milliseconds(1000));
   media_session_->Stop(MediaSession::SuspendType::kUI);
 
   std::unique_ptr<base::HistogramSamples> samples(
@@ -2281,7 +2275,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
-  clock.Advance(base::TimeDelta::FromMilliseconds(500));
+  clock.Advance(base::Milliseconds(500));
   SystemSuspend(true);
 
   {
@@ -2291,7 +2285,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   }
 
   SystemResume();
-  clock.Advance(base::TimeDelta::FromMilliseconds(5000));
+  clock.Advance(base::Milliseconds(5000));
   UISuspend();
 
   {
@@ -2314,13 +2308,13 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
-  clock.Advance(base::TimeDelta::FromMilliseconds(500));
+  clock.Advance(base::Milliseconds(500));
   SystemSuspend(true);
   media_session_->Stop(MediaSession::SuspendType::kUI);
 
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
-  clock.Advance(base::TimeDelta::FromMilliseconds(5000));
+  clock.Advance(base::Milliseconds(5000));
   SystemResume();
   media_session_->Stop(MediaSession::SuspendType::kUI);
 
@@ -2344,12 +2338,12 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
-  clock.Advance(base::TimeDelta::FromMilliseconds(10000));
+  clock.Advance(base::Milliseconds(10000));
   RemovePlayer(player_observer.get(), 0);
 
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
-  clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock.Advance(base::Milliseconds(1000));
   media_session_->Stop(MediaSession::SuspendType::kUI);
 
   std::unique_ptr<base::HistogramSamples> samples(
@@ -2843,7 +2837,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionFaviconBrowserTest, StartupInitalization) {
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers) {
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
@@ -2878,7 +2872,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateWithOneShotPlayer) {
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
@@ -2895,7 +2889,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateWithPepperPlayer) {
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
@@ -2912,7 +2906,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers_OneShot) {
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
@@ -2939,7 +2933,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers_Pepper) {
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
@@ -2977,7 +2971,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                                               "/media/session/position.html")));
 
   auto* main_frame = shell()->web_contents()->GetMainFrame();
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(6060);
+  const base::TimeDelta duration = base::Milliseconds(6060);
 
   {
     // By default we should have an empty position.
@@ -3007,7 +3001,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
     // has already progressed a bit.
     observer.WaitForExpectedPositionAtLeast(media_session::MediaPosition(
         /*playback_rate=*/1.0, duration,
-        /*position=*/base::TimeDelta::FromSeconds(1), /*end_of_media=*/false));
+        /*position=*/base::Seconds(1), /*end_of_media=*/false));
   }
 
   base::TimeDelta paused_position;
@@ -3021,7 +3015,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
     paused_position =
         observer.WaitForExpectedPositionAtLeast(media_session::MediaPosition(
             /*playback_rate=*/0.0, duration,
-            /*position=*/base::TimeDelta::FromSeconds(1),
+            /*position=*/base::Seconds(1),
             /*end_of_media=*/false));
   }
 

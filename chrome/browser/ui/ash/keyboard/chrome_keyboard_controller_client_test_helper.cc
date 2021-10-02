@@ -76,8 +76,8 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     observers_.RemoveObserver(observer);
   }
   ash::KeyRepeatSettings GetKeyRepeatSettings() override {
-    return ash::KeyRepeatSettings{true, base::TimeDelta::FromMilliseconds(1000),
-                                  base::TimeDelta::FromMilliseconds(1000)};
+    return ash::KeyRepeatSettings{true, base::Milliseconds(1000),
+                                  base::Milliseconds(1000)};
   }
 
  private:

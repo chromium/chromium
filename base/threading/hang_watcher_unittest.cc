@@ -45,7 +45,7 @@ const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
 // Use this value to mark things very far off in the future. Adding this
 // to TimeTicks::Now() gives a point that will never be reached during the
 // normal execution of a test.
-constexpr TimeDelta kVeryLongDelta{base::TimeDelta::FromDays(365)};
+constexpr TimeDelta kVeryLongDelta{base::Days(365)};
 
 constexpr uint64_t kArbitraryDeadline = 0x0000C0FFEEC0FFEEu;
 constexpr uint64_t kAllOnes = 0xFFFFFFFFFFFFFFFFu;
@@ -108,8 +108,8 @@ class BlockingThread : public DelegateSimpleThread::Delegate {
 
 class HangWatcherTest : public testing::Test {
  public:
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(10);
-  const base::TimeDelta kHangTime = kTimeout + base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kTimeout = base::Seconds(10);
+  const base::TimeDelta kHangTime = kTimeout + base::Seconds(1);
 
   HangWatcherTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
@@ -380,12 +380,10 @@ TEST_F(HangWatcherTest, NestedScopes) {
   ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
   base::TimeTicks original_deadline = current_hang_watch_state->GetDeadline();
 
-  constexpr base::TimeDelta kFirstTimeout(
-      base::TimeDelta::FromMilliseconds(500));
+  constexpr base::TimeDelta kFirstTimeout(base::Milliseconds(500));
   base::TimeTicks first_deadline = base::TimeTicks::Now() + kFirstTimeout;
 
-  constexpr base::TimeDelta kSecondTimeout(
-      base::TimeDelta::FromMilliseconds(250));
+  constexpr base::TimeDelta kSecondTimeout(base::Milliseconds(250));
   base::TimeTicks second_deadline = base::TimeTicks::Now() + kSecondTimeout;
 
   // At this point we have not set any timeouts.
@@ -687,7 +685,7 @@ namespace {
 // Monitor(). Choose a low value so that that successive invocations happens
 // fast. This makes tests that wait for monitoring run fast and makes tests that
 // expect no monitoring fail fast.
-const base::TimeDelta kMonitoringPeriod = base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kMonitoringPeriod = base::Milliseconds(1);
 
 // Test if and how often the HangWatcher periodically monitors for hangs.
 class HangWatcherPeriodicMonitoringTest : public testing::Test {
@@ -820,7 +818,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest, NoMonitorOnOverSleep) {
 
   // Make the HangWatcher tick clock advance so much after waiting that it will
   // detect oversleeping every time. This will keep it from monitoring.
-  InstallAfterWaitCallback(base::TimeDelta::FromMinutes(1));
+  InstallAfterWaitCallback(base::Minutes(1));
 
   hang_watcher_.Start();
 
@@ -850,7 +848,7 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
     hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
       capture_started_.Signal();
       // Simulate capturing that takes a long time.
-      PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(500));
+      PlatformThread::Sleep(base::Milliseconds(500));
 
       continue_capture_.Wait();
       completed_capture_ = true;
@@ -859,7 +857,7 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
     hang_watcher_.SetAfterMonitorClosureForTesting(
         base::BindLambdaForTesting([&] {
           // Simulate monitoring that takes a long time.
-          PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(500));
+          PlatformThread::Sleep(base::Milliseconds(500));
           completed_monitoring_.Signal();
         }));
 

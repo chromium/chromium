@@ -190,7 +190,7 @@ void CallOnMainThread(int delay_in_msec,
   if (callback.func) {
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostDelayedTask(
         FROM_HERE, base::BindOnce(callback.func, callback.user_data, result),
-        base::TimeDelta::FromMilliseconds(delay_in_msec));
+        base::Milliseconds(delay_in_msec));
   }
 }
 

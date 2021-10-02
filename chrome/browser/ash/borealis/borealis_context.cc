@@ -102,7 +102,7 @@ class BorealisLifetimeObserver
                       base::BindOnce(&BorealisLifetimeObserver::OnDelayComplete,
                                      weak_factory_.GetWeakPtr(), std::move(url),
                                      app_id),
-                      base::TimeDelta::FromSeconds(5)));
+                      base::Seconds(5)));
     }
   }
 

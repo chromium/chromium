@@ -1069,7 +1069,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       oldForegroundTabWasAddedCompletionBlock();
     }
     double duration = [NSDate timeIntervalSinceReferenceDate] - startTime;
-    base::TimeDelta timeDelta = base::TimeDelta::FromSecondsD(duration);
+    base::TimeDelta timeDelta = base::Seconds(duration);
     if (offTheRecord) {
       UMA_HISTOGRAM_TIMES("Toolbar.Menu.NewIncognitoTabPresentationDuration",
                           timeDelta);

@@ -25,10 +25,8 @@ namespace internal {
 namespace {
 constexpr int kInverseProbabilityOfDelay = 8;
 constexpr int kInverseProbabilityOfNotResuming = 10;
-constexpr base::TimeDelta kMillisecondsToResume =
-    base::TimeDelta::FromMilliseconds(2);
-constexpr base::TimeDelta kPauseBindingsFrequency =
-    base::TimeDelta::FromMilliseconds(7);
+constexpr base::TimeDelta kMillisecondsToResume = base::Milliseconds(2);
+constexpr base::TimeDelta kPauseBindingsFrequency = base::Milliseconds(7);
 }  // namespace
 
 // TODO(mpdenton) This only adds random delays on method call processing. This

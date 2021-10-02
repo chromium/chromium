@@ -80,7 +80,7 @@ TEST_F(BackgroundSnapshotControllerTest, OnLoad) {
   controller()->DocumentOnLoadCompletedInMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
 }
@@ -91,7 +91,7 @@ TEST_F(BackgroundSnapshotControllerTest, Stop) {
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   controller()->Stop();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   // Should not start snapshots
   EXPECT_EQ(0, snapshot_count());
@@ -104,14 +104,14 @@ TEST_F(BackgroundSnapshotControllerTest, Stop) {
 // as done later. That reporting should have no effect nor crash.
 TEST_F(BackgroundSnapshotControllerTest, ClientReset) {
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
   // This normally happens when navigation starts.
   controller()->Reset();
   // Next snapshot should be initiated when new document is loaded.
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   // No snapshot since session was reset.
   EXPECT_EQ(2, snapshot_count());

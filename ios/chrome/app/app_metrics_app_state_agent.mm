@@ -114,8 +114,7 @@
 
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
 
   IOSProfileSessionDurationsService* psdService = [self psdService];
   if (psdService) {

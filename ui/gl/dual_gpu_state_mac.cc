@@ -54,7 +54,7 @@ void DualGPUStateMac::AttemptSwitchToLowPowerGPUWithDelay() {
 
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, cancelable_delay_callback_.callback(),
-        base::TimeDelta::FromSeconds(kDelayLengthSeconds));
+        base::Seconds(kDelayLengthSeconds));
   } else {
     SwitchToLowPowerGPU();
   }

@@ -53,7 +53,7 @@ using EnergyImpactCoefficients =
 
 EnergyImpactCoefficients GetEnergyImpactTestCoefficients() {
   constexpr EnergyImpactCoefficients coefficients{
-      .kcpu_wakeups = base::TimeDelta::FromMicroseconds(200).InSecondsF(),
+      .kcpu_wakeups = base::Microseconds(200).InSecondsF(),
       .kqos_default = 1.0,
       .kqos_background = 0.8,
       .kqos_utility = 1.0,
@@ -66,7 +66,7 @@ EnergyImpactCoefficients GetEnergyImpactTestCoefficients() {
   return coefficients;
 }
 
-constexpr base::TimeDelta kIntervalLength = base::TimeDelta::FromSecondsD(2.5);
+constexpr base::TimeDelta kIntervalLength = base::Seconds(2.5);
 
 TEST(ResourceCoalitionTests, Basics) {
   base::HistogramTester histogram_tester;
@@ -83,7 +83,7 @@ TEST(ResourceCoalitionTests, Basics) {
   EXPECT_TRUE(coalition.IsAvailable());
 
   base::TimeTicks begin = base::TimeTicks::Now();
-  constexpr base::TimeDelta busy_time = base::TimeDelta::FromSeconds(1);
+  constexpr base::TimeDelta busy_time = base::Seconds(1);
   double number = 1;
   while (base::TimeTicks::Now() < (begin + busy_time)) {
     for (int i = 0; i < 10000; ++i) {
@@ -475,57 +475,49 @@ TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Individual) {
   EXPECT_DOUBLE_EQ(
       2.66, coalition.ComputeEnergyImpactForCoalitionUsage(
                 EnergyImpactCoefficients{
-                    .kcpu_wakeups =
-                        base::TimeDelta::FromMicroseconds(200).InSecondsF()},
+                    .kcpu_wakeups = base::Microseconds(200).InSecondsF()},
                 coalition_resource_usage{.platform_idle_wakeups = 133}));
 
   // Test 100 ms of CPU, which should come out to 8% of a CPU second with a
   // background QOS discount of rate of 0.8.
   EXPECT_DOUBLE_EQ(8.0, coalition.ComputeEnergyImpactForCoalitionUsage(
                             EnergyImpactCoefficients{.kqos_background = 0.8},
-                            MakeResourceUsageWithQOS(
-                                THREAD_QOS_BACKGROUND,
-                                base::TimeDelta::FromMilliseconds(100))));
-  EXPECT_DOUBLE_EQ(
-      5.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-               EnergyImpactCoefficients{.kqos_default = 1.0},
-               MakeResourceUsageWithQOS(
-                   THREAD_QOS_DEFAULT, base::TimeDelta::FromMilliseconds(50))));
+                            MakeResourceUsageWithQOS(THREAD_QOS_BACKGROUND,
+                                                     base::Milliseconds(100))));
+  EXPECT_DOUBLE_EQ(5.0, coalition.ComputeEnergyImpactForCoalitionUsage(
+                            EnergyImpactCoefficients{.kqos_default = 1.0},
+                            MakeResourceUsageWithQOS(THREAD_QOS_DEFAULT,
+                                                     base::Milliseconds(50))));
   EXPECT_DOUBLE_EQ(10.0, coalition.ComputeEnergyImpactForCoalitionUsage(
                              EnergyImpactCoefficients{.kqos_utility = 1.0},
                              MakeResourceUsageWithQOS(
-                                 THREAD_QOS_UTILITY,
-                                 base::TimeDelta::FromMilliseconds(100))));
-  EXPECT_DOUBLE_EQ(
-      1.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-               EnergyImpactCoefficients{.kqos_legacy = 1.0},
-               MakeResourceUsageWithQOS(
-                   THREAD_QOS_LEGACY, base::TimeDelta::FromMilliseconds(10))));
-  EXPECT_DOUBLE_EQ(
-      1.0,
-      coalition.ComputeEnergyImpactForCoalitionUsage(
-          EnergyImpactCoefficients{.kqos_user_initiated = 1.0},
-          MakeResourceUsageWithQOS(THREAD_QOS_USER_INITIATED,
-                                   base::TimeDelta::FromMilliseconds(10))));
-  EXPECT_DOUBLE_EQ(
-      1.0,
-      coalition.ComputeEnergyImpactForCoalitionUsage(
-          EnergyImpactCoefficients{.kqos_user_interactive = 1.0},
-          MakeResourceUsageWithQOS(THREAD_QOS_USER_INTERACTIVE,
-                                   base::TimeDelta::FromMilliseconds(10))));
+                                 THREAD_QOS_UTILITY, base::Milliseconds(100))));
+  EXPECT_DOUBLE_EQ(1.0, coalition.ComputeEnergyImpactForCoalitionUsage(
+                            EnergyImpactCoefficients{.kqos_legacy = 1.0},
+                            MakeResourceUsageWithQOS(THREAD_QOS_LEGACY,
+                                                     base::Milliseconds(10))));
+  EXPECT_DOUBLE_EQ(1.0,
+                   coalition.ComputeEnergyImpactForCoalitionUsage(
+                       EnergyImpactCoefficients{.kqos_user_initiated = 1.0},
+                       MakeResourceUsageWithQOS(THREAD_QOS_USER_INITIATED,
+                                                base::Milliseconds(10))));
+  EXPECT_DOUBLE_EQ(1.0,
+                   coalition.ComputeEnergyImpactForCoalitionUsage(
+                       EnergyImpactCoefficients{.kqos_user_interactive = 1.0},
+                       MakeResourceUsageWithQOS(THREAD_QOS_USER_INTERACTIVE,
+                                                base::Milliseconds(10))));
 
-  EXPECT_DOUBLE_EQ(
-      1.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-               EnergyImpactCoefficients{.kgpu_time = 2.5},
-               coalition_resource_usage{
-                   .gpu_time =
-                       base::TimeDelta::FromMilliseconds(4).InNanoseconds()}));
+  EXPECT_DOUBLE_EQ(1.0,
+                   coalition.ComputeEnergyImpactForCoalitionUsage(
+                       EnergyImpactCoefficients{.kgpu_time = 2.5},
+                       coalition_resource_usage{
+                           .gpu_time = base::Milliseconds(4).InNanoseconds()}));
 }
 
 TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Combined) {
   // test that the coefficients and samples add up as expected.
   EnergyImpactCoefficients coefficients{
-      .kcpu_wakeups = base::TimeDelta::FromMicroseconds(200).InSecondsF(),
+      .kcpu_wakeups = base::Microseconds(200).InSecondsF(),
       .kqos_default = 1.0,
       .kqos_background = 0.8,
       .kqos_utility = 1.0,
@@ -536,22 +528,22 @@ TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Combined) {
   };
   coalition_resource_usage sample{
       .platform_idle_wakeups = 133,
-      .gpu_time = NsScaleToTimebase(
-          kM1Timebase, base::TimeDelta::FromMilliseconds(4).InNanoseconds()),
+      .gpu_time =
+          NsScaleToTimebase(kM1Timebase, base::Milliseconds(4).InNanoseconds()),
       .cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES,
   };
-  sample.cpu_time_eqos[THREAD_QOS_BACKGROUND] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(100).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_DEFAULT] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(50).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_UTILITY] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(100).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_LEGACY] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(10).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(10).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(10).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_BACKGROUND] =
+      NsScaleToTimebase(kM1Timebase, base::Milliseconds(100).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_DEFAULT] =
+      NsScaleToTimebase(kM1Timebase, base::Milliseconds(50).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_UTILITY] =
+      NsScaleToTimebase(kM1Timebase, base::Milliseconds(100).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_LEGACY] =
+      NsScaleToTimebase(kM1Timebase, base::Milliseconds(10).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED] =
+      NsScaleToTimebase(kM1Timebase, base::Milliseconds(10).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE] =
+      NsScaleToTimebase(kM1Timebase, base::Milliseconds(10).InNanoseconds());
 
   TestResourceCoalition coalition;
   coalition.SetMachTimebaseForTesting(kM1Timebase);

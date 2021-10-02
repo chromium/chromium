@@ -33,8 +33,7 @@ class BookmarkStorage
     : public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
   // How often the file is saved at most.
-  static constexpr base::TimeDelta kSaveDelay =
-      base::TimeDelta::FromMilliseconds(2500);
+  static constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 
   // Creates a BookmarkStorage for the specified model. The data will saved to a
   // location derived from |profile_path|. The disk writes will be executed as a

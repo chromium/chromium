@@ -200,8 +200,7 @@ class LocalStorageImpl::StorageAreaHolder final
       : context_(context), storage_key_(storage_key) {
     // Delay for a moment after a value is set in anticipation
     // of other values being set, so changes are batched.
-    static constexpr base::TimeDelta kCommitDefaultDelaySecs =
-        base::TimeDelta::FromSeconds(5);
+    static constexpr base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
 
     // To avoid excessive IO we apply limits to the amount of data being written
     // and the frequency of writes.

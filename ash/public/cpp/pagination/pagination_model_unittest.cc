@@ -139,8 +139,8 @@ class PaginationModelTest : public views::test::WidgetTest {
     widget_.reset(CreateTopLevelPlatformWidget());
     pagination_ = std::make_unique<PaginationModel>(widget_->GetContentsView());
     pagination_->SetTotalPages(5);
-    pagination_->SetTransitionDurations(base::TimeDelta::FromMilliseconds(1),
-                                        base::TimeDelta::FromMilliseconds(1));
+    pagination_->SetTransitionDurations(base::Milliseconds(1),
+                                        base::Milliseconds(1));
     observer_.set_model(pagination_.get());
     pagination_->AddObserver(&observer_);
   }
@@ -177,8 +177,7 @@ class PaginationModelTest : public views::test::WidgetTest {
     while (pagination()->IsRevertingCurrentTransition()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }
   }

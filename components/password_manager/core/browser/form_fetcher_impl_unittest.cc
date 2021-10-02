@@ -1052,8 +1052,7 @@ TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherResumesFetch) {
 // Check that results from both stores are merged.
 TEST_F(MultiStoreFormFetcherTest, MergeFromBothStores) {
   const base::Time kLastUsedNow = base::Time::Now();
-  const base::Time kLastUsedYesterday =
-      kLastUsedNow - base::TimeDelta::FromDays(1);
+  const base::Time kLastUsedYesterday = kLastUsedNow - base::Days(1);
   Fetch();
   PasswordForm federated1 = CreateFederated("user", kLastUsedNow);
   PasswordForm federated2 = CreateFederated("user_B", kLastUsedNow);

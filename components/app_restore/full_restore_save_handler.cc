@@ -31,10 +31,10 @@ namespace {
 
 // Delay between when an update is received, and when we save it to the
 // full restore file.
-constexpr base::TimeDelta kSaveDelay = base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 
 // Delay starting `save_timer_` during the system startup phase.
-constexpr base::TimeDelta kWaitDelay = base::TimeDelta::FromSeconds(120);
+constexpr base::TimeDelta kWaitDelay = base::Seconds(120);
 
 const char kCrxAppPrefix[] = "_crx_";
 

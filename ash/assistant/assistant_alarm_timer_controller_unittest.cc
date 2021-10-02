@@ -399,7 +399,7 @@ TEST_F(AssistantAlarmTimerControllerTest, AddedTimersShouldHaveCreationTime) {
   testing::Mock::VerifyAndClearExpectations(&mock);
 
   // If specified, |creation_time| should be respected.
-  creation_time -= base::TimeDelta::FromMinutes(1);
+  creation_time -= base::Minutes(1);
   EXPECT_CALL(mock, OnTimerAdded)
       .WillOnce(testing::Invoke([&](const AssistantTimer& timer) {
         EXPECT_EQ(creation_time, timer.creation_time.value());
@@ -423,12 +423,12 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
       /*ticks=*/
       {
           {base::TimeDelta(), "1:01:01"},
-          {base::TimeDelta::FromHours(1), "1:01"},
-          {base::TimeDelta::FromMinutes(1), "0:01"},
-          {base::TimeDelta::FromSeconds(1), "0:00"},
-          {base::TimeDelta::FromSeconds(1), "-0:01"},
-          {base::TimeDelta::FromMinutes(1), "-1:01"},
-          {base::TimeDelta::FromHours(1), "-1:01:01"},
+          {base::Hours(1), "1:01"},
+          {base::Minutes(1), "0:01"},
+          {base::Seconds(1), "0:00"},
+          {base::Seconds(1), "-0:01"},
+          {base::Minutes(1), "-1:01"},
+          {base::Hours(1), "-1:01:01"},
       },
   });
 
@@ -438,12 +438,12 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
       /*ticks=*/
       {
           {base::TimeDelta(), "1.01.01"},
-          {base::TimeDelta::FromHours(1), "1.01"},
-          {base::TimeDelta::FromMinutes(1), "0.01"},
-          {base::TimeDelta::FromSeconds(1), "0.00"},
-          {base::TimeDelta::FromSeconds(1), "-0.01"},
-          {base::TimeDelta::FromMinutes(1), "-1.01"},
-          {base::TimeDelta::FromHours(1), "-1.01.01"},
+          {base::Hours(1), "1.01"},
+          {base::Minutes(1), "0.01"},
+          {base::Seconds(1), "0.00"},
+          {base::Seconds(1), "-0.01"},
+          {base::Minutes(1), "-1.01"},
+          {base::Hours(1), "-1.01.01"},
       },
   });
 
@@ -455,9 +455,8 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
     ScopedNotificationModelObserver observer;
 
     // Schedule a timer.
-    ScheduleTimer(kTimerId).WithRemainingTime(base::TimeDelta::FromHours(1) +
-                                              base::TimeDelta::FromMinutes(1) +
-                                              base::TimeDelta::FromSeconds(1));
+    ScheduleTimer(kTimerId).WithRemainingTime(
+        base::Hours(1) + base::Minutes(1) + base::Seconds(1));
 
     // Run each tick of the clock in the test.
     for (auto& tick : i18n_test_case.ticks) {
@@ -476,9 +475,9 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
 // Tests that a notification is added for a timer and has the expected message.
 TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedMessage) {
   constexpr char kEmptyLabel[] = "";
-  constexpr base::TimeDelta kOneSec = base::TimeDelta::FromSeconds(1);
-  constexpr base::TimeDelta kOneMin = base::TimeDelta::FromMinutes(1);
-  constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kOneSec = base::Seconds(1);
+  constexpr base::TimeDelta kOneMin = base::Minutes(1);
+  constexpr base::TimeDelta kOneHour = base::Hours(1);
 
   // We'll verify the message of our notification with various timers.
   typedef struct {
@@ -564,7 +563,7 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedButtons) {
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 
-  constexpr base::TimeDelta kTimeRemaining = base::TimeDelta::FromMinutes(1);
+  constexpr base::TimeDelta kTimeRemaining = base::Minutes(1);
 
   // Schedule a timer.
   ScheduleTimer(kTimerId).WithRemainingTime(kTimeRemaining);
@@ -645,7 +644,7 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedButtons) {
           .WithLabel(IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON)
           .WithActionUrl(assistant::util::CreateAlarmTimerDeepLink(
                              assistant::util::AlarmTimerAction::kAddTimeToTimer,
-                             kTimerId, base::TimeDelta::FromMinutes(1))
+                             kTimerId, base::Minutes(1))
                              .value())
           .WithRemoveNotificationOnClick(false),
       observer.last_notification().buttons.at(1));
@@ -697,7 +696,7 @@ TEST_F(AssistantAlarmTimerControllerTest,
   ScopedNotificationModelObserver notification_model_observer;
 
   // Schedule a timer.
-  ScheduleTimer(kTimerId).WithRemainingTime(base::TimeDelta::FromSeconds(10));
+  ScheduleTimer(kTimerId).WithRemainingTime(base::Seconds(10));
 
   // Make assertions about the notification.
   EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithPriority(
@@ -706,7 +705,7 @@ TEST_F(AssistantAlarmTimerControllerTest,
 
   // Advance the clock.
   // NOTE: Six seconds is the threshold for popping up our notification.
-  AdvanceClockAndWaitForTimerUpdate(base::TimeDelta::FromSeconds(6));
+  AdvanceClockAndWaitForTimerUpdate(base::Seconds(6));
 
   // Make assertions about the notification.
   EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithPriority(

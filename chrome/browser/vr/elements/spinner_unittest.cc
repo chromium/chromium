@@ -58,14 +58,14 @@ TEST(Spinner, Animation) {
     base::TimeDelta delta;
   };
   std::vector<TestCase> test_cases = {
-      {38.2652f, 63.8781f, base::TimeDelta::FromSecondsD(1.0 / 6.0)},
-      {76.5305f, 209.402f, base::TimeDelta::FromSecondsD(2.0 / 6.0)},
-      {114.796f, 259.029f, base::TimeDelta::FromSecondsD(3.0 / 6.0)},
-      {153.061f, 270.0f, base::TimeDelta::FromSecondsD(4.0 / 6.0)},
-      {255.206f, 206.121f, base::TimeDelta::FromSecondsD(5.0 / 6.0)},
-      {438.994f, 60.5979f, base::TimeDelta::FromSecondsD(6.0 / 6.0)},
-      {526.886f, 10.9706f, base::TimeDelta::FromSecondsD(7.0 / 6.0)},
-      {576.122f, 0.0f, base::TimeDelta::FromSecondsD(8.0 / 6.0)},
+      {38.2652f, 63.8781f, base::Seconds(1.0 / 6.0)},
+      {76.5305f, 209.402f, base::Seconds(2.0 / 6.0)},
+      {114.796f, 259.029f, base::Seconds(3.0 / 6.0)},
+      {153.061f, 270.0f, base::Seconds(4.0 / 6.0)},
+      {255.206f, 206.121f, base::Seconds(5.0 / 6.0)},
+      {438.994f, 60.5979f, base::Seconds(6.0 / 6.0)},
+      {526.886f, 10.9706f, base::Seconds(7.0 / 6.0)},
+      {576.122f, 0.0f, base::Seconds(8.0 / 6.0)},
   };
 
   for (const auto& test_case : test_cases) {

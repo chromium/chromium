@@ -33,8 +33,7 @@ constexpr const int kBorderForFocusRingDp = 3;
 
 // How long does a single step of the loading animation take - i.e., the time it
 // takes for the arc to grow from a point to a full circle.
-constexpr base::TimeDelta kLoadingAnimationStepDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kLoadingAnimationStepDuration = base::Seconds(2);
 
 void PaintLoadingArc(gfx::Canvas* canvas,
                      const gfx::Rect& bounds,

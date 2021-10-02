@@ -86,8 +86,7 @@ constexpr float kMaxRatioOfWorkArea = 0.9;
 // Padding of elements in the simple toolbar.
 constexpr gfx::Insets kToolbarPadding = gfx::Insets(8);
 
-constexpr base::TimeDelta kExtendedAccountInfoTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kExtendedAccountInfoTimeout = base::Seconds(10);
 
 constexpr int kSupportedAcceleratorCommands[] = {
     IDC_CLOSE_TAB,  IDC_CLOSE_WINDOW,    IDC_EXIT,

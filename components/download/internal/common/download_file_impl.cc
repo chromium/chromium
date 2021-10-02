@@ -401,8 +401,7 @@ base::TimeDelta DownloadFileImpl::GetRetryDelayForFailedRename(
   // 2 at each subsequent retry. Assumes that |retries_left| starts at
   // kMaxRenameRetries. Also assumes that kMaxRenameRetries is less than the
   // number of bits in an int.
-  return base::TimeDelta::FromMilliseconds(kInitialRenameRetryDelayMs) *
-         (1 << attempt_number);
+  return base::Milliseconds(kInitialRenameRetryDelayMs) * (1 << attempt_number);
 }
 
 bool DownloadFileImpl::ShouldRetryFailedRename(DownloadInterruptReason reason) {
@@ -576,8 +575,7 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
   bool should_terminate = false;
   InputStream::StreamState state(InputStream::EMPTY);
   DownloadInterruptReason reason = DOWNLOAD_INTERRUPT_REASON_NONE;
-  base::TimeDelta delta(
-      base::TimeDelta::FromMilliseconds(kMaxTimeBlockingFileThreadMs));
+  base::TimeDelta delta(base::Milliseconds(kMaxTimeBlockingFileThreadMs));
   // Take care of any file local activity required.
   do {
     state = source_stream->Read(&incoming_data, &incoming_data_size);
@@ -741,9 +739,8 @@ void DownloadFileImpl::SendUpdate() {
 
 void DownloadFileImpl::WillWriteToDisk(size_t data_len) {
   if (!update_timer_->IsRunning()) {
-    update_timer_->Start(FROM_HERE,
-                         base::TimeDelta::FromMilliseconds(kUpdatePeriodMs),
-                         this, &DownloadFileImpl::SendUpdate);
+    update_timer_->Start(FROM_HERE, base::Milliseconds(kUpdatePeriodMs), this,
+                         &DownloadFileImpl::SendUpdate);
   }
   rate_estimator_.Increment(data_len);
 }

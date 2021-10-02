@@ -133,7 +133,7 @@ bool HasRecommendableForeignTab(
 
         // Only show pages recently opened.
         const base::TimeDelta tab_age = base::Time::Now() - tab->timestamp;
-        if (tab_age > base::TimeDelta::FromMinutes(kMaxForeignTabAgeInMinutes))
+        if (tab_age > base::Minutes(kMaxForeignTabAgeInMinutes))
           continue;
 
         if (latest_timestamp < tab->timestamp) {

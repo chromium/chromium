@@ -240,7 +240,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
     support->DidPresentCompositorFrame(
         frame_token, draw_time, timings,
         gfx::PresentationFeedback(base::TimeTicks::Now(),
-                                  base::TimeDelta::FromMilliseconds(16),
+                                  base::Milliseconds(16),
                                   /*flags=*/0));
   }
 
@@ -1500,8 +1500,7 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
   }
 
   for (; sent_frames < BeginFrameTracker::kLimitStop; ++sent_frames) {
-    base::TimeTicks unthrottle_time =
-        frametime + base::TimeDelta::FromSeconds(1);
+    base::TimeTicks unthrottle_time = frametime + base::Seconds(1);
 
     // The client should now be throttled for the next second and won't receive
     // OnBeginFrames().
@@ -1512,7 +1511,7 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
     begin_frame_source.TestOnBeginFrame(args);
     testing::Mock::VerifyAndClearExpectations(&mock_client);
 
-    frametime = unthrottle_time - base::TimeDelta::FromMicroseconds(1);
+    frametime = unthrottle_time - base::Microseconds(1);
     args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0,
                                           sequence_number++, frametime);
     EXPECT_CALL(mock_client, OnBeginFrame(args, _)).Times(0);
@@ -1532,7 +1531,7 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
 
   // The client should no longer receive OnBeginFrame() until it becomes
   // responsive again.
-  frametime += base::TimeDelta::FromMinutes(1);
+  frametime += base::Minutes(1);
   args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0,
                                         sequence_number++, frametime);
   EXPECT_CALL(mock_client, OnBeginFrame(args, _)).Times(0);
@@ -1566,8 +1565,7 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   support->SetBeginFrameSource(&begin_frame_source);
   support->SetNeedsBeginFrame(true);
   constexpr uint8_t fps = 5;
-  constexpr base::TimeDelta throttled_interval =
-      base::TimeDelta::FromSeconds(1) / fps;
+  constexpr base::TimeDelta throttled_interval = base::Seconds(1) / fps;
   support->ThrottleBeginFrame(throttled_interval);
 
   constexpr base::TimeDelta interval = BeginFrameArgs::DefaultInterval();
@@ -1576,7 +1574,7 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   int sent_frames = 0;
   BeginFrameArgs args;
   uint64_t frames_throttled_since_last = 0;
-  const base::TimeTicks end_time = frame_time + base::TimeDelta::FromSeconds(2);
+  const base::TimeTicks end_time = frame_time + base::Seconds(2);
 
   base::TimeTicks next_expected_begin_frame = frame_time;
   while (frame_time < end_time) {

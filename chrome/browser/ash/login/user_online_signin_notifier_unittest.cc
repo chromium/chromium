@@ -31,13 +31,10 @@ class MockUserOnlineSigninNotifierObserver
   MOCK_METHOD(void, OnOnlineSigninEnforced, (const AccountId& account_id));
 };
 
-constexpr base::TimeDelta kLoginOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kLoginOnlineLongDelay =
-    base::TimeDelta::FromSeconds(100);
-constexpr base::TimeDelta kLoginOnlineVeryLongDelay =
-    base::TimeDelta::FromSeconds(1000);
-constexpr base::TimeDelta kLoginOnlineOffset = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
+constexpr base::TimeDelta kLoginOnlineLongDelay = base::Seconds(100);
+constexpr base::TimeDelta kLoginOnlineVeryLongDelay = base::Seconds(1000);
+constexpr base::TimeDelta kLoginOnlineOffset = base::Seconds(1);
 
 }  // namespace
 

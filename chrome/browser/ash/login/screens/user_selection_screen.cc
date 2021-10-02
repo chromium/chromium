@@ -374,9 +374,9 @@ class UserSelectionScreen::TpmLockedChecker {
     if (reply.dictionary_attack_lockout_in_effect()) {
       // Add `kWaitingOvertimeInSeconds` for safetiness, i.e hiding UI and
       // releasing `wake_lock_` happens after TPM becomes unlocked.
-      dictionary_attack_lockout_time_remaining_ = base::TimeDelta::FromSeconds(
-          reply.dictionary_attack_lockout_seconds_remaining() +
-          kWaitingOvertimeInSeconds);
+      dictionary_attack_lockout_time_remaining_ =
+          base::Seconds(reply.dictionary_attack_lockout_seconds_remaining() +
+                        kWaitingOvertimeInSeconds);
       OnTpmIsLocked();
     } else {
       TpmIsUnlocked();
@@ -385,9 +385,9 @@ class UserSelectionScreen::TpmLockedChecker {
 
   void OnTpmIsLocked() {
     AcquireWakeLock();
-    clock_ticking_animator_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
-                                  this, &TpmLockedChecker::UpdateUI);
-    tpm_recheck_.Start(FROM_HERE, base::TimeDelta::FromMinutes(1), this,
+    clock_ticking_animator_.Start(FROM_HERE, base::Seconds(1), this,
+                                  &TpmLockedChecker::UpdateUI);
+    tpm_recheck_.Start(FROM_HERE, base::Minutes(1), this,
                        &TpmLockedChecker::Check);
   }
 

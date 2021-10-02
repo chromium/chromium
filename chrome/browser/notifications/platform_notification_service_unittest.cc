@@ -286,9 +286,9 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   data.notification_data.require_interaction = false;
   data.num_clicks = 3;
   data.num_action_button_clicks = 1;
-  data.time_until_close_millis = base::TimeDelta::FromMilliseconds(10000);
-  data.time_until_first_click_millis = base::TimeDelta::FromMilliseconds(2222);
-  data.time_until_last_click_millis = base::TimeDelta::FromMilliseconds(3333);
+  data.time_until_close_millis = base::Milliseconds(10000);
+  data.time_until_first_click_millis = base::Milliseconds(2222);
+  data.time_until_last_click_millis = base::Milliseconds(3333);
 
   // Set up UKM recording conditions.
   ASSERT_TRUE(profile_.CreateHistoryService());

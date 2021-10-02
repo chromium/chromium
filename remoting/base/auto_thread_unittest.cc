@@ -65,7 +65,7 @@ class AutoThreadTest : public testing::Test {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(5));
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(5));
     run_loop.Run();
   }
 

@@ -102,7 +102,7 @@ mojom::PortInfo GetPortInfoFromEndpoint(MIDIEndpointRef endpoint) {
 
 base::TimeTicks MIDITimeStampToTimeTicks(MIDITimeStamp timestamp) {
   UInt64 nanoseconds = AudioConvertHostTimeToNanos(timestamp);
-  return base::TimeTicks() + base::TimeDelta::FromNanoseconds(nanoseconds);
+  return base::TimeTicks() + base::Nanoseconds(nanoseconds);
 }
 
 MIDITimeStamp TimeTicksToMIDITimeStamp(base::TimeTicks ticks) {

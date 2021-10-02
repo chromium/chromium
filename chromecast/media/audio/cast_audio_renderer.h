@@ -187,8 +187,8 @@ class CastAudioRenderer
 
   // TODO(b/173250111): update these values based on whether the media session
   // is multiroom.
-  base::TimeDelta min_lead_time_ = base::TimeDelta::FromMilliseconds(100);
-  base::TimeDelta max_lead_time_ = base::TimeDelta::FromMilliseconds(500);
+  base::TimeDelta min_lead_time_ = base::Milliseconds(100);
+  base::TimeDelta max_lead_time_ = base::Milliseconds(500);
 
   mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
       application_media_info_manager_pending_remote_;

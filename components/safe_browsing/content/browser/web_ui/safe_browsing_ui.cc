@@ -426,8 +426,8 @@ namespace {
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
 
 base::Value UserReadableTimeFromMillisSinceEpoch(int64_t time_in_milliseconds) {
-  base::Time time = base::Time::UnixEpoch() +
-                    base::TimeDelta::FromMilliseconds(time_in_milliseconds);
+  base::Time time =
+      base::Time::UnixEpoch() + base::Milliseconds(time_in_milliseconds);
   return base::Value(
       base::UTF16ToASCII(base::TimeFormatShortDateAndTime(time)));
 }
@@ -1221,7 +1221,7 @@ base::DictionaryValue SerializePGEvent(
   base::DictionaryValue result;
 
   base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(event.event_time_usec()));
+      base::Microseconds(event.event_time_usec()));
   result.SetDouble("time", timestamp.ToJsTime());
 
   base::DictionaryValue event_dict;

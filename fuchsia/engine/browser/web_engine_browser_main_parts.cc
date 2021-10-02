@@ -54,11 +54,10 @@ namespace {
 base::NoDestructor<fidl::InterfaceRequest<fuchsia::web::Context>>
     g_test_request;
 
-constexpr base::TimeDelta kMetricsReportingInterval =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMetricsReportingInterval = base::Minutes(1);
 
 constexpr base::TimeDelta kChildProcessHistogramFetchTimeout =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // Merge child process' histogram deltas into the browser process' histograms.
 void FetchHistogramsFromChildProcesses(

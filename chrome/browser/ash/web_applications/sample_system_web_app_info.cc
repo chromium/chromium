@@ -73,6 +73,5 @@ bool SampleSystemAppDelegate::ShouldCaptureNavigations() const {
 absl::optional<web_app::SystemAppBackgroundTaskInfo>
 SampleSystemAppDelegate::GetTimerInfo() const {
   return web_app::SystemAppBackgroundTaskInfo(
-      base::TimeDelta::FromSeconds(30),
-      GURL("chrome://sample-system-web-app/timer.html"));
+      base::Seconds(30), GURL("chrome://sample-system-web-app/timer.html"));
 }

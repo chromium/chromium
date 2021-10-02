@@ -114,7 +114,7 @@ class DomainReliabilitySchedulerTest : public testing::Test {
   TimeDelta min_delay() const { return params_.minimum_upload_delay; }
   TimeDelta max_delay() const { return params_.maximum_upload_delay; }
   TimeDelta retry_interval() const { return params_.upload_retry_interval; }
-  TimeDelta zero_delta() const { return base::TimeDelta::FromMicroseconds(0); }
+  TimeDelta zero_delta() const { return base::Microseconds(0); }
 
  protected:
   void ScheduleUploadCallback(TimeDelta min, TimeDelta max) {
@@ -162,7 +162,7 @@ TEST_F(DomainReliabilitySchedulerTest, SuccessfulUploads) {
 TEST_F(DomainReliabilitySchedulerTest, RetryAfter) {
   CreateScheduler(1);
 
-  base::TimeDelta retry_after_interval = base::TimeDelta::FromMinutes(30);
+  base::TimeDelta retry_after_interval = base::Minutes(30);
 
   scheduler_->OnBeaconAdded();
   ASSERT_TRUE(CheckPendingUpload(min_delay(), max_delay()));

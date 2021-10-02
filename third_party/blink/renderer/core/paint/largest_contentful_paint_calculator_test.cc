@@ -20,7 +20,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
  public:
   void SetUp() override {
     // Advance the clock so we do not assign null TimeTicks.
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    simulated_clock_.Advance(base::Milliseconds(100));
     EnableCompositing();
     RenderingTest::SetUp();
 

@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   ChangePageContentColor(SK_ColorGREEN);
   base::RunLoop run_loop;
   GetUIThreadTaskRunner({})->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                                             base::TimeDelta::FromSeconds(5));
+                                             base::Seconds(5));
   run_loop.Run();
   EXPECT_FALSE(HasCapturedFramesInQueue());
 

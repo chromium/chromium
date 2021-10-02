@@ -26,17 +26,15 @@ namespace {
 
 constexpr gfx::Transform kEndTransform;
 
-constexpr base::TimeDelta kBarBackgroundDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kBarBackgroundDuration = base::Milliseconds(200);
 
 constexpr base::TimeDelta kExistingMiniViewsAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 constexpr base::TimeDelta kRemovedMiniViewsFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
-constexpr base::TimeDelta kZeroStateAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kZeroStateAnimationDuration = base::Milliseconds(200);
 
 // Scale for entering/exiting zero state.
 constexpr float kEnterOrExitZeroStateScale = 0.6f;

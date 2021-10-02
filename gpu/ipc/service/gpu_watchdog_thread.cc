@@ -47,7 +47,7 @@ base::TimeDelta GetGpuWatchdogTimeout() {
   if (!timeout_str.empty()) {
     size_t timeout_seconds;
     if (base::StringToSizeT(timeout_str, &timeout_seconds))
-      return base::TimeDelta::FromSeconds(timeout_seconds);
+      return base::Seconds(timeout_seconds);
 
     LOG(WARNING) << "Invalid --" << switches::kGpuWatchdogTimeoutSeconds << ": "
                  << timeout_str;
@@ -57,9 +57,9 @@ base::TimeDelta GetGpuWatchdogTimeout() {
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     int num_of_processors = base::SysInfo::NumberOfProcessors();
     if (num_of_processors > 8)
-      return (kGpuWatchdogTimeout - base::TimeDelta::FromSeconds(10));
+      return (kGpuWatchdogTimeout - base::Seconds(10));
     else if (num_of_processors <= 4)
-      return kGpuWatchdogTimeout + base::TimeDelta::FromSeconds(5);
+      return kGpuWatchdogTimeout + base::Seconds(5);
   }
 #endif
 
@@ -183,7 +183,7 @@ void GpuWatchdogThread::OnInitComplete() {
       FROM_HERE,
       base::BindOnce(&GpuWatchdogThread::AddPowerObserver,
                      base::Unretained(this)),
-      base::TimeDelta::FromMilliseconds(kDelayForAddPowerObserverInMs));
+      base::Milliseconds(kDelayForAddPowerObserverInMs));
 }
 
 // Called from the gpu thread in viz::GpuServiceImpl::~GpuServiceImpl().
@@ -314,7 +314,7 @@ void GpuWatchdogThread::AddPowerObserver() {
     task_runner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&GpuWatchdogThread::AddPowerObserver, weak_ptr_),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
   }
 }
 
@@ -513,8 +513,7 @@ bool GpuWatchdogThread::SlowWatchdogThread() {
   // OnWatchdogTimeout() calls, the system is considered slow and it's not a GPU
   // hang.
   bool slow_watchdog_thread =
-      (base::Time::Now() - next_on_watchdog_timeout_time_) >=
-      base::TimeDelta::FromSeconds(15);
+      (base::Time::Now() - next_on_watchdog_timeout_time_) >= base::Seconds(15);
 
   // Record this case only when a GPU hang is detected and the thread is slow.
   if (slow_watchdog_thread)
@@ -597,7 +596,7 @@ base::ThreadTicks GpuWatchdogThread::GetWatchedThreadTime() {
     int64_t kernel_time_us = bit_cast<int64_t, FILETIME>(kernel_time) / 10;
 
     return base::ThreadTicks() +
-           base::TimeDelta::FromMicroseconds(user_time_us + kernel_time_us);
+           base::Microseconds(user_time_us + kernel_time_us);
   }
 }
 #endif
@@ -732,14 +731,12 @@ void GpuWatchdogThread::WatchedThreadNeedsMoreThreadTimeHistogram(
 #endif
 
 bool GpuWatchdogThread::WithinOneMinFromPowerResumed() {
-  size_t count = base::ClampFloor<size_t>(base::TimeDelta::FromMinutes(1) /
-                                          watchdog_timeout_);
+  size_t count = base::ClampFloor<size_t>(base::Minutes(1) / watchdog_timeout_);
   return power_resumed_event_ && num_of_timeout_after_power_resume_ <= count;
 }
 
 bool GpuWatchdogThread::WithinOneMinFromForegrounded() {
-  size_t count = base::ClampFloor<size_t>(base::TimeDelta::FromMinutes(1) /
-                                          watchdog_timeout_);
+  size_t count = base::ClampFloor<size_t>(base::Minutes(1) / watchdog_timeout_);
   return foregrounded_event_ && num_of_timeout_after_foregrounded_ <= count;
 }
 
@@ -792,7 +789,7 @@ void GpuWatchdogThread::WaitForPowerObserverAddedForTesting() {
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)),
-      base::TimeDelta::FromMilliseconds(kDelayForAddPowerObserverInMs));
+      base::Milliseconds(kDelayForAddPowerObserverInMs));
   event.Wait();
 }
 

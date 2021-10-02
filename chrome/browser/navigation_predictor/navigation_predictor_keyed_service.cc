@@ -195,12 +195,12 @@ bool NavigationPredictorKeyedService::IsBrowserAppLikelyInForeground() const {
   // in foreground for a very short period.
   if (visible_web_contents_.empty() &&
       tick_clock_->NowTicks() - last_web_contents_state_change_time_ >
-          base::TimeDelta::FromSeconds(1)) {
+          base::Seconds(1)) {
     return false;
   }
 
   return tick_clock_->NowTicks() - last_web_contents_state_change_time_ <=
-         base::TimeDelta::FromSeconds(120);
+         base::Seconds(120);
 }
 
 void NavigationPredictorKeyedService::SetTickClockForTesting(

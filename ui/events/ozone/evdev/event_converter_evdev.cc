@@ -210,7 +210,7 @@ base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
     const input_event& event) {
   base::TimeTicks timestamp =
       ui::EventTimeStampFromSeconds(event.input_event_sec) +
-      base::TimeDelta::FromMicroseconds(event.input_event_usec);
+      base::Microseconds(event.input_event_usec);
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }

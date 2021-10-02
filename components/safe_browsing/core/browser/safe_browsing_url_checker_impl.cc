@@ -421,8 +421,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
                                       TRACE_ID_LOCAL(this), "url", url.spec());
 
     // Start a timer to abort the check if it takes too long.
-    timer_.Start(FROM_HERE,
-                 base::TimeDelta::FromMilliseconds(kCheckUrlTimeoutMs), this,
+    timer_.Start(FROM_HERE, base::Milliseconds(kCheckUrlTimeoutMs), this,
                  &SafeBrowsingUrlCheckerImpl::OnTimeout);
 
     bool safe_synchronously;

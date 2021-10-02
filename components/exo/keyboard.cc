@@ -164,8 +164,8 @@ bool ProcessAshAcceleratorIfPossible(Surface* surface, ui::KeyEvent* event) {
 Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
     : delegate_(std::move(delegate)),
       seat_(seat),
-      expiration_delay_for_pending_key_acks_(base::TimeDelta::FromMilliseconds(
-          kExpirationDelayForPendingKeyAcksMs)) {
+      expiration_delay_for_pending_key_acks_(
+          base::Milliseconds(kExpirationDelayForPendingKeyAcksMs)) {
   seat_->AddObserver(this, kKeyboardSeatObserverPriority);
   ash::KeyboardController::Get()->AddObserver(this);
   ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();

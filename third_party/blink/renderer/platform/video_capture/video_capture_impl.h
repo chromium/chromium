@@ -123,8 +123,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // The returned weak pointer can only be dereferenced on the IO thread.
   base::WeakPtr<VideoCaptureImpl> GetWeakPtr();
 
-  static constexpr base::TimeDelta kCaptureStartTimeout =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kCaptureStartTimeout = base::Seconds(10);
 
  private:
   friend class VideoCaptureImplTest;

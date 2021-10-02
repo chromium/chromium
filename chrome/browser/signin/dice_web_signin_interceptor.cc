@@ -291,7 +291,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
         base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, on_account_info_update_timeout_.callback(),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
     account_info_update_observation_.Observe(identity_manager_);
   }
 }

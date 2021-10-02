@@ -304,8 +304,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
       new URLRequestContextConfig::Pkp(
           base::android::ConvertJavaStringToUTF8(env, jhost),
           jinclude_subdomains,
-          base::Time::UnixEpoch() +
-              base::TimeDelta::FromMilliseconds(jexpiration_time)));
+          base::Time::UnixEpoch() + base::Milliseconds(jexpiration_time)));
   for (auto bytes_array : jhashes.ReadElements<jbyteArray>()) {
     static_assert(std::is_pod<net::SHA256HashValue>::value,
                   "net::SHA256HashValue is not POD");

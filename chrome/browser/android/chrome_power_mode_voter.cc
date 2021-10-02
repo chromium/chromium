@@ -36,7 +36,7 @@ void RecordOnViewTreeDrawUMA() {
     return;
   }
   base::TimeTicks curr = base::TimeTicks::Now();
-  if (curr - g_android_view_ondraw_emitted > base::TimeDelta::FromSeconds(30)) {
+  if (curr - g_android_view_ondraw_emitted > base::Seconds(30)) {
     // a 144hz monitor refreshes 120 times a second so 3600 frames in 30
     // seconds. So 10000 should be more than enough for now (famous last words).
     UMA_HISTOGRAM_COUNTS_10000("Android.View.onDraw.30Seconds",

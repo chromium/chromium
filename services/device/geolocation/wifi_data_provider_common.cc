@@ -88,7 +88,7 @@ void WifiDataProviderCommon::ScheduleNextScan(int interval) {
       FROM_HERE,
       base::BindOnce(&WifiDataProviderCommon::DoWifiScanTask,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(interval));
+      base::Milliseconds(interval));
 }
 
 }  // namespace device

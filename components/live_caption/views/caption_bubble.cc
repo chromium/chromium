@@ -395,7 +395,7 @@ CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback,
     return;
 
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, base::TimeDelta::FromSeconds(kNoActivityIntervalSeconds),
+      FROM_HERE, base::Seconds(kNoActivityIntervalSeconds),
       base::BindRepeating(&CaptionBubble::OnInactivityTimeout,
                           base::Unretained(this)),
       tick_clock_);

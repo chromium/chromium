@@ -60,13 +60,11 @@ namespace {
 
 // The default time that the bubble should stay on the screen if it will close
 // automatically.
-constexpr base::TimeDelta kBubbleCloseDelayDefault =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kBubbleCloseDelayDefault = base::Milliseconds(1500);
 
 // A longer timeout used for how long the bubble should stay on the screen
 // before it will close automatically after + or - buttons have been used.
-constexpr base::TimeDelta kBubbleCloseDelayLong =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kBubbleCloseDelayLong = base::Milliseconds(5000);
 
 class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
  public:

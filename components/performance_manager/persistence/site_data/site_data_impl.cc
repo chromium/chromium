@@ -43,8 +43,7 @@ std::vector<SiteDataFeatureProto*> GetAllFeaturesFromProto(
 
 // Observations windows have a default value of 2 hours, 95% of backgrounded
 // tabs don't use any of these features in this time window.
-static constexpr base::TimeDelta kObservationWindowLength =
-    base::TimeDelta::FromHours(2);
+static constexpr base::TimeDelta kObservationWindowLength = base::Hours(2);
 
 }  // namespace
 
@@ -312,7 +311,7 @@ void SiteDataImpl::NotifyFeatureUsage(SiteDataFeatureProto* feature_proto,
             feature_name),
         InternalRepresentationToTimeDelta(
             feature_proto->observation_duration()),
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+        base::Seconds(1), base::Days(1), 100);
   }
 
   feature_proto->Clear();

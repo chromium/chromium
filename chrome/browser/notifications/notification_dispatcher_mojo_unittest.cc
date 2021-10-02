@@ -348,7 +348,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
       CreateNotification());
 
   // Wait for 30 seconds and close the notification.
-  auto delay = base::TimeDelta::FromSeconds(30);
+  auto delay = base::Seconds(30);
   task_environment_.FastForwardBy(delay);
 
   // Expect that we disconnect after closing the last notification.
@@ -376,7 +376,7 @@ TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
       CreateNotification());
 
   // Wait for 30 seconds and terminate the service.
-  auto delay = base::TimeDelta::FromSeconds(30);
+  auto delay = base::Seconds(30);
   task_environment_.FastForwardBy(delay);
   // Simulate a dying service process.
   provider_factory_->Disconnect();
@@ -417,13 +417,13 @@ TEST_F(NotificationDispatcherMojoTest, TestUnexpectedDisconnectReconnects) {
   EXPECT_TRUE(provider_factory_->is_service_connected());
 
   // Disconnect after 30 seconds while there is still a notification on screen.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
   provider_factory_->Disconnect();
   EXPECT_FALSE(provider_factory_->is_service_connected());
 
   // Expect the service to be restarted after a short timeout.
   EmulateOneNotification(base::DoNothing());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment_.FastForwardBy(base::Milliseconds(500));
   EXPECT_TRUE(provider_factory_->is_service_connected());
 }
 
@@ -431,25 +431,25 @@ TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
   // Display a notification and verify that the service is running.
   DisplayNotificationSync();
   // Disconnect after 30 seconds while there is still a notification on screen.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
   provider_factory_->Disconnect();
 
   // Verify the service hasn't restarted if not enough time has passed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(499));
+  task_environment_.FastForwardBy(base::Milliseconds(499));
   EXPECT_FALSE(provider_factory_->is_service_connected());
   // Expect the service to be restarted after a short timeout.
   EmulateOneNotification(base::DoNothing());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(provider_factory_->is_service_connected());
 
   // Disconnect again immediately which should double the restart timeout.
   provider_factory_->Disconnect();
 
   // Verify the service hasn't restarted if not enough time has passed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
+  task_environment_.FastForwardBy(base::Milliseconds(999));
   EXPECT_FALSE(provider_factory_->is_service_connected());
   // Expect the service to be restarted after a short timeout.
   EmulateOneNotification(base::DoNothing());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(provider_factory_->is_service_connected());
 }

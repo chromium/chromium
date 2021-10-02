@@ -684,11 +684,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationBeforeClearBadge) {
   badge_manager_->ClearBadgeForTesting(app_id, &test_recorder);
 
   // One day under the kBadgingOverrideLifetime threshold.
-  clock.Advance(base::TimeDelta::FromDays(13));
+  clock.Advance(base::Days(13));
 
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
-  clock.Advance(base::TimeDelta::FromDays(2));
+  clock.Advance(base::Days(2));
 
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterClearBadge) {
   badge_manager_->ClearBadgeForTesting(app_id, &test_recorder);
 
   // One day under the kBadgingOverrideLifetime threshold.
-  clock.Advance(base::TimeDelta::FromDays(13));
+  clock.Advance(base::Days(13));
 
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterClearBadge) {
 
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
-  clock.Advance(base::TimeDelta::FromDays(2));
+  clock.Advance(base::Days(2));
 
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
@@ -764,11 +764,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterShowBadge) {
   badge_manager_->SetBadgeForTesting(app_id, 1, &test_recorder);
 
   // One day under the kBadgingOverrideLifetime threshold.
-  clock.Advance(base::TimeDelta::FromDays(13));
+  clock.Advance(base::Days(13));
 
   ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 
-  clock.Advance(base::TimeDelta::FromDays(2));
+  clock.Advance(base::Days(2));
 
   ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 

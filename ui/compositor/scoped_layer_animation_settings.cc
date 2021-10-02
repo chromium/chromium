@@ -118,8 +118,8 @@ ScopedLayerAnimationSettings::ScopedLayerAnimationSettings(
       old_transition_duration_(animator->GetTransitionDuration()),
       old_tween_type_(animator->tween_type()),
       old_preemption_strategy_(animator->preemption_strategy()) {
-  SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      kScopedLayerAnimationDefaultTransitionDurationMs));
+  SetTransitionDuration(
+      base::Milliseconds(kScopedLayerAnimationDefaultTransitionDurationMs));
 }
 
 ScopedLayerAnimationSettings::~ScopedLayerAnimationSettings() {

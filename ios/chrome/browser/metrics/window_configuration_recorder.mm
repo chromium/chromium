@@ -24,8 +24,7 @@
 namespace {
 
 // Delay between a recording of a new configuration.
-static constexpr base::TimeDelta kRecordDelay =
-    base::TimeDelta::FromSeconds(20);
+static constexpr base::TimeDelta kRecordDelay = base::Seconds(20);
 
 // Timer callback for recording configuration after a delay.
 void RecordWindowGeometryMetrics(WindowConfigurationRecorder* recorder) {

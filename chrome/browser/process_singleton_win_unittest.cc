@@ -162,8 +162,8 @@ class ProcessSingletonTest : public base::MultiProcessTest {
     ASSERT_NO_FATAL_FAILURE(base::MultiProcessTest::SetUp());
 
     // Drop the process finder notification timeout to one second for testing.
-    old_notification_timeout_ = chrome::SetNotificationTimeoutForTesting(
-        base::TimeDelta::FromSeconds(1));
+    old_notification_timeout_ =
+        chrome::SetNotificationTimeoutForTesting(base::Seconds(1));
   }
 
   void TearDown() override {

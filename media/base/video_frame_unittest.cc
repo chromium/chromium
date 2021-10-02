@@ -90,17 +90,17 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
 
   // base::TimeTicks
   base::TimeTicks now = base::TimeTicks::Now();
-  metadata.receive_time = now + base::TimeDelta::FromMilliseconds(10);
-  metadata.capture_begin_time = now + base::TimeDelta::FromMilliseconds(20);
-  metadata.capture_end_time = now + base::TimeDelta::FromMilliseconds(30);
-  metadata.decode_begin_time = now + base::TimeDelta::FromMilliseconds(40);
-  metadata.decode_end_time = now + base::TimeDelta::FromMilliseconds(50);
-  metadata.reference_time = now + base::TimeDelta::FromMilliseconds(60);
+  metadata.receive_time = now + base::Milliseconds(10);
+  metadata.capture_begin_time = now + base::Milliseconds(20);
+  metadata.capture_end_time = now + base::Milliseconds(30);
+  metadata.decode_begin_time = now + base::Milliseconds(40);
+  metadata.decode_end_time = now + base::Milliseconds(50);
+  metadata.reference_time = now + base::Milliseconds(60);
 
   // base::TimeDeltas
-  metadata.processing_time = base::TimeDelta::FromMilliseconds(500);
-  metadata.frame_duration = base::TimeDelta::FromMilliseconds(16);
-  metadata.wallclock_frame_duration = base::TimeDelta::FromMilliseconds(17);
+  metadata.processing_time = base::Milliseconds(500);
+  metadata.frame_duration = base::Milliseconds(16);
+  metadata.wallclock_frame_duration = base::Milliseconds(17);
 
   return metadata;
 }
@@ -215,7 +215,7 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
   const unsigned char kFillByte = 0x80;
   const int kWidth = 61;
   const int kHeight = 31;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   gfx::Size size(kWidth, kHeight);
   scoped_refptr<VideoFrame> frame = VideoFrame::CreateFrame(
@@ -246,7 +246,7 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
 TEST(VideoFrame, CreateFrame) {
   const int kWidth = 64;
   const int kHeight = 48;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   // Create a YV12 Video Frame.
   gfx::Size size(kWidth, kHeight);
@@ -301,7 +301,7 @@ TEST(VideoFrame, CreateFrame) {
 TEST(VideoFrame, CreateZeroInitializedFrame) {
   const int kWidth = 2;
   const int kHeight = 2;
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   // Create a YV12 Video Frame.
   gfx::Size size(kWidth, kHeight);
@@ -361,7 +361,7 @@ static void FrameNoLongerNeededCallback(bool* triggered) {
 TEST(VideoFrame, WrapVideoFrame) {
   const int kWidth = 4;
   const int kHeight = 4;
-  const base::TimeDelta kFrameDuration = base::TimeDelta::FromMicroseconds(42);
+  const base::TimeDelta kFrameDuration = base::Microseconds(42);
 
   scoped_refptr<VideoFrame> frame, frame2;
   bool base_frame_done_callback_was_run = false;
@@ -429,7 +429,7 @@ TEST(VideoFrame, WrapExternalData) {
   gfx::Size coded_size(256, 256);
   gfx::Rect visible_rect(coded_size);
   CreateTestY16Frame(coded_size, visible_rect, memory);
-  auto timestamp = base::TimeDelta::FromMilliseconds(1);
+  auto timestamp = base::Milliseconds(1);
   auto frame = VideoFrame::WrapExternalData(PIXEL_FORMAT_Y16, coded_size,
                                             visible_rect, visible_rect.size(),
                                             memory, sizeof(memory), timestamp);
@@ -451,7 +451,7 @@ TEST(VideoFrame, WrapSharedMemory) {
   gfx::Size coded_size(256, 256);
   gfx::Rect visible_rect(coded_size);
   CreateTestY16Frame(coded_size, visible_rect, mapping.memory());
-  auto timestamp = base::TimeDelta::FromMilliseconds(1);
+  auto timestamp = base::Milliseconds(1);
   auto frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
       mapping.GetMemoryAsSpan<uint8_t>().data(), kDataSize, timestamp);
@@ -466,7 +466,7 @@ TEST(VideoFrame, WrapSharedMemory) {
 TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
-  auto timestamp = base::TimeDelta::FromMilliseconds(1);
+  auto timestamp = base::Milliseconds(1);
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const uint64_t modifier = 0x001234567890abcdULL;
 #else
@@ -517,7 +517,7 @@ TEST(VideoFrame, WrapExternalDmabufs) {
     planes[i].offset = offsets[i];
     planes[i].size = sizes[i];
   }
-  auto timestamp = base::TimeDelta::FromMilliseconds(1);
+  auto timestamp = base::Milliseconds(1);
   auto layout =
       VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
   ASSERT_TRUE(layout);
@@ -781,9 +781,8 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   VideoFrameMetadata full_metadata = GetFullVideoFrameMetadata();
 
   const gfx::Rect kTempRect{100, 200, 300, 400};
-  const base::TimeTicks kTempTicks =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kTempDelta = base::TimeDelta::FromMilliseconds(31415);
+  const base::TimeTicks kTempTicks = base::TimeTicks::Now() + base::Seconds(2);
+  const base::TimeDelta kTempDelta = base::Milliseconds(31415);
 
   VideoFrameMetadata partial_metadata;
   partial_metadata.capture_update_rect = kTempRect;

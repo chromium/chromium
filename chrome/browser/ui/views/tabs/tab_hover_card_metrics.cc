@@ -77,11 +77,10 @@ void RecordFadeOutSmoothness(int smoothness) {
 #endif
 
 void RecordTimeSinceLastSeenMetric(base::TimeTicks last_seen_time) {
-  constexpr base::TimeDelta kMaxHoverCardReshowTimeDelta =
-      base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kMaxHoverCardReshowTimeDelta = base::Seconds(5);
   const base::TimeDelta elapsed_time = base::TimeTicks::Now() - last_seen_time;
   constexpr base::TimeDelta kMinHoverCardReshowTimeDelta =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   if (elapsed_time < kMinHoverCardReshowTimeDelta ||
       elapsed_time > kMaxHoverCardReshowTimeDelta) {
     return;

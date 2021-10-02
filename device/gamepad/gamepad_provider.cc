@@ -208,8 +208,7 @@ void GamepadProvider::OnDevicesChanged(base::SystemMonitor::DeviceType type) {
 }
 
 void GamepadProvider::Initialize(std::unique_ptr<GamepadDataFetcher> fetcher) {
-  sampling_interval_delta_ =
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMilliseconds);
+  sampling_interval_delta_ = base::Milliseconds(kPollingIntervalMilliseconds);
 
   base::SystemMonitor* monitor = base::SystemMonitor::Get();
   if (monitor)

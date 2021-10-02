@@ -842,7 +842,7 @@ class AuctionRunnerTest : public testing::Test,
         // Add some time between interest group wins, so that they'll be added
         // to the database in the order they appear. Their times will *not*
         // match those in `prev_wins`.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+        task_environment_.FastForwardBy(base::Seconds(1));
       }
     }
 
@@ -2849,7 +2849,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
           1,
           GURL("https://ad2.com"),
           absl::nullopt,
-          base::TimeDelta::FromMilliseconds(-1),
+          base::Milliseconds(-1),
       },
   };
 

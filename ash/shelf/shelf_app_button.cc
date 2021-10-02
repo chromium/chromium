@@ -112,7 +112,7 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
 
  private:
   ShelfAppButtonAnimation() : animation_(this) {
-    animation_.SetThrobDuration(base::TimeDelta::FromMilliseconds(800));
+    animation_.SetThrobDuration(base::Milliseconds(800));
     animation_.SetTweenType(gfx::Tween::SMOOTH_IN_OUT);
   }
 
@@ -216,8 +216,7 @@ class ShelfAppButton::AppStatusIndicatorView
 
     show_attention_ = show;
     if (show_attention_) {
-      animation_end_time_ =
-          base::TimeTicks::Now() + base::TimeDelta::FromSeconds(10);
+      animation_end_time_ = base::TimeTicks::Now() + base::Seconds(10);
       ShelfAppButtonAnimation::GetInstance()->AddObserver(this);
     } else {
       ShelfAppButtonAnimation::GetInstance()->RemoveObserver(this);
@@ -607,8 +606,7 @@ bool ShelfAppButton::OnMousePressed(const ui::MouseEvent& event) {
   shelf_view_->PointerPressedOnButton(this, ShelfView::MOUSE, event);
 
   if (shelf_view_->IsDraggedView(this)) {
-    drag_timer_.Start(FROM_HERE,
-                      base::TimeDelta::FromMilliseconds(kDragTimeThresholdMs),
+    drag_timer_.Start(FROM_HERE, base::Milliseconds(kDragTimeThresholdMs),
                       base::BindOnce(&ShelfAppButton::OnTouchDragTimer,
                                      base::Unretained(this)));
   }
@@ -742,13 +740,11 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP_DOWN:
       if (shelf_view_->shelf()->IsVisible()) {
         AddState(STATE_HOVERED);
-        drag_timer_.Start(
-            FROM_HERE, base::TimeDelta::FromMilliseconds(kDragTimeThresholdMs),
-            base::BindOnce(&ShelfAppButton::OnTouchDragTimer,
-                           base::Unretained(this)));
+        drag_timer_.Start(FROM_HERE, base::Milliseconds(kDragTimeThresholdMs),
+                          base::BindOnce(&ShelfAppButton::OnTouchDragTimer,
+                                         base::Unretained(this)));
         ripple_activation_timer_.Start(
-            FROM_HERE,
-            base::TimeDelta::FromMilliseconds(kInkDropRippleActivationTimeMs),
+            FROM_HERE, base::Milliseconds(kInkDropRippleActivationTimeMs),
             base::BindOnce(&ShelfAppButton::OnRippleTimer,
                            base::Unretained(this)));
         views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
@@ -908,7 +904,7 @@ void ShelfAppButton::ScaleAppIcon(bool scale_up) {
   }
   ui::ScopedLayerAnimationSettings settings(icon_view_->layer()->GetAnimator());
   settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kDragDropAppIconScaleTransitionMs));
+      base::Milliseconds(kDragDropAppIconScaleTransitionMs));
   if (scale_up) {
     icon_view_->layer()->SetTransform(gfx::Transform());
   } else {
@@ -931,7 +927,7 @@ void ShelfAppButton::ScaleAppIcon(bool scale_up) {
     ui::ScopedLayerAnimationSettings notification_settings(
         notification_indicator_->layer()->GetAnimator());
     notification_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kDragDropAppIconScaleTransitionMs));
+        base::Milliseconds(kDragDropAppIconScaleTransitionMs));
     notification_indicator_->layer()->SetTransform(scale_up ? gfx::Transform()
                                                             : scale_transform);
   }

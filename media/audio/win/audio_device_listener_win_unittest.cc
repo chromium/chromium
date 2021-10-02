@@ -43,7 +43,7 @@ class AudioDeviceListenerWinTest
         base::BindRepeating(&AudioDeviceListenerWinTest::OnDeviceChange,
                             base::Unretained(this)));
 
-    tick_clock_.Advance(base::TimeDelta::FromSeconds(12345));
+    tick_clock_.Advance(base::Seconds(12345));
     output_device_listener_->tick_clock_ = &tick_clock_;
   }
 
@@ -57,7 +57,7 @@ class AudioDeviceListenerWinTest
 
   void AdvanceLastDeviceChangeTime() {
     tick_clock_.Advance(AudioDeviceListenerWin::kDeviceChangeLimit +
-                        base::TimeDelta::FromMilliseconds(1));
+                        base::Milliseconds(1));
   }
 
   // Simulate a device change where no output devices are available.

@@ -45,10 +45,8 @@ namespace em = enterprise_management;
 
 namespace {
 
-constexpr base::TimeDelta kDefaultStatusUploadDelay =
-    base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kMinImmediateUploadInterval =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultStatusUploadDelay = base::Hours(1);
+constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 
 // Using a DeviceStatusCollector to have a concrete StatusCollector, but the
 // exact type doesn't really matter, as it is being mocked.
@@ -187,8 +185,7 @@ TEST_F(StatusUploaderTest, BasicTest) {
   auto uploader = CreateStatusUploader();
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 }
 
 TEST_F(StatusUploaderTest, DifferentFrequencyAtStart) {
@@ -200,8 +197,7 @@ TEST_F(StatusUploaderTest, DifferentFrequencyAtStart) {
   auto uploader = CreateStatusUploader();
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 
   // Second update should use the delay specified in settings.
   RunPendingUploadTaskAndCheckNext(*uploader, new_delay,
@@ -329,8 +325,7 @@ TEST_F(StatusUploaderTest, ScheduleImmediateStatusUpload) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 
   // Schedule an immediate status upload.
   uploader->ScheduleNextStatusUploadImmediately();
@@ -345,8 +340,7 @@ TEST_F(StatusUploaderTest, ScheduleImmediateStatusUploadConsecutively) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 
   // Schedule an immediate status upload and run it.
   uploader->ScheduleNextStatusUploadImmediately();

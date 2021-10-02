@@ -278,9 +278,9 @@ bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
   // Scale the |duration| to one HTTP RTT, and compute the number of bits that
   // would be received over a duration of one HTTP RTT.
   size_t bits_received_over_one_http_rtt =
-      bits_received * (network_quality_estimator_->GetHttpRTT().value_or(
-                           base::TimeDelta::FromSeconds(10)) /
-                       duration);
+      bits_received *
+      (network_quality_estimator_->GetHttpRTT().value_or(base::Seconds(10)) /
+       duration);
 
   // If |is_hanging| is true, it implies that less than
   // kCwndSizeKilobytes were received over a period of 1 HTTP RTT. For a network
@@ -447,8 +447,7 @@ void ThroughputAnalyzer::EraseHangingRequests(const URLRequest& request) {
   const base::TimeTicks now = tick_clock_->NowTicks();
 
   const base::TimeDelta http_rtt =
-      network_quality_estimator_->GetHttpRTT().value_or(
-          base::TimeDelta::FromSeconds(60));
+      network_quality_estimator_->GetHttpRTT().value_or(base::Seconds(60));
 
   size_t count_request_erased = 0;
   auto request_it = requests_.find(&request);
@@ -464,7 +463,7 @@ void ThroughputAnalyzer::EraseHangingRequests(const URLRequest& request) {
     }
   }
 
-  if (now - last_hanging_request_check_ >= base::TimeDelta::FromSeconds(1)) {
+  if (now - last_hanging_request_check_ >= base::Seconds(1)) {
     // Hanging request check is done at most once per second.
     last_hanging_request_check_ = now;
 

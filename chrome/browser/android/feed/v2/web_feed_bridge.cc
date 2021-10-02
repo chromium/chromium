@@ -380,11 +380,10 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
 
   // Ignore any visits within the last hour so that we do not count the current
   // visit to the page.
-  auto end_time = base::Time::Now() - base::TimeDelta::FromHours(1);
+  auto end_time = base::Time::Now() - base::Hours(1);
   auto begin_time =
       base::Time::Now() -
-      base::TimeDelta::FromDays(
-          GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
+      base::Days(GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
   history_service->GetDailyVisitsToHost(
       *url::GURLAndroid::ToNativeGURL(env, j_url), begin_time, end_time,
       std::move(callback), &TaskTracker());

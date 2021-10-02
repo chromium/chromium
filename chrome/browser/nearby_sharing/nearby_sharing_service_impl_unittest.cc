@@ -290,7 +290,7 @@ class FakeArcNearbyShareSession {
 
 namespace NearbySharingServiceUnitTests {
 
-constexpr base::TimeDelta kDelta = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kDelta = base::Milliseconds(100);
 
 const char kProfileName[] = "profile_name";
 const char kServiceId[] = "NearbySharing";
@@ -334,7 +334,7 @@ const std::vector<int64_t> kValidIntroductionFramePayloadIds = {1, 2, 3,
 
 constexpr size_t kMaxCertificateDownloadsDuringDiscovery = 3u;
 constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -4208,7 +4208,7 @@ TEST_F(NearbySharingServiceImplTest, RotateBackgroundAdvertisement_Periodic) {
       fake_nearby_connections_manager_->advertising_endpoint_info();
 
   certificate_manager()->set_next_salt({0x00, 0x02});
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(870));
+  task_environment_.FastForwardBy(base::Seconds(870));
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   auto endpoint_info_rotated =
       fake_nearby_connections_manager_->advertising_endpoint_info();
@@ -4616,13 +4616,13 @@ TEST_F(NearbySharingServiceImplTest, ProcessShutdownTimerDoesNotRestart) {
   EXPECT_TRUE(IsProcessShutdownTimerRunning());
 
   // Run the timer down a bit.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Unregister a receive surface again and make sure the timer did not restart.
   service_->UnregisterReceiveSurface(&callback);
   EXPECT_TRUE(IsBoundToProcess());
   EXPECT_TRUE(IsProcessShutdownTimerRunning());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_FALSE(IsBoundToProcess());
   EXPECT_FALSE(IsProcessShutdownTimerRunning());
 }

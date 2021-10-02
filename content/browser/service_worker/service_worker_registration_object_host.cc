@@ -24,8 +24,8 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kSelfUpdateDelay = base::TimeDelta::FromSeconds(30);
-constexpr base::TimeDelta kMaxSelfUpdateDelay = base::TimeDelta::FromMinutes(3);
+constexpr base::TimeDelta kSelfUpdateDelay = base::Seconds(30);
+constexpr base::TimeDelta kMaxSelfUpdateDelay = base::Minutes(3);
 
 // Returns an object info to send over Mojo. The info must be sent immediately.
 // See ServiceWorkerObjectHost::CreateCompleteObjectInfoToSend() for details.

@@ -143,7 +143,7 @@ class AppAnimatedWaiter {
 
   void Wait() {
     const base::TimeDelta threshold =
-        base::TimeDelta::FromMilliseconds(kAppAnimatedThresholdMs);
+        base::Milliseconds(kAppAnimatedThresholdMs);
     ShelfSpinnerController* controller =
         ChromeShelfController::instance()->GetShelfSpinnerController();
     while (controller->GetActiveTime(app_id_) < threshold) {

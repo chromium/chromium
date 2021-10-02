@@ -29,7 +29,7 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::SATURDAY,
     em::WeeklyTimeProto::SUNDAY};
 
-constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
 
 const char kUtcTimezone[] = "UTC";
 

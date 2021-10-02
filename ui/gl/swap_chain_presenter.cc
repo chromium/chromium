@@ -32,8 +32,7 @@ namespace {
 
 // When in BGRA888 overlay format, wait for this time delta before retrying
 // YUV format.
-constexpr base::TimeDelta kDelayForRetryingYUVFormat =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 
 // Some drivers fail to correctly handle BT.709 video in overlays. This flag
 // converts them to BT.601 in the video processor.
@@ -1127,9 +1126,9 @@ void SwapChainPresenter::RecordPresentationStatistics() {
           stats.CompositionMode);
       if (frame_rate_ != 0) {
         // [1ms, 10s] covers the fps between [0.1hz, 1000hz].
-        base::UmaHistogramTimes("GPU.DirectComposition.ApprovedPresentDuration",
-                                base::TimeDelta::FromMilliseconds(
-                                    stats.ApprovedPresentDuration / 10000));
+        base::UmaHistogramTimes(
+            "GPU.DirectComposition.ApprovedPresentDuration",
+            base::Milliseconds(stats.ApprovedPresentDuration / 10000));
       }
       presentation_history_.AddSample(stats.CompositionMode);
       mode = stats.CompositionMode;

@@ -4703,15 +4703,9 @@ TEST(ExtensionDetermineDownloadFilenameInternal,
   warnings.clear();
   ExtensionDownloadsEventRouter::DetermineFilenameInternal(
       base::FilePath(FILE_PATH_LITERAL("b")),
-      downloads::FILENAME_CONFLICT_ACTION_PROMPT,
-      "suggester",
-      base::Time::Now() - base::TimeDelta::FromDays(1),
-      "incumbent",
-      base::Time::Now(),
-      &winner_id,
-      &filename,
-      &conflict_action,
-      &warnings);
+      downloads::FILENAME_CONFLICT_ACTION_PROMPT, "suggester",
+      base::Time::Now() - base::Days(1), "incumbent", base::Time::Now(),
+      &winner_id, &filename, &conflict_action, &warnings);
   EXPECT_EQ("incumbent", winner_id);
   EXPECT_EQ(FILE_PATH_LITERAL("a"), filename.value());
   EXPECT_EQ(downloads::FILENAME_CONFLICT_ACTION_OVERWRITE, conflict_action);
@@ -4724,15 +4718,9 @@ TEST(ExtensionDetermineDownloadFilenameInternal,
   warnings.clear();
   ExtensionDownloadsEventRouter::DetermineFilenameInternal(
       base::FilePath(FILE_PATH_LITERAL("b")),
-      downloads::FILENAME_CONFLICT_ACTION_PROMPT,
-      "suggester",
-      base::Time::Now(),
-      "incumbent",
-      base::Time::Now() - base::TimeDelta::FromDays(1),
-      &winner_id,
-      &filename,
-      &conflict_action,
-      &warnings);
+      downloads::FILENAME_CONFLICT_ACTION_PROMPT, "suggester",
+      base::Time::Now(), "incumbent", base::Time::Now() - base::Days(1),
+      &winner_id, &filename, &conflict_action, &warnings);
   EXPECT_EQ("suggester", winner_id);
   EXPECT_EQ(FILE_PATH_LITERAL("b"), filename.value());
   EXPECT_EQ(downloads::FILENAME_CONFLICT_ACTION_PROMPT, conflict_action);

@@ -54,7 +54,7 @@ constexpr uint8_t codec_private[4] = {
 
 // Force new clusters at a maximum rate of 10 Hz.
 constexpr base::TimeDelta kMinimumForcedClusterDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 void WriteOpusHeader(const media::AudioParameters& params, uint8_t* header) {
   // See https://wiki.xiph.org/OggOpus#ID_Header.

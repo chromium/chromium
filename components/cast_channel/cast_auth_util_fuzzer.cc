@@ -46,15 +46,15 @@ void UpdateTime(TimeBoundCase c, const base::Time* time, int direction) {
   switch (c) {
     case TimeBoundCase::VALID:
       // Create bound that include the current date.
-      mtime = base::Time::Now() + base::TimeDelta::FromDays(direction);
+      mtime = base::Time::Now() + base::Days(direction);
       break;
     case TimeBoundCase::INVALID:
       // Create a bound that excludes the current date.
-      mtime = base::Time::Now() + base::TimeDelta::FromDays(-direction);
+      mtime = base::Time::Now() + base::Days(-direction);
       break;
     case TimeBoundCase::OOB:
       // Create a bound so far in the past/future it's not valid.
-      mtime = base::Time::Now() + base::TimeDelta::FromDays(direction * 10000);
+      mtime = base::Time::Now() + base::Days(direction * 10000);
       break;
     case TimeBoundCase::MISSING:
       // Remove any existing bound.

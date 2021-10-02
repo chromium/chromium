@@ -581,7 +581,7 @@ Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
     time_micros = 0;
 
   DCHECK_GE(time_micros, 0);
-  *earliest_sweep += base::TimeDelta::FromMicroseconds(time_micros);
+  *earliest_sweep += base::Microseconds(time_micros);
 
   return s;
 }
@@ -616,7 +616,7 @@ Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
     time_micros = 0;
 
   DCHECK_GE(time_micros, 0);
-  *earliest_compaction += base::TimeDelta::FromMicroseconds(time_micros);
+  *earliest_compaction += base::Microseconds(time_micros);
 
   return s;
 }

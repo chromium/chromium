@@ -21,7 +21,7 @@ class ScoreNormalizerTest : public testing::Test {
   ScoreNormalizer::Params TestingParams() {
     ScoreNormalizer::Params params;
     params.version = 4;
-    params.write_delay = base::TimeDelta::FromSeconds(0);
+    params.write_delay = base::Seconds(0);
     return params;
   }
 

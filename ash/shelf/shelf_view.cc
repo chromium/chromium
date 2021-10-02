@@ -124,8 +124,7 @@ class BoundsAnimatorDisabler {
   explicit BoundsAnimatorDisabler(views::BoundsAnimator* bounds_animator)
       : old_duration_(bounds_animator->GetAnimationDuration()),
         bounds_animator_(bounds_animator) {
-    bounds_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+    bounds_animator_->SetAnimationDuration(base::Milliseconds(1));
   }
 
   BoundsAnimatorDisabler(const BoundsAnimatorDisabler&) = delete;
@@ -763,7 +762,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
       FROM_HERE,
       base::BindOnce(&ShelfView::DestroyScopedDisplay,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   // Slow down activation animations if Control key is pressed.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> slowing_animations;

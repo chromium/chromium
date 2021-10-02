@@ -137,7 +137,7 @@ Result AddUniqueUrlsSync(
 
     // We artificially add a microsecond to ensure that the timestamp is
     // different (and guarantee a particular order when sorting by timestamp).
-    now += base::TimeDelta::FromMicroseconds(1);
+    now += base::Microseconds(1);
   }
 
   if (!transaction.Commit())

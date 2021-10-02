@@ -60,8 +60,7 @@ void MaybeLogAdditionalMicSystemPermissionStats(SystemPermission permission) {
       base::UmaHistogramCustomTimes(
           "Media.Audio.Capture.Mac.MicSystemPermission."
           "FixedTime.SinceFirstFailure",
-          time_delta, base::TimeDelta::FromSeconds(1),
-          base::TimeDelta::FromHours(1), 50);
+          time_delta, base::Seconds(1), base::Hours(1), 50);
     }
 
     stored_time = prefs->GetTime(kSystemPermissionMicLastBlockedTimePref);
@@ -70,8 +69,7 @@ void MaybeLogAdditionalMicSystemPermissionStats(SystemPermission permission) {
       base::UmaHistogramCustomTimes(
           "Media.Audio.Capture.Mac.MicSystemPermission."
           "FixedTime.SinceLastFailure",
-          time_delta, base::TimeDelta::FromSeconds(1),
-          base::TimeDelta::FromHours(1), 50);
+          time_delta, base::Seconds(1), base::Hours(1), 50);
     }
   }
 
@@ -108,8 +106,7 @@ void MaybeLogAdditionalCameraSystemPermissionStats(
       base::UmaHistogramCustomTimes(
           "Media.Video.Capture.Mac.CameraSystemPermission.FixedTime."
           "SinceFirstFailure",
-          time_delta, base::TimeDelta::FromSeconds(1),
-          base::TimeDelta::FromHours(1), 50);
+          time_delta, base::Seconds(1), base::Hours(1), 50);
     }
 
     stored_time = prefs->GetTime(kSystemPermissionCameraLastBlockedTimePref);
@@ -118,8 +115,7 @@ void MaybeLogAdditionalCameraSystemPermissionStats(
       base::UmaHistogramCustomTimes(
           "Media.Video.Capture.Mac.CameraSystemPermission.FixedTime."
           "SinceLastFailure",
-          time_delta, base::TimeDelta::FromSeconds(1),
-          base::TimeDelta::FromHours(1), 50);
+          time_delta, base::Seconds(1), base::Hours(1), 50);
     }
   }
 

@@ -35,7 +35,7 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimation) {
                                          checker.repeating_callback());
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    settings.SetTransitionDuration(base::Milliseconds(48));
     layer.SetOpacity(1.0f);
   }
   // The animation starts in next frame (16ms) and ends 48 ms later.
@@ -55,7 +55,7 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimationLateAttach) {
                                          checker.repeating_callback());
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    settings.SetTransitionDuration(base::Milliseconds(48));
     layer.SetOpacity(1.0f);
   }
 
@@ -77,7 +77,7 @@ TEST_F(AnimationThroughputReporterTest, ExplicitAnimation) {
 
   animator->ScheduleAnimation(
       new LayerAnimationSequence(LayerAnimationElement::CreateOpacityElement(
-          1.0f, base::TimeDelta::FromMilliseconds(48))));
+          1.0f, base::Milliseconds(48))));
 
   EXPECT_TRUE(checker.WaitUntilReported());
 }
@@ -89,8 +89,7 @@ TEST_F(AnimationThroughputReporterTest, PersistedAnimation) {
   root_layer()->Add(layer.get());
 
   // Set a persisted animator to |layer|.
-  LayerAnimator* animator =
-      new LayerAnimator(base::TimeDelta::FromMilliseconds(48));
+  LayerAnimator* animator = new LayerAnimator(base::Milliseconds(48));
   layer->SetAnimator(animator);
 
   // |reporter| keeps reporting as long as it is alive.
@@ -123,7 +122,7 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
                                          checker.repeating_callback());
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    settings.SetTransitionDuration(base::Milliseconds(48));
     layer->SetOpacity(1.0f);
   }
 
@@ -131,7 +130,7 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
   layer.reset();
 
   // Wait a bit to ensure that report does not happen.
-  Advance(base::TimeDelta::FromMilliseconds(100));
+  Advance(base::Milliseconds(100));
 
   // TODO(crbug.com/1158510): Test the scenario where the report exists when the
   // layer is removed.
@@ -148,7 +147,7 @@ TEST_F(AnimationThroughputReporterTest, LayerDestroyedBeforeReporter) {
   AnimationThroughputReporter reporter(animator, checker.repeating_callback());
   {
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    settings.SetTransitionDuration(base::Milliseconds(48));
     layer->SetOpacity(1.0f);
   }
 
@@ -156,7 +155,7 @@ TEST_F(AnimationThroughputReporterTest, LayerDestroyedBeforeReporter) {
   layer.reset();
 
   // Wait a bit to ensure that report does not happen.
-  Advance(base::TimeDelta::FromMilliseconds(100));
+  Advance(base::Milliseconds(100));
 }
 
 // Tests animation throughput not reported when detached from timeline.
@@ -171,7 +170,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
     AnimationThroughputReporter reporter(animator,
                                          checker.repeating_callback());
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    settings.SetTransitionDuration(base::Milliseconds(48));
     layer->SetOpacity(1.0f);
   }
 
@@ -180,7 +179,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
   root_layer()->Add(layer.get());
 
   // Wait a bit to ensure that report does not happen.
-  Advance(base::TimeDelta::FromMilliseconds(100));
+  Advance(base::Milliseconds(100));
 }
 
 // Tests animation throughput not reported and no leak when animation is stopped
@@ -196,7 +195,7 @@ TEST_F(AnimationThroughputReporterTest, EndDetachedNoReportNoLeak) {
     AnimationThroughputReporter reporter(animator,
                                          checker.repeating_callback());
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::Milliseconds(50));
     layer->SetOpacity(1.0f);
   }
 
@@ -204,7 +203,7 @@ TEST_F(AnimationThroughputReporterTest, EndDetachedNoReportNoLeak) {
   animator->StopAnimating();
 
   // Wait a bit to ensure that report does not happen.
-  Advance(base::TimeDelta::FromMilliseconds(100));
+  Advance(base::Milliseconds(100));
 
   // AnimationTracker in |reporter| should not leak in asan.
 }
@@ -224,7 +223,7 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
     AnimationThroughputReporter reporter(animator,
                                          checker.repeating_callback());
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::Milliseconds(50));
     layer->SetOpacity(0.5f);
     layer->SetBounds(gfx::Rect(0, 0, 3, 4));
   }
@@ -237,7 +236,7 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
     ScopedLayerAnimationSettings settings(animator);
     settings.SetPreemptionStrategy(
         LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    settings.SetTransitionDuration(base::Milliseconds(48));
     layer->SetOpacity(1.0f);
     layer->SetBounds(gfx::Rect(0, 0, 5, 6));
   }

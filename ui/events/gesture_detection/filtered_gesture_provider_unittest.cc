@@ -78,7 +78,7 @@ TEST_F(FilteredGestureProviderTest, TouchMovedBeyondSlopRegion_SingleTouch) {
   EXPECT_FALSE(result.moved_beyond_slop_region);
 
   // A fling should set the bit right away.
-  time += base::TimeDelta::FromMilliseconds(10);
+  time += base::Milliseconds(10);
   event.MovePoint(0, kSlopRegion * 50, 0);
   event.set_event_time(time);
   result = provider.OnTouchEvent(event);

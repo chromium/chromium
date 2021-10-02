@@ -41,8 +41,8 @@ class NetLogPlatformBrowserTestBase : public PlatformBrowserTest {
     // started before this method is called, but completes asynchronously.
     //
     // Try for up to 5 seconds to read the netlog file.
-    constexpr auto kMaxWaitTime = base::TimeDelta::FromSeconds(5);
-    constexpr auto kWaitInterval = base::TimeDelta::FromMilliseconds(50);
+    constexpr auto kMaxWaitTime = base::Seconds(5);
+    constexpr auto kWaitInterval = base::Milliseconds(50);
     int tries_left = kMaxWaitTime / kWaitInterval;
 
     absl::optional<base::Value> parsed_net_log;

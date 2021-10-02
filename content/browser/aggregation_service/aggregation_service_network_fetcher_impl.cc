@@ -103,7 +103,7 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
 
   auto it = loaders_in_progress_.insert(loaders_in_progress_.begin(),
                                         std::move(simple_url_loader));
-  simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
+  simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
   const int kMaxRetries = 1;
 

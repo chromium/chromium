@@ -38,7 +38,7 @@ void MultiLayerAnimatorTestController::CompleteAnimations() {
     // StepAnimations() will only progress the current running animations. Thus
     // each queued animation will require at least one 'Step' call and we cannot
     // just use a large duration here.
-    StepAnimations(base::TimeDelta::FromMilliseconds(20));
+    StepAnimations(base::Milliseconds(20));
   }
 }
 

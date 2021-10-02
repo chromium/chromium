@@ -116,7 +116,7 @@ const char kPDFPath[] = "/complex_document.pdf";
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
   // Leave the tab grid.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]

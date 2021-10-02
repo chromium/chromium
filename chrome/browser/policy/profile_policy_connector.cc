@@ -75,9 +75,7 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
     device_wide_policy_service->AddProviderUpdateObserver(this);
 
     timeout_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(
-            kProxiedPoliciesPropagationTimeoutInSeconds),
+        FROM_HERE, base::Seconds(kProxiedPoliciesPropagationTimeoutInSeconds),
         this,
         &ProxiedPoliciesPropagatedWatcher::OnProviderUpdatePropagationTimedOut);
   }

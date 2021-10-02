@@ -98,13 +98,13 @@ constexpr char kWebAppName[] = "WebApp1";
 void WaitTimeUpdated() {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(1));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1));
   run_loop.Run();
 }
 
 base::Time MicrosecondsSinceEpoch(int microseconds) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(microseconds));
+      base::Microseconds(microseconds));
 }
 
 }  // namespace
@@ -444,8 +444,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendations) {
   EXPECT_EQ("Packaged App 2,Packaged App 1,Hosted App", RunQuery(""));
 
   // Times in the future should just be handled as highest priority.
-  prefs->SetLastLaunchTime(kHostedAppId,
-                           kTestCurrentTime + base::TimeDelta::FromSeconds(5));
+  prefs->SetLastLaunchTime(kHostedAppId, kTestCurrentTime + base::Seconds(5));
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(5));
   // Allow async callbacks to run.
@@ -474,9 +473,9 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(2);
-    const base::Time kTimestamp2 = now - base::TimeDelta::FromMinutes(1);
-    const base::Time kTimestamp3 = now - base::TimeDelta::FromMinutes(3);
+    const base::Time kTimestamp1 = now - base::Minutes(2);
+    const base::Time kTimestamp2 = now - base::Minutes(1);
+    const base::Time kTimestamp3 = now - base::Minutes(3);
 
     session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
     session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
@@ -526,7 +525,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(1);
+    const base::Time kTimestamp1 = now - base::Minutes(1);
 
     session_tracker()->PutWindowInSession(kLocalSessionTag, kWindowId1);
     session_tracker()->PutTabInWindow(kLocalSessionTag, kWindowId1, kTabId1);
@@ -551,7 +550,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(121);
+    const base::Time kTimestamp1 = now - base::Minutes(121);
 
     session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
     session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
@@ -576,7 +575,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(1);
+    const base::Time kTimestamp1 = now - base::Minutes(1);
 
     session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
     session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
@@ -601,7 +600,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(1);
+    const base::Time kTimestamp1 = now - base::Minutes(1);
 
     session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
     session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
@@ -626,7 +625,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(1);
+    const base::Time kTimestamp1 = now - base::Minutes(1);
 
     session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
     session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
@@ -650,7 +649,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
     CreateSearchWithContinueReading();
     session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
                                         sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::TimeDelta::FromMinutes(1);
+    const base::Time kTimestamp1 = now - base::Minutes(1);
 
     session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
     session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
@@ -706,7 +705,7 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   extension_prefs->SetLastLaunchTime(
       extension_misc::kGmailAppId,
-      arc_gmail_app_info->last_launch_time - base::TimeDelta::FromSeconds(1));
+      arc_gmail_app_info->last_launch_time - base::Seconds(1));
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -716,7 +715,7 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   extension_prefs->SetLastLaunchTime(
       extension_misc::kGmailAppId,
-      arc_gmail_app_info->last_launch_time + base::TimeDelta::FromSeconds(1));
+      arc_gmail_app_info->last_launch_time + base::Seconds(1));
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();

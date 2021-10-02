@@ -14,8 +14,7 @@
 namespace syncer {
 
 const char DeviceInfoUtil::kClientTagPrefix[] = "DeviceInfo_";
-const base::TimeDelta DeviceInfoUtil::kActiveThreshold =
-    base::TimeDelta::FromDays(14);
+const base::TimeDelta DeviceInfoUtil::kActiveThreshold = base::Days(14);
 
 namespace {
 
@@ -37,7 +36,7 @@ base::TimeDelta Age(const base::Time last_update, const base::Time now) {
 
 // static
 base::TimeDelta DeviceInfoUtil::GetPulseInterval() {
-  return base::TimeDelta::FromMinutes(kPulseIntervalMinutes.Get());
+  return base::Minutes(kPulseIntervalMinutes.Get());
 }
 
 // static

@@ -234,7 +234,7 @@ class ResetTestWithTpmFirmwareUpdate : public ResetTest {
   void HandleTpmFirmwareUpdateCheck(
       ResetScreen::TpmFirmwareUpdateAvailabilityCallback callback,
       base::TimeDelta delay) {
-    EXPECT_EQ(delay, base::TimeDelta::FromSeconds(10));
+    EXPECT_EQ(delay, base::Seconds(10));
     // Multiple checks are technically allowed, but not needed by these tests.
     ASSERT_FALSE(pending_tpm_firmware_update_check_);
     pending_tpm_firmware_update_check_ = std::move(callback);

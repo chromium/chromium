@@ -48,8 +48,7 @@ void WaylandTouch::Down(void* data,
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchPressEvent(window, location, timestamp, id);
 }
 
@@ -61,8 +60,7 @@ void WaylandTouch::Up(void* data,
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchReleaseEvent(timestamp, id);
 
   // Reset kTouchPress serial only after dispatching touch-up event, so popups
@@ -82,8 +80,7 @@ void WaylandTouch::Motion(void* data,
   DCHECK(touch);
 
   gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchMotionEvent(location, timestamp, id);
 }
 

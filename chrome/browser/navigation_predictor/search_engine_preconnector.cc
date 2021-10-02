@@ -52,9 +52,8 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
   timer_.Stop();
   if (with_startup_delay) {
     timer_.Start(FROM_HERE,
-                 base::TimeDelta::FromMilliseconds(
-                     base::GetFieldTrialParamByFeatureAsInt(
-                         features::kPreconnectToSearch, "startup_delay_ms", 0)),
+                 base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+                     features::kPreconnectToSearch, "startup_delay_ms", 0)),
                  base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
                                 base::Unretained(this)));
     return;
@@ -111,18 +110,17 @@ void SearchEnginePreconnector::PreconnectDSE() {
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.
-  const base::TimeDelta retry_delay = base::TimeDelta::FromMilliseconds(50);
+  const base::TimeDelta retry_delay = base::Milliseconds(50);
 
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
-  timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
-          net::features::kNetUnusedIdleSocketTimeout,
-          "unused_idle_socket_timeout_seconds", 60)) +
-          retry_delay,
-      base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
-                     base::Unretained(this)));
+  timer_.Start(FROM_HERE,
+               base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
+                   net::features::kNetUnusedIdleSocketTimeout,
+                   "unused_idle_socket_timeout_seconds", 60)) +
+                   retry_delay,
+               base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
+                              base::Unretained(this)));
 }
 
 GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {

@@ -89,10 +89,10 @@ constexpr int kMinimumItemsForNewLayout = 6;
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
 constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
-    base::TimeDelta::FromMilliseconds(300);
+    base::Milliseconds(300);
 
 // Toast id for the toast that is displayed when a user tries to move a window
 // that is visible on all desks to another desk.

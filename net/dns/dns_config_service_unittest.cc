@@ -113,8 +113,7 @@ TEST_F(DnsConfigServiceTest, Timeout) {
   DnsConfig bad_config = last_config_ = MakeConfig(0xBAD);
   service_->InvalidateConfig();
   // We don't expect an update. This should time out.
-  WaitForConfig(base::TimeDelta::FromMilliseconds(100) +
-                TestTimeouts::tiny_timeout());
+  WaitForConfig(base::Milliseconds(100) + TestTimeouts::tiny_timeout());
   EXPECT_TRUE(last_config_.Equals(bad_config)) << "Unexpected change";
 
   last_config_ = DnsConfig();

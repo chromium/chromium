@@ -378,7 +378,7 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
       if (quic_args->GetInteger(kQuicIdleConnectionTimeoutSeconds,
                                 &quic_idle_connection_timeout_seconds)) {
         quic_params->idle_connection_timeout =
-            base::TimeDelta::FromSeconds(quic_idle_connection_timeout_seconds);
+            base::Seconds(quic_idle_connection_timeout_seconds);
       }
 
       int quic_max_time_before_crypto_handshake_seconds = 0;
@@ -386,8 +386,7 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
               kQuicMaxTimeBeforeCryptoHandshakeSeconds,
               &quic_max_time_before_crypto_handshake_seconds)) {
         quic_params->max_time_before_crypto_handshake =
-            base::TimeDelta::FromSeconds(
-                quic_max_time_before_crypto_handshake_seconds);
+            base::Seconds(quic_max_time_before_crypto_handshake_seconds);
       }
 
       int quic_max_idle_time_before_crypto_handshake_seconds = 0;
@@ -395,8 +394,7 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
               kQuicMaxIdleTimeBeforeCryptoHandshakeSeconds,
               &quic_max_idle_time_before_crypto_handshake_seconds)) {
         quic_params->max_idle_time_before_crypto_handshake =
-            base::TimeDelta::FromSeconds(
-                quic_max_idle_time_before_crypto_handshake_seconds);
+            base::Seconds(quic_max_idle_time_before_crypto_handshake_seconds);
       }
 
       absl::optional<bool> quic_close_sessions_on_ip_change =
@@ -449,8 +447,7 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
                 kQuicMaxTimeOnNonDefaultNetworkSeconds,
                 &quic_max_time_on_non_default_network_seconds)) {
           quic_params->max_time_on_non_default_network =
-              base::TimeDelta::FromSeconds(
-                  quic_max_time_on_non_default_network_seconds);
+              base::Seconds(quic_max_time_on_non_default_network_seconds);
         }
         if (quic_args->GetInteger(
                 kQuicMaxMigrationsToNonDefaultNetworkOnWriteError,
@@ -479,8 +476,7 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
                 kQuicIdleSessionMigrationPeriodSeconds,
                 &quic_idle_session_migration_period_seconds)) {
           quic_params->idle_session_migration_period =
-              base::TimeDelta::FromSeconds(
-                  quic_idle_session_migration_period_seconds);
+              base::Seconds(quic_idle_session_migration_period_seconds);
         }
       }
 
@@ -498,9 +494,8 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
       if (quic_args->GetInteger(
               kQuicRetransmittableOnWireTimeoutMilliseconds,
               &quic_retransmittable_on_wire_timeout_milliseconds)) {
-        quic_params->retransmittable_on_wire_timeout =
-            base::TimeDelta::FromMilliseconds(
-                quic_retransmittable_on_wire_timeout_milliseconds);
+        quic_params->retransmittable_on_wire_timeout = base::Milliseconds(
+            quic_retransmittable_on_wire_timeout_milliseconds);
       }
 
       quic_params->retry_on_alternate_network_before_handshake =
@@ -574,12 +569,12 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
 
         int delay;
         if (stale_dns_args->GetInteger(kStaleDnsDelayMs, &delay))
-          stale_dns_options.delay = base::TimeDelta::FromMilliseconds(delay);
+          stale_dns_options.delay = base::Milliseconds(delay);
         int max_expired_time_ms;
         if (stale_dns_args->GetInteger(kStaleDnsMaxExpiredTimeMs,
                                        &max_expired_time_ms)) {
           stale_dns_options.max_expired_time =
-              base::TimeDelta::FromMilliseconds(max_expired_time_ms);
+              base::Milliseconds(max_expired_time_ms);
         }
         int max_stale_uses;
         if (stale_dns_args->GetInteger(kStaleDnsMaxStaleUses, &max_stale_uses))

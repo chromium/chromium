@@ -199,8 +199,7 @@ class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
         task_runner_(task_runner),
         message_loop_controller_(message_loop_controller),
         repaint_cb_(repaint_cb),
-        delay_till_next_generated_frame_(
-            base::TimeDelta::FromSecondsD(1.0 / 30.0)) {}
+        delay_till_next_generated_frame_(base::Seconds(1.0 / 30.0)) {}
 
   // Implementation of WebMediaStreamVideoRenderer
   void Start() override;
@@ -326,7 +325,7 @@ void MockMediaStreamVideoRenderer::QueueFrames(
       auto frame = media::VideoFrame::CreateZeroInitializedFrame(
           opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
           frame_size, gfx::Rect(frame_size), frame_size,
-          base::TimeDelta::FromMilliseconds(token));
+          base::Milliseconds(token));
 
       // MediaStreamRemoteVideoSource does not explicitly set the rotation
       // for unrotated frames, so that is not done here either.
@@ -334,7 +333,7 @@ void MockMediaStreamVideoRenderer::QueueFrames(
         frame->metadata().transformation = rotation;
 
       frame->metadata().reference_time =
-          base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(token);
+          base::TimeTicks::Now() + base::Milliseconds(token);
 
       AddFrame(FrameType::NORMAL_FRAME, frame);
       continue;
@@ -781,10 +780,8 @@ void WebMediaPlayerMSTest::RenderFrame() {
     return;
 
   base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeTicks deadline_min =
-      now + base::TimeDelta::FromSecondsD(1.0 / 60.0);
-  base::TimeTicks deadline_max =
-      deadline_min + base::TimeDelta::FromSecondsD(1.0 / 60.0);
+  base::TimeTicks deadline_min = now + base::Seconds(1.0 / 60.0);
+  base::TimeTicks deadline_max = deadline_min + base::Seconds(1.0 / 60.0);
 
   // Background rendering is different from stop rendering. The rendering loop
   // is still running but we do not ask frames from |compositor_|. And
@@ -797,7 +794,7 @@ void WebMediaPlayerMSTest::RenderFrame() {
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
       FROM_HERE,
       WTF::Bind(&WebMediaPlayerMSTest::RenderFrame, weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSecondsD(1.0 / 60.0));
+      base::Seconds(1.0 / 60.0));
 }
 
 void WebMediaPlayerMSTest::SizeChanged() {
@@ -1462,8 +1459,7 @@ TEST_P(WebMediaPlayerMSTest, ValidPreferredInterval) {
 
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
-      frame_size, gfx::Rect(frame_size), frame_size,
-      base::TimeDelta::FromSeconds(10));
+      frame_size, gfx::Rect(frame_size), frame_size, base::Seconds(10));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   base::RunLoop().RunUntilIdle();
@@ -1471,8 +1467,7 @@ TEST_P(WebMediaPlayerMSTest, ValidPreferredInterval) {
 
   frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
-      frame_size, gfx::Rect(frame_size), frame_size,
-      base::TimeDelta::FromSeconds(1));
+      frame_size, gfx::Rect(frame_size), frame_size, base::Seconds(1));
   compositor_->EnqueueFrame(std::move(frame), true);
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(compositor_->GetPreferredRenderInterval(), base::TimeDelta());

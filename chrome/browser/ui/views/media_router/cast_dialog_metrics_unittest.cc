@@ -26,13 +26,10 @@ namespace media_router {
 namespace {
 
 const base::Time init_time = base::Time::Now();
-const base::Time paint_time = init_time + base::TimeDelta::FromMilliseconds(50);
-const base::Time sink_load_time =
-    init_time + base::TimeDelta::FromMilliseconds(300);
-const base::Time start_casting_time =
-    init_time + base::TimeDelta::FromMilliseconds(2000);
-const base::Time close_dialog_time =
-    init_time + base::TimeDelta::FromMilliseconds(3000);
+const base::Time paint_time = init_time + base::Milliseconds(50);
+const base::Time sink_load_time = init_time + base::Milliseconds(300);
+const base::Time start_casting_time = init_time + base::Milliseconds(2000);
+const base::Time close_dialog_time = init_time + base::Milliseconds(3000);
 
 }  // namespace
 

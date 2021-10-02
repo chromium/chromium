@@ -2088,8 +2088,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   base::TimeTicks start_time = base::TimeTicks::Now();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
-  waiter->AddMinimumAggregateCpuTimeExpectation(
-      base::TimeDelta::FromMilliseconds(300));
+  waiter->AddMinimumAggregateCpuTimeExpectation(base::Milliseconds(300));
 
   // Navigate the iframe to a page with a delayed rAF, waiting for it to
   // complete. Long enough to guarantee the frame client sees a cpu time
@@ -2169,8 +2168,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // Navigate to the page and set up the waiter.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
-  waiter->AddMinimumAggregateCpuTimeExpectation(
-      base::TimeDelta::FromMilliseconds(100));
+  waiter->AddMinimumAggregateCpuTimeExpectation(base::Milliseconds(100));
 
   // Navigate twice to a page delaying 50ms.  The first and second navigations
   // by themselves aren't enough to trigger a cpu update, but when combined an
@@ -2205,8 +2203,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
 
-  waiter->AddMinimumAggregateCpuTimeExpectation(
-      base::TimeDelta::FromMilliseconds(300));
+  waiter->AddMinimumAggregateCpuTimeExpectation(base::Milliseconds(300));
 
   // Navigate twice to a page with enough cumulative time to measure
   // at least 1% peak windowed percent (300ms), either individually leads to 0
@@ -2368,7 +2365,7 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>
       memory_request = std::make_unique<
           performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
-          base::TimeDelta::FromSeconds(1),
+          base::Seconds(1),
           performance_manager::v8_memory::V8DetailedMemoryRequest::
               MeasurementMode::kEagerForTesting);
   auto memory_observer = std::make_unique<DummyMemoryObserver>();

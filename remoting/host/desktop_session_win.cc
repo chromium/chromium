@@ -677,9 +677,9 @@ void DesktopSessionWin::StartMonitoring(const std::string& terminal_id) {
 
   ReportElapsedTime("started monitoring");
 
-  session_attach_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kSessionAttachTimeoutSeconds),
-      this, &DesktopSessionWin::OnSessionAttachTimeout);
+  session_attach_timer_.Start(FROM_HERE,
+                              base::Seconds(kSessionAttachTimeoutSeconds), this,
+                              &DesktopSessionWin::OnSessionAttachTimeout);
 
   monitoring_notifications_ = true;
   monitor_->AddWtsTerminalObserver(terminal_id, this);
@@ -816,8 +816,8 @@ void DesktopSessionWin::OnSessionDetached() {
     ReportElapsedTime("detached");
 
     session_attach_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kSessionAttachTimeoutSeconds),
-        this, &DesktopSessionWin::OnSessionAttachTimeout);
+        FROM_HERE, base::Seconds(kSessionAttachTimeoutSeconds), this,
+        &DesktopSessionWin::OnSessionAttachTimeout);
   }
 }
 

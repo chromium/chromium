@@ -791,10 +791,9 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
   testing::Mock::VerifyAndClearExpectations(&configuration_delegate);
 }
 
-constexpr base::TimeDelta kDelta50Ms = base::TimeDelta::FromMilliseconds(50);
-constexpr base::TimeDelta kDelta500Ms = base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kDelta1000Ms =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDelta50Ms = base::Milliseconds(50);
+constexpr base::TimeDelta kDelta500Ms = base::Milliseconds(500);
+constexpr base::TimeDelta kDelta1000Ms = base::Milliseconds(1000);
 
 TEST_F(KeyboardTest, KeyRepeatSettingsLoadDefaults) {
   auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
@@ -1183,8 +1182,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1000));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
   run_loop.Run();
   base::RunLoop().RunUntilIdle();
 
@@ -1275,8 +1273,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1000));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
   run_loop.Run();
   base::RunLoop().RunUntilIdle();
 

@@ -776,7 +776,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   if (base::RandGenerator(100) == 0) {
     background_task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordIsPinnedToTaskbarHistogram),
-        base::TimeDelta::FromSeconds(45));
+        base::Seconds(45));
   }
 #endif  // defined(OS_WIN)
 

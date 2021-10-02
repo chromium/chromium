@@ -19,8 +19,7 @@ namespace multidevice_setup {
 
 namespace {
 const base::Time kTestTime = base::Time::FromJavaTime(1500000000000);
-const base::Time kLaterTime =
-    kTestTime + base::TimeDelta::FromMilliseconds(123456789);
+const base::Time kLaterTime = kTestTime + base::Milliseconds(123456789);
 }  // namespace
 
 class HostDeviceTimestampManagerImplTest : public testing::Test {

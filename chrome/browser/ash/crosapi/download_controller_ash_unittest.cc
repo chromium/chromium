@@ -98,10 +98,10 @@ TEST_F(DownloadControllerAshTest, GetAllDownloads_MultipleBoundClients) {
           [](mojom::DownloadControllerClient::GetAllDownloadsCallback
                  callback) {
             std::vector<mojom::DownloadItemPtr> downloads;
-            downloads.push_back(CreateDownloadItemWithStartTimeOffset(
-                base::TimeDelta::FromMinutes(10)));
-            downloads.push_back(CreateDownloadItemWithStartTimeOffset(
-                -base::TimeDelta::FromMinutes(10)));
+            downloads.push_back(
+                CreateDownloadItemWithStartTimeOffset(base::Minutes(10)));
+            downloads.push_back(
+                CreateDownloadItemWithStartTimeOffset(-base::Minutes(10)));
             std::move(callback).Run(std::move(downloads));
           }));
 
@@ -117,10 +117,10 @@ TEST_F(DownloadControllerAshTest, GetAllDownloads_MultipleBoundClients) {
           [](mojom::DownloadControllerClient::GetAllDownloadsCallback
                  callback) {
             std::vector<mojom::DownloadItemPtr> downloads;
-            downloads.push_back(CreateDownloadItemWithStartTimeOffset(
-                base::TimeDelta::FromMinutes(20)));
-            downloads.push_back(CreateDownloadItemWithStartTimeOffset(
-                -base::TimeDelta::FromMinutes(20)));
+            downloads.push_back(
+                CreateDownloadItemWithStartTimeOffset(base::Minutes(20)));
+            downloads.push_back(
+                CreateDownloadItemWithStartTimeOffset(-base::Minutes(20)));
             std::move(callback).Run(std::move(downloads));
           }));
 

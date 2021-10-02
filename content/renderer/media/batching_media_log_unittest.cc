@@ -102,12 +102,12 @@ TEST_F(BatchingMediaLogTest, ThrottleSendingEvents) {
   EXPECT_EQ(0, message_count());
 
   // Still shouldn't send anything.
-  Advance(base::TimeDelta::FromMilliseconds(500));
+  Advance(base::Milliseconds(500));
   AddEvent<media::MediaLogEvent::kPause>();
   EXPECT_EQ(0, message_count());
 
   // Now we should expect an IPC.
-  Advance(base::TimeDelta::FromMilliseconds(500));
+  Advance(base::Milliseconds(500));
   EXPECT_EQ(1, message_count());
 
   // Verify contents.
@@ -128,18 +128,18 @@ TEST_F(BatchingMediaLogTest, LimitEvents) {
     AddEvent<media::MediaLogEvent::kPause>();
   }
 
-  Advance(base::TimeDelta::FromMilliseconds(1100));
+  Advance(base::Milliseconds(1100));
   EXPECT_EQ(media::MediaLog::kLogLimit + 1, GetMediaLogRecords().size());
 }
 
 TEST_F(BatchingMediaLogTest, EventSentWithoutDelayAfterIpcInterval) {
   AddEvent<media::MediaLogEvent::kPlay>();
-  Advance(base::TimeDelta::FromMilliseconds(1000));
+  Advance(base::Milliseconds(1000));
   EXPECT_EQ(1, message_count());
 
   // After the ipc send interval passes, the next event should be sent
   // right away.
-  Advance(base::TimeDelta::FromMilliseconds(2000));
+  Advance(base::Milliseconds(2000));
   AddEvent<media::MediaLogEvent::kPlay>();
   EXPECT_EQ(2, message_count());
 }
@@ -150,15 +150,12 @@ TEST_F(BatchingMediaLogTest, DurationChanged) {
 
   // This event is handled separately and should always appear last regardless
   // of how many times we see it.
-  AddEvent<media::MediaLogEvent::kDurationChanged>(
-      base::TimeDelta::FromMilliseconds(1));
-  AddEvent<media::MediaLogEvent::kDurationChanged>(
-      base::TimeDelta::FromMilliseconds(2));
-  AddEvent<media::MediaLogEvent::kDurationChanged>(
-      base::TimeDelta::FromMilliseconds(3));
+  AddEvent<media::MediaLogEvent::kDurationChanged>(base::Milliseconds(1));
+  AddEvent<media::MediaLogEvent::kDurationChanged>(base::Milliseconds(2));
+  AddEvent<media::MediaLogEvent::kDurationChanged>(base::Milliseconds(3));
 
   EXPECT_EQ(0, message_count());
-  Advance(base::TimeDelta::FromMilliseconds(1000));
+  Advance(base::Milliseconds(1000));
   EXPECT_EQ(1, message_count());
 
   // Verify contents. There should only be a single buffered extents changed
@@ -193,7 +190,7 @@ TEST_F(BatchingMediaLogTest, BufferingStateChanged) {
           false});
 
   EXPECT_EQ(0, message_count());
-  Advance(base::TimeDelta::FromMilliseconds(1000));
+  Advance(base::Milliseconds(1000));
   EXPECT_EQ(1, message_count());
 
   // Verify contents. There should only be a single buffered extents changed

@@ -46,8 +46,7 @@ const char kWebViewSocketPrefix[] = "webview_devtools_remote";
 
 static void ScheduleTaskDefault(base::OnceClosure task) {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, std::move(task),
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMs));
+      FROM_HERE, std::move(task), base::Milliseconds(kPollingIntervalMs));
 }
 
 // ProtocolCommand ------------------------------------------------------------

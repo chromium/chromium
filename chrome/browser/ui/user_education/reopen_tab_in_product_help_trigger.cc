@@ -23,10 +23,8 @@ const char kNewTabOpenedTimeoutParamName[] = "x_new_tab_opened_timeout";
 
 // Default timeouts, if a field trial isn't present (only used for interactive
 // testing).
-const base::TimeDelta kDefaultTabMinimumActiveDuration =
-    base::TimeDelta::FromSeconds(10);
-const base::TimeDelta kDefaultNewTabOpenedTimeout =
-    base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kDefaultTabMinimumActiveDuration = base::Seconds(10);
+const base::TimeDelta kDefaultNewTabOpenedTimeout = base::Seconds(10);
 
 absl::optional<base::TimeDelta> GetTimeoutFromFieldTrialParam(
     const std::string& name) {
@@ -36,7 +34,7 @@ absl::optional<base::TimeDelta> GetTimeoutFromFieldTrialParam(
   if (!str.empty()) {
     base::StringToInt(str, &timeout_seconds);
     DCHECK_GT(timeout_seconds, 0);
-    return base::TimeDelta::FromSeconds(timeout_seconds);
+    return base::Seconds(timeout_seconds);
   }
 
   return absl::optional<base::TimeDelta>();

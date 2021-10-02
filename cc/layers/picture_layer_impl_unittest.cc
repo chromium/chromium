@@ -347,13 +347,13 @@ TEST_F(LegacySWPictureLayerImplTest, CloneNoInvalidation) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ExternalViewportRectForPrioritizingTiles) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   gfx::Size layer_bounds(400, 400);
   SetupDefaultTrees(layer_bounds);
 
   SetupDrawPropertiesAndUpdateTiles(active_layer(), 1.f, 1.f, 1.f);
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
 
   // Update tiles with viewport for tile priority as (0, 0, 100, 100) and the
   // identify transform for tile priority.
@@ -378,7 +378,7 @@ TEST_F(LegacySWPictureLayerImplTest, ExternalViewportRectForPrioritizingTiles) {
   // Update tiles with viewport for tile priority as (200, 200, 100, 100) in
   // root layer space and the transform for tile priority is translated and
   // rotated.
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
 
   viewport_rect_for_tile_priority = gfx::Rect(200, 200, 100, 100);
   transform_for_tile_priority.Translate(100, 100);
@@ -399,13 +399,13 @@ TEST_F(LegacySWPictureLayerImplTest, ExternalViewportRectForPrioritizingTiles) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ViewportRectForTilePriorityIsCached) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   gfx::Size layer_bounds(400, 400);
   SetupDefaultTrees(layer_bounds);
 
   SetupDrawPropertiesAndUpdateTiles(active_layer(), 1.f, 1.f, 1.f);
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
 
   gfx::Rect viewport_rect_for_tile_priority(0, 0, 100, 100);
   gfx::Transform transform_for_tile_priority;
@@ -417,7 +417,7 @@ TEST_F(LegacySWPictureLayerImplTest, ViewportRectForTilePriorityIsCached) {
   EXPECT_EQ(viewport_rect_for_tile_priority,
             active_layer()->viewport_rect_for_tile_priority_in_content_space());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
 
   gfx::Rect another_viewport_rect_for_tile_priority(11, 11, 50, 50);
   host_impl()->SetExternalTilePriorityConstraints(
@@ -1200,7 +1200,7 @@ TEST_F(LegacySWPictureLayerImplTest, DontAddLowResForSmallLayers) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
 
@@ -1215,7 +1215,7 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
   SetupMaskProperties(pending_layer(), pending_mask);
   ASSERT_TRUE(pending_mask->is_backdrop_filter_mask());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   EXPECT_EQ(1.f, pending_mask->HighResTiling()->contents_scale_key());
@@ -1260,7 +1260,7 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
   pending_mask->SetBounds(huge_bounds);
   pending_mask->SetRasterSource(huge_raster_source, Region());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   // The mask tiling gets scaled down.
@@ -1316,14 +1316,14 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
 
   EXPECT_FALSE(pending_mask->CanHaveTilings());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   EXPECT_EQ(0u, pending_mask->num_tilings());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
 
@@ -1340,7 +1340,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
   SetupMaskProperties(pending_layer(), pending_mask);
   ASSERT_TRUE(pending_mask->is_backdrop_filter_mask());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   // Masks are scaled, and do not have a low res tiling.
@@ -1371,7 +1371,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ScaledMaskLayer) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
 
@@ -1387,7 +1387,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledMaskLayer) {
   SetupMaskProperties(pending_layer(), pending_mask);
   ASSERT_FALSE(pending_mask->is_backdrop_filter_mask());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   // Masks are scaled, and do not have a low res tiling.
@@ -1841,7 +1841,7 @@ TEST_F(NoLowResPictureLayerImplTest, MarkRequiredOffscreenTiles) {
       viewport,
       pending_layer()->viewport_rect_for_tile_priority_in_content_space());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   pending_layer()->UpdateTiles();
 
   int num_visible = 0;
@@ -1867,7 +1867,7 @@ TEST_F(NoLowResPictureLayerImplTest, MarkRequiredOffscreenTiles) {
 
 TEST_F(NoLowResPictureLayerImplTest,
        TileOutsideOfViewportForTilePriorityNotRequired) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(400, 400);
@@ -1883,13 +1883,13 @@ TEST_F(NoLowResPictureLayerImplTest,
   gfx::Transform transform_for_tile_priority;
   host_impl()->SetExternalTilePriorityConstraints(
       external_viewport_for_tile_priority, transform_for_tile_priority);
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   // Set visible content rect that is different from
   // external_viewport_for_tile_priority.
   pending_layer()->draw_properties().visible_layer_rect = visible_layer_rect;
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
   pending_layer()->UpdateTiles();
 
   // Intersect the two rects. Any tile outside should not be required for
@@ -1939,7 +1939,7 @@ TEST_F(NoLowResPictureLayerImplTest,
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HighResTileIsComplete) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -1969,7 +1969,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsComplete) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncomplete) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -1992,7 +1992,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncomplete) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncompleteLowResComplete) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -2020,7 +2020,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncompleteLowResComplete) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, LowResTileIsIncomplete) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -2058,7 +2058,7 @@ TEST_F(LegacySWPictureLayerImplTest, LowResTileIsIncomplete) {
 
 TEST_F(LegacySWPictureLayerImplTest,
        HighResAndIdealResTileIsCompleteWhenRasterScaleIsNotIdeal) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -2121,7 +2121,7 @@ TEST_F(LegacySWPictureLayerImplTest,
 }
 
 TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -3208,7 +3208,7 @@ TEST_F(LegacySWPictureLayerImplTest,
 }
 
 TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(500, 500));
 
@@ -3289,7 +3289,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
   EXPECT_EQ(high_res_now_tiles, required_for_activation_count);
 
   // No NOW tiles.
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
 
   pending_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(1100, 1100, 500, 500);
@@ -3318,7 +3318,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
   EXPECT_EQ(16, high_res_tile_count);
   EXPECT_EQ(high_res_tile_count, static_cast<int>(unique_tiles.size()));
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
 
   pending_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 0, 500, 500);
@@ -3339,7 +3339,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueActiveTree) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(500, 500));
 
@@ -4285,7 +4285,7 @@ class OcclusionTrackingPictureLayerImplTest
 
 TEST_F(OcclusionTrackingPictureLayerImplTest,
        OccludedTilesSkippedDuringRasterization) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(102, 102);
   gfx::Size layer_bounds(1000, 1000);
@@ -4327,7 +4327,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   CopyProperties(pending_layer(), layer1);
   layer1->SetOffsetToTransformParent(occluding_layer_position);
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   unoccluded_tile_count = 0;
@@ -4351,7 +4351,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   layer1->SetOffsetToTransformParent(gfx::Vector2dF());
   layer1->NoteLayerPropertyChanged();
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   unoccluded_tile_count = 0;
@@ -4374,7 +4374,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
 
 TEST_F(OcclusionTrackingPictureLayerImplTest,
        OccludedTilesNotMarkedAsRequired) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(102, 102);
   gfx::Size layer_bounds(1000, 1000);
@@ -4419,7 +4419,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   CopyProperties(pending_layer(), layer1);
   layer1->SetOffsetToTransformParent(occluding_layer_position);
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -4456,7 +4456,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   layer1->SetOffsetToTransformParent(gfx::Vector2dF());
   layer1->NoteLayerPropertyChanged();
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -4493,7 +4493,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
 void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
     float scale,
     int expected_occluded_count) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(102, 102);
   gfx::Size layer_bounds(1000, 1000);
@@ -4529,7 +4529,7 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
 
   ASSERT_EQ(2u, active_layer()->num_tilings());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   // UpdateDrawProperties with the occluding layer.
   UpdateDrawProperties(host_impl()->active_tree());
 
@@ -4667,7 +4667,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest, DifferentOcclusionOnTrees) {
 
 TEST_F(OcclusionTrackingPictureLayerImplTest,
        OccludedTilesConsideredDuringEviction) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(102, 102);
   gfx::Size layer_bounds(1000, 1000);
@@ -4716,7 +4716,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   EXPECT_EQ(1u, pending_layer()->num_tilings());
   EXPECT_EQ(2u, active_layer()->num_tilings());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   // UpdateDrawProperties with the occluding layer.
   UpdateDrawProperties(host_impl()->pending_tree());
 
@@ -4867,7 +4867,7 @@ void GetClientDataAndUpdateInvalidation(RecordingSource* recording_source,
 
 void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
                                                   bool partial_opaque) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
@@ -4957,7 +4957,7 @@ TEST_F(LegacySWPictureLayerImplTest, DrawTransparentQuads) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, NonSolidToSolidNoTilings) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(200, 200);
   gfx::Rect layer_rect(layer_bounds);
@@ -5011,7 +5011,7 @@ TEST_F(LegacySWPictureLayerImplTest, NonSolidToSolidNoTilings) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ChangeInViewportAllowsTilingUpdates) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(400, 4000);
   SetupDefaultTrees(layer_bounds);
@@ -5171,7 +5171,7 @@ TEST_F(LegacySWPictureLayerImplTest,
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ScrollPastLiveTilesRectAndBack) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(102, 102);
   gfx::Size layer_bounds(100, 100);
@@ -5216,7 +5216,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScrollPastLiveTilesRectAndBack) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ScrollPropagatesToPending) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
   gfx::Size viewport_size(100, 100);
@@ -5594,7 +5594,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResWasLowResCollision) {
                   ->tiling_at(1)
                   ->may_contain_low_resolution_tiles());
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   // Zoom in to exactly the low res factor so that the previous low res
   // would be equal to the current high res.
@@ -6026,8 +6026,8 @@ TEST_F(LegacySWPictureLayerImplTest, AnimatedImages) {
   auto recording_source = FakeRecordingSource::CreateRecordingSource(
       gfx::Rect(layer_bounds), layer_bounds);
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1))};
+      FrameMetadata(true, base::Milliseconds(1)),
+      FrameMetadata(true, base::Milliseconds(1))};
   PaintImage image1 = CreateAnimatedImage(gfx::Size(200, 200), frames);
   PaintImage image2 = CreateAnimatedImage(gfx::Size(200, 200), frames);
   recording_source->add_draw_image(image1, gfx::Point(100, 100));

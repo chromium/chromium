@@ -21,7 +21,7 @@ namespace {
 // The cached OAuth token needs to be valid at least until base::Time::Now()
 // + `kBufferTime`. The buffer time will be useful to ensure that we don't send
 // soon to expire tokens to the Projector app.
-const base::TimeDelta kBufferTime = base::TimeDelta::FromSeconds(4);
+const base::TimeDelta kBufferTime = base::Seconds(4);
 
 signin::IdentityManager* GetIdentityManager() {
   return chromeos::ProjectorAppClient::Get()->GetIdentityManager();

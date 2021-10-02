@@ -222,8 +222,7 @@ TEST_F(TachyonIceConfigFetcherTest, IceServersCached) {
   run_loop->Run();
 
   // Wait until the cache has expired.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kLifetimeDurationSeconds + 1));
+  task_environment_.FastForwardBy(base::Seconds(kLifetimeDurationSeconds + 1));
 
   // Expired cache results in fetching the servers again.
   run_loop.reset(new base::RunLoop());

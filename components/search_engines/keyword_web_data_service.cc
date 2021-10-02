@@ -76,7 +76,7 @@ KeywordWebDataService::KeywordWebDataService(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), std::move(ui_task_runner)),
       timer_(FROM_HERE,
-             base::TimeDelta::FromSeconds(5),
+             base::Seconds(5),
              base::BindRepeating(&KeywordWebDataService::CommitQueuedOperations,
                                  base::Unretained(this))) {}
 

@@ -856,10 +856,8 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
   EXPECT_EQ(1000,
             quic_params->retransmittable_on_wire_timeout.InMilliseconds());
   EXPECT_TRUE(quic_params->migrate_idle_sessions);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(15),
-            quic_params->idle_session_migration_period);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10),
-            quic_params->max_time_on_non_default_network);
+  EXPECT_EQ(base::Seconds(15), quic_params->idle_session_migration_period);
+  EXPECT_EQ(base::Seconds(10), quic_params->max_time_on_non_default_network);
   EXPECT_EQ(3,
             quic_params->max_migrations_to_non_default_network_on_write_error);
   EXPECT_EQ(

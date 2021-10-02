@@ -99,7 +99,7 @@ void ContentTranslateDriver::InitiateTranslation(const std::string& page_lang,
         base::BindOnce(&ContentTranslateDriver::InitiateTranslation,
                        weak_pointer_factory_.GetWeakPtr(), page_lang,
                        attempt + 1),
-        base::TimeDelta::FromMilliseconds(backoff));
+        base::Milliseconds(backoff));
     return;
   }
 

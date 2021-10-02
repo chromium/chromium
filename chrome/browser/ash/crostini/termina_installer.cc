@@ -126,7 +126,7 @@ void TerminaInstaller::OnInstallDlc(
         base::BindOnce(&TerminaInstaller::InstallDlc,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        is_initial_install),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
     return;
   } else if (result.error == dlcservice::kErrorNeedReboot ||
              result.error == dlcservice::kErrorNoImageFound) {
@@ -250,7 +250,7 @@ void TerminaInstaller::OnInstallComponent(
           FROM_HERE,
           base::BindOnce(&TerminaInstaller::InstallComponent,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-          base::TimeDelta::FromSeconds(5));
+          base::Seconds(5));
       return;
     } else {
       result = InstallResult::Failure;

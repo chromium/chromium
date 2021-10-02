@@ -312,7 +312,7 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
         FROM_HERE,
         base::BindOnce(&SystemInfoHandlerGpuObserver::ObserverWatchdogCallback,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kGPUInfoWatchdogTimeoutMs));
+        base::Milliseconds(kGPUInfoWatchdogTimeoutMs));
 
     GpuDataManagerImpl::GetInstance()->AddObserver(this);
     OnGpuInfoUpdate();

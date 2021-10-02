@@ -75,7 +75,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
   TestFuture<int> future;
 
   PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
-                  base::TimeDelta::FromMilliseconds(1));
+                  base::Milliseconds(1));
 
   future.Wait();
 
@@ -86,15 +86,14 @@ TEST_F(TestFutureTest, WaitShouldReturnTrueWhenValueArrives) {
   TestFuture<int> future;
 
   PostDelayedTask(base::BindOnce(future.GetCallback(), kAnyValue),
-                  base::TimeDelta::FromMilliseconds(1));
+                  base::Milliseconds(1));
 
   bool success = future.Wait();
   EXPECT_TRUE(success);
 }
 
 TEST_F(TestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
-  base::test::ScopedRunLoopTimeout timeout(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(1));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
 
   // |ScopedRunLoopTimeout| will automatically fail the test when a timeout
   // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
@@ -112,7 +111,7 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrives) {
   TestFuture<int> future;
 
   PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
-                  base::TimeDelta::FromMilliseconds(1));
+                  base::Milliseconds(1));
 
   int actual_value = future.Get();
 
@@ -120,8 +119,7 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrives) {
 }
 
 TEST_F(TestFutureTest, GetShouldDcheckIfTimeoutHappens) {
-  base::test::ScopedRunLoopTimeout timeout(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(1));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
 
   TestFuture<AnyType> future;
 
@@ -140,8 +138,7 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
 }
 
 TEST_F(TestFutureTest, TakeShouldDcheckIfTimeoutHappens) {
-  base::test::ScopedRunLoopTimeout timeout(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(1));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
 
   TestFuture<AnyType> future;
 

@@ -18,8 +18,7 @@ namespace ui {
 
 const uint64_t INACTIVITY_TIMEOUT_FOR_SESSION_IN_MS = 3000;
 const uint64_t MIN_CHARACTERS_COMMITTED = 10;
-const base::TimeDelta MIN_SESSION_DURATION_IN_MS =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta MIN_SESSION_DURATION_IN_MS = base::Seconds(1);
 
 // TODO: We cannot assume that the time will always increase, it can decrease if
 // system clock is explicitly set. Invalidate sessions where system clock
@@ -45,8 +44,8 @@ void TypingSessionManager::Heartbeat() {
   // If too much time has passed, then end the previous session and
   // start a new one.
   if (is_active_) {
-    if (last_user_action_time_ + base::TimeDelta::FromMilliseconds(
-                                     INACTIVITY_TIMEOUT_FOR_SESSION_IN_MS) <
+    if (last_user_action_time_ +
+            base::Milliseconds(INACTIVITY_TIMEOUT_FOR_SESSION_IN_MS) <
         current_time) {
       EndAndRecordSession();
     }

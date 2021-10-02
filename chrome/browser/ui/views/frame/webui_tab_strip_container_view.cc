@@ -127,10 +127,8 @@ base::TimeDelta GetBaseTabstripOpenCloseAnimationDuration(
   // These values were determined by UX; in the future we may want to change
   // values for fling animations to be consistent for both open and close
   // gestures.
-  constexpr base::TimeDelta kHideAnimationDuration =
-      base::TimeDelta::FromMilliseconds(200);
-  constexpr base::TimeDelta kShowAnimationDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kHideAnimationDuration = base::Milliseconds(200);
+  constexpr base::TimeDelta kShowAnimationDuration = base::Milliseconds(250);
   switch (direction) {
     case WebUITabStripDragDirection::kUp:
       return kHideAnimationDuration;
@@ -155,7 +153,7 @@ base::TimeDelta GetTimeDeltaForTabstripOpenClose(
   // fling is not granular enough to give consistent results.
   if (reason == WebUITabStripOpenCloseReason::kFling) {
     constexpr base::TimeDelta kMinimumAnimationDuration =
-        base::TimeDelta::FromMilliseconds(75);
+        base::Milliseconds(75);
     duration =
         std::max(kMinimumAnimationDuration, duration * percent_remaining);
   }

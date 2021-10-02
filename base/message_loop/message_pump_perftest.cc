@@ -90,7 +90,7 @@ class ScheduleWorkTest : public testing::Test {
       lastnow = now;
       minimum = std::min(minimum, laptime);
       maximum = std::max(maximum, laptime);
-    } while (now - start < base::TimeDelta::FromSeconds(kTargetTimeSec));
+    } while (now - start < base::Seconds(kTargetTimeSec));
 
     scheduling_times_[index] = now - start;
     if (ThreadTicks::IsSupported())

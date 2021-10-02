@@ -92,11 +92,10 @@ class ReportUploaderTest : public ::testing::Test {
                 task_environment_.NextMainThreadPendingTaskDelay());
       return;
     }
-    EXPECT_GE(base::TimeDelta::FromSeconds(delay_seconds),
+    EXPECT_GE(base::Seconds(delay_seconds),
               task_environment_.NextMainThreadPendingTaskDelay());
-    EXPECT_LE(
-        base::TimeDelta::FromSeconds(static_cast<int>(delay_seconds * 0.9)),
-        task_environment_.NextMainThreadPendingTaskDelay());
+    EXPECT_LE(base::Seconds(static_cast<int>(delay_seconds * 0.9)),
+              task_environment_.NextMainThreadPendingTaskDelay());
   }
 
   base::test::TaskEnvironment task_environment_;

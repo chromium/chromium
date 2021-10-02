@@ -24,12 +24,11 @@ using proto::Aggregation;
 using proto::SignalType;
 
 namespace {
-constexpr base::TimeDelta kDefaultBucketDuration =
-    base::TimeDelta::FromHours(3);
-constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kTwoSeconds = base::TimeDelta::FromSeconds(2);
-constexpr base::TimeDelta kThreeSeconds = base::TimeDelta::FromSeconds(3);
-constexpr base::TimeDelta kFourSeconds = base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kDefaultBucketDuration = base::Hours(3);
+constexpr base::TimeDelta kOneSecond = base::Seconds(1);
+constexpr base::TimeDelta kTwoSeconds = base::Seconds(2);
+constexpr base::TimeDelta kThreeSeconds = base::Seconds(3);
+constexpr base::TimeDelta kFourSeconds = base::Seconds(4);
 constexpr uint64_t kDefaultBucketCount = 6;
 }  // namespace
 
@@ -258,46 +257,42 @@ TEST_F(FeatureAggregatorImplTest, BucketedCumulativeSumAggregation) {
 TEST_F(FeatureAggregatorImplTest, BucketizationThresholds) {
   std::vector<Sample> samples{
       // First sample is exactly 1 day ago, part of second bucket.
-      {clock_.Now() - base::TimeDelta::FromDays(1), 1},
+      {clock_.Now() - base::Days(1), 1},
       // Second sample is just over 1 day ago, part of second bucket.
-      {clock_.Now() - base::TimeDelta::FromDays(1) -
-           base::TimeDelta::FromSeconds(1),
-       2},
+      {clock_.Now() - base::Days(1) - base::Seconds(1), 2},
       // Second sample is just under 1 day ago, part of first bucket.
-      {clock_.Now() - base::TimeDelta::FromDays(1) +
-           base::TimeDelta::FromSeconds(1),
-       3},
+      {clock_.Now() - base::Days(1) + base::Seconds(1), 3},
   };
 
-  Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT, 2,
-         base::TimeDelta::FromDays(1), samples, {1, 2});
-  Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM, 2,
-         base::TimeDelta::FromDays(1), samples, {1, 2});
+  Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT, 2, base::Days(1),
+         samples, {1, 2});
+  Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM, 2, base::Days(1),
+         samples, {1, 2});
   Verify(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT, 2,
-         base::TimeDelta::FromDays(1), samples, {1, 2});
+         base::Days(1), samples, {1, 2});
   Verify(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM, 2,
-         base::TimeDelta::FromDays(1), samples, {3, 3});
+         base::Days(1), samples, {3, 3});
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT, 2,
-         base::TimeDelta::FromDays(1), samples, {1, 2});
+         base::Days(1), samples, {1, 2});
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 2,
-         base::TimeDelta::FromDays(1), samples, {3, 3});
+         base::Days(1), samples, {3, 3});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketsOutOfBounds) {
   std::vector<Sample> samples{
-      {clock_.Now() + base::TimeDelta::FromDays(1), 1},  // In the future.
+      {clock_.Now() + base::Days(1), 1},  // In the future.
       {clock_.Now(), 2},
-      {clock_.Now() - base::TimeDelta::FromDays(1), 3},
-      {clock_.Now() - base::TimeDelta::FromDays(2), 4},
-      {clock_.Now() - base::TimeDelta::FromDays(3), 5},  // Too old.
+      {clock_.Now() - base::Days(1), 3},
+      {clock_.Now() - base::Days(2), 4},
+      {clock_.Now() - base::Days(3), 5},  // Too old.
   };
 
   // Using bucket count of 3, means the first sample is out of bounds for being
   // in the future, and the last sample is out of bounds for being too old.
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT, 3,
-         base::TimeDelta::FromDays(1), samples, {1, 1, 1});
+         base::Days(1), samples, {1, 1, 1});
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 3,
-         base::TimeDelta::FromDays(1), samples, {2, 3, 4});
+         base::Days(1), samples, {2, 3, 4});
 }
 
 TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {

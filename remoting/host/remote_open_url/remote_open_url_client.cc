@@ -24,7 +24,7 @@ namespace remoting {
 
 namespace {
 
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 
 std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
 #if defined(OS_LINUX)

@@ -189,8 +189,7 @@ class DeviceStatusCollector : public StatusCollector,
   }
 
   // How often to poll to see if the user is idle.
-  static constexpr base::TimeDelta kIdlePollInterval =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kIdlePollInterval = base::Seconds(30);
 
   // The total number of hardware resource usage samples cached internally.
   static const unsigned int kMaxResourceUsageSamples = 10;

@@ -22,8 +22,7 @@ namespace ash {
 namespace {
 // Battery percentage threshold used to label the battery level as Low.
 constexpr int kStylusLowBatteryThreshold = 24;
-constexpr base::TimeDelta kStylusBatteryStatusStaleThreshold =
-    base::TimeDelta::FromDays(14);
+constexpr base::TimeDelta kStylusBatteryStatusStaleThreshold = base::Days(14);
 }  // namespace
 
 StylusBatteryDelegate::StylusBatteryDelegate() {

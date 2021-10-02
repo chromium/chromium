@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                        MANUAL_Dialog_RouteCreationTimedOut) {
   // The hardcoded timeout route creation timeout for the UI.
   // See kCreateRouteTimeoutSeconds in media_router_ui.cc.
-  test_provider_->set_delay(base::TimeDelta::FromSeconds(20));
+  test_provider_->set_delay(base::Seconds(20));
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
   test_ui_->ShowCastDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
@@ -51,10 +51,10 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   test_ui_->WaitForAnyIssue();
 
   base::TimeDelta elapsed(base::TimeTicks::Now() - start_time);
-  base::TimeDelta expected_timeout(base::TimeDelta::FromSeconds(20));
+  base::TimeDelta expected_timeout(base::Seconds(20));
 
   EXPECT_GE(elapsed, expected_timeout);
-  EXPECT_LE(elapsed - expected_timeout, base::TimeDelta::FromSeconds(5));
+  EXPECT_LE(elapsed - expected_timeout, base::Seconds(5));
 
   std::string issue_title = test_ui_->GetIssueTextForSink(receiver_);
   // TODO(imcheng): Fix host name for file schemes (crbug.com/560576).

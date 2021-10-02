@@ -293,9 +293,9 @@ constexpr int kMaxCompositorLatencyHistogramIndex =
     kFrameReportTypeCount * kFrameSequenceTrackerTypeCount *
     (kStageTypeCount + kAllBreakdownCount);
 constexpr base::TimeDelta kCompositorLatencyHistogramMin =
-    base::TimeDelta::FromMicroseconds(1);
+    base::Microseconds(1);
 constexpr base::TimeDelta kCompositorLatencyHistogramMax =
-    base::TimeDelta::FromMilliseconds(350);
+    base::Milliseconds(350);
 constexpr int kCompositorLatencyHistogramBucketCount = 50;
 
 constexpr int kEventLatencyEventTypeCount =
@@ -304,10 +304,8 @@ constexpr int kEventLatencyScrollTypeCount =
     static_cast<int>(EventMetrics::ScrollType::kMaxValue) + 1;
 constexpr int kMaxEventLatencyHistogramIndex =
     kEventLatencyEventTypeCount * kEventLatencyScrollTypeCount;
-constexpr base::TimeDelta kEventLatencyHistogramMin =
-    base::TimeDelta::FromMicroseconds(1);
-constexpr base::TimeDelta kEventLatencyHistogramMax =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kEventLatencyHistogramMin = base::Microseconds(1);
+constexpr base::TimeDelta kEventLatencyHistogramMax = base::Seconds(5);
 constexpr int kEventLatencyHistogramBucketCount = 100;
 
 std::string GetCompositorLatencyHistogramName(

@@ -68,13 +68,13 @@ class NetworkTimeTrackerTest : public ::testing::Test {
         shared_url_loader_factory_);
 
     // Do this to be sure that |is_null| returns false.
-    clock_->Advance(base::TimeDelta::FromDays(111));
-    tick_clock_->Advance(base::TimeDelta::FromDays(222));
+    clock_->Advance(base::Days(111));
+    tick_clock_->Advance(base::Days(222));
 
     // Can not be smaller than 15, it's the NowFromSystemTime() resolution.
-    resolution_ = base::TimeDelta::FromMilliseconds(17);
-    latency_ = base::TimeDelta::FromMilliseconds(50);
-    adjustment_ = 7 * base::TimeDelta::FromMilliseconds(kTicksResolutionMs);
+    resolution_ = base::Milliseconds(17);
+    latency_ = base::Milliseconds(50);
+    adjustment_ = 7 * base::Milliseconds(kTicksResolutionMs);
   }
 
   // Replaces |tracker_| with a new object, while preserving the
@@ -188,7 +188,7 @@ TEST_F(NetworkTimeTrackerTest, LongPostingDelay) {
 
   // Simulate that it look a long time (1888us) for the browser thread to get
   // around to executing the update.
-  AdvanceBoth(base::TimeDelta::FromMicroseconds(1888));
+  AdvanceBoth(base::Microseconds(1888));
   UpdateNetworkTime(in_network_time, resolution_, latency_, posting_time);
 
   base::Time out_network_time;
@@ -219,7 +219,7 @@ TEST_F(NetworkTimeTrackerTest, LopsidedLatency) {
 
 TEST_F(NetworkTimeTrackerTest, ClockIsWack) {
   // Now let's assume the system clock is completely wrong.
-  base::Time in_network_time = clock_->Now() - base::TimeDelta::FromDays(90);
+  base::Time in_network_time = clock_->Now() - base::Days(90);
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
 
@@ -239,7 +239,7 @@ TEST_F(NetworkTimeTrackerTest, ClocksDivergeSlightly) {
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
 
-  base::TimeDelta small = base::TimeDelta::FromSeconds(30);
+  base::TimeDelta small = base::Seconds(30);
   tick_clock_->Advance(small);
   base::Time out_network_time;
   base::TimeDelta out_uncertainty;
@@ -267,7 +267,7 @@ TEST_F(NetworkTimeTrackerTest, NetworkTimeUpdates) {
   EXPECT_EQ(resolution_ + latency_ + adjustment_, uncertainty);
 
   // Fake a wait to make sure we keep tracking.
-  AdvanceBoth(base::TimeDelta::FromSeconds(1));
+  AdvanceBoth(base::Seconds(1));
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, &uncertainty));
   EXPECT_EQ(clock_->Now(), out_network_time);
@@ -276,7 +276,7 @@ TEST_F(NetworkTimeTrackerTest, NetworkTimeUpdates) {
   // And one more time.
   UpdateNetworkTime(clock_->Now() - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
-  AdvanceBoth(base::TimeDelta::FromSeconds(1));
+  AdvanceBoth(base::Seconds(1));
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, &uncertainty));
   EXPECT_EQ(clock_->Now(), out_network_time);
@@ -291,8 +291,8 @@ TEST_F(NetworkTimeTrackerTest, SpringForward) {
   // Simulate the wall clock advancing faster than the tick clock.
   UpdateNetworkTime(clock_->Now(), resolution_, latency_,
                     tick_clock_->NowTicks());
-  tick_clock_->Advance(base::TimeDelta::FromSeconds(1));
-  clock_->Advance(base::TimeDelta::FromDays(1));
+  tick_clock_->Advance(base::Seconds(1));
+  clock_->Advance(base::Days(1));
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -302,7 +302,7 @@ TEST_F(NetworkTimeTrackerTest, SpringForward) {
   // The recorded clock divergence should be 1 second - 1 day in seconds.
   histograms.ExpectBucketCount(
       kClockDivergenceNegativeHistogram,
-      base::TimeDelta::FromSeconds(kOneDayInSeconds - 1).InMilliseconds(), 1);
+      base::Seconds(kOneDayInSeconds - 1).InMilliseconds(), 1);
 }
 
 TEST_F(NetworkTimeTrackerTest, TickClockSpringsForward) {
@@ -313,8 +313,8 @@ TEST_F(NetworkTimeTrackerTest, TickClockSpringsForward) {
   // Simulate the tick clock advancing faster than the wall clock.
   UpdateNetworkTime(clock_->Now(), resolution_, latency_,
                     tick_clock_->NowTicks());
-  tick_clock_->Advance(base::TimeDelta::FromDays(1));
-  clock_->Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock_->Advance(base::Days(1));
+  clock_->Advance(base::Seconds(1));
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -324,7 +324,7 @@ TEST_F(NetworkTimeTrackerTest, TickClockSpringsForward) {
   // The recorded clock divergence should be 1 day - 1 second.
   histograms.ExpectBucketCount(
       kClockDivergencePositiveHistogram,
-      base::TimeDelta::FromSeconds(kOneDayInSeconds - 1).InMilliseconds(), 1);
+      base::Seconds(kOneDayInSeconds - 1).InMilliseconds(), 1);
 }
 
 TEST_F(NetworkTimeTrackerTest, FallBack) {
@@ -335,8 +335,8 @@ TEST_F(NetworkTimeTrackerTest, FallBack) {
   // Simulate the wall clock running backward.
   UpdateNetworkTime(clock_->Now(), resolution_, latency_,
                     tick_clock_->NowTicks());
-  tick_clock_->Advance(base::TimeDelta::FromSeconds(1));
-  clock_->Advance(base::TimeDelta::FromDays(-1));
+  tick_clock_->Advance(base::Seconds(1));
+  clock_->Advance(base::Days(-1));
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -345,7 +345,7 @@ TEST_F(NetworkTimeTrackerTest, FallBack) {
   histograms.ExpectTotalCount(kWallClockBackwardsHistogram, 1);
   histograms.ExpectBucketCount(
       kWallClockBackwardsHistogram,
-      base::TimeDelta::FromSeconds(kOneDayInSeconds - 1).InMilliseconds(), 1);
+      base::Seconds(kOneDayInSeconds - 1).InMilliseconds(), 1);
 }
 
 TEST_F(NetworkTimeTrackerTest, SuspendAndResume) {
@@ -353,7 +353,7 @@ TEST_F(NetworkTimeTrackerTest, SuspendAndResume) {
   // would happen in a suspend+resume cycle.
   UpdateNetworkTime(clock_->Now(), resolution_, latency_,
                     tick_clock_->NowTicks());
-  clock_->Advance(base::TimeDelta::FromHours(1));
+  clock_->Advance(base::Hours(1));
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -362,7 +362,7 @@ TEST_F(NetworkTimeTrackerTest, SuspendAndResume) {
 TEST_F(NetworkTimeTrackerTest, Serialize) {
   // Test that we can serialize and deserialize state and get consistent
   // results.
-  base::Time in_network_time = clock_->Now() - base::TimeDelta::FromDays(90);
+  base::Time in_network_time = clock_->Now() - base::Days(90);
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
   base::Time out_network_time;
@@ -373,7 +373,7 @@ TEST_F(NetworkTimeTrackerTest, Serialize) {
   EXPECT_EQ(resolution_ + latency_ + adjustment_, out_uncertainty);
 
   // 6 days is just under the threshold for discarding data.
-  base::TimeDelta delta = base::TimeDelta::FromDays(6);
+  base::TimeDelta delta = base::Days(6);
   AdvanceBoth(delta);
   Reset();
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
@@ -385,7 +385,7 @@ TEST_F(NetworkTimeTrackerTest, Serialize) {
 TEST_F(NetworkTimeTrackerTest, DeserializeOldFormat) {
   // Test that deserializing old data (which do not record the uncertainty and
   // tick clock) causes the serialized data to be ignored.
-  base::Time in_network_time = clock_->Now() - base::TimeDelta::FromDays(90);
+  base::Time in_network_time = clock_->Now() - base::Days(90);
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
 
@@ -409,13 +409,13 @@ TEST_F(NetworkTimeTrackerTest, DeserializeOldFormat) {
 TEST_F(NetworkTimeTrackerTest, SerializeWithLongDelay) {
   // Test that if the serialized data are more than a week old, they are
   // discarded.
-  base::Time in_network_time = clock_->Now() - base::TimeDelta::FromDays(90);
+  base::Time in_network_time = clock_->Now() - base::Days(90);
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
-  AdvanceBoth(base::TimeDelta::FromDays(8));
+  AdvanceBoth(base::Days(8));
   Reset();
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -424,13 +424,13 @@ TEST_F(NetworkTimeTrackerTest, SerializeWithLongDelay) {
 TEST_F(NetworkTimeTrackerTest, SerializeWithTickClockAdvance) {
   // Test that serialized data are discarded if the wall clock and tick clock
   // have not advanced consistently since data were serialized.
-  base::Time in_network_time = clock_->Now() - base::TimeDelta::FromDays(90);
+  base::Time in_network_time = clock_->Now() - base::Days(90);
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
-  tick_clock_->Advance(base::TimeDelta::FromDays(1));
+  tick_clock_->Advance(base::Days(1));
   Reset();
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -439,14 +439,14 @@ TEST_F(NetworkTimeTrackerTest, SerializeWithTickClockAdvance) {
 TEST_F(NetworkTimeTrackerTest, SerializeWithWallClockAdvance) {
   // Test that serialized data are discarded if the wall clock and tick clock
   // have not advanced consistently since data were serialized.
-  base::Time in_network_time = clock_->Now() - base::TimeDelta::FromDays(90);
+  base::Time in_network_time = clock_->Now() - base::Days(90);
   UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
                     tick_clock_->NowTicks());
 
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
-  clock_->Advance(base::TimeDelta::FromDays(1));
+  clock_->Advance(base::Days(1));
   Reset();
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
@@ -461,8 +461,7 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetwork) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   // First query should happen soon.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(0),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(0), tracker_->GetTimerDelayForTesting());
 
   test_server_->RegisterRequestHandler(
       base::BindRepeating(&GoodTimeResponseHandler));
@@ -474,12 +473,10 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetwork) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   EXPECT_EQ(base::Time::UnixEpoch() +
-                base::TimeDelta::FromMilliseconds(
-                    (uint64_t)kGoodTimeResponseHandlerJsTime[0]),
+                base::Milliseconds((uint64_t)kGoodTimeResponseHandlerJsTime[0]),
             out_network_time);
   // Should see no backoff in the success case.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(60),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(60), tracker_->GetTimerDelayForTesting());
 
   histograms.ExpectTotalCount(kFetchFailedHistogram, 0);
   histograms.ExpectTotalCount(kFetchValidHistogram, 1);
@@ -504,12 +501,10 @@ TEST_F(NetworkTimeTrackerTest, StartTimeFetch) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   EXPECT_EQ(base::Time::UnixEpoch() +
-                base::TimeDelta::FromMilliseconds(
-                    (uint64_t)kGoodTimeResponseHandlerJsTime[0]),
+                base::Milliseconds((uint64_t)kGoodTimeResponseHandlerJsTime[0]),
             out_network_time);
   // Should see no backoff in the success case.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(60),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(60), tracker_->GetTimerDelayForTesting());
 }
 
 // Tests that when StartTimeFetch() is called with a query already in
@@ -534,12 +529,10 @@ TEST_F(NetworkTimeTrackerTest, StartTimeFetchWithQueryInProgress) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   EXPECT_EQ(base::Time::UnixEpoch() +
-                base::TimeDelta::FromMilliseconds(
-                    (uint64_t)kGoodTimeResponseHandlerJsTime[0]),
+                base::Milliseconds((uint64_t)kGoodTimeResponseHandlerJsTime[0]),
             out_network_time);
   // Should see no backoff in the success case.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(60),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(60), tracker_->GetTimerDelayForTesting());
 }
 
 // Tests that StartTimeFetch() returns false if called while network
@@ -592,15 +585,13 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileSynced) {
   // No query should be started so long as NetworkTimeTracker is synced, but the
   // next check should happen soon.
   EXPECT_FALSE(tracker_->QueryTimeServiceForTesting());
-  EXPECT_EQ(base::TimeDelta::FromMinutes(6),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(6), tracker_->GetTimerDelayForTesting());
 
   field_trial_test_->SetNetworkQueriesWithVariationsService(
       true, 1.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(60),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(60), tracker_->GetTimerDelayForTesting());
 }
 
 TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileFeatureDisabled) {
@@ -609,8 +600,7 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileFeatureDisabled) {
       false, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
   EXPECT_FALSE(tracker_->QueryTimeServiceForTesting());
   // The timer is not started when the feature is disabled.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(0),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(0), tracker_->GetTimerDelayForTesting());
 
   // Enable time queries and check that a query is sent.
   field_trial_test_->SetNetworkQueriesWithVariationsService(
@@ -634,8 +624,7 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkBadSignature) {
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SUCCESSFUL_SYNC,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(120),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
 
   histograms.ExpectTotalCount(kFetchFailedHistogram, 0);
   histograms.ExpectTotalCount(kFetchValidHistogram, 1);
@@ -669,8 +658,7 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkBadData) {
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SUCCESSFUL_SYNC,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(120),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
 
   histograms.ExpectTotalCount(kFetchFailedHistogram, 0);
   histograms.ExpectTotalCount(kFetchValidHistogram, 1);
@@ -693,8 +681,7 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkServerError) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SUCCESSFUL_SYNC,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   // Should see backoff in the error case.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(120),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
 
   histograms.ExpectTotalCount(kFetchFailedHistogram, 1);
   // There was no network error, so the histogram is recorded as
@@ -727,8 +714,7 @@ TEST_F(NetworkTimeTrackerTest, MAYBE_UpdateFromNetworkNetworkError) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SUCCESSFUL_SYNC,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   // Should see backoff in the error case.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(120),
-            tracker_->GetTimerDelayForTesting());
+  EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
 
   histograms.ExpectTotalCount(kFetchFailedHistogram, 1);
   histograms.ExpectBucketCount(kFetchFailedHistogram, -net::ERR_EMPTY_RESPONSE,
@@ -908,7 +894,7 @@ TEST_F(NetworkTimeTrackerTest, TimeBetweenFetchesHistogram) {
 
   // Trigger a second query, which should cause the delta from the first
   // query to be recorded.
-  clock_->Advance(base::TimeDelta::FromHours(1));
+  clock_->Advance(base::Hours(1));
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,

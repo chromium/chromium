@@ -66,13 +66,11 @@ namespace prerender {
 namespace {
 
 // Time interval at which periodic cleanups are performed.
-constexpr base::TimeDelta kPeriodicCleanupInterval =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kPeriodicCleanupInterval = base::Milliseconds(1000);
 
 // Time interval after which OnCloseWebContentsDeleter will schedule a
 // WebContents for deletion.
-constexpr base::TimeDelta kDeleteWithExtremePrejudice =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDeleteWithExtremePrejudice = base::Seconds(3);
 
 // Length of prerender history, for display in chrome://net-internals
 constexpr int kHistoryLength = 100;
@@ -142,8 +140,7 @@ NoStatePrefetchManager::NoStatePrefetchManager(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   last_prefetch_start_time_ =
-      GetCurrentTimeTicks() -
-      base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrefetchesMs);
+      GetCurrentTimeTicks() - base::Milliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
 NoStatePrefetchManager::~NoStatePrefetchManager() {
@@ -364,8 +361,8 @@ bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
                                                         const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  CleanUpOldNavigations(&navigations_, base::TimeDelta::FromMilliseconds(
-                                           kNavigationRecordWindowMs));
+  CleanUpOldNavigations(&navigations_,
+                        base::Milliseconds(kNavigationRecordWindowMs));
   for (auto it = navigations_.rbegin(); it != navigations_.rend(); ++it) {
     if (it->url == url)
       return true;
@@ -412,8 +409,8 @@ void NoStatePrefetchManager::RecordNavigation(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   navigations_.emplace_back(url, GetCurrentTimeTicks(), ORIGIN_NONE);
-  CleanUpOldNavigations(&navigations_, base::TimeDelta::FromMilliseconds(
-                                           kNavigationRecordWindowMs));
+  CleanUpOldNavigations(&navigations_,
+                        base::Milliseconds(kNavigationRecordWindowMs));
 }
 
 struct NoStatePrefetchManager::NoStatePrefetchData::OrderByExpiryTime {
@@ -583,8 +580,7 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
   GetPrefetchInformation(url, &prefetch_age, nullptr /* final_status*/,
                          nullptr /* origin */);
   if (!prefetch_age.is_zero() &&
-      prefetch_age <
-          base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins)) {
+      prefetch_age < base::Minutes(net::HttpCache::kPrefetchReuseMins)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
     return nullptr;
@@ -721,7 +717,7 @@ void NoStatePrefetchManager::PeriodicCleanup() {
 
   DeleteToDeletePrerenders();
 
-  CleanUpOldNavigations(&prefetches_, base::TimeDelta::FromMinutes(30));
+  CleanUpOldNavigations(&prefetches_, base::Minutes(30));
 }
 
 void NoStatePrefetchManager::PostCleanupTask() {
@@ -835,8 +831,7 @@ bool NoStatePrefetchManager::DoesRateLimitAllowPrefetch(Origin origin) const {
       GetCurrentTimeTicks() - last_prefetch_start_time_;
   if (!config_.rate_limit_enabled)
     return true;
-  return elapsed_time >=
-         base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrefetchesMs);
+  return elapsed_time >= base::Milliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
 void NoStatePrefetchManager::DeleteOldWebContents() {
@@ -848,7 +843,7 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
     base::TimeDelta* prefetch_age,
     FinalStatus* final_status,
     Origin* origin) {
-  CleanUpOldNavigations(&prefetches_, base::TimeDelta::FromMinutes(30));
+  CleanUpOldNavigations(&prefetches_, base::Minutes(30));
 
   if (prefetch_age)
     *prefetch_age = base::TimeDelta();

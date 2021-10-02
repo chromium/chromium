@@ -144,7 +144,7 @@ std::map<WebFeature, int> WebFeatureHistogramTester::WaitForCountsAtLeast(
       break;
     }
 
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+    base::PlatformThread::Sleep(base::Milliseconds(5));
   }
 
   return expected;

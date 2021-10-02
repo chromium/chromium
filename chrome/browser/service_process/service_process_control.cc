@@ -40,8 +40,7 @@ namespace {
 // to avoid inherent raciness in how the service process listens for incoming
 // connections, particularly on Windows.
 const size_t kMaxConnectionAttempts = 10;
-constexpr base::TimeDelta kInitialConnectionRetryDelay =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kInitialConnectionRetryDelay = base::Milliseconds(20);
 
 void ConnectAsyncWithBackoff(
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
@@ -298,7 +297,7 @@ void ServiceProcessControl::Launcher::DoDetectLaunched() {
   retry_count_++;
 
   // If the service process is not launched yet then check again in 2 seconds.
-  const base::TimeDelta kDetectLaunchRetry = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kDetectLaunchRetry = base::Seconds(2);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&Launcher::DoDetectLaunched, this),
       kDetectLaunchRetry);

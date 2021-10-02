@@ -46,7 +46,7 @@ class ContextualTooltipTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     contextual_tooltip::OverrideClockForTesting(&test_clock_);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(360));
+    test_clock_.Advance(base::Seconds(360));
   }
   void TearDown() override {
     contextual_tooltip::ClearStatusTrackerTableForTesting();

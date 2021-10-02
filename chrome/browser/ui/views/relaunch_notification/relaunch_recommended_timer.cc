@@ -30,8 +30,7 @@ void RelaunchRecommendedTimer::ScheduleNextTitleRefresh() {
   // Refresh at the next day boundary.
   const base::Time now = base::Time::Now();
   const base::TimeDelta elapsed = now - upgrade_detected_time_;
-  const base::TimeDelta delta =
-      base::TimeDelta::FromDays(elapsed.InDays() + 1) - elapsed;
+  const base::TimeDelta delta = base::Days(elapsed.InDays() + 1) - elapsed;
 
   refresh_timer_.Start(FROM_HERE, now + delta, this,
                        &RelaunchRecommendedTimer::OnTitleRefresh);

@@ -44,7 +44,7 @@ std::unique_ptr<std::string> TestRemoteCommandJob::EchoPayload::Serialize() {
 TestRemoteCommandJob::TestRemoteCommandJob(bool succeed,
                                            base::TimeDelta execution_duration)
     : succeed_(succeed), execution_duration_(execution_duration) {
-  DCHECK_LT(base::TimeDelta::FromSeconds(0), execution_duration_);
+  DCHECK_LT(base::Seconds(0), execution_duration_);
 }
 
 em::RemoteCommand_Type TestRemoteCommandJob::GetType() const {
@@ -61,8 +61,7 @@ bool TestRemoteCommandJob::ParseCommandPayload(
 
 bool TestRemoteCommandJob::IsExpired(base::TimeTicks now) {
   return !issued_time().is_null() &&
-         now > issued_time() +
-                   base::TimeDelta::FromHours(kCommandExpirationTimeInHours);
+         now > issued_time() + base::Hours(kCommandExpirationTimeInHours);
 }
 
 void TestRemoteCommandJob::RunImpl(CallbackWithResult succeed_callback,

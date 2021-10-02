@@ -170,9 +170,7 @@ HostCache::Key::~Key() = default;
 HostCache::Entry::Entry(int error,
                         Source source,
                         absl::optional<base::TimeDelta> ttl)
-    : error_(error),
-      source_(source),
-      ttl_(ttl.value_or(base::TimeDelta::FromSeconds(-1))) {
+    : error_(error), source_(source), ttl_(ttl.value_or(base::Seconds(-1))) {
   // If |ttl| has a value, must not be negative.
   DCHECK_GE(ttl.value_or(base::TimeDelta()), base::TimeDelta());
   DCHECK_NE(OK, error_);
@@ -455,8 +453,8 @@ base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {
 }
 
 // static
-const HostCache::EntryStaleness HostCache::kNotStale = {
-    base::TimeDelta::FromSeconds(-1), 0, 0};
+const HostCache::EntryStaleness HostCache::kNotStale = {base::Seconds(-1), 0,
+                                                        0};
 
 HostCache::HostCache(size_t max_entries)
     : max_entries_(max_entries),

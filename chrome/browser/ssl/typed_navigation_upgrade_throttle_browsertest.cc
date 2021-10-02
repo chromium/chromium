@@ -147,7 +147,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
   void SetUp() override {
     // Set the delay long enough so that the HTTPS navigation is guaranteed
     // to succeed or fail during this window.
-    SetUpFeature(base::TimeDelta::FromHours(12));
+    SetUpFeature(base::Hours(12));
     InProcessBrowserTest::SetUp();
   }
 
@@ -805,7 +805,7 @@ class TypedNavigationUpgradeThrottleFastTimeoutBrowserTest
  protected:
   void SetUp() override {
     // Set timeout to zero so that HTTPS upgrades immediately timeout.
-    SetUpFeature(base::TimeDelta::FromSeconds(0));
+    SetUpFeature(base::Seconds(0));
     InProcessBrowserTest::SetUp();
   }
 };

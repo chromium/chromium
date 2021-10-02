@@ -129,7 +129,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "inline_bio_enrollment") {
       model->StartInlineBioEnrollment(base::DoNothing());
       timer_.Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(2),
+          FROM_HERE, base::Seconds(2),
           base::BindLambdaForTesting([&, weak_model = model->GetWeakPtr()] {
             if (!weak_model || weak_model->current_step() !=
                                    AuthenticatorRequestDialogModel::Step::

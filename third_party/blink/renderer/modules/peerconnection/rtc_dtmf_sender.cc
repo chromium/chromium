@@ -164,7 +164,7 @@ void RTCDTMFSender::DidPlayTone(const String& tone) {
         ->PostDelayedTask(
             FROM_HERE,
             WTF::Bind(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
-            base::TimeDelta::FromMilliseconds(inter_tone_gap_));
+            base::Milliseconds(inter_tone_gap_));
   }
 }
 

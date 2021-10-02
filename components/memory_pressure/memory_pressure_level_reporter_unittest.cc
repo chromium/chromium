@@ -23,40 +23,36 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDuration) {
   base::HistogramTester histogram_tester;
 
   // Moderate -> None.
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(12));
+  task_environment.AdvanceClock(base::Seconds(12));
   reporter.OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToNone",
-      base::TimeDelta::FromSeconds(12), 1);
+      "Memory.PressureWindowDuration.ModerateToNone", base::Seconds(12), 1);
 
   // Moderate -> Critical.
   reporter.OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(20));
+  task_environment.AdvanceClock(base::Seconds(20));
   reporter.OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToCritical",
-      base::TimeDelta::FromSeconds(20), 1);
+      "Memory.PressureWindowDuration.ModerateToCritical", base::Seconds(20), 1);
 
   // Critical -> None
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(25));
+  task_environment.AdvanceClock(base::Seconds(25));
   reporter.OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.CriticalToNone",
-      base::TimeDelta::FromSeconds(25), 1);
+      "Memory.PressureWindowDuration.CriticalToNone", base::Seconds(25), 1);
 
   // Critical -> Moderate
   reporter.OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(27));
+  task_environment.AdvanceClock(base::Seconds(27));
   reporter.OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.CriticalToModerate",
-      base::TimeDelta::FromSeconds(27), 1);
+      "Memory.PressureWindowDuration.CriticalToModerate", base::Seconds(27), 1);
 }
 
 TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogram) {
@@ -69,7 +65,7 @@ TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogram) {
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   base::HistogramTester histogram_tester;
 
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromSeconds(12);
+  constexpr base::TimeDelta kDelay = base::Seconds(12);
   const char* kHistogram = "Memory.PressureLevel2";
 
   // None -> Moderate.
@@ -130,8 +126,7 @@ TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogramAccumulatedTime) {
   base::HistogramTester histogram_tester;
 
   const char* kHistogram = "Memory.PressureLevel2";
-  constexpr base::TimeDelta kHalfASecond =
-      base::TimeDelta::FromMilliseconds(500);
+  constexpr base::TimeDelta kHalfASecond = base::Milliseconds(500);
 
   task_environment.AdvanceClock(kHalfASecond);
   reporter.OnMemoryPressureLevelChanged(
@@ -170,7 +165,7 @@ TEST(MemoryPressureLevelReporterTest,
 
   // Advancing the clock by a few seconds shouldn't cause any periodic
   // reporting.
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment.FastForwardBy(base::Seconds(10));
   histogram_tester.ExpectBucketCount(
       kHistogram,
       static_cast<int>(
@@ -178,14 +173,14 @@ TEST(MemoryPressureLevelReporterTest,
       0);
 
   // Advancing the clock by a few minutes should cause periodic reporting.
-  task_environment.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment.FastForwardBy(base::Minutes(5));
   histogram_tester.ExpectBucketCount(
       kHistogram,
       static_cast<int>(
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE),
       5 * 60 /* 5 minutes */);
 
-  task_environment.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment.FastForwardBy(base::Minutes(5));
   histogram_tester.ExpectBucketCount(
       kHistogram,
       static_cast<int>(

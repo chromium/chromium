@@ -316,8 +316,8 @@ TabStrip::TabStrip(TabbedPane::Orientation orientation,
   // These durations are taken from the Paper Tabs source:
   // https://github.com/PolymerElements/paper-tabs/blob/master/paper-tabs.html
   // See |selectionBar.expand| and |selectionBar.contract|.
-  expand_animation_->SetDuration(base::TimeDelta::FromMilliseconds(150));
-  contract_animation_->SetDuration(base::TimeDelta::FromMilliseconds(180));
+  expand_animation_->SetDuration(base::Milliseconds(150));
+  contract_animation_->SetDuration(base::Milliseconds(180));
 }
 
 TabStrip::~TabStrip() = default;

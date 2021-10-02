@@ -26,8 +26,7 @@ namespace views {
 namespace corewm {
 namespace {
 
-constexpr auto kDefaultHideTooltipTimeoutInMs =
-    base::TimeDelta::FromSeconds(10);
+constexpr auto kDefaultHideTooltipTimeoutInMs = base::Seconds(10);
 
 // Returns true if |target| is a valid window to get the tooltip from.
 // |event_target| is the original target from the event and |target| the window

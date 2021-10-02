@@ -73,8 +73,7 @@ const int kPortStart = 1024;
 const int kPortEnd = 65535;
 const int kActivityMonitorBytesThreshold = 65535;
 const int kActivityMonitorMinimumSamplesForThroughputEstimate = 2;
-const base::TimeDelta kActivityMonitorMsThreshold =
-    base::TimeDelta::FromMilliseconds(100);
+const base::TimeDelta kActivityMonitorMsThreshold = base::Milliseconds(100);
 
 #if defined(OS_MAC)
 

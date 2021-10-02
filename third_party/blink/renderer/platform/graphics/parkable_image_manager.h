@@ -103,8 +103,7 @@ class PLATFORM_EXPORT ParkableImageManager
   }
 
   void ResetForTesting();
-  constexpr static auto kDelayedParkingInterval =
-      base::TimeDelta::FromSeconds(2);
+  constexpr static auto kDelayedParkingInterval = base::Seconds(2);
   constexpr static const char* kAllocatorDumpName = "parkable_images";
 
   mutable Mutex lock_;

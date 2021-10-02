@@ -387,8 +387,7 @@ void WifiSyncFeatureManagerImpl::OnSetWifiSyncHostStateNetworkRequestFinished(
   // If the network request failed and there is still a pending network request,
   // schedule a retry.
   if (GetCurrentState() == CurrentState::kValidPendingRequest) {
-    timer_->Start(FROM_HERE,
-                  base::TimeDelta::FromMinutes(kNumMinutesBetweenRetries),
+    timer_->Start(FROM_HERE, base::Minutes(kNumMinutesBetweenRetries),
                   base::BindOnce(&WifiSyncFeatureManagerImpl::
                                      AttemptSetWifiSyncHostStateNetworkRequest,
                                  base::Unretained(this), true /* is_retry */));

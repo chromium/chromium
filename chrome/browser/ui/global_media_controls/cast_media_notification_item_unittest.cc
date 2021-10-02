@@ -288,8 +288,8 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
 
 TEST_F(CastMediaNotificationItemTest, MediaPositionUpdate) {
   SetView();
-  const base::TimeDelta duration = base::TimeDelta::FromSeconds(100);
-  const base::TimeDelta current_time = base::TimeDelta::FromSeconds(70);
+  const base::TimeDelta duration = base::Seconds(100);
+  const base::TimeDelta current_time = base::Seconds(70);
 
   {
     // Test that media position updated correctly with playing video.

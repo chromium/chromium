@@ -186,8 +186,7 @@ void OverviewTestBase::SetUpInternal(
   aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
   shelf_view_test_api_ = std::make_unique<ShelfViewTestAPI>(
       GetPrimaryShelf()->GetShelfViewForTesting());
-  shelf_view_test_api_->SetAnimationDuration(
-      base::TimeDelta::FromMilliseconds(1));
+  shelf_view_test_api_->SetAnimationDuration(base::Milliseconds(1));
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(
       /*immediate=*/true);
   OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);

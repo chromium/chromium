@@ -1887,8 +1887,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     // Then wait for any remaining connections that we should NOT get.
     base::RunLoop ugly_100ms_wait;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, ugly_100ms_wait.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(100));
+        FROM_HERE, ugly_100ms_wait.QuitClosure(), base::Milliseconds(100));
     ugly_100ms_wait.Run();
 
     // Stop the server.
@@ -1975,7 +1974,7 @@ class NetworkContextConfigurationReportingAndNelBrowserTest
 
     // Make report delivery happen instantly.
     net::ReportingPolicy policy;
-    policy.delivery_interval = base::TimeDelta::FromSeconds(0);
+    policy.delivery_interval = base::Seconds(0);
     net::ReportingPolicy::UsePolicyForTesting(policy);
   }
 

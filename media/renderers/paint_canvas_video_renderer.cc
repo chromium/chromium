@@ -783,11 +783,10 @@ class VideoTextureBacking : public cc::TextureBacking {
 };
 
 PaintCanvasVideoRenderer::PaintCanvasVideoRenderer()
-    : cache_deleting_timer_(
-          FROM_HERE,
-          base::TimeDelta::FromSeconds(kTemporaryResourceDeletionDelay),
-          this,
-          &PaintCanvasVideoRenderer::ResetCache),
+    : cache_deleting_timer_(FROM_HERE,
+                            base::Seconds(kTemporaryResourceDeletionDelay),
+                            this,
+                            &PaintCanvasVideoRenderer::ResetCache),
       renderer_stable_id_(cc::PaintImage::GetNextId()) {}
 
 PaintCanvasVideoRenderer::~PaintCanvasVideoRenderer() = default;

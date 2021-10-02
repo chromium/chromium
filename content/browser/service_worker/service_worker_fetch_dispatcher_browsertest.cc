@@ -198,8 +198,8 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
     // idle state on the renderer and it has no work on the browser. The default
     // delay to become an idle is 30 seconds
     // (kServiceWorkerDefaultIdleDelayInSeconds).
-    base::test::ScopedRunLoopTimeout specific_timeout(
-        FROM_HERE, base::TimeDelta::FromSeconds(35));
+    base::test::ScopedRunLoopTimeout specific_timeout(FROM_HERE,
+                                                      base::Seconds(35));
     base::RunLoop run_loop;
     NoWorkObserver observer(run_loop.QuitClosure());
     version->AddObserver(&observer);

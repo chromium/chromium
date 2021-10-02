@@ -28,24 +28,24 @@ Traditionally this would be how the above animation would be created.
   secondary_sequence->set_is_repeating(true);
 
   primary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
+      ui::LayerAnimationElement::OPACITY, base::Seconds(2)));
   primary_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
-      0.0f, base::TimeDelta::FromSeconds(1)));
+      0.0f, base::Seconds(1)));
   primary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
+      ui::LayerAnimationElement::OPACITY, base::Seconds(2)));
   primary_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
-      1.0f, base::TimeDelta::FromSeconds(1)));
+      1.0f, base::Seconds(1)));
 
   secondary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
+      ui::LayerAnimationElement::OPACITY, base::Seconds(2)));
   secondary_sequence->AddElement(
       ui::LayerAnimationElement::CreateOpacityElement(
-          1.0f, base::TimeDelta::FromSeconds(1)));
+          1.0f, base::Seconds(1)));
   secondary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
+      ui::LayerAnimationElement::OPACITY, base::Seconds(2)));
   secondary_sequence->AddElement(
       ui::LayerAnimationElement::CreateOpacityElement(
-          0.0f, base::TimeDelta::FromSeconds(1)));
+          0.0f, base::Seconds(1)));
 
   primary_view_->layer()->GetAnimator()->StartAnimation(
       primary_sequence.release());
@@ -60,12 +60,12 @@ Using the new builder system described in this document, the above code could be
 ``` cpp
   AnimationBuilder()
       .Repeatedly()
-      .Offset(base::TimeDelta::FromSeconds(2))
-      .SetDuration(base::TimeDelta::FromSeconds(1))
+      .Offset(base::Seconds(2))
+      .SetDuration(base::Seconds(1))
       .SetOpacity(primary_view_, 0.0f)
       .SetOpacity(secondary_view_, 1.0f)
-      .Offset(base::TimeDelta::FromSeconds(2))
-      .SetDuration(base::TimeDelta::FromSeconds(1))
+      .Offset(base::Seconds(2))
+      .SetDuration(base::Seconds(1))
       .SetOpacity(primary_view_, 1.0f)
       .SetOpacity(secondary_view_, 0.0f);
 ```

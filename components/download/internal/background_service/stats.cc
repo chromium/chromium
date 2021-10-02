@@ -231,8 +231,7 @@ void LogFileCleanupStatus(FileCleanupReason reason,
 
 void LogFileLifeTime(const base::TimeDelta& file_life_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Download.Service.Files.LifeTime", file_life_time,
-                             base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromDays(8), 100);
+                             base::Seconds(1), base::Days(8), 100);
 }
 
 void LogEntryEvent(DownloadEvent event) {

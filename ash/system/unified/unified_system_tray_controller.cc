@@ -101,13 +101,12 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
       bubble_(bubble),
       animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   animation_->Reset(model_->IsExpandedOnOpen() ? 1.0 : 0.0);
-  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(
-      kSystemMenuCollapseExpandAnimationDurationMs));
+  animation_->SetSlideDuration(
+      base::Milliseconds(kSystemMenuCollapseExpandAnimationDurationMs));
   animation_->SetTweenType(gfx::Tween::EASE_IN_OUT);
 
-  model_->pagination_model()->SetTransitionDurations(
-      base::TimeDelta::FromMilliseconds(250),
-      base::TimeDelta::FromMilliseconds(50));
+  model_->pagination_model()->SetTransitionDurations(base::Milliseconds(250),
+                                                     base::Milliseconds(50));
 
   pagination_controller_ = std::make_unique<PaginationController>(
       model_->pagination_model(), PaginationController::SCROLL_AXIS_HORIZONTAL,
@@ -591,8 +590,7 @@ bool UnifiedSystemTrayController::IsMessageCenterCollapseRequired() const {
 
 base::TimeDelta UnifiedSystemTrayController::GetAnimationDurationForReporting()
     const {
-  return base::TimeDelta::FromMilliseconds(
-      kSystemMenuCollapseExpandAnimationDurationMs);
+  return base::Milliseconds(kSystemMenuCollapseExpandAnimationDurationMs);
 }
 
 }  // namespace ash

@@ -123,8 +123,7 @@ base::TimeDelta VelocityBasedDurationBound(gfx::Vector2dF old_delta,
   double bound = (new_delta_max_dimension / velocity) * 2.5f;
 
   // If bound < 0 we are moving in the opposite direction.
-  return bound < 0 ? base::TimeDelta::Max()
-                   : base::TimeDelta::FromSecondsD(bound);
+  return bound < 0 ? base::TimeDelta::Max() : base::Seconds(bound);
 }
 
 }  // namespace
@@ -203,7 +202,7 @@ base::TimeDelta ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
   }
 
   base::TimeDelta delay_adjusted_duration =
-      base::TimeDelta::FromSecondsD(duration) - delayed_by;
+      base::Seconds(duration) - delayed_by;
   return (delay_adjusted_duration >= base::TimeDelta())
              ? delay_adjusted_duration
              : base::TimeDelta();
@@ -251,7 +250,7 @@ base::TimeDelta ScrollOffsetAnimationCurve::LinearSegmentDuration(
           ? animation_duration_for_testing_.value()
           : std::abs(MaximumDimension(delta) / velocity);
   base::TimeDelta delay_adjusted_duration =
-      base::TimeDelta::FromSecondsD(duration_in_seconds) - delayed_by;
+      base::Seconds(duration_in_seconds) - delayed_by;
   return (delay_adjusted_duration >= base::TimeDelta())
              ? delay_adjusted_duration
              : base::TimeDelta();
@@ -263,14 +262,13 @@ base::TimeDelta ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
     base::TimeDelta delayed_by) {
   base::TimeDelta duration;
   if (animation_duration_for_testing_.has_value()) {
-    duration =
-        base::TimeDelta::FromSecondsD(animation_duration_for_testing_.value());
+    duration = base::Seconds(animation_duration_for_testing_.value());
   } else {
     double duration_in_milliseconds =
         kImpulseMillisecondsPerPixel * std::abs(MaximumDimension(delta));
     duration_in_milliseconds = base::clamp(
         duration_in_milliseconds, kImpulseMinDurationMs, kImpulseMaxDurationMs);
-    duration = base::TimeDelta::FromMillisecondsD(duration_in_milliseconds);
+    duration = base::Milliseconds(duration_in_milliseconds);
   }
 
   duration -= delayed_by;

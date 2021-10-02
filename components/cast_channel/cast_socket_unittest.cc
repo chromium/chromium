@@ -387,9 +387,8 @@ class CastSocketTestBase : public testing::Test {
         url_request_context_(true),
         logger_(new Logger()),
         observer_(new MockCastSocketObserver()),
-        socket_open_params_(
-            CreateIPEndPointForTest(),
-            base::TimeDelta::FromMilliseconds(kDistantTimeoutMillis)),
+        socket_open_params_(CreateIPEndPointForTest(),
+                            base::Milliseconds(kDistantTimeoutMillis)),
         client_socket_factory_(socket_open_params_.ip_endpoint) {}
 
   CastSocketTestBase(const CastSocketTestBase&) = delete;

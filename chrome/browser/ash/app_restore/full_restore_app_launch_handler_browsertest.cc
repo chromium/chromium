@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   // Wait a couple seconds and verify the window is now activatable.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(3));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(3));
   run_loop.Run();
 
   EXPECT_TRUE(wm::CanActivateWindow(window));

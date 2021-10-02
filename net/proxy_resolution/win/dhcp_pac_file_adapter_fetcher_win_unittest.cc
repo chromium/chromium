@@ -49,7 +49,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
       URLRequestContext* context,
       scoped_refptr<base::TaskRunner> task_runner)
       : DhcpPacFileAdapterFetcher(context, task_runner),
-        dhcp_delay_(base::TimeDelta::FromMilliseconds(1)),
+        dhcp_delay_(base::Milliseconds(1)),
         timeout_(TestTimeouts::action_timeout()),
         configured_url_(kPacUrl),
         fetcher_delay_ms_(1),
@@ -66,9 +66,9 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
     // the caller.
     fetcher_ = new MockPacFileFetcher();
     if (fetcher_delay_ms_ != -1) {
-      fetcher_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromMilliseconds(fetcher_delay_ms_), this,
-          &MockDhcpPacFileAdapterFetcher::OnFetcherTimer);
+      fetcher_timer_.Start(FROM_HERE, base::Milliseconds(fetcher_delay_ms_),
+                           this,
+                           &MockDhcpPacFileAdapterFetcher::OnFetcherTimer);
     }
     return base::WrapUnique(fetcher_);
   }
@@ -212,7 +212,7 @@ TEST(DhcpPacFileAdapterFetcher, TimeoutDuringDhcp) {
   // of seconds.
   FetcherClient client;
   client.fetcher_->dhcp_delay_ = TestTimeouts::action_max_timeout();
-  client.fetcher_->timeout_ = base::TimeDelta::FromMilliseconds(25);
+  client.fetcher_->timeout_ = base::Milliseconds(25);
 
   base::ElapsedTimer timer;
   client.RunTest();
@@ -252,7 +252,7 @@ TEST(DhcpPacFileAdapterFetcher, CancelWhileFetcher) {
   client.RunTest();
   int max_loops = 4;
   while (!client.fetcher_->IsWaitingForFetcher() && max_loops--) {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+    base::PlatformThread::Sleep(base::Milliseconds(10));
     base::RunLoop().RunUntilIdle();
   }
   client.fetcher_->Cancel();

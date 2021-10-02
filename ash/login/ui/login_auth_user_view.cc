@@ -102,7 +102,7 @@ constexpr char kDayOfWeekOnlyTimeFormat[] = "EEEE";
 constexpr int kFingerprintIconSizeDp = 28;
 constexpr int kResetToDefaultIconDelayMs = 1300;
 constexpr base::TimeDelta kResetToDefaultMessageDelayMs =
-    base::TimeDelta::FromMilliseconds(3000);
+    base::Milliseconds(3000);
 constexpr int kFingerprintIconTopSpacingDp = 20;
 constexpr int kSpacingBetweenFingerprintIconAndLabelDp = 15;
 constexpr int kFingerprintViewWidthDp = 204;
@@ -111,7 +111,7 @@ constexpr int kFingerprintFailedAnimationDurationMs = 700;
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
 
 constexpr base::TimeDelta kChallengeResponseResetAfterFailureDelay =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 constexpr int kChallengeResponseArrowSizeDp = 48;
 constexpr int kSpacingBetweenChallengeResponseArrowAndIconDp = 100;
 constexpr int kSpacingBetweenChallengeResponseIconAndLabelDp = 15;
@@ -324,11 +324,11 @@ LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
         unlock_time, base::k12HourClock, base::kKeepAmPm);
   }
 
-  if (unlock_time < local_midnight + base::TimeDelta::FromDays(1)) {
+  if (unlock_time < local_midnight + base::Days(1)) {
     // Unlock time is today.
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_COME_BACK_MESSAGE, time_to_display);
-  } else if (unlock_time < local_midnight + base::TimeDelta::FromDays(2)) {
+  } else if (unlock_time < local_midnight + base::Days(2)) {
     // Unlock time is tomorrow.
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_COME_BACK_TOMORROW_MESSAGE, time_to_display);
@@ -349,7 +349,7 @@ LockScreenMessage GetUsageLimitMessage(const base::TimeDelta& used_time) {
 
   // 1 minute is used instead of 0, because the device is used for a few
   // milliseconds before locking.
-  if (used_time < base::TimeDelta::FromMinutes(1)) {
+  if (used_time < base::Minutes(1)) {
     // The device was locked all day.
     message.title = l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TAKE_BREAK_MESSAGE);
     message.content =
@@ -466,11 +466,10 @@ class LoginAuthUserView::FingerprintView : public views::View {
     } else {
       SetIcon(FingerprintState::DISABLED_FROM_ATTEMPTS);
       // base::Unretained is safe because reset_state_ is owned by |this|.
-      reset_state_.Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kResetToDefaultIconDelayMs),
-          base::BindOnce(&FingerprintView::DisplayCurrentState,
-                         base::Unretained(this)));
+      reset_state_.Start(FROM_HERE,
+                         base::Milliseconds(kResetToDefaultIconDelayMs),
+                         base::BindOnce(&FingerprintView::DisplayCurrentState,
+                                        base::Unretained(this)));
 
       FireAlert();
     }
@@ -536,8 +535,7 @@ class LoginAuthUserView::FingerprintView : public views::View {
             std::make_unique<HorizontalImageSequenceAnimationDecoder>(
                 *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                     IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
-                base::TimeDelta::FromMilliseconds(
-                    kFingerprintFailedAnimationDurationMs),
+                base::Milliseconds(kFingerprintFailedAnimationDurationMs),
                 kFingerprintFailedAnimationNumFrames),
             AnimatedRoundedImageView::Playback::kSingle);
         break;
@@ -1421,8 +1419,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     auto transition =
         ui::LayerAnimationElement::CreateInterpolatedTransformElement(
             std::move(move_to_center),
-            base::TimeDelta::FromMilliseconds(
-                login::kChangeUserAnimationDurationMs));
+            base::Milliseconds(login::kChangeUserAnimationDurationMs));
     transition->set_tween_type(gfx::Tween::Type::FAST_OUT_SLOW_IN);
     auto* sequence = new ui::LayerAnimationSequence(std::move(transition));
     auto* observer = BuildObserverToNotifyA11yLocationChanged(this);
@@ -1444,8 +1441,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     {
       ui::ScopedLayerAnimationSettings settings(
           password_view_->layer()->GetAnimator());
-      settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-          login::kChangeUserAnimationDurationMs));
+      settings.SetTransitionDuration(
+          base::Milliseconds(login::kChangeUserAnimationDurationMs));
       settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
       if (previous_state_->has_password && !current_state.has_password) {
         settings.AddObserver(
@@ -1468,8 +1465,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     {
       ui::ScopedLayerAnimationSettings settings(
           pin_password_toggle_->layer()->GetAnimator());
-      settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-          login::kChangeUserAnimationDurationMs));
+      settings.SetTransitionDuration(
+          base::Milliseconds(login::kChangeUserAnimationDurationMs));
       settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
       pin_password_toggle_->layer()->SetOpacity(opacity_end);
     }
@@ -1496,8 +1493,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     auto transition = std::make_unique<PinKeyboardAnimation>(
         current_state.has_pinpad /*grow*/, pin_view_->height(),
         // TODO(https://crbug.com/955119): Implement proper animation.
-        base::TimeDelta::FromMilliseconds(
-            login::kChangeUserAnimationDurationMs / 2.0f),
+        base::Milliseconds(login::kChangeUserAnimationDurationMs / 2.0f),
         gfx::Tween::FAST_OUT_SLOW_IN);
     auto* sequence = new ui::LayerAnimationSequence(std::move(transition));
 
@@ -1527,8 +1523,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     {
       ui::ScopedLayerAnimationSettings settings(
           fingerprint_view_->layer()->GetAnimator());
-      settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-          login::kChangeUserAnimationDurationMs));
+      settings.SetTransitionDuration(
+          base::Milliseconds(login::kChangeUserAnimationDurationMs));
       settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
       fingerprint_view_->layer()->SetOpacity(opacity_end);
     }
@@ -1547,8 +1543,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     {
       ui::ScopedLayerAnimationSettings settings(
           challenge_response_view_->layer()->GetAnimator());
-      settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-          login::kChangeUserAnimationDurationMs));
+      settings.SetTransitionDuration(
+          base::Milliseconds(login::kChangeUserAnimationDurationMs));
       settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
       challenge_response_view_->layer()->SetOpacity(opacity_end);
     }

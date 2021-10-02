@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     // This helps against flakes, and also ensures that if the IO thread starts
     // blocking systemically for that length of time (e.g. deadlocking or such),
     // we'll get a consistent test failure.
-    if (end - start > base::TimeDelta::FromSeconds(5))
+    if (end - start > base::Seconds(5))
       continue;
 
     // Make sure that the prefs file was written with the expected key/value.
@@ -1022,8 +1022,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   Browser* browser = CreateGuestBrowser();
   BrowserCloseObserver close_observer(browser);
 
-  browser->profile()->SetCreationTimeForTesting(
-      base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
+  browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                base::Seconds(60) * 60);
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);

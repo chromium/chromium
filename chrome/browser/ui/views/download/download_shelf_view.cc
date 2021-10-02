@@ -90,9 +90,8 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   accessible_alert_ = AddChildView(std::make_unique<views::View>());
 
   if (gfx::Animation::ShouldRenderRichAnimation()) {
-    new_item_animation_.SetSlideDuration(
-        base::TimeDelta::FromMilliseconds(800));
-    shelf_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(120));
+    new_item_animation_.SetSlideDuration(base::Milliseconds(800));
+    shelf_animation_.SetSlideDuration(base::Milliseconds(120));
   } else {
     new_item_animation_.SetSlideDuration(base::TimeDelta());
     shelf_animation_.SetSlideDuration(base::TimeDelta());
@@ -108,7 +107,7 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   // most likely going to trigger a new window to appear over the button. Delay
   // a long time so that the user has a chance to quickly close the other app
   // and return to chrome with the download shelf still open.
-  mouse_watcher_.set_notify_on_exit_time(base::TimeDelta::FromSeconds(5));
+  mouse_watcher_.set_notify_on_exit_time(base::Seconds(5));
   SetID(VIEW_ID_DOWNLOAD_SHELF);
   views::SetCascadingThemeProviderColor(this, views::kCascadingBackgroundColor,
                                         ThemeProperties::COLOR_TOOLBAR);

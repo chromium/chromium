@@ -31,7 +31,7 @@ namespace {
 // Animation
 // The animation duration for the translation of |active_button_selector_| on
 // mode change.
-constexpr auto kToggleSlideDuration = base::TimeDelta::FromMilliseconds(150);
+constexpr auto kToggleSlideDuration = base::Milliseconds(150);
 
 // The insets of the focus ring of the tab slider button.
 constexpr int kTabSliderButtonFocusInsets = 4;

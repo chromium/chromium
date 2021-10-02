@@ -373,8 +373,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (EnableSyntheticCrashReportsForUte()) {
     [[PreviousSessionInfo sharedInstance]
         startRecordingMemoryFootprintWithInterval:
-            base::TimeDelta::FromSeconds(
-                kMemoryFootprintRecordingTimeInterval)];
+            base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
 }
 
@@ -609,8 +608,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     // startUpBrowserToStage: method called above.
     [[PreviousSessionInfo sharedInstance]
         startRecordingMemoryFootprintWithInterval:
-            base::TimeDelta::FromSeconds(
-                kMemoryFootprintRecordingTimeInterval)];
+            base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
 }
 

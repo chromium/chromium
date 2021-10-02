@@ -172,8 +172,7 @@ bool SerialIoHandlerWin::PostOpen() {
   COMMTIMEOUTS timeouts = {0};
   timeouts.ReadIntervalTimeout = MAXDWORD;
   timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-  timeouts.ReadTotalTimeoutConstant =
-      base::TimeDelta::FromMinutes(5).InMilliseconds();
+  timeouts.ReadTotalTimeoutConstant = base::Minutes(5).InMilliseconds();
   if (!::SetCommTimeouts(file().GetPlatformFile(), &timeouts)) {
     SERIAL_PLOG(DEBUG) << "Failed to set serial timeouts";
     return false;

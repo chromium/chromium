@@ -34,8 +34,7 @@ namespace {
 // Delay to wait to turn off privacy screen enforcement after confidential data
 // becomes not visible. This is done to not blink the privacy screen in case of
 // a quick switch from one confidential data to another.
-const base::TimeDelta kPrivacyScreenOffDelay =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta kPrivacyScreenOffDelay = base::Milliseconds(500);
 
 // Reports events to `reporting_manager`.
 void ReportEvent(GURL url,

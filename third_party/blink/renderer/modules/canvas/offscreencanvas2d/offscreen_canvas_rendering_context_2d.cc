@@ -333,8 +333,8 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
     Host()->DiscardResourceProvider();
   }
   uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
-  dispatch_context_lost_event_timer_.StartOneShot(
-      base::TimeDelta::FromMilliseconds(delay), FROM_HERE);
+  dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),
+                                                  FROM_HERE);
 }
 
 bool OffscreenCanvasRenderingContext2D::IsPaintable() const {

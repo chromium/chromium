@@ -201,8 +201,8 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
 
   // Lead time range requested by the |audio_consumer_|. Initialized to  the
   // [100ms, 500ms] until the initial AudioConsumerStatus is received.
-  base::TimeDelta min_lead_time_ = base::TimeDelta::FromMilliseconds(100);
-  base::TimeDelta max_lead_time_ = base::TimeDelta::FromMilliseconds(500);
+  base::TimeDelta min_lead_time_ = base::Milliseconds(100);
+  base::TimeDelta max_lead_time_ = base::Milliseconds(500);
 
   // Set to true after we've received end-of-stream from the |demuxer_stream_|.
   // The renderer may be restarted after Flush().

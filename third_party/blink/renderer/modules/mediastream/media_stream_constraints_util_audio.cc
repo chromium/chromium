@@ -890,7 +890,7 @@ class ProcessingBasedContainer {
       std::tie(min_buffer_size, max_buffer_size) =
           GetMinMaxBufferSizesForAudioParameters(parameters);
       requested_buffer_size = media::AudioLatency::GetExactBufferSize(
-          base::TimeDelta::FromSecondsD(*latency), parameters.sample_rate(),
+          base::Seconds(*latency), parameters.sample_rate(),
           parameters.frames_per_buffer(), min_buffer_size, max_buffer_size,
           max_buffer_size);
     }
@@ -1648,12 +1648,12 @@ std::tuple<double, double> GetMinMaxLatenciesForAudioParameters(
   // AudioParameters::GetBufferDuration() so that values reported to the user
   // are truncated consistently to the microseconds decimal place.
   return std::make_tuple(
-      base::TimeDelta::FromMicroseconds(
+      base::Microseconds(
           static_cast<int64_t>(min_buffer_size *
                                base::Time::kMicrosecondsPerSecond /
                                static_cast<float>(parameters.sample_rate())))
           .InSecondsF(),
-      base::TimeDelta::FromMicroseconds(
+      base::Microseconds(
           static_cast<int64_t>(max_buffer_size *
                                base::Time::kMicrosecondsPerSecond /
                                static_cast<float>(parameters.sample_rate())))

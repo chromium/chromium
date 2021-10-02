@@ -94,8 +94,7 @@ static const char kTranslateCaptureText[] = "Translate.CaptureText";
 
 // For a page that auto-refreshes, we still show the bubble, if
 // the refresh delay is less than this value (in seconds).
-static constexpr base::TimeDelta kLocationChangeInterval =
-    base::TimeDelta::FromSeconds(10);
+static constexpr base::TimeDelta kLocationChangeInterval = base::Seconds(10);
 
 // For the context menu, we want to keep transparency as is instead of
 // replacing transparent pixels with black ones

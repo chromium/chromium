@@ -443,7 +443,7 @@ bool FaviconDatabase::GetFaviconBitmaps(
     favicon_bitmap.bitmap_id = statement.ColumnInt64(0);
     favicon_bitmap.icon_id = icon_id;
     favicon_bitmap.last_updated = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(statement.ColumnInt64(1)));
+        base::Microseconds(statement.ColumnInt64(1)));
     std::vector<uint8_t> bitmap_data_blob;
     statement.ColumnBlobAsVector(2, &bitmap_data_blob);
     if (!bitmap_data_blob.empty()) {
@@ -453,7 +453,7 @@ bool FaviconDatabase::GetFaviconBitmaps(
     favicon_bitmap.pixel_size =
         gfx::Size(statement.ColumnInt(3), statement.ColumnInt(4));
     favicon_bitmap.last_requested = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(statement.ColumnInt64(5)));
+        base::Microseconds(statement.ColumnInt64(5)));
     favicon_bitmaps->push_back(favicon_bitmap);
   }
   return result;
@@ -477,7 +477,7 @@ bool FaviconDatabase::GetFaviconBitmap(
 
   if (last_updated) {
     *last_updated = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(statement.ColumnInt64(0)));
+        base::Microseconds(statement.ColumnInt64(0)));
   }
 
   if (png_icon_data) {
@@ -493,7 +493,7 @@ bool FaviconDatabase::GetFaviconBitmap(
 
   if (last_requested) {
     *last_requested = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(statement.ColumnInt64(4)));
+        base::Microseconds(statement.ColumnInt64(4)));
   }
 
   return true;
@@ -601,8 +601,7 @@ bool FaviconDatabase::TouchOnDemandFavicon(const GURL& icon_url,
       SQL_FROM_HERE, "SELECT id FROM favicons WHERE url=?"));
   id_statement.BindString(0, database_utils::GurlToDatabaseUrl(icon_url));
 
-  base::Time max_time =
-      time - base::TimeDelta::FromDays(kFaviconUpdateLastRequestedAfterDays);
+  base::Time max_time = time - base::Days(kFaviconUpdateLastRequestedAfterDays);
 
   while (id_statement.Step()) {
     favicon_base::FaviconID icon_id = id_statement.ColumnInt64(0);
@@ -658,7 +657,7 @@ bool FaviconDatabase::GetFaviconLastUpdatedTime(favicon_base::FaviconID icon_id,
 
   if (last_updated) {
     *last_updated = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(statement.ColumnInt64(0)));
+        base::Microseconds(statement.ColumnInt64(0)));
   }
   return true;
 }

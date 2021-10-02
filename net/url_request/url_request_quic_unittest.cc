@@ -482,8 +482,8 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
   GURL report_uri("https://report.test/");
   IsolationInfo isolation_info = IsolationInfo::CreateTransient();
   transport_security_state()->AddExpectCT(
-      kTestServerHost, base::Time::Now() + base::TimeDelta::FromDays(1),
-      true /* enforce */, report_uri, isolation_info.network_isolation_key());
+      kTestServerHost, base::Time::Now() + base::Days(1), true /* enforce */,
+      report_uri, isolation_info.network_isolation_key());
 
   base::RunLoop run_loop;
   TestDelegate delegate;

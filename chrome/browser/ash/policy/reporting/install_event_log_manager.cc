@@ -25,20 +25,19 @@ namespace {
 
 // Delay after which a change to the log contents is stored to disk. Further
 // changes during this time window are picked up by the same store operation.
-constexpr base::TimeDelta kStoreDelay = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kStoreDelay = base::Seconds(5);
 // Reduce store delay for integration tests.
-constexpr base::TimeDelta kFastStoreDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kFastStoreDelay = base::Seconds(1);
 
 // Interval between subsequent uploads to the server, if the log is not empty.
-constexpr base::TimeDelta kUploadInterval = base::TimeDelta::FromHours(3);
+constexpr base::TimeDelta kUploadInterval = base::Hours(3);
 
 // Delay of an expedited upload to the server, used for the first upload after
 // the |InstallEventLogManagerBase| is constructed and whenever the log is
 // getting full.
-constexpr base::TimeDelta kExpeditedUploadDelay =
-    base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kExpeditedUploadDelay = base::Minutes(15);
 // Reduce upload delay for integration tests.
-constexpr base::TimeDelta kFastUploadDelay = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kFastUploadDelay = base::Seconds(30);
 
 // An expedited upload is scheduled whenever the total number of log entries
 // exceeds |kTotalSizeExpeditedUploadThreshold| or the number of log entries for

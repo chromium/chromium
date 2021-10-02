@@ -23,17 +23,15 @@ class IdentityTokenCacheTest : public testing::Test {
   void SetAccessToken(const std::string& ext_id,
                       const std::string& token_string,
                       const std::set<std::string>& scopes) {
-    SetAccessTokenInternal(ext_id, token_string, scopes,
-                           base::TimeDelta::FromSeconds(3600));
+    SetAccessTokenInternal(ext_id, token_string, scopes, base::Seconds(3600));
   }
 
   void SetExpiredAccessToken(const std::string& ext_id,
                              const std::string& token_string,
                              const std::set<std::string>& scopes) {
     // Token must not be expired at the insertion moment.
-    SetAccessTokenInternal(ext_id, token_string, scopes,
-                           base::TimeDelta::FromMilliseconds(1));
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+    SetAccessTokenInternal(ext_id, token_string, scopes, base::Milliseconds(1));
+    task_environment_.FastForwardBy(base::Milliseconds(2));
   }
 
   void SetRemoteConsentApprovedToken(const std::string& ext_id,

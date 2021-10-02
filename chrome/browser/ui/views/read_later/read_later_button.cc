@@ -87,12 +87,9 @@ void RecordBookmarkBarState(Browser* browser) {
 
 // Note this matches the background base layer alpha used in ToolbarButton.
 constexpr SkAlpha kBackgroundBaseLayerAlpha = 204;
-constexpr base::TimeDelta kHighlightShowDuration =
-    base::TimeDelta::FromMilliseconds(150);
-constexpr base::TimeDelta kHighlightHideDuration =
-    base::TimeDelta::FromMilliseconds(650);
-constexpr base::TimeDelta kHighlightDuration =
-    base::TimeDelta::FromMilliseconds(2250);
+constexpr base::TimeDelta kHighlightShowDuration = base::Milliseconds(150);
+constexpr base::TimeDelta kHighlightHideDuration = base::Milliseconds(650);
+constexpr base::TimeDelta kHighlightDuration = base::Milliseconds(2250);
 
 }  // namespace
 

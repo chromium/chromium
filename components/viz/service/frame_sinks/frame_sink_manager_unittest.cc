@@ -439,7 +439,7 @@ TEST_F(FrameSinkManagerTest, Throttle) {
   manager_.RegisterFrameSinkHierarchy(client_c->frame_sink_id(),
                                       client_d->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+  constexpr base::TimeDelta interval = base::Hertz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
                                kFrameSinkIdC, kFrameSinkIdD};
@@ -487,7 +487,7 @@ TEST_F(FrameSinkManagerTest, NoThrottleOnFrameSinksBeingCaptured) {
   manager_.RegisterFrameSinkHierarchy(client_b->frame_sink_id(),
                                       client_c->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+  constexpr base::TimeDelta interval = base::Hertz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
                                kFrameSinkIdC};
@@ -547,7 +547,7 @@ TEST_F(FrameSinkManagerTest, ThrottleUponHierarchyChange) {
   manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
                                       client_b->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+  constexpr base::TimeDelta interval = base::Hertz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB};
 

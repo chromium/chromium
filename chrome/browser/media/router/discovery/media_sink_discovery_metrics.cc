@@ -24,7 +24,7 @@ void DeviceCountMetrics::RecordDeviceCountsIfNeeded(
     size_t known_device_count) {
   base::Time now = clock_->Now();
   if (now - device_count_metrics_record_time_ <
-      base::TimeDelta::FromMinutes(kDeviceCountMetricThresholdMins)) {
+      base::Minutes(kDeviceCountMetricThresholdMins)) {
     return;
   }
   RecordDeviceCounts(available_device_count, known_device_count);

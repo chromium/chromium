@@ -125,8 +125,8 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
     }
   }
 
-  if (refresh_cache_on_miss && (base::Time::Now() - footprints_last_updated_) >
-                                   base::TimeDelta::FromMinutes(1)) {
+  if (refresh_cache_on_miss &&
+      (base::Time::Now() - footprints_last_updated_) > base::Minutes(1)) {
     footprints_fetcher_->GetUserDevices(
         base::BindOnce(&FastPairRepositoryImpl::RetryCheckAccountKeys,
                        weak_ptr_factory_.GetWeakPtr(), account_key_filter,

@@ -286,7 +286,7 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
                                       device_closed->Signal();
                                     },
                                     base::Unretained(&device_closed_))));
-  base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
+  base::TimeDelta kWaitTimeoutSecs = base::Seconds(3);
   device_closed_.TimedWait(kWaitTimeoutSecs);
   if (!unblock_suspend_token.is_empty())
     power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);

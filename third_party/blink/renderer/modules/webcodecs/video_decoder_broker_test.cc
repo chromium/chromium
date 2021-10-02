@@ -416,7 +416,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   media::VideoDecoderConfig large_config = media::TestVideoConfig::ExtraLarge();
   InitializeDecoder(large_config);
   DecodeBuffer(media::CreateFakeVideoBufferForTest(
-      large_config, base::TimeDelta(), base::TimeDelta::FromMilliseconds(33)));
+      large_config, base::TimeDelta(), base::Milliseconds(33)));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(2U, output_frames_.size());
 
@@ -426,7 +426,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   // Use a large frame to force hardware decode.
   InitializeDecoder(large_config);
   DecodeBuffer(media::CreateFakeVideoBufferForTest(
-      large_config, base::TimeDelta(), base::TimeDelta::FromMilliseconds(33)));
+      large_config, base::TimeDelta(), base::Milliseconds(33)));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(3U, output_frames_.size());
   EXPECT_TRUE(IsPlatformDecoder());
@@ -454,8 +454,8 @@ TEST_F(VideoDecoderBrokerTest, Decode_WithMojoDecoder) {
   InitializeDecoder(config);
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kTesting);
 
-  DecodeBuffer(media::CreateFakeVideoBufferForTest(
-      config, base::TimeDelta(), base::TimeDelta::FromMilliseconds(33)));
+  DecodeBuffer(media::CreateFakeVideoBufferForTest(config, base::TimeDelta(),
+                                                   base::Milliseconds(33)));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(1U, output_frames_.size());
 

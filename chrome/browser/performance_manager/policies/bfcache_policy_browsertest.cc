@@ -117,7 +117,7 @@ class BFCachePolicyBrowserTest
                 content::RenderFrameHost::LifecycleState::kInBackForwardCache);
             run_loop.Quit();
           }),
-          base::TimeDelta::FromSeconds(std::max(
+          base::Seconds(std::max(
               0, GetParam().delay_to_flush_background_tab_in_seconds)));
       run_loop.Run();
     }

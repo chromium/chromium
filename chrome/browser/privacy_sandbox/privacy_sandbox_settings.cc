@@ -143,8 +143,7 @@ int GetNumberOfDaysRoundedAboveOne(base::TimeDelta time) {
   if (number_of_days == 0)
     return 0;
 
-  int number_of_hours_past_day =
-      (time - base::TimeDelta::FromDays(number_of_days)).InHours();
+  int number_of_hours_past_day = (time - base::Days(number_of_days)).InHours();
 
   if (number_of_hours_past_day >= 12)
     number_of_days++;

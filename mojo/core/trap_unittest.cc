@@ -1375,7 +1375,7 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
         // Give the other thread sufficient time to race with the completion
         // of this callback. There should be no race, since the cancellation
         // notification must be mutually exclusive to this notification.
-        base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+        base::PlatformThread::Sleep(base::Seconds(1));
 
         callback_done = true;
       },

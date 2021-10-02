@@ -22,8 +22,7 @@ const base::FeatureParam<std::string> kLearnMoreUrl{
     &safe_browsing::kAccuracyTipsFeature, "LearnMoreUrl", ""};
 
 const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts{
-    &safe_browsing::kAccuracyTipsFeature, "TimeBetweenPrompts",
-    base::TimeDelta::FromDays(7)};
+    &safe_browsing::kAccuracyTipsFeature, "TimeBetweenPrompts", base::Days(7)};
 
 extern const base::FeatureParam<int> kNumIgnorePrompts{
     &safe_browsing::kAccuracyTipsFeature, "NumIgnorePrompts", 2};
@@ -35,12 +34,10 @@ const base::Feature kAccuracyTipsSurveyFeature{
     "AccuracyTipsSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::FeatureParam<base::TimeDelta> kMinTimeToShowSurvey{
-    &kAccuracyTipsSurveyFeature, "MinTimeToShowSurvey",
-    base::TimeDelta::FromMinutes(10)};
+    &kAccuracyTipsSurveyFeature, "MinTimeToShowSurvey", base::Minutes(10)};
 
 const base::FeatureParam<base::TimeDelta> kMaxTimeToShowSurvey{
-    &kAccuracyTipsSurveyFeature, "MaxTimeToShowSurvey",
-    base::TimeDelta::FromMinutes(30)};
+    &kAccuracyTipsSurveyFeature, "MaxTimeToShowSurvey", base::Minutes(30)};
 
 const base::FeatureParam<int> kMinPromptCountRequiredForSurvey{
     &kAccuracyTipsSurveyFeature, "MinPromptCountRequiredForSurvey", 1};

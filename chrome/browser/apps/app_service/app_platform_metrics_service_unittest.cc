@@ -676,8 +676,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
 // Tests OnNewDay() is called after more than one day passes.
 TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDay) {
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1) +
-                                  base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Days(1) + base::Hours(1));
   VerifyMetrics();
   EXPECT_EQ(AppPlatformMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
@@ -685,7 +684,7 @@ TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDay) {
 
 // Tests OnNewDay() is called at midnight.
 TEST_F(AppPlatformMetricsServiceTest, UntilMidnight) {
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment_.FastForwardBy(base::Hours(3));
   VerifyMetrics();
   EXPECT_EQ(AppPlatformMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
@@ -693,7 +692,7 @@ TEST_F(AppPlatformMetricsServiceTest, UntilMidnight) {
 
 // Tests OnNewDay() is not called before midnight.
 TEST_F(AppPlatformMetricsServiceTest, LessThanOneDay) {
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   histogram_tester().ExpectTotalCount(
       AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
       /*expected_count=*/0);
@@ -706,7 +705,7 @@ TEST_F(AppPlatformMetricsServiceTest, LessThanOneDay) {
 TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDayDeviceIdle) {
   SetScreenOff(true);
   SetSuspendImminent();
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   VerifyMetrics();
   EXPECT_EQ(AppPlatformMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
@@ -714,12 +713,12 @@ TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDayDeviceIdle) {
 
 // Tests the UMA metrics that count the number of installed apps.
 TEST_F(AppPlatformMetricsServiceTest, InstallApps) {
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment_.FastForwardBy(base::Hours(3));
   VerifyMetrics();
 
   InstallOneApp("aa", apps::mojom::AppType::kArc, "com.google.AA",
                 apps::mojom::Readiness::kReady);
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   histogram_tester().ExpectTotalCount(
       AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
       /*expected_count=*/2);
@@ -739,17 +738,16 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
   // Set the browser window active.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser1->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
+  task_environment_.FastForwardBy(base::Minutes(20));
   // Set the browser window running in the background.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser1->window()->GetNativeWindow(), kInactiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
-  VerifyAppRunningDuration(base::TimeDelta::FromMinutes(30),
-                           AppTypeName::kChromeBrowser);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Minutes(30), AppTypeName::kChromeBrowser);
 
   // Test multiple browsers.
   std::unique_ptr<Browser> browser2 = CreateBrowserWithAuraWindow2();
@@ -757,23 +755,22 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
 
   ModifyInstance(extension_misc::kChromeAppId,
                  browser2->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
+  task_environment_.FastForwardBy(base::Minutes(20));
   ModifyInstance(extension_misc::kChromeAppId,
                  browser2->window()->GetNativeWindow(),
                  apps::InstanceState::kDestroyed);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
-  VerifyAppRunningDuration(base::TimeDelta::FromHours(1),
-                           AppTypeName::kChromeBrowser);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Hours(1), AppTypeName::kChromeBrowser);
 
   // Test date change.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kChromeBrowser);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
+  VerifyAppRunningDurationHistogram(base::Hours(1),
                                     /*expected_count=*/1,
                                     AppTypeName::kChromeBrowser);
   VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
@@ -798,22 +795,22 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
 
   // Close the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(50));
+  task_environment_.FastForwardBy(base::Minutes(50));
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
-  VerifyAppRunningDuration(base::TimeDelta::FromHours(1), AppTypeName::kArc);
+  task_environment_.FastForwardBy(base::Hours(1));
+  VerifyAppRunningDuration(base::Hours(1), AppTypeName::kArc);
 
   // One day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
+  VerifyAppRunningDurationHistogram(base::Hours(1),
                                     /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedHistogram(/*count*/ 1, /*expected_count=*/1,
@@ -822,10 +819,10 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
   VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 
   // One more day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
+  VerifyAppRunningDurationHistogram(base::Hours(1),
                                     /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
                                            AppTypeName::kArc);
@@ -845,39 +842,39 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInMultipleDays) {
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
 
   // One day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment_.FastForwardBy(base::Hours(2));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedHistogram(/*count*/ 1, /*expected_count=*/1,
                               AppTypeName::kArc);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment_.FastForwardBy(base::Hours(2));
 
   // Close the window after running five hours.
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
+  VerifyAppRunningDurationHistogram(base::Hours(3),
                                     /*expected_count=*/1, AppTypeName::kArc);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
-  VerifyAppRunningDuration(base::TimeDelta::FromHours(2), AppTypeName::kArc);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Hours(2), AppTypeName::kArc);
 
   // One more day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/2,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
+  VerifyAppRunningDurationHistogram(base::Hours(3),
                                     /*expected_count=*/1, AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(2),
+  VerifyAppRunningDurationHistogram(base::Hours(2),
                                     /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
-  VerifyAppRunningDuration(base::TimeDelta::FromHours(0), AppTypeName::kArc);
+  VerifyAppRunningDuration(base::Hours(0), AppTypeName::kArc);
   VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 }
 
@@ -891,91 +888,89 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::Minutes(30));
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
   VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
 
   // Inactiva the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::Minutes(30));
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
 
   // Activa the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kArc);
 
   // Close the window after running half hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
+  task_environment_.FastForwardBy(base::Minutes(20));
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
-  VerifyAppRunningDuration(
-      base::TimeDelta::FromHours(1) + base::TimeDelta::FromMinutes(30),
-      AppTypeName::kArc);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Hours(1) + base::Minutes(30),
+                           AppTypeName::kArc);
 
   // One day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
+  task_environment_.FastForwardBy(base::Minutes(20));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(
-      base::TimeDelta::FromHours(1) + base::TimeDelta::FromMinutes(30),
-      /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppRunningDurationHistogram(base::Hours(1) + base::Minutes(30),
+                                    /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/1,
                               AppTypeName::kArc);
 
   // 20 hours passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(20));
+  task_environment_.FastForwardBy(base::Hours(20));
 
   // Create a new window.
   window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
 
   // Inactiva the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(50));
+  task_environment_.FastForwardBy(base::Minutes(50));
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
 
   // Activa the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kArc);
 
   // One more day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/2,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
+  VerifyAppRunningDurationHistogram(base::Hours(3),
                                     /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
   VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/2,
                               AppTypeName::kArc);
 
   // Inactiva the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment_.FastForwardBy(base::Hours(3));
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
 
   // Close the window after running five hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
-  VerifyAppRunningDuration(base::TimeDelta::FromHours(3), AppTypeName::kArc);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Hours(3), AppTypeName::kArc);
 
   // One more day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/3,
                                          AppTypeName::kArc);
-  VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
+  VerifyAppRunningDurationHistogram(base::Hours(3),
                                     /*expected_count=*/2, AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
-  VerifyAppRunningDuration(base::TimeDelta::FromHours(0), AppTypeName::kArc);
+  VerifyAppRunningDuration(base::Hours(0), AppTypeName::kArc);
   VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 }
 
@@ -991,7 +986,7 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
   // Set the browser window active.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Set the browser window running in the background.
   ModifyInstance(extension_misc::kChromeAppId,
@@ -1008,11 +1003,11 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
   // Close the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
 
   // One day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
                                            AppTypeName::kChromeBrowser);
   VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
@@ -1033,13 +1028,13 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeNameV2::kArc);
-  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
+  VerifyAppUsageTimeHistogram(base::Minutes(5),
                               /*expected_count=*/1, AppTypeName::kArc);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
 
   // Create a browser window
@@ -1052,29 +1047,29 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_environment_.FastForwardBy(base::Minutes(3));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
-  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(2),
+  VerifyAppUsageTimeHistogram(base::Minutes(2),
                               /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
                                    AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
                                    AppTypeNameV2::kChromeBrowser);
-  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(3),
+  VerifyAppUsageTimeHistogram(base::Minutes(3),
                               /*expected_count=*/1,
                               AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/180000,
                         AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  task_environment_.FastForwardBy(base::Minutes(15));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
                                    AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
                                    AppTypeNameV2::kChromeBrowser);
-  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
+  VerifyAppUsageTimeHistogram(base::Minutes(5),
                               /*expected_count=*/3,
                               AppTypeName::kChromeBrowser);
 }
@@ -1094,7 +1089,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
   sync_service()->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
 
   // Verify UKM is not reported.
   const auto entries =
@@ -1103,7 +1098,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
 
   // Set sync is allowed by setting an empty disable reason set.
   sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/600000,
                         AppTypeName::kChromeBrowser);
 }
@@ -1118,14 +1113,14 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   // Set the browser window1 active.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser1->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/300000,
                         AppTypeName::kChromeBrowser);
 
   // Set the browser window1 inactive.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser1->window()->GetNativeWindow(), kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   std::unique_ptr<Browser> browser2 = CreateBrowserWithAuraWindow2();
   EXPECT_EQ(2U, BrowserList::GetInstance()->size());
@@ -1133,12 +1128,12 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   // Set the browser window2 active.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser2->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
 
   VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/540000,
                         AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_environment_.FastForwardBy(base::Minutes(3));
 
   // Close windows.
   ModifyInstance(extension_misc::kChromeAppId,
@@ -1148,7 +1143,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
                  browser2->window()->GetNativeWindow(),
                  apps::InstanceState::kDestroyed);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
   VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/720000,
                         AppTypeName::kChromeBrowser);
 }
@@ -1174,7 +1169,7 @@ TEST_F(AppPlatformMetricsServiceTest,
   // Set the web app tab as activated.
   ModifyWebAppInstance(web_app_id, web_app_window.get(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
 
   // Verify only the web app UKM is reported.
   auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1186,7 +1181,7 @@ TEST_F(AppPlatformMetricsServiceTest,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
   ModifyWebAppInstance(web_app_id, web_app_window.get(),
                        kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
 
   // Set the web app tab as activated.
   ModifyWebAppInstance(web_app_id, web_app_window.get(), kActiveInstanceState);
@@ -1194,7 +1189,7 @@ TEST_F(AppPlatformMetricsServiceTest,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_environment_.FastForwardBy(base::Minutes(3));
 
   // Verify only the web app UKM is reported.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1204,7 +1199,7 @@ TEST_F(AppPlatformMetricsServiceTest,
   // Set the web app tab as inactivated.
   ModifyWebAppInstance(web_app_id, web_app_window.get(),
                        kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Set the web app tab as destroyed.
   ModifyWebAppInstance(web_app_id, web_app_window.get(),
@@ -1215,7 +1210,7 @@ TEST_F(AppPlatformMetricsServiceTest,
                  browser->window()->GetNativeWindow(),
                  apps::InstanceState::kDestroyed);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
 
   // Verify only the browser UKM is reported.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1246,7 +1241,7 @@ TEST_F(AppPlatformMetricsServiceTest,
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
 
   // Verify only the web app UKM is reported.
   auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1256,12 +1251,12 @@ TEST_F(AppPlatformMetricsServiceTest,
   // Set the web app tab as inactivated.
   ModifyWebAppInstance(web_app_id, web_app_window.get(),
                        kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_environment_.FastForwardBy(base::Minutes(3));
 
   // Set the browser window as inactivated.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
 
   // Verify the browser UKM is reported.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1275,7 +1270,7 @@ TEST_F(AppPlatformMetricsServiceTest,
 
   // Set the web app tab as activated.
   ModifyWebAppInstance(web_app_id, web_app_window.get(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
 
   // Set the browser window as inactivated.
   ModifyInstance(extension_misc::kChromeAppId,
@@ -1285,7 +1280,7 @@ TEST_F(AppPlatformMetricsServiceTest,
   ModifyWebAppInstance(web_app_id, web_app_window.get(),
                        kInactiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_environment_.FastForwardBy(base::Minutes(3));
 
   // Verify only the web app UKM is reported.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1297,7 +1292,7 @@ TEST_F(AppPlatformMetricsServiceTest,
   // Set the browser window as activated.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Set the browser window as destroyed.
   ModifyInstance(extension_misc::kChromeAppId,
@@ -1307,7 +1302,7 @@ TEST_F(AppPlatformMetricsServiceTest,
   // Set the web app tab as destroyed.
   ModifyWebAppInstance(web_app_id, web_app_window.get(),
                        apps::InstanceState::kDestroyed);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
 
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
   ASSERT_EQ(4U, entries.size());
@@ -1343,7 +1338,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
 
   // Verify only the web app1 UKM is reported.
   auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1355,7 +1350,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
                        kActiveInstanceState);
   ModifyWebAppInstance(web_app_id1, web_app_window1.get(),
                        kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
 
   // Verify only the web app2 UKM is reported.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1367,7 +1362,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
                        kInactiveInstanceState);
   ModifyWebAppInstance(web_app_id2, web_app_window2.get(),
                        kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
 
   // Verify the browser UKM is reported.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
@@ -1375,12 +1370,12 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
   VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/300000,
                         AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
 
   // Set the browser window as activated.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_environment_.FastForwardBy(base::Minutes(3));
 
   // Destroy the browser windows, and web app tabs.
   ModifyWebAppInstance(web_app_id1, web_app_window1.get(),

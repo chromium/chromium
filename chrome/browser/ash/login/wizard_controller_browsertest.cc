@@ -297,8 +297,7 @@ void QuitLoopOnAutoEnrollmentProgress(
 // negative, the return value represents `days_offset` days in the past.
 std::string GenerateEmbargoEndDate(int days_offset) {
   base::Time::Exploded exploded;
-  base::Time target_time =
-      base::Time::Now() + base::TimeDelta::FromDays(days_offset);
+  base::Time target_time = base::Time::Now() + base::Days(days_offset);
   target_time.UTCExplode(&exploded);
 
   std::string embargo_end_date_string = base::StringPrintf(
@@ -1788,7 +1787,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   // The timeout is 45 seconds, see `auto_enrollment_controller.cc`.
   // Fast-forward by a bit more than that.
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(45 + 1));
+  task_runner->FastForwardBy(base::Seconds(45 + 1));
 
   EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
             auto_enrollment_controller()->auto_enrollment_check_type());

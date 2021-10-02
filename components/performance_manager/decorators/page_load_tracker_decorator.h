@@ -65,13 +65,12 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
   // kWaitingForNavigation to kWaitingForNavigationTimedOut if the page change
   // hasn't been committed.
   static constexpr base::TimeDelta kWaitingForNavigationTimeout =
-      base::TimeDelta::FromSeconds(5);
+      base::Seconds(5);
 
   // The amount of time a page has to be idle post-loading in order for it to be
   // considered loaded and idle. This is used in UpdateLoadIdleState
   // transitions.
-  static constexpr base::TimeDelta kLoadedAndIdlingTimeout =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kLoadedAndIdlingTimeout = base::Seconds(1);
 
   // The maximum amount of time post-DidStopLoading a page can be waiting for
   // an idle state to occur before the page is simply considered loaded anyways.
@@ -83,8 +82,7 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
   // (see SessionRestore.ForegroundTabFirstLoaded). This ensures that all tabs
   // eventually transition to loaded, even if they keep the main task queue
   // busy, or continue loading content.
-  static constexpr base::TimeDelta kWaitingForIdleTimeout =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kWaitingForIdleTimeout = base::Minutes(1);
 
   // (Un)registers the various node observer flavors of this object with the
   // graph. These are invoked by OnPassedToGraph and OnTakenFromGraph, but

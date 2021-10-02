@@ -566,7 +566,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
         load_models, load_host_model_features, have_models_in_store);
     RunUntilIdle();
     // Move clock forward for any short delays added for the fetcher.
-    MoveClockForwardBy(base::TimeDelta::FromSeconds(2));
+    MoveClockForwardBy(base::Seconds(2));
   }
 
   void MoveClockForwardBy(base::TimeDelta time_delta) {
@@ -778,8 +778,7 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
     prediction_model_fetcher()->SetCheckExpectedVersion();
     prediction_model_fetcher()->SetExpectedVersionForOptimizationTarget(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, 1);
-    MoveClockForwardBy(
-        base::TimeDelta::FromSeconds(kUpdateFetchModelAndFeaturesTimeSecs));
+    MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
     EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
     histogram_tester2.ExpectTotalCount(
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
@@ -1485,14 +1484,14 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
   SetStoreInitialized();
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
 
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
 
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
 }
 
@@ -1512,7 +1511,7 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
 
   SetStoreInitialized();
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
   EXPECT_EQ("en-US", prediction_model_fetcher()->locale_requested());
 
@@ -1520,10 +1519,9 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
-  MoveClockForwardBy(
-      base::TimeDelta::FromSeconds(kUpdateFetchModelAndFeaturesTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
 }
 

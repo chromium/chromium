@@ -238,7 +238,7 @@ TEST(SmsFetchRequestHandlerTest, AskUserPermissionOnReceive) {
 
   testing::Mock::VerifyAndClear(&handler);
   EXPECT_CALL(handler, AskUserPermission);
-  handler.task_environment().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  handler.task_environment().FastForwardBy(base::Seconds(1));
 }
 
 TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {

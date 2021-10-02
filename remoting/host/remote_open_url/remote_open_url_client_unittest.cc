@@ -30,8 +30,7 @@ using testing::Return;
 
 // The IPC channel doesn't work if we use a mock clock, so we just reduce the
 // timeout to shorten the test time.
-constexpr base::TimeDelta kTestRequestTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kTestRequestTimeout = base::Milliseconds(500);
 
 class MockRemoteOpenUrlClientDelegate : public RemoteOpenUrlClient::Delegate {
  public:

@@ -860,8 +860,7 @@ class NotificationPlatformBridgeWinImpl
 
   static winui::Notifications::IToastNotifier* notifier_for_testing_;
 
-  const base::TimeDelta kSynchronizationInterval =
-      base::TimeDelta::FromMinutes(10);
+  const base::TimeDelta kSynchronizationInterval = base::Minutes(10);
 
   // Windows does not fire a close event when the notification closes. To work
   // around this, NotificationPlatformBridgeWinImpl simulates the close event by

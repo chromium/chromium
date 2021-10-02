@@ -135,7 +135,7 @@ TEST_F(DesktopSessionAgentTest, StartProcessStatsReport) {
   ASSERT_TRUE(proxy->Send(new ChromotingNetworkDesktopMsg_StartSessionAgent(
       "jid", ScreenResolution(), DesktopEnvironmentOptions())));
   ASSERT_TRUE(proxy->Send(new ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-      base::TimeDelta::FromMilliseconds(1))));
+      base::Milliseconds(1))));
   run_loop_.Run();
 }
 
@@ -150,7 +150,7 @@ TEST_F(DesktopSessionAgentTest, StartProcessStatsReportWithInvalidInterval) {
   ASSERT_TRUE(proxy->Send(new ChromotingNetworkDesktopMsg_StartSessionAgent(
       "jid", ScreenResolution(), DesktopEnvironmentOptions())));
   ASSERT_TRUE(proxy->Send(new ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-      base::TimeDelta::FromMilliseconds(-1))));
+      base::Milliseconds(-1))));
   ASSERT_TRUE(proxy->Send(
       new ChromotingNetworkToAnyMsg_StopProcessStatsReport()));
   task_runner_->PostDelayedTask(
@@ -165,7 +165,7 @@ TEST_F(DesktopSessionAgentTest, StartProcessStatsReportWithInvalidInterval) {
           },
           base::Unretained(this), base::Unretained(&delegate),
           base::Unretained(&proxy)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   run_loop_.Run();
 }
 
@@ -180,7 +180,7 @@ TEST_F(DesktopSessionAgentTest, StartThenStopProcessStatsReport) {
   ASSERT_TRUE(proxy->Send(new ChromotingNetworkDesktopMsg_StartSessionAgent(
       "jid", ScreenResolution(), DesktopEnvironmentOptions())));
   ASSERT_TRUE(proxy->Send(new ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-      base::TimeDelta::FromMilliseconds(1))));
+      base::Milliseconds(1))));
   ASSERT_TRUE(proxy->Send(
       new ChromotingNetworkToAnyMsg_StopProcessStatsReport()));
   task_runner_->PostDelayedTask(
@@ -195,7 +195,7 @@ TEST_F(DesktopSessionAgentTest, StartThenStopProcessStatsReport) {
           },
           base::Unretained(this), base::Unretained(&delegate),
           base::Unretained(&proxy)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   run_loop_.Run();
 }
 

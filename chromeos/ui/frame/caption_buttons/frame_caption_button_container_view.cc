@@ -38,15 +38,14 @@ namespace {
 
 // Duration of the animation of the position of buttons to the left of
 // |size_button_|.
-constexpr auto kPositionAnimationDuration =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr auto kPositionAnimationDuration = base::Milliseconds(500);
 
 // Duration of the animation of the alpha of |size_button_|.
-constexpr auto kAlphaAnimationDuration = base::TimeDelta::FromMilliseconds(250);
+constexpr auto kAlphaAnimationDuration = base::Milliseconds(250);
 
 // Delay during |tablet_mode_animation_| hide to wait before beginning to
 // animate the position of buttons to the left of |size_button_|.
-constexpr auto kHidePositionDelay = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kHidePositionDelay = base::Milliseconds(100);
 
 // Duration of |tablet_mode_animation_| hiding.
 // Hiding size button 250
@@ -58,8 +57,7 @@ constexpr auto kHideAnimationDuration =
 
 // Delay during |tablet_mode_animation_| show to wait before beginning to
 // animate the alpha of |size_button_|.
-constexpr auto kShowAnimationAlphaDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr auto kShowAnimationAlphaDelay = base::Milliseconds(100);
 
 // Duration of |tablet_mode_animation_| showing.
 // Slide other buttons 500

@@ -66,8 +66,7 @@ constexpr TimeDelta kMaxStoredPastActivityInterval = TimeDelta::FromDays(30);
 constexpr TimeDelta kMaxStoredFutureActivityInterval = TimeDelta::FromDays(2);
 
 // How often the child's usage time is stored.
-constexpr base::TimeDelta kUpdateChildActiveTimeInterval =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kUpdateChildActiveTimeInterval = base::Seconds(30);
 
 const char kReportSizeHistogramName[] =
     "ChromeOS.FamilyLink.ChildStatusReportRequest.Size";
@@ -252,7 +251,7 @@ void ChildStatusCollector::UpdateChildUsageTime() {
     // negative (which can happen when the clock changes), assume a single
     // interval of activity. This is the same strategy used to enterprise users.
     base::TimeDelta active_seconds = now - last_active_check_;
-    if (active_seconds < base::TimeDelta::FromSeconds(0) ||
+    if (active_seconds < base::Seconds(0) ||
         active_seconds >= (2 * kUpdateChildActiveTimeInterval)) {
       activity_storage_->AddActivityPeriod(now - kUpdateChildActiveTimeInterval,
                                            now, now);
@@ -314,8 +313,7 @@ bool ChildStatusCollector::GetAppActivity(
     if (last_successful_report_time_int > 0) {
       base::Time last_successful_report_time =
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(
-                  last_successful_report_time_int));
+              base::Microseconds(last_successful_report_time_int));
       DCHECK_LT(last_successful_report_time,
                 last_report_params_->generation_time);
       base::TimeDelta elapsed_time =

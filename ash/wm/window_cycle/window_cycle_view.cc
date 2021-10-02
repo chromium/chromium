@@ -74,17 +74,14 @@ constexpr char kContainerAnimationSmoothness[] =
     "Ash.WindowCycleView.AnimationSmoothness.Container";
 
 // Duration of the window cycle UI fade in animation.
-constexpr base::TimeDelta kFadeInDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(100);
 
 // Duration of the window cycle elements slide animation.
-constexpr base::TimeDelta kContainerSlideDuration =
-    base::TimeDelta::FromMilliseconds(120);
+constexpr base::TimeDelta kContainerSlideDuration = base::Milliseconds(120);
 
 // Duration of the window cycle scale animation when a user toggles alt-tab
 // modes.
-constexpr base::TimeDelta kToggleModeScaleDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kToggleModeScaleDuration = base::Milliseconds(150);
 
 }  // namespace
 

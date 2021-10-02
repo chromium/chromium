@@ -43,7 +43,7 @@ constexpr base::TimeTicks TestScheduler::kStartTime;
 }  // namespace
 
 TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
-  const base::TimeDelta sampling_duration = base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta sampling_duration = base::Seconds(30);
   const double fraction_of_execution_time_to_sample = 0.01;
 
   const base::TimeDelta expected_period =
@@ -55,8 +55,7 @@ TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
   // The first collection should be exactly at the start time, since the random
   // value is 0.0.
   scheduler.SetRandDouble(0.0);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
-            scheduler.GetTimeToNextCollection());
+  EXPECT_EQ(base::Seconds(0), scheduler.GetTimeToNextCollection());
 
   // With a random value of 1.0 the second collection should be at the end of
   // the second period.
@@ -72,7 +71,7 @@ TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
 }
 
 TEST(ThreadProfilerTest, PeriodicSamplingSchedulerWithJumpInTimeTicks) {
-  const base::TimeDelta sampling_duration = base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta sampling_duration = base::Seconds(30);
   const double fraction_of_execution_time_to_sample = 0.01;
 
   const base::TimeDelta expected_period =
@@ -84,15 +83,13 @@ TEST(ThreadProfilerTest, PeriodicSamplingSchedulerWithJumpInTimeTicks) {
   // The first collection should be exactly at the start time, since the random
   // value is 0.0.
   scheduler.SetRandDouble(0.0);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
-            scheduler.GetTimeToNextCollection());
+  EXPECT_EQ(base::Seconds(0), scheduler.GetTimeToNextCollection());
 
   // Simulate a non-continuous jump in the current TimeTicks such that the next
   // period would start before the current time. In this case the
   // period start should be reset to the current time, and the next collection
   // chosen within that period.
-  scheduler.tick_clock().Advance(expected_period +
-                                 base::TimeDelta::FromSeconds(1));
+  scheduler.tick_clock().Advance(expected_period + base::Seconds(1));
   scheduler.SetRandDouble(0.5);
   EXPECT_EQ(0.5 * (expected_period - sampling_duration),
             scheduler.GetTimeToNextCollection());

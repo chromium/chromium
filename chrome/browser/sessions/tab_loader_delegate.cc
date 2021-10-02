@@ -121,8 +121,8 @@ TabLoaderDelegateImpl::TabLoaderDelegateImpl(TabLoaderCallback* callback)
     callback->SetTabLoadingEnabled(false);
   }
 
-  first_timeout_ = base::TimeDelta::FromMilliseconds(kFirstTabLoadTimeoutMS);
-  timeout_ = base::TimeDelta::FromMilliseconds(kInitialDelayTimerMS);
+  first_timeout_ = base::Milliseconds(kFirstTabLoadTimeoutMS);
+  timeout_ = base::Milliseconds(kInitialDelayTimerMS);
 
   // Override |policy_| if a testing policy has been set.
   if (g_testing_policy) {

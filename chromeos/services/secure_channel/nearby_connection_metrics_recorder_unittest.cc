@@ -46,7 +46,7 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
       /*sample=*/true,
       /*count=*/1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Succeed again; should be logged.
   recorder_.HandleConnectionSuccess(device_id_pair_);
@@ -55,7 +55,7 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
       /*sample=*/true,
       /*count=*/2);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Fail; nothing should be logged since the failure just occurred.
   recorder_.HandleConnectionFailure(device_id_pair_);
@@ -65,7 +65,7 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
       /*count=*/0);
 
   // Fast forward 59 seconds (under 1min).
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
+  task_environment_.FastForwardBy(base::Seconds(59));
 
   // Fail; still nothing should have been logged.
   recorder_.HandleConnectionFailure(device_id_pair_);
@@ -76,13 +76,13 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
 
   // Fast forward 1 more second; a minute has passed, so a failure should have
   // been logged.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   histogram_tester_.ExpectBucketCount(
       "MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult",
       /*sample=*/false,
       /*count=*/1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Succeed; this should reset any ongoing timer.
   recorder_.HandleConnectionSuccess(device_id_pair_);
@@ -91,7 +91,7 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
       /*sample=*/true,
       /*count=*/3);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Fail; nothing should be logged.
   recorder_.HandleConnectionFailure(device_id_pair_);
@@ -101,7 +101,7 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
       /*count=*/1);
 
   // Move forward another minute and verify that another failure was logged.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   histogram_tester_.ExpectBucketCount(
       "MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult",
       /*sample=*/false,

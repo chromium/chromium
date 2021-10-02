@@ -332,9 +332,9 @@ void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
   // TODO(fbarchard): Handle used 0 by queueing more.
 
   // TODO(sergeyu): Specify correct hardware delay for |delay|.
-  const base::TimeDelta delay = base::TimeDelta::FromMicroseconds(
-      pending_bytes_ * base::Time::kMicrosecondsPerSecond /
-      format_.Format.nAvgBytesPerSec);
+  const base::TimeDelta delay =
+      base::Microseconds(pending_bytes_ * base::Time::kMicrosecondsPerSecond /
+                         format_.Format.nAvgBytesPerSec);
   int frames_filled =
       callback_->OnMoreData(delay, base::TimeTicks::Now(), 0, audio_bus_.get());
   uint32_t used = frames_filled * audio_bus_->channels() *

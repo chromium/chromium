@@ -767,8 +767,7 @@ TransportSecurityState::CheckPinsAndMaybeSendReport(
     return PKPStatus::VIOLATED;
   sent_hpkp_reports_cache_.Put(
       report_cache_key, true, base::TimeTicks::Now(),
-      base::TimeTicks::Now() +
-          base::TimeDelta::FromMinutes(kTimeToRememberReportsMins));
+      base::TimeTicks::Now() + base::Minutes(kTimeToRememberReportsMins));
 
   report_sender_->Send(pkp_state.report_uri, "application/json; charset=utf-8",
                        serialized_report, network_isolation_key,
@@ -818,8 +817,7 @@ void TransportSecurityState::MaybeNotifyExpectCTFailed(
   }
   sent_expect_ct_reports_cache_.Put(
       report_cache_key, true, base::TimeTicks::Now(),
-      base::TimeTicks::Now() +
-          base::TimeDelta::FromMinutes(kTimeToRememberReportsMins));
+      base::TimeTicks::Now() + base::Minutes(kTimeToRememberReportsMins));
 
   expect_ct_reporter_->OnExpectCTFailed(
       host_port_pair, report_uri, expiration, validated_certificate_chain,
@@ -1424,12 +1422,10 @@ void TransportSecurityState::MaybePruneExpectCTState() {
     return;
 
   earliest_next_prune_expect_ct_time_ =
-      now +
-      base::TimeDelta::FromSeconds(features::kExpectCTPruneDelaySecs.Get());
+      now + base::Seconds(features::kExpectCTPruneDelaySecs.Get());
 
   base::Time last_prunable_observation_time =
-      now -
-      base::TimeDelta::FromDays(features::kExpectCTSafeFromPruneDays.Get());
+      now - base::Days(features::kExpectCTSafeFromPruneDays.Get());
 
   // Cache this locally, so don't have to repeatedly query the value.
   size_t expect_ct_prune_min = features::kExpectCTPruneMin.Get();

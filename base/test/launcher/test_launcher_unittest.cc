@@ -912,7 +912,7 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
 
 MULTIPROCESS_TEST_MAIN(LeakChildProcess) {
   while (true)
-    PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    PlatformThread::Sleep(base::Seconds(1));
 }
 
 TEST(LeakedChildProcessTest, DISABLED_LeakChildProcess) {

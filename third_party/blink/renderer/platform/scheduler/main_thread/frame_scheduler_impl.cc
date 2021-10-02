@@ -355,7 +355,7 @@ void FrameSchedulerImpl::AddTaskTime(base::TimeDelta time) {
   // The duration of task time under which AddTaskTime buffers rather than
   // sending the task time update to the delegate.
   constexpr base::TimeDelta kTaskDurationSendThreshold =
-      base::TimeDelta::FromMilliseconds(100);
+      base::Milliseconds(100);
   if (!delegate_)
     return;
   task_time_ += time;
@@ -1333,7 +1333,7 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
   base::UmaHistogramCustomTimes(
       "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."
       "TimeUntilIPCReceived",
-      duration, base::TimeDelta(), base::TimeDelta::FromMinutes(5), 100);
+      duration, base::TimeDelta(), base::Minutes(5), 100);
 }
 
 WTF::HashSet<SchedulingPolicy::Feature>

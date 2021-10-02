@@ -408,12 +408,13 @@ class CookieStoreTest : public testing::Test {
                                   const std::string& line) {
     std::string cookies = GetCookies(cs, url);
     bool matched = (TokenizeCookieLine(line) == TokenizeCookieLine(cookies));
-    base::Time polling_end_date = base::Time::Now() +
-        base::TimeDelta::FromMilliseconds(
+    base::Time polling_end_date =
+        base::Time::Now() +
+        base::Milliseconds(
             CookieStoreTestTraits::creation_time_granularity_in_ms);
 
     while (!matched &&  base::Time::Now() <= polling_end_date) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+      base::PlatformThread::Sleep(base::Milliseconds(10));
       cookies = GetCookies(cs, url);
       matched = (TokenizeCookieLine(line) == TokenizeCookieLine(cookies));
     }
@@ -454,10 +455,9 @@ TYPED_TEST_SUITE_P(CookieStoreTest);
 TYPED_TEST_P(CookieStoreTest, FilterTest) {
   CookieStore* cs = this->GetCookieStore();
 
-  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
-  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  base::Time one_hour_from_now =
-      base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
+  base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
 
   std::unique_ptr<CanonicalCookie> cc(CanonicalCookie::CreateSanitizedCookie(
       this->www_foo_foo_.url(), "A", "B", std::string(), "/foo", one_hour_ago,
@@ -581,10 +581,9 @@ TYPED_TEST_P(CookieStoreTest, FilterTest) {
 TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   CookieStore* cs = this->GetCookieStore();
 
-  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
-  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  base::Time one_hour_from_now =
-      base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
+  base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
 
   std::string foo_foo_host(this->www_foo_foo_.url().host());
   std::string foo_bar_domain(this->www_foo_bar_.domain());
@@ -1297,12 +1296,12 @@ TYPED_TEST_P(CookieStoreTest, EmptyExpires) {
                          this->GetCookiesWithOptions(cs, url, options));
 
   absl::optional<base::Time> server_time =
-      absl::make_optional(base::Time::Now() - base::TimeDelta::FromHours(1));
+      absl::make_optional(base::Time::Now() - base::Hours(1));
   this->CreateAndSetCookie(cs, url, set_cookie_line, options, server_time);
   this->MatchCookieLines(cookie_line,
                          this->GetCookiesWithOptions(cs, url, options));
 
-  server_time = base::Time::Now() + base::TimeDelta::FromHours(1);
+  server_time = base::Time::Now() + base::Hours(1);
   this->CreateAndSetCookie(cs, url, set_cookie_line, options, server_time);
   this->MatchCookieLines(cookie_line,
                          this->GetCookiesWithOptions(cs, url, options));
@@ -1453,14 +1452,10 @@ TYPED_TEST_P(CookieStoreTest, TestDeleteAll) {
 
 TYPED_TEST_P(CookieStoreTest, TestDeleteAllCreatedInTimeRange) {
   CookieStore* cs = this->GetCookieStore();
-  const base::Time last_month = base::Time::Now() -
-                                base::TimeDelta::FromDays(30);
-  const base::Time last_minute = base::Time::Now() -
-                                 base::TimeDelta::FromMinutes(1);
-  const base::Time next_minute = base::Time::Now() +
-                                 base::TimeDelta::FromMinutes(1);
-  const base::Time next_month = base::Time::Now() +
-                                base::TimeDelta::FromDays(30);
+  const base::Time last_month = base::Time::Now() - base::Days(30);
+  const base::Time last_minute = base::Time::Now() - base::Minutes(1);
+  const base::Time next_minute = base::Time::Now() + base::Minutes(1);
+  const base::Time next_month = base::Time::Now() + base::Days(30);
 
   // Add a cookie.
   EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "A=B"));
@@ -1501,8 +1496,8 @@ TYPED_TEST_P(CookieStoreTest, TestDeleteAllCreatedInTimeRange) {
 TYPED_TEST_P(CookieStoreTest, TestDeleteAllWithInfo) {
   CookieStore* cs = this->GetCookieStore();
   base::Time now = base::Time::Now();
-  base::Time last_month = base::Time::Now() - base::TimeDelta::FromDays(30);
-  base::Time last_minute = base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  base::Time last_month = base::Time::Now() - base::Days(30);
+  base::Time last_minute = base::Time::Now() - base::Minutes(1);
 
   // These 3 cookies match the time range and host.
   EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "A=B"));
@@ -1686,12 +1681,12 @@ TYPED_TEST_P(CookieStoreTest, CookieOrdering) {
       this->SetCookie(cs, GURL("http://d.c.b.a.foo.com/aa/x.html"), "c=1"));
   EXPECT_TRUE(this->SetCookie(cs, GURL("http://b.a.foo.com/aa/bb/cc/x.html"),
                               "d=1; domain=b.a.foo.com"));
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(
-      TypeParam::creation_time_granularity_in_ms));
+  base::PlatformThread::Sleep(
+      base::Milliseconds(TypeParam::creation_time_granularity_in_ms));
   EXPECT_TRUE(this->SetCookie(cs, GURL("http://b.a.foo.com/aa/bb/cc/x.html"),
                               "a=4; domain=b.a.foo.com"));
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(
-      TypeParam::creation_time_granularity_in_ms));
+  base::PlatformThread::Sleep(
+      base::Milliseconds(TypeParam::creation_time_granularity_in_ms));
   EXPECT_TRUE(this->SetCookie(cs, GURL("http://c.b.a.foo.com/aa/bb/cc/x.html"),
                               "e=1; domain=c.b.a.foo.com"));
   EXPECT_TRUE(

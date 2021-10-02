@@ -547,8 +547,8 @@ void ShimNewMallocZonesAndReschedule(base::Time end_time,
 }  // namespace
 
 void PeriodicallyShimNewMallocZones() {
-  base::Time end_time = base::Time::Now() + base::TimeDelta::FromMinutes(1);
-  base::TimeDelta initial_delay = base::TimeDelta::FromSeconds(1);
+  base::Time end_time = base::Time::Now() + base::Minutes(1);
+  base::TimeDelta initial_delay = base::Seconds(1);
   ShimNewMallocZonesAndReschedule(end_time, initial_delay);
 }
 

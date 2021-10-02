@@ -538,8 +538,8 @@ GURL BaseSearchProviderTest::AddSearchToHistory(TemplateURL* t_url,
       TemplateURLServiceFactory::GetForProfile(profile_.get())
           ->search_terms_data()));
   static base::Time last_added_time;
-  last_added_time = std::max(base::Time::Now(),
-      last_added_time + base::TimeDelta::FromMicroseconds(1));
+  last_added_time =
+      std::max(base::Time::Now(), last_added_time + base::Microseconds(1));
   history->AddPageWithDetails(search, std::u16string(), visit_count,
                               visit_count, last_added_time, false,
                               history::SOURCE_BROWSED);

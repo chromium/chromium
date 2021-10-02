@@ -431,8 +431,7 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
   auto mojo_group = mojom::blink::InterestGroup::New();
-  mojo_group->expiry =
-      base::Time::Now() + base::TimeDelta::FromSecondsD(duration_seconds);
+  mojo_group->expiry = base::Time::Now() + base::Seconds(duration_seconds);
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
     return;
   mojo_group->name = group->name();

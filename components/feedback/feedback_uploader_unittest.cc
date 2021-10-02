@@ -33,8 +33,7 @@ constexpr char kReportThree[] = "three";
 constexpr char kReportFour[] = "four";
 constexpr char kReportFive[] = "five";
 
-constexpr base::TimeDelta kRetryDelayForTest =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kRetryDelayForTest = base::Milliseconds(100);
 
 class MockFeedbackUploader : public FeedbackUploader {
  public:

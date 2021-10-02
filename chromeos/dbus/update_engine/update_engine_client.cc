@@ -423,8 +423,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
     EolInfo eol_info;
     if (status.eol_date() > 0) {
-      eol_info.eol_date = base::Time::UnixEpoch() +
-                          base::TimeDelta::FromDays(status.eol_date());
+      eol_info.eol_date =
+          base::Time::UnixEpoch() + base::Days(status.eol_date());
     }
     std::move(callback).Run(eol_info);
   }
@@ -550,7 +550,7 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
         FROM_HERE,
         base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kStateTransitionDefaultDelayMs));
+        base::Milliseconds(kStateTransitionDefaultDelayMs));
   }
 
   void RebootAfterUpdate() override {}
@@ -646,7 +646,7 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
           FROM_HERE,
           base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(delay_ms));
+          base::Milliseconds(delay_ms));
     }
   }
 

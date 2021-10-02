@@ -1337,7 +1337,7 @@ class PingerImpl : public mojom::Pinger, public mojom::SimplePinger {
     pong_sender_.AsyncCall(&PongSender::SendPong).WithArgs(barrier);
     same_pipe_pong_sender_.AsyncCall(&PongSender::SendPong).WithArgs(barrier);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, barrier, base::TimeDelta::FromMilliseconds(10));
+        FROM_HERE, barrier, base::Milliseconds(10));
     wait_to_reply.Run();
   }
 

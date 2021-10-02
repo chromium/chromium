@@ -309,15 +309,15 @@ TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
 // Tests that the time spent in the tab grid is correctly logged.
 TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
-  scoped_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  scoped_clock_.Advance(base::Minutes(1));
   [coordinator_ showTabGrid];
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
-  scoped_clock_.Advance(base::TimeDelta::FromSeconds(20));
+  scoped_clock_.Advance(base::Seconds(20));
   [coordinator_ showTabViewController:normal_tab_view_controller_
                    shouldCloseTabGrid:YES
                            completion:nil];
   histogram_tester_.ExpectUniqueTimeSample("IOS.TabSwitcher.TimeSpent",
-                                           base::TimeDelta::FromSeconds(20), 1);
+                                           base::Seconds(20), 1);
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 1);
 }
 

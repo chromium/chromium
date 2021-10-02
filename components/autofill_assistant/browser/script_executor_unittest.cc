@@ -268,7 +268,7 @@ TEST_F(ScriptExecutorTest, RunMultipleActions) {
 }
 
 ACTION_P2(Delay, env, delay) {
-  env->FastForwardBy(base::TimeDelta::FromMilliseconds(delay));
+  env->FastForwardBy(base::Milliseconds(delay));
 }
 
 TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningReplace) {
@@ -276,10 +276,8 @@ TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningReplace) {
   client_settings->slow_connection_message = "slow";
   client_settings->enable_slow_connection_warnings = true;
   client_settings->max_consecutive_slow_roundtrips = 2;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
   ActionsResponseProto initial_actions_response;
@@ -310,10 +308,8 @@ TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningConcatenate) {
   client_settings->slow_connection_message = "... slow";
   client_settings->enable_slow_connection_warnings = true;
   client_settings->max_consecutive_slow_roundtrips = 2;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::CONCATENATE;
   ActionsResponseProto initial_actions_response;
@@ -346,10 +342,8 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersOnlyOnce) {
   client_settings->enable_slow_connection_warnings = true;
   client_settings->only_show_connection_warning_once = true;
   client_settings->max_consecutive_slow_roundtrips = 1;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
   ActionsResponseProto initial_actions_response;
@@ -370,7 +364,7 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersOnlyOnce) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(delegate_.GetStatusMessage(), "2");
 }
 
@@ -381,10 +375,8 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersMultipleTimes) {
   client_settings->only_show_connection_warning_once = false;
   client_settings->only_show_warning_once = false;
   client_settings->max_consecutive_slow_roundtrips = 1;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
   ActionsResponseProto initial_actions_response;
@@ -405,9 +397,9 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersMultipleTimes) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(delegate_.GetStatusMessage(), "2");
 }
 
@@ -468,14 +460,12 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShownIfSlowWebsiteFirst) {
   client_settings->slow_connection_message = "slow connection";
   client_settings->slow_website_message = "slow website";
   client_settings->enable_slow_website_warnings = true;
-  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->warning_delay = base::Milliseconds(1500);
   client_settings->enable_slow_connection_warnings = true;
   client_settings->only_show_warning_once = true;
   client_settings->max_consecutive_slow_roundtrips = 2;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
   ActionsResponseProto tell1_waitfordom;
@@ -521,7 +511,7 @@ TEST_F(ScriptExecutorTest, SlowWebsiteWarningReplace) {
   ClientSettings* client_settings = delegate_.GetMutableSettings();
   client_settings->slow_website_message = "slow";
   client_settings->enable_slow_website_warnings = true;
-  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->warning_delay = base::Milliseconds(1500);
   ActionsResponseProto actions_response;
   actions_response.add_actions()->mutable_tell()->set_message("1");
   auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
@@ -613,14 +603,12 @@ TEST_F(ScriptExecutorTest, SlowWebsiteWarningNotShownIfSlowConnectionFirst) {
   client_settings->slow_connection_message = "slow connection";
   client_settings->slow_website_message = "slow website";
   client_settings->enable_slow_website_warnings = true;
-  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->warning_delay = base::Milliseconds(1500);
   client_settings->enable_slow_connection_warnings = true;
   client_settings->only_show_warning_once = true;
   client_settings->max_consecutive_slow_roundtrips = 1;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
   ActionsResponseProto tell1;
@@ -670,14 +658,12 @@ TEST_F(ScriptExecutorTest, SlowWarningsBothShownIfConfigured) {
   client_settings->slow_connection_message = "slow connection";
   client_settings->slow_website_message = "slow website";
   client_settings->enable_slow_website_warnings = true;
-  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->warning_delay = base::Milliseconds(1500);
   client_settings->enable_slow_connection_warnings = true;
   client_settings->only_show_warning_once = false;
   client_settings->max_consecutive_slow_roundtrips = 1;
-  client_settings->slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(100);
-  client_settings->minimum_warning_duration =
-      base::TimeDelta::FromMilliseconds(100);
+  client_settings->slow_roundtrip_threshold = base::Milliseconds(100);
+  client_settings->minimum_warning_duration = base::Milliseconds(100);
   client_settings->message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
   ActionsResponseProto tell1;
@@ -822,7 +808,7 @@ TEST_F(ScriptExecutorTest, RunDelayedAction) {
   // Moving forward in time triggers action execution.
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
 }
 
@@ -956,7 +942,7 @@ TEST_F(ScriptExecutorTest, WaitForDomWaitUntil) {
                                 std::make_unique<ElementFinder::Result>());
       }));
   EXPECT_CALL(executor_callback_, Run(_));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   ASSERT_EQ(1u, processed_actions_capture.size());
   EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[0].status());
@@ -1354,7 +1340,7 @@ TEST_F(ScriptExecutorTest, RunInterruptMultipleTimesDuringPrompt) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
   for (int try_count = 0; try_count < 10; try_count++) {
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
   }
 
   EXPECT_THAT(
@@ -1550,7 +1536,7 @@ TEST_F(ScriptExecutorTest, PauseWaitForDomWhileNavigating) {
   // timeout.
   delegate_.UpdateNavigationState(/* navigating= */ true, /* error= */ false);
   for (int i = 0; i < 5; i++) {
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // The end of navigation un-pauses WaitForDom.
@@ -1683,7 +1669,7 @@ TEST_F(ScriptExecutorTest, ReportNavigationEnd) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   ASSERT_THAT(processed_actions_capture, SizeIs(1));
   EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[0].status());
@@ -2027,7 +2013,7 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   EXPECT_EQ("Prompt", delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::PROMPT, delegate_.GetState());
 }
@@ -2053,7 +2039,7 @@ TEST_F(ScriptExecutorTest, RoundtripTimingStats) {
 
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   // Moving forward in time triggers action execution.
 
   EXPECT_EQ(200, timing_stats.roundtrip_time_ms());

@@ -69,8 +69,7 @@ TEST_F(NativeTimerTest, CheckCreateFailure) {
   create_timer_loop.RunUntilIdle();
 
   // Starting the timer should fail as timer creation failed.
-  EXPECT_FALSE(CheckStartTimerAndExpiration(
-      &timer, base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_FALSE(CheckStartTimerAndExpiration(&timer, base::Milliseconds(1000)));
 }
 
 TEST_F(NativeTimerTest, CheckCreateAndStartTimer) {
@@ -80,13 +79,11 @@ TEST_F(NativeTimerTest, CheckCreateAndStartTimer) {
   create_timer_loop.RunUntilIdle();
 
   // Start timer and check if starting the timer and its expiration succeeded.
-  EXPECT_TRUE(CheckStartTimerAndExpiration(
-      &timer, base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_TRUE(CheckStartTimerAndExpiration(&timer, base::Milliseconds(1000)));
 
   // Start another timer and check if starting the timer and its expiration
   // succeeded.
-  EXPECT_TRUE(CheckStartTimerAndExpiration(
-      &timer, base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_TRUE(CheckStartTimerAndExpiration(&timer, base::Milliseconds(1000)));
 }
 
 }  // namespace chromeos

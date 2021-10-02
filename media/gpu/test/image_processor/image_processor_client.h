@@ -67,9 +67,8 @@ class ImageProcessorClient {
 
   // Wait until |num_processed| frames are processed. Returns false if
   // |max_wait| is exceeded.
-  bool WaitUntilNumImageProcessed(
-      size_t num_processed,
-      base::TimeDelta max_wait = base::TimeDelta::FromSeconds(5));
+  bool WaitUntilNumImageProcessed(size_t num_processed,
+                                  base::TimeDelta max_wait = base::Seconds(5));
 
   // Get the number of processed VideoFrames.
   size_t GetNumOfProcessedImages() const;

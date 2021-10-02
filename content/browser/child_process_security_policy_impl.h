@@ -664,8 +664,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Allows tests to modify the delay in cleaning up BrowsingInstanceIds. If the
   // delay is set to zero, cleanup happens immediately.
   void SetBrowsingInstanceCleanupDelayForTesting(int64_t delay_in_seconds) {
-    browsing_instance_cleanup_delay_ =
-        base::TimeDelta::FromSeconds(delay_in_seconds);
+    browsing_instance_cleanup_delay_ = base::Seconds(delay_in_seconds);
   }
 
  private:

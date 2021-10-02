@@ -25,7 +25,7 @@
 namespace {
 
 // Constants for retrying certificate obtention and upload.
-constexpr base::TimeDelta kRetryDelay = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRetryDelay = base::Seconds(5);
 const int kRetryLimit = 100;
 
 void DBusPrivacyCACallback(

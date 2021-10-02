@@ -150,7 +150,7 @@ void PNGImageDecoder::InitializeNewFrame(wtf_size_t index) {
   DCHECK(IntRect(IntPoint(), Size()).Contains(frame_info.frame_rect));
   buffer.SetOriginalFrameRect(frame_info.frame_rect);
 
-  buffer.SetDuration(base::TimeDelta::FromMilliseconds(frame_info.duration));
+  buffer.SetDuration(base::Milliseconds(frame_info.duration));
   buffer.SetDisposalMethod(frame_info.disposal_method);
   buffer.SetAlphaBlendSource(frame_info.alpha_blend);
 

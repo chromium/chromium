@@ -48,7 +48,7 @@ constexpr char kIPHShowCountPath[] = "show_count";
 // client side will be used.
 constexpr base::FeatureParam<base::TimeDelta> kOverriddenDuration{
     &feature_engagement::kIPHDesktopSnoozeFeature,
-    "x_iph_snooze_overridden_duration", base::TimeDelta::FromHours(0)};
+    "x_iph_snooze_overridden_duration", base::Hours(0)};
 
 constexpr base::FeatureParam<FeaturePromoSnoozeService::NonClickerPolicy>::
     Option kNonClickerPolicyOptions[] = {
@@ -75,7 +75,7 @@ FeaturePromoSnoozeService::FeaturePromoSnoozeService(Profile* profile)
 
 void FeaturePromoSnoozeService::OnUserSnooze(const base::Feature& iph_feature,
                                              base::TimeDelta snooze_duration) {
-  DCHECK(snooze_duration > base::TimeDelta::FromSeconds(0));
+  DCHECK(snooze_duration > base::Seconds(0));
   auto snooze_data = ReadSnoozeData(iph_feature);
 
   if (!snooze_data)
@@ -165,8 +165,7 @@ bool FeaturePromoSnoozeService::IsBlocked(const base::Feature& iph_feature) {
     if (non_clicker_policy == NonClickerPolicy::kDismiss)
       return true;
 
-    return base::Time::Now() <
-           snooze_data->last_show_time + base::TimeDelta::FromDays(14);
+    return base::Time::Now() < snooze_data->last_show_time + base::Days(14);
   }
 }
 
@@ -221,7 +220,7 @@ FeaturePromoSnoozeService::ReadSnoozeData(const base::Feature& iph_feature) {
   if (!show_time || !show_count) {
     // This feature was shipped before without handling
     // non-clickers. Assume previous displays were all snooozed.
-    show_time = *snooze_time - base::TimeDelta::FromSeconds(1);
+    show_time = *snooze_time - base::Seconds(1);
     show_count = *snooze_count;
   }
 

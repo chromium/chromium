@@ -291,7 +291,7 @@ void ExecuteJavaScriptFunction(const std::string& name,
         name, parameters, base::BindOnce(^(const base::Value* res) {
           std::move(cb).Run(res);
         }),
-        base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+        base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
     if (!called) {
       std::move(cb).Run(nil);
     }

@@ -360,7 +360,7 @@ void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
       // This base::Unretained is safe because the task is owned by the timer,
       // which is in turn owned by this object.
       enable_install_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromMilliseconds(g_install_delay_in_ms),
+          FROM_HERE, base::Milliseconds(g_install_delay_in_ms),
           base::BindOnce(&ExtensionInstallDialogView::EnableInstallButton,
                          base::Unretained(this)));
     }

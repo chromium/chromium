@@ -1695,12 +1695,10 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
 
   response->headers = new net::HttpResponseHeaders("200 OK\r\n\r\n");
 
-  auto start_time =
-      base::TimeTicks::Now() - base::TimeDelta::FromMilliseconds(10);
+  auto start_time = base::TimeTicks::Now() - base::Milliseconds(10);
   response->request_start = start_time;
   response->response_start = base::TimeTicks::Now();
-  response->request_time =
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(10);
+  response->request_time = base::Time::Now() - base::Milliseconds(10);
   response->response_time = base::Time::Now();
 
   auto& load_timing = response->load_timing;
@@ -1709,7 +1707,7 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   load_timing.send_start = start_time;
   load_timing.send_end = base::TimeTicks::Now();
   load_timing.receive_headers_end = base::TimeTicks::Now();
-  load_timing.push_start = start_time - base::TimeDelta::FromMilliseconds(100);
+  load_timing.push_start = start_time - base::Milliseconds(100);
   if (url.query() != kPushUseNullEndTime)
     load_timing.push_end = base::TimeTicks::Now();
 
@@ -2390,7 +2388,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
   https_test_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_test_server.Start());
   GURL https_url = https_test_server.GetURL("localhost", "/devtools/image.png");
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   content::StoragePartition* partition =

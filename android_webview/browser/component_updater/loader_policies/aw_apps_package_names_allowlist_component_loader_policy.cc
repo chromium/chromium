@@ -189,9 +189,8 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
     return;
   }
 
-  base::Time expiry_date =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMillisecondsD(expiry_date_ms.value_or(0.0));
+  base::Time expiry_date = base::Time::UnixEpoch() +
+                           base::Milliseconds(expiry_date_ms.value_or(0.0));
   if (expiry_date <= base::Time::Now()) {
     RecordAndReportResult(std::move(lookup_callback_),
                           {AllowlistPraseStatus::kExpiredAllowlist});

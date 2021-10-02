@@ -55,10 +55,9 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
     if (timing_info.rateRefresh.uiDenominator > 0 &&
         timing_info.rateRefresh.uiNumerator > 0) {
       // Swap the numerator/denominator to convert frequency to period.
-      rate_interval = base::TimeDelta::FromMicroseconds(
-          timing_info.rateRefresh.uiDenominator *
-          base::Time::kMicrosecondsPerSecond /
-          timing_info.rateRefresh.uiNumerator);
+      rate_interval = base::Microseconds(timing_info.rateRefresh.uiDenominator *
+                                         base::Time::kMicrosecondsPerSecond /
+                                         timing_info.rateRefresh.uiNumerator);
     }
 
     if (base::TimeTicks::IsHighResolution()) {
@@ -70,7 +69,7 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
           static_cast<LONGLONG>(timing_info.qpcRefreshPeriod));
       // Check for interval values that are impossibly low. A 29 microsecond
       // interval was seen (from a qpcRefreshPeriod of 60).
-      if (interval < base::TimeDelta::FromMilliseconds(1)) {
+      if (interval < base::Milliseconds(1)) {
         interval = rate_interval;
       }
       // Check for the qpcRefreshPeriod interval being improbably small
@@ -105,7 +104,7 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
       if (EnumDisplaySettings(monitor_info.szDevice, ENUM_CURRENT_SETTINGS,
                               &display_info) &&
           display_info.dmDisplayFrequency > 1) {
-        interval = base::TimeDelta::FromMicroseconds(
+        interval = base::Microseconds(
             (1.0 / static_cast<double>(display_info.dmDisplayFrequency)) *
             base::Time::kMicrosecondsPerSecond);
       }

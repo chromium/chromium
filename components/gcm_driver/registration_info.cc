@@ -141,8 +141,7 @@ bool GCMRegistrationInfo::Deserialize(const std::string& serialized_key,
   if (base::StringToInt64(last_validated_str, &last_validated_ms)) {
     // It's okay for |last_validated| to be the default base::Time() value
     // when there is no serialized timestamp value available.
-    last_validated =
-        base::Time() + base::TimeDelta::FromMicroseconds(last_validated_ms);
+    last_validated = base::Time() + base::Microseconds(last_validated_ms);
   }
 
   return true;
@@ -234,7 +233,7 @@ bool InstanceIDTokenInfo::Deserialize(const std::string& serialized_key,
   if (base::StringToInt64(last_validated_str, &last_validated_ms)) {
     // It's okay for last_validated to be the default base::Time() value
     // when there is no serialized timestamp available.
-    last_validated += base::TimeDelta::FromMicroseconds(last_validated_ms);
+    last_validated += base::Microseconds(last_validated_ms);
   }
 
   return true;

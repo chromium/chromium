@@ -763,8 +763,8 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
                 : "Persistent",
             ModelTypeToHistogramSuffix(type_)),
         configuration_duration,
-        /*min=*/base::TimeDelta::FromMilliseconds(1),
-        /*min=*/base::TimeDelta::FromSeconds(60),
+        /*min=*/base::Milliseconds(1),
+        /*min=*/base::Seconds(60),
         /*buckets=*/50);
   }
 

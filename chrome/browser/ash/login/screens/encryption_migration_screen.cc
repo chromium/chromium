@@ -437,7 +437,7 @@ void EncryptionMigrationScreen::UpdateUIState(
       FROM_HERE,
       base::BindOnce(&EncryptionMigrationScreen::OnDelayedRecordVisibleScreen,
                      weak_ptr_factory_.GetWeakPtr(), state),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void EncryptionMigrationScreen::CheckAvailableStorage() {

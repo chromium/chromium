@@ -29,8 +29,7 @@ namespace {
 
 // Delay for notifying Android about screen brightness changes, added in
 // order to prevent spammy brightness updates.
-constexpr base::TimeDelta kNotifyBrightnessDelay =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kNotifyBrightnessDelay = base::Milliseconds(200);
 
 // Singleton factory for ArcPowerBridge.
 class ArcPowerBridgeFactory

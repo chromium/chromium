@@ -1166,7 +1166,7 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
   const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
 
   merchant_proto.set_timestamp(
-      (base::Time::Now() - base::TimeDelta::FromDays(16)).ToDoubleT());
+      (base::Time::Now() - base::Days(16)).ToDoubleT());
   service_->AddCart(kMockMerchantA, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
@@ -1201,7 +1201,7 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
   run_loop[3].Run();
 
   merchant_proto.set_timestamp(
-      (base::Time::Now() - base::TimeDelta::FromDays(13)).ToDoubleT());
+      (base::Time::Now() - base::Days(13)).ToDoubleT());
   merchant_proto.set_is_removed(false);
   service_->GetDB()->AddCart(
       kMockMerchantA, merchant_proto,
@@ -1744,8 +1744,7 @@ TEST_F(CartServiceDiscountFetchTest, TestFreshFetch) {
 TEST_F(CartServiceDiscountFetchTest, TestFetchWhenBeyondEnforcedDelay) {
   // Set last fetch timestamp so that the current time is beyond the enforced
   // delay.
-  base::Time last_fetch_time =
-      base::Time::Now() - base::TimeDelta::FromSeconds(20);
+  base::Time last_fetch_time = base::Time::Now() - base::Seconds(20);
   profile_.GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
                                last_fetch_time);
   StartGettingDiscount();
@@ -1767,7 +1766,7 @@ TEST_F(CartServiceDiscountFetchTest, TestNoFetchWithinEnforcedDelay) {
   EXPECT_EQ(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             last_fetch_time);
   // Wait so that the current time is beyond the enforced delay.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   StartGettingDiscount();
   task_environment_.RunUntilIdle();
   EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),

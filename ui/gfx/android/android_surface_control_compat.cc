@@ -339,7 +339,7 @@ SurfaceControl::TransactionStats ToTransactionStats(
           stats));
   transaction_stats.latch_time =
       base::TimeTicks() +
-      base::TimeDelta::FromNanoseconds(
+      base::Nanoseconds(
           SurfaceControlMethods::Get().ASurfaceTransactionStats_getLatchTimeFn(
               stats));
   if (transaction_stats.latch_time == base::TimeTicks())

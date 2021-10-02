@@ -102,7 +102,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
     if (stream_receiver_.is_bound())
       return;
     base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
                       &TestStreamFactory::OnTimer);
     runner_.Run();
   }
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName,
-      base::TimeDelta::FromMilliseconds(2520), 1);
+      base::Milliseconds(2520), 1);
   histograms.ExpectTotalCount(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName, 0);
 }
@@ -457,10 +457,10 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName,
-      base::TimeDelta::FromMilliseconds(2520), 1);
+      base::Milliseconds(2520), 1);
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName,
-      base::TimeDelta::FromMilliseconds(1260), 1);
+      base::Milliseconds(1260), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {

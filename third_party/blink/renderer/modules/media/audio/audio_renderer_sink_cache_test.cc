@@ -25,8 +25,7 @@ const char* const kDefaultDeviceId =
 const char kAnotherDeviceId[] = "another-device-id";
 const char kUnhealthyDeviceId[] = "i-am-sick";
 const LocalFrameToken kFrameToken;
-constexpr base::TimeDelta kDeleteTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(500);
 }  // namespace
 
 class AudioRendererSinkCacheTest : public testing::Test {
@@ -221,8 +220,7 @@ TEST_F(AudioRendererSinkCacheTest, NoGarbageCollectionForUsedSink) {
   EXPECT_EQ(1u, sink_count());
 
   // Wait less than garbage collection timeout.
-  base::TimeDelta wait_a_bit =
-      kDeleteTimeout - base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta wait_a_bit = kDeleteTimeout - base::Milliseconds(1);
   task_runner_->FastForwardBy(wait_a_bit);
 
   // Sink is not deleted yet.

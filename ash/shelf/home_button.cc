@@ -45,9 +45,8 @@ constexpr int kAnimationBounceUpOffset = 12;
 constexpr int kAnimationBounceDownOffset = 3;
 
 constexpr base::TimeDelta kHomeButtonAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kRippleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(250);
+constexpr base::TimeDelta kRippleAnimationDuration = base::Milliseconds(2000);
 
 }  // namespace
 
@@ -301,7 +300,7 @@ void HomeButton::StartNudgeAnimation() {
       .SetOpacity(nudge_ripple_layer_.get(), 0.0f,
                   gfx::Tween::ACCEL_0_80_DECEL_80)
       // Set up the animation of the widget_layer
-      .At(base::TimeDelta::FromSeconds(0))
+      .At(base::Seconds(0))
       .SetDuration(kHomeButtonAnimationDuration)
       .SetTransform(widget_layer, move_up, gfx::Tween::FAST_OUT_SLOW_IN_3)
       .Then()

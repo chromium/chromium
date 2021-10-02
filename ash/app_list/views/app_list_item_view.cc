@@ -210,7 +210,7 @@ class AppListItemView::IconImageView : public views::ImageView {
     if (animate) {
       settings.emplace(layer()->GetAnimator());
       settings->SetTweenType(gfx::Tween::EASE_IN);
-      settings->SetTransitionDuration(base::TimeDelta::FromMilliseconds(125));
+      settings->SetTransitionDuration(base::Milliseconds(125));
     }
 
     extended_ = extended;
@@ -431,7 +431,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
 
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
   settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds((kDragDropAppIconScaleTransitionInMs)));
+      base::Milliseconds((kDragDropAppIconScaleTransitionInMs)));
   settings.SetTweenType(gfx::Tween::EASE_OUT_2);
   if (scale_up) {
     if (is_folder_) {
@@ -736,9 +736,8 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
   if (!InitiateDrag(event.location(), event.root_location()))
     return true;
 
-  mouse_drag_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kMouseDragUIDelayInMs), this,
-      &AppListItemView::OnMouseDragTimer);
+  mouse_drag_timer_.Start(FROM_HERE, base::Milliseconds(kMouseDragUIDelayInMs),
+                          this, &AppListItemView::OnMouseDragTimer);
   return true;
 }
 
@@ -860,8 +859,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       if (GetState() != STATE_DISABLED) {
         SetState(STATE_PRESSED);
         touch_drag_timer_.Start(
-            FROM_HERE,
-            base::TimeDelta::FromMilliseconds(kTouchLongpressDelayInMs),
+            FROM_HERE, base::Milliseconds(kTouchLongpressDelayInMs),
             base::BindOnce(&AppListItemView::OnTouchDragTimer,
                            base::Unretained(this), event->location(),
                            event->root_location()));
@@ -1128,8 +1126,7 @@ void AppListItemView::CreateDraggedViewHoverAnimation() {
 
   dragged_view_hover_animation_ = std::make_unique<gfx::SlideAnimation>(this);
   dragged_view_hover_animation_->SetTweenType(gfx::Tween::EASE_IN);
-  dragged_view_hover_animation_->SetSlideDuration(
-      base::TimeDelta::FromMilliseconds(250));
+  dragged_view_hover_animation_->SetSlideDuration(base::Milliseconds(250));
 }
 
 void AppListItemView::AdaptBoundsForSelectionHighlight(gfx::Rect* bounds) {

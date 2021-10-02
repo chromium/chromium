@@ -164,16 +164,16 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuInfoUpdate) {
 
 base::Time GpuDataManagerImplPrivateTest::JustBeforeExpiration(
     const GpuDataManagerImplPrivate* manager) {
-  return GetTimeForTesting() + base::TimeDelta::FromMilliseconds(
-      manager->GetBlockAllDomainsDurationInMs()) -
-      base::TimeDelta::FromMilliseconds(3);
+  return GetTimeForTesting() +
+         base::Milliseconds(manager->GetBlockAllDomainsDurationInMs()) -
+         base::Milliseconds(3);
 }
 
 base::Time GpuDataManagerImplPrivateTest::JustAfterExpiration(
     const GpuDataManagerImplPrivate* manager) {
-  return GetTimeForTesting() + base::TimeDelta::FromMilliseconds(
-      manager->GetBlockAllDomainsDurationInMs()) +
-      base::TimeDelta::FromMilliseconds(3);
+  return GetTimeForTesting() +
+         base::Milliseconds(manager->GetBlockAllDomainsDurationInMs()) +
+         base::Milliseconds(3);
 }
 
 void GpuDataManagerImplPrivateTest::TestBlockingDomainFrom3DAPIs(

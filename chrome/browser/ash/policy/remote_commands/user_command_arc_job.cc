@@ -22,8 +22,7 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultCommandTimeout =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kDefaultCommandTimeout = base::Minutes(2);
 
 }  // namespace
 

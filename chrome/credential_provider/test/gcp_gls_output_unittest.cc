@@ -208,8 +208,8 @@ std::string GcpUsingChromeTest::RunProcessAndExtractOutput(
   // If the pipe is no longer readable it is expected that the process will be
   // terminating shortly.
   int exit_code;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeout), &exit_code));
+  EXPECT_TRUE(
+      process.WaitForExitWithTimeout(base::Milliseconds(kTimeout), &exit_code));
   EXPECT_EQ(exit_code, 0);
 
   return output_from_process;

@@ -46,8 +46,8 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kOneHour = base::Hours(1);
+constexpr base::TimeDelta kOneDay = base::Days(1);
 constexpr char kStartTime[] = "1 Jan 2020 21:15";
 
 constexpr char kExampleHost0[] = "http://www.example0.com";
@@ -203,7 +203,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*policy=*/&policy_content,
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
       /*created_at=*/base::Time::Now() - kOneDay,
-      /*duration=*/base::TimeDelta::FromHours(2));
+      /*duration=*/base::Hours(2));
   GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
 
   // The override time limit policy would not get reported since the difference
@@ -223,8 +223,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
   utils::AddOverrideWithDuration(
       /*policy=*/&policy_content,
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
-      /*created_at=*/base::Time::Now() - base::TimeDelta::FromHours(23),
-      /*duration=*/base::TimeDelta::FromHours(2));
+      /*created_at=*/base::Time::Now() - base::Hours(23),
+      /*duration=*/base::Hours(2));
   GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
 
   // The override time limit policy would get reported since the created
@@ -271,14 +271,12 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
   // Add limit policy to the Chrome and the Arc app.
   {
     app_time::AppTimeLimitsPolicyBuilder builder;
-    builder.AddAppLimit(
-        kArcApp,
-        app_time::AppLimit(app_time::AppRestriction::kTimeLimit,
-                           base::TimeDelta::FromHours(1), base::Time::Now()));
-    builder.AddAppLimit(
-        app_time::GetChromeAppId(),
-        app_time::AppLimit(app_time::AppRestriction::kTimeLimit,
-                           base::TimeDelta::FromHours(1), base::Time::Now()));
+    builder.AddAppLimit(kArcApp,
+                        app_time::AppLimit(app_time::AppRestriction::kTimeLimit,
+                                           base::Hours(1), base::Time::Now()));
+    builder.AddAppLimit(app_time::GetChromeAppId(),
+                        app_time::AppLimit(app_time::AppRestriction::kTimeLimit,
+                                           base::Hours(1), base::Time::Now()));
 
     builder.SetResetTime(6, 0);
     DictionaryPrefUpdate update(GetPrefs(), prefs::kPerAppTimeLimitsPolicy);

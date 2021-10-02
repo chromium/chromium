@@ -107,7 +107,7 @@ DWORD WINAPI NotificationHandler(LPVOID parameter) {
 
   do {
     if (!args->notification_event->TimedWait(
-            base::TimeDelta::FromMilliseconds(kWaitTimeoutMs)))
+            base::Milliseconds(kWaitTimeoutMs)))
       break;
 
     bytes_written = DrainLog(&buffer[0], buffer_size, nullptr);

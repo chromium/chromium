@@ -360,8 +360,8 @@ TEST_F(CertProvisioningCertDeleterTest, CertWasRenewed) {
   const char kCertId2[] = "id2";
 
   base::Time t1 = base::Time::Now();
-  base::Time t2 = t1 + base::TimeDelta::FromDays(30);
-  base::Time t3 = t2 + base::TimeDelta::FromDays(30);
+  base::Time t2 = t1 + base::Days(30);
+  base::Time t3 = t2 + base::Days(30);
 
   auto cert = certificate_helper_.AddCert(kCertScope, kRenewedCertId,
                                           Status::kSuccess, t1, t2);

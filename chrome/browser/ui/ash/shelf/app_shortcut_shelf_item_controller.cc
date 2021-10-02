@@ -542,8 +542,7 @@ bool AppShortcutShelfItemController::IsV2App() {
 
 bool AppShortcutShelfItemController::AllowNextLaunchAttempt() {
   if (last_launch_attempt_.is_null() ||
-      last_launch_attempt_ +
-              base::TimeDelta::FromMilliseconds(kClickSuppressionInMS) <
+      last_launch_attempt_ + base::Milliseconds(kClickSuppressionInMS) <
           base::Time::Now()) {
     last_launch_attempt_ = base::Time::Now();
     return true;

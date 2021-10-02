@@ -160,7 +160,7 @@ TEST_F(SettingsTest, Timeouts) {
       // Switch not present.
       {"", false, base::TimeDelta()},
       // Valid number of minutes.
-      {"100", true, base::TimeDelta::FromMinutes(100)},
+      {"100", true, base::Minutes(100)},
       // Disabled.
       {"0", true, base::TimeDelta()},
       // Invalid values.

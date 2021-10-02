@@ -140,9 +140,9 @@ void AffiliationFetchThrottler::OnConnectionChanged(
 
   double grace_ms = kGracePeriodAfterReconnectMs *
                     (1 - base::RandDouble() * kBackoffPolicy.jitter_factor);
-  exponential_backoff_->SetCustomReleaseTime(std::max(
-      exponential_backoff_->GetReleaseTime(),
-      tick_clock_->NowTicks() + base::TimeDelta::FromMillisecondsD(grace_ms)));
+  exponential_backoff_->SetCustomReleaseTime(
+      std::max(exponential_backoff_->GetReleaseTime(),
+               tick_clock_->NowTicks() + base::Milliseconds(grace_ms)));
 
   if (state_ == FETCH_NEEDED)
     EnsureCallbackIsScheduled();

@@ -56,7 +56,7 @@ void NoticeCardTracker::OnCardViewed(bool is_signed_in,
   }
 
   auto now = base::TimeTicks::Now();
-  if (now - last_view_time_ < base::TimeDelta::FromMinutes(5))
+  if (now - last_view_time_ < base::Minutes(5))
     return;
 
   last_view_time_ = now;

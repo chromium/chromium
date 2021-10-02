@@ -417,11 +417,11 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   const std::string kEngineC1Name = "custom-1";
   const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
 
-  AddCustomSearchEngine(/* short_name */ kEngineC1Name,
-                        /* searchable_url */ kEngineC1Url,
-                        /* last_visited_time */ base::Time::Now() -
-                            base::TimeDelta::FromSeconds(10),
-                        /* set_default */ true);
+  AddCustomSearchEngine(
+      /* short_name */ kEngineC1Name,
+      /* searchable_url */ kEngineC1Url,
+      /* last_visited_time */ base::Time::Now() - base::Seconds(10),
+      /* set_default */ true);
 
   [manager_ loadModel:model_];
 
@@ -455,11 +455,11 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
   const std::string kEngineC1Name = "custom-1";
   const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
 
-  AddCustomSearchEngine(/* short_name */ kEngineC1Name,
-                        /* searchable_url */ kEngineC1Url,
-                        /* last_visited_time */ base::Time::Now() -
-                            base::TimeDelta::FromSeconds(10),
-                        /* set_default */ true);
+  AddCustomSearchEngine(
+      /* short_name */ kEngineC1Name,
+      /* searchable_url */ kEngineC1Url,
+      /* last_visited_time */ base::Time::Now() - base::Seconds(10),
+      /* set_default */ true);
 
   [manager_ loadModel:model_];
 

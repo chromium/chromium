@@ -68,8 +68,7 @@ class DisplayConfigurationController::DisplayChangeLimiter {
   DisplayChangeLimiter& operator=(const DisplayChangeLimiter&) = delete;
 
   void SetThrottleTimeout(int64_t throttle_ms) {
-    throttle_timeout_ =
-        base::Time::Now() + base::TimeDelta::FromMilliseconds(throttle_ms);
+    throttle_timeout_ = base::Time::Now() + base::Milliseconds(throttle_ms);
   }
 
   bool IsThrottled() const { return base::Time::Now() < throttle_timeout_; }

@@ -180,7 +180,7 @@ class DisplaySchedulerTest : public testing::Test {
                    task_runner_.get(),
                    kMaxPendingSwaps,
                    wait_for_all_surfaces_before_draw) {
-    now_src_.Advance(base::TimeDelta::FromMicroseconds(10000));
+    now_src_.Advance(base::Microseconds(10000));
     scheduler_.SetClient(&client_);
   }
 
@@ -195,7 +195,7 @@ class DisplaySchedulerTest : public testing::Test {
 
   void AdvanceTimeAndBeginFrameForTest(
       const std::vector<SurfaceId>& observing_surfaces) {
-    now_src_.Advance(base::TimeDelta::FromMicroseconds(10000));
+    now_src_.Advance(base::Microseconds(10000));
     // FakeBeginFrameSource deals with |source_id| and |sequence_number|.
     last_begin_frame_args_ = fake_begin_frame_source_.CreateBeginFrameArgs(
         BEGINFRAME_FROM_HERE, &now_src_);

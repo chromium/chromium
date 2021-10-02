@@ -19,8 +19,7 @@ namespace {
 
 using ::ash::Sound;
 
-constexpr base::TimeDelta kShutdownSoundDuration =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kShutdownSoundDuration = base::Milliseconds(1000);
 
 class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
  public:

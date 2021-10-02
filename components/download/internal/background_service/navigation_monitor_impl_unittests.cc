@@ -43,7 +43,7 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
         FROM_HERE,
         base::BindOnce(&TestNavigationMonitorObserver::VerifyNavigationState,
                        weak_ptr_factory_.GetWeakPtr(), expected),
-        base::TimeDelta::FromMilliseconds(millis));
+        base::Milliseconds(millis));
   }
 
  private:
@@ -68,8 +68,8 @@ class NavigationMonitorImplTest : public testing::Test {
     navigation_monitor_ = std::make_unique<NavigationMonitorImpl>();
     observer_ = std::make_unique<TestNavigationMonitorObserver>(
         task_runner_, navigation_monitor_.get());
-    navigation_monitor_->Configure(base::TimeDelta::FromMilliseconds(20),
-                                   base::TimeDelta::FromMilliseconds(200));
+    navigation_monitor_->Configure(base::Milliseconds(20),
+                                   base::Milliseconds(200));
   }
 
   void TearDown() override {
@@ -88,7 +88,7 @@ class NavigationMonitorImplTest : public testing::Test {
         FROM_HERE,
         base::BindOnce(&NavigationMonitorImplTest::SendNavigationEvent,
                        weak_ptr_factory_.GetWeakPtr(), event),
-        base::TimeDelta::FromMilliseconds(millis));
+        base::Milliseconds(millis));
   }
 
  protected:

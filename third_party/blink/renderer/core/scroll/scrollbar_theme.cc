@@ -280,7 +280,7 @@ base::TimeDelta ScrollbarTheme::InitialAutoscrollTimerDelay() {
 }
 
 base::TimeDelta ScrollbarTheme::AutoscrollTimerDelay() {
-  return base::TimeDelta::FromSecondsD(1.f / kAutoscrollMultiplier);
+  return base::Seconds(1.f / kAutoscrollMultiplier);
 }
 
 ScrollbarTheme& ScrollbarTheme::GetTheme() {

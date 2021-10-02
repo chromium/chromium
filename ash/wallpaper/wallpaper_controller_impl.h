@@ -347,7 +347,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void CreateEmptyWallpaperForTesting();
 
   void set_wallpaper_reload_no_delay_for_test() {
-    wallpaper_reload_delay_ = base::TimeDelta::FromMilliseconds(0);
+    wallpaper_reload_delay_ = base::Milliseconds(0);
   }
 
   // Proxy to private ReloadWallpaper().

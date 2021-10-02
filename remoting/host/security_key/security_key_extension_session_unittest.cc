@@ -203,8 +203,7 @@ SecurityKeyExtensionSessionTest::SecurityKeyExtensionSessionTest()
 SecurityKeyExtensionSessionTest::~SecurityKeyExtensionSessionTest() = default;
 
 void SecurityKeyExtensionSessionTest::WaitForAndVerifyHostMessage() {
-  client_stub_.WaitForDeliverHostMessage(
-      base::TimeDelta::FromMilliseconds(500));
+  client_stub_.WaitForDeliverHostMessage(base::Milliseconds(500));
   base::ListValue expected_data;
 
   // Skip first four bytes.
@@ -462,8 +461,7 @@ TEST_F(SecurityKeyExtensionSessionTest, SendMessageToClient_ValidData) {
   // Inject data into SendMessageCallback to simulate a security key request.
   mock_security_key_auth_handler_->GetSendMessageCallback().Run(42, "test_msg");
 
-  client_stub_.WaitForDeliverHostMessage(
-      base::TimeDelta::FromMilliseconds(500));
+  client_stub_.WaitForDeliverHostMessage(base::Milliseconds(500));
 
   // Expects a JSON array of the ASCII character codes for "test_msg".
   client_stub_.CheckHostDataMessage(42, "[116,101,115,116,95,109,115,103]");

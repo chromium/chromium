@@ -49,11 +49,11 @@ enum CallbackResult {
 };
 
 // Expected immediate configurations should be done without any delays.
-constexpr base::TimeDelta kNoDelay = base::TimeDelta::FromMilliseconds(0);
+constexpr base::TimeDelta kNoDelay = base::Milliseconds(0);
 
 // The expected configuration delay when resuming from suspend while in 2+
 // display mode.
-constexpr base::TimeDelta kLongDelay = base::TimeDelta::FromMilliseconds(
+constexpr base::TimeDelta kLongDelay = base::Milliseconds(
     DisplayConfigurator::kResumeConfigureMultiDisplayDelayMs);
 
 class TestObserver : public DisplayConfigurator::Observer {
@@ -1305,9 +1305,8 @@ TEST_F(DisplayConfiguratorTest,
             log_->GetActionsAndClear());
 
   config_waiter_.Reset();
-  EXPECT_EQ(
-      base::TimeDelta::FromMilliseconds(DisplayConfigurator::kConfigureDelayMs),
-      config_waiter_.Wait());
+  EXPECT_EQ(base::Milliseconds(DisplayConfigurator::kConfigureDelayMs),
+            config_waiter_.Wait());
   EXPECT_EQ(CALLBACK_NOT_CALLED, config_waiter_.callback_result());
   EXPECT_EQ(kNoDelay, config_waiter_.Wait());
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
@@ -1572,9 +1571,8 @@ TEST_F(DisplayConfiguratorTest, PowerStateChange) {
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
   config_waiter_.Reset();
   // Run the task posted by OnConfigured().
-  EXPECT_EQ(
-      base::TimeDelta::FromMilliseconds(DisplayConfigurator::kConfigureDelayMs),
-      config_waiter_.Wait());
+  EXPECT_EQ(base::Milliseconds(DisplayConfigurator::kConfigureDelayMs),
+            config_waiter_.Wait());
   EXPECT_EQ(CALLBACK_NOT_CALLED, config_waiter_.callback_result());
   config_waiter_.Reset();
   // Run the task posted by TestNativeDisplayDelegate::GetDisplays().

@@ -224,7 +224,7 @@ void BrowserRenderer::SetUiExpectingActivityForTesting(
       << "Attempted to set a UI activity expectation with one in progress";
   ui_test_state_ = std::make_unique<UiTestState>();
   ui_test_state_->quiescence_timeout_ms =
-      base::TimeDelta::FromMilliseconds(ui_expectation.quiescence_timeout_ms);
+      base::Milliseconds(ui_expectation.quiescence_timeout_ms);
 }
 
 void BrowserRenderer::SaveNextFrameBufferToDiskForTesting(
@@ -239,7 +239,7 @@ void BrowserRenderer::WatchElementForVisibilityStatusForTesting(
                                              "in progress";
   ui_visibility_state_ = std::make_unique<UiVisibilityState>();
   ui_visibility_state_->timeout_ms =
-      base::TimeDelta::FromMilliseconds(visibility_expectation.timeout_ms);
+      base::Milliseconds(visibility_expectation.timeout_ms);
   ui_visibility_state_->element_to_watch = visibility_expectation.element_name;
   ui_visibility_state_->expected_visibile = visibility_expectation.visibility;
 }

@@ -59,7 +59,7 @@ std::string GetLogTitle(const std::string& label, const TestParams& params) {
 }
 
 base::TimeDelta GetFrameTime(size_t frames_per_second) {
-  return base::TimeDelta::FromSecondsD(1.0 / frames_per_second);
+  return base::Seconds(1.0 / frames_per_second);
 }
 
 class PerfCpuLogger {

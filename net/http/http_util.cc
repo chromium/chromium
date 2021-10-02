@@ -267,14 +267,14 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
   base::TimeDelta interval;
 
   if (net::ParseUint32(retry_after_string, &seconds)) {
-    interval = base::TimeDelta::FromSeconds(seconds);
+    interval = base::Seconds(seconds);
   } else if (base::Time::FromUTCString(retry_after_string.c_str(), &time)) {
     interval = time - now;
   } else {
     return false;
   }
 
-  if (interval < base::TimeDelta::FromSeconds(0))
+  if (interval < base::Seconds(0))
     return false;
 
   *retry_after = interval;

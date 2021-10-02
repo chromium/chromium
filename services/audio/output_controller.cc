@@ -33,8 +33,7 @@ namespace audio {
 namespace {
 
 // Time in seconds between two successive measurements of audio power levels.
-constexpr base::TimeDelta kPowerMonitorLogInterval =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
 const char* StateToString(OutputController::State state) {
   switch (state) {
@@ -492,7 +491,7 @@ void OutputController::OnError(ErrorType type) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&OutputController::ReportError, weak_this_for_stream_),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void OutputController::StopCloseAndClearStream() {

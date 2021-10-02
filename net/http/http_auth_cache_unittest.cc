@@ -712,7 +712,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kRoot, kWileCoyote), "/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));  // Time now 12:00:10
+  test_clock.Advance(base::Seconds(10));  // Time now 12:00:10
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm3, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm3",
             AuthCredentials(kAlice2, k1234), "/");
@@ -724,7 +724,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));  // Time now 12:00:20
+  test_clock.Advance(base::Seconds(10));  // Time now 12:00:20
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm5, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm5",
             AuthCredentials(kAlice3, k12345), "/");
@@ -761,7 +761,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
             cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm4,
                          HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey()));
 
-  cache.ClearEntriesAddedBetween(start_time - base::TimeDelta::FromSeconds(1),
+  cache.ClearEntriesAddedBetween(start_time - base::Seconds(1),
                                  base::Time::Max());
   EXPECT_EQ(nullptr,
             cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm1,
@@ -789,7 +789,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kRoot, kWileCoyote), "/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock.Advance(base::Seconds(10));
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm3, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm3",
             AuthCredentials(kAlice2, k1234), "/");
@@ -836,7 +836,7 @@ TEST(HttpAuthCacheTest, ClearAllEntries) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kRoot, kWileCoyote), "/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock.Advance(base::Seconds(10));
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm3, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm3",
             AuthCredentials(kAlice2, k1234), "/");
@@ -848,7 +848,7 @@ TEST(HttpAuthCacheTest, ClearAllEntries) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(55));
+  test_clock.Advance(base::Seconds(55));
   cache.ClearAllEntries();
 
   // All entries should be cleared.
@@ -1072,27 +1072,27 @@ TEST_F(HttpAuthCacheEvictionTest, RealmEntryEviction) {
 
   for (int i = 0; i < kMaxRealms; ++i) {
     AddRealm(i);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < kMaxRealms; ++i) {
     CheckRealmExistence(i, true);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < 3; ++i) {
     AddRealm(i + kMaxRealms);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < 3; ++i) {
     CheckRealmExistence(i, false);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < kMaxRealms; ++i) {
     CheckRealmExistence(i + 3, true);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 }
 

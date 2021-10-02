@@ -39,8 +39,7 @@ using testing::Truly;
 namespace chromecast {
 namespace {
 
-constexpr base::TimeDelta kDefaultTimeout =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kDefaultTimeout = base::Milliseconds(5000);
 
 const std::string kKeyInputDataURL = R"HTML(
 <!DOCTYPE html>

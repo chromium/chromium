@@ -230,8 +230,7 @@ TEST_F(AccountsCookieMutatorTest, AddAccountToCookie_ExistingAccount) {
       account_id, gaia::GaiaSource::kChrome, std::move(completion_callback));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   run_loop.Run();
 
   EXPECT_EQ(account_id_from_add_account_to_cookie_completed_callback,
@@ -377,11 +376,9 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookie_AllExistingAccounts) {
           run_loop.QuitClosure()));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      other_account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
 
   run_loop.Run();
 }
@@ -415,11 +412,9 @@ TEST_F(AccountsCookieMutatorTest,
               run_loop.QuitClosure()));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      other_account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
 
   run_loop.Run();
 }

@@ -37,7 +37,7 @@ class CompositorFrameReporterTest : public testing::Test {
 
  protected:
   base::TimeTicks AdvanceNowByMs(int advance_ms) {
-    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(advance_ms));
+    test_tick_clock_.Advance(base::Microseconds(advance_ms));
     return test_tick_clock_.NowTicks();
   }
 
@@ -45,16 +45,16 @@ class CompositorFrameReporterTest : public testing::Test {
 
   std::unique_ptr<BeginMainFrameMetrics> BuildBlinkBreakdown() {
     auto breakdown = std::make_unique<BeginMainFrameMetrics>();
-    breakdown->handle_input_events = base::TimeDelta::FromMicroseconds(10);
-    breakdown->animate = base::TimeDelta::FromMicroseconds(9);
-    breakdown->style_update = base::TimeDelta::FromMicroseconds(8);
-    breakdown->layout_update = base::TimeDelta::FromMicroseconds(7);
-    breakdown->compositing_inputs = base::TimeDelta::FromMicroseconds(6);
-    breakdown->prepaint = base::TimeDelta::FromMicroseconds(5);
-    breakdown->compositing_assignments = base::TimeDelta::FromMicroseconds(4);
-    breakdown->paint = base::TimeDelta::FromMicroseconds(3);
-    breakdown->composite_commit = base::TimeDelta::FromMicroseconds(2);
-    breakdown->update_layers = base::TimeDelta::FromMicroseconds(1);
+    breakdown->handle_input_events = base::Microseconds(10);
+    breakdown->animate = base::Microseconds(9);
+    breakdown->style_update = base::Microseconds(8);
+    breakdown->layout_update = base::Microseconds(7);
+    breakdown->compositing_inputs = base::Microseconds(6);
+    breakdown->prepaint = base::Microseconds(5);
+    breakdown->compositing_assignments = base::Microseconds(4);
+    breakdown->paint = base::Microseconds(3);
+    breakdown->composite_commit = base::Microseconds(2);
+    breakdown->update_layers = base::Microseconds(1);
 
     // Advance now by the sum of the breakdowns.
     AdvanceNowByMs(10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);

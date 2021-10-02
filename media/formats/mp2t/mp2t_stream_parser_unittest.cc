@@ -55,7 +55,7 @@ bool IsMonotonic(const StreamParser::BufferQueue& buffers) {
 }
 
 bool IsAlmostEqual(DecodeTimestamp t0, DecodeTimestamp t1) {
-  base::TimeDelta kMaxDeviation = base::TimeDelta::FromMilliseconds(5);
+  base::TimeDelta kMaxDeviation = base::Milliseconds(5);
   base::TimeDelta diff = t1 - t0;
   return (diff >= -kMaxDeviation && diff <= kMaxDeviation);
 }

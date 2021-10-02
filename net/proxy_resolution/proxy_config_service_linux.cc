@@ -457,9 +457,9 @@ class SettingGetterImplGSettings
     // We don't use Reset() because the timer may not yet be running.
     // (In that case Stop() is a no-op.)
     debounce_timer_->Stop();
-    debounce_timer_->Start(FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kDebounceTimeoutMilliseconds),
-        this, &SettingGetterImplGSettings::OnDebouncedNotification);
+    debounce_timer_->Start(
+        FROM_HERE, base::Milliseconds(kDebounceTimeoutMilliseconds), this,
+        &SettingGetterImplGSettings::OnDebouncedNotification);
   }
 
   // gsettings notification callback, dispatched on the default glib main loop.
@@ -977,8 +977,8 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       // We don't use Reset() because the timer may not yet be running.
       // (In that case Stop() is a no-op.)
       debounce_timer_->Stop();
-      debounce_timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(
-          kDebounceTimeoutMilliseconds), this,
+      debounce_timer_->Start(
+          FROM_HERE, base::Milliseconds(kDebounceTimeoutMilliseconds), this,
           &SettingGetterImplKDE::OnDebouncedNotification);
     }
   }

@@ -54,8 +54,8 @@ NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     int unicode_char) {
   return NativeWebKeyboardEvent(
       env, java_key_event, static_cast<blink::WebInputEvent::Type>(type),
-      modifiers, base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_ms),
-      key_code, scan_code, unicode_char, is_system_key);
+      modifiers, base::TimeTicks() + base::Milliseconds(time_ms), key_code,
+      scan_code, unicode_char, is_system_key);
 }
 
 }  // anonymous namespace

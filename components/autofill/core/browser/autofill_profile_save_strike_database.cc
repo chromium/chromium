@@ -47,7 +47,7 @@ int AutofillProfileSaveStrikeDatabase::GetMaxStrikesLimit() const {
 absl::optional<base::TimeDelta>
 AutofillProfileSaveStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 180 days by default.
-  return base::TimeDelta::FromDays(
+  return base::Days(
       features::kAutofillAutoBlockSaveAddressProfilePromptExpirationDays.Get());
 }
 
@@ -83,8 +83,7 @@ void AutofillProfileSaveStrikeDatabase::ClearStrikesByOriginAndTimeInternal(
     }
 
     base::Time last_update = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(
-            entry.second.last_update_timestamp()));
+        base::Microseconds(entry.second.last_update_timestamp()));
 
     // Check if the time stamp of the record is within deletion range and if the
     // domain is deleted.

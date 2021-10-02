@@ -103,7 +103,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
             }
           },
           std::move(old_native_obj)),
-      base::TimeDelta::FromMilliseconds(1000));
+      base::Milliseconds(1000));
 }
 
 uint32_t BrowserAccessibilityMac::PlatformChildCount() const {

@@ -2266,7 +2266,7 @@ TEST_F(CollectUserDataActionTest, ClearUserDataIfRequested) {
   autofill::test::SetProfileInfo(
       &address_old, "Berta", "", "West", "berta.west@gmail.com", "",
       "Baker Street 221b", "", "London", "", "WC2N 5DU", "UK", "+44");
-  address_old.set_use_date(current - base::TimeDelta::FromDays(2));
+  address_old.set_use_date(current - base::Days(2));
 
   ON_CALL(mock_personal_data_manager_, GetProfileByGUID("card_new"))
       .WillByDefault(Return(&address_new));
@@ -2283,7 +2283,7 @@ TEST_F(CollectUserDataActionTest, ClearUserDataIfRequested) {
   autofill::test::SetCreditCardInfo(&card_old, "Berta West", "4111111111111111",
                                     "1", "2050",
                                     /* billing_address_id= */ "card_old");
-  card_old.set_use_date(current - base::TimeDelta::FromDays(2));
+  card_old.set_use_date(current - base::Days(2));
 
   ON_CALL(mock_personal_data_manager_, GetCreditCards())
       .WillByDefault(

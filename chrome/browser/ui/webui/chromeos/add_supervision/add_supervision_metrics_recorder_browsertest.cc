@@ -233,11 +233,11 @@ IN_PROC_BROWSER_TEST_P(AddSupervisionMetricsRecorderTimeTest, UserTimingTest) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   AddSupervisionMetricsRecorder::GetInstance()->SetClockForTesting(
       task_runner_->GetMockTickClock());
-  base::TimeDelta duration(base::TimeDelta::FromSeconds(GetParam()));
+  base::TimeDelta duration(base::Seconds(GetParam()));
 
   // We need to start at some non-zero point in time or else
   // DCHECK(!start_time_.is_null()) throws.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   ShowAddSupervisionDialog();
   task_runner_->FastForwardBy(duration);
   CloseAddSupervisionDialog();

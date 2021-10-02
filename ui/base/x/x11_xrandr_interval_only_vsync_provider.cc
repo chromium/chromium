@@ -11,7 +11,7 @@
 namespace ui {
 
 XrandrIntervalOnlyVSyncProvider::XrandrIntervalOnlyVSyncProvider()
-    : interval_(base::TimeDelta::FromSeconds(1 / 60.)) {}
+    : interval_(base::Seconds(1 / 60.)) {}
 
 void XrandrIntervalOnlyVSyncProvider::GetVSyncParameters(
     UpdateVSyncCallback callback) {

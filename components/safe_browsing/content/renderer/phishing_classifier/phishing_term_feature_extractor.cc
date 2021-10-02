@@ -158,16 +158,14 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
     if (num_words >= kClockCheckGranularity) {
       num_words = 0;
       base::TimeTicks now = clock_->NowTicks();
-      if (now - state_->start_time >=
-          base::TimeDelta::FromMilliseconds(kMaxTotalTimeMs)) {
+      if (now - state_->start_time >= base::Milliseconds(kMaxTotalTimeMs)) {
         // We expect this to happen infrequently, so record when it does.
         UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.TermFeatureTimeout", 1);
         RunCallback(false);
         return;
       }
       base::TimeDelta chunk_elapsed = now - current_chunk_start_time;
-      if (chunk_elapsed >=
-          base::TimeDelta::FromMilliseconds(kMaxTimePerChunkMs)) {
+      if (chunk_elapsed >= base::Milliseconds(kMaxTimePerChunkMs)) {
         // The time limit for the current chunk is up, so post a task to
         // continue extraction.
         //

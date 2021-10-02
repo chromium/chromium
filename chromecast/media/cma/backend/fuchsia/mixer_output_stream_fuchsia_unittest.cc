@@ -33,7 +33,7 @@ TEST_F(MixerOutputStreamFuchsiaTest, StartAndStop) {
 TEST_F(MixerOutputStreamFuchsiaTest, Play1s) {
   EXPECT_TRUE(output_.Start(kSampleRate, kNumChannels));
 
-  constexpr auto kTestStreamDuration = base::TimeDelta::FromMilliseconds(300);
+  constexpr auto kTestStreamDuration = base::Milliseconds(300);
   constexpr float kSignalFrequencyHz = 1000;
 
   auto started = base::TimeTicks::Now();
@@ -62,8 +62,7 @@ TEST_F(MixerOutputStreamFuchsiaTest, Play1s) {
   auto ended = base::TimeTicks::Now();
 
   // Verify that Write() was blocking, allowing 100ms for buffering.
-  EXPECT_GT(ended - started,
-            kTestStreamDuration - base::TimeDelta::FromMilliseconds(100));
+  EXPECT_GT(ended - started, kTestStreamDuration - base::Milliseconds(100));
 
   output_.Stop();
 }
@@ -89,8 +88,7 @@ TEST_F(MixerOutputStreamFuchsiaTest, PlaybackInterrupted) {
   // Run message loop for 100ms before calling Write() again.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(100));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
 
   // Write() is called to late, expect interrupted = true.

@@ -155,9 +155,8 @@ void ProxyManagerImpl::ProxyRequest(
   // kRateLimit, the request is blocked and the HTTP 429 Too Many Requests
   // response status code is returned.
   base::TimeTicks time = base::TimeTicks::Now();
-  bool block_request =
-      timestamp_.CurrentIndex() >= timestamp_.BufferSize() &&
-      time - timestamp_.ReadBuffer(0) < base::TimeDelta::FromSeconds(1);
+  bool block_request = timestamp_.CurrentIndex() >= timestamp_.BufferSize() &&
+                       time - timestamp_.ReadBuffer(0) < base::Seconds(1);
   timestamp_.SaveToBuffer(time);
   if (block_request) {
     LOG(WARNING) << "CupsPrintService: Rate limit (" << kRateLimit

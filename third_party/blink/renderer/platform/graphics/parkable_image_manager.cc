@@ -109,7 +109,7 @@ void ParkableImageManager::Add(ParkableImageImpl* impl) {
         FROM_HERE,
         base::BindOnce(&ParkableImageManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
-        base::TimeDelta::FromMinutes(5));
+        base::Minutes(5));
     has_posted_accounting_task_ = true;
   }
 

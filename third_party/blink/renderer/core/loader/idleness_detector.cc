@@ -200,8 +200,8 @@ IdlenessDetector::IdlenessDetector(LocalFrame* local_frame,
           this,
           &IdlenessDetector::NetworkQuietTimerFired) {
   if (local_frame->GetSettings()) {
-    network_quiet_window_ = base::TimeDelta::FromSecondsD(
-        local_frame->GetSettings()->GetNetworkQuietTimeout());
+    network_quiet_window_ =
+        base::Seconds(local_frame->GetSettings()->GetNetworkQuietTimeout());
   }
 }
 

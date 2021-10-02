@@ -58,10 +58,10 @@ net::CookieList GetCookies(network::mojom::CookieManager* cookie_manager) {
 void SetCookie(network::mojom::CookieManager* cookie_manager) {
   base::Time t = base::Time::Now();
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      kCookieName, kCookieValue, "www.test.com", "/", t,
-      t + base::TimeDelta::FromDays(1), base::Time(), true /* secure */,
-      false /* http-only*/, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_DEFAULT, false /* same_party */);
+      kCookieName, kCookieValue, "www.test.com", "/", t, t + base::Days(1),
+      base::Time(), true /* secure */, false /* http-only*/,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),

@@ -118,8 +118,7 @@ class AssistantPowerManagerProviderImplTest : public testing::Test {
         power_manager_provider_impl_->AddWakeAlarm(
             relative_time_ms, max_delay_ms,
             std::move(wake_alarm_expiration_cb));
-    task_environment_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(relative_time_ms));
+    task_environment_.FastForwardBy(base::Milliseconds(relative_time_ms));
 
     if (id <= 0UL)
       return false;

@@ -81,12 +81,12 @@ TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithFiles) {
       [&error](blink::mojom::ShareError in_error) { error = in_error; }));
 
   // Should be cancelled after 1-2 seconds. So 500ms is not enough.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
 
   // But 5*500ms > 2 seconds, so it should now be cancelled.
   for (int n = 0; n < 4; n++)
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_EQ(error, blink::mojom::ShareError::CANCELED);
 }
 

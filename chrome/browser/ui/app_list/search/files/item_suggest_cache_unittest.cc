@@ -483,7 +483,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
                {{"item id 1", "display text 1"}});
 
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(2));
+  task_environment_.AdvanceClock(base::Minutes(2));
 
   url_loader_factory_.AddResponse(kRequestUrl,
                                   R"(

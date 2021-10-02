@@ -60,7 +60,7 @@ static const char* const kT0IpAddresses[] = {
   "74.125.226.177", "74.125.226.178"
 };
 static const char kT0CanonName[] = "www.l.google.com";
-static const base::TimeDelta kT0Ttl = base::TimeDelta::FromSeconds(0x000000e4);
+static const base::TimeDelta kT0Ttl = base::Seconds(0x000000e4);
 // +1 for the CNAME record.
 static const unsigned kT0RecordCount = base::size(kT0IpAddresses) + 1;
 
@@ -90,7 +90,7 @@ static const char* const kT1IpAddresses[] = {
   "64.233.169.121"
 };
 static const char kT1CanonName[] = "ghs.l.google.com";
-static const base::TimeDelta kT1Ttl = base::TimeDelta::FromSeconds(0x0000010b);
+static const base::TimeDelta kT1Ttl = base::Seconds(0x0000010b);
 // +1 for the CNAME record.
 static const unsigned kT1RecordCount = base::size(kT1IpAddresses) + 1;
 
@@ -119,7 +119,7 @@ static const char* const kT2IpAddresses[] = {
   "129.10.116.81"
 };
 static const char kT2CanonName[] = "vulcan.ccs.neu.edu";
-static const base::TimeDelta kT2Ttl = base::TimeDelta::FromSeconds(0x0000012c);
+static const base::TimeDelta kT2Ttl = base::Seconds(0x0000012c);
 // +1 for the CNAME record.
 static const unsigned kT2RecordCount = base::size(kT2IpAddresses) + 1;
 
@@ -161,7 +161,7 @@ static const char* const kT3IpAddresses[] = {
   "74.125.226.176", "74.125.226.177"
 };
 static const char kT3CanonName[] = "www.l.google.com";
-static const base::TimeDelta kT3Ttl = base::TimeDelta::FromSeconds(0x00000015);
+static const base::TimeDelta kT3Ttl = base::Seconds(0x00000015);
 // +2 for the CNAME records, +1 for TXT record.
 static const unsigned kT3RecordCount = base::size(kT3IpAddresses) + 3;
 
@@ -182,7 +182,7 @@ static const uint8_t kT4ResponseDatagram[] = {
     0x00, 0x01, 0x2b, 0x00, 0x04, 0xac, 0xd9, 0x06, 0xc3};
 
 static const char* const kT4IpAddresses[] = {"172.217.6.195"};
-static const base::TimeDelta kT4Ttl = base::TimeDelta::FromSeconds(0x0000012b);
+static const base::TimeDelta kT4Ttl = base::Seconds(0x0000012b);
 static const unsigned kT4RecordCount = base::size(kT0IpAddresses);
 
 class AddressSorter;
@@ -192,31 +192,27 @@ class IPAddress;
 class ResolveContext;
 class URLRequestContext;
 
-DnsResourceRecord BuildTestDnsRecord(
-    std::string name,
-    uint16_t type,
-    std::string rdata,
-    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+DnsResourceRecord BuildTestDnsRecord(std::string name,
+                                     uint16_t type,
+                                     std::string rdata,
+                                     base::TimeDelta ttl = base::Days(1));
 
-DnsResourceRecord BuildTestCnameRecord(
-    std::string name,
-    base::StringPiece canonical_name,
-    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+DnsResourceRecord BuildTestCnameRecord(std::string name,
+                                       base::StringPiece canonical_name,
+                                       base::TimeDelta ttl = base::Days(1));
 
-DnsResourceRecord BuildTestAddressRecord(
-    std::string name,
-    const IPAddress& ip,
-    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+DnsResourceRecord BuildTestAddressRecord(std::string name,
+                                         const IPAddress& ip,
+                                         base::TimeDelta ttl = base::Days(1));
 
-DnsResourceRecord BuildTestTextRecord(
-    std::string name,
-    std::vector<std::string> text_strings,
-    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+DnsResourceRecord BuildTestTextRecord(std::string name,
+                                      std::vector<std::string> text_strings,
+                                      base::TimeDelta ttl = base::Days(1));
 
 DnsResourceRecord BuildTestHttpsAliasRecord(
     std::string name,
     base::StringPiece alias_name,
-    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+    base::TimeDelta ttl = base::Days(1));
 
 // `params` is a mapping from service param keys to a string containing the
 // encoded bytes of a service param value (without the value length prefix which
@@ -226,7 +222,7 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
     uint16_t priority,
     base::StringPiece service_name,
     const std::map<uint16_t, std::string>& params,
-    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+    base::TimeDelta ttl = base::Days(1));
 
 DnsResponse BuildTestDnsResponse(
     std::string name,

@@ -59,8 +59,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   EXPECT_THAT(fetched_access_token, Eq(absl::nullopt));
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kAccountId, kAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      kAccountId, kAccessToken, base::Time::Now() + base::Hours(1));
 
   // Now access token should be fetched.
   ASSERT_THAT(fetched_access_token, Ne(absl::nullopt));
@@ -87,8 +86,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   EXPECT_THAT(fetched_access_token, Eq(absl::nullopt));
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kAccountId, kAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      kAccountId, kAccessToken, base::Time::Now() + base::Hours(1));
 
   // Now access token should be fetched.
   ASSERT_THAT(fetched_access_token, Ne(absl::nullopt));
@@ -173,8 +171,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest, ShouldAllowMultipleFetches) {
   EXPECT_THAT(fetched_access_token2, Eq(absl::nullopt));
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kAccountId, kAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      kAccountId, kAccessToken, base::Time::Now() + base::Hours(1));
 
   // Both fetch callbacks should be called.
   ASSERT_THAT(fetched_access_token1, Ne(absl::nullopt));

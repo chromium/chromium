@@ -235,7 +235,7 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
   // (http://crbug.com/408264)
   base::TimeDelta commit_delay = base::TimeDelta();
 #else
-  base::TimeDelta commit_delay = base::TimeDelta::FromMinutes(60);
+  base::TimeDelta commit_delay = base::Minutes(60);
 #endif
 
   PrefService* profile_prefs = profile->GetPrefs();

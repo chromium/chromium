@@ -63,8 +63,8 @@ class AudioEncoder::ImplBase
         samples_per_frame_(samples_per_frame),
         callback_(std::move(callback)),
         operational_status_(STATUS_UNINITIALIZED),
-        frame_duration_(base::TimeDelta::FromSecondsD(
-            static_cast<double>(samples_per_frame_) / sampling_rate)),
+        frame_duration_(base::Seconds(static_cast<double>(samples_per_frame_) /
+                                      sampling_rate)),
         buffer_fill_end_(0),
         frame_id_(FrameId::first()),
         samples_dropped_from_buffer_(0) {
@@ -305,12 +305,12 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
 
   static bool IsValidFrameDuration(base::TimeDelta duration) {
     // See https://tools.ietf.org/html/rfc6716#section-2.1.4
-    return duration == base::TimeDelta::FromMicroseconds(2500) ||
-           duration == base::TimeDelta::FromMilliseconds(5) ||
-           duration == base::TimeDelta::FromMilliseconds(10) ||
-           duration == base::TimeDelta::FromMilliseconds(20) ||
-           duration == base::TimeDelta::FromMilliseconds(40) ||
-           duration == base::TimeDelta::FromMilliseconds(60);
+    return duration == base::Microseconds(2500) ||
+           duration == base::Milliseconds(5) ||
+           duration == base::Milliseconds(10) ||
+           duration == base::Milliseconds(20) ||
+           duration == base::Milliseconds(40) ||
+           duration == base::Milliseconds(60);
   }
 
   const std::unique_ptr<uint8_t[]> encoder_memory_;

@@ -1891,8 +1891,7 @@ Status ExecutePerformActions(Session* session,
     }
 
     if (tick_duration > 0) {
-      base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(tick_duration));
+      base::PlatformThread::Sleep(base::Milliseconds(tick_duration));
     }
   }
 

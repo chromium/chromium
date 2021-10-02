@@ -1286,8 +1286,8 @@ void BluetoothLowEnergySetAdvertisingIntervalFunction::DoWork() {
   BluetoothLowEnergyEventRouter* event_router =
       GetEventRouter(browser_context());
   event_router->adapter()->SetAdvertisingInterval(
-      base::TimeDelta::FromMilliseconds(params_->min_interval),
-      base::TimeDelta::FromMilliseconds(params_->max_interval),
+      base::Milliseconds(params_->min_interval),
+      base::Milliseconds(params_->max_interval),
       base::BindOnce(
           &BluetoothLowEnergySetAdvertisingIntervalFunction::SuccessCallback,
           this),

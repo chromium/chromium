@@ -184,11 +184,11 @@ TEST_F(AnimationTest, PropertiesMutate) {
   host_impl_->ActivateAnimations(nullptr);
 
   base::TimeTicks time;
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   TickAnimationsTransferEvents(time, 4u);
   CheckKeyframeEffectTimelineNeedsPushProperties(false);
 
-  time += base::TimeDelta::FromSecondsD(duration);
+  time += base::Seconds(duration);
   TickAnimationsTransferEvents(time, 4u);
   CheckKeyframeEffectTimelineNeedsPushProperties(true);
 
@@ -271,7 +271,7 @@ TEST_F(AnimationTest, AttachTwoAnimationsToOneLayer) {
   EXPECT_FALSE(delegate2.finished());
 
   base::TimeTicks time;
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   TickAnimationsTransferEvents(time, 2u);
 
   EXPECT_TRUE(delegate1.started());
@@ -283,7 +283,7 @@ TEST_F(AnimationTest, AttachTwoAnimationsToOneLayer) {
   EXPECT_FALSE(animation1->keyframe_effect()->needs_push_properties());
   EXPECT_FALSE(animation2->keyframe_effect()->needs_push_properties());
 
-  time += base::TimeDelta::FromSecondsD(duration);
+  time += base::Seconds(duration);
   TickAnimationsTransferEvents(time, 2u);
 
   EXPECT_TRUE(delegate1.finished());
@@ -358,10 +358,10 @@ TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
   host_impl_->ActivateAnimations(nullptr);
 
   base::TimeTicks time;
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   TickAnimationsTransferEvents(time, 1u);
 
-  time += base::TimeDelta::FromSecondsD(duration);
+  time += base::Seconds(duration);
   TickAnimationsTransferEvents(time, 1u);
 
   client_.ExpectOpacityPropertyMutated(element_id_, ElementListType::ACTIVE,
@@ -392,8 +392,7 @@ TEST_F(AnimationTest, AddRemoveAnimationCausesSetNeedsCommit) {
   EXPECT_TRUE(client_.mutators_need_commit());
   client_.set_mutators_need_commit(false);
 
-  animation_->PauseKeyframeModel(keyframe_model_id,
-                                 base::TimeDelta::FromSeconds(1));
+  animation_->PauseKeyframeModel(keyframe_model_id, base::Seconds(1));
   EXPECT_TRUE(client_.mutators_need_commit());
   client_.set_mutators_need_commit(false);
 

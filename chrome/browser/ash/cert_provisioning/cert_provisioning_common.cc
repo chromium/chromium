@@ -159,8 +159,7 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
   result.name = name ? *name : std::string();
   result.policy_version = *policy_version;
   result.is_va_enabled = is_va_enabled.value_or(true);
-  result.renewal_period =
-      base::TimeDelta::FromSeconds(renewal_period_sec.value_or(0));
+  result.renewal_period = base::Seconds(renewal_period_sec.value_or(0));
 
   return result;
 }

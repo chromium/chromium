@@ -402,7 +402,7 @@ void InputInjectorMac::Core::Stop() {
 void InputInjectorMac::Core::WakeUpDisplay() {
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_time_display_woken_ <
-      base::TimeDelta::FromMilliseconds(kWakeUpDisplayIntervalMs)) {
+      base::Milliseconds(kWakeUpDisplayIntervalMs)) {
     return;
   }
 

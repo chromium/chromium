@@ -1092,7 +1092,7 @@ TEST_F(WindowEventDispatcherTest, TouchMovesHeldOnScroll) {
 
   ui::test::EventGenerator generator(root_window());
   generator.GestureScrollSequence(gfx::Point(60, 60), gfx::Point(10, 60),
-                                  base::TimeDelta::FromMilliseconds(100), 25);
+                                  base::Milliseconds(100), 25);
 
   // |handler| will have reset |filter| and started holding the touch-move
   // events when scrolling started. At the end of the scroll (i.e. upon
@@ -1763,8 +1763,7 @@ TEST_F(WindowEventDispatcherTest, GestureRepostEventOrder) {
 
   ui::test::EventGenerator scroll_generator(root_window(), repost_target.get());
   scroll_generator.GestureScrollSequence(
-      gfx::Point(80, 80), gfx::Point(100, 100),
-      base::TimeDelta::FromMilliseconds(100), 3);
+      gfx::Point(80, 80), gfx::Point(100, 100), base::Milliseconds(100), 3);
   RunAllPendingInMessageLoop();
 
   int tap_down_count = 0;
@@ -2530,7 +2529,7 @@ TEST_F(WindowEventDispatcherTestInHighDPI, TouchMovesHeldOnScroll) {
 
   ui::test::EventGenerator generator(root_window());
   generator.GestureScrollSequence(gfx::Point(120, 120), gfx::Point(20, 120),
-                                  base::TimeDelta::FromMilliseconds(100), 25);
+                                  base::Milliseconds(100), 25);
 
   // |handler| will have reset |filter| and started holding the touch-move
   // events when scrolling started. At the end of the scroll (i.e. upon
@@ -3047,10 +3046,10 @@ TEST_F(WindowEventDispatcherTest, TouchMovesMarkedWhenCausingScroll) {
   recorder.Reset();
 
   // Delay the release to avoid fling generation.
-  ui::TouchEvent release(
-      ui::ET_TOUCH_RELEASED, location + gfx::Vector2d(200, 200),
-      ui::EventTimeForNow() + base::TimeDelta::FromSeconds(1),
-      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  ui::TouchEvent release(ui::ET_TOUCH_RELEASED,
+                         location + gfx::Vector2d(200, 200),
+                         ui::EventTimeForNow() + base::Seconds(1),
+                         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_TRUE(recorder.LastTouchMayCauseScrolling());
   EXPECT_TRUE(recorder.HasReceivedEvent(ui::ET_TOUCH_RELEASED));

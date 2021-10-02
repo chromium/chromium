@@ -13,7 +13,7 @@ namespace {
 // fraction to update animatable properties. That being the case, this value
 // doesn't really matter but is chosen to be on the order of minutes to minimize
 // overhead that may occur during cyclic animation restart.
-constexpr base::TimeDelta kAnimationDuration = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kAnimationDuration = base::Minutes(1);
 
 // Helpers ---------------------------------------------------------------------
 

@@ -1481,7 +1481,7 @@ void TileManager::ScheduleCheckRasterFinishedQueries() {
       &TileManager::CheckRasterFinishedQueries, base::Unretained(this)));
   task_runner_->PostDelayedTask(FROM_HERE,
                                 check_pending_tile_queries_callback_.callback(),
-                                base::TimeDelta::FromMilliseconds(100));
+                                base::Milliseconds(100));
 }
 
 void TileManager::CheckRasterFinishedQueries() {

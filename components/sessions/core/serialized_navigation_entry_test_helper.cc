@@ -27,8 +27,7 @@ const ui::PageTransition kTransitionType =
 const bool kHasPostData = true;
 const int64_t kPostID = 100;
 const bool kIsOverridingUserAgent = true;
-const base::Time kTimestamp =
-    base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(100);
+const base::Time kTimestamp = base::Time::UnixEpoch() + base::Milliseconds(100);
 const int kHttpStatusCode = 404;
 const SerializedNavigationEntry::PasswordState kPasswordState =
     SerializedNavigationEntry::HAS_PASSWORD_FIELD;

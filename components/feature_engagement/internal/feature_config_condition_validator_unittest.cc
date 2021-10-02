@@ -716,7 +716,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
 
   // Updating last snooze timestamp.
   event_model_.IncrementSnooze(config.trigger.name, 1u,
-                               baseline - base::TimeDelta::FromDays(4));
+                               baseline - base::Days(4));
 
   // Verify that snooze conditions are met at day 3.
   result = GetResultForDay(config, 3u);
@@ -726,7 +726,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
 
   // When last snooze timestamp is too recent.
   event_model_.IncrementSnooze(config.trigger.name, 1u,
-                               baseline - base::TimeDelta::FromDays(2));
+                               baseline - base::Days(2));
   result = GetResultForDay(config, 3u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.snooze_expiration_ok);
@@ -734,7 +734,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
 
   // Reset the last snooze timestamp.
   event_model_.IncrementSnooze(config.trigger.name, 1u,
-                               baseline - base::TimeDelta::FromDays(4));
+                               baseline - base::Days(4));
   result = GetResultForDay(config, 3u);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.snooze_expiration_ok);

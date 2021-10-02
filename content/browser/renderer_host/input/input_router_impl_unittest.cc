@@ -252,9 +252,9 @@ class InputRouterImplTestBase : public testing::Test {
   void SetUpForTouchAckTimeoutTest(int desktop_timeout_ms,
                                    int mobile_timeout_ms) {
     config_.touch_config.desktop_touch_ack_timeout_delay =
-        base::TimeDelta::FromMilliseconds(desktop_timeout_ms);
+        base::Milliseconds(desktop_timeout_ms);
     config_.touch_config.mobile_touch_ack_timeout_delay =
-        base::TimeDelta::FromMilliseconds(mobile_timeout_ms);
+        base::Milliseconds(mobile_timeout_ms);
     config_.touch_config.touch_ack_timeout_supported = true;
     TearDown();
     SetUp();
@@ -1288,7 +1288,7 @@ TEST_F(InputRouterImplTest, TouchAckTimeoutConfigured) {
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
   ASSERT_EQ(1U, dispatched_messages.size());
   ASSERT_TRUE(dispatched_messages[0]->ToEvent());
-  RunTasksAndWait(base::TimeDelta::FromMilliseconds(kDesktopTimeoutMs + 1));
+  RunTasksAndWait(base::Milliseconds(kDesktopTimeoutMs + 1));
 
   // The timed-out event should have been ack'ed.
   EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
@@ -1398,7 +1398,7 @@ TEST_F(InputRouterImplTest,
   EXPECT_EQ(1U, dispatched_messages.size());
 
   // Delay the move ack. The timeout should not fire.
-  RunTasksAndWait(base::TimeDelta::FromMilliseconds(kDesktopTimeoutMs + 1));
+  RunTasksAndWait(base::Milliseconds(kDesktopTimeoutMs + 1));
   EXPECT_EQ(0U, disposition_handler_->GetAndResetAckCount());
   EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
   dispatched_messages[0]->ToEvent()->CallCallback(
@@ -1426,7 +1426,7 @@ TEST_F(InputRouterImplTest,
   EXPECT_EQ(0U, disposition_handler_->GetAndResetAckCount());
 
   // Wait for the touch ack timeout to fire.
-  RunTasksAndWait(base::TimeDelta::FromMilliseconds(kDesktopTimeoutMs + 1));
+  RunTasksAndWait(base::Milliseconds(kDesktopTimeoutMs + 1));
   EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
 }
 

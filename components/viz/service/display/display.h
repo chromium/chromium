@@ -99,10 +99,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   ~Display() override;
 
-  static constexpr base::TimeDelta kDrawToSwapMin =
-      base::TimeDelta::FromMicroseconds(5);
-  static constexpr base::TimeDelta kDrawToSwapMax =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kDrawToSwapMin = base::Microseconds(5);
+  static constexpr base::TimeDelta kDrawToSwapMax = base::Milliseconds(50);
   static constexpr uint32_t kDrawToSwapUsBuckets = 50;
 
   // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary

@@ -117,7 +117,7 @@ TEST_F(RateLimitTableTest, AddRateLimit) {
   EXPECT_TRUE(table()->CreateTable(&db));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(3),
+      .time_window = base::Days(3),
       .max_contributions_per_window = INT_MAX,
   });
 
@@ -130,7 +130,7 @@ TEST_F(RateLimitTableTest, AddRateLimit) {
 
   // The above report should be deleted, as it expires after the clock is
   // advanced.
-  clock()->Advance(base::TimeDelta::FromDays(3));
+  clock()->Advance(base::Days(3));
   EXPECT_TRUE(table()->AddRateLimit(
       &db,
       NewConversionReport(url::Origin::Create(GURL("https://c.example/")),
@@ -147,7 +147,7 @@ TEST_F(RateLimitTableTest, AttributionAllowed) {
   delegate()->set_rate_limits({
       // Set this to >9d so |AddRateLimit|'s calls to |DeleteExpiredRateLimits|
       // don't delete any of the rows we're adding.
-      .time_window = base::TimeDelta::FromDays(10),
+      .time_window = base::Days(10),
       .max_contributions_per_window = 2,
   });
 
@@ -160,11 +160,11 @@ TEST_F(RateLimitTableTest, AttributionAllowed) {
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_c)));
 
-  clock()->Advance(base::TimeDelta::FromDays(3));
+  clock()->Advance(base::Days(3));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_d)));
 
-  clock()->Advance(base::TimeDelta::FromDays(3));
+  clock()->Advance(base::Days(3));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_c)));
 
@@ -193,7 +193,7 @@ TEST_F(RateLimitTableTest, AttributionAllowed) {
             table()->AttributionAllowed(&db, report_b_a, now));
 
   // Expire the first row above by advancing to +10d.
-  clock()->Advance(base::TimeDelta::FromDays(4));
+  clock()->Advance(base::Days(4));
   now = clock()->Now();
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(&db, report_a_c, now));
@@ -220,7 +220,7 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_SourceTypesIndependent) {
   EXPECT_TRUE(table()->CreateTable(&db));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(2),
+      .time_window = base::Days(2),
       .max_contributions_per_window = 2,
   });
 
@@ -267,7 +267,7 @@ TEST_F(RateLimitTableTest,
   EXPECT_TRUE(table()->CreateTable(&db));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(4),
+      .time_window = base::Days(4),
       .max_contributions_per_window = 2,
   });
 
@@ -282,7 +282,7 @@ TEST_F(RateLimitTableTest,
   // ConversionDestination.
   EXPECT_TRUE(table()->AddRateLimit(
       &db, NewConversionReport(example_a, example_c_sub_a)));
-  clock()->Advance(base::TimeDelta::FromDays(3));
+  clock()->Advance(base::Days(3));
   EXPECT_TRUE(table()->AddRateLimit(
       &db, NewConversionReport(example_a, example_c_sub_b)));
 
@@ -304,7 +304,7 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_ImpressionSiteSubdomains) {
   EXPECT_TRUE(table()->CreateTable(&db));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(4),
+      .time_window = base::Days(4),
       .max_contributions_per_window = 2,
   });
 
@@ -319,7 +319,7 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_ImpressionSiteSubdomains) {
   // impression_site.
   EXPECT_TRUE(table()->AddRateLimit(
       &db, NewConversionReport(example_c_sub_a, example_a)));
-  clock()->Advance(base::TimeDelta::FromDays(3));
+  clock()->Advance(base::Days(3));
   EXPECT_TRUE(table()->AddRateLimit(
       &db, NewConversionReport(example_c_sub_b, example_a)));
 
@@ -369,13 +369,13 @@ TEST_F(RateLimitTableTest, ClearAllDataInRange) {
 
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_b)));
-  clock()->Advance(base::TimeDelta::FromDays(2));
+  clock()->Advance(base::Days(2));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_b)));
-  clock()->Advance(base::TimeDelta::FromDays(2));
+  clock()->Advance(base::Days(2));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_b, example_c)));
-  clock()->Advance(base::TimeDelta::FromDays(2));
+  clock()->Advance(base::Days(2));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_b, example_c)));
   EXPECT_EQ(4u, GetRateLimitRows(&db));
@@ -391,9 +391,8 @@ TEST_F(RateLimitTableTest, ClearAllDataInRange) {
 
   // Delete the first row: attribution should now be allowed for the site,
   // but the other rows should not be deleted.
-  EXPECT_TRUE(table()->ClearAllDataInRange(&db,
-                                           now - base::TimeDelta::FromDays(7),
-                                           now - base::TimeDelta::FromDays(6)));
+  EXPECT_TRUE(table()->ClearAllDataInRange(&db, now - base::Days(7),
+                                           now - base::Days(6)));
   EXPECT_EQ(3u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(
@@ -424,10 +423,10 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_ba)));
-  clock()->Advance(base::TimeDelta::FromDays(2));
+  clock()->Advance(base::Days(2));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_a, example_bb)));
-  clock()->Advance(base::TimeDelta::FromDays(2));
+  clock()->Advance(base::Days(2));
   EXPECT_TRUE(
       table()->AddRateLimit(&db, NewConversionReport(example_d, example_c)));
 
@@ -440,7 +439,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 
   // Should delete nothing, because (example_d, example_c) is at now.
   EXPECT_TRUE(table()->ClearDataForOriginsInRange(
-      &db, base::Time(), now - base::TimeDelta::FromDays(1),
+      &db, base::Time(), now - base::Days(1),
       base::BindRepeating(std::equal_to<url::Origin>(), example_c)));
   EXPECT_EQ(3u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
@@ -487,8 +486,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 }
 
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
-  delegate()->set_delete_expired_rate_limits_frequency(
-      base::TimeDelta::FromMinutes(5));
+  delegate()->set_delete_expired_rate_limits_frequency(base::Minutes(5));
 
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
@@ -506,10 +504,10 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
               ElementsAre("https://a.example", "https://c.example"));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromMinutes(2),
+      .time_window = base::Minutes(2),
       .max_contributions_per_window = INT_MAX,
   });
-  clock()->Advance(base::TimeDelta::FromMinutes(1));
+  clock()->Advance(base::Minutes(1));
   EXPECT_TRUE(table()->AddRateLimit(
       &db,
       NewConversionReport(url::Origin::Create(GURL("https://e.example/")),
@@ -518,7 +516,7 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
               ElementsAre("https://a.example", "https://c.example",
                           "https://e.example"));
 
-  clock()->Advance(base::TimeDelta::FromMinutes(3));
+  clock()->Advance(base::Minutes(3));
   EXPECT_TRUE(table()->AddRateLimit(
       &db,
       NewConversionReport(url::Origin::Create(GURL("https://g.example/")),
@@ -528,7 +526,7 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
               ElementsAre("https://a.example", "https://c.example",
                           "https://e.example", "https://g.example"));
 
-  clock()->Advance(base::TimeDelta::FromMinutes(1));
+  clock()->Advance(base::Minutes(1));
   EXPECT_TRUE(table()->AddRateLimit(
       &db,
       NewConversionReport(url::Origin::Create(GURL("https://i.example/")),
@@ -587,7 +585,7 @@ TEST_F(RateLimitTableTest, Aggregate) {
   EXPECT_TRUE(table()->CreateTable(&db));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(7),
+      .time_window = base::Days(7),
       .max_contributions_per_window = 16,
   });
 
@@ -613,8 +611,7 @@ TEST_F(RateLimitTableTest, Aggregate) {
                     {.bucket = "a", .value = 10},
                 }));
 
-  clock()->Advance(base::TimeDelta::FromDays(7) -
-                   base::TimeDelta::FromMilliseconds(1));
+  clock()->Advance(base::Days(7) - base::Milliseconds(1));
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AddAggregateHistogramContributionsForTesting(
                 &db, impression,
@@ -629,7 +626,7 @@ TEST_F(RateLimitTableTest, Aggregate) {
                 }));
 
   // This is checking expiry behavior.
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AddAggregateHistogramContributionsForTesting(
                 &db, impression,

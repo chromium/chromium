@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   const sync_pb::UserEventSpecifics specifics =
       CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(kUserEventTimeUsec)));
+          base::Microseconds(kUserEventTimeUsec)));
   event_service->RecordUserEvent(specifics);
 
   // Wait for a commit message containing the user event. However the commit
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const sync_pb::UserEventSpecifics expected_specifics =
       CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(kUserEventTimeUsec)));
+          base::Microseconds(kUserEventTimeUsec)));
   EXPECT_TRUE(UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
                                        {{expected_specifics}})
                   .Wait());

@@ -193,7 +193,7 @@ TEST_F(ResizeAreaTest, SuccessfulGestureDrag) {
   gfx::Point start = widget()->GetNativeView()->bounds().CenterPoint();
   event_generator()->GestureScrollSequenceWithCallback(
       start, gfx::Point(start.x() + kGestureScrollDistance, start.y()),
-      base::TimeDelta::FromMilliseconds(200), kGestureScrollSteps,
+      base::Milliseconds(200), kGestureScrollSteps,
       base::BindRepeating(&ResizeAreaTest::ProcessGesture,
                           base::Unretained(this)));
 }

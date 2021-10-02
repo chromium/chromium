@@ -220,8 +220,8 @@ void AudioOutputAuthorizationHandler::UMALogDeviceAuthorizationTime(
     base::TimeTicks auth_start_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.OutputDeviceAuthorizationTime",
                              base::TimeTicks::Now() - auth_start_time,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMilliseconds(5000), 50);
+                             base::Milliseconds(1), base::Milliseconds(5000),
+                             50);
 }
 
 void AudioOutputAuthorizationHandler::HashDeviceId(

@@ -75,7 +75,7 @@ TEST(DataUseTrackerPrefsTest, PrefsOnMeteredConnection) {
 
   // Move clock forward 10 days. New data use reported must go in a separate
   // entry in the dictionary pref.
-  clock.Advance(base::TimeDelta::FromDays(10));
+  clock.Advance(base::Days(10));
   DataUseTrackerPrefsTest tracker_prefs_test_2(&clock, &test_prefs);
   EXPECT_EQ(
       1u, test_prefs.GetDictionary(prefs::kDataUsedUserForeground)->DictSize());
@@ -87,7 +87,7 @@ TEST(DataUseTrackerPrefsTest, PrefsOnMeteredConnection) {
   // Move clock forward 55 days. This should clean up the first entry since they
   // are now 65 days older (i.e., more than 60 days old). New data use reported
   // must go in a separate entry in the dictionary pref.
-  clock.Advance(base::TimeDelta::FromDays(55));
+  clock.Advance(base::Days(55));
   DataUseTrackerPrefsTest tracker_prefs_test_3(&clock, &test_prefs);
   EXPECT_EQ(
       1u, test_prefs.GetDictionary(prefs::kDataUsedUserForeground)->DictSize());

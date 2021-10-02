@@ -131,7 +131,7 @@ HatsNextWebDialog::HatsNextWebDialog(
           browser,
           trigger_id,
           GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
-          base::TimeDelta::FromSeconds(10),
+          base::Seconds(10),
           std::move(success_callback),
           std::move(failure_callback),
           product_specific_bits_data,

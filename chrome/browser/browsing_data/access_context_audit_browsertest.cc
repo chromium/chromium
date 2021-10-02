@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MultipleAccesses) {
 
   // Renavigate to the same pages, this should update the access times on all
   // records.
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
   NavigateToTopLevelPage();
   NavigateToEmbeddedPage();
 

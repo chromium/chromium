@@ -31,7 +31,7 @@ namespace {
 // timestamp field. These two functions are used for converting between
 // bitstream ID and fake timestamp.
 base::TimeDelta BitstreamIdToFakeTimestamp(int32_t bitstream_id) {
-  return base::TimeDelta::FromMilliseconds(bitstream_id);
+  return base::Milliseconds(bitstream_id);
 }
 
 int32_t FakeTimestampToBitstreamId(base::TimeDelta timestamp) {

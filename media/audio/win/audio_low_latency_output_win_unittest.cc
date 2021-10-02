@@ -369,7 +369,7 @@ TEST_F(WASAPIAudioOutputStreamTest, ValidPacketSize) {
   EXPECT_TRUE(aos->Open());
 
   // Derive the expected duration of each packet.
-  base::TimeDelta packet_duration = base::TimeDelta::FromSecondsD(
+  base::TimeDelta packet_duration = base::Seconds(
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.  Ignore any
@@ -510,7 +510,7 @@ TEST_F(WASAPIAudioOutputStreamTest,
   EXPECT_TRUE(aos->Open());
 
   // Derive the expected size in bytes of each packet.
-  base::TimeDelta packet_duration = base::TimeDelta::FromSecondsD(
+  base::TimeDelta packet_duration = base::Seconds(
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.
@@ -544,7 +544,7 @@ TEST_F(WASAPIAudioOutputStreamTest,
   EXPECT_TRUE(aos->Open());
 
   // Derive the expected size in bytes of each packet.
-  base::TimeDelta packet_duration = base::TimeDelta::FromSecondsD(
+  base::TimeDelta packet_duration = base::Seconds(
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.

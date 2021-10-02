@@ -873,15 +873,14 @@ TEST_F(PrerenderTest, NoStatePrefetchDuplicate) {
       kUrl, absl::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_PROFILE_DESTROYED);
 
   // Prefetching again before time_to_live aborts, because it is a duplicate.
-  tick_clock()->Advance(base::TimeDelta::FromSeconds(1));
+  tick_clock()->Advance(base::Seconds(1));
   EXPECT_FALSE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
       kUrl, nullptr, gfx::Size()));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
   // Prefetching after time_to_live succeeds.
-  tick_clock()->Advance(
-      base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins));
+  tick_clock()->Advance(base::Minutes(net::HttpCache::kPrefetchReuseMins));
   EXPECT_TRUE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
       kUrl, nullptr, gfx::Size()));
 }

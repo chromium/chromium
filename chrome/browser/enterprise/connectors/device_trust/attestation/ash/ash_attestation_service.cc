@@ -31,7 +31,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
   tpm_key_challenger_ =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
   tpm_key_challenger_->BuildResponse(
-      base::TimeDelta::FromSeconds(15), ash::attestation::KEY_DEVICE, profile_,
+      base::Seconds(15), ash::attestation::KEY_DEVICE, profile_,
       base::BindOnce(&AshAttestationService::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       JsonChallengeToProtobufChallenge(challenge), /*register_key=*/false,

@@ -76,8 +76,8 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
   }
 
  private:
-  base::test::ScopedRunLoopTimeout shortened_timeout_{
-      FROM_HERE, base::TimeDelta::FromSeconds(3)};
+  base::test::ScopedRunLoopTimeout shortened_timeout_{FROM_HERE,
+                                                      base::Seconds(3)};
 
   EventDelegate event_delegate_;
 

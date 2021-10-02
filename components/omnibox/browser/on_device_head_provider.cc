@@ -163,8 +163,7 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
       FROM_HERE,
       base::BindOnce(&OnDeviceHeadProvider::DoSearch,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)),
-      delay > 0 ? base::TimeDelta::FromMilliseconds(delay)
-                : base::TimeDelta());
+      delay > 0 ? base::Milliseconds(delay) : base::TimeDelta());
 }
 
 void OnDeviceHeadProvider::Stop(bool clear_cached_results,

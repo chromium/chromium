@@ -748,8 +748,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
     // immediately and the test can reset the default verifier result in
     // between retry attempts.
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test()->SetSCTAuditingRetryDelay(
-        base::TimeDelta::FromSeconds(1));
+    network_service_test()->SetSCTAuditingRetryDelay(base::Seconds(1));
 
     // Default test fixture teardown will reset the delay back to the default.
   }

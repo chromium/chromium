@@ -51,8 +51,7 @@ namespace {
 // |kCheckInvalidatorStateDelay|, InvalidationService is still in
 // TRANSIENT_INVALIDATION_ERROR state, disconnect from it and try to reregister
 // all the topics.
-constexpr base::TimeDelta kCheckInvalidatorStateDelay =
-    base::TimeDelta::FromMinutes(3);
+constexpr base::TimeDelta kCheckInvalidatorStateDelay = base::Minutes(3);
 
 // After reregistering all the topics |kTransientErrorDisconnectLimit| number of
 // times, when InvalidationService is failing due to

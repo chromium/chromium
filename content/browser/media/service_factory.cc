@@ -98,7 +98,7 @@ class SeatbeltExtensionTokenProviderImpl final
 
 // How long an instance of the service is allowed to sit idle before we
 // disconnect and effectively kill it.
-constexpr auto kServiceIdleTimeout = base::TimeDelta::FromSeconds(5);
+constexpr auto kServiceIdleTimeout = base::Seconds(5);
 
 // Services are keyed on CDM type, user profile and site URL. Note that site
 // is not normal URL nor origin. See chrome/browser/site_isolation for details.

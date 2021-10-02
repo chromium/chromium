@@ -22,9 +22,8 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       visit.url_row.set_title(u"Search Engine Title");
       visit.visit_row.visit_id = 1;
       // Choose a recent time, as otherwise History will discard the visit.
-      visit.visit_row.visit_time =
-          base::Time::Now() - base::TimeDelta::FromDays(2);
-      visit.visit_row.visit_duration = base::TimeDelta::FromMilliseconds(5600);
+      visit.visit_row.visit_time = base::Time::Now() - base::Days(2);
+      visit.visit_row.visit_duration = base::Milliseconds(5600);
       visit.context_annotations.page_end_reason = 3;
       visit.context_annotations.is_new_bookmark = true;
       visit.source = history::VisitSource::SOURCE_BROWSED;
@@ -38,9 +37,8 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       visit.url_row.set_title(u"Code Storage Title");
       visit.visit_row.visit_id = 2;
       // Choose a recent time, as otherwise History will discard the visit.
-      visit.visit_row.visit_time =
-          base::Time::Now() - base::TimeDelta::FromDays(1);
-      visit.visit_row.visit_duration = base::TimeDelta::FromSeconds(20);
+      visit.visit_row.visit_time = base::Time::Now() - base::Days(1);
+      visit.visit_row.visit_duration = base::Seconds(20);
       visit.visit_row.referring_visit = 1;
       visit.context_annotations.page_end_reason = 5;
       visit.context_annotations.is_existing_part_of_tab_group = true;
@@ -55,9 +53,8 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       visit.url_row.set_title(u"Synched visit");
       visit.visit_row.visit_id = 3;
       // Choose a recent time, as otherwise History will discard the visit.
-      visit.visit_row.visit_time =
-          base::Time::Now() - base::TimeDelta::FromDays(1);
-      visit.visit_row.visit_duration = base::TimeDelta::FromSeconds(20);
+      visit.visit_row.visit_time = base::Time::Now() - base::Days(1);
+      visit.visit_row.visit_duration = base::Seconds(20);
       visit.context_annotations.page_end_reason = 5;
       visit.source = history::VisitSource::SOURCE_SYNCED;
       visits.push_back(visit);

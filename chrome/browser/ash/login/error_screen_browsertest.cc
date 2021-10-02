@@ -266,8 +266,8 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
     skip_splash_wait_override_ =
         KioskLaunchController::SkipSplashScreenWaitForTesting();
-    network_wait_override_ = KioskLaunchController::SetNetworkWaitForTesting(
-        base::TimeDelta::FromSeconds(0));
+    network_wait_override_ =
+        KioskLaunchController::SetNetworkWaitForTesting(base::Seconds(0));
 
     AddKioskAppToDevicePolicy();
 

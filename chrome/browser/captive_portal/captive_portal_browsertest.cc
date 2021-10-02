@@ -987,8 +987,7 @@ void CaptivePortalBrowserTest::SetUpOnMainThread() {
   // Set SSL interstitial delay long enough so that a captive portal result
   // is guaranteed to arrive during this window, and a captive portal
   // error page is displayed instead of an SSL interstitial.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
 }
 
 bool CaptivePortalBrowserTest::OnIntercept(
@@ -1261,7 +1260,7 @@ void CaptivePortalBrowserTest::SlowLoadNoCaptivePortal(
   EXPECT_EQ(0, NumLoadingTabs());
 
   // Set a slow SSL load time to prevent the timer from triggering.
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromDays(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Days(1));
 }
 
 void CaptivePortalBrowserTest::FastTimeoutNoCaptivePortal(
@@ -1274,7 +1273,7 @@ void CaptivePortalBrowserTest::FastTimeoutNoCaptivePortal(
   captive_portal::CaptivePortalTabReloader* tab_reloader =
       GetTabReloader(browser->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(tab_reloader);
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromHours(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Hours(1));
 
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->profile());
@@ -1420,7 +1419,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
             GetStateOfTabReloaderAt(browser, initial_active_index));
 
   // Reset the load time to be large, so the timer won't trigger on a reload.
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromHours(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Hours(1));
 
   if (out_login_browser)
     *out_login_browser = login_browser;
@@ -1454,7 +1453,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
   captive_portal::CaptivePortalTabReloader* tab_reloader =
       GetTabReloader(tab_strip_model->GetActiveWebContents());
   ASSERT_TRUE(tab_reloader);
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromHours(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Hours(1));
 
   // Number of tabs expected to be open after the captive portal checks
   // have completed.
@@ -1802,7 +1801,7 @@ void CaptivePortalBrowserTest::RunNavigateLoadingTabToTimeoutTest(
   // A non-zero delay makes it more likely that
   // captive_portal::CaptivePortalTabHelper will be confused by events relating
   // to canceling the old navigation.
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromSeconds(2));
+  SetSlowSSLLoadTime(tab_reloader, base::Seconds(2));
   CaptivePortalObserver portal_observer(browser->profile());
 
   // Navigate the error tab to another slow loading page.  Can't have
@@ -1831,7 +1830,7 @@ void CaptivePortalBrowserTest::RunNavigateLoadingTabToTimeoutTest(
 
   // Simulate logging in.
   tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromDays(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Days(1));
   Login(browser, 1 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
 
@@ -2634,7 +2633,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, GoBackToTimeout) {
                    tab_strip_model->GetWebContentsAt(1)));
   EXPECT_EQ(1, NumLoadingTabs());
 
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromDays(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Days(1));
   Login(browser(), 1 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
   FailLoadsAfterLogin(browser(), 1);
@@ -2689,7 +2688,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, ReloadTimeout) {
                    tab_strip_model->GetWebContentsAt(1)));
   EXPECT_EQ(1, NumLoadingTabs());
 
-  SetSlowSSLLoadTime(tab_reloader, base::TimeDelta::FromDays(1));
+  SetSlowSSLLoadTime(tab_reloader, base::Days(1));
   Login(browser(), 1 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
   FailLoadsAfterLogin(browser(), 1);

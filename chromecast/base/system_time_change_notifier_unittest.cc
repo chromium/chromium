@@ -104,7 +104,7 @@ TEST_F(SystemTimeChangeNotifierTest, TimeChangedForwardLessThan10Seconds) {
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected.
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(4));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(4));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
   RunPendingTasks();
@@ -116,7 +116,7 @@ TEST_F(SystemTimeChangeNotifierTest, TimeChangedBackwardLessThan10Seconds) {
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected.
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(4));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(4));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
   RunPendingTasks();
@@ -127,7 +127,7 @@ TEST_F(SystemTimeChangeNotifierTest, TimeChangedForwardMoreThan10Seconds) {
   base::Time now = base::Time::Now();
   EXPECT_EQ(0, observer_->num_time_changed());
 
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(40));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(40));
   RunPendingTasks();
   // Still 0 since observe callback is running in next run loop.
   EXPECT_EQ(0, observer_->num_time_changed());
@@ -140,7 +140,7 @@ TEST_F(SystemTimeChangeNotifierTest, TimeChangedBackwardMoreThan10Seconds) {
   base::Time now = base::Time::Now();
   EXPECT_EQ(0, observer_->num_time_changed());
 
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(40));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(40));
   RunPendingTasks();
   // Still 0 since observe callback is running in next run loop.
   EXPECT_EQ(0, observer_->num_time_changed());
@@ -154,27 +154,27 @@ TEST_F(SystemTimeChangeNotifierTest, CannotDetectTimeDriftForward) {
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected. Expected = now + 1, actual = now + 4.
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(4));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(4));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected. Expected = now + 4 + 1, actual = now + 8.
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(8));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(8));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected. Expected = now + 8 + 1, actual = now + 12.
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(12));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(12));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change detected. Expected = now + 12 + 1, actual = now + 16.
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(16));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(16));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change detected. Expected = now + 16 + 1, actual = now + 20.
-  notifier_->set_fake_now_for_testing(now + base::TimeDelta::FromSeconds(20));
+  notifier_->set_fake_now_for_testing(now + base::Seconds(20));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 }
@@ -184,27 +184,27 @@ TEST_F(SystemTimeChangeNotifierTest, CannotDetectTTimeDriftBackward) {
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected. Expected = now + 1, actual = now - 4.
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(4));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(4));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change NOT detected. Expected = now - 4 + 1, actual = now - 8.
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(8));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(8));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change detected. Expected = now - 8 + 1, actual = now - 12.
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(12));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(12));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change detected. Expected = now - 12 + 1, actual = now - 16.
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(16));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(16));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 
   // Time change detected. Expected = now - 20 + 1, actual = now - 20.
-  notifier_->set_fake_now_for_testing(now - base::TimeDelta::FromSeconds(20));
+  notifier_->set_fake_now_for_testing(now - base::Seconds(20));
   RunPendingTasks();
   EXPECT_EQ(0, observer_->num_time_changed());
 }

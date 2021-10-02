@@ -109,7 +109,7 @@ TEST_F(DeviceNameApplierImplTest, SuccessfullySetNameAfterMultipleAttempts) {
 
   // No more retry calls are made once success callback is called.
   EXPECT_CALL(*mock_adapter_, SetName("TestName", _, _)).Times(0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 }
 
 TEST_F(DeviceNameApplierImplTest, SetNameDelayNotReached) {
@@ -123,7 +123,7 @@ TEST_F(DeviceNameApplierImplTest, SetNameDelayNotReached) {
   // SetName should not be called before next backoff retry time.
   EXPECT_CALL(*mock_adapter_, SetName("TestName", _, _)).Times(0);
   task_environment_.FastForwardBy(GetCurrentBackoffDelay() -
-                                  base::TimeDelta::FromMilliseconds(1));
+                                  base::Milliseconds(1));
 }
 
 TEST_F(DeviceNameApplierImplTest, MultipleCallsToSetDeviceName) {

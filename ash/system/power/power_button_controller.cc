@@ -42,14 +42,14 @@ namespace {
 // for convertible/slate/detachable devices. This differs depending on whether
 // the screen is on or off when the power button is initially pressed.
 constexpr base::TimeDelta kShowMenuWhenScreenOnTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 constexpr base::TimeDelta kShowMenuWhenScreenOffTimeout =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(2000);
 
 // Time that power button should be pressed after power menu is shown before
 // starting the cancellable pre-shutdown animation.
 constexpr base::TimeDelta kStartShutdownAnimationTimeout =
-    base::TimeDelta::FromMilliseconds(650);
+    base::Milliseconds(650);
 
 enum PowerButtonUpState {
   UP_NONE = 0,

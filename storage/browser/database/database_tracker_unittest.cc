@@ -265,14 +265,14 @@ class DatabaseTracker_TestHelper_Test {
               tracker->GetFullDBFilePath(kOrigin1, kDB1), now, now));
           EXPECT_TRUE(base::TouchFile(
               tracker->GetFullDBFilePath(kOrigin2, kDB2), now, now));
-          base::Time three_days_ago = now - base::TimeDelta::FromDays(3);
+          base::Time three_days_ago = now - base::Days(3);
           EXPECT_TRUE(
               base::TouchFile(tracker->GetFullDBFilePath(kOrigin2, kDB3),
                               three_days_ago, three_days_ago));
 
           // Delete databases modified since yesterday. db2 is whitelisted.
           base::Time yesterday = base::Time::Now();
-          yesterday -= base::TimeDelta::FromDays(1);
+          yesterday -= base::Days(1);
 
           net::TestCompletionCallback delete_data_modified_since_callback;
           tracker->DeleteDataModifiedSince(

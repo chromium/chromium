@@ -29,7 +29,7 @@
 namespace {
 
 // The maximum duration to parse media file.
-const base::TimeDelta kTimeOut = base::TimeDelta::FromSeconds(8);
+const base::TimeDelta kTimeOut = base::Seconds(8);
 
 // Returns if the mime type is video or audio.
 bool IsSupportedMediaMimeType(const std::string& mime_type) {

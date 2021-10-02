@@ -38,8 +38,7 @@ namespace arc {
 namespace {
 
 // Tracing delay for jankinees.
-constexpr base::TimeDelta kJankinessTracingTime =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kJankinessTracingTime = base::Minutes(5);
 
 // Minimum number of frames for a jankiness tracing result to be valid.
 constexpr int kMinTotalFramesJankiness = 1000;
@@ -349,8 +348,7 @@ void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,
   // We can only calculate real numbers for initial data. Only report if first
   // time.
   if (first_time) {
-    const base::TimeDelta frameTime =
-        base::TimeDelta::FromMilliseconds(frameTime95);
+    const base::TimeDelta frameTime = base::Milliseconds(frameTime95);
     base::UmaHistogramTimes("Arc.Runtime.Performance.Generic.FrameTime",
                             frameTime);
     VLOG(1) << "Total Frames: " << framesTotal << " | "

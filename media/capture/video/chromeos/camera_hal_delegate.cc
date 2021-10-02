@@ -36,8 +36,7 @@ namespace {
 constexpr int32_t kDefaultFps = 30;
 constexpr char kVirtualPrefix[] = "VIRTUAL_";
 
-constexpr base::TimeDelta kEventWaitTimeoutSecs =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
 class LocalCameraClientObserver : public CameraClientObserver {
  public:

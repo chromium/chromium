@@ -50,8 +50,7 @@ namespace {
 
 // The interval at which the DailyEvent::CheckInterval function should be
 // called.
-constexpr base::TimeDelta kDailyEventIntervalTimeDelta =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kDailyEventIntervalTimeDelta = base::Minutes(30);
 
 // The intervals at which we report the number of unused tabs. This is used for
 // all the tab usage histograms listed below.
@@ -59,18 +58,16 @@ constexpr base::TimeDelta kDailyEventIntervalTimeDelta =
 // The 'Tabs.TabUsageIntervalLength' histogram suffixes entry in histograms.xml
 // should be kept in sync with these values.
 constexpr base::TimeDelta kTabUsageReportingIntervals[] = {
-    base::TimeDelta::FromSeconds(30), base::TimeDelta::FromMinutes(1),
-    base::TimeDelta::FromMinutes(10), base::TimeDelta::FromHours(1),
-    base::TimeDelta::FromHours(5),    base::TimeDelta::FromHours(12)};
+    base::Seconds(30), base::Minutes(1), base::Minutes(10),
+    base::Hours(1),    base::Hours(5),   base::Hours(12)};
 
 #if defined(OS_WIN)
 const base::TimeDelta kNativeWindowOcclusionCalculationInterval =
-    base::TimeDelta::FromMinutes(10);
+    base::Minutes(10);
 #endif
 
 // The interval at which the heartbeat tab metrics should be reported.
-const base::TimeDelta kTabsHeartbeatReportingInterval =
-    base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kTabsHeartbeatReportingInterval = base::Minutes(5);
 
 // The global TabStatsTracker instance.
 TabStatsTracker* g_tab_stats_tracker_instance = nullptr;

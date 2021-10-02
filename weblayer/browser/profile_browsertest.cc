@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearBrowsingDataDeletesFavicons) {
   base::Time now = base::Time::Now();
   ProfileImpl* profile = static_cast<TabImpl*>(shell()->tab())->profile();
   profile->ClearBrowsingData({BrowsingDataType::COOKIES_AND_SITE_DATA},
-                             now - base::TimeDelta::FromMinutes(5), now,
+                             now - base::Minutes(5), now,
                              run_loop.QuitClosure());
   run_loop.Run();
 

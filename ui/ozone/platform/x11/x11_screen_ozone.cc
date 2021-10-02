@@ -125,7 +125,7 @@ bool X11ScreenOzone::IsScreenSaverActive() const {
 
 base::TimeDelta X11ScreenOzone::CalculateIdleTime() const {
   IdleQueryX11 idle_query;
-  return base::TimeDelta::FromSeconds(idle_query.IdleTime());
+  return base::Seconds(idle_query.IdleTime());
 }
 
 void X11ScreenOzone::AddObserver(display::DisplayObserver* observer) {

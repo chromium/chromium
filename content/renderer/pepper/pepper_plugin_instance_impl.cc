@@ -657,9 +657,7 @@ void PepperPluginInstanceImpl::Delete() {
     original_instance_interface_->DidDestroy(pp_instance());
     UMA_HISTOGRAM_CUSTOM_TIMES("NaCl.Perf.ShutdownTime.Total",
                                base::TimeTicks::Now() - start,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromSeconds(20),
-                               100);
+                               base::Milliseconds(1), base::Seconds(20), 100);
   } else {
     instance_interface_->DidDestroy(pp_instance());
   }

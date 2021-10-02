@@ -102,8 +102,7 @@ class NoBestEffortTasksTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr base::StringPiece kExtensionId = "ddchlicdkolnonkihahngkmmmjnjlkkf";
-constexpr base::TimeDelta kSendMessageRetryPeriod =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kSendMessageRetryPeriod = base::Milliseconds(250);
 #endif
 
 }  // namespace

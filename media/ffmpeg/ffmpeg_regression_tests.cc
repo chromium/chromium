@@ -223,7 +223,7 @@ FFMPEG_TEST_CASE_SEEKING(Cr666770,
                          "security/666770.mp4",
                          PIPELINE_ERROR_DECODE,
                          PIPELINE_ERROR_DECODE,
-                         base::TimeDelta::FromSecondsD(0.0843));
+                         base::Seconds(0.0843));
 FFMPEG_TEST_CASE(Cr666874,
                  "security/666874.mp3",
                  DEMUXER_ERROR_COULD_NOT_OPEN,

@@ -34,8 +34,7 @@ void GetNetworkConfigService(
 }
 
 // The maximum latency threshold (in milliseconds) for pinging the gateway.
-constexpr base::TimeDelta kMaxAllowedLatencyMs =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kMaxAllowedLatencyMs = base::Milliseconds(1500);
 
 }  // namespace
 
@@ -154,7 +153,7 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!avg_value || !avg_value->is_double()) {
     return false;
   }
-  *latency = base::TimeDelta::FromMilliseconds(avg_value->GetDouble());
+  *latency = base::Milliseconds(avg_value->GetDouble());
   *ip = ip_addr;
 
   return true;

@@ -35,7 +35,7 @@ class NoticeCardTrackerTest : public testing::Test {
   void SetUp() override {
     feed::RegisterProfilePrefs(profile_prefs_.registry());
     // Make sure current time isn't zero.
-    task_environment_.AdvanceClock(base::TimeDelta::FromDays(1));
+    task_environment_.AdvanceClock(base::Days(1));
   }
 
  protected:
@@ -51,9 +51,9 @@ TEST_F(NoticeCardTrackerTest,
   // Generate enough views to reach the acknowlegement threshold, but the views
   // were not on the notice card.
   tracker.OnCardViewed(/*is_signed_in=*/true, OtherContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(6));
+  task_environment_.AdvanceClock(base::Minutes(6));
   tracker.OnCardViewed(/*is_signed_in=*/true, OtherContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(6));
+  task_environment_.AdvanceClock(base::Minutes(6));
   tracker.OnCardViewed(/*is_signed_in=*/true, OtherContentId());
 
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
@@ -63,9 +63,9 @@ TEST_F(NoticeCardTrackerTest, AcknowledgedNoticeCardWhenEnoughViews) {
   NoticeCardTracker tracker(&profile_prefs_);
 
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(6));
+  task_environment_.AdvanceClock(base::Minutes(6));
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(6));
+  task_environment_.AdvanceClock(base::Minutes(6));
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
 
   EXPECT_TRUE(tracker.HasAcknowledgedNoticeCard());
@@ -75,9 +75,9 @@ TEST_F(NoticeCardTrackerTest, ViewsAreIgnoredIfNotEnoughTimeElapsed) {
   NoticeCardTracker tracker(&profile_prefs_);
 
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(4));
+  task_environment_.AdvanceClock(base::Minutes(4));
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(4));
+  task_environment_.AdvanceClock(base::Minutes(4));
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
 
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
@@ -89,7 +89,7 @@ TEST_F(NoticeCardTrackerTest,
 
   // Generate views but not enough to reach the threshold.
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
-  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(6));
+  task_environment_.AdvanceClock(base::Minutes(6));
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
 
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());

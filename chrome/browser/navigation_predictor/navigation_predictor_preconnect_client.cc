@@ -109,7 +109,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
     }
 
     timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(delay_ms),
+        FROM_HERE, base::Milliseconds(delay_ms),
         base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
                        base::Unretained(this), /*preconnects_attempted=*/0u));
   }
@@ -211,13 +211,13 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.
-  const base::TimeDelta retry_delay = base::TimeDelta::FromMilliseconds(50);
+  const base::TimeDelta retry_delay = base::Milliseconds(50);
 
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
   timer_.Start(
       FROM_HERE,
-      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
           net::features::kNetUnusedIdleSocketTimeout,
           "unused_idle_socket_timeout_seconds", 60)) +
           retry_delay,

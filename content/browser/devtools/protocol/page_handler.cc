@@ -1123,7 +1123,7 @@ void PageHandler::ScreencastFrameCaptured(
           FROM_HERE,
           base::BindOnce(&PageHandler::InnerSwapCompositorFrame,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kFrameRetryDelayMs));
+          base::Milliseconds(kFrameRetryDelayMs));
     }
     --frames_in_flight_;
     return;

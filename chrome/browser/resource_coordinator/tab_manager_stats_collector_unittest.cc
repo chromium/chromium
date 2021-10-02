@@ -59,7 +59,7 @@ class TabManagerStatsCollectorTest : public ChromeRenderViewHostTestHarness {
     base::CurrentThread::Get()->SetTaskRunner(task_runner_);
 
     // Start with a non-zero time.
-    task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(42));
+    task_runner_->FastForwardBy(base::Seconds(42));
   }
 
   TabManagerStatsCollectorTest(const TabManagerStatsCollectorTest&) = delete;

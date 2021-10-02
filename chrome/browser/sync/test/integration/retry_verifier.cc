@@ -18,20 +18,19 @@ namespace {
 // the next retry. This is analogous to the production logic in
 // BackoffDelayProvider::GetDelay().
 DelayInfo CalculateDelay(base::TimeDelta current_delay) {
-  base::TimeDelta backoff =
-      std::max(base::TimeDelta::FromSeconds(1),
-               current_delay * syncer::kBackoffMultiplyFactor);
+  base::TimeDelta backoff = std::max(
+      base::Seconds(1), current_delay * syncer::kBackoffMultiplyFactor);
 
   DelayInfo delay_info;
   delay_info.min_delay = backoff - current_delay * syncer::kBackoffJitterFactor;
   delay_info.max_delay = backoff + current_delay * syncer::kBackoffJitterFactor;
 
   delay_info.min_delay =
-      std::max(base::TimeDelta::FromSeconds(1),
+      std::max(base::Seconds(1),
                std::min(delay_info.min_delay, syncer::kMaxBackoffTime));
 
   delay_info.max_delay =
-      std::max(base::TimeDelta::FromSeconds(1),
+      std::max(base::Seconds(1),
                std::min(delay_info.max_delay, syncer::kMaxBackoffTime));
 
   return delay_info;

@@ -107,9 +107,9 @@ TEST(NetLogProxySink, TestMultipleObservers) {
       add_entry_runloop.QuitClosure());
 
   base::TimeTicks source1_start_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(10);
+      base::TimeTicks() + base::Milliseconds(10);
   base::TimeTicks source1_event0_time =
-      source1_start_time + base::TimeDelta::FromMilliseconds(1);
+      source1_start_time + base::Milliseconds(1);
   base::Value source1_event0_params(base::Value::Type::DICTIONARY);
   source1_event0_params.SetStringKey("hello", "world");
   proxy_sink_remote->AddEntry(

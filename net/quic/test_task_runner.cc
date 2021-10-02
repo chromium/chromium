@@ -17,7 +17,7 @@ namespace {
 
 base::TimeTicks NowInTicks(const quic::MockClock& clock) {
   base::TimeTicks ticks;
-  return ticks + base::TimeDelta::FromMicroseconds(
+  return ticks + base::Microseconds(
                      (clock.Now() - quic::QuicTime::Zero()).ToMicroseconds());
 }
 

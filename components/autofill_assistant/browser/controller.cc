@@ -1108,8 +1108,8 @@ void Controller::OnGetScripts(const GURL& url,
 
   autostart_timeout_script_path_ =
       response_proto.script_timeout_error().script_path();
-  autostart_timeout_ = base::TimeDelta::FromMilliseconds(
-      response_proto.script_timeout_error().timeout_ms());
+  autostart_timeout_ =
+      base::Milliseconds(response_proto.script_timeout_error().timeout_ms());
   if (allow_autostart())
     absolute_autostart_timeout_ = tick_clock_->NowTicks() + autostart_timeout_;
 

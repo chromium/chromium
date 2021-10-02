@@ -250,7 +250,7 @@ void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
     return;
   }
   chromeos::DelayNetworkCall(
-      base::TimeDelta::FromMilliseconds(chromeos::kDefaultNetworkRetryDelayMS),
+      base::Milliseconds(chromeos::kDefaultNetworkRetryDelayMS),
       std::move(callback));
   return;
 #else

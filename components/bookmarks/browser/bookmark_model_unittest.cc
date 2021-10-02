@@ -678,8 +678,7 @@ TEST_F(BookmarkModelTest, AddFolderWithCreationTime) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
   BookmarkNode::MetaInfoMap meta_info;
-  const base::Time creation_time(base::Time::Now() -
-                                 base::TimeDelta::FromDays(1));
+  const base::Time creation_time(base::Time::Now() - base::Days(1));
 
   const BookmarkNode* new_node =
       model_->AddFolder(root, /*index=*/0, title, &meta_info, creation_time);
@@ -890,7 +889,7 @@ TEST_F(BookmarkModelTest, SetDateAdded) {
 
   ClearCounts();
 
-  base::Time new_time = base::Time::Now() + base::TimeDelta::FromMinutes(20);
+  base::Time new_time = base::Time::Now() + base::Minutes(20);
   model_->SetDateAdded(node, new_time);
   AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0);
   EXPECT_EQ(new_time, node->date_added());
@@ -937,7 +936,7 @@ TEST_F(BookmarkModelTest, NonMovingMoveCall) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
   const GURL url("http://foo.com");
-  const base::Time old_date(base::Time::Now() - base::TimeDelta::FromDays(1));
+  const base::Time old_date(base::Time::Now() - base::Days(1));
 
   const BookmarkNode* node = model_->AddURL(root, 0, title, url);
   model_->SetDateFolderModified(root, old_date);

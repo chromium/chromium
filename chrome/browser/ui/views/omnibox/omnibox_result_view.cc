@@ -588,8 +588,7 @@ void OmniboxResultView::SetWidths() {
 // OmniboxResultView, views::View overrides, private:
 
 void OmniboxResultView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  keyword_slide_animation_->SetSlideDuration(
-      base::TimeDelta::FromMilliseconds(width() / 4));
+  keyword_slide_animation_->SetSlideDuration(base::Milliseconds(width() / 4));
   SetWidths();
 }
 

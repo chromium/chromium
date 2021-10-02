@@ -77,7 +77,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
   ++num_tabs;
   size_t num_browsers = static_cast<size_t>(num_popups + num_app_popups) + 1;
 
-  const base::TimeDelta kWaitTime = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kWaitTime = base::Seconds(10);
   base::TimeTicks end_time = base::TimeTicks::Now() + kWaitTime;
   while (base::TimeTicks::Now() < end_time) {
     if (chrome::GetBrowserCount(browser->profile()) == num_browsers &&

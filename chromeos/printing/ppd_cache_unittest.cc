@@ -93,7 +93,7 @@ TEST_F(PpdCacheTest, MissThenHit) {
   EXPECT_EQ(captured_find_results_, 2);
   EXPECT_TRUE(find_result_.success);
   EXPECT_EQ(find_result_.contents, kTestContents);
-  EXPECT_LT(find_result_.age, base::TimeDelta::FromMinutes(5));
+  EXPECT_LT(find_result_.age, base::Minutes(5));
 
   cache->Find(kTestKey2, base::BindOnce(&PpdCacheTest::CaptureFindResult,
                                         base::Unretained(this)));
@@ -115,7 +115,7 @@ TEST_F(PpdCacheTest, HitAge) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(captured_find_results_, 1);
   // The age should be well under a second, but accept anything under an hour.
-  EXPECT_LT(find_result_.age, base::TimeDelta::FromHours(1));
+  EXPECT_LT(find_result_.age, base::Hours(1));
 }
 
 }  // namespace

@@ -49,8 +49,7 @@ bool CheckLinearValues(const std::string& name, int maximum) {
 }
 
 // Default interval between externally-reported metrics being collected.
-constexpr base::TimeDelta kDefaultCollectionInterval =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kDefaultCollectionInterval = base::Seconds(30);
 
 }  // namespace
 
@@ -65,7 +64,7 @@ ExternalMetrics::ExternalMetrics()
   if (!flag_value.empty()) {
     int seconds = -1;
     if (base::StringToInt(flag_value, &seconds) && seconds > 0) {
-      collection_interval_ = base::TimeDelta::FromSeconds(seconds);
+      collection_interval_ = base::Seconds(seconds);
     } else {
       LOG(WARNING) << "Ignoring bad value \"" << flag_value << "\" in --"
                    << switches::kExternalMetricsCollectionInterval;

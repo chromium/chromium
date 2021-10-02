@@ -64,12 +64,11 @@ MemoryAblationStudy::MemoryAblationStudy() {
   if (remaining_allocation_mb_ <= 0)
     return;
 
-  allocate_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kAllocateTimerIntervalSeconds),
-      base::BindRepeating(&MemoryAblationStudy::Allocate,
-                          base::Unretained(this)));
+  allocate_timer_.Start(FROM_HERE, base::Seconds(kAllocateTimerIntervalSeconds),
+                        base::BindRepeating(&MemoryAblationStudy::Allocate,
+                                            base::Unretained(this)));
   read_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kReadTimerIntervalSeconds),
+      FROM_HERE, base::Seconds(kReadTimerIntervalSeconds),
       base::BindRepeating(&MemoryAblationStudy::Read, base::Unretained(this)));
 }
 

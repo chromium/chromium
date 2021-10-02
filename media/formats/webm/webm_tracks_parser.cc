@@ -57,7 +57,7 @@ base::TimeDelta WebMTracksParser::PrecisionCappedDefaultDuration(
   if (result_us == 0)
     return kNoTimestamp;
 
-  return base::TimeDelta::FromMicroseconds(result_us);
+  return base::Microseconds(result_us);
 }
 
 void WebMTracksParser::Reset() {

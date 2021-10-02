@@ -217,7 +217,7 @@ TEST_F(NativeWidgetAuraTest, MouseClickInterruptsGestureScroll) {
   ui::test::EventGenerator generator(widget.GetNativeView()->GetRootWindow());
   generator.GestureScrollSequenceWithCallback(
       center_point, target_point,
-      /*duration=*/base::TimeDelta::FromMilliseconds(100), step_count,
+      /*duration=*/base::Milliseconds(100), step_count,
       base::BindRepeating(scroll_callback, &generator, &step_count));
 
   // Verify that `child_view` receives gesture end events.

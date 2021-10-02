@@ -132,7 +132,7 @@ void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
   const base::DictionaryValue* user_pref_dict =
       local_state_->GetDictionary(pref_name);
   const base::Time current_date = GetCurrentMeasurementDate();
-  const base::Time week_ago = current_date - base::TimeDelta::FromDays(7);
+  const base::Time week_ago = current_date - base::Days(7);
 
   base::DictionaryValue user_pref_new_dict;
   for (base::DictionaryValue::Iterator it(*user_pref_dict); !it.IsAtEnd();

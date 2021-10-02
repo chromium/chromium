@@ -137,8 +137,7 @@ TEST_F(TimeViewTest, ShowDateMode) {
 TEST_F(TimeViewTest, UpdateSize) {
   // Set current time to 8:00AM for testing.
   task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
-                                   base::TimeDelta::FromHours(32) -
-                                   base::Time::Now());
+                                   base::Hours(32) - base::Time::Now());
 
   // A newly created horizontal clock only has the horizontal label.
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
@@ -148,11 +147,11 @@ TEST_F(TimeViewTest, UpdateSize) {
   EXPECT_FALSE(test_observer.preferred_size_changed_called());
 
   // Move to 9:59AM. There should be no layout change of the `time_view()`.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(119));
+  task_environment()->FastForwardBy(base::Minutes(119));
   EXPECT_FALSE(test_observer.preferred_size_changed_called());
 
   // Move to 10:00AM. There should be a layout change of the `time_view()`.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(61));
+  task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
 }
 

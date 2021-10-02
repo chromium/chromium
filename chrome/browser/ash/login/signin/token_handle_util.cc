@@ -27,7 +27,7 @@ const char kHandleStatusInvalid[] = "invalid";
 
 constexpr int kMaxRetries = 3;
 
-constexpr base::TimeDelta kCacheStatusTime = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 
 const char* g_invalid_token_for_testing = nullptr;
 

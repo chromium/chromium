@@ -65,9 +65,8 @@ class HistoryEntryInserterTest : public PlatformTest {
 // Tests that history entry items added to ListModel are sorted by
 // timestamp.
 TEST_F(HistoryEntryInserterTest, AddItems) {
-  base::Time today =
-      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(1);
-  base::TimeDelta minute = base::TimeDelta::FromMinutes(1);
+  base::Time today = base::Time::Now().LocalMidnight() + base::Hours(1);
+  base::TimeDelta minute = base::Minutes(1);
   HistoryEntryItem* entry1 = TestHistoryEntryItem(today, "entry1");
   HistoryEntryItem* entry2 = TestHistoryEntryItem(today - minute, "entry2");
   HistoryEntryItem* entry3 =
@@ -110,10 +109,9 @@ TEST_F(HistoryEntryInserterTest, AddItems) {
 // Tests that items from different dates are added in correctly ordered
 // sections.
 TEST_F(HistoryEntryInserterTest, AddSections) {
-  base::Time today =
-      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(12);
-  base::TimeDelta day = base::TimeDelta::FromDays(1);
-  base::TimeDelta minute = base::TimeDelta::FromMinutes(1);
+  base::Time today = base::Time::Now().LocalMidnight() + base::Hours(12);
+  base::TimeDelta day = base::Days(1);
+  base::TimeDelta minute = base::Minutes(1);
   HistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
   HistoryEntryItem* day2_entry1 =
       TestHistoryEntryItem(today - day, "day2_entry1");
@@ -233,9 +231,8 @@ TEST_F(HistoryEntryInserterTest, AddDuplicateItems) {
 
 // Tests that removing a section invokes the appropriate delegate callback.
 TEST_F(HistoryEntryInserterTest, RemoveSection) {
-  base::Time today =
-      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(1);
-  base::TimeDelta day = base::TimeDelta::FromDays(1);
+  base::Time today = base::Time::Now().LocalMidnight() + base::Hours(1);
+  base::TimeDelta day = base::Days(1);
   HistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
   HistoryEntryItem* day2 = TestHistoryEntryItem(today - day, "day2");
 

@@ -22,12 +22,10 @@ namespace ash {
 namespace {
 
 // Delay of the reconnection to Sensor Hal Dispatcher.
-constexpr base::TimeDelta kDelayReconnect =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDelayReconnect = base::Milliseconds(1000);
 
 // Timeout for the late-present devices: 10 seconds.
-constexpr base::TimeDelta kNewDevicesTimeout =
-    base::TimeDelta::FromMilliseconds(10000);
+constexpr base::TimeDelta kNewDevicesTimeout = base::Milliseconds(10000);
 
 }  // namespace
 

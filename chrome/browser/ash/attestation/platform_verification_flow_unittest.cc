@@ -234,7 +234,7 @@ TEST_F(PlatformVerificationFlowTest, AttestationServiceInternalError) {
 }
 
 TEST_F(PlatformVerificationFlowTest, Timeout) {
-  verifier_->set_timeout_delay(base::TimeDelta::FromSeconds(0));
+  verifier_->set_timeout_delay(base::Seconds(0));
   ExpectAttestationFlow();
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
                                   kTestChallenge, CreateChallengeCallback());
@@ -245,14 +245,13 @@ TEST_F(PlatformVerificationFlowTest, Timeout) {
 TEST_F(PlatformVerificationFlowTest, ExpiredCert) {
   ExpectAttestationFlow();
   fake_certificate_list_.resize(3);
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(-1),
-                                    &fake_certificate_list_[0]));
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(1),
-                                    &fake_certificate_list_[1]));
+  ASSERT_TRUE(
+      GetFakeCertificatePEM(base::Days(-1), &fake_certificate_list_[0]));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &fake_certificate_list_[1]));
   // This is the opportunistic renewal certificate. Send it back expired to test
   // that it does not pass through the certificate expiry check again.
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(-1),
-                                    &fake_certificate_list_[2]));
+  ASSERT_TRUE(
+      GetFakeCertificatePEM(base::Days(-1), &fake_certificate_list_[2]));
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
                                   kTestChallenge, CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
@@ -267,13 +266,12 @@ TEST_F(PlatformVerificationFlowTest, ExpiredIntermediateCert) {
   ExpectAttestationFlow();
   fake_certificate_list_.resize(2);
   std::string leaf_cert;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(60), &leaf_cert));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(60), &leaf_cert));
   std::string intermediate_cert;
-  ASSERT_TRUE(
-      GetFakeCertificatePEM(base::TimeDelta::FromDays(-1), &intermediate_cert));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(-1), &intermediate_cert));
   fake_certificate_list_[0] = leaf_cert + intermediate_cert;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(90),
-                                    &fake_certificate_list_[1]));
+  ASSERT_TRUE(
+      GetFakeCertificatePEM(base::Days(90), &fake_certificate_list_[1]));
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
                                   kTestChallenge, CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
@@ -286,8 +284,7 @@ TEST_F(PlatformVerificationFlowTest, ExpiredIntermediateCert) {
 TEST_F(PlatformVerificationFlowTest, AsyncRenewalMultipleHits) {
   ExpectAttestationFlow();
   fake_certificate_list_.resize(4);
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(1),
-                                    &fake_certificate_list_[0]));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &fake_certificate_list_[0]));
   std::fill(fake_certificate_list_.begin() + 1, fake_certificate_list_.end(),
             fake_certificate_list_[0]);
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,

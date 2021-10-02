@@ -99,7 +99,7 @@ bool ConvertTimeSeconds(uint64_t seconds,
                         net::der::GeneralizedTime* generalized_time) {
   base::Time unix_timestamp =
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(base::saturated_cast<int64_t>(seconds));
+      base::Seconds(base::saturated_cast<int64_t>(seconds));
   return net::der::EncodeTimeAsGeneralizedTime(unix_timestamp,
                                                generalized_time);
 }

@@ -33,8 +33,8 @@ base::TimeDelta ContentCaptureTask::TaskDelay::ResetAndGetInitialDelay() {
 }
 
 base::TimeDelta ContentCaptureTask::TaskDelay::GetNextTaskDelay() const {
-  return base::TimeDelta::FromMilliseconds(
-      task_initial_delay_.InMilliseconds() * (1 << delay_exponent_));
+  return base::Milliseconds(task_initial_delay_.InMilliseconds() *
+                            (1 << delay_exponent_));
 }
 
 void ContentCaptureTask::TaskDelay::IncreaseDelayExponent() {

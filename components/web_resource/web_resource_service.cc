@@ -104,7 +104,7 @@ void WebResourceService::ScheduleFetch(int64_t delay_ms) {
       FROM_HERE,
       base::BindOnce(&WebResourceService::StartFetch,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 }
 
 void WebResourceService::SetResourceRequestAllowedNotifier(

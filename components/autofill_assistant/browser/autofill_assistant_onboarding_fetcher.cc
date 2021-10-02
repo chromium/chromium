@@ -64,8 +64,7 @@ void AutofillAssistantOnboardingFetcher::FetchOnboardingDefinition(
 
 void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
                                                     int timeout_ms) {
-  static const base::TimeDelta kFetchTimeout(
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+  static const base::TimeDelta kFetchTimeout(base::Milliseconds(timeout_ms));
   if (url_loader_) {
     return;
   }

@@ -195,7 +195,7 @@ TEST_F(LinkSelectionTest, HandCursorDuringLinkDrag) {
       ->LocalFrameRoot()
       .GetEventHandler()
       .ScheduleCursorUpdate();
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(50));
+  test::RunDelayedTasks(base::Milliseconds(50));
   const auto& cursor =
       main_frame_->GetFrame()->GetChromeClient().LastSetCursorForTesting();
   EXPECT_EQ(ui::mojom::blink::CursorType::kHand, cursor.type());
@@ -207,7 +207,7 @@ TEST_F(LinkSelectionTest, DragOnNothingShowsPointer) {
       ->LocalFrameRoot()
       .GetEventHandler()
       .ScheduleCursorUpdate();
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(50));
+  test::RunDelayedTasks(base::Milliseconds(50));
   const auto& cursor =
       main_frame_->GetFrame()->GetChromeClient().LastSetCursorForTesting();
   EXPECT_EQ(ui::mojom::blink::CursorType::kPointer, cursor.type());
@@ -220,7 +220,7 @@ TEST_F(LinkSelectionTest, CaretCursorOverLinkDuringSelection) {
       ->LocalFrameRoot()
       .GetEventHandler()
       .ScheduleCursorUpdate();
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(50));
+  test::RunDelayedTasks(base::Milliseconds(50));
   const auto& cursor =
       main_frame_->GetFrame()->GetChromeClient().LastSetCursorForTesting();
   EXPECT_EQ(ui::mojom::blink::CursorType::kIBeam, cursor.type());
@@ -239,7 +239,7 @@ TEST_F(LinkSelectionTest, HandCursorOverLinkAfterContextMenu) {
   frame->GetPage()->GetContextMenuController().ClearContextMenu();
 
   frame->LocalFrameRoot().GetEventHandler().ScheduleCursorUpdate();
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(50));
+  test::RunDelayedTasks(base::Milliseconds(50));
   const auto& cursor =
       main_frame_->GetFrame()->GetChromeClient().LastSetCursorForTesting();
   EXPECT_EQ(ui::mojom::blink::CursorType::kHand, cursor.type());

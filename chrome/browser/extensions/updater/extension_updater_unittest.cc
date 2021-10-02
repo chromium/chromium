@@ -1734,7 +1734,7 @@ class ExtensionUpdaterTest : public testing::Test {
         tmp_path.Append(LocalExtensionCache::ExtensionFileName(
             kTestExtensionId, version, "" /* hash */));
     // Create a small file of zeroes, e.g. 100 bytes size.
-    CreateFile(filename, 100, now - base::TimeDelta::FromSeconds(3));
+    CreateFile(filename, 100, now - base::Seconds(3));
 
     // Add crx file entry in the cache.
     base::RunLoop put_extension_run_loop;

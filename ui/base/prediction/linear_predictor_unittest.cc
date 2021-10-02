@@ -132,8 +132,7 @@ TEST_F(LinearPredictorFirstOrderTest, TimeInterval) {
   for (size_t i = 0; i < n; i++) {
     predictor_->Update({gfx::PointF(x[i], y[i]), FromMilliseconds(t[i])});
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMilliseconds(t[1] - t[0]));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds(t[1] - t[0]));
 }
 
 // Test time interval in second order
@@ -146,8 +145,7 @@ TEST_F(LinearPredictorSecondOrderTest, TimeInterval) {
   for (size_t i = 0; i < n; i++) {
     predictor_->Update({gfx::PointF(x[i], y[i]), FromMilliseconds(t[i])});
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMillisecondsD((t[2] - t[0]) / 2));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds((t[2] - t[0]) / 2));
 }
 
 }  // namespace test

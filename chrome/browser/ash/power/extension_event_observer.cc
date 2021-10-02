@@ -227,7 +227,7 @@ void ExtensionEventObserver::OnSuspendImminent(bool dark_suspend) {
   // prevent this callback from reporting ready.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, suspend_readiness_callback_.callback(),
-      dark_suspend ? base::TimeDelta::FromMilliseconds(kDarkSuspendDelayMs)
+      dark_suspend ? base::Milliseconds(kDarkSuspendDelayMs)
                    : base::TimeDelta());
 }
 

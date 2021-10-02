@@ -120,10 +120,9 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     [strongSelf->_delegate didFailFetchManagedStatus:error];
   };
   _watchdogTimer.reset(new base::OneShotTimer());
-  _watchdogTimer->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kAuthenticationFlowTimeoutSeconds),
-      base::BindOnce(onTimeout));
+  _watchdogTimer->Start(FROM_HERE,
+                        base::Seconds(kAuthenticationFlowTimeoutSeconds),
+                        base::BindOnce(onTimeout));
 }
 
 - (BOOL)stopWatchdogTimer {

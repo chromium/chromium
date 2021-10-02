@@ -392,7 +392,7 @@ class MidiManagerWin::InPort final : public Port {
   }
 
   base::TimeTicks CalculateInEventTime(uint32_t elapsed_ms) const {
-    return start_time_ + base::TimeDelta::FromMilliseconds(elapsed_ms);
+    return start_time_ + base::Milliseconds(elapsed_ms);
   }
 
   void RestoreBuffer() {

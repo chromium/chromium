@@ -22,18 +22,17 @@ class AudioShifterTest :
       public ::testing::TestWithParam<::testing::tuple<int, int, int, bool> > {
  public:
   AudioShifterTest()
-      : shifter_(base::TimeDelta::FromMilliseconds(2000),
-                 base::TimeDelta::FromMilliseconds(3),
-                 base::TimeDelta::FromMilliseconds(100),
+      : shifter_(base::Milliseconds(2000),
+                 base::Milliseconds(3),
+                 base::Milliseconds(100),
                  kSampleRate,
                  2),
-        end2end_latency_(base::TimeDelta::FromMilliseconds(30)),
-        playback_latency_(base::TimeDelta::FromMilliseconds(10)),
+        end2end_latency_(base::Milliseconds(30)),
+        playback_latency_(base::Milliseconds(10)),
         tag_input_(false),
         expect_smooth_output_(true),
         input_sample_n_(0),
-        output_sample_(0) {
-  }
+        output_sample_(0) {}
 
   void SetupInput(int size, base::TimeDelta rate) {
     input_size_ = size;
@@ -62,12 +61,10 @@ class AudioShifterTest :
   void SetUp() override {
     SetupInput(
         kInputPacketSize + ::testing::get<0>(GetParam()) - 1,
-        base::TimeDelta::FromMicroseconds(
-            1000 + ::testing::get<1>(GetParam()) * 5 - 5));
+        base::Microseconds(1000 + ::testing::get<1>(GetParam()) * 5 - 5));
     SetupOutput(
         kOutputPacketSize,
-        base::TimeDelta::FromMicroseconds(
-            500 + ::testing::get<2>(GetParam()) * 3 - 3));
+        base::Microseconds(500 + ::testing::get<2>(GetParam()) * 3 - 3));
     if (::testing::get<3>(GetParam())) {
       end2end_latency_ = -end2end_latency_;
     }
@@ -89,9 +86,8 @@ class AudioShifterTest :
           if (test_output_->channel(0)[j] != 0.0) {
             silence = false;
             if (test_output_->channel(0)[j] > 3000000.0) {
-              marker_outputs_.push_back(
-                now_ + playback_latency_ +
-                base::TimeDelta::FromSeconds(j) / kSampleRate);
+              marker_outputs_.push_back(now_ + playback_latency_ +
+                                        base::Seconds(j) / kSampleRate);
              } else {
                // We don't expect smooth output once we insert a tag,
                // or in the very beginning.
@@ -128,8 +124,8 @@ class AudioShifterTest :
     if (end2end_latency_ > base::TimeDelta()) {
       CHECK(!marker_outputs_.empty());
       base::TimeDelta actual_offset = marker_outputs_[0] - expected_mark_time;
-      EXPECT_LT(actual_offset, base::TimeDelta::FromMicroseconds(100));
-      EXPECT_GT(actual_offset, base::TimeDelta::FromMicroseconds(-100));
+      EXPECT_LT(actual_offset, base::Microseconds(100));
+      EXPECT_GT(actual_offset, base::Microseconds(-100));
     } else {
       EXPECT_GT(marker_outputs_.size(), 0UL);
     }
@@ -174,8 +170,7 @@ TEST_P(AudioShifterTest, TestSyncWithPull) {
   expect_smooth_output_ = false;
   Run(100);
   for (int i = 0; i < 100; i++) {
-    shifter_.Pull(test_output_.get(),
-                  now_ + base::TimeDelta::FromMilliseconds(i));
+    shifter_.Pull(test_output_.get(), now_ + base::Milliseconds(i));
   }
   RunAndCheckSync(1000);
   EXPECT_LE(skip_outputs_.size(), 1UL);
@@ -185,12 +180,10 @@ TEST_P(AudioShifterTest, UnderOverFlow) {
   expect_smooth_output_ = false;
   SetupInput(
       kInputPacketSize + ::testing::get<0>(GetParam()) * 10 - 10,
-      base::TimeDelta::FromMicroseconds(
-          1000 + ::testing::get<1>(GetParam()) * 100 - 100));
+      base::Microseconds(1000 + ::testing::get<1>(GetParam()) * 100 - 100));
   SetupOutput(
       kOutputPacketSize,
-      base::TimeDelta::FromMicroseconds(
-          500 + ::testing::get<2>(GetParam()) * 50 - 50));
+      base::Microseconds(500 + ::testing::get<2>(GetParam()) * 50 - 50));
   // Sane output is not expected, but let's make sure we don't crash.
   Run(1000);
 }

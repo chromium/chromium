@@ -970,9 +970,8 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
   absl::optional<base::TimeDelta> total_time = GetTotalPrefetchTime(head.get());
   if (total_time) {
     UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.TotalTime",
-                               *total_time,
-                               base::TimeDelta::FromMilliseconds(10),
-                               base::TimeDelta::FromSeconds(30), 100);
+                               *total_time, base::Milliseconds(10),
+                               base::Seconds(30), 100);
   }
 
   absl::optional<base::TimeDelta> connect_time =

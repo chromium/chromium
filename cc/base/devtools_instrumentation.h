@@ -89,8 +89,8 @@ class CC_BASE_EXPORT ScopedImageTask {
 
   // UMA histogram parameters
   const uint32_t bucket_count_ = 50;
-  base::TimeDelta hist_min_ = base::TimeDelta::FromMicroseconds(1);
-  base::TimeDelta hist_max_ = base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta hist_min_ = base::Microseconds(1);
+  base::TimeDelta hist_max_ = base::Milliseconds(1000);
 };
 
 class CC_BASE_EXPORT ScopedImageUploadTask : public ScopedImageTask {

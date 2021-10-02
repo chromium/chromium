@@ -492,10 +492,8 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
   data->input_encodings = base::SplitString(
       s.ColumnString(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   data->id = s.ColumnInt64(0);
-  data->date_created =
-      base::Time() + base::TimeDelta::FromMicroseconds(s.ColumnInt64(7));
-  data->last_modified =
-      base::Time() + base::TimeDelta::FromMicroseconds(s.ColumnInt64(13));
+  data->date_created = base::Time() + base::Microseconds(s.ColumnInt64(7));
+  data->last_modified = base::Time() + base::Microseconds(s.ColumnInt64(13));
   data->created_by_policy = s.ColumnBool(12);
   data->created_from_play_api = s.ColumnBool(22);
   data->usage_count = s.ColumnInt(8);
@@ -513,8 +511,7 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
     }
   }
 
-  data->last_visited =
-      base::Time() + base::TimeDelta::FromMicroseconds(s.ColumnInt64(21));
+  data->last_visited = base::Time() + base::Microseconds(s.ColumnInt64(21));
 
   return true;
 }

@@ -104,17 +104,17 @@ TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobs) {
   test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, 1);
   print_job_database_->Initialize(base::DoNothing());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(300));
+  task_environment_.FastForwardBy(base::Days(300));
   PrintJobInfo print_job_info1 =
       ConstructPrintJobInfo(kId1, task_environment_.GetMockClock()->Now());
   SavePrintJob(print_job_info1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   PrintJobInfo print_job_info2 =
       ConstructPrintJobInfo(kId2, task_environment_.GetMockClock()->Now());
   SavePrintJob(print_job_info2);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
+  task_environment_.FastForwardBy(base::Hours(12));
   base::RunLoop run_loop1;
   print_job_history_cleaner_->CleanUp(run_loop1.QuitClosure());
   run_loop1.Run();
@@ -124,7 +124,7 @@ TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobs) {
   ASSERT_EQ(1u, entries.size());
   EXPECT_EQ(kId2, entries[0].id());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   base::RunLoop run_loop2;
   print_job_history_cleaner_->CleanUp(run_loop2.QuitClosure());
   run_loop2.Run();
@@ -138,12 +138,12 @@ TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobsAfterPrefChanged) {
   test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, 3);
   print_job_database_->Initialize(base::DoNothing());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(300));
+  task_environment_.FastForwardBy(base::Days(300));
   PrintJobInfo print_job_info =
       ConstructPrintJobInfo(kId1, task_environment_.GetMockClock()->Now());
   SavePrintJob(print_job_info);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(36));
+  task_environment_.FastForwardBy(base::Hours(36));
   base::RunLoop run_loop1;
   print_job_history_cleaner_->CleanUp(run_loop1.QuitClosure());
   run_loop1.Run();
@@ -167,12 +167,12 @@ TEST_F(PrintJobHistoryCleanerTest, StorePrintJobHistoryIndefinite) {
   test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, -1);
   print_job_database_->Initialize(base::DoNothing());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(300));
+  task_environment_.FastForwardBy(base::Days(300));
   PrintJobInfo print_job_info1 =
       ConstructPrintJobInfo(kId1, task_environment_.GetMockClock()->Now());
   SavePrintJob(print_job_info1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(300));
+  task_environment_.FastForwardBy(base::Days(300));
 
   base::RunLoop run_loop;
   print_job_history_cleaner_->CleanUp(run_loop.QuitClosure());

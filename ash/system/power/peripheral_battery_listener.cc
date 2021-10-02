@@ -502,8 +502,7 @@ void PeripheralBatteryListener::OnStylusStateChanged(
     if (info.charge_status == BatteryInfo::ChargeStatus::kCharging) {
       base::TimeTicks charge_start_time = base::TimeTicks::Now();
       garage_charge_timer_.Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kGarageChargeUpdatePeriod),
+          FROM_HERE, base::Milliseconds(kGarageChargeUpdatePeriod),
           base::BindRepeating(&PeripheralBatteryListener::GarageTimerAction,
                               base::Unretained(this), charge_start_time,
                               info.level));

@@ -18,8 +18,7 @@
 namespace ui {
 
 // How long we want to wait for release-fence from scenic for previous frames.
-constexpr base::TimeDelta kFrameReleaseTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kFrameReleaseTimeout = base::Milliseconds(500);
 
 ScenicWindowCanvas::Frame::Frame() = default;
 ScenicWindowCanvas::Frame::~Frame() = default;

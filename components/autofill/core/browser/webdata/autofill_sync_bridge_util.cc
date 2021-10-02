@@ -400,9 +400,8 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
 
   // General offer data:
   offer_data.offer_id = offer_specifics.id();
-  offer_data.expiry =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(offer_specifics.offer_expiry_date());
+  offer_data.expiry = base::Time::UnixEpoch() +
+                      base::Seconds(offer_specifics.offer_expiry_date());
   offer_data.offer_details_url = GURL(offer_specifics.offer_details_url());
   for (const std::string& domain : offer_specifics.merchant_domain()) {
     const GURL gurl_domain = GURL(domain);

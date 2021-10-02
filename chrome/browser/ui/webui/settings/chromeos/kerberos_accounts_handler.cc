@@ -261,10 +261,10 @@ void KerberosAccountsHandler::OnListAccounts(
     // Format validity time as 'xx hours yy minutes' for validity < 1 day and
     // 'nn days' otherwise.
     base::TimeDelta tgt_validity =
-        base::TimeDelta::FromSeconds(account.tgt_validity_seconds());
+        base::Seconds(account.tgt_validity_seconds());
     const std::u16string valid_for_duration = ui::TimeFormat::Detailed(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
-        tgt_validity < base::TimeDelta::FromDays(1) ? -1 : 0, tgt_validity);
+        tgt_validity < base::Days(1) ? -1 : 0, tgt_validity);
 
     base::DictionaryValue account_dict;
     account_dict.SetString("principalName", account.principal_name());

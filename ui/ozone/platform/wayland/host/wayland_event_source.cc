@@ -490,7 +490,7 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
     }
     if (frame.dx == 0 && frame.dy == 0)
       break;
-    if (dt + frame.dt > base::TimeDelta::FromMilliseconds(200))
+    if (dt + frame.dt > base::Milliseconds(200))
       break;
 
     dx += frame.dx;

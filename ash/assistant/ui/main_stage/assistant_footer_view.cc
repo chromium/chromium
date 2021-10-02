@@ -28,12 +28,9 @@ namespace {
 constexpr int kPreferredHeightDip = 48;
 
 // Animation.
-constexpr base::TimeDelta kAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(167);
-constexpr base::TimeDelta kAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(167);
-constexpr base::TimeDelta kAnimationFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kAnimationFadeInDelay = base::Milliseconds(167);
+constexpr base::TimeDelta kAnimationFadeInDuration = base::Milliseconds(167);
+constexpr base::TimeDelta kAnimationFadeOutDuration = base::Milliseconds(167);
 
 }  // namespace
 

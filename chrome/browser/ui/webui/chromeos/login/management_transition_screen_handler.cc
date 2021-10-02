@@ -23,7 +23,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kWaitingTimeout = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kWaitingTimeout = base::Minutes(2);
 
 }  // namespace
 

@@ -66,9 +66,8 @@ base::TimeDelta LiteVideoHintAgent::CalculateLatencyForResourceResponse(
   // 1 second, an 400KB response should have total delay of 5 seconds (400/100
   // + 1).
   auto delay_for_throttled_response =
-      base::TimeDelta::FromSecondsD(
-          recv_bytes.value_or(0) /
-          (*target_downlink_bandwidth_kbps_ * 1024.0)) +
+      base::Seconds(recv_bytes.value_or(0) /
+                    (*target_downlink_bandwidth_kbps_ * 1024.0)) +
       *target_downlink_rtt_latency_;
   auto response_delay =
       response_head.response_time - response_head.request_time;

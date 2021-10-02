@@ -338,8 +338,8 @@ void DirectRenderer::DrawFrame(
         &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
 
-    constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);
-    constexpr auto kMaxTime = base::TimeDelta::FromMilliseconds(10);
+    constexpr auto kMinTime = base::Microseconds(5);
+    constexpr auto kMaxTime = base::Milliseconds(10);
     constexpr int kTimeBuckets = 50;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.DirectRenderer.OverlayProcessingUs",
@@ -932,7 +932,7 @@ gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
   // OutputSurface size to |device_viewport_size_|.
   if (device_viewport_size_ == requested_viewport_size &&
       (base::TimeTicks::Now() - last_viewport_resize_time_) >=
-          base::TimeDelta::FromSeconds(1)) {
+          base::Seconds(1)) {
     return requested_viewport_size;
   }
 

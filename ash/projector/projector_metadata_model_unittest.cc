@@ -105,8 +105,8 @@ class ProjectorKeyIdeaTest : public testing::Test {
 
 TEST_F(ProjectorKeyIdeaTest, ToJson) {
   ProjectorKeyIdea key_idea(
-      /*start_time=*/base::TimeDelta::FromMilliseconds(1000),
-      /*end_time=*/base::TimeDelta::FromMilliseconds(3000));
+      /*start_time=*/base::Milliseconds(1000),
+      /*end_time=*/base::Milliseconds(3000));
 
   std::string key_idea_str;
   base::JSONWriter::Write(key_idea.ToJson(), &key_idea_str);
@@ -117,8 +117,8 @@ TEST_F(ProjectorKeyIdeaTest, ToJson) {
 
 TEST_F(ProjectorKeyIdeaTest, ToJsonWithText) {
   ProjectorKeyIdea key_idea(
-      /*start_time=*/base::TimeDelta::FromMilliseconds(1000),
-      /*end_time=*/base::TimeDelta::FromMilliseconds(3000), "Key idea text");
+      /*start_time=*/base::Milliseconds(1000),
+      /*end_time=*/base::Milliseconds(3000), "Key idea text");
 
   std::string key_idea_str;
   base::JSONWriter::Write(key_idea.ToJson(), &key_idea_str);
@@ -138,16 +138,16 @@ class ProjectorTranscriptTest : public testing::Test {
 TEST_F(ProjectorTranscriptTest, ToJson) {
   std::vector<media::HypothesisParts> hypothesis_parts;
   hypothesis_parts.emplace_back(std::vector<std::string>({"transcript"}),
-                                base::TimeDelta::FromMilliseconds(1000));
+                                base::Milliseconds(1000));
   hypothesis_parts.emplace_back(std::vector<std::string>({"text"}),
-                                base::TimeDelta::FromMilliseconds(2000));
+                                base::Milliseconds(2000));
 
   const auto expected_transcript =
       BuildTranscriptJson(1000, 3000, "transcript text", hypothesis_parts);
 
   ProjectorTranscript transcript(
-      /*start_time=*/base::TimeDelta::FromMilliseconds(1000),
-      /*end_time=*/base::TimeDelta::FromMilliseconds(3000), "transcript text",
+      /*start_time=*/base::Milliseconds(1000),
+      /*end_time=*/base::Milliseconds(3000), "transcript text",
       std::move(hypothesis_parts));
 
   std::string transcript_str;
@@ -228,28 +228,28 @@ TEST_F(ProjectorMetadataTest, Serialize) {
 
   std::vector<media::HypothesisParts> first_transcript;
   first_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                base::TimeDelta::FromMilliseconds(1000));
+                                base::Milliseconds(1000));
   first_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                base::TimeDelta::FromMilliseconds(2000));
+                                base::Milliseconds(2000));
 
   metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
-      /*start_time=*/base::TimeDelta::FromMilliseconds(1000),
-      /*end_time=*/base::TimeDelta::FromMilliseconds(3000), "transcript text",
+      /*start_time=*/base::Milliseconds(1000),
+      /*end_time=*/base::Milliseconds(3000), "transcript text",
       std::move(first_transcript)));
 
   metadata.MarkKeyIdea();
 
   std::vector<media::HypothesisParts> second_transcript;
   second_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                 base::TimeDelta::FromMilliseconds(3200));
+                                 base::Milliseconds(3200));
   second_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                 base::TimeDelta::FromMilliseconds(4200));
+                                 base::Milliseconds(4200));
   second_transcript.emplace_back(std::vector<std::string>({"2"}),
-                                 base::TimeDelta::FromMilliseconds(4500));
+                                 base::Milliseconds(4500));
 
   metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
-      /*start_time=*/base::TimeDelta::FromMilliseconds(3000),
-      /*end_time=*/base::TimeDelta::FromMilliseconds(5000), "transcript text 2",
+      /*start_time=*/base::Milliseconds(3000),
+      /*end_time=*/base::Milliseconds(5000), "transcript text 2",
       std::move(second_transcript)));
 
   AssertSerializedString(kExpectedMetaData, metadata.Serialize());

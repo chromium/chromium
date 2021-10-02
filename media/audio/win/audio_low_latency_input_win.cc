@@ -888,13 +888,12 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     base::TimeTicks capture_time;
     if (!timestamp_error_was_detected) {
       // Use the latest |capture_time_100ns| since it is marked as valid.
-      capture_time +=
-          base::TimeDelta::FromMicroseconds(capture_time_100ns / 10.0);
+      capture_time += base::Microseconds(capture_time_100ns / 10.0);
     }
     if (capture_time <= last_capture_time_) {
       // Latest |capture_time_100ns| can't be trusted. Ensure a monotonic time-
       // stamp sequence by adding one microsecond to the latest timestamp.
-      capture_time = last_capture_time_ + base::TimeDelta::FromMicroseconds(1);
+      capture_time = last_capture_time_ + base::Microseconds(1);
     }
 
     // Keep track of max and min time difference between two successive time-
@@ -1622,14 +1621,12 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
       __func__, total_glitches_, total_lost_frames_, lost_frames_ms);
   if (total_glitches_ != 0) {
     UMA_HISTOGRAM_LONG_TIMES("Media.Audio.Capture.LostFramesInMs",
-                             base::TimeDelta::FromMilliseconds(lost_frames_ms));
+                             base::Milliseconds(lost_frames_ms));
     int64_t largest_glitch_ms =
         (largest_glitch_frames_ * 1000) / input_format_.Format.nSamplesPerSec;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Media.Audio.Capture.LargestGlitchMs",
-        base::TimeDelta::FromMilliseconds(largest_glitch_ms),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(1),
-        50);
+    UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.Capture.LargestGlitchMs",
+                               base::Milliseconds(largest_glitch_ms),
+                               base::Milliseconds(1), base::Minutes(1), 50);
   }
 
   // TODO(https://crbug.com/825744): It can be possible to replace

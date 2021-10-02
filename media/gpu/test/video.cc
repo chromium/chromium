@@ -326,8 +326,8 @@ gfx::Rect Video::VisibleRect() const {
 }
 
 base::TimeDelta Video::GetDuration() const {
-  return base::TimeDelta::FromSecondsD(static_cast<double>(num_frames_) /
-                                       static_cast<double>(frame_rate_));
+  return base::Seconds(static_cast<double>(num_frames_) /
+                       static_cast<double>(frame_rate_));
 }
 
 const std::vector<std::string>& Video::FrameChecksums() const {

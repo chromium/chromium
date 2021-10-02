@@ -21,19 +21,19 @@ TEST_F(SessionTrackerTest, SessionTrackerGetRoundedDurationInSeconds) {
   SessionTracker<FakeUkmEvent> tracker(std::make_unique<FakeUkmEvent>());
   base::Time now = base::Time::Now();
 
-  tracker.SetSessionEnd(now + base::TimeDelta::FromSeconds(8));
+  tracker.SetSessionEnd(now + base::Seconds(8));
   EXPECT_EQ(tracker.GetRoundedDurationInSeconds(), 8);
 
   // 3 min and 7 seconds, round down to nearest minute
-  tracker.SetSessionEnd(now + base::TimeDelta::FromSeconds(187));
+  tracker.SetSessionEnd(now + base::Seconds(187));
   EXPECT_EQ(tracker.GetRoundedDurationInSeconds(), 180);
 
   // 22 minutes 34 seconds, rounds down to nearest 10 minutes
-  tracker.SetSessionEnd(now + base::TimeDelta::FromSeconds(1254));
+  tracker.SetSessionEnd(now + base::Seconds(1254));
   EXPECT_EQ(tracker.GetRoundedDurationInSeconds(), 1200);
 
   // 2 hours, 10 minutes, 22 seconds, rounds down nearest hour
-  tracker.SetSessionEnd(now + base::TimeDelta::FromSeconds(7822));
+  tracker.SetSessionEnd(now + base::Seconds(7822));
   EXPECT_EQ(tracker.GetRoundedDurationInSeconds(), 7200);
 }
 

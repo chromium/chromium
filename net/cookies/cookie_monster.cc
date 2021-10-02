@@ -323,10 +323,9 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              NetLog* net_log)
-    : CookieMonster(
-          std::move(store),
-          base::TimeDelta::FromSeconds(kDefaultAccessUpdateThresholdSeconds),
-          net_log) {}
+    : CookieMonster(std::move(store),
+                    base::Seconds(kDefaultAccessUpdateThresholdSeconds),
+                    net_log) {}
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
@@ -2176,7 +2175,7 @@ void CookieMonster::RecordPeriodicStats(const base::Time& current_time) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const base::TimeDelta kRecordStatisticsIntervalTime(
-      base::TimeDelta::FromSeconds(kRecordStatisticsIntervalSeconds));
+      base::Seconds(kRecordStatisticsIntervalSeconds));
 
   // If we've taken statistics recently, return.
   if (current_time - last_statistic_record_time_ <=

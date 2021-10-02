@@ -72,14 +72,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Not implemented."
         })");
 
-constexpr base::TimeDelta kMinimumHeartbeatInterval =
-    base::TimeDelta::FromMinutes(3);
-constexpr base::TimeDelta kHeartbeatResponseTimeout =
-    base::TimeDelta::FromSeconds(30);
-constexpr base::TimeDelta kResendDelayOnHostNotFound =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kResendDelayOnUnauthenticated =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMinimumHeartbeatInterval = base::Minutes(3);
+constexpr base::TimeDelta kHeartbeatResponseTimeout = base::Seconds(30);
+constexpr base::TimeDelta kResendDelayOnHostNotFound = base::Seconds(10);
+constexpr base::TimeDelta kResendDelayOnUnauthenticated = base::Seconds(10);
 
 constexpr int kMaxResendOnHostNotFoundCount =
     12;  // 2 minutes (12 x 10 seconds).
@@ -360,7 +356,7 @@ void HeartbeatSender::OnResponse(
   base::TimeDelta delay;
   switch (status.error_code()) {
     case ProtobufHttpStatus::Code::OK:
-      delay = base::TimeDelta::FromSeconds(response->set_interval_seconds());
+      delay = base::Seconds(response->set_interval_seconds());
       if (delay < kMinimumHeartbeatInterval) {
         LOG(WARNING) << "Received suspicious set_interval_seconds: " << delay
                      << ". Using minimum interval: "

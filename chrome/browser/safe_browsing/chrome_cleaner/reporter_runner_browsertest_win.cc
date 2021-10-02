@@ -235,8 +235,7 @@ class ReporterRunnerTest
   void SetUpOnMainThread() override {
     // SetDateInLocalState calculates a time as Now() minus an offset. Move the
     // simulated clock ahead far enough that this calculation won't underflow.
-    FastForwardBy(
-        base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns * 2));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns * 2));
 
     ClearLastTimeSentReport();
 
@@ -345,8 +344,7 @@ class ReporterRunnerTest
   // Sets |path| in the local state to a date corresponding to |days| days ago.
   void SetDateInLocalState(const std::string& path, int days) {
     PrefService* local_state = g_browser_process->local_state();
-    local_state->SetInt64(
-        path, (Now() - base::TimeDelta::FromDays(days)).ToInternalValue());
+    local_state->SetInt64(path, (Now() - base::Days(days)).ToInternalValue());
   }
 
   // Sets local state for last time the software reporter ran to |days| days
@@ -421,7 +419,7 @@ class ReporterRunnerTest
 
     // Checks if the last time sent logs is set as no more than one hour ago,
     // which should be enough time if the execution does not fail.
-    EXPECT_LT(now - base::TimeDelta::FromHours(1), last_time_sent_logs);
+    EXPECT_LT(now - base::Hours(1), last_time_sent_logs);
     EXPECT_GE(now, last_time_sent_logs);
   }
 
@@ -697,8 +695,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
   // Schedule a launch with 2 invocations, then another with the same 2.
   {
     SCOPED_TRACE("Launch 2 times with retry");
-    FastForwardBy(
-        base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns));
     RunReporterQueueAndWait(chrome_cleaner::kSwReporterNothingFound,
                             SwReporterInvocationResult::kNothingFound,
                             invocations);
@@ -722,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
 
   {
     SCOPED_TRACE("Attempt to launch after a few days");
-    FastForwardBy(base::TimeDelta::FromDays(kAFewDays));
+    FastForwardBy(base::Days(kAFewDays));
     if (IsUserInitiated(invocation_type_)) {
       RunReporterQueueAndWait(chrome_cleaner::kSwReporterNothingFound,
                               SwReporterInvocationResult::kNothingFound,
@@ -735,8 +732,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
       ExpectReporterLaunches({}, /*expect_prompt=*/false);
     }
 
-    FastForwardBy(base::TimeDelta::FromDays(
-        kDaysBetweenSuccessfulSwReporterRuns - kAFewDays));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns - kAFewDays));
     RunReporterQueueAndWait(chrome_cleaner::kSwReporterNothingFound,
                             SwReporterInvocationResult::kNothingFound,
                             invocations);
@@ -746,8 +742,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
   // Second launch should not occur after a failure.
   {
     SCOPED_TRACE("Launch multiple times with failure");
-    FastForwardBy(
-        base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns));
     RunReporterQueueAndWait(kReporterNotLaunchedExitCode,
                             SwReporterInvocationResult::kProcessFailedToLaunch,
                             invocations);

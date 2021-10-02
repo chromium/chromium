@@ -184,7 +184,7 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
       FROM_HERE,
       base::BindOnce(&NetworkLocationProvider::RequestPosition,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kDataCompleteWaitSeconds));
+      base::Seconds(kDataCompleteWaitSeconds));
 
   OnWifiDataUpdate();
 }

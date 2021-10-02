@@ -109,8 +109,8 @@ BufferList Mp3SegmenterForTest(const uint8_t* data, size_t data_size) {
         scoped_refptr<DecoderBufferBase>(new DecoderBufferAdapter(buffer)));
 
     // 1152 samples in an MP3 frame.
-    timestamp += base::TimeDelta::FromMicroseconds(
-        (UINT64_C(1152) * 1000 * 1000) / header.sampling_frequency);
+    timestamp += base::Microseconds((UINT64_C(1152) * 1000 * 1000) /
+                                    header.sampling_frequency);
   }
   return audio_frames;
 }
@@ -252,7 +252,7 @@ BufferList H264SegmenterForTest(const uint8_t* data, size_t data_size) {
   // Create the list of buffers.
   // Totally arbitrary decision: assume a delta POC of 1 is 20ms (50Hz field
   // rate).
-  base::TimeDelta poc_duration = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta poc_duration = base::Milliseconds(20);
   for (std::list<H264AccessUnit>::iterator it = access_unit_list.begin();
        it != access_unit_list.end(); ++it) {
     scoped_refptr< ::media::DecoderBuffer> buffer(

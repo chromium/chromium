@@ -119,7 +119,7 @@ class RequiredFieldsFallbackHandler {
   base::OnceCallback<void(const ClientStatus&)> status_update_callback_;
   ActionDelegate* action_delegate_;
   std::unique_ptr<BatchElementChecker> batch_element_checker_;
-  base::TimeDelta total_wait_time_ = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta total_wait_time_ = base::Seconds(0);
   base::WeakPtrFactory<RequiredFieldsFallbackHandler> weak_ptr_factory_{this};
 };
 

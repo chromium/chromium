@@ -286,8 +286,7 @@ void SafeBrowsingReporter::UploadWithRetry(
   std::unique_ptr<ChromeFoilResponse> response(new ChromeFoilResponse);
   Result result = Result::UPLOAD_NO_NETWORK;
   if (GetNetworkChecker()->WaitForSafeBrowsing(
-          upload_url_,
-          base::TimeDelta::FromSeconds(kNetworkPresenceTimeoutSeconds))) {
+          upload_url_, base::Seconds(kNetworkPresenceTimeoutSeconds))) {
     result = PerformUploadWithRetries(serialized_report, response.get(),
                                       traffic_annotation);
     if (result != Result::UPLOAD_SUCCESS) {
@@ -311,8 +310,7 @@ SafeBrowsingReporter::Result SafeBrowsingReporter::PerformUploadWithRetries(
 
   SafeBrowsingReporter::Result result = Result::UPLOAD_INTERNAL_ERROR;
   for (unsigned int attempt = 0; attempt < kMaxUploadAttempts; ++attempt) {
-    sleep_callback_.Run(
-        base::TimeDelta::FromSeconds(kUploadAttemptDelaySeconds[attempt]));
+    sleep_callback_.Run(base::Seconds(kUploadAttemptDelaySeconds[attempt]));
     result = PerformUpload(serialized_report, response, traffic_annotation);
     if (result == Result::UPLOAD_SUCCESS)
       break;

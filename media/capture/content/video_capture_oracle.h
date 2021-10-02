@@ -139,11 +139,11 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // Clients are expected to set a better minimum capture period after
   // VideoCaptureOracle is constructed.
   static constexpr base::TimeDelta kDefaultMinCapturePeriod =
-      base::TimeDelta::FromMicroseconds(1000000 / 5);  // 5 FPS
+      base::Microseconds(1000000 / 5);  // 5 FPS
 
   // Default minimum size change period if SetMinSizeChangePeriod is not called.
   static constexpr base::TimeDelta kDefaultMinSizeChangePeriod =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   void SetLogCallback(
       base::RepeatingCallback<void(const std::string&)> emit_log_cb);

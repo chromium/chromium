@@ -99,8 +99,7 @@ TEST_F(LSQPredictorTest, TimeInterval) {
                                       FromMilliseconds(t[i])};
     predictor_->Update(data);
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMillisecondsD((t[2] - t[0]) / 2));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds((t[2] - t[0]) / 2));
 }
 
 }  // namespace test

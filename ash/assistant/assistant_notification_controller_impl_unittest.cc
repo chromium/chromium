@@ -120,7 +120,7 @@ class AssistantNotificationBuilder {
   }
 
   AssistantNotificationBuilder& WithTimeoutMs(int timeout_ms) {
-    return WithTimeout(base::TimeDelta::FromMilliseconds(timeout_ms));
+    return WithTimeout(base::Milliseconds(timeout_ms));
   }
 
  private:
@@ -237,8 +237,7 @@ class AssistantNotificationControllerTest : public AshTestBase {
   }
 
   void ForwardTimeInMs(int time_in_ms) {
-    task_environment()->FastForwardBy(
-        base::TimeDelta::FromMilliseconds(time_in_ms));
+    task_environment()->FastForwardBy(base::Milliseconds(time_in_ms));
   }
 
  private:

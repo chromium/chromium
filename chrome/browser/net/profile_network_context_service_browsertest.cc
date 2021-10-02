@@ -98,7 +98,7 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
     do {
       content::FetchHistogramsFromChildProcesses();
       metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+      base::PlatformThread::Sleep(base::Milliseconds(5));
       all_metrics = histograms_.GetAllHistogramsRecorded();
     } while (std::string::npos ==
              all_metrics.find("HttpCache.MaxFileSizeOnInit"));
@@ -233,7 +233,7 @@ void CheckCacheResetStatus(base::HistogramTester* histograms, bool reset) {
   while (!histograms->GetBucketCount("HttpCache.HardReset", reset)) {
     content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+    base::PlatformThread::Sleep(base::Milliseconds(5));
   }
 
   if (reset) {

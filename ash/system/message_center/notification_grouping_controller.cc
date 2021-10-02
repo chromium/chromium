@@ -235,7 +235,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
       parent_notification.notifier_id(), message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   child_copy->set_timestamp(parent_notification.timestamp() -
-                            base::TimeDelta::FromMilliseconds(1));
+                            base::Milliseconds(1));
   child_copy->SetGroupChild();
 
   return child_copy;

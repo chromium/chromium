@@ -65,9 +65,9 @@ void ClipboardMac::Start(
   // OS X doesn't provide a clipboard-changed notification. The only way to
   // detect clipboard changes is by polling.
   clipboard_polling_timer_ = std::make_unique<base::RepeatingTimer>();
-  clipboard_polling_timer_->Start(FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kClipboardPollingIntervalMs),
-      this, &ClipboardMac::CheckClipboardForChanges);
+  clipboard_polling_timer_->Start(
+      FROM_HERE, base::Milliseconds(kClipboardPollingIntervalMs), this,
+      &ClipboardMac::CheckClipboardForChanges);
 }
 
 void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {

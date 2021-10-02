@@ -34,8 +34,7 @@ void CompositorScrollOffsetAnimationCurve::SetInitialValue(
 }
 
 FloatPoint CompositorScrollOffsetAnimationCurve::GetValue(double time) const {
-  gfx::ScrollOffset value =
-      curve_->GetValue(base::TimeDelta::FromSecondsD(time));
+  gfx::ScrollOffset value = curve_->GetValue(base::Seconds(time));
   return FloatPoint(value.x(), value.y());
 }
 

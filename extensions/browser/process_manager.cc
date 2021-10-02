@@ -90,10 +90,9 @@ unsigned g_event_page_suspending_time_msec = 5000;
 // ShouldSuspend message, taking into account experiments and testing overrides.
 base::TimeDelta GetEventPageSuspendDelay() {
   if (g_event_page_suspend_delay_ms_for_testing != kInvalidSuspendDelay) {
-    return base::TimeDelta::FromMilliseconds(
-        g_event_page_suspend_delay_ms_for_testing);
+    return base::Milliseconds(g_event_page_suspend_delay_ms_for_testing);
   }
-  return base::TimeDelta::FromMilliseconds(kEventPageSuspendDelayMs.Get());
+  return base::Milliseconds(kEventPageSuspendDelayMs.Get());
 }
 
 std::string GetExtensionIdForSiteInstance(
@@ -570,7 +569,7 @@ void ProcessManager::OnSuspendAck(const std::string& extension_id) {
       FROM_HERE,
       base::BindOnce(&ProcessManager::CloseLazyBackgroundPageNow,
                      weak_ptr_factory_.GetWeakPtr(), extension_id, sequence_id),
-      base::TimeDelta::FromMilliseconds(g_event_page_suspending_time_msec));
+      base::Milliseconds(g_event_page_suspending_time_msec));
 }
 
 void ProcessManager::NetworkRequestStarted(

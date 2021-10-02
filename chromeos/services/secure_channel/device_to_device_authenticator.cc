@@ -130,7 +130,7 @@ void DeviceToDeviceAuthenticator::OnHelloMessageCreated(
   // Add a timeout for receiving the [Responder Auth] message as a guard.
   timer_ = CreateTimer();
   timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kResponderAuthTimeoutSeconds),
+      FROM_HERE, base::Seconds(kResponderAuthTimeoutSeconds),
       base::BindOnce(&DeviceToDeviceAuthenticator::OnResponderAuthTimedOut,
                      weak_ptr_factory_.GetWeakPtr()));
 

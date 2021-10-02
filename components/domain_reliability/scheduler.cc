@@ -60,13 +60,13 @@ DomainReliabilityScheduler::Params::GetFromFieldTrialsOrDefaults() {
   DomainReliabilityScheduler::Params params;
 
   params.minimum_upload_delay =
-      base::TimeDelta::FromSeconds(GetUnsignedFieldTrialValueOrDefault(
+      base::Seconds(GetUnsignedFieldTrialValueOrDefault(
           kMinimumUploadDelayFieldTrialName, kDefaultMinimumUploadDelaySec));
   params.maximum_upload_delay =
-      base::TimeDelta::FromSeconds(GetUnsignedFieldTrialValueOrDefault(
+      base::Seconds(GetUnsignedFieldTrialValueOrDefault(
           kMaximumUploadDelayFieldTrialName, kDefaultMaximumUploadDelaySec));
   params.upload_retry_interval =
-      base::TimeDelta::FromSeconds(GetUnsignedFieldTrialValueOrDefault(
+      base::Seconds(GetUnsignedFieldTrialValueOrDefault(
           kUploadRetryIntervalFieldTrialName, kDefaultUploadRetryIntervalSec));
 
   return params;

@@ -197,8 +197,7 @@ void SCTAuditingReporter::SendReport() {
   url_loader_ = SimpleURLLoader::Create(
       std::move(report_request),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation_));
-  url_loader_->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kSendSCTReportTimeoutSeconds));
+  url_loader_->SetTimeoutDuration(base::Seconds(kSendSCTReportTimeoutSeconds));
   // Retry is handled by SCTAuditingReporter.
   url_loader_->SetRetryOptions(0, SimpleURLLoader::RETRY_NEVER);
 
@@ -443,7 +442,7 @@ void SCTAuditingCache::SetPeriodicMetricsEnabled(bool enabled) {
   // processes can fail to report metrics during shutdown). The timer should
   // only be running if SCT auditing is enabled.
   if (enabled) {
-    histogram_timer_.Start(FROM_HERE, base::TimeDelta::FromHours(1), this,
+    histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
                            &SCTAuditingCache::ReportHWMMetrics);
   } else {
     histogram_timer_.Stop();

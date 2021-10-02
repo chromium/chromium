@@ -138,7 +138,7 @@ AAudioOutputStream::~AAudioOutputStream() {
       FROM_HERE,
       base::BindOnce([](std::unique_ptr<AAudioDestructionHelper>) {},
                      std::move(destruction_helper_)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void AAudioOutputStream::Flush() {}
@@ -288,8 +288,8 @@ base::TimeDelta AAudioOutputStream::GetDelay(base::TimeTicks delay_timestamp) {
       AAudioStream_getFramesWritten(aaudio_stream_) - existing_frame_index;
 
   // Calculate the time which the next frame will be presented.
-  const base::TimeDelta next_frame_pts = base::TimeDelta::FromNanosecondsD(
-      existing_frame_pts + frame_index_delta * ns_per_frame_);
+  const base::TimeDelta next_frame_pts =
+      base::Nanoseconds(existing_frame_pts + frame_index_delta * ns_per_frame_);
 
   // Calculate the latency between write time and presentation time. At startup
   // we may end up with negative values here.

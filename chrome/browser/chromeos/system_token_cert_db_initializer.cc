@@ -38,9 +38,8 @@ namespace chromeos {
 
 namespace {
 
-constexpr base::TimeDelta kInitialRequestDelay =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kMaxRequestDelay = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kInitialRequestDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kMaxRequestDelay = base::Minutes(5);
 
 #if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
 constexpr bool kIsSystemSlotSoftwareFallbackAllowed = true;

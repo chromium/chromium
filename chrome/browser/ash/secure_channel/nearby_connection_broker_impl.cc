@@ -42,14 +42,12 @@ using ::location::nearby::connections::mojom::Status;
 
 NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
 
-constexpr base::TimeDelta kConnectionStatusChangeTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kConnectionStatusChangeTimeout = base::Seconds(10);
 
 // The amount of time by which we can expect a WebRTC upgrade to have been
 // completed. According to metrics, 30 seconds is the 95th+ percentile of how
 // long it takes to upgrade to WebRTC.
-constexpr base::TimeDelta kWebRtcUpgradeDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kWebRtcUpgradeDelay = base::Seconds(30);
 
 // These values are set to help with Phone Hub battery drain (see: b/183505430)
 // by making the Nearby Connections layer 'keep alive' ping and activity timeout
@@ -65,12 +63,12 @@ constexpr base::TimeDelta kWebRtcUpgradeDelay =
 // the impact.
 //
 // Nearby Connections keep alive interval default is 5 seconds.
-constexpr base::TimeDelta kKeepAliveInterval = base::TimeDelta::FromSeconds(25);
+constexpr base::TimeDelta kKeepAliveInterval = base::Seconds(25);
 // Nearby Connections keep alive timeout default is 30 seconds. When the phone
 // goes into deep sleep mode Chrome OS cannot expect to receive keepalives every
 // 25 seconds. The timeout needs to be set high enough to ensure a stable
 // connection when the phone is in deep sleep mode.
-constexpr base::TimeDelta kKeepAliveTimeout = base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kKeepAliveTimeout = base::Minutes(10);
 
 // Numerical values should not be reused or changed since this is used by
 // metrics.
@@ -91,8 +89,8 @@ void RecordWebRtcUpgradeDuration(base::TimeDelta duration) {
   // adjusted, a new histogram should be created.
   base::UmaHistogramCustomTimes(
       "MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration", duration,
-      /*min=*/base::TimeDelta::FromSeconds(1),
-      /*max=*/base::TimeDelta::FromMinutes(5),
+      /*min=*/base::Seconds(1),
+      /*max=*/base::Minutes(5),
       /*buckets=*/50);
 }
 

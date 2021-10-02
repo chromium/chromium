@@ -29,8 +29,7 @@ namespace {
 
 // The restore data owned by this class will clear after being set. This is a
 // temporary estimate of how long it takes to launch apps.
-constexpr base::TimeDelta kClearRestoreDataDuration =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kClearRestoreDataDuration = base::Seconds(5);
 
 }  // namespace
 

@@ -764,7 +764,7 @@ scoped_refptr<net::X509Certificate> CreateFakeCert(
   std::string cert_der;
   if (!net::x509_util::CreateKeyAndSelfSignedCert(
           "CN=Error", static_cast<uint32_t>(g_serial_number.GetNext()),
-          base::Time::Now() - base::TimeDelta::FromMinutes(30),
+          base::Time::Now() - base::Minutes(30),
           base::Time::Now() + time_until_expiration, &unused_key, &cert_der)) {
     return nullptr;
   }
@@ -782,8 +782,8 @@ TEST(SecurityStateContentUtilsTest, ExpiringCertificateWarning) {
   // Check that an info explanation is provided if the certificate is expiring
   // in less than 48 hours.
   content::SecurityStyleExplanations explanations;
-  visible_security_state.certificate = scoped_refptr<net::X509Certificate>(
-      CreateFakeCert(base::TimeDelta::FromHours(30)));
+  visible_security_state.certificate =
+      scoped_refptr<net::X509Certificate>(CreateFakeCert(base::Hours(30)));
   ASSERT_TRUE(visible_security_state.certificate);
   GetSecurityStyle(security_state::SECURE, visible_security_state,
                    &explanations);
@@ -792,8 +792,8 @@ TEST(SecurityStateContentUtilsTest, ExpiringCertificateWarning) {
   // Check that no explanation is set if the certificate is expiring in more
   // than 48 hours.
   explanations.info_explanations.clear();
-  visible_security_state.certificate = scoped_refptr<net::X509Certificate>(
-      CreateFakeCert(base::TimeDelta::FromHours(72)));
+  visible_security_state.certificate =
+      scoped_refptr<net::X509Certificate>(CreateFakeCert(base::Hours(72)));
   ASSERT_TRUE(visible_security_state.certificate);
   GetSecurityStyle(security_state::SECURE, visible_security_state,
                    &explanations);
@@ -801,8 +801,8 @@ TEST(SecurityStateContentUtilsTest, ExpiringCertificateWarning) {
 
   // Check that no explanation is set if the certificate has already expired.
   explanations.info_explanations.clear();
-  visible_security_state.certificate = scoped_refptr<net::X509Certificate>(
-      CreateFakeCert(base::TimeDelta::FromHours(-10)));
+  visible_security_state.certificate =
+      scoped_refptr<net::X509Certificate>(CreateFakeCert(base::Hours(-10)));
   ASSERT_TRUE(visible_security_state.certificate);
   GetSecurityStyle(security_state::SECURE, visible_security_state,
                    &explanations);

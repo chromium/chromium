@@ -274,7 +274,7 @@ TEST_F(BluetoothSocketTest, TestInputStream_CloseWhileReading) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         EXPECT_EQ(Exception::kSuccess, input_stream.Close().value);
       }),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   run_loop.Run();
 
@@ -363,7 +363,7 @@ TEST_F(BluetoothSocketTest, TestOutputStream_CloseWhileWriting) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         EXPECT_EQ(Exception::kSuccess, output_stream.Close().value);
       }),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   run_loop.Run();
 

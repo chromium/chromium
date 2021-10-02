@@ -174,8 +174,8 @@ TEST_F(SandboxTest, SpawnSandboxTarget) {
   EXPECT_TRUE(target_process.IsValid());
 
   int exit_code = -1;
-  EXPECT_TRUE(target_process.WaitForExitWithTimeout(
-      base::TimeDelta::FromSeconds(10), &exit_code));
+  EXPECT_TRUE(
+      target_process.WaitForExitWithTimeout(base::Seconds(10), &exit_code));
   EXPECT_EQ(kChildExitCode, exit_code);
 }
 

@@ -81,7 +81,7 @@ BuildState* GetBuildState() {
 }
 
 int GetDaysRounded(base::TimeDelta time) {
-  return base::ClampRound(time / base::TimeDelta::FromDays(1));
+  return base::ClampRound(time / base::Days(1));
 }
 
 chromeos::UpdateEngineClient* GetUpdateEngineClient() {
@@ -132,10 +132,10 @@ MinimumVersionRequirement::CreateInstanceIfValid(
     return nullptr;
   auto warning = dict->FindIntKey(kWarningPeriod);
   base::TimeDelta warning_time =
-      base::TimeDelta::FromDays(warning.has_value() ? warning.value() : 0);
+      base::Days(warning.has_value() ? warning.value() : 0);
   auto eol_warning = dict->FindIntKey(kEolWarningPeriod);
-  base::TimeDelta eol_warning_time = base::TimeDelta::FromDays(
-      eol_warning.has_value() ? eol_warning.value() : 0);
+  base::TimeDelta eol_warning_time =
+      base::Days(eol_warning.has_value() ? eol_warning.value() : 0);
   return std::make_unique<MinimumVersionRequirement>(
       minimum_version, warning_time, eol_warning_time);
 }
@@ -475,7 +475,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotificationOnLogin() {
   // at startup.
   absl::optional<int> days = GetTimeRemainingInDays();
   if (days && days.value() <= 1)
-    MaybeShowNotification(base::TimeDelta::FromDays(days.value()));
+    MaybeShowNotification(base::Days(days.value()));
 }
 
 void MinimumVersionPolicyHandler::MaybeShowNotification(
@@ -541,14 +541,13 @@ void MinimumVersionPolicyHandler::ShowAndScheduleNotification(
   // one week before EOL and on the last day. No need to schedule a notification
   // if it is already the last day.
   if (eol_reached_ && days_remaining > kOneWeekEolNotificationInDays) {
-    expiry =
-        deadline - base::TimeDelta::FromDays(kOneWeekEolNotificationInDays);
+    expiry = deadline - base::Days(kOneWeekEolNotificationInDays);
   } else if (days_remaining > 1) {
-    expiry = deadline - base::TimeDelta::FromDays(1);
+    expiry = deadline - base::Days(1);
   }
 
   VLOG(2) << "Next notification scheduled for " << expiry;
-  MaybeShowNotification(base::TimeDelta::FromDays(days_remaining));
+  MaybeShowNotification(base::Days(days_remaining));
   if (!expiry.is_null()) {
     notification_timer_.Start(
         FROM_HERE, expiry,

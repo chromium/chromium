@@ -136,7 +136,7 @@ void FlingUpOrDown(ui::test::EventGenerator* generator,
   target_point.Offset(0, offset);
 
   generator->GestureScrollSequence(start_point, target_point,
-                                   base::TimeDelta::FromMilliseconds(10), 2);
+                                   base::Milliseconds(10), 2);
 }
 
 std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
@@ -2001,8 +2001,8 @@ TEST_P(AppListPresenterTest, SideShelfAlignmentDragDisabled) {
   // result in no state change.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureScrollSequence(GetPointOutsideSearchbox(),
-                                   gfx::Point(10, 900),
-                                   base::TimeDelta::FromMilliseconds(100), 10);
+                                   gfx::Point(10, 900), base::Milliseconds(100),
+                                   10);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
@@ -2136,13 +2136,13 @@ TEST_P(AppListPresenterTest, AppListViewDragHandler) {
       GetAppListView()->GetWidget()->GetWindowBoundsInScreen().y();
   generator->GestureScrollSequence(gfx::Point(0, top_of_app_list + 20),
                                    gfx::Point(0, top_of_app_list - 20),
-                                   base::TimeDelta::FromMilliseconds(500), 50);
+                                   base::Milliseconds(500), 50);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Execute a long upwards drag, this should transition the app list.
   generator->GestureScrollSequence(gfx::Point(10, top_of_app_list + 20),
-                                   gfx::Point(10, 10),
-                                   base::TimeDelta::FromMilliseconds(100), 10);
+                                   gfx::Point(10, 10), base::Milliseconds(100),
+                                   10);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
   // Execute a short downward drag, this should fail to transition the app list.
@@ -2165,8 +2165,8 @@ TEST_P(AppListPresenterTest, AppListViewDragHandler) {
 
   // Transition to fullscreen.
   generator->GestureScrollSequence(gfx::Point(10, top_of_app_list + 20),
-                                   gfx::Point(10, 10),
-                                   base::TimeDelta::FromMilliseconds(100), 10);
+                                   gfx::Point(10, 10), base::Milliseconds(100),
+                                   10);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
   // Enter text to transition to |FULLSCREEN_SEARCH|.
@@ -2184,7 +2184,7 @@ TEST_P(AppListPresenterTest, AppListViewDragHandler) {
 
   // Execute a long downward drag, this should close the app list.
   generator->GestureScrollSequence(gfx::Point(10, 10), gfx::Point(10, 900),
-                                   base::TimeDelta::FromMilliseconds(100), 10);
+                                   base::Milliseconds(100), 10);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
   GetAppListTestHelper()->CheckVisibility(false);
@@ -2500,8 +2500,8 @@ TEST_P(AppListPresenterTest,
   const int top_of_app_list =
       app_list_view->GetWidget()->GetWindowBoundsInScreen().y();
   generator->GestureScrollSequence(gfx::Point(10, top_of_app_list + 20),
-                                   gfx::Point(10, 10),
-                                   base::TimeDelta::FromMilliseconds(100), 10);
+                                   gfx::Point(10, 10), base::Milliseconds(100),
+                                   10);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
@@ -2846,8 +2846,8 @@ TEST_P(AppListPresenterTest, DragToBezelClosesAppListFromFullscreenAndPeeking) {
                           .bottom();
   generator->GestureScrollSequence(
       gfx::Point(0, bezel_y - (kAppListBezelMargin + 100)),
-      gfx::Point(0, bezel_y - (kAppListBezelMargin)),
-      base::TimeDelta::FromMilliseconds(1500), 100);
+      gfx::Point(0, bezel_y - (kAppListBezelMargin)), base::Milliseconds(1500),
+      100);
 
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
@@ -2886,7 +2886,7 @@ TEST_P(AppListPresenterTest,
   GetEventGenerator()->GestureScrollSequence(
       gfx::Point(drag_x, bezel_y - (kAppListBezelMargin + 100)),
       gfx::Point(drag_x, bezel_y - (kAppListBezelMargin)),
-      base::TimeDelta::FromMilliseconds(1500), 100);
+      base::Milliseconds(1500), 100);
 
   GetAppListTestHelper()->WaitUntilIdle();
   SCOPED_TRACE("Closed");

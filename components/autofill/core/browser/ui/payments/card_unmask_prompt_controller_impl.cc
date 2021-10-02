@@ -297,7 +297,7 @@ int CardUnmaskPromptControllerImpl::GetExpectedCvcLength() const {
 
 base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()
     const {
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       card_.record_type() == CreditCard::LOCAL_CARD ||
               reason_ == AutofillClient::UnmaskCardReason::kPaymentRequest
           ? 0

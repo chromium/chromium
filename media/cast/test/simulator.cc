@@ -303,7 +303,7 @@ void RunSimulation(const base::FilePath& source_path,
                    const NetworkSimulationModel& model) {
   // Fake clock. Make sure start time is non zero.
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromSeconds(1));
+  testing_clock.Advance(base::Seconds(1));
 
   // Task runner.
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner =
@@ -329,8 +329,8 @@ void RunSimulation(const base::FilePath& source_path,
   // Audio sender config.
   FrameSenderConfig audio_sender_config = GetDefaultAudioSenderConfig();
   audio_sender_config.min_playout_delay =
-      audio_sender_config.max_playout_delay = base::TimeDelta::FromMilliseconds(
-          GetIntegerSwitchValue(kTargetDelay, 400));
+      audio_sender_config.max_playout_delay =
+          base::Milliseconds(GetIntegerSwitchValue(kTargetDelay, 400));
 
   // Audio receiver config.
   FrameReceiverConfig audio_receiver_config =
@@ -362,7 +362,7 @@ void RunSimulation(const base::FilePath& source_path,
 
   // Cast receiver.
   std::unique_ptr<CastTransport> transport_receiver(new CastTransportImpl(
-      &testing_clock, base::TimeDelta::FromSeconds(1),
+      &testing_clock, base::Seconds(1),
       std::make_unique<TransportClient>(receiver_env->logger(), &packet_proxy),
       base::WrapUnique(receiver_to_sender), task_runner));
   std::unique_ptr<CastReceiver> cast_receiver(
@@ -373,7 +373,7 @@ void RunSimulation(const base::FilePath& source_path,
 
   // Cast sender and transport sender.
   std::unique_ptr<CastTransport> transport_sender(new CastTransportImpl(
-      &testing_clock, base::TimeDelta::FromSeconds(1),
+      &testing_clock, base::Seconds(1),
       std::make_unique<TransportClient>(sender_env->logger(), nullptr),
       base::WrapUnique(sender_to_receiver), task_runner));
   std::unique_ptr<CastSender> cast_sender(
@@ -471,10 +471,10 @@ void RunSimulation(const base::FilePath& source_path,
   // by using --run-time= flag.
   base::TimeDelta elapsed_time;
   const base::TimeDelta desired_run_time =
-      base::TimeDelta::FromSeconds(GetIntegerSwitchValue(kRunTime, 180));
+      base::Seconds(GetIntegerSwitchValue(kRunTime, 180));
   while (elapsed_time < desired_run_time) {
     // Each step is 100us.
-    base::TimeDelta step = base::TimeDelta::FromMicroseconds(100);
+    base::TimeDelta step = base::Microseconds(100);
     task_runner->Sleep(step);
     elapsed_time += step;
   }

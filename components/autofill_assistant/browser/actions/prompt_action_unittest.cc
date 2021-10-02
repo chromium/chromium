@@ -88,8 +88,7 @@ class PromptActionTest : public testing::Test {
     check_elements.Run(checker_.get(),
                        base::BindOnce(&PromptActionTest::OnCheckElementsDone,
                                       base::Unretained(this)));
-    task_env_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(fake_check_time_));
+    task_env_.FastForwardBy(base::Milliseconds(fake_check_time_));
     checker_->AddAllDoneCallback(
         base::BindOnce(&PromptActionTest::OnWaitForDomDone,
                        base::Unretained(this), check_elements));
@@ -117,12 +116,11 @@ class PromptActionTest : public testing::Test {
 
     if (check_elements_result_.ok()) {
       std::move(fake_wait_for_dom_done_)
-          .Run(check_elements_result_,
-               base::TimeDelta::FromMilliseconds(fake_wait_time_));
+          .Run(check_elements_result_, base::Milliseconds(fake_wait_time_));
     } else {
       wait_for_dom_timer_ = std::make_unique<base::OneShotTimer>();
       wait_for_dom_timer_->Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(1),
+          FROM_HERE, base::Seconds(1),
           base::BindOnce(&PromptActionTest::RunFakeWaitForDom,
                          base::Unretained(this), check_elements));
     }
@@ -234,13 +232,13 @@ TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
 
   EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
       .WillRepeatedly(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(IsEmpty()));
 }
 
@@ -270,7 +268,7 @@ TEST_F(PromptActionTest, TimingStatsUserAction) {
   PromptAction action(&mock_action_delegate_, proto_);
   action.ProcessAction(callback_.Get());
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
 
   ProcessedActionProto capture;
@@ -298,14 +296,14 @@ TEST_F(PromptActionTest, DisabledUnlessElementExists) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_TRUE((*user_actions_)[0].enabled());
 
   EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
       .WillRepeatedly(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_FALSE((*user_actions_)[0].enabled());
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
@@ -334,7 +332,7 @@ TEST_F(PromptActionTest, AutoSelectWhenElementExists) {
                         Property(&ProcessedActionProto::prompt_choice,
                                  Property(&PromptProto::Result::server_payload,
                                           "auto-select"))))));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(PromptActionTest, TimingStatsAutoSelect) {
@@ -357,7 +355,7 @@ TEST_F(PromptActionTest, TimingStatsAutoSelect) {
   EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(capture.timing_stats().active_time_ms(), 500);
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 500);
 }
@@ -389,7 +387,7 @@ TEST_F(PromptActionTest, AutoSelectWithButton) {
                         Property(&ProcessedActionProto::prompt_choice,
                                  Property(&PromptProto::Result::server_payload,
                                           "auto-select"))))));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(PromptActionTest, Terminate) {
@@ -506,7 +504,7 @@ TEST_F(PromptActionTest, ForwardInterruptFailure) {
   EXPECT_THAT(user_actions_, Pointee(SizeIs(0)));
 
   // First round of element checks: element doesn't exist.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 
   // Second round of element checks: an interrupt ran and failed. No choice was
   // selected.
@@ -519,7 +517,7 @@ TEST_F(PromptActionTest, ForwardInterruptFailure) {
                        Property(&PromptProto::Result::server_payload, ""))))));
   ASSERT_TRUE(fake_wait_for_dom_done_);
   std::move(fake_wait_for_dom_done_)
-      .Run(ClientStatus(INTERRUPT_FAILED), base::TimeDelta::FromSeconds(0));
+      .Run(ClientStatus(INTERRUPT_FAILED), base::Seconds(0));
 }
 
 TEST_F(PromptActionTest, EndActionOnNavigation) {
@@ -558,8 +556,7 @@ TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
                          base::OnceCallback<void()> callback, bool browse_mode,
                          bool browse_mode_invisible) {
             user_actions_ = std::move(user_actions);
-            timer->Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
-                         std::move(callback));
+            timer->Start(FROM_HERE, base::Seconds(1), std::move(callback));
           });
 
   prompt_proto_->set_end_on_navigation(true);

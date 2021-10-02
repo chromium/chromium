@@ -565,12 +565,12 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
     if (insufficient_limit) {
       // Set a deadline one millisecond in the past. Path building should fail
       // since the deadline is already past.
-      deadline = base::TimeTicks::Now() - base::TimeDelta::FromMilliseconds(1);
+      deadline = base::TimeTicks::Now() - base::Milliseconds(1);
     } else {
       // The other tests in this file exercise the case that |SetDeadline|
       // isn't called. Therefore set a sufficient limit for the path to be
       // found.
-      deadline = base::TimeTicks::Now() + base::TimeDelta::FromDays(1);
+      deadline = base::TimeTicks::Now() + base::Days(1);
     }
     path_builder.SetDeadline(deadline);
 

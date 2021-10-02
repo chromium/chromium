@@ -284,7 +284,7 @@ TEST_F(NaClIPCAdapterTest, ReadWithChannelError) {
         : SimpleThread("NaClIPCAdapterThread"),
           adapter_(adapter) {}
     void Run() override {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+      base::PlatformThread::Sleep(base::Seconds(1));
       adapter_->OnChannelError();
     }
    private:

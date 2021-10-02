@@ -305,7 +305,7 @@ TEST_F(ScrollableAppsGridViewTest, AutoScrollDown) {
   EXPECT_FALSE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
 
   // Holding the mouse in place for a while scrolls down more.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   const int scroll_offset2 = scroll_view_->GetVisibleRect().y();
   EXPECT_GT(scroll_offset2, scroll_offset1);
 
@@ -330,7 +330,7 @@ TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
   StartDragOnItemViewAt(0);
   GetEventGenerator()->MoveMouseTo(
       scroll_view_->GetBoundsInScreen().top_center());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
 
   // View did not scroll.
   int scroll_offset = scroll_view_->GetVisibleRect().y();
@@ -351,7 +351,7 @@ TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
   StartDragOnItemViewAt(29);
   GetEventGenerator()->MoveMouseTo(
       scroll_view_->GetBoundsInScreen().bottom_center());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
 
   // View did not scroll.
   int scroll_offset = scroll_view_->GetVisibleRect().y();
@@ -369,7 +369,7 @@ TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
   gfx::Point point = scroll_view_->GetBoundsInScreen().bottom_right();
   point.Offset(10, 10);
   GetEventGenerator()->MoveMouseTo(point);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
 
   // View did not scroll.
   int scroll_offset = scroll_view_->GetVisibleRect().y();

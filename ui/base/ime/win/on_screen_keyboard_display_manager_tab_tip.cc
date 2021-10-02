@@ -27,10 +27,9 @@
 
 namespace {
 
-constexpr base::TimeDelta kCheckOSKDelay =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kCheckOSKDelay = base::Milliseconds(1000);
 constexpr base::TimeDelta kDismissKeyboardRetryTimeout =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 constexpr int kDismissKeyboardMaxRetries = 5;
 
 constexpr wchar_t kOSKClassName[] = L"IPTip_Main_Window";

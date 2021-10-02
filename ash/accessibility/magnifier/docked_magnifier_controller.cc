@@ -224,7 +224,7 @@ void DockedMagnifierController::CenterOnPoint(
   // point of interest due to input caret bounds changes ... etc.).
   ui::ScopedLayerAnimationSettings settings(
       viewport_magnifier_layer_->GetAnimator());
-  settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(0));
+  settings.SetTransitionDuration(base::Milliseconds(0));
   settings.SetTweenType(gfx::Tween::ZERO);
   settings.SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
   viewport_magnifier_layer_->SetTransform(transform);

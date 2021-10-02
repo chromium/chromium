@@ -107,8 +107,7 @@ constexpr char kVideoOnlyTestFile[] = "bear-320x240-video-only.webm";
 constexpr char kVideoAudioTestFile[] = "bear-320x240-16x9-aspect.webm";
 constexpr char kEncryptedVideoOnlyTestFile[] = "bear-320x240-av_enc-v.webm";
 
-constexpr base::TimeDelta kAudioOnlyTestFileDuration =
-    base::TimeDelta::FromMilliseconds(296);
+constexpr base::TimeDelta kAudioOnlyTestFileDuration = base::Milliseconds(296);
 
 MATCHER(WmpiDestroyed, "") {
   return CONTAINS_STRING(arg, "{\"event\":\"kWebMediaPlayerDestroyed\"}");
@@ -1129,12 +1128,12 @@ TEST_F(WebMediaPlayerImplTest,
        IdleSuspendIsDisabledIfLoadingProgressedRecently) {
   InitializeWebMediaPlayerImpl();
   base::SimpleTestTickClock clock;
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   SetTickClock(&clock);
   AddBufferedRanges();
   wmpi_->DidLoadingProgress();
   // Advance less than the loading timeout.
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   EXPECT_FALSE(delegate_.ExpireForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsSuspended());
@@ -1144,12 +1143,12 @@ TEST_F(WebMediaPlayerImplTest, IdleSuspendIsEnabledIfLoadingHasStalled) {
   InitializeWebMediaPlayerImpl();
   SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
   base::SimpleTestTickClock clock;
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   SetTickClock(&clock);
   AddBufferedRanges();
   wmpi_->DidLoadingProgress();
   // Advance more than the loading timeout.
-  clock.Advance(base::TimeDelta::FromSeconds(4));
+  clock.Advance(base::Seconds(4));
   EXPECT_TRUE(delegate_.ExpireForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSuspended());
@@ -1594,19 +1593,17 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_PositionChange) {
   Play();
 
   testing::Sequence sequence;
-  EXPECT_CALL(client_,
-              DidPlayerMediaPositionStateChange(
-                  0.0, kAudioOnlyTestFileDuration,
-                  base::TimeDelta::FromSecondsD(0.1), /*end_of_media=*/false))
+  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
+                           0.0, kAudioOnlyTestFileDuration, base::Seconds(0.1),
+                           /*end_of_media=*/false))
       .InSequence(sequence);
   wmpi_->Seek(0.1);
   wmpi_->OnTimeUpdate();
 
   // If we load enough data to resume playback the position should be updated.
-  EXPECT_CALL(client_,
-              DidPlayerMediaPositionStateChange(
-                  0.5, kAudioOnlyTestFileDuration,
-                  base::TimeDelta::FromSecondsD(0.1), /*end_of_media=*/false))
+  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
+                           0.5, kAudioOnlyTestFileDuration, base::Seconds(0.1),
+                           /*end_of_media=*/false))
       .InSequence(sequence);
   SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->OnTimeUpdate();
@@ -2261,8 +2258,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     SetLoadType(is_media_source ? WebMediaPlayer::kLoadTypeMediaSource
                                 : WebMediaPlayer::kLoadTypeURL);
     SetVideoKeyframeDistanceAverage(
-        base::TimeDelta::FromSeconds(GetAverageKeyframeDistanceSec()));
-    SetDuration(base::TimeDelta::FromSeconds(GetDurationSec()));
+        base::Seconds(GetAverageKeyframeDistanceSec()));
+    SetDuration(base::Seconds(GetDurationSec()));
 
     if (IsPictureInPictureOn()) {
       EXPECT_CALL(client_, GetDisplayType())

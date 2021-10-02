@@ -85,7 +85,7 @@ TEST_F(DownloadUkmHelperTest, TestBasicReporting) {
   int bytes_wasted = 1234;
   DownloadUkmHelper::RecordDownloadInterrupted(
       download_id_, change_in_file_size, reason, resulting_file_size,
-      base::TimeDelta::FromMilliseconds(time_since_start), bytes_wasted);
+      base::Milliseconds(time_since_start), bytes_wasted);
 
   ExpectUkmMetrics(
       UkmDownloadInterrupted::kEntryName,
@@ -105,8 +105,7 @@ TEST_F(DownloadUkmHelperTest, TestBasicReporting) {
   ResumeMode mode = ResumeMode::IMMEDIATE_RESTART;
   int time_since_start_resume = 300;
   DownloadUkmHelper::RecordDownloadResumed(
-      download_id_, mode,
-      base::TimeDelta::FromMilliseconds(time_since_start_resume));
+      download_id_, mode, base::Milliseconds(time_since_start_resume));
 
   ExpectUkmMetrics(
       UkmDownloadResumed::kEntryName,
@@ -120,8 +119,7 @@ TEST_F(DownloadUkmHelperTest, TestBasicReporting) {
   int bytes_wasted_completed = 2345;
   DownloadUkmHelper::RecordDownloadCompleted(
       download_id_, resulting_file_size_completed,
-      base::TimeDelta::FromMilliseconds(time_since_start_completed),
-      bytes_wasted_completed);
+      base::Milliseconds(time_since_start_completed), bytes_wasted_completed);
 
   ExpectUkmMetrics(
       UkmDownloadCompleted::kEntryName,

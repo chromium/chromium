@@ -70,7 +70,7 @@ base::TimeDelta GetAutoDismissTimerValue() {
   if (!base::FeatureList::IsEnabled(media::kGlobalMediaControlsAutoDismiss))
     return base::TimeDelta::Max();
 
-  return base::TimeDelta::FromMinutes(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Minutes(base::GetFieldTrialParamByFeatureAsInt(
       media::kGlobalMediaControlsAutoDismiss,
       kAutoDismissTimerInMinutesParamName, kAutoDismissTimerInMinutesDefault));
 }
@@ -279,8 +279,7 @@ void MediaSessionNotificationProducer::Session::
       base::TimeTicks::Now() - last_interaction_time_;
   base::UmaHistogramCustomTimes(
       "Media.GlobalMediaControls.InteractionDelayAfterPause",
-      time_since_last_interaction, base::TimeDelta::FromMinutes(1),
-      base::TimeDelta::FromDays(1), 100);
+      time_since_last_interaction, base::Minutes(1), base::Days(1), 100);
 }
 
 void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {

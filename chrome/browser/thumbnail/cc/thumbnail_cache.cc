@@ -41,8 +41,7 @@
 namespace {
 
 const float kApproximationScaleFactor = 4.f;
-const base::TimeDelta kDefaultCaptureMinRequestTimeMs(
-    base::TimeDelta::FromMilliseconds(1000));
+const base::TimeDelta kDefaultCaptureMinRequestTimeMs(base::Milliseconds(1000));
 
 const int kCompressedKey = 0xABABABAB;
 const int kCurrentExtraVersion = 1;
@@ -554,7 +553,7 @@ void ThumbnailCache::OnUIResourcesWereEvicted() {
 }
 
 void ThumbnailCache::SetCaptureMinRequestTimeForTesting(int timeMs) {
-  capture_min_request_time_ms_ = base::TimeDelta::FromMilliseconds(timeMs);
+  capture_min_request_time_ms_ = base::Milliseconds(timeMs);
 }
 
 void ThumbnailCache::InvalidateCachedThumbnail(Thumbnail* thumbnail) {

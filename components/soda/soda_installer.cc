@@ -123,7 +123,7 @@ void SodaInstaller::SetUninstallTimer(PrefService* profile_prefs,
   // Schedule deletion.
   global_prefs->SetTime(
       prefs::kSodaScheduledDeletionTime,
-      base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
+      base::Time::Now() + base::Days(kSodaCleanUpDelayInDays));
 }
 
 bool SodaInstaller::IsSodaInstalled(LanguageCode language_code) const {

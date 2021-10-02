@@ -100,7 +100,7 @@ class FakeV4L2Impl::OpenedDevice {
       }
     }
     return wait_for_outgoing_queue_event_.TimedWait(
-        base::TimeDelta::FromMilliseconds(timeout_in_milliseconds));
+        base::Milliseconds(timeout_in_milliseconds));
   }
 
   int enum_fmt(v4l2_fmtdesc* fmtdesc) {
@@ -342,7 +342,7 @@ class FakeV4L2Impl::OpenedDevice {
       // Sleep for a bit.
       // We ignore the requested frame rate here, and just sleep for a fixed
       // duration.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+      base::PlatformThread::Sleep(base::Milliseconds(100));
     }
   }
 

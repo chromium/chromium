@@ -93,7 +93,7 @@ void BiometricAuthenticatorAndroid::Authenticate(
       "PasswordManager.BiometricAuthPwdFill.AuthRequester", requester);
   if (last_good_auth_timestamp_.has_value() &&
       base::TimeTicks::Now() - last_good_auth_timestamp_.value() <
-          base::TimeDelta::FromSeconds(kAuthValidSeconds)) {
+          base::Seconds(kAuthValidSeconds)) {
     LogAuthResult(BiometricAuthFinalResult::kAuthStillValid);
     std::move(callback_).Run(/*success=*/true);
     requester_ = absl::nullopt;

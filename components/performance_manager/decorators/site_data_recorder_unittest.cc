@@ -31,9 +31,9 @@
 namespace performance_manager {
 
 constexpr base::TimeDelta kTitleOrFaviconChangePostLoadGracePeriod =
-    base::TimeDelta::FromSeconds(20);
+    base::Seconds(20);
 constexpr base::TimeDelta kFeatureUsagePostBackgroundGracePeriod =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // A mock implementation of a SiteDataWriter.
 class LenientMockDataWriter : public SiteDataWriter {

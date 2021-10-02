@@ -234,8 +234,8 @@ IdleMonitor* IdleManager::GetMonitor(const std::string& extension_id) {
 void IdleManager::StartPolling() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!poll_timer_.IsRunning()) {
-    poll_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(kPollInterval),
-                      this, &IdleManager::UpdateIdleState);
+    poll_timer_.Start(FROM_HERE, base::Seconds(kPollInterval), this,
+                      &IdleManager::UpdateIdleState);
   }
 }
 

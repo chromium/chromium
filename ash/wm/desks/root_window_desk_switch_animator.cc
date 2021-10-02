@@ -42,14 +42,13 @@ constexpr int kMaxScreenshotRetries = 2;
 // request a new screenshot.
 constexpr int kMinDistanceBeforeScreenshotDp = 40;
 
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
 // The amount, by which the detached old layers of the removed desk's windows,
 // is translated vertically during the for-remove desk switch animation.
 constexpr int kRemovedDeskWindowYTranslation = 20;
 constexpr base::TimeDelta kRemovedDeskWindowTranslationDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 // When ending a swipe that is deemed fast, the target desk only needs to be
 // 10% shown for us to animate to that desk, compared to 50% shown for a non

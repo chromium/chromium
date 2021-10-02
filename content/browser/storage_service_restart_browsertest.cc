@@ -54,7 +54,7 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
               base::BindOnce(&StorageServiceRestartBrowserTest::
                                  WaitForAnyLocalStorageDataAsync,
                              base::Unretained(test), std::move(callback)),
-              base::TimeDelta::FromMilliseconds(50));
+              base::Milliseconds(50));
         },
         this, std::move(callback)));
   }

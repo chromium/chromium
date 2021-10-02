@@ -169,9 +169,9 @@ void UmaSessionStats::SessionTimeTracker::ReportBackgroundSessionTime() {
   // This histogram is used in analysis to determine if an uploaded log
   // represents background activity. For this reason, this histogram may be
   // recorded more than once per 'background session'.
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "Session.Background.TotalDuration", background_session_accumulated_time_,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(24), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES("Session.Background.TotalDuration",
+                             background_session_accumulated_time_,
+                             base::Milliseconds(1), base::Hours(24), 50);
   background_session_accumulated_time_ = base::TimeDelta();
 }
 
@@ -189,8 +189,7 @@ base::TimeDelta UmaSessionStats::SessionTimeTracker::EndForegroundSession() {
   // DesktopSessionDurationTracker::EndSession.
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
   return duration;
 }
 

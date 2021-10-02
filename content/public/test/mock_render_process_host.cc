@@ -361,7 +361,7 @@ void MockRenderProcessHost::AddFilter(BrowserMessageFilter* filter) {
 }
 
 base::TimeDelta MockRenderProcessHost::GetChildProcessIdleTime() {
-  return base::TimeDelta::FromMilliseconds(0);
+  return base::Milliseconds(0);
 }
 
 void MockRenderProcessHost::BindReceiver(

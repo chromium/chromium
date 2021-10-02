@@ -27,7 +27,7 @@ namespace remoting {
 namespace {
 
 // Time to wait before closing the dialog and cancelling the connection.
-constexpr base::TimeDelta kDialogTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kDialogTimeout = base::Minutes(1);
 
 class It2MeConfirmationDialogWin : public It2MeConfirmationDialog {
  public:

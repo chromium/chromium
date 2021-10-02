@@ -52,16 +52,15 @@ namespace device_sync {
 
 namespace {
 
-constexpr base::TimeDelta kSetFeatureEnabledTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSetFeatureEnabledTimeout = base::Seconds(5);
 
 // Timeout value for asynchronous operation.
 // TODO(https://crbug.com/933656): Use async execution time metrics to tune
 // this timeout value.
 constexpr base::TimeDelta kWaitingForClientAppMetadataTimeout =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
-constexpr base::TimeDelta kBaseRetryDelay = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kBaseRetryDelay = base::Seconds(5);
 
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -143,8 +142,8 @@ void RecordGcmRegistrationMetrics(const base::TimeDelta& execution_time,
                                   bool success) {
   base::UmaHistogramCustomTimes(
       "CryptAuth.DeviceSyncService.GcmRegistration.ExecutionTime",
-      execution_time, base::TimeDelta::FromSeconds(1) /* min */,
-      base::TimeDelta::FromMinutes(10) /* max */, 100 /* buckets */);
+      execution_time, base::Seconds(1) /* min */, base::Minutes(10) /* max */,
+      100 /* buckets */);
 
   base::UmaHistogramBoolean(
       "CryptAuth.DeviceSyncService.GcmRegistration.Success", success);
@@ -154,7 +153,7 @@ void RecordClientAppMetadataFetchMetrics(const base::TimeDelta& execution_time,
                                          CryptAuthAsyncTaskResult result) {
   base::UmaHistogramCustomTimes(
       "CryptAuth.DeviceSyncService.ClientAppMetadataFetch.ExecutionTime",
-      execution_time, base::TimeDelta::FromSeconds(1) /* min */,
+      execution_time, base::Seconds(1) /* min */,
       kWaitingForClientAppMetadataTimeout /* max */, 100 /* buckets */);
 
   LogCryptAuthAsyncTaskSuccessMetric(
@@ -165,7 +164,7 @@ void RecordClientAppMetadataFetchMetrics(const base::TimeDelta& execution_time,
 void RecordInitializationMetrics(const base::TimeDelta& execution_time) {
   base::UmaHistogramCustomTimes(
       "CryptAuth.DeviceSyncService.Initialization.ExecutionTime",
-      execution_time, base::TimeDelta::FromSeconds(1) /* min */,
+      execution_time, base::Seconds(1) /* min */,
       kWaitingForClientAppMetadataTimeout /* max */, 100 /* buckets */);
 }
 

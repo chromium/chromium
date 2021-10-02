@@ -96,7 +96,7 @@ Status DevToolsHttpClient::Init(const base::TimeDelta& timeout) {
   while (!FetchUrlAndLog(version_url, &data) || data.empty()) {
     if (base::TimeTicks::Now() > deadline)
       return Status(kChromeNotReachable);
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
 
   return ParseBrowserInfo(data, &browser_info_);
@@ -125,8 +125,7 @@ Status DevToolsHttpClient::CloseWebView(const std::string& id) {
   }
 
   // Wait for the target window to be completely closed.
-  base::TimeTicks deadline =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(20);
+  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
   while (base::TimeTicks::Now() < deadline) {
     WebViewsInfo views_info;
     Status status = GetWebViewsInfo(&views_info);
@@ -136,7 +135,7 @@ Status DevToolsHttpClient::CloseWebView(const std::string& id) {
       return status;
     if (!views_info.GetForId(id))
       return Status(kOk);
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
   return Status(kUnknownError, "failed to close window in 20 seconds");
 }
@@ -216,8 +215,7 @@ Status DevToolsHttpClient::CloseFrontends(const std::string& for_client_id) {
   }
 
   // Wait until DevTools UI disconnects from the given web view.
-  base::TimeTicks deadline =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(20);
+  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
   while (base::TimeTicks::Now() < deadline) {
     status = GetWebViewsInfo(&views_info);
     if (status.IsError())
@@ -229,7 +227,7 @@ Status DevToolsHttpClient::CloseFrontends(const std::string& for_client_id) {
     if (view_info->debugger_url.size())
       return Status(kOk);
 
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
   return Status(kUnknownError, "failed to close UI debuggers");
 }

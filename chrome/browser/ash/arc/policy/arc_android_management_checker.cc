@@ -25,8 +25,8 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kRetryDelayMin = base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kRetryDelayMax = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRetryDelayMin = base::Seconds(10);
+constexpr base::TimeDelta kRetryDelayMax = base::Hours(1);
 
 policy::DeviceManagementService* GetDeviceManagementService() {
   policy::BrowserPolicyConnectorAsh* const connector =

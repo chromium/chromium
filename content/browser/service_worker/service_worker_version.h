@@ -747,14 +747,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
   };
 
   // The timeout timer interval.
-  static constexpr base::TimeDelta kTimeoutTimerDelay =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kTimeoutTimerDelay = base::Seconds(30);
   // Timeout for a new worker to start.
-  static constexpr base::TimeDelta kStartNewWorkerTimeout =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kStartNewWorkerTimeout = base::Minutes(5);
   // Timeout for the worker to stop.
-  static constexpr base::TimeDelta kStopWorkerTimeout =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kStopWorkerTimeout = base::Seconds(5);
 
   ~ServiceWorkerVersion() override;
 

@@ -19,13 +19,13 @@ namespace performance_manager {
 // use some of these features without this being an attempt to communicate
 // with the user (e.g. the page is just really finishing to load).
 constexpr base::TimeDelta kTitleOrFaviconChangePostLoadGracePeriod =
-    base::TimeDelta::FromSeconds(20);
+    base::Seconds(20);
 
 // The period of time during which audio usage gets ignored after a page gets
 // backgrounded. It's necessary because there might be a delay between a media
 // request gets initiated and the time the audio actually starts.
 constexpr base::TimeDelta kFeatureUsagePostBackgroundGracePeriod =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // Provides SiteData machinery access to some internals of a PageNodeImpl.
 class SiteDataAccess {

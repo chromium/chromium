@@ -28,14 +28,11 @@ constexpr int kTotalHostsToQuery = 3;
 constexpr int kHostPrefixLength = 8;
 constexpr int kHttpsPort = 443;
 constexpr char kHttpsScheme[] = "https://";
-constexpr base::TimeDelta kRequestTimeoutMs =
-    base::TimeDelta::FromMilliseconds(5 * 1000);
+constexpr base::TimeDelta kRequestTimeoutMs = base::Milliseconds(5 * 1000);
 // Requests taking longer than 1000 ms are problematic.
-constexpr base::TimeDelta kProblemLatencyMs =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kProblemLatencyMs = base::Milliseconds(1000);
 // Requests lasting between 500 ms and 1000 ms are potentially problematic.
-constexpr base::TimeDelta kPotentialProblemLatencyMs =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kPotentialProblemLatencyMs = base::Milliseconds(500);
 
 base::TimeDelta MedianLatency(std::vector<base::TimeDelta>& latencies) {
   if (latencies.size() == 0) {

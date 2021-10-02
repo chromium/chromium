@@ -33,51 +33,51 @@ TEST_F(StopwatchTest, SimpleRun) {
   EXPECT_FALSE(stopwatch_.Start());
   EXPECT_TRUE(stopwatch_.IsRunning());
 
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(1);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), stopwatch_.TotalElapsed());
+  TimeTicksOverride::now_ticks_ += base::Seconds(1);
+  EXPECT_EQ(base::Seconds(1), stopwatch_.TotalElapsed());
 
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   EXPECT_TRUE(stopwatch_.Stop());
   EXPECT_FALSE(stopwatch_.Stop());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3), stopwatch_.TotalElapsed());
+  EXPECT_EQ(base::Seconds(3), stopwatch_.TotalElapsed());
 
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   EXPECT_TRUE(stopwatch_.Start());
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(1);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(4), stopwatch_.TotalElapsed());
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(1);
+  TimeTicksOverride::now_ticks_ += base::Seconds(1);
+  EXPECT_EQ(base::Seconds(4), stopwatch_.TotalElapsed());
+  TimeTicksOverride::now_ticks_ += base::Seconds(1);
   EXPECT_TRUE(stopwatch_.Stop());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(5), stopwatch_.TotalElapsed());
+  EXPECT_EQ(base::Seconds(5), stopwatch_.TotalElapsed());
 }
 
 TEST_F(StopwatchTest, AddTime) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   stopwatch_.Start();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(1);
+  TimeTicksOverride::now_ticks_ += base::Seconds(1);
   stopwatch_.Stop();
-  stopwatch_.AddTime(base::TimeDelta::FromSeconds(2));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3), stopwatch_.TotalElapsed());
+  stopwatch_.AddTime(base::Seconds(2));
+  EXPECT_EQ(base::Seconds(3), stopwatch_.TotalElapsed());
 }
 
 TEST_F(StopwatchTest, RemoveTime) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   stopwatch_.Start();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   stopwatch_.Stop();
-  stopwatch_.RemoveTime(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), stopwatch_.TotalElapsed());
+  stopwatch_.RemoveTime(base::Seconds(1));
+  EXPECT_EQ(base::Seconds(1), stopwatch_.TotalElapsed());
 }
 
 TEST_F(StopwatchTest, RemoveGreaterThanElapsed) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   stopwatch_.Start();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(1);
+  TimeTicksOverride::now_ticks_ += base::Seconds(1);
   stopwatch_.Stop();
-  stopwatch_.RemoveTime(base::TimeDelta::FromSeconds(2));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0), stopwatch_.TotalElapsed());
+  stopwatch_.RemoveTime(base::Seconds(2));
+  EXPECT_EQ(base::Seconds(0), stopwatch_.TotalElapsed());
 }
 
 // This parameterized test uses 4 parameters: time to start at, time to stop at,
@@ -105,20 +105,17 @@ TEST_P(StopwatchStartStopTest, StartAndStopAt) {
   long expected_while_running = std::get<2>(GetParam());
   long expected = std::get<3>(GetParam());
   if (start_at) {
-    stopwatch_.StartAt(TimeTicksOverride::now_ticks_ +
-                       base::TimeDelta::FromSeconds(start_at));
+    stopwatch_.StartAt(TimeTicksOverride::now_ticks_ + base::Seconds(start_at));
   } else {
     stopwatch_.Start();
   }
-  EXPECT_EQ(base::TimeDelta::FromSeconds(expected_while_running),
-            stopwatch_.TotalElapsed());
+  EXPECT_EQ(base::Seconds(expected_while_running), stopwatch_.TotalElapsed());
   if (stop_at) {
-    stopwatch_.StopAt(TimeTicksOverride::now_ticks_ +
-                      base::TimeDelta::FromSeconds(stop_at));
+    stopwatch_.StopAt(TimeTicksOverride::now_ticks_ + base::Seconds(stop_at));
   } else {
     stopwatch_.Stop();
   }
-  EXPECT_EQ(base::TimeDelta::FromSeconds(expected), stopwatch_.TotalElapsed());
+  EXPECT_EQ(base::Seconds(expected), stopwatch_.TotalElapsed());
 }
 
 class ActionStopwatchTest : public testing::Test {
@@ -130,56 +127,52 @@ TEST_F(ActionStopwatchTest, SimpleRun) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   action_stopwatch_.StartActiveTime();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(1);
+  TimeTicksOverride::now_ticks_ += base::Seconds(1);
   action_stopwatch_.StartWaitTime();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   action_stopwatch_.Stop();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            action_stopwatch_.TotalActiveTime());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2), action_stopwatch_.TotalWaitTime());
+  EXPECT_EQ(base::Seconds(1), action_stopwatch_.TotalActiveTime());
+  EXPECT_EQ(base::Seconds(2), action_stopwatch_.TotalWaitTime());
 }
 
 TEST_F(ActionStopwatchTest, TransferToActive) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   action_stopwatch_.StartActiveTime();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(4);
+  TimeTicksOverride::now_ticks_ += base::Seconds(4);
   action_stopwatch_.StartWaitTime();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   action_stopwatch_.Stop();
-  action_stopwatch_.TransferToActiveTime(base::TimeDelta::FromSeconds(3));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(7),
-            action_stopwatch_.TotalActiveTime());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0), action_stopwatch_.TotalWaitTime());
+  action_stopwatch_.TransferToActiveTime(base::Seconds(3));
+  EXPECT_EQ(base::Seconds(7), action_stopwatch_.TotalActiveTime());
+  EXPECT_EQ(base::Seconds(0), action_stopwatch_.TotalWaitTime());
 }
 
 TEST_F(ActionStopwatchTest, TransferToWait) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   action_stopwatch_.StartActiveTime();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   action_stopwatch_.StartWaitTime();
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(4);
+  TimeTicksOverride::now_ticks_ += base::Seconds(4);
   action_stopwatch_.Stop();
-  action_stopwatch_.TransferToWaitTime(base::TimeDelta::FromSeconds(3));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
-            action_stopwatch_.TotalActiveTime());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(7), action_stopwatch_.TotalWaitTime());
+  action_stopwatch_.TransferToWaitTime(base::Seconds(3));
+  EXPECT_EQ(base::Seconds(0), action_stopwatch_.TotalActiveTime());
+  EXPECT_EQ(base::Seconds(7), action_stopwatch_.TotalWaitTime());
 }
 
 TEST_F(ActionStopwatchTest, StartTimesAt) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   action_stopwatch_.StartActiveTimeAt(TimeTicksOverride::now_ticks_ +
-                                      base::TimeDelta::FromSeconds(1));
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(5);
+                                      base::Seconds(1));
+  TimeTicksOverride::now_ticks_ += base::Seconds(5);
   action_stopwatch_.StartWaitTimeAt(TimeTicksOverride::now_ticks_ -
-                                    base::TimeDelta::FromSeconds(1));
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(2);
+                                    base::Seconds(1));
+  TimeTicksOverride::now_ticks_ += base::Seconds(2);
   action_stopwatch_.Stop();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3),
-            action_stopwatch_.TotalActiveTime());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3), action_stopwatch_.TotalWaitTime());
+  EXPECT_EQ(base::Seconds(3), action_stopwatch_.TotalActiveTime());
+  EXPECT_EQ(base::Seconds(3), action_stopwatch_.TotalWaitTime());
 }
 
 }  // namespace

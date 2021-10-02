@@ -321,15 +321,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffAndTimerReset) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::Seconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 }
 
@@ -395,15 +395,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::Seconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   /////////////////////////////////////
@@ -418,15 +418,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 599 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(598));
+  task_environment_.FastForwardBy(base::Seconds(598));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 600 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   //////////////////////////////////////
@@ -441,15 +441,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1199 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1198));
+  task_environment_.FastForwardBy(base::Seconds(1198));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 1200 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   ///////////////////////////////////////////////////
@@ -464,15 +464,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1799 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::Seconds(1798));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 1800 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   ///////////////////////////////////////////////////
@@ -487,15 +487,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1799 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::Seconds(1798));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 1800 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 }
 
@@ -520,15 +520,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::Seconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   /////////////////////////////////////
@@ -543,15 +543,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 599 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(598));
+  task_environment_.FastForwardBy(base::Seconds(598));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 600 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   // The next lookup is a success. This should reset the backoff duration to
@@ -571,15 +571,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::Seconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 }
 
@@ -1010,7 +1010,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
                                base::Time::Now().ToDoubleT())
           .get());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EnableRealTimeUrlLookup({kRealTimeUrlLookupReferrerChain}, {});
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,

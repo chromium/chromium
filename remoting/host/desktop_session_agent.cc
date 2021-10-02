@@ -789,7 +789,7 @@ void DesktopSessionAgent::StartProcessStatsReport(base::TimeDelta interval) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   DCHECK(!stats_sender_);
 
-  if (interval <= base::TimeDelta::FromSeconds(0)) {
+  if (interval <= base::Seconds(0)) {
     interval = kDefaultProcessStatsInterval;
   }
 

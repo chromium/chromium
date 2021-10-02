@@ -419,7 +419,7 @@ TEST_F(TabLoadingFrameNavigationPolicyTest, MinTimeoutUpdateWorks) {
   // Simulate an FCP that would cause a minimum timeout to be applied.
   base::TimeDelta fcp = policy()->GetMinTimeoutForTesting() /
                             policy()->GetFCPMultipleForTesting() -
-                        base::TimeDelta::FromMilliseconds(100);
+                        base::Milliseconds(100);
   ASSERT_LT(base::TimeDelta(), fcp);
 
   // Advance time by that amount and simulate FCP. No callbacks should fire.
@@ -441,8 +441,8 @@ TEST_F(TabLoadingFrameNavigationPolicyTest, FCPTimeoutUpdateWorks) {
   ExpectThrottledPageCount(1);
 
   // Simulate an FCP that will cause a timeout update.
-  base::TimeDelta fcp = policy()->GetMinTimeoutForTesting() +
-                        base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta fcp =
+      policy()->GetMinTimeoutForTesting() + base::Milliseconds(100);
 
   // Advance time by that amount and simulate FCP. No callbacks should fire.
   task_environment()->FastForwardBy(fcp);
@@ -467,7 +467,7 @@ TEST_F(TabLoadingFrameNavigationPolicyTest, MaxTimeoutWorks) {
   // maximum.
   base::TimeDelta fcp = policy()->GetMaxTimeoutForTesting() /
                             policy()->GetFCPMultipleForTesting() +
-                        base::TimeDelta::FromMilliseconds(100);
+                        base::Milliseconds(100);
 
   // Advance time by that amount and simulate FCP. No callbacks should fire.
   task_environment()->FastForwardBy(fcp);
@@ -488,9 +488,8 @@ TEST(TabLoadingFrameNavigationThrottlesParams, FeatureParamsWork) {
 
   // Make sure the parsing works.
   auto params = features::TabLoadingFrameNavigationThrottlesParams::GetParams();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2500),
-            params.minimum_throttle_timeout);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(25), params.maximum_throttle_timeout);
+  EXPECT_EQ(base::Milliseconds(2500), params.minimum_throttle_timeout);
+  EXPECT_EQ(base::Seconds(25), params.maximum_throttle_timeout);
   EXPECT_EQ(3.14, params.fcp_multiple);
 
   // And make sure the plumbing works.
@@ -505,20 +504,18 @@ TEST(TabLoadingFrameNavigationThrottlesParams, FeatureParamsWork) {
   // An FCP of 300ms would yield 942ms, or 642ms of additional timeout. This is
   // less than timeout_min_, so we should get that.
   EXPECT_EQ(params.minimum_throttle_timeout,
-            policy->CalculateTimeoutFromFCPForTesting(
-                base::TimeDelta::FromMilliseconds(300)));
+            policy->CalculateTimeoutFromFCPForTesting(base::Milliseconds(300)));
 
   // An FCP of 1000ms would yield 3140ms, or 2140ms of additional timeout. This
   // is also less than timeout_min_, so we should get that.
-  EXPECT_EQ(params.minimum_throttle_timeout,
-            policy->CalculateTimeoutFromFCPForTesting(
-                base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_EQ(
+      params.minimum_throttle_timeout,
+      policy->CalculateTimeoutFromFCPForTesting(base::Milliseconds(1000)));
 
   // An FCP of 2000ms would yield 6280ms, or 4280ms of additional timeout. We
   // should get that.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(4280),
-            policy->CalculateTimeoutFromFCPForTesting(
-                base::TimeDelta::FromMilliseconds(2000)));
+  EXPECT_EQ(base::Milliseconds(4280), policy->CalculateTimeoutFromFCPForTesting(
+                                          base::Milliseconds(2000)));
 }
 
 }  // namespace policies

@@ -387,7 +387,7 @@ class HUDActionButton : public views::LabelButton {
   void DisableWithSpinner() {
     DCHECK(!spinner_refresh_timer_.IsRunning());
     SetEnabled(false);
-    constexpr base::TimeDelta interval = base::TimeDelta::FromSecondsD(0.5);
+    constexpr base::TimeDelta interval = base::Seconds(0.5);
     spinner_created_ = base::Time::Now();
     spinner_refresh_timer_.Start(
         FROM_HERE, interval,

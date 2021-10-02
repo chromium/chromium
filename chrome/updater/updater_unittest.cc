@@ -45,7 +45,6 @@ TEST(UpdaterTest, UpdaterExitCode) {
   auto process = base::LaunchProcess(command_line, options);
   ASSERT_TRUE(process.IsValid());
   int exit_code = -1;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(60),
-                                             &exit_code));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(60), &exit_code));
   EXPECT_EQ(0, exit_code);
 }

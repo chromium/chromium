@@ -159,8 +159,7 @@ class PendingGetPrintersRequests {
 // requests for an extension.
 class PendingGetCapabilityRequests {
  public:
-  static constexpr base::TimeDelta kGetCapabilityTimeout =
-      base::TimeDelta::FromSeconds(20);
+  static constexpr base::TimeDelta kGetCapabilityTimeout = base::Seconds(20);
 
   PendingGetCapabilityRequests();
   ~PendingGetCapabilityRequests();

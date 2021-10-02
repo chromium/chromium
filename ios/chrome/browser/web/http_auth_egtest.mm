@@ -136,7 +136,7 @@ void WaitForHttpAuthDialog() {
         performAction:grey_tap()];
 
     // Ensure first dialog is dismissed before waiting for the second one.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
     // Verifies that authentication was requested again.
     WaitForHttpAuthDialog();
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]

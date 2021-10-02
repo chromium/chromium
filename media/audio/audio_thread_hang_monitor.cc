@@ -33,8 +33,7 @@ namespace {
 constexpr int kMaxFailedPingsCount = 3;
 
 // The default deadline after which we consider the audio thread hung.
-constexpr base::TimeDelta kDefaultHangDeadline =
-    base::TimeDelta::FromMinutes(3);
+constexpr base::TimeDelta kDefaultHangDeadline = base::Minutes(3);
 
 }  // namespace
 
@@ -125,7 +124,7 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
   // An unexpected |time_since_last_check| may indicate that the system has been
   // in sleep mode, in which case the audio thread may have had insufficient
   // time to respond to the ping. In such a case, skip the check for now.
-  if (time_since_last_check > ping_interval_ + base::TimeDelta::FromSeconds(1))
+  if (time_since_last_check > ping_interval_ + base::Seconds(1))
     return;
 
   const bool audio_thread_responded_to_last_ping = alive_flag_->flag_;

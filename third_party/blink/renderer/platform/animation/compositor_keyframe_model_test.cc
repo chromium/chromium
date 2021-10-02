@@ -32,7 +32,7 @@ TEST(WebCompositorAnimationTest, ModifiedSettings) {
           compositor_target_property::OPACITY));
   keyframe_model->SetIterations(2);
   keyframe_model->SetStartTime(2);
-  keyframe_model->SetTimeOffset(base::TimeDelta::FromSeconds(2));
+  keyframe_model->SetTimeOffset(base::Seconds(2));
   keyframe_model->SetDirection(CompositorKeyframeModel::Direction::REVERSE);
 
   EXPECT_EQ(2, keyframe_model->Iterations());

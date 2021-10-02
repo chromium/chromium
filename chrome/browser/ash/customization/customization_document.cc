@@ -432,8 +432,7 @@ ServicesCustomizationDocument::ServicesCustomizationDocument()
     : CustomizationDocument(kAcceptedManifestVersion),
       num_retries_(0),
       load_started_(false),
-      network_delay_(
-          base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS)),
+      network_delay_(base::Milliseconds(kDefaultNetworkRetryDelayMS)),
       apply_tasks_started_(0),
       apply_tasks_finished_(0),
       apply_tasks_success_(0) {}
@@ -441,8 +440,7 @@ ServicesCustomizationDocument::ServicesCustomizationDocument()
 ServicesCustomizationDocument::ServicesCustomizationDocument(
     const std::string& manifest)
     : CustomizationDocument(kAcceptedManifestVersion),
-      network_delay_(
-          base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS)),
+      network_delay_(base::Milliseconds(kDefaultNetworkRetryDelayMS)),
       apply_tasks_started_(0),
       apply_tasks_finished_(0),
       apply_tasks_success_(0) {
@@ -650,7 +648,7 @@ void ServicesCustomizationDocument::OnSimpleLoaderComplete(
           FROM_HERE,
           base::BindOnce(&ServicesCustomizationDocument::StartFileFetch,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromSeconds(kRetriesDelayInSec));
+          base::Seconds(kRetriesDelayInSec));
       return;
     }
     // This doesn't stop fetching manifest on next restart.

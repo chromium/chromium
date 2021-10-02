@@ -151,7 +151,7 @@ static void SendMulticastPacket(base::OnceClosure quit_run_loop,
         FROM_HERE,
         base::BindOnce(&SendMulticastPacket, std::move(quit_run_loop), src,
                        result),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   } else {
     std::move(quit_run_loop).Run();
     FAIL() << "Failed to connect to multicast address. Error code: " << result;

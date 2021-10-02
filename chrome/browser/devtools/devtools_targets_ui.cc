@@ -124,7 +124,7 @@ void LocalTargetsUIHandler::ForceUpdate() {
 void LocalTargetsUIHandler::ScheduleUpdate() {
   const int kUpdateDelay = 100;
   timer_ = std::make_unique<base::OneShotTimer>();
-  timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kUpdateDelay),
+  timer_->Start(FROM_HERE, base::Milliseconds(kUpdateDelay),
                 base::BindOnce(&LocalTargetsUIHandler::UpdateTargets,
                                base::Unretained(this)));
 }

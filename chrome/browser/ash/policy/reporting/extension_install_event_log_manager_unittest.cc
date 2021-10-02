@@ -53,11 +53,10 @@ namespace {
 
 constexpr base::FilePath::CharType kLogFileName[] =
     FILE_PATH_LITERAL("extension_install_log");
-constexpr base::TimeDelta kStoreDelay = base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kUploadInterval = base::TimeDelta::FromHours(3);
-constexpr base::TimeDelta kExpeditedUploadDelay =
-    base::TimeDelta::FromMinutes(15);
-constexpr base::TimeDelta kOneMs = base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kStoreDelay = base::Seconds(5);
+constexpr base::TimeDelta kUploadInterval = base::Hours(3);
+constexpr base::TimeDelta kExpeditedUploadDelay = base::Minutes(15);
+constexpr base::TimeDelta kOneMs = base::Milliseconds(1);
 
 constexpr int kTotalSizeExpeditedUploadThreshold = 2048;
 constexpr int kMaxSizeExpeditedUploadThreshold = 512;
@@ -370,7 +369,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, CreateNonEmpty) {
 TEST_F(ExtensionInstallEventLogManagerTest, AddBeforeInitialUpload) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(2);
+  const base::TimeDelta offset = base::Minutes(2);
   FastForwardTo(offset);
   AddLogEntry(0 /* extension_index */);
 
@@ -400,14 +399,14 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddBeforeInitialUpload) {
 TEST_F(ExtensionInstallEventLogManagerTest, Add) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   AddLogEntry(0 /* extension_index */);
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(2));
+  FastForwardTo(offset + base::Seconds(2));
   AddLogEntry(0 /* extension_index */);
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(4));
+  FastForwardTo(offset + base::Seconds(4));
   AddLogEntry(0 /* extension_index */);
 
   FastForwardTo(offset + kStoreDelay - kOneMs);
@@ -416,14 +415,13 @@ TEST_F(ExtensionInstallEventLogManagerTest, Add) {
   FastForwardTo(offset + kStoreDelay);
   VerifyAndDeleteLogFile();
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(6));
+  FastForwardTo(offset + base::Seconds(6));
   AddLogEntry(0 /* extension_index */);
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(6) + kStoreDelay -
-                kOneMs);
+  FastForwardTo(offset + base::Seconds(6) + kStoreDelay - kOneMs);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(6) + kStoreDelay);
+  FastForwardTo(offset + base::Seconds(6) + kStoreDelay);
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kUploadInterval - kOneMs);
@@ -446,7 +444,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, Add) {
 TEST_F(ExtensionInstallEventLogManagerTest, AddForMultipleExtensions) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   AddLogEntryForAllExtensions();
 
@@ -475,7 +473,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddForMultipleExtensions) {
 TEST_F(ExtensionInstallEventLogManagerTest, AddForZeroExtensions) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   AddLogEntryForsetOfExtensions({});
 
@@ -489,7 +487,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddForZeroExtensions) {
 TEST_F(ExtensionInstallEventLogManagerTest, AddToTriggerMaxSizeExpedited) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kMaxSizeExpeditedUploadThreshold; ++i) {
     AddLogEntry(0 /* extension_index */);
@@ -521,7 +519,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddToTriggerMaxSizeExpedited) {
 TEST_F(ExtensionInstallEventLogManagerTest, AddToTriggerTotalSizeExpedited) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   int i = 0;
   while (i <= kTotalSizeExpeditedUploadThreshold) {
@@ -558,7 +556,7 @@ TEST_F(ExtensionInstallEventLogManagerTest,
        AddForMultipleExtensionsToTriggerTotalSizeExpedited) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kTotalSizeExpeditedUploadThreshold;
        i += base::size(kExtensionIds)) {
@@ -680,7 +678,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestUploadAddExpeditedUpload) {
 TEST_F(ExtensionInstallEventLogManagerTest, RequestExpeditedUploadAddUpload) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kMaxSizeExpeditedUploadThreshold; ++i) {
     AddLogEntry(0 /* extension_index */);

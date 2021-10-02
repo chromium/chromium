@@ -559,28 +559,26 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicIdleConnectionTimeoutSeconds(quic_trial_params);
     if (idle_connection_timeout_seconds != 0) {
       quic_params->idle_connection_timeout =
-          base::TimeDelta::FromSeconds(idle_connection_timeout_seconds);
+          base::Seconds(idle_connection_timeout_seconds);
     }
     int reduced_ping_timeout_seconds =
         GetQuicReducedPingTimeoutSeconds(quic_trial_params);
     if (reduced_ping_timeout_seconds > 0 &&
         reduced_ping_timeout_seconds < quic::kPingTimeoutSecs) {
       quic_params->reduced_ping_timeout =
-          base::TimeDelta::FromSeconds(reduced_ping_timeout_seconds);
+          base::Seconds(reduced_ping_timeout_seconds);
     }
     int max_time_before_crypto_handshake_seconds =
         GetQuicMaxTimeBeforeCryptoHandshakeSeconds(quic_trial_params);
     if (max_time_before_crypto_handshake_seconds > 0) {
       quic_params->max_time_before_crypto_handshake =
-          base::TimeDelta::FromSeconds(
-              max_time_before_crypto_handshake_seconds);
+          base::Seconds(max_time_before_crypto_handshake_seconds);
     }
     int max_idle_time_before_crypto_handshake_seconds =
         GetQuicMaxIdleTimeBeforeCryptoHandshakeSeconds(quic_trial_params);
     if (max_idle_time_before_crypto_handshake_seconds > 0) {
       quic_params->max_idle_time_before_crypto_handshake =
-          base::TimeDelta::FromSeconds(
-              max_idle_time_before_crypto_handshake_seconds);
+          base::Seconds(max_idle_time_before_crypto_handshake_seconds);
     }
     quic_params->estimate_initial_rtt =
         ShouldQuicEstimateInitialRtt(quic_trial_params);
@@ -600,8 +598,7 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicInitialRttForHandshakeMilliseconds(quic_trial_params);
     if (initial_rtt_for_handshake_milliseconds > 0) {
       quic_params->initial_rtt_for_handshake =
-          base::TimeDelta::FromMilliseconds(
-              initial_rtt_for_handshake_milliseconds);
+          base::Milliseconds(initial_rtt_for_handshake_milliseconds);
     }
 
     quic_params->disable_tls_zero_rtt =
@@ -614,8 +611,7 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicRetransmittableOnWireTimeoutMilliseconds(quic_trial_params);
     if (retransmittable_on_wire_timeout_milliseconds > 0) {
       quic_params->retransmittable_on_wire_timeout =
-          base::TimeDelta::FromMilliseconds(
-              retransmittable_on_wire_timeout_milliseconds);
+          base::Milliseconds(retransmittable_on_wire_timeout_milliseconds);
     }
     quic_params->migrate_idle_sessions =
         ShouldQuicMigrateIdleSessions(quic_trial_params);
@@ -623,13 +619,13 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicIdleSessionMigrationPeriodSeconds(quic_trial_params);
     if (idle_session_migration_period_seconds > 0) {
       quic_params->idle_session_migration_period =
-          base::TimeDelta::FromSeconds(idle_session_migration_period_seconds);
+          base::Seconds(idle_session_migration_period_seconds);
     }
     int max_time_on_non_default_network_seconds =
         GetQuicMaxTimeOnNonDefaultNetworkSeconds(quic_trial_params);
     if (max_time_on_non_default_network_seconds > 0) {
       quic_params->max_time_on_non_default_network =
-          base::TimeDelta::FromSeconds(max_time_on_non_default_network_seconds);
+          base::Seconds(max_time_on_non_default_network_seconds);
     }
     int max_migrations_to_non_default_network_on_write_error =
         GetQuicMaxNumMigrationsToNonDefaultNetworkOnWriteError(

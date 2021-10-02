@@ -1236,8 +1236,7 @@ void SkiaOutputSurfaceImpl::OnObservingBeginFrameSourceChanged(bool observing) {
   if (num_allocated_buffers_ <= 1)
     return;
 
-  constexpr base::TimeDelta kDropFrameBufferDelay =
-      base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kDropFrameBufferDelay = base::Seconds(5);
   idle_drop_frame_buffer_timer_.Start(
       FROM_HERE, kDropFrameBufferDelay,
       base::BindOnce(

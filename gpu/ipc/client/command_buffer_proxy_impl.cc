@@ -481,9 +481,8 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
       elapsed_timer.Elapsed().InMicroseconds());
 
   UMA_HISTOGRAM_CUSTOM_TIMES("GPU.EnsureWorkVisibleDurationLowRes",
-                             elapsed_timer.Elapsed(),
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(5), 100);
+                             elapsed_timer.Elapsed(), base::Milliseconds(1),
+                             base::Seconds(5), 100);
 }
 
 gpu::CommandBufferNamespace CommandBufferProxyImpl::GetNamespaceID() const {

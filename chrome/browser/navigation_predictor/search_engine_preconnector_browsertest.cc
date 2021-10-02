@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
   // Ensure that we wait long enough to trigger preconnects.
-  WaitForDelay(base::TimeDelta::FromMilliseconds(200));
+  WaitForDelay(base::Milliseconds(200));
 
   TemplateURLData data_fake_search;
   data_fake_search.SetShortName(kShortName);
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
   // Ensure that we wait long enough to trigger preconnects.
-  WaitForDelay(base::TimeDelta::FromMilliseconds(200));
+  WaitForDelay(base::Milliseconds(200));
 
   TemplateURLData data_fake_search;
   data_fake_search.SetShortName(kShortName);
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
   tick_clock_.SetNowTicks(base::TimeTicks::Now());
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(10000));
+  tick_clock_.Advance(base::Seconds(10000));
 
   NavigationPredictorKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser()->profile()))

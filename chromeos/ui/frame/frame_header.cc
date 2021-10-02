@@ -37,7 +37,7 @@ namespace chromeos {
 namespace {
 
 constexpr base::TimeDelta kFrameActivationAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
 DEFINE_UI_CLASS_PROPERTY_KEY(FrameHeader*, kFrameHeaderKey, nullptr)
 

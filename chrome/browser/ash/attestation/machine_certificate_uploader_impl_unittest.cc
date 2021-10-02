@@ -302,8 +302,7 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertValid),
-                                    &certificate));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(kCertValid), &certificate));
   SetupMocks(MOCK_KEY_EXISTS, certificate);
   RunUploader();
   EXPECT_EQ(CreatePayload(),
@@ -315,24 +314,22 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsAlreadyUploaded) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertValid),
-                                    &certificate));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(kCertValid), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED, certificate);
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpiringSoon) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(
-      base::TimeDelta::FromDays(kCertExpiringSoon), &certificate));
+  ASSERT_TRUE(
+      GetFakeCertificatePEM(base::Days(kCertExpiringSoon), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED | MOCK_NEW_KEY, certificate);
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpired) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertExpired),
-                                    &certificate));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(kCertExpired), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED | MOCK_NEW_KEY, certificate);
   RunUploader();
 }

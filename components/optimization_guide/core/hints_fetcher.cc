@@ -151,8 +151,8 @@ bool HintsFetcher::WasHostCoveredByFetch(PrefService* pref_service,
   if (!value)
     return false;
 
-  base::Time host_valid_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSecondsD(*value));
+  base::Time host_valid_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value));
   return host_valid_time > time_clock->Now();
 }
 
@@ -351,8 +351,8 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
     base::TimeDelta valid_duration =
         features::StoredFetchedHintsFreshnessDuration();
     if (get_hints_response->has_max_cache_duration()) {
-      valid_duration = base::TimeDelta::FromSeconds(
-          get_hints_response->max_cache_duration().seconds());
+      valid_duration =
+          base::Seconds(get_hints_response->max_cache_duration().seconds());
     }
     UpdateHostsSuccessfullyFetched(valid_duration);
     RecordRequestStatusHistogram(request_context_,
@@ -379,8 +379,8 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
   // Remove any expired hosts.
   std::vector<std::string> entries_to_remove;
   for (auto it : hosts_fetched_list->DictItems()) {
-    if (base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSecondsD(
-            it.second.GetDouble())) < time_clock_->Now()) {
+    if (base::Time::FromDeltaSinceWindowsEpoch(
+            base::Seconds(it.second.GetDouble())) < time_clock_->Now()) {
       entries_to_remove.emplace_back(it.first);
     }
   }
@@ -466,8 +466,8 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     absl::optional<double> value =
         hosts_fetched->FindDoubleKey(HashHostForDictionary(host));
     if (value && optimization_guide::features::ShouldPersistHintsToDisk()) {
-      base::Time host_valid_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromSecondsD(*value));
+      base::Time host_valid_time =
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value));
       host_hints_due_for_refresh =
           (host_valid_time - features::GetHostHintsFetchRefreshDuration() <=
            time_clock_->Now());

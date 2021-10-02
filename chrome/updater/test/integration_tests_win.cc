@@ -478,8 +478,7 @@ HRESULT InitializeBundle(UpdaterScope scope,
 
 HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
   bool done = false;
-  static const base::TimeDelta kExpirationTimeout =
-      base::TimeDelta::FromMinutes(1);
+  static const base::TimeDelta kExpirationTimeout = base::Minutes(1);
   base::ElapsedTimer timer;
 
   EXPECT_TRUE(timer.Elapsed() < kExpirationTimeout);
@@ -653,8 +652,7 @@ int RunVPythonCommand(const base::CommandLine& command_line) {
   int exit_code = -1;
   base::Process process = base::LaunchProcess(python_command, {});
   EXPECT_TRUE(process.IsValid());
-  EXPECT_TRUE(process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(60),
-                                             &exit_code));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(60), &exit_code));
   return exit_code;
 }
 

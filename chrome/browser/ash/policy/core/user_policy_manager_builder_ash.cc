@@ -67,8 +67,7 @@ const base::FilePath::CharType kPolicyExternalDataDir[] =
     FILE_PATH_LITERAL("External Data");
 
 // How long we'll block session initialization to try to refresh policy.
-constexpr base::TimeDelta kPolicyRefreshTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kPolicyRefreshTimeout = base::Seconds(10);
 
 // Called when the user policy loading fails with a fatal error, and the user
 // session has to be terminated.

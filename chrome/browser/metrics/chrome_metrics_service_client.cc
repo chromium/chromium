@@ -905,7 +905,7 @@ void ChromeMetricsServiceClient::OnMemoryDetailCollectionDone() {
       weak_ptr_factory_.GetWeakPtr());
 
   base::TimeDelta timeout =
-      base::TimeDelta::FromMilliseconds(kMaxHistogramGatheringWaitDuration);
+      base::Milliseconds(kMaxHistogramGatheringWaitDuration);
 
   DCHECK_EQ(num_async_histogram_fetches_in_progress_, 0);
   // `callback` is used 2 times below.

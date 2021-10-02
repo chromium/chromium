@@ -139,8 +139,8 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     // Set the profile creation time to be old enough to ensure triggering.
-    browser()->profile()->SetCreationTimeForTesting(
-        base::Time::Now() - base::TimeDelta::FromDays(45));
+    browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                    base::Days(45));
   }
 
   void TearDownOnMainThread() override {
@@ -249,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
   base::HistogramTester histogram_tester;
   // Set creation time to only 15 days.
   static_cast<ProfileImpl*>(browser()->profile())
-      ->SetCreationTimeForTesting(base::Time::Now() -
-                                  base::TimeDelta::FromDays(15));
+      ->SetCreationTimeForTesting(base::Time::Now() - base::Days(15));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
@@ -262,8 +261,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileOldEnoughToShow) {
   SetMetricsConsent(true);
   // Set creation time to 31 days. This is just past the threshold.
   static_cast<ProfileImpl*>(browser()->profile())
-      ->SetCreationTimeForTesting(base::Time::Now() -
-                                  base::TimeDelta::FromDays(31));
+      ->SetCreationTimeForTesting(base::Time::Now() - base::Days(31));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
 }
@@ -285,8 +283,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
   SetMetricsConsent(true);
   HatsService::SurveyMetadata metadata;
-  metadata.last_survey_check_time =
-      base::Time::Now() - base::TimeDelta::FromHours(23);
+  metadata.last_survey_check_time = base::Time::Now() - base::Hours(23);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
@@ -295,8 +292,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedAfterADayToShow) {
   SetMetricsConsent(true);
   HatsService::SurveyMetadata metadata;
-  metadata.last_survey_check_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  metadata.last_survey_check_time = base::Time::Now() - base::Days(1);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());

@@ -263,7 +263,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
         DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
 
     // Set update period to reduce the time it takes to run tests.
-    model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
+    model_->SetUpdatePeriod(base::Milliseconds(20));
 
     // Set up widows.
     size_t aura_window_first_index = kDefaultWindowCount - kDefaultAuraCount;
@@ -346,7 +346,7 @@ TEST_F(NativeDesktopMediaListTest, ScreenOnly) {
       DesktopMediaList::Type::kScreen, std::make_unique<FakeScreenCapturer>());
 
   // Set update period to reduce the time it takes to run tests.
-  model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
+  model_->SetUpdatePeriod(base::Milliseconds(20));
 
   base::RunLoop run_loop;
 
@@ -534,7 +534,7 @@ TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   model_->SetThumbnailSize(gfx::Size());
 
   // Set update period to reduce the time it takes to run tests.
-  model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
+  model_->SetUpdatePeriod(base::Milliseconds(20));
 
   base::RunLoop run_loop;
 

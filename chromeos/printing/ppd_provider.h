@@ -106,7 +106,7 @@ class CHROMEOS_EXPORT PpdProvider : public base::RefCounted<PpdProvider> {
     // non-authoritative -- PpdProvider will attempt to re-resolve from the
     // network anyways and only use the cache results if the network is
     // unavailable.
-    base::TimeDelta cache_staleness_age = base::TimeDelta::FromDays(14);
+    base::TimeDelta cache_staleness_age = base::Days(14);
 
     // Root of the ppd serving hierarchy.
     std::string ppd_server_root = "https://www.gstatic.com/chromeos_printing";

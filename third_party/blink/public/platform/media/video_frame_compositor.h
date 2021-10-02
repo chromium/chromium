@@ -281,7 +281,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // Assume 60Hz before the first UpdateCurrentFrame() call.
   // Updated/read by the compositor thread, but also read on the media thread.
   base::TimeDelta last_interval_ GUARDED_BY(callback_lock_) =
-      base::TimeDelta::FromSecondsD(1.0 / 60);
+      base::Seconds(1.0 / 60);
 
   // AutoOpenCloseEvent for begin/end events.
   std::unique_ptr<base::trace_event::AutoOpenCloseEvent<kTracingCategory>>

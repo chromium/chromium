@@ -622,8 +622,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
       MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET};
 
   client_socket_factory_.set_client_socket_types(case_types, 2);
-  client_socket_factory_.set_delay(base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs + 50));
+  client_socket_factory_.set_delay(
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs + 50));
 
   // Resolve an AddressList with an IPv6 address first and then an IPv4 address.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -769,8 +769,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
   base::TimeTicks start(base::TimeTicks::Now());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_LT(base::TimeTicks::Now() - start,
-            base::TimeDelta::FromMilliseconds(
-                TransportConnectJob::kIPv6FallbackTimerInMs));
+            base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs));
   ASSERT_TRUE(handle.socket());
 
   IPEndPoint endpoint;
@@ -819,8 +818,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
 TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::MOCK_DELAYED_FAILING_CLIENT_SOCKET);
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs / 3);
+  base::TimeDelta delay =
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs / 3);
   client_socket_factory_.set_delay(delay);
 
   // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
@@ -861,8 +860,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, DISABLED_OverallTimeoutApplies) {
 
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::MOCK_DELAYED_FAILING_CLIENT_SOCKET);
-  client_socket_factory_.set_delay(base::TimeDelta::FromSeconds(1) +
-                                   connect_job_timeout / 6);
+  client_socket_factory_.set_delay(base::Seconds(1) + connect_job_timeout / 6);
 
   // Resolve an AddressList with 6 IPv6 addresses and 6 IPv4 addresses.
   host_resolver_->rules()->AddIPLiteralRule("*",
@@ -1053,8 +1051,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   }
   // Now we have |kMaxSockets| IPv6 sockets stalled in connect. No IPv4 sockets
   // are started yet.
-  RunLoopForTimePeriod(base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs));
+  RunLoopForTimePeriod(
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs));
   // Now we have |kMaxSockets| IPv6 sockets and one IPv4 socket stalled in
   // connect, and |kMaxSockets - 1| IPv4 sockets waiting for the endpoint lock.
   pool_.FlushWithError(ERR_FAILED, "Very good reason");

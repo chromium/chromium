@@ -61,7 +61,7 @@ void DriveFsAuth::GetAccessToken(
   get_access_token_callback_ = std::move(callback);
   // Timer is cancelled when it is destroyed, so use base::Unretained().
   timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(30),
+      FROM_HERE, base::Seconds(30),
       base::BindOnce(&DriveFsAuth::AuthTimeout, base::Unretained(this)));
   std::set<std::string> scopes({"https://www.googleapis.com/auth/drive"});
   access_token_fetcher_ =

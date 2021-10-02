@@ -50,8 +50,7 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
       (1 << static_cast<size_t>(DeviceType::kMic)) |
       (1 << static_cast<size_t>(DeviceType::kCamera))};
 
-  static constexpr base::TimeDelta kDebounceTime =
-      base::TimeDelta::FromMilliseconds(300);
+  static constexpr base::TimeDelta kDebounceTime = base::Milliseconds(300);
 
   class Observer : public base::CheckedObserver {
    public:

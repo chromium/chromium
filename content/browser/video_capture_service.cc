@@ -129,7 +129,7 @@ video_capture::mojom::VideoCaptureService& GetVideoCaptureService() {
       // and re-querying these can take several seconds on certain Android
       // devices.
       remote.set_idle_handler(
-          base::TimeDelta::FromSeconds(5),
+          base::Seconds(5),
           base::BindRepeating(
               [](mojo::Remote<video_capture::mojom::VideoCaptureService>*
                      remote) {

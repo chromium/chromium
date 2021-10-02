@@ -259,9 +259,8 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // The amount of time to wait before declaring underflow if the video renderer
   // runs out of data but the audio renderer still has enough.
   Tuneable<base::TimeDelta> video_underflow_threshold_ = {
-      "MediaVideoUnderflowThreshold", base::TimeDelta::FromMilliseconds(1000),
-      base::TimeDelta::FromMilliseconds(3000),
-      base::TimeDelta::FromMilliseconds(8000)};
+      "MediaVideoUnderflowThreshold", base::Milliseconds(1000),
+      base::Milliseconds(3000), base::Milliseconds(8000)};
 
   // Lock used to protect access to the |restarting_audio_| flag and
   // |restarting_audio_time_|.

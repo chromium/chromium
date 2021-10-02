@@ -1161,7 +1161,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   if (!IsSuspiciousSiteWarningEnabled()) {
     return;
   }
-  const base::TimeDelta kMinWarningTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kMinWarningTime = base::Milliseconds(10);
 
   // Test the histogram for no user action taken.
   {

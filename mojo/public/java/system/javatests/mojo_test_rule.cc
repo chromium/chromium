@@ -60,7 +60,7 @@ static void JNI_MojoTestRule_RunLoop(JNIEnv* env,
   if (timeout_ms) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(),
-        base::TimeDelta::FromMilliseconds(timeout_ms));
+        base::Milliseconds(timeout_ms));
     run_loop.Run();
   } else {
     run_loop.RunUntilIdle();

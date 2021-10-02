@@ -35,8 +35,8 @@ namespace ash {
 namespace {
 constexpr char kExtensionNameChrome[] = "Chrome";
 constexpr char kExtensionAppUrl[] = "https://example.com/";
-constexpr base::TimeDelta kHalfHour = base::TimeDelta::FromMinutes(30);
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kHalfHour = base::Minutes(30);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
 
 constexpr apps::InstanceState kActiveInstanceState =
     static_cast<apps::InstanceState>(
@@ -197,12 +197,12 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
   task_environment()->FastForwardBy(kHalfHour);
   PushChromeAppInstance(another_browser->window()->GetNativeWindow(),
                         apps::InstanceState::kDestroyed);
-  EXPECT_EQ(base::TimeDelta::FromHours(1),
+  EXPECT_EQ(base::Hours(1),
             pref_service()->GetTimeDelta(
                 prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
   // Test date change.
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment()->FastForwardBy(base::Days(1));
   OnNewDay();
 
   EXPECT_EQ(base::TimeDelta(),
@@ -211,7 +211,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
   histogram_tester.ExpectTimeBucketCount(
       FamilyUserChromeActivityMetrics::
           kChromeBrowserEngagementDurationHistogramName,
-      base::TimeDelta::FromHours(1), 1);
+      base::Hours(1), 1);
 }
 
 TEST_F(FamilyUserChromeActivityMetricsTest, ClockBackward) {
@@ -271,7 +271,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest,
       FamilyUserChromeActivityMetrics::
           kChromeBrowserEngagementDurationHistogramName,
       0);
-  EXPECT_EQ(base::TimeDelta::FromHours(1),
+  EXPECT_EQ(base::Hours(1),
             pref_service()->GetTimeDelta(
                 prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 }
@@ -297,7 +297,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, ScreenStateChange) {
   // Test the screen off for 1 day.
   SetScreenOff(true);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment()->FastForwardBy(base::Days(1));
   OnNewDay();
 
   EXPECT_EQ(base::TimeDelta(),
@@ -336,11 +336,11 @@ TEST_F(FamilyUserChromeActivityMetricsTest, MockLockAndUnclockScreen) {
   PushChromeAppInstance(test_browser_->window()->GetNativeWindow(),
                         kInactiveInstanceState);
 
-  EXPECT_EQ(base::TimeDelta::FromMinutes(2),
+  EXPECT_EQ(base::Minutes(2),
             pref_service()->GetTimeDelta(
                 prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment()->FastForwardBy(base::Days(1));
   OnNewDay();
 
   EXPECT_EQ(base::TimeDelta(),
@@ -349,7 +349,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, MockLockAndUnclockScreen) {
   histogram_tester.ExpectTimeBucketCount(
       FamilyUserChromeActivityMetrics::
           kChromeBrowserEngagementDurationHistogramName,
-      base::TimeDelta::FromMinutes(2), 1);
+      base::Minutes(2), 1);
 }
 
 }  // namespace ash

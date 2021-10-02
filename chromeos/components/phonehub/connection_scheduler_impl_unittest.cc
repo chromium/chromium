@@ -117,7 +117,7 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedConnection) {
   EXPECT_EQ(0, GetBackoffFailureCount());
 
   // Fast forward time and confirm no other retries have been made.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_environment_.FastForwardBy(base::Seconds(100));
   EXPECT_EQ(3u, fake_connection_manager_->num_attempt_connection_calls());
   EXPECT_EQ(0, GetBackoffFailureCount());
   EXPECT_EQ(FeatureStatus::kEnabledAndConnected,
@@ -148,7 +148,7 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedFeatures) {
   EXPECT_EQ(1u, fake_connection_manager_->num_disconnect_calls());
 
   // Fast forward time and confirm no other retries have been made.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_environment_.FastForwardBy(base::Seconds(100));
   EXPECT_EQ(0, GetBackoffFailureCount());
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
 

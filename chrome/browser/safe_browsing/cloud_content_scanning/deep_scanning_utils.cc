@@ -294,12 +294,11 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
   // in order to be lenient and avoid having lots of data in the overlow bucket.
   base::UmaHistogramCustomTimes("SafeBrowsing.DeepScan." + access_point_string +
                                     "." + result + ".Duration",
-                                duration, base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(30), 50);
+                                duration, base::Milliseconds(1),
+                                base::Minutes(30), 50);
   base::UmaHistogramCustomTimes(
       "SafeBrowsing.DeepScan." + access_point_string + ".Duration", duration,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(30),
-      50);
+      base::Milliseconds(1), base::Minutes(30), 50);
 }
 
 const std::array<const base::FilePath::CharType*, 26>& SupportedDlpFileTypes() {

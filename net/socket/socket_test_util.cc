@@ -2176,7 +2176,7 @@ MockTransportClientSocketPool::MockTransportClientSocketPool(
     : TransportClientSocketPool(
           max_sockets,
           max_sockets_per_group,
-          base::TimeDelta::FromSeconds(10) /* unused_idle_socket_timeout */,
+          base::Seconds(10) /* unused_idle_socket_timeout */,
           ProxyServer::Direct(),
           false /* is_for_websockets */,
           common_connect_job_params),

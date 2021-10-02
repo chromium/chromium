@@ -29,8 +29,7 @@ namespace extensions {
 
 AppWindowGeometryCache::AppWindowGeometryCache(content::BrowserContext* context,
                                                ExtensionPrefs* prefs)
-    : prefs_(prefs),
-      sync_delay_(base::TimeDelta::FromMilliseconds(kSyncTimeoutMilliseconds)) {
+    : prefs_(prefs), sync_delay_(base::Milliseconds(kSyncTimeoutMilliseconds)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
@@ -195,7 +194,7 @@ void AppWindowGeometryCache::OnExtensionUnloaded(
 }
 
 void AppWindowGeometryCache::SetSyncDelayForTests(int timeout_ms) {
-  sync_delay_ = base::TimeDelta::FromMilliseconds(timeout_ms);
+  sync_delay_ = base::Milliseconds(timeout_ms);
 }
 
 void AppWindowGeometryCache::LoadGeometryFromStorage(

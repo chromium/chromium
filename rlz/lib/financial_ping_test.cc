@@ -339,7 +339,7 @@ TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
   // returns true when the embargo date has already passed.
   base::Time::Exploded exploded;
   base::Time past_rlz_embargo_date =
-      base::Time::NowFromSystemTime() - base::TimeDelta::FromDays(1);
+      base::Time::NowFromSystemTime() - base::Days(1);
   past_rlz_embargo_date.LocalExplode(&exploded);
   std::string past_rlz_embargo_date_value =
       ConvertExplodedToRlzEmbargoDate(exploded);
@@ -354,8 +354,7 @@ TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
   // |IsPingTime| is false.
   base::Time future_rlz_embargo_date =
       base::Time::NowFromSystemTime() +
-      chromeos::system::kEmbargoEndDateGarbageDateThreshold -
-      base::TimeDelta::FromDays(1);
+      chromeos::system::kEmbargoEndDateGarbageDateThreshold - base::Days(1);
   future_rlz_embargo_date.LocalExplode(&exploded);
   std::string future_rlz_embargo_date_value =
       ConvertExplodedToRlzEmbargoDate(exploded);
@@ -370,8 +369,7 @@ TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
   // |IsPingTime| is true.
   future_rlz_embargo_date =
       base::Time::NowFromSystemTime() +
-      chromeos::system::kEmbargoEndDateGarbageDateThreshold +
-      base::TimeDelta::FromDays(1);
+      chromeos::system::kEmbargoEndDateGarbageDateThreshold + base::Days(1);
   future_rlz_embargo_date.LocalExplode(&exploded);
   future_rlz_embargo_date_value = ConvertExplodedToRlzEmbargoDate(exploded);
   statistics_provider_->SetMachineStatistic(

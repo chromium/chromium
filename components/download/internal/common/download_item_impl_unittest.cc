@@ -2701,7 +2701,7 @@ std::vector<DownloadLaterTestParam> DownloadLaterTestParams() {
   params.push_back(
       {false, absl::nullopt, true, DownloadItem::IN_PROGRESS, true});
   // Download later, will be interrupted.
-  auto future_time = base::Time::Now() + base::TimeDelta::FromDays(10);
+  auto future_time = base::Time::Now() + base::Days(10);
   params.push_back({false, future_time, true, DownloadItem::INTERRUPTED, true});
   return params;
 }
@@ -2803,7 +2803,7 @@ TEST_F(DownloadItemTest, CancelWithDownloadSchedule) {
   auto item = CreateDownloadItem(DownloadItem::DownloadState::INTERRUPTED,
                                  DOWNLOAD_INTERRUPT_REASON_CRASH);
   auto download_schedule = absl::make_optional<DownloadSchedule>(
-      false, base::Time::Now() + base::TimeDelta::FromDays(10));
+      false, base::Time::Now() + base::Days(10));
   item->OnDownloadScheduleChanged(std::move(download_schedule));
 
   EXPECT_EQ(item->GetState(), DownloadItem::DownloadState::INTERRUPTED);

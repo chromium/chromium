@@ -464,8 +464,8 @@ TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   FakeObserver observer;
   arbiter.AddObserver(&observer);
 
-  base::TimeDelta delta1s = base::TimeDelta::FromSeconds(1);
-  base::TimeDelta delta2s = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta delta1s = base::Seconds(1);
+  base::TimeDelta delta2s = base::Seconds(2);
 
   std::unique_ptr<PowerModeVoter> voter1 = arbiter.NewVoter("voter1");
   voter1->VoteFor(PowerMode::kAnimation);
@@ -565,7 +565,7 @@ TEST(PowerModeArbiterTest, ObserverEnablesResetTasks) {
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
 
   FakeObserver observer;
-  base::TimeDelta delta1s = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta1s = base::Seconds(1);
 
   arbiter.OnThreadPoolAvailable();
 

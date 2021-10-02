@@ -42,7 +42,7 @@ constexpr int kPreviewIndexOffsetForDropTarget = 3;
 // The previews are animated in and shifted with a delay that increases
 // incrementally. This is the delay increment.
 constexpr base::TimeDelta kPreviewItemUpdateDelayIncrement =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ class HoldingSpaceTrayIcon::ResizeAnimation
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
-        base::TimeDelta::FromMilliseconds(250));
+        base::Milliseconds(250));
   }
   ResizeAnimation(const ResizeAnimation&) = delete;
   ResizeAnimation operator=(const ResizeAnimation&) = delete;

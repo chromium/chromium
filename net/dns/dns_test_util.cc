@@ -306,8 +306,7 @@ DnsResponse BuildTestDnsServiceResponse(
     rdata += dns_name;
 
     answers.push_back(BuildTestDnsRecord(answer_name, dns_protocol::kTypeSRV,
-                                         std::move(rdata),
-                                         base::TimeDelta::FromHours(5)));
+                                         std::move(rdata), base::Hours(5)));
   }
 
   return BuildTestDnsResponse(std::move(name), dns_protocol::kTypeSRV, answers);

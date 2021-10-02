@@ -63,7 +63,7 @@ base::TimeDelta GetImprovement(
     const std::vector<gfx::DelegatedInkPoint>* points_to_draw,
     const gfx::DelegatedInkMetadata* metadata) {
   if (points_to_draw->size() == 0)
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
 
   return points_to_draw->back().timestamp() - metadata->timestamp();
 }

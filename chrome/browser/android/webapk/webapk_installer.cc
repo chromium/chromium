@@ -466,7 +466,7 @@ void WebApkInstaller::SendRequest(
   DCHECK(server_url_.is_valid());
 
   timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(webapk_server_timeout_ms_),
+      FROM_HERE, base::Milliseconds(webapk_server_timeout_ms_),
       base::BindOnce(&WebApkInstaller::OnResult, weak_ptr_factory_.GetWeakPtr(),
                      WebApkInstallResult::FAILURE));
 

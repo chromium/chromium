@@ -31,8 +31,7 @@ constexpr char kVmConciergeName[] = "/usr/bin/vm_concierge";
 constexpr char kVmProcessName[] = "/usr/bin/crosvm";
 
 // Delay between refreshing the list of VM processes.
-constexpr base::TimeDelta kRefreshProcessListDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRefreshProcessListDelay = base::Seconds(5);
 
 // Matches the process name "vm_concierge" in the process tree and get the
 // corresponding process ID.

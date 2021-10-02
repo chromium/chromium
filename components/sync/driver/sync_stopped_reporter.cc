@@ -28,7 +28,7 @@ const char kEventEndpoint[] = "event";
 // plenty of time. Since sync is off when this request is started, we don't
 // want anything sync-related hanging around for very long from a human
 // perspective either. This seems like a good compromise.
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(10);
 
 }  // namespace
 

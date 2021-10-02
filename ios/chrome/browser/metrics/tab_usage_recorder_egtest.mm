@@ -881,8 +881,7 @@ void SwitchToNormalMode() {
   // is for zero metrics recorded, it adds no flakiness.  However, this pause
   // makes the step more likely to fail in failure cases.  I.e. without it, this
   // test would sometimes pass even when it should fail.
-  base::test::ios::SpinRunLoopWithMaxDelay(
-      base::TimeDelta::FromMilliseconds(500));
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Milliseconds(500));
 
   // Verify that zero Tab.StatusWhenSwitchedBackToForeground metrics were
   // recorded.  Tabs created at the time the user switches to them should not

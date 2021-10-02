@@ -67,7 +67,7 @@ MultipartUploadRequest::MultipartUploadRequest(
       data_(data),
       boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)),
-      current_backoff_(base::TimeDelta::FromSeconds(kInitialBackoffSeconds)),
+      current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {
@@ -86,7 +86,7 @@ MultipartUploadRequest::MultipartUploadRequest(
       path_(path),
       boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)),
-      current_backoff_(base::TimeDelta::FromSeconds(kInitialBackoffSeconds)),
+      current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {

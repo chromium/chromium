@@ -67,7 +67,7 @@ class ProcessSnapshotServerTest : public testing::Test {
 };
 
 TEST_F(ProcessSnapshotServerTest, FirstObserverTriggersImmediateRefresh) {
-  constexpr base::TimeDelta kDesiredDelay = base::TimeDelta::FromSeconds(20);
+  constexpr base::TimeDelta kDesiredDelay = base::Seconds(20);
   TestObserver observer(kDesiredDelay);
 
   server()->AddObserver(&observer);
@@ -78,9 +78,9 @@ TEST_F(ProcessSnapshotServerTest, FirstObserverTriggersImmediateRefresh) {
 }
 
 TEST_F(ProcessSnapshotServerTest, AddRemoveObservers) {
-  constexpr base::TimeDelta kDelay1 = base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta kDelay2 = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta kDelay3 = base::TimeDelta::FromSeconds(20);
+  constexpr base::TimeDelta kDelay1 = base::Seconds(10);
+  constexpr base::TimeDelta kDelay2 = base::Seconds(5);
+  constexpr base::TimeDelta kDelay3 = base::Seconds(20);
   TestObserver observer1(kDelay1);
   TestObserver observer2(kDelay2);
   TestObserver observer3(kDelay3);

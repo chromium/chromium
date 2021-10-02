@@ -44,11 +44,9 @@ namespace media {
 namespace {
 
 constexpr int kDefaultQueueSize = 8192;
-constexpr base::TimeDelta kDefaultFillTime =
-    base::TimeDelta::FromMilliseconds(5);
-constexpr base::TimeDelta kDefaultFadeTime =
-    base::TimeDelta::FromMilliseconds(5);
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDefaultFillTime = base::Milliseconds(5);
+constexpr base::TimeDelta kDefaultFadeTime = base::Milliseconds(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Seconds(5);
 constexpr int64_t kDefaultMaxTimestampError = 2000;
 // Max absolute value for timestamp errors, to avoid overflow/underflow.
 constexpr int64_t kTimestampErrorLimit = 1000000;
@@ -192,12 +190,11 @@ std::unique_ptr<RateAdjuster> CreateRateAdjuster(
   const auto& c = params.timestamped_audio_config();
   media::RateAdjuster::Config config;
   if (c.has_rate_change_interval()) {
-    config.rate_change_interval =
-        base::TimeDelta::FromMicroseconds(c.rate_change_interval());
+    config.rate_change_interval = base::Microseconds(c.rate_change_interval());
   }
   if (c.has_linear_regression_window()) {
     config.linear_regression_window =
-        base::TimeDelta::FromMicroseconds(c.linear_regression_window());
+        base::Microseconds(c.linear_regression_window());
   }
   if (c.has_max_ignored_current_error()) {
     config.max_ignored_current_error = c.max_ignored_current_error();
@@ -966,7 +963,7 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
   if (drop_us >= 0) {
     AUDIO_LOG(INFO) << this << " Dropping audio, duration = " << drop_us;
     DropAudio(::media::AudioTimestampHelper::TimeToFrames(
-        base::TimeDelta::FromMicroseconds(drop_us), input_samples_per_second_));
+        base::Microseconds(drop_us), input_samples_per_second_));
     // Only start if we still have enough data to do so.
     started_ = (queued_frames_ >= start_threshold_frames_);
 
@@ -983,8 +980,7 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
     AUDIO_LOG(INFO) << this
                     << " Adding silence. Duration = " << silence_duration;
     remaining_silence_frames_ = ::media::AudioTimestampHelper::TimeToFrames(
-        base::TimeDelta::FromMicroseconds(silence_duration),
-        input_samples_per_second_);
+        base::Microseconds(silence_duration), input_samples_per_second_);
     // Round to nearest multiple of 4 to preserve buffer alignment.
     remaining_silence_frames_ = ((remaining_silence_frames_ + 2) / 4) * 4;
     started_ = true;

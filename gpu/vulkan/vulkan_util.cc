@@ -128,8 +128,8 @@ VkResult CreateGraphicsPipelinesHook(
       [](base::Time time) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             "GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines",
-            base::Time::Now() - time, base::TimeDelta::FromMicroseconds(100),
-            base::TimeDelta::FromMicroseconds(50000), 50);
+            base::Time::Now() - time, base::Microseconds(100),
+            base::Microseconds(50000), 50);
       },
       base::Time::Now()));
   return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,

@@ -21,15 +21,15 @@ namespace {
 // We divide the measurement interval into discretized time slices.
 // Each slice is marked as janky if it contained a janky task. A janky task is
 // one whose execution latency is greater than kJankThreshold.
-constexpr auto kMeasurementInterval = base::TimeDelta::FromSeconds(30);
+constexpr auto kMeasurementInterval = base::Seconds(30);
 
 // A task or event longer than kJankThreshold is considered janky.
-constexpr auto kJankThreshold = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kJankThreshold = base::Milliseconds(100);
 
 // If there have been no events/tasks on the UI thread for a significant period
 // of time, it's likely because Chrome was suspended.
 // This value is copied from queueing_time_estimator.cc:kInvalidPeriodThreshold.
-constexpr auto kSuspendInterval = base::TimeDelta::FromSeconds(30);
+constexpr auto kSuspendInterval = base::Seconds(30);
 
 constexpr char kLatencyEventCategory[] = "latency";
 

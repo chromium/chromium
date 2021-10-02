@@ -40,8 +40,7 @@ TEST_F(ExternalMetricsTest, CustomInterval) {
       switches::kExternalMetricsCollectionInterval, "5");
   Init();
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(5),
-            external_metrics_->collection_interval_);
+  EXPECT_EQ(base::Seconds(5), external_metrics_->collection_interval_);
 }
 
 TEST_F(ExternalMetricsTest, HandleMissingFile) {

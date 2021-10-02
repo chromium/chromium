@@ -543,8 +543,8 @@ void AppCacheServiceImpl::ScheduleReinitialize() {
   // users never shutdown the browser.
 
   constexpr base::TimeDelta kZeroDelta;
-  constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
-  constexpr base::TimeDelta kThirtySeconds = base::TimeDelta::FromSeconds(30);
+  constexpr base::TimeDelta kOneHour = base::Hours(1);
+  constexpr base::TimeDelta kThirtySeconds = base::Seconds(30);
 
   // If the system managed to stay up for long enough, reset the
   // delay so a new failure won't incur a long wait to get going again.

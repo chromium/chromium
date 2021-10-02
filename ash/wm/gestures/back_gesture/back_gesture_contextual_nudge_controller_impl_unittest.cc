@@ -73,7 +73,7 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
     // Is only allowed after the drag handle nudge has been shown - simulate
     // drag handle so back gesture gets enabled.
     contextual_tooltip::OverrideClockForTesting(&test_clock_);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(360));
+    test_clock_.Advance(base::Seconds(360));
     contextual_tooltip::HandleNudgeShown(
         user1_pref_service(), contextual_tooltip::TooltipType::kInAppToHome);
     contextual_tooltip::HandleNudgeShown(
@@ -99,8 +99,7 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
     while (nudge()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }
   }
@@ -137,7 +136,7 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
   void GenerateBackSequence() {
     GetEventGenerator()->GestureScrollSequence(
         gfx::Point(0, 100), gfx::Point(kSwipingDistanceForGoingBack + 10, 100),
-        base::TimeDelta::FromMilliseconds(100), 3);
+        base::Milliseconds(100), 3);
   }
 
  private:
@@ -392,8 +391,7 @@ TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
       "Ash.ContextualNudgeDismissContext.BackGesture",
       contextual_tooltip::DismissNudgeReason::kPerformedGesture, 1);
   histogram_tester.ExpectTimeBucketCount(
-      "Ash.ContextualNudgeDismissTime.BackGesture",
-      base::TimeDelta::FromSeconds(0), 1);
+      "Ash.ContextualNudgeDismissTime.BackGesture", base::Seconds(0), 1);
 }
 
 // crbug.com/1239200: flaky on linux.

@@ -45,12 +45,10 @@ class AdaptiveScreenBrightnessManager
       public viz::mojom::VideoDetectorObserver {
  public:
   // Duration of inactivity that marks the end of an activity.
-  static constexpr base::TimeDelta kInactivityDuration =
-      base::TimeDelta::FromSeconds(20);
+  static constexpr base::TimeDelta kInactivityDuration = base::Seconds(20);
 
   // Interval at which data should be logged.
-  static constexpr base::TimeDelta kLoggingInterval =
-      base::TimeDelta::FromMinutes(10);
+  static constexpr base::TimeDelta kLoggingInterval = base::Minutes(10);
 
   AdaptiveScreenBrightnessManager(
       std::unique_ptr<AdaptiveScreenBrightnessUkmLogger> ukm_logger,

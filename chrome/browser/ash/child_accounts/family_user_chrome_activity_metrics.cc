@@ -19,8 +19,8 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kMinChromeDuration = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kMaxChromeDuration = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMinChromeDuration = base::Minutes(1);
+constexpr base::TimeDelta kMaxChromeDuration = base::Days(7);
 constexpr int kChromeDurationBuckets = 100;
 
 }  // namespace

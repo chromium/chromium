@@ -54,9 +54,8 @@ class BrowserAutofillManagerTestDelegateImpl
   void DidShowSuggestions() override;
   void OnTextFieldChanged() override;
 
-  void SetExpectations(
-      std::list<ObservedUiEvents> expected_events,
-      base::TimeDelta timeout = base::TimeDelta::FromSeconds(0));
+  void SetExpectations(std::list<ObservedUiEvents> expected_events,
+                       base::TimeDelta timeout = base::Seconds(0));
   bool Wait();
 
   void SetIsExpectingDynamicRefill(bool expect_refill) {

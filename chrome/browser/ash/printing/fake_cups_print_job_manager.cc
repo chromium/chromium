@@ -76,7 +76,7 @@ bool FakeCupsPrintJobManager::ResumePrintJob(CupsPrintJob* job) {
       FROM_HERE,
       base::BindOnce(&FakeCupsPrintJobManager::ChangePrintJobState,
                      weak_ptr_factory_.GetWeakPtr(), job),
-      base::TimeDelta::FromMilliseconds(3000));
+      base::Milliseconds(3000));
 
   return true;
 }
@@ -138,7 +138,7 @@ void FakeCupsPrintJobManager::ChangePrintJobState(CupsPrintJob* job) {
       FROM_HERE,
       base::BindOnce(&FakeCupsPrintJobManager::ChangePrintJobState,
                      weak_ptr_factory_.GetWeakPtr(), job),
-      base::TimeDelta::FromMilliseconds(3000));
+      base::Milliseconds(3000));
 }
 
 }  // namespace ash

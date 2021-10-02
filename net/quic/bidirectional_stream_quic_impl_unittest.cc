@@ -551,7 +551,7 @@ class BidirectionalStreamQuicImplTest
           std::make_unique<quic::NullDecrypter>(quic::Perspective::IS_CLIENT));
     }
     base::TimeTicks dns_end = base::TimeTicks::Now();
-    base::TimeTicks dns_start = dns_end - base::TimeDelta::FromMilliseconds(1);
+    base::TimeTicks dns_start = dns_end - base::Milliseconds(1);
 
     session_ = std::make_unique<QuicChromiumClientSession>(
         connection_, std::move(socket),

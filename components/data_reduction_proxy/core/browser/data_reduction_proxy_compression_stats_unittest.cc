@@ -136,13 +136,9 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
     return now_ + now_delta_;
   }
 
-  void SetFakeTimeDeltaInHours(int hours) {
-    now_delta_ = base::TimeDelta::FromHours(hours);
-  }
+  void SetFakeTimeDeltaInHours(int hours) { now_delta_ = base::Hours(hours); }
 
-  void AddFakeTimeDeltaInHours(int hours) {
-    now_delta_ += base::TimeDelta::FromHours(hours);
-  }
+  void AddFakeTimeDeltaInHours(int hours) { now_delta_ += base::Hours(hours); }
 
   void SetUpPrefs() {
     CreatePrefList(prefs::kDailyHttpOriginalContentLength);
@@ -400,8 +396,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDirect) {
 }
 
 TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDelayed) {
-  ResetCompressionStatsWithDelay(
-      base::TimeDelta::FromMinutes(kWriteDelayMinutes));
+  ResetCompressionStatsWithDelay(base::Minutes(kWriteDelayMinutes));
 
   EXPECT_EQ(0, pref_service()->GetInt64(prefs::kHttpOriginalContentLength));
   EXPECT_EQ(0, pref_service()->GetInt64(prefs::kHttpReceivedContentLength));
@@ -422,8 +417,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, StatsRestoredOnOnRestart) {
   list_value.Append(base::Value(base::NumberToString(1234)));
   pref_service()->Set(prefs::kDailyHttpOriginalContentLength, list_value);
 
-  ResetCompressionStatsWithDelay(
-      base::TimeDelta::FromMinutes(kWriteDelayMinutes));
+  ResetCompressionStatsWithDelay(base::Minutes(kWriteDelayMinutes));
 
   const base::Value* value =
       pref_service()->GetList(prefs::kDailyHttpOriginalContentLength);
@@ -762,7 +756,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
 
   RecordDataUsage("https://www.foo.com", 1000, 1250, fifteen_mins_ago);
 
@@ -802,7 +796,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
 
   RecordDataUsage("https://www.foo.com", 1000, 1250, fifteen_mins_ago);
 
@@ -830,7 +824,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteHistoricalDataUsage) {
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
   // Fake record to be from 15 minutes ago so that it is flushed to storage.
   RecordDataUsage("https://www.bar.com", 900, 1100, fifteen_mins_ago);
 
@@ -855,7 +849,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteBrowsingHistory) {
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
 
   // Fake record to be from 15 minutes ago so that it is flushed to storage.
   RecordDataUsage("https://www.bar.com", 900, 1100, fifteen_mins_ago);
@@ -903,7 +897,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ClearDataSavingStatistics) {
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
   // Fake record to be from 15 minutes ago so that it is flushed to storage.
   RecordDataUsage("https://www.bar.com", 900, 1100, fifteen_mins_ago);
 
@@ -1029,7 +1023,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
       kNonMainFrameKB);
 
   // Fast forward 7 days, and verify that the last week histograms are recorded.
-  fake_time_now += base::TimeDelta::FromDays(7);
+  fake_time_now += base::Days(7);
   InitializeWeeklyAggregateDataUse(fake_time_now);
   VerifyDictionaryPref(prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
                        data_use_measurement::DataUseUserData::MAIN_FRAME_HTML,
@@ -1062,7 +1056,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
                        kMainFrameKB);
 
   // Fast forward by more than two weeks, and the prefs will be cleared.
-  fake_time_now += base::TimeDelta::FromDays(15);
+  fake_time_now += base::Days(15);
   InitializeWeeklyAggregateDataUse(fake_time_now);
   VerifyDictionaryPref(prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
                        data_use_measurement::DataUseUserData::MAIN_FRAME_HTML,

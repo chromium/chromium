@@ -35,8 +35,7 @@ constexpr int kLeftEdgeContextPadding = 32;
 // (~16ms assuming 60hz screen updates), however most importantly keep it short,
 // so e.g. when user focuses an element, and then starts typing, the viewport
 // quickly moves to the caret position.
-constexpr base::TimeDelta kPauseCaretUpdateDuration =
-    base::TimeDelta::FromMilliseconds(15);
+constexpr base::TimeDelta kPauseCaretUpdateDuration = base::Milliseconds(15);
 
 // Calculates the new scale if it were to be adjusted exponentially by the
 // given |linear_offset|. This allows linear changes in scroll offset

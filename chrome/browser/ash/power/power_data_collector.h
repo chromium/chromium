@@ -109,7 +109,7 @@ void AddSample(base::circular_deque<SampleType>* sample_queue,
   while (!sample_queue->empty()) {
     const SampleType& first = sample_queue->front();
     if (sample.time - first.time >
-        base::TimeDelta::FromSeconds(PowerDataCollector::kSampleTimeLimitSec)) {
+        base::Seconds(PowerDataCollector::kSampleTimeLimitSec)) {
       sample_queue->pop_front();
     } else {
       break;

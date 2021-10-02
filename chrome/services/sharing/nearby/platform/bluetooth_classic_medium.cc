@@ -22,8 +22,7 @@ constexpr char kScanClientName[] = "Nearby Connections";
 
 // Duration of time after which inactive Bluetooth devices may be removed from
 // the discovered devices map.
-const base::TimeDelta kStaleBluetoothDeviceTimeout =
-    base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kStaleBluetoothDeviceTimeout = base::Seconds(20);
 
 void LogStartDiscoveryResult(bool success) {
   base::UmaHistogramBoolean(

@@ -127,11 +127,10 @@ class SubresourceFilterContentSettingsManager {
   // Time before showing the UI again on a domain.
   // TODO(csharrison): Consider setting this via a finch param.
   static constexpr base::TimeDelta kDelayBeforeShowingInfobarAgain =
-      base::TimeDelta::FromHours(24);
+      base::Hours(24);
 
   // Maximum duration to persist metadata for.
-  static constexpr base::TimeDelta kMaxPersistMetadataDuration =
-      base::TimeDelta::FromDays(7);
+  static constexpr base::TimeDelta kMaxPersistMetadataDuration = base::Days(7);
 
   // Overwrites existing site metadata for testing.
   void SetSiteMetadataForTesting(const GURL& url,

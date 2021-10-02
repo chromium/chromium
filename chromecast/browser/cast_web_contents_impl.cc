@@ -268,7 +268,7 @@ void CastWebContentsImpl::ClosePage() {
       FROM_HERE,
       base::BindOnce(&CastWebContentsImpl::OnClosePageTimeout,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(1000));
+      base::Milliseconds(1000));
 }
 
 void CastWebContentsImpl::Stop(int error_code) {

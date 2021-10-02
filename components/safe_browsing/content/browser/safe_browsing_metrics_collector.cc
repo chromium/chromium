@@ -43,7 +43,7 @@ base::Value TimeToPrefValue(const base::Time& time) {
 
 base::Time PrefValueToTime(const base::Value& value) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(base::ValueToInt64(value).value_or(0)));
+      base::Seconds(base::ValueToInt64(value).value_or(0)));
 }
 
 }  // namespace
@@ -66,10 +66,9 @@ void SafeBrowsingMetricsCollector::Shutdown() {
 }
 
 void SafeBrowsingMetricsCollector::StartLogging() {
-  base::TimeDelta log_interval =
-      base::TimeDelta::FromDays(kMetricsLoggingIntervalDay);
+  base::TimeDelta log_interval = base::Days(kMetricsLoggingIntervalDay);
   base::Time last_log_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(
           pref_service_->GetInt64(prefs::kSafeBrowsingMetricsLastLogTime)));
   base::TimeDelta delay = base::Time::Now() - last_log_time;
   if (delay >= log_interval) {
@@ -87,8 +86,7 @@ void SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging() {
   pref_service_->SetInt64(
       prefs::kSafeBrowsingMetricsLastLogTime,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-  ScheduleNextLoggingAfterInterval(
-      base::TimeDelta::FromDays(kMetricsLoggingIntervalDay));
+  ScheduleNextLoggingAfterInterval(base::Days(kMetricsLoggingIntervalDay));
 }
 
 void SafeBrowsingMetricsCollector::ScheduleNextLoggingAfterInterval(
@@ -122,9 +120,8 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
     if (!IsBypassEventType(event_type)) {
       continue;
     }
-    int bypass_count =
-        GetEventCountSince(user_state, event_type,
-                           base::Time::Now() - base::TimeDelta::FromDays(28));
+    int bypass_count = GetEventCountSince(user_state, event_type,
+                                          base::Time::Now() - base::Days(28));
     base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
                                     GetUserStateMetricSuffix(user_state) + "." +
                                     GetEventTypeMetricSuffix(event_type),
@@ -152,7 +149,7 @@ void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
     for (auto event_map : state_map.second.DictItems()) {
       event_map.second.EraseListValueIf([&](const auto& timestamp) {
         return base::Time::Now() - PrefValueToTime(timestamp) >
-               base::TimeDelta::FromDays(kEventMaxDurationDay);
+               base::Days(kEventMaxDurationDay);
       });
     }
   }
@@ -224,7 +221,7 @@ void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
                                            EventType::USER_STATE_DISABLED);
     int disabled_times_last_week = GetEventCountSince(
         UserState::kEnhancedProtection, EventType::USER_STATE_DISABLED,
-        base::Time::Now() - base::TimeDelta::FromDays(7));
+        base::Time::Now() - base::Days(7));
     if (disabled_times_last_week <= kEsbDisabledMetricsQuota) {
       LogEnhancedProtectionDisabledMetrics();
     }
@@ -281,7 +278,7 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
         "SafeBrowsing.EsbDisabled.BypassCountLast28Days." +
             GetEventTypeMetricSuffix(event_type),
         GetEventCountSince(UserState::kEnhancedProtection, event_type,
-                           base::Time::Now() - base::TimeDelta::FromDays(28)));
+                           base::Time::Now() - base::Days(28)));
 
     const absl::optional<Event> latest_event =
         GetLatestEventFromEventType(UserState::kEnhancedProtection, event_type);
@@ -301,8 +298,8 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
         "SafeBrowsing.EsbDisabled.LastBypassEventInterval." +
             GetEventTypeMetricSuffix(latest_event->type),
         /* sample */ base::Time::Now() - latest_event->timestamp,
-        /* min */ base::TimeDelta::FromSeconds(1),
-        /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
+        /* min */ base::Seconds(1),
+        /* max */ base::Days(1), /* buckets */ 50);
   }
 
   const absl::optional<Event> latest_enabled_event =

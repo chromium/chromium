@@ -103,9 +103,9 @@ void AppSyncUIState::SetStatus(Status status) {
   status_ = status;
   switch (status_) {
     case STATUS_SYNCING:
-      max_syncing_status_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromMilliseconds(kMaxSyncingTimeMs), this,
-          &AppSyncUIState::OnMaxSyncingTimer);
+      max_syncing_status_timer_.Start(FROM_HERE,
+                                      base::Milliseconds(kMaxSyncingTimeMs),
+                                      this, &AppSyncUIState::OnMaxSyncingTimer);
       break;
     case STATUS_NORMAL:
     case STATUS_TIMED_OUT:

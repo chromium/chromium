@@ -40,7 +40,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
       uint32_t sync_cpu_memory_limit = 0,
       const gpu::GPUInfo* gpu_info = nullptr,
       base::TimeDelta cooldown_duration_at_memory_pressure_critical =
-          base::TimeDelta::FromSeconds(15));
+          base::Seconds(15));
 
   VulkanInProcessContextProvider(const VulkanInProcessContextProvider&) =
       delete;

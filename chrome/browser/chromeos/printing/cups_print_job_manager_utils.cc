@@ -21,8 +21,7 @@ namespace {
 
 // The amount of time elapsed from print job creation before a timeout is
 // acknowledged.
-constexpr base::TimeDelta kMinElaspedPrintJobTimeout =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kMinElaspedPrintJobTimeout = base::Milliseconds(5000);
 
 // job state reason values
 const char kJobCompletedWithErrors[] = "job-completed-with-errors";

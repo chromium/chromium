@@ -111,9 +111,8 @@ TEST_F(NudgeTrackerTest, EmptyNudgeTracker) {
 // RETRY < all variants of GU_TRIGGER
 TEST_F(NudgeTrackerTest, OriginPriorities) {
   // Start with a retry request.
-  const base::TimeTicks t0 =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(1234);
-  const base::TimeTicks t1 = t0 + base::TimeDelta::FromSeconds(10);
+  const base::TimeTicks t0 = base::TimeTicks() + base::Microseconds(1234);
+  const base::TimeTicks t1 = t0 + base::Seconds(10);
   nudge_tracker_.SetNextRetryTime(t0);
   nudge_tracker_.SetSyncCycleStartTime(t1);
   EXPECT_EQ(sync_pb::SyncEnums::RETRY, nudge_tracker_.GetOrigin());
@@ -431,7 +430,7 @@ TEST_F(NudgeTrackerTest, IsGetUpdatesRequired) {
 // Test IsSyncRequired() responds correctly to data type throttling and backoff.
 TEST_F(NudgeTrackerTest, IsSyncRequired_Throttling_Backoff) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta throttle_length = base::TimeDelta::FromMinutes(0);
+  const base::TimeDelta throttle_length = base::Minutes(0);
 
   EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
@@ -476,7 +475,7 @@ TEST_F(NudgeTrackerTest, IsSyncRequired_Throttling_Backoff) {
 // backoff.
 TEST_F(NudgeTrackerTest, IsGetUpdatesRequired_Throttling_Backoff) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta throttle_length = base::TimeDelta::FromMinutes(0);
+  const base::TimeDelta throttle_length = base::Minutes(0);
 
   EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
@@ -526,7 +525,7 @@ TEST_F(NudgeTrackerTest, NoTypesBlocked) {
 // Tests throttling-related getter functions when some types are throttled.
 TEST_F(NudgeTrackerTest, ThrottleAndUnthrottle) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta throttle_length = base::TimeDelta::FromMinutes(0);
+  const base::TimeDelta throttle_length = base::Minutes(0);
 
   nudge_tracker_.SetTypesThrottledUntil(ModelTypeSet(SESSIONS, PREFERENCES),
                                         throttle_length, now);
@@ -547,7 +546,7 @@ TEST_F(NudgeTrackerTest, ThrottleAndUnthrottle) {
 // Tests backoff-related getter functions when some types are backed off.
 TEST_F(NudgeTrackerTest, BackoffAndUnbackoff) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta backoff_length = base::TimeDelta::FromMinutes(0);
+  const base::TimeDelta backoff_length = base::Minutes(0);
 
   nudge_tracker_.SetTypeBackedOff(SESSIONS, backoff_length, now);
   nudge_tracker_.SetTypeBackedOff(PREFERENCES, backoff_length, now);
@@ -567,8 +566,8 @@ TEST_F(NudgeTrackerTest, BackoffAndUnbackoff) {
 
 TEST_F(NudgeTrackerTest, OverlappingThrottleIntervals) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta throttle1_length = base::TimeDelta::FromMinutes(0);
-  const base::TimeDelta throttle2_length = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta throttle1_length = base::Minutes(0);
+  const base::TimeDelta throttle2_length = base::Minutes(20);
 
   // Setup the longer of two intervals.
   nudge_tracker_.SetTypesThrottledUntil(ModelTypeSet(SESSIONS, PREFERENCES),
@@ -605,8 +604,8 @@ TEST_F(NudgeTrackerTest, OverlappingThrottleIntervals) {
 
 TEST_F(NudgeTrackerTest, OverlappingBackoffIntervals) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta backoff1_length = base::TimeDelta::FromMinutes(0);
-  const base::TimeDelta backoff2_length = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta backoff1_length = base::Minutes(0);
+  const base::TimeDelta backoff2_length = base::Minutes(20);
 
   // Setup the longer of two intervals.
   nudge_tracker_.SetTypeBackedOff(SESSIONS, backoff2_length, now);
@@ -643,8 +642,8 @@ TEST_F(NudgeTrackerTest, OverlappingBackoffIntervals) {
 
 TEST_F(NudgeTrackerTest, Retry) {
   const base::TimeTicks t0 = base::TimeTicks::FromInternalValue(12345);
-  const base::TimeTicks t3 = t0 + base::TimeDelta::FromSeconds(3);
-  const base::TimeTicks t4 = t0 + base::TimeDelta::FromSeconds(4);
+  const base::TimeTicks t3 = t0 + base::Seconds(3);
+  const base::TimeTicks t4 = t0 + base::Seconds(4);
 
   // Set retry for t3.
   nudge_tracker_.SetNextRetryTime(t3);
@@ -677,10 +676,10 @@ TEST_F(NudgeTrackerTest, Retry) {
 // began.
 TEST_F(NudgeTrackerTest, IsRetryRequired_MidCycleUpdate1) {
   const base::TimeTicks t0 = base::TimeTicks::FromInternalValue(12345);
-  const base::TimeTicks t1 = t0 + base::TimeDelta::FromSeconds(1);
-  const base::TimeTicks t2 = t0 + base::TimeDelta::FromSeconds(2);
-  const base::TimeTicks t5 = t0 + base::TimeDelta::FromSeconds(5);
-  const base::TimeTicks t6 = t0 + base::TimeDelta::FromSeconds(6);
+  const base::TimeTicks t1 = t0 + base::Seconds(1);
+  const base::TimeTicks t2 = t0 + base::Seconds(2);
+  const base::TimeTicks t5 = t0 + base::Seconds(5);
+  const base::TimeTicks t6 = t0 + base::Seconds(6);
 
   nudge_tracker_.SetNextRetryTime(t0);
   nudge_tracker_.SetSyncCycleStartTime(t1);
@@ -710,10 +709,10 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_MidCycleUpdate1) {
 // began.
 TEST_F(NudgeTrackerTest, IsRetryRequired_MidCycleUpdate2) {
   const base::TimeTicks t0 = base::TimeTicks::FromInternalValue(12345);
-  const base::TimeTicks t1 = t0 + base::TimeDelta::FromSeconds(1);
-  const base::TimeTicks t3 = t0 + base::TimeDelta::FromSeconds(3);
-  const base::TimeTicks t5 = t0 + base::TimeDelta::FromSeconds(5);
-  const base::TimeTicks t6 = t0 + base::TimeDelta::FromSeconds(6);
+  const base::TimeTicks t1 = t0 + base::Seconds(1);
+  const base::TimeTicks t3 = t0 + base::Seconds(3);
+  const base::TimeTicks t5 = t0 + base::Seconds(5);
+  const base::TimeTicks t6 = t0 + base::Seconds(6);
 
   // Schedule a future retry, and a nudge unrelated to it.
   nudge_tracker_.RecordLocalChange(BOOKMARKS);
@@ -743,8 +742,8 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_MidCycleUpdate2) {
 // Simulate the case where a sync cycle fails.
 TEST_F(NudgeTrackerTest, IsRetryRequired_FailedCycle) {
   const base::TimeTicks t0 = base::TimeTicks::FromInternalValue(12345);
-  const base::TimeTicks t1 = t0 + base::TimeDelta::FromSeconds(1);
-  const base::TimeTicks t2 = t0 + base::TimeDelta::FromSeconds(2);
+  const base::TimeTicks t1 = t0 + base::Seconds(1);
+  const base::TimeTicks t2 = t0 + base::Seconds(2);
 
   nudge_tracker_.SetNextRetryTime(t0);
   nudge_tracker_.SetSyncCycleStartTime(t1);
@@ -767,11 +766,11 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_FailedCycle) {
 // was invoked, but the sync cycle did not complete successfully.
 TEST_F(NudgeTrackerTest, IsRetryRequired_FailedCycleIncludesUpdate) {
   const base::TimeTicks t0 = base::TimeTicks::FromInternalValue(12345);
-  const base::TimeTicks t1 = t0 + base::TimeDelta::FromSeconds(1);
-  const base::TimeTicks t3 = t0 + base::TimeDelta::FromSeconds(3);
-  const base::TimeTicks t4 = t0 + base::TimeDelta::FromSeconds(4);
-  const base::TimeTicks t5 = t0 + base::TimeDelta::FromSeconds(5);
-  const base::TimeTicks t6 = t0 + base::TimeDelta::FromSeconds(6);
+  const base::TimeTicks t1 = t0 + base::Seconds(1);
+  const base::TimeTicks t3 = t0 + base::Seconds(3);
+  const base::TimeTicks t4 = t0 + base::Seconds(4);
+  const base::TimeTicks t5 = t0 + base::Seconds(5);
+  const base::TimeTicks t6 = t0 + base::Seconds(6);
 
   nudge_tracker_.SetNextRetryTime(t0);
   nudge_tracker_.SetSyncCycleStartTime(t1);
@@ -831,8 +830,7 @@ TEST_F(NudgeTrackerTest, NudgeDelayTest) {
   // a last-resort fallback.
   EXPECT_GT(nudge_tracker_.RecordLocalChange(AUTOFILL),
             nudge_tracker_.RecordLocalChange(SESSIONS));
-  EXPECT_GT(nudge_tracker_.RecordLocalChange(AUTOFILL),
-            base::TimeDelta::FromHours(1));
+  EXPECT_GT(nudge_tracker_.RecordLocalChange(AUTOFILL), base::Hours(1));
   EXPECT_EQ(nudge_tracker_.RecordLocalChange(AUTOFILL),
             nudge_tracker_.RecordLocalChange(USER_EVENTS));
 }
@@ -840,27 +838,24 @@ TEST_F(NudgeTrackerTest, NudgeDelayTest) {
 // Test that custom nudge delays are used over the defaults.
 TEST_F(NudgeTrackerTest, CustomDelayTest) {
   // Set some custom delays.
-  nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
-      BOOKMARKS, base::TimeDelta::FromSeconds(10));
-  nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
-      SESSIONS, base::TimeDelta::FromSeconds(2));
+  nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(BOOKMARKS,
+                                                       base::Seconds(10));
+  nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(SESSIONS,
+                                                       base::Seconds(2));
 
   // Only those with custom delays should be affected, not another type.
   EXPECT_NE(nudge_tracker_.RecordLocalChange(BOOKMARKS),
             nudge_tracker_.RecordLocalChange(PREFERENCES));
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10),
-            nudge_tracker_.RecordLocalChange(BOOKMARKS));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2),
-            nudge_tracker_.RecordLocalChange(SESSIONS));
+  EXPECT_EQ(base::Seconds(10), nudge_tracker_.RecordLocalChange(BOOKMARKS));
+  EXPECT_EQ(base::Seconds(2), nudge_tracker_.RecordLocalChange(SESSIONS));
 }
 
 TEST_F(NudgeTrackerTest, DoNotUpdateDelayIfTooSmall) {
   base::TimeDelta initial_delay = nudge_tracker_.RecordLocalChange(BOOKMARKS);
   // The tracker should enforce a minimum threshold that prevents setting a
   // delay too small.
-  nudge_tracker_.UpdateLocalChangeDelay(BOOKMARKS,
-                                        base::TimeDelta::FromMicroseconds(100));
+  nudge_tracker_.UpdateLocalChangeDelay(BOOKMARKS, base::Microseconds(100));
   EXPECT_EQ(initial_delay, nudge_tracker_.RecordLocalChange(BOOKMARKS));
 }
 

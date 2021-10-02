@@ -2128,10 +2128,10 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForLargeImageNonSRGBColorSpace) {
 TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   auto cache = CreateCache();
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(2)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(3)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(4)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(5)),
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3)),
+      FrameMetadata(true, base::Milliseconds(4)),
+      FrameMetadata(true, base::Milliseconds(5)),
   };
   const gfx::Size test_image_size = GetNormalImageSize();
   SkImageInfo info =

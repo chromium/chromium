@@ -29,7 +29,7 @@ namespace {
 void GiveItSomeTime() {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(20));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(20));
   run_loop.Run();
 }
 

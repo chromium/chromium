@@ -141,7 +141,7 @@ const storage::QuotaSettings* g_test_quota_settings;
 // Timeout after which the
 // History.ClearBrowsingData.Duration.SlowTasks180sStoragePartition histogram is
 // recorded.
-const base::TimeDelta kSlowTaskTimeout = base::TimeDelta::FromSeconds(180);
+const base::TimeDelta kSlowTaskTimeout = base::Seconds(180);
 
 // If true, Storage Service instances will always be started in-process.
 bool g_force_in_process_storage_service = false;

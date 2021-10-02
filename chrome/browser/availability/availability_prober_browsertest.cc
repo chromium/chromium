@@ -129,8 +129,7 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, OK) {
       browser()->profile()->GetPrefs(),
       AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
   prober.SendNowIfInactive(false);
   WaitForCompletedProbe(&prober);
 
@@ -146,15 +145,14 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, Timeout) {
   retry_policy.max_retries = 0;
 
   AvailabilityProber::TimeoutPolicy timeout_policy;
-  timeout_policy.base_timeout = base::TimeDelta::FromMilliseconds(1);
+  timeout_policy.base_timeout = base::Milliseconds(1);
 
   AvailabilityProber prober(
       &delegate, browser()->profile()->GetURLLoaderFactory(),
       browser()->profile()->GetPrefs(),
       AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
   prober.SendNowIfInactive(false);
   WaitForCompletedProbe(&prober);
 
@@ -176,8 +174,7 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, NetworkChange) {
       browser()->profile()->GetPrefs(),
       AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
 
   content::NetworkConnectionChangeSimulator().SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_4G);
@@ -198,8 +195,7 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, BadServer) {
       browser()->profile()->GetPrefs(),
       AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
   prober.SendNowIfInactive(false);
   WaitForCompletedProbe(&prober);
 

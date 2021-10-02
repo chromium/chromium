@@ -80,7 +80,7 @@ class MrfuCache {
     // Items below min_score may be deleted.
     float min_score = 0.01f;
     // How long to wait until writing any updates to disk.
-    base::TimeDelta write_delay = base::TimeDelta::FromSeconds(30);
+    base::TimeDelta write_delay = base::Seconds(30);
   };
 
   MrfuCache(const base::FilePath& path, const Params& params);

@@ -617,7 +617,7 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BrowserActionOpenPopupFunction::OpenPopupTimedOut, this),
-      base::TimeDelta::FromSeconds(10));
+      base::Seconds(10));
   return RespondLater();
 }
 

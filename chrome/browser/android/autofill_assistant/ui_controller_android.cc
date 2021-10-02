@@ -1206,7 +1206,7 @@ void UiControllerAndroid::OnInputTextFocusChanged(bool is_text_focused) {
       FROM_HERE,
       base::BindOnce(&UiControllerAndroid::HideKeyboardIfFocusNotOnText,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(50));
+      base::Milliseconds(50));
 }
 
 void UiControllerAndroid::HideKeyboardIfFocusNotOnText() {

@@ -756,9 +756,9 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   base::Time local_now;
   EXPECT_TRUE(base::Time::FromLocalExploded(local_exploded, &local_now));
 
-  base::Time modified_today = local_now + base::TimeDelta::FromHours(-1);
-  base::Time modified_this_year = local_now + base::TimeDelta::FromDays(-8);
-  base::Time modified_last_year = local_now + base::TimeDelta::FromDays(-365);
+  base::Time modified_today = local_now + base::Hours(-1);
+  base::Time modified_this_year = local_now + base::Days(-8);
+  base::Time modified_last_year = local_now + base::Days(-365);
 
   // GenerateLastModifiedString should accept any parsable timestamp, but use
   // ISO8601 UTC timestamp strings since the service returns them in practice.

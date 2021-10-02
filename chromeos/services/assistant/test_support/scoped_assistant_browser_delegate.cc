@@ -9,8 +9,7 @@ namespace assistant {
 
 namespace {
 
-constexpr base::TimeDelta kMockCallbackDelayTime =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kMockCallbackDelayTime = base::Milliseconds(250);
 
 std::unique_ptr<ui::AssistantTree> CreateTestAssistantTree() {
   auto tree = std::make_unique<ui::AssistantTree>();

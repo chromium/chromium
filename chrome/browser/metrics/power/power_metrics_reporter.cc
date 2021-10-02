@@ -387,7 +387,7 @@ PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
   // The battery discharge rate is reported per minute with 1/10000 of full
   // charge resolution.
   static const int64_t kDischargeRateFactor =
-      10000 * base::TimeDelta::FromMinutes(1).InSecondsF();
+      10000 * base::Minutes(1).InSecondsF();
 
   auto discharge_rate = (previous_battery_state.charge_level.value() -
                          battery_state_.charge_level.value()) *

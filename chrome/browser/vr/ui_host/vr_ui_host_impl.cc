@@ -30,14 +30,13 @@
 namespace vr {
 
 namespace {
-static constexpr base::TimeDelta kPermissionPromptTimeout =
-    base::TimeDelta::FromSeconds(5);
+static constexpr base::TimeDelta kPermissionPromptTimeout = base::Seconds(5);
 
 #if defined(OS_WIN)
 // Some runtimes on Windows have quite lengthy lengthy startup animations that
 // may cause indicators/permissions to not be visible during the normal timeout.
 static constexpr base::TimeDelta kFirstWindowsPermissionPromptTimeout =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 #endif
 
 base::TimeDelta GetPermissionPromptTimeout(bool first_time) {
@@ -49,7 +48,7 @@ base::TimeDelta GetPermissionPromptTimeout(bool first_time) {
 }
 
 static constexpr base::TimeDelta kPollCapturingStateInterval =
-    base::TimeDelta::FromSecondsD(0.2);
+    base::Seconds(0.2);
 
 const CapturingStateModel g_default_capturing_state;
 }  // namespace

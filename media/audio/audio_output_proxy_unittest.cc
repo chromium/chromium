@@ -174,7 +174,7 @@ class AudioOutputProxyTest : public testing::Test {
     // RunUntilIdle() will never terminate.
     params_ = AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                               CHANNEL_LAYOUT_STEREO, 8000, 2048);
-    InitDispatcher(base::TimeDelta::FromMilliseconds(kTestCloseDelayMs));
+    InitDispatcher(base::Milliseconds(kTestCloseDelayMs));
   }
 
   void TearDown() override {
@@ -512,8 +512,7 @@ class AudioOutputResamplerTest : public AudioOutputProxyTest {
     // Let Start() run for a bit.
     base::RunLoop run_loop;
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(kStartRunTimeMs));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kStartRunTimeMs));
     run_loop.Run();
   }
 
@@ -642,7 +641,7 @@ TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_AfterStop) {
 
 TEST_F(AudioOutputProxyTest, DispatcherDeviceChangeClosesIdleStreams) {
   // Set close delay so long that it triggers a test timeout if relied upon.
-  InitDispatcher(base::TimeDelta::FromSeconds(1000));
+  InitDispatcher(base::Seconds(1000));
 
   MockAudioOutputStream stream(&manager_, params_);
 
@@ -852,7 +851,7 @@ TEST_F(AudioOutputResamplerTest, FallbackRecovery) {
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(2 * kTestCloseDelayMs));
+      base::Milliseconds(2 * kTestCloseDelayMs));
   run_loop.Run();
 
   // Verify a non-fake stream can be created.

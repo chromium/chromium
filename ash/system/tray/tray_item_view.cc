@@ -85,13 +85,13 @@ void TrayItemView::SetVisible(bool set_visible) {
   }
 
   if (target_visible_) {
-    animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(400));
+    animation_->SetSlideDuration(base::Milliseconds(400));
     animation_->Show();
     AnimationProgressed(animation_.get());
     views::View::SetVisible(true);
     layer()->SetOpacity(0.f);
   } else {
-    animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(100));
+    animation_->SetSlideDuration(base::Milliseconds(100));
     animation_->Hide();
     AnimationProgressed(animation_.get());
   }

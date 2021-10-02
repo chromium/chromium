@@ -31,18 +31,16 @@ const int kDefaultOutputPeriodMs = 5000;
 const int kMaxOutputPeriodMs = 60000;
 
 namespace {
-const base::TimeDelta kDefaultProactivePruningDelta =
-    base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kDefaultProactivePruningDelta = base::Minutes(5);
 
 const base::TimeDelta kDefaultWebRtcRemoteEventLogUploadDelay =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 
 // Because history files are rarely used, their existence is not kept in memory.
 // That means that pruning them involves inspecting data on disk. This is not
 // terribly cheap (up to kMaxWebRtcEventLogHistoryFiles files per profile), and
 // should therefore be done somewhat infrequently.
-const base::TimeDelta kProactiveHistoryFilesPruneDelta =
-    base::TimeDelta::FromMinutes(30);
+const base::TimeDelta kProactiveHistoryFilesPruneDelta = base::Minutes(30);
 
 base::TimeDelta GetProactivePendingLogsPruneDelta() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -52,7 +50,7 @@ base::TimeDelta GetProactivePendingLogsPruneDelta() {
             ::switches::kWebRtcRemoteEventLogProactivePruningDelta);
     int64_t seconds;
     if (base::StringToInt64(delta_seconds_str, &seconds) && seconds >= 0) {
-      return base::TimeDelta::FromSeconds(seconds);
+      return base::Seconds(seconds);
     } else {
       LOG(WARNING) << "Proactive pruning delta could not be parsed.";
     }
@@ -69,7 +67,7 @@ base::TimeDelta GetUploadDelay() {
             ::switches::kWebRtcRemoteEventLogUploadDelayMs);
     int64_t ms;
     if (base::StringToInt64(delta_seconds_str, &ms) && ms >= 0) {
-      return base::TimeDelta::FromMilliseconds(ms);
+      return base::Milliseconds(ms);
     } else {
       LOG(WARNING) << "Upload delay could not be parsed; using default delay.";
     }
@@ -182,12 +180,11 @@ static_assert(kMaxActiveRemoteBoundWebRtcEventLogs <=
 const size_t kMaxWebRtcEventLogHistoryFiles = 50;
 
 // Maximum time to keep remote-bound logs on disk.
-const base::TimeDelta kRemoteBoundWebRtcEventLogsMaxRetention =
-    base::TimeDelta::FromDays(7);
+const base::TimeDelta kRemoteBoundWebRtcEventLogsMaxRetention = base::Days(7);
 
 // Maximum time to keep history files on disk. These serve to display an upload
 // on chrome://webrtc-logs/. It is persisted for longer than the log itself.
-const base::TimeDelta kHistoryFileRetention = base::TimeDelta::FromDays(30);
+const base::TimeDelta kHistoryFileRetention = base::Days(30);
 
 WebRtcRemoteEventLogManager::WebRtcRemoteEventLogManager(
     WebRtcRemoteEventLogsObserver* observer,

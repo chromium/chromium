@@ -40,8 +40,7 @@ namespace {
 // In this case we will time out, to avoid renderer hang forever waiting for
 // device authorization (http://crbug/615589). This will result in "no audio".
 // There are also cases when authorization takes too long on Mac and Linux.
-constexpr base::TimeDelta kMaxAuthorizationTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMaxAuthorizationTimeout = base::Seconds(10);
 #else
 constexpr base::TimeDelta kMaxAuthorizationTimeout;  // No timeout.
 #endif
@@ -190,8 +189,7 @@ media::OutputDeviceInfo WebAudioDeviceFactory::GetOutputDeviceInfo(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
-  constexpr base::TimeDelta kDeleteTimeout =
-      base::TimeDelta::FromMilliseconds(5000);
+  constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(5000);
 
   // There's one process wide instance that lives on the render thread.
   static base::NoDestructor<AudioRendererSinkCache> cache(

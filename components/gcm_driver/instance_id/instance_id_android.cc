@@ -172,8 +172,8 @@ void InstanceIDAndroid::DidGetCreationTime(
   // If the InstanceID's getId, getToken and deleteToken methods have never been
   // called, or deleteInstanceID has cleared it since, creation time will be 0.
   if (creation_time_unix_ms) {
-    creation_time = base::Time::UnixEpoch() +
-                    base::TimeDelta::FromMilliseconds(creation_time_unix_ms);
+    creation_time =
+        base::Time::UnixEpoch() + base::Milliseconds(creation_time_unix_ms);
   }
 
   GetCreationTimeCallback* callback =

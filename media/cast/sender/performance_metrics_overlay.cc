@@ -290,9 +290,9 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
   }
   base::TimeDelta rem = frame->timestamp();
   const int minutes = rem.InMinutes();
-  rem -= base::TimeDelta::FromMinutes(minutes);
+  rem -= base::Minutes(minutes);
   const int seconds = static_cast<int>(rem.InSeconds());
-  rem -= base::TimeDelta::FromSeconds(seconds);
+  rem -= base::Seconds(seconds);
   const int hundredth_seconds = static_cast<int>(rem.InMilliseconds() / 10);
   RenderLineOfText(
       base::StringPrintf("%d.%01d %dx%d %d:%02d.%02d", frame_duration_ms,

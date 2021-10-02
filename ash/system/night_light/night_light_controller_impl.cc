@@ -86,13 +86,11 @@ constexpr float kDefaultColorTemperature = 0.5f;
 
 // The duration of the temperature change animation for
 // AnimationDurationType::kShort.
-constexpr base::TimeDelta kManualAnimationDuration =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kManualAnimationDuration = base::Seconds(1);
 
 // The duration of the temperature change animation for
 // AnimationDurationType::kLong.
-constexpr base::TimeDelta kAutomaticAnimationDuration =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kAutomaticAnimationDuration = base::Seconds(60);
 
 // The color temperature animation frames per second.
 constexpr int kNightLightAnimationFrameRate = 15;
@@ -695,7 +693,7 @@ void NightLightControllerImpl::SetCurrentGeoposition(
   // or more in either sunset or sunrise times. A one-hour threshold is used
   // here as an indication of a possible timezone change, and this case, manual
   // toggles should be ignored.
-  constexpr base::TimeDelta kOneHourDuration = base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
   const bool keep_manual_toggles_during_schedules =
       (delegate_->GetSunsetTime() - previous_sunset).magnitude() <
           kOneHourDuration &&
@@ -1113,7 +1111,7 @@ void NightLightControllerImpl::RefreshScheduleTimer(
       //        |             |        |
       //      start          now      end
       //
-      start_time -= base::TimeDelta::FromDays(1);
+      start_time -= base::Days(1);
     } else {
       // Two possibilities here:
       // - Either "now" is greater than the end time, but less than start time.
@@ -1122,7 +1120,7 @@ void NightLightControllerImpl::RefreshScheduleTimer(
       // - Or "now" is greater than both the start and end times. This means
       //   NightLight is within the schedule, waiting to turn off at the next
       //   end time, which is also a day later.
-      end_time += base::TimeDelta::FromDays(1);
+      end_time += base::Days(1);
     }
   }
 
@@ -1154,7 +1152,7 @@ void NightLightControllerImpl::RefreshScheduleTimer(
     // Start NightLight right away. Our future start time is a day later than
     // its current value.
     enable_now = true;
-    start_time += base::TimeDelta::FromDays(1);
+    start_time += base::Days(1);
   } else {  // now >= end_time.
     // Example:
     // Start: 6:00 PM today, End: 10:00 PM today, Now: 11:00 PM.
@@ -1167,8 +1165,8 @@ void NightLightControllerImpl::RefreshScheduleTimer(
     // current values. NightLight needs to be ended immediately if it's already
     // enabled.
     enable_now = false;
-    start_time += base::TimeDelta::FromDays(1);
-    end_time += base::TimeDelta::FromDays(1);
+    start_time += base::Days(1);
+    end_time += base::Days(1);
   }
 
   // After the above processing, the start and end time are all in the future.

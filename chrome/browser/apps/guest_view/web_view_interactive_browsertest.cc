@@ -409,7 +409,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
           FROM_HERE,
           base::BindOnce(&PopupCreatedObserver::Wait, base::Unretained(this),
                          wait_retry_left),
-          base::TimeDelta::FromMilliseconds(200));
+          base::Milliseconds(200));
     }
 
     size_t CountWidgets() {
@@ -1221,8 +1221,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner =
       new content::MessageLoopRunner;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, message_loop_runner->QuitClosure(),
-      base::TimeDelta::FromMilliseconds(200));
+      FROM_HERE, message_loop_runner->QuitClosure(), base::Milliseconds(200));
   message_loop_runner->Run();
 
   gfx::Rect guest_rect = guest_web_contents()->GetContainerBounds();
@@ -1242,8 +1241,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   // Give enough time for the quick menu to fire.
   message_loop_runner = new content::MessageLoopRunner;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, message_loop_runner->QuitClosure(),
-      base::TimeDelta::FromMilliseconds(200));
+      FROM_HERE, message_loop_runner->QuitClosure(), base::Milliseconds(200));
   message_loop_runner->Run();
 
 // TODO: Fix quick menu opening on Windows.

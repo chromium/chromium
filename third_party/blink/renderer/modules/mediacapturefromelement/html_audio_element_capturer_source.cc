@@ -85,8 +85,8 @@ void HtmlAudioElementCapturerSource::OnAudioBus(
     int sample_rate) {
   const base::TimeTicks capture_time =
       base::TimeTicks::Now() -
-      base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond *
-                                        frames_delayed / sample_rate);
+      base::Microseconds(base::Time::kMicrosecondsPerSecond * frames_delayed /
+                         sample_rate);
 
   if (sample_rate != last_sample_rate_ ||
       audio_bus->channels() != last_num_channels_ ||

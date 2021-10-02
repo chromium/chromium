@@ -998,7 +998,7 @@ class WebRtcEventLogManagerTestCacheClearing
 };
 
 const base::TimeDelta WebRtcEventLogManagerTestCacheClearing::kEpsion =
-    base::TimeDelta::FromHours(1);
+    base::Hours(1);
 
 class WebRtcEventLogManagerTestWithRemoteLoggingDisabled
     : public WebRtcEventLogManagerTestBase,
@@ -1266,7 +1266,7 @@ class WebRtcEventLogManagerTestHistory : public WebRtcEventLogManagerTestBase {
     // Way more than is "small", to make sure tests don't become flaky.
     // If the timestamp is ever off, it's likely to be off by more than this,
     // though, or the problem would not truly be severe enough to worry about.
-    const base::TimeDelta small_delta = base::TimeDelta::FromMinutes(15);
+    const base::TimeDelta small_delta = base::Minutes(15);
 
     return (std::max(a, b) - std::min(a, b) <= small_delta);
   }
@@ -2830,11 +2830,10 @@ TEST_F(WebRtcEventLogManagerTest,
   // This is OK in production, but can confuse the test, which expects a
   // specific order.
   base::Time time =
-      base::Time::Now() -
-      base::TimeDelta::FromSeconds(kMaxPendingRemoteBoundWebRtcEventLogs);
+      base::Time::Now() - base::Seconds(kMaxPendingRemoteBoundWebRtcEventLogs);
 
   for (size_t i = 0; i < kMaxPendingRemoteBoundWebRtcEventLogs; ++i) {
-    time += base::TimeDelta::FromSeconds(1);
+    time += base::Seconds(1);
 
     base::FilePath file_path;
     base::File file;
@@ -2883,11 +2882,10 @@ TEST_F(WebRtcEventLogManagerTest,
   // This is OK in production, but can confuse the test, which expects a
   // specific order.
   base::Time time =
-      base::Time::Now() -
-      base::TimeDelta::FromSeconds(kMaxPendingRemoteBoundWebRtcEventLogs);
+      base::Time::Now() - base::Seconds(kMaxPendingRemoteBoundWebRtcEventLogs);
 
   for (size_t i = 0, ext = 0; i < kMaxPendingRemoteBoundWebRtcEventLogs; ++i) {
-    time += base::TimeDelta::FromSeconds(1);
+    time += base::Seconds(1);
 
     const auto& extension = extensions[ext];
     ext = (ext + 1) % base::size(extensions);
@@ -3040,7 +3038,7 @@ TEST_F(WebRtcEventLogManagerTest, ExpiredFilesArePrunedRatherThanUploaded) {
   // Set the expired file's last modification time to past max retention.
   const base::Time expired_mod_time = base::Time::Now() -
                                       kRemoteBoundWebRtcEventLogsMaxRetention -
-                                      base::TimeDelta::FromSeconds(1);
+                                      base::Seconds(1);
   ASSERT_TRUE(base::TouchFile(file_paths[kExpired], file_info.last_accessed,
                               expired_mod_time));
 
@@ -3644,9 +3642,9 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Test
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
-  ClearCacheForBrowserContext(
-      browser_context_.get(), base::Time::Now() - base::TimeDelta::FromHours(1),
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+  ClearCacheForBrowserContext(browser_context_.get(),
+                              base::Time::Now() - base::Hours(1),
+                              base::Time::Now() + base::Hours(1));
   EXPECT_FALSE(base::PathExists(*file_path));
 }
 
@@ -3682,10 +3680,8 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   auto& elements = *(pending_logs_[browser_context.get()]);
 
   // Get a range whose intersection with the files' range is empty.
-  const base::Time earliest_mod =
-      pending_earliest_mod_ - base::TimeDelta::FromHours(2);
-  const base::Time latest_mod =
-      pending_earliest_mod_ - base::TimeDelta::FromHours(1);
+  const base::Time earliest_mod = pending_earliest_mod_ - base::Hours(2);
+  const base::Time latest_mod = pending_earliest_mod_ - base::Hours(1);
   ASSERT_LT(latest_mod, pending_latest_mod_);
 
   // Test - ClearCacheForBrowserContext() does not remove files not in range.
@@ -3716,9 +3712,9 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Test
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(_)).Times(0);
-  ClearCacheForBrowserContext(
-      browser_context_.get(), base::Time::Now() - base::TimeDelta::FromHours(2),
-      base::Time::Now() - base::TimeDelta::FromHours(1));
+  ClearCacheForBrowserContext(browser_context_.get(),
+                              base::Time::Now() - base::Hours(2),
+                              base::Time::Now() - base::Hours(1));
   EXPECT_TRUE(base::PathExists(*file_path));
 }
 
@@ -4656,7 +4652,7 @@ TEST_F(WebRtcEventLogManagerTestUploadDelay, DoNotInitiateUploadBeforeDelay) {
   // constraints, we cannot wait forever.)
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  event.TimedWait(base::TimeDelta::FromMilliseconds(500));
+  event.TimedWait(base::Milliseconds(500));
 
   WaitForPendingTasks(&run_loop);
 }
@@ -4930,7 +4926,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
 
   // Pretend more time than kRemoteBoundWebRtcEventLogsMaxRetention has passed.
   const base::TimeDelta elapsed_time =
-      kRemoteBoundWebRtcEventLogsMaxRetention + base::TimeDelta::FromHours(1);
+      kRemoteBoundWebRtcEventLogsMaxRetention + base::Hours(1);
   base::File::Info file_info;
   ASSERT_TRUE(base::GetFileInfo(*log_path, &file_info));
 
@@ -4984,7 +4980,7 @@ TEST_F(WebRtcEventLogManagerTestHistory, ClearingCacheRemovesHistoryFiles) {
 
   // Pretend more time than kRemoteBoundWebRtcEventLogsMaxRetention has passed.
   const base::TimeDelta elapsed_time =
-      kRemoteBoundWebRtcEventLogsMaxRetention + base::TimeDelta::FromHours(1);
+      kRemoteBoundWebRtcEventLogsMaxRetention + base::Hours(1);
   base::File::Info file_info;
   ASSERT_TRUE(base::GetFileInfo(*log_path, &file_info));
 

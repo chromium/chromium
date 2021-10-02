@@ -118,7 +118,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
           result = value->CreateDeepCopy();
         did_finish = true;
       }),
-      base::TimeDelta::FromSecondsD(kWaitForJSCompletionTimeout));
+      base::Seconds(kWaitForJSCompletionTimeout));
 
   if (!function_call_successful) {
     DLOG(ERROR) << "JavaScript failed to be called on WebFrame.";
@@ -159,7 +159,7 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
   // As of iOS 13.1, devices need additional time to stabalize the page before
   // getting the element location. Without this wait, the element's bounding
   // rect will be incorrect.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 #endif
 
   std::string selector_script =

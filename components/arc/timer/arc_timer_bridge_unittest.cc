@@ -262,7 +262,7 @@ TEST_F(ArcTimerTest, StartTimerTest) {
   // Create timers before starting it.
   EXPECT_TRUE(CreateTimers(clocks));
   // Start timer and check if timer expired.
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta delay = base::Milliseconds(20);
   EXPECT_TRUE(StartTimer(CLOCK_BOOTTIME_ALARM, base::TimeTicks::Now() + delay));
   EXPECT_TRUE(WaitForExpiration(CLOCK_BOOTTIME_ALARM));
 }
@@ -278,7 +278,7 @@ TEST_F(ArcTimerTest, InvalidStartTimerArgsTest) {
   std::vector<clockid_t> clocks = {CLOCK_REALTIME_ALARM};
   EXPECT_TRUE(CreateTimers(clocks));
   // Start timer should fail due to un-registered clock id.
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta delay = base::Milliseconds(20);
   EXPECT_FALSE(
       StartTimer(CLOCK_BOOTTIME_ALARM, base::TimeTicks::Now() + delay));
 }

@@ -73,7 +73,7 @@ base::TimeDelta ReadTimeDeltaFromFile(const base::FilePath& path) {
       seconds < 0.0) {
     return base::TimeDelta();
   }
-  return base::TimeDelta::FromMilliseconds(seconds * 1000.0);
+  return base::Milliseconds(seconds * 1000.0);
 }
 
 void SaveUpdateRebootNeededUptime() {
@@ -240,7 +240,7 @@ void AutomaticRebootManager::OnUserActivity(const ui::Event* event) {
   // the timer fires predictably in tests.
   login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
   login_screen_idle_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kLoginManagerIdleTimeoutMs),
+      FROM_HERE, base::Milliseconds(kLoginManagerIdleTimeoutMs),
       base::BindOnce(&AutomaticRebootManager::MaybeReboot,
                      base::Unretained(this), false));
 }
@@ -308,7 +308,7 @@ void AutomaticRebootManager::Reschedule() {
 
   // If an uptime limit is set, calculate the time at which it should cause a
   // reboot to be requested.
-  const base::TimeDelta uptime_limit = base::TimeDelta::FromSeconds(
+  const base::TimeDelta uptime_limit = base::Seconds(
       local_state_registrar_.prefs()->GetInteger(prefs::kUptimeLimit));
   base::TimeTicks reboot_request_time = *boot_time_ + uptime_limit;
   bool have_reboot_request_time = !uptime_limit.is_zero();
@@ -340,9 +340,9 @@ void AutomaticRebootManager::Reschedule() {
   // is actually requested and the grace period begins is never less than
   // |kMinRebootUptimeMs|.
   const base::TimeTicks now = clock_->NowTicks();
-  const base::TimeTicks grace_start_time = std::max(
-      reboot_request_time,
-      *boot_time_ + base::TimeDelta::FromMilliseconds(kMinRebootUptimeMs));
+  const base::TimeTicks grace_start_time =
+      std::max(reboot_request_time,
+               *boot_time_ + base::Milliseconds(kMinRebootUptimeMs));
 
   // Set up a timer for the start of the grace period. If the grace period
   // started in the past, the timer is still used with its delay set to zero.
@@ -354,8 +354,8 @@ void AutomaticRebootManager::Reschedule() {
       base::BindOnce(&AutomaticRebootManager::RequestReboot,
                      base::Unretained(this)));
 
-  const base::TimeTicks grace_end_time = grace_start_time +
-      base::TimeDelta::FromMilliseconds(kGracePeriodMs);
+  const base::TimeTicks grace_end_time =
+      grace_start_time + base::Milliseconds(kGracePeriodMs);
   // Set up a timer for the end of the grace period. If the grace period ended
   // in the past, the timer is still used with its delay set to zero.
   if (!grace_end_timer_)

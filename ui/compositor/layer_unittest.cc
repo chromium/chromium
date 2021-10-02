@@ -2520,7 +2520,7 @@ TEST_F(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(root->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     root->SetFillsBoundsOpaquely(false);
     root->SetColor(transparent);
   }
@@ -2619,7 +2619,7 @@ TEST_F(LayerWithRealCompositorTest, SwitchCCLayerDeleteLayer) {
   {
     ui::ScopedLayerAnimationSettings animation(l1->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     l1->SetOpacity(0.f);
   }
 
@@ -2657,7 +2657,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(layer_to_delete->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     layer_to_delete->SetTransform(transform);
   }
 
@@ -2678,7 +2678,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(layer_to_delete->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     layer_to_delete->SetTransform(transform);
   }
 
@@ -2700,7 +2700,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     child->SetTransform(transform);
   }
 
@@ -2723,7 +2723,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     child->SetTransform(transform);
   }
 
@@ -2776,7 +2776,7 @@ TEST_F(LayerWithRealCompositorTest, ParentOrChildGoneDuringRemove) {
     {
       ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
       animation.AddObserver(&animation_observer);
-      animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+      animation.SetTransitionDuration(base::Milliseconds(1000));
       child->SetBounds(gfx::Rect(10, 20, 100, 100));
     }
 
@@ -2880,8 +2880,7 @@ TEST_F(LayerWithDelegateTest, NonAnimatingAnimatorsAreRemovedFromCollection) {
   child->GetAnimator()->AddObserver(&observer);
 
   std::unique_ptr<LayerAnimationElement> element =
-      ui::LayerAnimationElement::CreateOpacityElement(
-          0.5f, base::TimeDelta::FromSeconds(1));
+      ui::LayerAnimationElement::CreateOpacityElement(0.5f, base::Seconds(1));
   LayerAnimationSequence* sequence =
       new LayerAnimationSequence(std::move(element));
 
@@ -2974,8 +2973,8 @@ TEST(LayerDelegateTest, OnLayerBoundsChangedAnimation) {
 
   // Start the animation.
   std::unique_ptr<LayerAnimationElement> element =
-      LayerAnimationElement::CreateBoundsElement(
-          kTargetBounds, base::TimeDelta::FromSeconds(1));
+      LayerAnimationElement::CreateBoundsElement(kTargetBounds,
+                                                 base::Seconds(1));
   ASSERT_FALSE(element->IsThreaded(layer.get()));
   LayerAnimationElement* element_raw = element.get();
   animator->StartAnimation(new LayerAnimationSequence(std::move(element)));
@@ -3080,7 +3079,7 @@ TEST(LayerDelegateTest, OnLayerTransformedNonThreadedAnimation) {
   // Start the animation.
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateInterpolatedTransformElement(
-          std::move(interpolated_transform), base::TimeDelta::FromSeconds(1));
+          std::move(interpolated_transform), base::Seconds(1));
   // The LayerAnimationElement returned by CreateInterpolatedTransformElement()
   // is non-threaded.
   ASSERT_FALSE(element->IsThreaded(layer.get()));
@@ -3147,8 +3146,8 @@ TEST(LayerDelegateTest, OnLayerTransformedThreadedAnimation) {
   gfx::Transform target_transform;
   target_transform.Skew(10.0f, 5.0f);
   std::unique_ptr<LayerAnimationElement> element =
-      LayerAnimationElement::CreateTransformElement(
-          target_transform, base::TimeDelta::FromSeconds(1));
+      LayerAnimationElement::CreateTransformElement(target_transform,
+                                                    base::Seconds(1));
   ASSERT_TRUE(element->IsThreaded(layer.get()));
   LayerAnimationElement* element_raw = element.get();
   // At the beginning, setting the transform actually does not change, so
@@ -3214,8 +3213,8 @@ TEST(LayerDelegateTest, OnLayerOpacityChangedAnimation) {
   const float initial_opacity = layer->opacity();
   const float kTargetOpacity = 0.5f;
   std::unique_ptr<LayerAnimationElement> element =
-      LayerAnimationElement::CreateOpacityElement(
-          kTargetOpacity, base::TimeDelta::FromSeconds(1));
+      LayerAnimationElement::CreateOpacityElement(kTargetOpacity,
+                                                  base::Seconds(1));
   ASSERT_TRUE(element->IsThreaded(layer.get()));
   LayerAnimationElement* element_raw = element.get();
   EXPECT_CALL(delegate,

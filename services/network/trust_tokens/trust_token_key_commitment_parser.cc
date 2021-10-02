@@ -78,9 +78,8 @@ ParseKeyResult ParseSingleKeyExceptLabel(
   if (!base::Base64Decode(*key_body, &out->body))
     return ParseKeyResult::kFail;
 
-  out->expiry =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMicroseconds(expiry_microseconds_since_unix_epoch);
+  out->expiry = base::Time::UnixEpoch() +
+                base::Microseconds(expiry_microseconds_since_unix_epoch);
   if (out->expiry <= base::Time::Now())
     return ParseKeyResult::kIgnore;
 

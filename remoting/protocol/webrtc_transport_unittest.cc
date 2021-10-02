@@ -41,8 +41,7 @@ namespace {
 const char kChannelName[] = "test_channel";
 const char kAuthKey[] = "test_auth_key";
 
-constexpr base::TimeDelta kWaitForThreadJoinTimeout =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kWaitForThreadJoinTimeout = base::Milliseconds(200);
 
 class TestTransportEventHandler : public WebrtcTransport::EventHandler {
  public:

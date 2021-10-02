@@ -214,7 +214,7 @@ ExtractionError ExtractResponseRecords(
       if (!cname_data)
         return ExtractionError::kMalformedCname;
 
-      base::TimeDelta ttl = base::TimeDelta::FromSeconds(record->ttl());
+      base::TimeDelta ttl = base::Seconds(record->ttl());
       response_ttl =
           std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
 
@@ -222,7 +222,7 @@ ExtractionError ExtractResponseRecords(
       DCHECK(added);
     } else if (record->klass() == dns_protocol::kClassIN &&
                record->type() == result_qtype) {
-      base::TimeDelta ttl = base::TimeDelta::FromSeconds(record->ttl());
+      base::TimeDelta ttl = base::Seconds(record->ttl());
       response_ttl =
           std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
 
@@ -246,7 +246,7 @@ ExtractionError ExtractResponseRecords(
       DnsResourceRecord record;
       if (parser.ReadRecord(&record) && record.type == dns_protocol::kTypeSOA) {
         soa_found = true;
-        base::TimeDelta ttl = base::TimeDelta::FromSeconds(record.ttl);
+        base::TimeDelta ttl = base::Seconds(record.ttl);
         response_ttl =
             std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
       }

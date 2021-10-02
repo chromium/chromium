@@ -48,8 +48,7 @@ constexpr char kNativeMessagingHostPath[] =
 constexpr int kSigtermExitCode = 128 + SIGTERM;
 
 // Constants controlling the host process relaunch throttling.
-constexpr base::TimeDelta kMinimumRelaunchInterval =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMinimumRelaunchInterval = base::Minutes(1);
 constexpr int kMaximumHostFailures = 10;
 
 // Exit code 126 is defined by Posix to mean "Command found, but not

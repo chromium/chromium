@@ -163,7 +163,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
     return;
 
   if (self.requestStartTime != 0) {
-    base::TimeDelta elapsed = base::TimeDelta::FromSecondsD(
+    base::TimeDelta elapsed = base::Seconds(
         [NSDate timeIntervalSinceReferenceDate] - self.requestStartTime);
     UMA_HISTOGRAM_TIMES("Toolbar.ShowToolsMenuResponsiveness", elapsed);
     // Reset the start time to ensure that whatever happens, we only record

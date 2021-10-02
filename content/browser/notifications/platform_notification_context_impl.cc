@@ -40,8 +40,7 @@ const base::FilePath::CharType kPlatformNotificationsDirectory[] =
 
 // Max age of a displayed notification before we consider it stale and remove it
 // from the database and ask the platform to close it.
-constexpr base::TimeDelta kMaxDisplayedNotificationAge =
-    base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMaxDisplayedNotificationAge = base::Days(7);
 
 // Checks if this notification can trigger in the future.
 bool CanTrigger(const NotificationDatabaseData& data) {
@@ -70,7 +69,7 @@ void RecordOldestNotificationTimeUMA(base::Time oldest_notification_time) {
 
   base::UmaHistogramCustomCounts(
       "Notifications.Database.OldestNotificationTimeInMinutes",
-      delta.InMinutes(), 0, base::TimeDelta::FromDays(150).InMinutes(), 50);
+      delta.InMinutes(), 0, base::Days(150).InMinutes(), 50);
 }
 
 // Returns if the notification described by |data| is currently visible.

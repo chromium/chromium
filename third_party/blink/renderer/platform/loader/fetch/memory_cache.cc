@@ -40,9 +40,8 @@ static Persistent<MemoryCache>* g_memory_cache;
 
 static const unsigned kCDefaultCacheCapacity = 8192 * 1024;
 static const base::TimeDelta kCMinDelayBeforeLiveDecodedPrune =
-    base::TimeDelta::FromSeconds(1);
-static const base::TimeDelta kCMaxPruneDeferralDelay =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Seconds(1);
+static const base::TimeDelta kCMaxPruneDeferralDelay = base::Milliseconds(500);
 
 // Percentage of capacity toward which we prune, to avoid immediately pruning
 // again.

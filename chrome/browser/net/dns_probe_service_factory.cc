@@ -369,8 +369,7 @@ bool DnsProbeServiceImpl::CachedResultIsExpired() const {
   if (state_ != STATE_RESULT_CACHED)
     return false;
 
-  const base::TimeDelta kMaxResultAge =
-      base::TimeDelta::FromMilliseconds(kMaxResultAgeMs);
+  const base::TimeDelta kMaxResultAge = base::Milliseconds(kMaxResultAgeMs);
   return tick_clock_->NowTicks() - probe_start_time_ > kMaxResultAge;
 }
 

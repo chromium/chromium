@@ -147,8 +147,7 @@ void MultiLogCTVerifier::Verify(
     base::TimeDelta verify_time = base::TimeTicks::Now() - start;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Net.CertificateTransparency.SCT.VerificationTime", verify_time,
-        base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(100), 50);
+        base::Microseconds(1), base::Milliseconds(100), 50);
   }
 
   net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED, [&] {
@@ -188,8 +187,7 @@ void MultiLogCTVerifier::VerifySCTs(
     base::TimeDelta verify_time = base::TimeTicks::Now() - start;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Net.CertificateTransparency.SCT.SingleVerificationTime", verify_time,
-        base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(100), 50);
+        base::Microseconds(1), base::Milliseconds(100), 50);
   }
 }
 

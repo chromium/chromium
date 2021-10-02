@@ -50,7 +50,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessUnknownDevice[];
 // element on the page that is interesting, based on the Switch Access
 // predicates.
 constexpr base::TimeDelta kDefaultSwitchAccessAutoScanSpeed =
-    base::TimeDelta::FromMilliseconds(1200);
+    base::Milliseconds(1200);
 
 // The default speed in dips per second that the gliding point scan cursor
 // in switch access moves across the screen.
@@ -73,12 +73,11 @@ constexpr bool kDefaultDarkModeEnabled = false;
 constexpr bool kDefaultColorModeThemed = true;
 
 // The default delay before a held keypress will start to auto repeat.
-constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay = base::Milliseconds(500);
 
 // The default interval between auto-repeated key events.
 constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 }  // namespace ash
 

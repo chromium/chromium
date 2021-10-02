@@ -215,8 +215,7 @@ class GaiaCookieManagerServiceTest : public testing::Test {
 
   void Advance(scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner,
                base::TimeDelta advance_by) {
-    test_task_runner->FastForwardBy(advance_by +
-                                    base::TimeDelta::FromMilliseconds(1));
+    test_task_runner->FastForwardBy(advance_by + base::Milliseconds(1));
     test_task_runner->RunUntilIdle();
   }
 

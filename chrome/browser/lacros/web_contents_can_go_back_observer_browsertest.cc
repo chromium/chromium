@@ -60,7 +60,7 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
         },
         &outer_loop, window_id, expected_value);
     base::RepeatingTimer timer;
-    timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+    timer.Start(FROM_HERE, base::Milliseconds(1),
                 std::move(look_for_property_value));
     outer_loop.Run();
   }

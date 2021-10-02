@@ -589,8 +589,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
   EXPECT_EQ(IsSignedExchangeSubresourcePrefetchEnabled() ? 1u : 0u,
             GetCachedExchanges(shell()).size());
 
-  MockClock::Get().Advance(base::TimeDelta::FromSeconds(
-      net::HttpCache::kPrefetchReuseMins * 60 + 1));
+  MockClock::Get().Advance(
+      base::Seconds(net::HttpCache::kPrefetchReuseMins * 60 + 1));
 
   // Need to setup MockSignedExchangeHandlerFactory because the SXG is loaded
   // from the server again.
@@ -634,8 +634,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
   EXPECT_EQ(IsSignedExchangeSubresourcePrefetchEnabled() ? 1u : 0u,
             GetCachedExchanges(shell()).size());
 
-  MockClock::Get().Advance(base::TimeDelta::FromSeconds(
-      net::HttpCache::kPrefetchReuseMins * 2 * 60));
+  MockClock::Get().Advance(
+      base::Seconds(net::HttpCache::kPrefetchReuseMins * 2 * 60));
 
   if (IsSignedExchangeSubresourcePrefetchEnabled()) {
     NavigateToURLAndWaitTitle(sxg_url, "Prefetch Target (SXG)");
@@ -682,8 +682,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
   EXPECT_EQ(IsSignedExchangeSubresourcePrefetchEnabled() ? 1u : 0u,
             GetCachedExchanges(shell()).size());
 
-  MockClock::Get().Advance(base::TimeDelta::FromSeconds(
-      net::HttpCache::kPrefetchReuseMins * 3 * 60 + 1));
+  MockClock::Get().Advance(
+      base::Seconds(net::HttpCache::kPrefetchReuseMins * 3 * 60 + 1));
 
   // Need to setup MockSignedExchangeHandlerFactory because the SXG is loaded
   // from the server again.
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
       net::SHA256HashValue({{0x01}}) /* header_integrity */, content,
       {} /* sxg_outer_headers */, {} /* sxg_inner_headers */,
       base::Time::Now() +
-          base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins * 2));
+          base::Minutes(net::HttpCache::kPrefetchReuseMins * 2));
   EXPECT_EQ(1, sxg_request_counter->GetRequestCount());
 
   const GURL sxg_url = embedded_test_server()->GetURL(hostname, sxg_path);
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
             GetCachedExchanges(shell()).size());
 
   MockClock::Get().Advance(
-      base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins * 3));
+      base::Minutes(net::HttpCache::kPrefetchReuseMins * 3));
 
   // Setup MockSignedExchangeHandlerFactory which triggers signature
   // verificvation error fallback.
@@ -979,8 +979,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
                 *script_it->second->header_integrity());
     }
 
-    MockClock::Get().Advance(
-        base::TimeDelta::FromSeconds(elapsed_time_after_prefetch));
+    MockClock::Get().Advance(base::Seconds(elapsed_time_after_prefetch));
 
     // Subsequent navigation to the target URL wouldn't hit the network for
     // the target URL. The target content should still be read correctly.

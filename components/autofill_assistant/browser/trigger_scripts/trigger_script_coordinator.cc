@@ -113,14 +113,13 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     (*script_parameters)->MergeWith(trigger_context_->GetScriptParameters());
     trigger_context_->SetScriptParameters(std::move(*script_parameters));
   }
-  trigger_condition_check_interval_ =
-      base::TimeDelta::FromMilliseconds(check_interval_ms);
+  trigger_condition_check_interval_ = base::Milliseconds(check_interval_ms);
   if (trigger_condition_timeout_ms.has_value()) {
     // Note: add 1 for the initial, not-delayed check.
     initial_trigger_condition_evaluations_ =
-        1 + base::ClampCeil<int64_t>(base::TimeDelta::FromMilliseconds(
-                                         *trigger_condition_timeout_ms) /
-                                     trigger_condition_check_interval_);
+        1 + base::ClampCeil<int64_t>(
+                base::Milliseconds(*trigger_condition_timeout_ms) /
+                trigger_condition_check_interval_);
   } else {
     initial_trigger_condition_evaluations_ = -1;
   }
@@ -277,11 +276,10 @@ void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
                                            .has_ui_timeout_ms()) {
     ui_timeout_timer_.Start(
         FROM_HERE,
-        base::TimeDelta::FromMilliseconds(
-            trigger_scripts_[visible_trigger_script_]
-                ->AsProto()
-                .user_interface()
-                .ui_timeout_ms()),
+        base::Milliseconds(trigger_scripts_[visible_trigger_script_]
+                               ->AsProto()
+                               .user_interface()
+                               .ui_timeout_ms()),
         base::BindOnce(&TriggerScriptCoordinator::OnUiTimeoutReached,
                        weak_ptr_factory_.GetWeakPtr()));
   }

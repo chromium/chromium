@@ -210,8 +210,7 @@ void ImageCache::RunEvictionOnStartup() {
       pref_service_->GetTime(kPrefLastStartupEviction);
   // If we've already garbage collected in the past interval, bail out.
   if (last_eviction_time >
-      clock_->Now() -
-          base::TimeDelta::FromHours(kImageCacheEvictionIntervalHours)) {
+      clock_->Now() - base::Hours(kImageCacheEvictionIntervalHours)) {
     return;
   }
 
@@ -247,8 +246,7 @@ void ImageCache::RunEvictionWhenFull() {
 void ImageCache::RunEviction(size_t bytes_left,
                              base::OnceClosure on_completion) {
   metadata_store_->EvictImageMetadata(
-      clock_->Now() - base::TimeDelta::FromDays(kCacheItemsTimeToLiveDays),
-      bytes_left,
+      clock_->Now() - base::Days(kCacheItemsTimeToLiveDays), bytes_left,
       base::BindOnce(&ImageCache::OnKeysEvicted, weak_ptr_factory_.GetWeakPtr(),
                      std::move(on_completion)));
 }

@@ -1190,7 +1190,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 
   // Less then 8.5 seconds.
   manager_->set_current_request_first_display_time_for_testing(
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(5000));
+      base::Time::Now() - base::Milliseconds(5000));
 
   std::unique_ptr<MockPermissionRequest> request_geolocation =
       CreateAndAddRequest(RequestType::kGeolocation, /*should_be_seen=*/true,
@@ -1225,7 +1225,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
 
   // More then 8.5 seconds.
   manager_->set_current_request_first_display_time_for_testing(
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(9000));
+      base::Time::Now() - base::Milliseconds(9000));
 
   std::unique_ptr<MockPermissionRequest> request_geolocation =
       CreateAndAddRequest(RequestType::kGeolocation, /*should_be_seen=*/true,
@@ -1268,7 +1268,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
                           1);
   // Less then 8.5 seconds.
   manager_->set_current_request_first_display_time_for_testing(
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(5000));
+      base::Time::Now() - base::Milliseconds(5000));
 
   std::unique_ptr<MockPermissionRequest> request_geolocation =
       CreateAndAddRequest(RequestType::kGeolocation, /*should_be_seen=*/true,
@@ -1318,7 +1318,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
                           1);
   // Less then 8.5 seconds.
   manager_->set_current_request_first_display_time_for_testing(
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(5000));
+      base::Time::Now() - base::Milliseconds(5000));
 
   // Geolocation is not shown because Camera has higher priority.
   std::unique_ptr<MockPermissionRequest> request_geolocation =
@@ -1373,7 +1373,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
                           1);
   // Less then 8.5 seconds.
   manager_->set_current_request_first_display_time_for_testing(
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(5000));
+      base::Time::Now() - base::Milliseconds(5000));
 
   // Geolocation is not shown because Camera has higher priority.
   std::unique_ptr<MockPermissionRequest> request_geolocation =
@@ -1436,7 +1436,7 @@ TEST_P(PermissionRequestManagerTestQuietChip,
                           1);
   // Less then 8.5 seconds.
   manager_->set_current_request_first_display_time_for_testing(
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(5000));
+      base::Time::Now() - base::Milliseconds(5000));
 
   // Geolocation is not shown because Camera has higher priority.
   std::unique_ptr<MockPermissionRequest> request_geolocation =

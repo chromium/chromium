@@ -81,9 +81,9 @@ TEST_F(BreadcrumbManagerObserverTest, OldEventsRemoved) {
 
   const std::string event = "event";
   manager_.AddEvent(event);
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_env_.FastForwardBy(base::Hours(1));
   manager_.AddEvent(event);
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_env_.FastForwardBy(base::Hours(1));
   manager_.AddEvent(event);
 
   EXPECT_EQ(&manager_, observer_.old_events_removed_last_received_manager_);

@@ -188,15 +188,16 @@ void VideoSender::InsertRawVideoFrame(
   // based on the configured |max_frame_rate_|.  Any error introduced by this
   // guess will be eliminated when |duration_in_encoder_| is updated in
   // OnEncodedVideoFrame().
-  const base::TimeDelta duration_added_by_next_frame = frames_in_encoder_ > 0 ?
-      reference_time - last_enqueued_frame_reference_time_ :
-      base::TimeDelta::FromSecondsD(1.0 / max_frame_rate_);
+  const base::TimeDelta duration_added_by_next_frame =
+      frames_in_encoder_ > 0
+          ? reference_time - last_enqueued_frame_reference_time_
+          : base::Seconds(1.0 / max_frame_rate_);
 
   if (ShouldDropNextFrame(duration_added_by_next_frame)) {
-    base::TimeDelta new_target_delay = std::min(
-        current_round_trip_time_ * kRoundTripsNeeded +
-        base::TimeDelta::FromMilliseconds(kConstantTimeMs),
-        max_playout_delay_);
+    base::TimeDelta new_target_delay =
+        std::min(current_round_trip_time_ * kRoundTripsNeeded +
+                     base::Milliseconds(kConstantTimeMs),
+                 max_playout_delay_);
     // In case of low latency mode, we prefer frame drops over increasing
     // playout time.
     if (!low_latency_mode_ && new_target_delay > target_playout_delay_) {

@@ -516,7 +516,7 @@ void ExistingUserController::Observe(
   VLOG(1) << "Authentication was entered manually, possibly for proxyauth.";
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&TransferHttpAuthCaches),
-      base::TimeDelta::FromMilliseconds(kAuthCacheTransferDelayMs));
+      base::Milliseconds(kAuthCacheTransferDelayMs));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -831,7 +831,7 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
         base::BindOnce(&SessionTerminationManager::StopSession,
                        base::Unretained(SessionTerminationManager::Get()),
                        login_manager::SessionStopReason::OWNER_REQUIRED),
-        base::TimeDelta::FromMilliseconds(kSafeModeRestartUiDelayMs));
+        base::Milliseconds(kSafeModeRestartUiDelayMs));
   } else if (failure.reason() == AuthFailure::TPM_ERROR) {
     ShowTPMError();
   } else if (failure.reason() == AuthFailure::TPM_UPDATE_REQUIRED) {
@@ -1461,7 +1461,7 @@ void ExistingUserController::StartAutoLoginTimer() {
   VLOG(2) << "Public session autologin will be fired in " << auto_login_delay_
           << "ms";
   auto_login_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(auto_login_delay_),
+      FROM_HERE, base::Milliseconds(auto_login_delay_),
       base::BindOnce(&ExistingUserController::OnPublicSessionAutoLoginTimerFire,
                      weak_factory_.GetWeakPtr()));
 }

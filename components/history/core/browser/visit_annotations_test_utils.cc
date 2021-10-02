@@ -9,8 +9,7 @@
 namespace history {
 
 base::Time IntToTime(int seconds) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(seconds));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(seconds));
 }
 
 std::vector<VisitID> GetVisitIds(

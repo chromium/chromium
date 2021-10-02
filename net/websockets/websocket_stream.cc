@@ -161,8 +161,7 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
 
   void Start(std::unique_ptr<base::OneShotTimer> timer) {
     DCHECK(timer);
-    base::TimeDelta timeout(base::TimeDelta::FromSeconds(
-        kHandshakeTimeoutIntervalInSeconds));
+    base::TimeDelta timeout(base::Seconds(kHandshakeTimeoutIntervalInSeconds));
     timer_ = std::move(timer);
     timer_->Start(FROM_HERE, timeout,
                   base::BindOnce(&WebSocketStreamRequestImpl::OnTimeout,

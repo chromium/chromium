@@ -37,7 +37,7 @@ TEST_F(ScopedUsHistogramTimerTest, Basic) {
   {
     ScopedUsHistogramTimer timer(scoped_us_counter,
                                  test_task_runner_->GetMockTickClock());
-    test_task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    test_task_runner_->FastForwardBy(base::Milliseconds(500));
   }
   // 500ms == 500000us
   EXPECT_EQ(500000, scoped_us_counter.Histogram()->SnapshotSamples()->sum());
@@ -49,7 +49,7 @@ TEST_F(ScopedUsHistogramTimerTest, BasicHighRes) {
   {
     ScopedHighResUsHistogramTimer timer(scoped_us_counter,
                                         test_task_runner_->GetMockTickClock());
-    test_task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    test_task_runner_->FastForwardBy(base::Milliseconds(500));
   }
   int64_t expected = base::TimeTicks::IsHighResolution() ? 500000 : 0;
   EXPECT_EQ(expected, scoped_us_counter.Histogram()->SnapshotSamples()->sum());

@@ -2374,7 +2374,7 @@ class ExtensionWebRequestMockedClockTest : public ExtensionWebRequestApiTest {
  private:
   static base::Time Now() {
     static base::Time now_time = base::Time::UnixEpoch();
-    now_time += base::TimeDelta::FromMilliseconds(1);
+    now_time += base::Milliseconds(1);
     return now_time;
   }
 
@@ -3280,8 +3280,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
       https_test_server.host_port_pair().host(),
-      base::Time::Now() + base::TimeDelta::FromDays(100), true,
-      run_loop.QuitClosure());
+      base::Time::Now() + base::Days(100), true, run_loop.QuitClosure());
   run_loop.Run();
 
   PerformXhrInFrame(
@@ -3347,9 +3346,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HSTSUpgradeAfterRedirect) {
   content::StoragePartition* partition =
       profile()->GetDefaultStoragePartition();
   base::RunLoop run_loop;
-  partition->GetNetworkContext()->AddHSTS(
-      "hsts.com", base::Time::Now() + base::TimeDelta::FromDays(100), true,
-      run_loop.QuitClosure());
+  partition->GetNetworkContext()->AddHSTS("hsts.com",
+                                          base::Time::Now() + base::Days(100),
+                                          true, run_loop.QuitClosure());
   run_loop.Run();
 
   GURL final_url = https_test_server.GetURL("hsts.com", "/echo");

@@ -372,8 +372,7 @@ TEST_F(BlobURLTest, TestGetNonExistentFileRequest) {
 }
 
 TEST_F(BlobURLTest, TestGetChangedFileRequest) {
-  base::Time old_time =
-      temp_file_modification_time1_ - base::TimeDelta::FromSeconds(10);
+  base::Time old_time = temp_file_modification_time1_ - base::Seconds(10);
   blob_data_->AppendFile(temp_file1_, 0, 3, old_time);
   TestErrorRequest(net::ERR_UPLOAD_FILE_CHANGED);
 }
@@ -433,8 +432,8 @@ TEST_F(BlobURLTest, TestGetInvalidFileSystemFileRequest) {
 
 TEST_F(BlobURLTest, TestGetChangedFileSystemFileRequest) {
   SetUpFileSystem();
-  base::Time old_time = temp_file_system_file_modification_time1_ -
-                        base::TimeDelta::FromSeconds(10);
+  base::Time old_time =
+      temp_file_system_file_modification_time1_ - base::Seconds(10);
   blob_data_->AppendFileSystemFile(
       file_system_context_->CrackURLInFirstPartyContext(
           temp_file_system_file1_),

@@ -416,8 +416,7 @@ void PseudoTcpAdapter::Core::AdjustClock() {
   long timeout = 0;
   if (pseudo_tcp_.GetNextClock(PseudoTcp::Now(), timeout)) {
     timer_.Stop();
-    timer_.Start(FROM_HERE,
-                 base::TimeDelta::FromMilliseconds(std::max(timeout, 0L)), this,
+    timer_.Start(FROM_HERE, base::Milliseconds(std::max(timeout, 0L)), this,
                  &PseudoTcpAdapter::Core::HandleTcpClock);
   }
 }

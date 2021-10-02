@@ -483,8 +483,7 @@ TEST_F(OriginTrialContextTest, GetTokenExpiryTimeIgnoresIrrelevantTokens) {
   base::Time nowish = base::Time::Now();
   // A non-success response shouldn't affect Frobulate's expiry time.
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kMalformed,
-                                kFrobulateTrialName,
-                                nowish + base::TimeDelta::FromDays(2));
+                                kFrobulateTrialName, nowish + base::Days(2));
   EXPECT_FALSE(IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPI));
   EXPECT_EQ(base::Time(),
             GetFeatureExpiry(OriginTrialFeature::kOriginTrialsSampleAPI));
@@ -492,14 +491,14 @@ TEST_F(OriginTrialContextTest, GetTokenExpiryTimeIgnoresIrrelevantTokens) {
   // A different trial shouldn't affect Frobulate's expiry time.
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
                                 kFrobulateDeprecationTrialName,
-                                nowish + base::TimeDelta::FromDays(3));
+                                nowish + base::Days(3));
   EXPECT_TRUE(
       IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPIDeprecation));
   EXPECT_EQ(base::Time(),
             GetFeatureExpiry(OriginTrialFeature::kOriginTrialsSampleAPI));
 
   // A valid trial should update the expiry time.
-  base::Time expected_expiry = nowish + base::TimeDelta::FromDays(1);
+  base::Time expected_expiry = nowish + base::Days(1);
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
                                 kFrobulateTrialName, expected_expiry);
   EXPECT_TRUE(IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPI));
@@ -510,9 +509,9 @@ TEST_F(OriginTrialContextTest, GetTokenExpiryTimeIgnoresIrrelevantTokens) {
 TEST_F(OriginTrialContextTest, LastExpiryForFeatureIsUsed) {
   UpdateSecurityOrigin(kFrobulateEnabledOrigin);
 
-  base::Time plusone = base::Time::Now() + base::TimeDelta::FromDays(1);
-  base::Time plustwo = plusone + base::TimeDelta::FromDays(1);
-  base::Time plusthree = plustwo + base::TimeDelta::FromDays(1);
+  base::Time plusone = base::Time::Now() + base::Days(1);
+  base::Time plustwo = plusone + base::Days(1);
+  base::Time plusthree = plustwo + base::Days(1);
 
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
                                 kFrobulateTrialName, plusone);
@@ -536,7 +535,7 @@ TEST_F(OriginTrialContextTest, LastExpiryForFeatureIsUsed) {
 TEST_F(OriginTrialContextTest, ImpliedFeatureExpiryTimesAreUpdated) {
   UpdateSecurityOrigin(kFrobulateEnabledOrigin);
 
-  base::Time tomorrow = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time tomorrow = base::Time::Now() + base::Days(1);
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
                                 kFrobulateTrialName, tomorrow);
   EXPECT_TRUE(IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPI));

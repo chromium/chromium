@@ -175,7 +175,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   // This is equivalent to the following snippets, which should be replaced.
   // * base::Time::FromInternalValue(ColumnInt64(col))
   // * base::Time::FromDeltaSinceWindowsEpoch(
-  //       base::TimeDelta::FromMicroseconds(ColumnInt64(col)))
+  //       base::Microseconds(ColumnInt64(col)))
   //
   // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
   //                          then remove the migration details above.

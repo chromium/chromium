@@ -67,7 +67,7 @@ class PerformanceMonitorTest : public testing::Test {
   int NumUniqueFrameContextsSeen();
 
   static base::TimeTicks SecondsToTimeTicks(double seconds) {
-    return base::TimeTicks() + base::TimeDelta::FromSecondsD(seconds);
+    return base::TimeTicks() + base::Seconds(seconds);
   }
 
   Persistent<PerformanceMonitor> monitor_;

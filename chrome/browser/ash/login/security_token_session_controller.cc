@@ -302,9 +302,8 @@ void SecurityTokenSessionController::UpdateBehaviorPref() {
 }
 
 void SecurityTokenSessionController::UpdateNotificationPref() {
-  notification_seconds_ =
-      base::TimeDelta::FromSeconds(profile_prefs_->GetInteger(
-          prefs::kSecurityTokenSessionNotificationSeconds));
+  notification_seconds_ = base::Seconds(profile_prefs_->GetInteger(
+      prefs::kSecurityTokenSessionNotificationSeconds));
 }
 
 SecurityTokenSessionController::Behavior

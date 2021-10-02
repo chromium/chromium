@@ -89,7 +89,7 @@ std::unique_ptr<blink::WebMouseEvent> GetWebMouseEvent(
 
   auto mouse_event = std::make_unique<blink::WebMouseEvent>(
       type, event.GetModifiers(),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+      base::TimeTicks() + base::Seconds(event.GetTimeStamp()));
 
   mouse_event->button = GetWebPointerPropertiesButton(event.GetButton());
   mouse_event->click_count = event.GetClickCount();
@@ -107,7 +107,7 @@ std::unique_ptr<blink::WebKeyboardEvent> GetWebKeyboardEvent(
 
   auto keyboard_event = std::make_unique<blink::WebKeyboardEvent>(
       type, event.GetModifiers(),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+      base::TimeTicks() + base::Seconds(event.GetTimeStamp()));
 
   keyboard_event->windows_key_code = event.GetKeyCode();
 
@@ -130,7 +130,7 @@ std::unique_ptr<blink::WebTouchEvent> GetWebTouchEvent(
 
   auto touch_event = std::make_unique<blink::WebTouchEvent>(
       type, event.GetModifiers(),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+      base::TimeTicks() + base::Seconds(event.GetTimeStamp()));
 
   // The PDF plugin only cares about the first touch and the number of touches,
   // but copy over all the touches so that `touch_event->touches_length`

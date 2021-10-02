@@ -50,9 +50,8 @@ struct TestModuleData {
 };
 
 // NOTE: TestTimeouts::action_max_timeout() is not long enough here.
-base::TimeDelta g_timeout = ::IsDebuggerPresent()
-                                ? base::TimeDelta::Max()
-                                : base::TimeDelta::FromMilliseconds(5000);
+base::TimeDelta g_timeout =
+    ::IsDebuggerPresent() ? base::TimeDelta::Max() : base::Milliseconds(5000);
 
 // Centralize child test process control.
 void LaunchChildAndWait(const base::CommandLine& command_line, int* exit_code) {

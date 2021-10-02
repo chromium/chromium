@@ -87,9 +87,9 @@ bool IsLegacyDemoRetailModeSession(const user_manager::User* user) {
 }  // namespace
 
 DemoModeResourcesRemover::UsageAccumulationConfig::UsageAccumulationConfig()
-    : resources_removal_threshold(base::TimeDelta::FromHours(48)),
-      update_interval(base::TimeDelta::FromMinutes(5)),
-      idle_threshold(base::TimeDelta::FromSeconds(30)) {}
+    : resources_removal_threshold(base::Hours(48)),
+      update_interval(base::Minutes(5)),
+      idle_threshold(base::Seconds(30)) {}
 
 DemoModeResourcesRemover::UsageAccumulationConfig::UsageAccumulationConfig(
     const base::TimeDelta& resources_removal_threshold,

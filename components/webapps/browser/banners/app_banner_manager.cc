@@ -142,8 +142,7 @@ AppBannerManager* AppBannerManager::FromWebContents(
 
 // static
 base::Time AppBannerManager::GetCurrentTime() {
-  return base::Time::Now() +
-         base::TimeDelta::FromDays(gTimeDeltaInDaysForTesting);
+  return base::Time::Now() + base::Days(gTimeDeltaInDaysForTesting);
 }
 
 // static

@@ -798,7 +798,7 @@ bool SandboxDirectoryDatabase::IsFileSystemConsistent() {
 void SandboxDirectoryDatabase::ReportInitStatus(const leveldb::Status& status) {
   base::Time now = base::Time::Now();
   const base::TimeDelta minimum_interval =
-      base::TimeDelta::FromHours(kSandboxDirectoryMinimumReportIntervalHours);
+      base::Hours(kSandboxDirectoryMinimumReportIntervalHours);
   if (last_reported_time_ + minimum_interval >= now)
     return;
   last_reported_time_ = now;

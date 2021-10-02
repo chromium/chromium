@@ -297,7 +297,7 @@ void TimeView::SetTimer(const base::Time& now) {
   seconds_left += kTimerSlopSeconds;
 
   timer_.Stop();
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(seconds_left), this,
+  timer_.Start(FROM_HERE, base::Seconds(seconds_left), this,
                &TimeView::UpdateText);
 }
 

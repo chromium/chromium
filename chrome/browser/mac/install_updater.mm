@@ -36,7 +36,7 @@ int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
   if (!process.IsValid())
     return exit_code;
 
-  process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(120), &exit_code);
+  process.WaitForExitWithTimeout(base::Seconds(120), &exit_code);
 
   return exit_code;
 }

@@ -94,7 +94,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
   // tab is not visible, so these 500ms never add up to >= 1 second.
   for (int n = 0; n < 10; n++) {
     web_contents()->WasShown();
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
     web_contents()->WasHidden();
   }
 
@@ -109,7 +109,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
   // scheduled task, and when it fires Timer::RunScheduledTask will call
   // TimeTicks::Now() (which unlike task_environment()->NowTicks(), we can't
   // fake), and miscalculate the remaining delay at which to fire the timer.
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment()->FastForwardBy(base::Days(1));
 
   EXPECT_EQ(0, permission_context.permission_set_count());
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -117,7 +117,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 
   // Should be blocked after 1-2 seconds. So 500ms is not enough.
   web_contents()->WasShown();
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_EQ(0, permission_context.permission_set_count());
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -125,7 +125,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 
   // But 5*500ms > 2 seconds, so it should now be blocked.
   for (int n = 0; n < 4; n++)
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
@@ -169,7 +169,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   // Fast forward up to 2.5 seconds. Stop as soon as the first permission
   // request is auto-denied.
   for (int n = 0; n < 5; n++) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
     if (permission_context.permission_set_count())
       break;
   }
@@ -184,7 +184,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
 
   // After another 2.5 seconds, the second permission request should also have
   // received a response.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(2500));
+  task_environment()->FastForwardBy(base::Milliseconds(2500));
   EXPECT_EQ(2, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,

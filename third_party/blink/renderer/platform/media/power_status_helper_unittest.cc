@@ -206,7 +206,7 @@ TEST_F(PowerStatusHelperTest, BasicReportingWithFractionalAmounts) {
   monitor_.ProvidePowerUpdate(false, baseline_level);
 
   // This should trigger recording.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta time_delta = base::Seconds(1);
   FastForward(time_delta);
 
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
@@ -245,7 +245,7 @@ TEST_F(PowerStatusHelperTest, ChargingResetsBaseline) {
   monitor_.ProvidePowerUpdate(false, baseline_level);
 
   // This should trigger recording.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta time_delta = base::Seconds(1);
   FastForward(time_delta);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, second_level);
@@ -292,7 +292,7 @@ TEST_F(PowerStatusHelperTest, ChangingBucketsWorks) {
   monitor_.ProvidePowerUpdate(false, baseline_level);
 
   // This should trigger recording.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta time_delta = base::Seconds(1);
   FastForward(time_delta);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, second_level);

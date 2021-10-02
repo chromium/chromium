@@ -355,7 +355,7 @@ class OpenSystemSettingsHelper {
     // Only the watchers that were succesfully initialized are counted.
     registry_watcher_count_ = registry_key_watchers_.size();
 
-    timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(2),
+    timer_.Start(FROM_HERE, base::Minutes(2),
                  base::BindOnce(&OpenSystemSettingsHelper::ConcludeInteraction,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 ConcludeReason::TIMEOUT));

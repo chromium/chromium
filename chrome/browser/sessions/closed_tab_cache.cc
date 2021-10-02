@@ -20,7 +20,7 @@ static constexpr size_t kClosedTabCacheLimit = 1;
 
 // The default time to live in seconds for entries in the ClosedTabCache.
 static constexpr base::TimeDelta kDefaultTimeToLiveInClosedTabCacheInSeconds =
-    base::TimeDelta::FromSeconds(15);
+    base::Seconds(15);
 
 // The memory pressure level from which we should evict all entries from the
 // cache to preserve memory.
@@ -134,7 +134,7 @@ base::TimeDelta ClosedTabCache::GetTimeToLiveInClosedTabCache() {
     return base::TimeDelta::Max();
   }
 
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kClosedTabCache, "time_to_live_in_closed_tab_cache_in_seconds",
       kDefaultTimeToLiveInClosedTabCacheInSeconds.InSeconds()));
 }

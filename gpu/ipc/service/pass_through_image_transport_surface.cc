@@ -239,9 +239,9 @@ void PassThroughImageTransportSurface::FinishSwapBuffers(
 
     if (!multiple_surfaces_swapped_) {
       static constexpr base::TimeDelta kTimingMetricsHistogramMin =
-          base::TimeDelta::FromMicroseconds(5);
+          base::Microseconds(5);
       static constexpr base::TimeDelta kTimingMetricsHistogramMax =
-          base::TimeDelta::FromMilliseconds(500);
+          base::Milliseconds(500);
       static constexpr uint32_t kTimingMetricsHistogramBuckets = 50;
 
       base::TimeDelta delta =

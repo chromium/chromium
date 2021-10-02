@@ -556,7 +556,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
     auto mojo_options = blink::mojom::PublicKeyCredentialCreationOptions::New(
-        rp, user, kTestChallenge, parameters, base::TimeDelta::FromSeconds(30),
+        rp, user, kTestChallenge, parameters, base::Seconds(30),
         std::vector<device::PublicKeyCredentialDescriptor>(),
         device::AuthenticatorSelectionCriteria(),
         device::AttestationConveyancePreference::kNone,
@@ -585,10 +585,9 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
     auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New(
-        /*is_conditional=*/false, kTestChallenge,
-        base::TimeDelta::FromSeconds(30), "acme.com", std::move(credentials),
-        device::UserVerificationRequirement::kPreferred, absl::nullopt,
-        std::vector<device::CableDiscoveryData>(), /*prf=*/false,
+        /*is_conditional=*/false, kTestChallenge, base::Seconds(30), "acme.com",
+        std::move(credentials), device::UserVerificationRequirement::kPreferred,
+        absl::nullopt, std::vector<device::CableDiscoveryData>(), /*prf=*/false,
         /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
         /*large_blob_read=*/false, /*large_blob_write=*/absl::nullopt,
         /*get_cred_blob=*/false);

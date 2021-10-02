@@ -287,7 +287,7 @@ TEST_F(DriveFsSearchTest, Search_SharedWithMeCaching) {
   EXPECT_TRUE(called);
 
   // Time has passed...
-  clock_.Advance(base::TimeDelta::FromHours(1));
+  clock_.Advance(base::Hours(1));
 
   params = mojom::QueryParameters::New();
   params->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;

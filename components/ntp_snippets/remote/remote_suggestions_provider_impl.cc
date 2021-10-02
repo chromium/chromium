@@ -167,7 +167,7 @@ const char kTimeoutForLoadingIndicatorSecondsParamName[] =
 const int kDefaultTimeoutForLoadingIndicatorSeconds = 5;
 
 base::TimeDelta GetTimeoutForLoadingIndicator() {
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       ntp_snippets::kArticleSuggestionsFeature,
       kTimeoutForLoadingIndicatorSecondsParamName,
       kDefaultTimeoutForLoadingIndicatorSeconds));
@@ -879,8 +879,7 @@ void RemoteSuggestionsProviderImpl::OnFetchFinished(
         if (ShouldForceFetchedSuggestionsNotifications() &&
             IsFetchedSuggestionsNotificationsEnabled()) {
           suggestion->set_should_notify(true);
-          suggestion->set_notification_deadline(clock_->Now() +
-                                                base::TimeDelta::FromDays(7));
+          suggestion->set_notification_deadline(clock_->Now() + base::Days(7));
         }
         if (!IsFetchedSuggestionsNotificationsEnabled()) {
           suggestion->set_should_notify(false);

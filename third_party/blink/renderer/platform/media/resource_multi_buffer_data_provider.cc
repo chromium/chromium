@@ -443,7 +443,7 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
           FROM_HERE,
           base::BindOnce(&ResourceMultiBufferDataProvider::Start,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kLoaderPartialRetryDelayMs));
+          base::Milliseconds(kLoaderPartialRetryDelayMs));
       return;
     } else {
       url_data_->Fail();
@@ -475,8 +475,8 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
         FROM_HERE,
         base::BindOnce(&ResourceMultiBufferDataProvider::Start,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(
-            kLoaderFailedRetryDelayMs + kAdditionalDelayPerRetryMs * retries_));
+        base::Milliseconds(kLoaderFailedRetryDelayMs +
+                           kAdditionalDelayPerRetryMs * retries_));
   } else {
     // We don't need to continue loading after failure.
     // Note that calling Fail() will most likely delete this object.

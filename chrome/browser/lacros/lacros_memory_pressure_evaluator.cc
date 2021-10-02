@@ -16,7 +16,7 @@ LacrosMemoryPressureEvaluator* g_lacros_evaluator = nullptr;
 // We try not to re-notify on moderate too frequently, this time
 // controls how frequently we will notify after our first notification.
 constexpr base::TimeDelta kModerateMemoryPressureCooldownTime =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 }  // namespace
 

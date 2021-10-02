@@ -42,7 +42,7 @@ constexpr int kFinalizingTimeInSeconds = 5 * 60;
 constexpr const char kNetworkGuid[] = "test_network";
 
 MATCHER_P(TimeLeftEq, time_in_seconds, "") {
-  return arg.total_time_left == base::TimeDelta::FromSeconds(time_in_seconds);
+  return arg.total_time_left == base::Seconds(time_in_seconds);
 }
 
 MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
@@ -227,8 +227,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
     EXPECT_CALL(*mock_delegate_,
                 UpdateInfoChanged(TimeLeftEq(time_left - seconds - 1)));
   }
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(time_spent_on_downloading));
+  task_environment_.FastForwardBy(base::Seconds(time_spent_on_downloading));
   Mock::VerifyAndClearExpectations(&mock_delegate_);
 
   // VERIFYING starts.
@@ -248,8 +247,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
       *mock_delegate_,
       UpdateInfoChanged(TimeLeftEq(time_left - kVerifyingTimeInSeconds)))
       .Times(over_time + 1);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(time_spent_on_verifying));
+  task_environment_.FastForwardBy(base::Seconds(time_spent_on_verifying));
   Mock::VerifyAndClearExpectations(&mock_delegate_);
 
   // FINALIZING starts.
@@ -293,7 +291,7 @@ TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   EXPECT_CALL(*mock_delegate_,
               UpdateInfoChanged(DowloadingTimeLeftEq(false, 0)));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   status.set_progress(0.01);
   EXPECT_CALL(*mock_delegate_,

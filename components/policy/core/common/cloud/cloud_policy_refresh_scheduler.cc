@@ -217,7 +217,7 @@ void CloudPolicyRefreshScheduler::OnConnectionChanged(
     return;
 
   const base::TimeDelta refresh_delay =
-      base::TimeDelta::FromMilliseconds(GetActualRefreshDelay());
+      base::Milliseconds(GetActualRefreshDelay());
   const base::TimeDelta system_delta =
       std::max(last_refresh_ + refresh_delay - base::Time::NowFromSystemTime(),
                base::TimeDelta());
@@ -368,7 +368,7 @@ void CloudPolicyRefreshScheduler::PerformRefresh() {
 }
 
 void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms) {
-  const base::TimeDelta delta(base::TimeDelta::FromMilliseconds(delta_ms));
+  const base::TimeDelta delta(base::Milliseconds(delta_ms));
 
   // Schedule the callback, calculating the delay based on both, system time
   // and TimeTicks, whatever comes up to become earlier update. This is done to
@@ -385,7 +385,7 @@ void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms) {
   // Unless requesting an immediate refresh, add a delay to the scheduled policy
   // refresh in order to spread out server load.
   if (!delay.is_zero())
-    delay += base::TimeDelta::FromMilliseconds(refresh_delay_salt_ms_);
+    delay += base::Milliseconds(refresh_delay_salt_ms_);
 
   refresh_callback_.Reset(base::BindOnce(
       &CloudPolicyRefreshScheduler::PerformRefresh, base::Unretained(this)));

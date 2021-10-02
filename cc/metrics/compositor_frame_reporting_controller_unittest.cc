@@ -193,23 +193,23 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     args_ = viz::BeginFrameArgs();
     args_.frame_id = frame_id;
     args_.frame_time = AdvanceNowByMs(10);
-    args_.interval = base::TimeDelta::FromMilliseconds(16);
+    args_.interval = base::Milliseconds(16);
     current_id_ = frame_id;
     return args_;
   }
 
   std::unique_ptr<BeginMainFrameMetrics> BuildBlinkBreakdown() {
     auto breakdown = std::make_unique<BeginMainFrameMetrics>();
-    breakdown->handle_input_events = base::TimeDelta::FromMicroseconds(10);
-    breakdown->animate = base::TimeDelta::FromMicroseconds(9);
-    breakdown->style_update = base::TimeDelta::FromMicroseconds(8);
-    breakdown->layout_update = base::TimeDelta::FromMicroseconds(7);
-    breakdown->compositing_inputs = base::TimeDelta::FromMicroseconds(6);
-    breakdown->prepaint = base::TimeDelta::FromMicroseconds(5);
-    breakdown->compositing_assignments = base::TimeDelta::FromMicroseconds(4);
-    breakdown->paint = base::TimeDelta::FromMicroseconds(3);
-    breakdown->composite_commit = base::TimeDelta::FromMicroseconds(2);
-    breakdown->update_layers = base::TimeDelta::FromMicroseconds(1);
+    breakdown->handle_input_events = base::Microseconds(10);
+    breakdown->animate = base::Microseconds(9);
+    breakdown->style_update = base::Microseconds(8);
+    breakdown->layout_update = base::Microseconds(7);
+    breakdown->compositing_inputs = base::Microseconds(6);
+    breakdown->prepaint = base::Microseconds(5);
+    breakdown->compositing_assignments = base::Microseconds(4);
+    breakdown->paint = base::Microseconds(3);
+    breakdown->composite_commit = base::Microseconds(2);
+    breakdown->update_layers = base::Microseconds(1);
 
     // Advance now by the sum of the breakdowns.
     AdvanceNowByMs(10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
@@ -233,7 +233,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   }
 
   base::TimeTicks AdvanceNowByMs(int64_t advance_ms) {
-    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(advance_ms));
+    test_tick_clock_.Advance(base::Microseconds(advance_ms));
     return test_tick_clock_.NowTicks();
   }
 
@@ -977,34 +977,34 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
       "CompositorLatency.SendBeginMainFrameToCommit", 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.HandleInputEvents",
-      base::TimeDelta::FromMicroseconds(10).InMilliseconds(), 1);
+      base::Microseconds(10).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.Animate",
-      base::TimeDelta::FromMicroseconds(9).InMilliseconds(), 1);
+      base::Microseconds(9).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.StyleUpdate",
-      base::TimeDelta::FromMicroseconds(8).InMilliseconds(), 1);
+      base::Microseconds(8).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.LayoutUpdate",
-      base::TimeDelta::FromMicroseconds(7).InMilliseconds(), 1);
+      base::Microseconds(7).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.CompositingInputs",
-      base::TimeDelta::FromMicroseconds(6).InMilliseconds(), 1);
+      base::Microseconds(6).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.Prepaint",
-      base::TimeDelta::FromMicroseconds(5).InMilliseconds(), 1);
+      base::Microseconds(5).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.CompositingAssignments",
-      base::TimeDelta::FromMicroseconds(4).InMilliseconds(), 1);
+      base::Microseconds(4).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.Paint",
-      base::TimeDelta::FromMicroseconds(3).InMilliseconds(), 1);
+      base::Microseconds(3).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.CompositeCommit",
-      base::TimeDelta::FromMicroseconds(2).InMilliseconds(), 1);
+      base::Microseconds(2).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.UpdateLayers",
-      base::TimeDelta::FromMicroseconds(1).InMilliseconds(), 1);
+      base::Microseconds(1).InMilliseconds(), 1);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency.SendBeginMainFrameToCommit.BeginMainSentToStarted", 1);
 }
@@ -1024,8 +1024,7 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame1) {
       1, current_id_, current_id_, {}, /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   details.presentation_feedback.timestamp =
-      args_.frame_time + args_.interval * 1.5 -
-      base::TimeDelta::FromMicroseconds(100);
+      args_.frame_time + args_.interval * 1.5 - base::Microseconds(100);
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
   histogram_tester.ExpectTotalCount(
@@ -1063,8 +1062,7 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame2) {
       1, current_id_, current_id_, {}, /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   details.presentation_feedback.timestamp =
-      args_.frame_time + args_.interval * 1.5 +
-      base::TimeDelta::FromMicroseconds(100);
+      args_.frame_time + args_.interval * 1.5 + base::Microseconds(100);
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
   histogram_tester.ExpectTotalCount(

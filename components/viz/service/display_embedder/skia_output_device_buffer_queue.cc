@@ -30,7 +30,7 @@ namespace {
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
 
 NOINLINE void CheckForLoopFailuresBufferQueue() {
-  const auto threshold = base::TimeDelta::FromSeconds(1);
+  const auto threshold = base::Seconds(1);
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
       now - g_last_reshape_failure < threshold) {

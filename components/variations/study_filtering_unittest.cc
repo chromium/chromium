@@ -347,7 +347,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyPolicyRestriction) {
 
 TEST(VariationsStudyFilteringTest, CheckStudyStartDate) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta = base::Hours(1);
   const struct {
     const base::Time start_date;
     bool expected_result;
@@ -374,7 +374,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyStartDate) {
 
 TEST(VariationsStudyFilteringTest, CheckStudyEndDate) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta = base::Hours(1);
   const struct {
     const base::Time end_date;
     bool expected_result;
@@ -901,7 +901,7 @@ TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Permanent) {
 
 TEST(VariationsStudyFilteringTest, IsStudyExpired) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta = base::Hours(1);
   const struct {
     const base::Time expiry_date;
     bool expected_result;

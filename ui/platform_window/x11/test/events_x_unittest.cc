@@ -222,8 +222,8 @@ TEST_F(EventsXTest, ClickCount) {
   x11::Event event;
   gfx::Point location(5, 10);
 
-  base::TimeDelta time_stamp = base::TimeTicks::Now().since_origin() -
-                               base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta time_stamp =
+      base::TimeTicks::Now().since_origin() - base::Milliseconds(10);
   for (int i = 1; i <= 3; ++i) {
     InitButtonEvent(&event, true, location, 1, {});
     {
@@ -242,7 +242,7 @@ TEST_F(EventsXTest, ClickCount) {
       EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouseev->type());
       EXPECT_EQ(i, mouseev->GetClickCount());
     }
-    time_stamp += base::TimeDelta::FromMilliseconds(1);
+    time_stamp += base::Milliseconds(1);
   }
 }
 
@@ -518,7 +518,7 @@ namespace {
 
 // Returns a fake TimeTicks based on the given millisecond offset.
 base::TimeTicks TimeTicksFromMillis(int64_t millis) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(millis);
+  return base::TimeTicks() + base::Milliseconds(millis);
 }
 
 }  // namespace

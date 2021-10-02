@@ -205,8 +205,8 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
 
 void TextSuggestionHostAndroid::StartSuggestionMenuTimer() {
   suggestion_menu_timeout_.Stop();
-  suggestion_menu_timeout_.Start(base::TimeDelta::FromMilliseconds(
-      gfx::ViewConfiguration::GetDoubleTapTimeoutInMs()));
+  suggestion_menu_timeout_.Start(
+      base::Milliseconds(gfx::ViewConfiguration::GetDoubleTapTimeoutInMs()));
 }
 
 void TextSuggestionHostAndroid::OnKeyEvent() {

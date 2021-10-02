@@ -349,7 +349,7 @@ TEST_F(ResizeShadowAndCursorTest, Touch) {
   int start_y = 100 + kResizeOutsideBoundsSize - 1;
   generator.GestureScrollSequenceWithCallback(
       gfx::Point(start_x, start_y), gfx::Point(start_x + 50, start_y + 50),
-      base::TimeDelta::FromMilliseconds(200), 3,
+      base::Milliseconds(200), 3,
       base::BindRepeating(
           &ResizeShadowAndCursorTest::ProcessBottomRightResizeGesture,
           base::Unretained(this)));

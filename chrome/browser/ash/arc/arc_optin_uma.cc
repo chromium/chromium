@@ -127,7 +127,7 @@ void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
   // here.
   base::UmaHistogramCustomTimes(
       GetHistogramNameByUserType(histogram_name, profile), elapsed_time,
-      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(6), 50);
+      base::Seconds(1), base::Minutes(6), 50);
 }
 
 void UpdateReauthorizationResultUMA(ProvisioningStatus status,
@@ -149,8 +149,7 @@ void UpdatePlayAutoInstallRequestTime(const base::TimeDelta& elapsed_time,
   base::UmaHistogramCustomTimes(
       GetHistogramNameByUserType("Arc.PlayAutoInstallRequest.TimeDelta",
                                  profile),
-      elapsed_time, base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromMinutes(10), 50);
+      elapsed_time, base::Seconds(1), base::Minutes(10), 50);
 }
 
 void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
@@ -159,22 +158,19 @@ void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
   base::UmaHistogramCustomTimes(
       GetHistogramNameByUserType("Arc.UiAvailable." + mode + ".TimeDelta",
                                  profile),
-      elapsed_time, base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromMinutes(5), 50);
+      elapsed_time, base::Seconds(1), base::Minutes(5), 50);
 }
 
 void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time) {
   base::UmaHistogramCustomTimes("Arc.PlayStoreLaunch.TimeDelta", elapsed_time,
-                                base::TimeDelta::FromMilliseconds(10),
-                                base::TimeDelta::FromSeconds(20), 50);
+                                base::Milliseconds(10), base::Seconds(20), 50);
 }
 
 void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
                                         const Profile* profile) {
   base::UmaHistogramCustomTimes(
       GetHistogramNameByUserType("Arc.PlayStoreShown.TimeDelta", profile),
-      elapsed_time, base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromMinutes(10), 50);
+      elapsed_time, base::Seconds(1), base::Minutes(10), 50);
 }
 
 void UpdateAuthTiming(const char* histogram_name,
@@ -182,8 +178,8 @@ void UpdateAuthTiming(const char* histogram_name,
                       const Profile* profile) {
   base::UmaHistogramCustomTimes(
       GetHistogramNameByUserType(histogram_name, profile), elapsed_time,
-      base::TimeDelta::FromSeconds(1) /* minimum */,
-      base::TimeDelta::FromMinutes(3) /* maximum */, 50 /* bucket_count */);
+      base::Seconds(1) /* minimum */, base::Minutes(3) /* maximum */,
+      50 /* bucket_count */);
 }
 
 void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile) {

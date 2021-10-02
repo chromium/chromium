@@ -297,7 +297,7 @@ class TouchHudProjectionTest : public TouchHudTestBase {
     GetInternalTouchHudProjection()->OnTouchEvent(&event);
 
     // Advance time for next event.
-    event_time += base::TimeDelta::FromMilliseconds(100);
+    event_time += base::Milliseconds(100);
   }
 
  private:

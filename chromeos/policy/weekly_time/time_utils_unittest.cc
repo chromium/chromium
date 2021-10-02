@@ -36,8 +36,8 @@ enum {
 
 constexpr int kMinutesInHour = 60;
 constexpr int kMillisecondsInHour = 3600000;
-constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kMinute = base::Minutes(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
 constexpr base::Time::Exploded kDaylightSavingsTime{2018, 8, 3, 8, 15, 0, 0, 0};
 constexpr base::Time::Exploded kNonDaylightSavingsTime{2018, 1, 0, 28,
                                                        0,    0, 0, 0};
@@ -250,7 +250,7 @@ TEST(TimeUtilsNonEmptyIntervalVector, AlwaysHasNextEvent) {
   // Just to make sure: Time::FromString actually parses microseconds
   ASSERT_EQ(TimeFromString("Tue, 20 Apr 2021 22:05:00.123456 GMT") -
                 TimeFromString("Tue, 20 Apr 2021 22:05:00 GMT"),
-            base::TimeDelta::FromMicroseconds(123456));
+            base::Microseconds(123456));
 
   // First interval, before begin.
   EXPECT_EQ(GetNextEventTime(TimeFromString("Sat, 17 Apr 2021 23:59:59 GMT"),

@@ -54,8 +54,7 @@ class WindowMoveToDeskAnimation : public ui::ImplicitAnimationObserver {
       : old_window_layer_tree_(::wm::RecreateLayers(window)) {
     ui::Layer* layer = old_window_layer_tree_->root();
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-    constexpr base::TimeDelta kDuration =
-        base::TimeDelta::FromMilliseconds(200);
+    constexpr base::TimeDelta kDuration = base::Milliseconds(200);
     settings.SetTransitionDuration(kDuration);
     settings.SetTweenType(gfx::Tween::EASE_IN);
     settings.SetPreemptionStrategy(
@@ -101,7 +100,7 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
   //      |     |
   //      |---->|
   //      |     |
-  constexpr base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(150);
+  constexpr base::TimeDelta kDuration = base::Milliseconds(150);
   auto outgoing_transition = ui::LayerAnimationElement::CreateTransformElement(
       begin_transform, kDuration);
   outgoing_transition->set_tween_type(gfx::Tween::EASE_OUT);

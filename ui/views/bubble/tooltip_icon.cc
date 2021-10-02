@@ -45,7 +45,7 @@ TooltipIcon::~TooltipIcon() {
 
 void TooltipIcon::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_inside_ = true;
-  show_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(150), this,
+  show_timer_.Start(FROM_HERE, base::Milliseconds(150), this,
                     &TooltipIcon::ShowBubble);
 }
 

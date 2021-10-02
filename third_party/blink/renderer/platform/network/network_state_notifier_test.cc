@@ -50,10 +50,9 @@ namespace {
 const double kNoneMaxBandwidthMbps = 0.0;
 const double kBluetoothMaxBandwidthMbps = 1.0;
 const double kEthernetMaxBandwidthMbps = 2.0;
-const absl::optional<base::TimeDelta> kEthernetHttpRtt(
-    base::TimeDelta::FromMilliseconds(50));
+const absl::optional<base::TimeDelta> kEthernetHttpRtt(base::Milliseconds(50));
 const absl::optional<base::TimeDelta> kEthernetTransportRtt(
-    base::TimeDelta::FromMilliseconds(25));
+    base::Milliseconds(25));
 const absl::optional<double> kEthernetThroughputMbps(75.0);
 const absl::optional<base::TimeDelta> kUnknownRtt;
 const absl::optional<double> kUnknownThroughputMbps;
@@ -202,10 +201,9 @@ class NetworkStateNotifierTest : public testing::Test {
     notifier_.SetWebConnection(type, max_bandwidth_mbps);
     notifier_.SetNetworkQuality(
         effective_type,
-        http_rtt.has_value() ? http_rtt.value()
-                             : base::TimeDelta::FromMilliseconds(-1),
+        http_rtt.has_value() ? http_rtt.value() : base::Milliseconds(-1),
         transport_rtt.has_value() ? transport_rtt.value()
-                                  : base::TimeDelta::FromMilliseconds(-1),
+                                  : base::Milliseconds(-1),
         downlink_throughput_mbps.has_value()
             ? downlink_throughput_mbps.value() * 1000
             : -1);
@@ -1051,14 +1049,10 @@ TEST_F(NetworkStateNotifierTest, SetNetworkConnectionInfoOverrideGenerateECTs) {
     absl::optional<base::TimeDelta> rtt;
     WebEffectiveConnectionType expected_effective_connection_type;
   } tests[] = {
-      {base::TimeDelta::FromMilliseconds(100),
-       WebEffectiveConnectionType::kType4G},
-      {base::TimeDelta::FromMilliseconds(600),
-       WebEffectiveConnectionType::kType3G},
-      {base::TimeDelta::FromMilliseconds(1600),
-       WebEffectiveConnectionType::kType2G},
-      {base::TimeDelta::FromMilliseconds(2800),
-       WebEffectiveConnectionType::kTypeSlow2G},
+      {base::Milliseconds(100), WebEffectiveConnectionType::kType4G},
+      {base::Milliseconds(600), WebEffectiveConnectionType::kType3G},
+      {base::Milliseconds(1600), WebEffectiveConnectionType::kType2G},
+      {base::Milliseconds(2800), WebEffectiveConnectionType::kTypeSlow2G},
   };
 
   for (const auto& test : tests) {
@@ -1091,12 +1085,12 @@ TEST_F(NetworkStateNotifierTest, SetNetInfoHoldback) {
   notifier_.SetNetworkQualityWebHoldback(WebEffectiveConnectionType::kType2G);
   VerifyInitialMetricsWithWebHoldbackState(
       kWebConnectionTypeUnknown, kNoneMaxBandwidthMbps,
-      WebEffectiveConnectionType::kType2G,
-      base::TimeDelta::FromMilliseconds(1800), 0.075, SaveData::kOff);
+      WebEffectiveConnectionType::kType2G, base::Milliseconds(1800), 0.075,
+      SaveData::kOff);
 
   EXPECT_EQ(WebEffectiveConnectionType::kType2G,
             notifier_.GetWebHoldbackEffectiveType().value());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             notifier_.GetWebHoldbackHttpRtt().value());
   EXPECT_EQ(0.075, notifier_.GetWebHoldbackDownlinkThroughputMbps().value());
 }

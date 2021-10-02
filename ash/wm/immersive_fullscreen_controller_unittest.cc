@@ -292,8 +292,8 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
         views::View::ConvertPointToScreen(top_container(), &start);
         views::View::ConvertPointToScreen(top_container(), &end);
         ui::test::EventGenerator* event_generator = GetEventGenerator();
-        event_generator->GestureScrollSequence(
-            start, end, base::TimeDelta::FromMilliseconds(30), 1);
+        event_generator->GestureScrollSequence(start, end,
+                                               base::Milliseconds(30), 1);
         break;
       }
     }
@@ -1129,7 +1129,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
       shelf->shelf_widget()->GetWindowBoundsInScreen().top_center();
   GetEventGenerator()->GestureScrollSequence(
       start, start + gfx::Vector2d(0, -ShelfConfig::Get()->shelf_size()),
-      base::TimeDelta::FromMilliseconds(200), /*steps=*/5);
+      base::Milliseconds(200), /*steps=*/5);
 
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());

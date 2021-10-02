@@ -31,7 +31,7 @@ const char kFeaturePolicyBlocked[] =
     "Access to the feature \"idle-detection\" is disallowed by permissions "
     "policy.";
 
-constexpr base::TimeDelta kMinimumThreshold = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMinimumThreshold = base::Seconds(60);
 
 }  // namespace
 
@@ -114,7 +114,7 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   }
 
   if (options->hasThreshold()) {
-    auto threshold = base::TimeDelta::FromMilliseconds(options->threshold());
+    auto threshold = base::Milliseconds(options->threshold());
     if (threshold < kMinimumThreshold) {
       exception_state.ThrowTypeError("Minimum threshold is 1 minute.");
       return ScriptPromise();

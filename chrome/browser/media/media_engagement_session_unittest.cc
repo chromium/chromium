@@ -109,7 +109,7 @@ class MediaEngagementSessionTest : public testing::Test {
     test_ukm_recorder_.UpdateSourceURL(ukm_source_id(), origin_.GetURL());
 
     // Advance the test clock to a non null value.
-    test_clock_.Advance(base::TimeDelta::FromMinutes(15));
+    test_clock_.Advance(base::Minutes(15));
   }
 
   MediaEngagementService* service() const { return service_.get(); }

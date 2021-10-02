@@ -75,7 +75,7 @@ std::tuple<bool, int, int> RunRecoveryCRXElevated(
     return {false, static_cast<int>(hr), 0};
 
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);

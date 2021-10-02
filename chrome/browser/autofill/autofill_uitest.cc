@@ -207,7 +207,7 @@ void AutofillUiTest::SendKeyToPopupAndWait(
 
 void AutofillUiTest::DoNothingAndWait(unsigned seconds) {
   test_delegate()->SetExpectations({ObservedUiEvents::kNoEvent},
-                                   base::TimeDelta::FromSeconds(seconds));
+                                   base::Seconds(seconds));
   ASSERT_FALSE(test_delegate()->Wait());
 }
 

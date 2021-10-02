@@ -401,14 +401,13 @@ TEST_P(WaylandKeyboardTest, EventAutoRepeat) {
 
   // First key repeat event happens after |delay| milliseconds.
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(check_repeat_event);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(delay));
+  task_environment_.FastForwardBy(base::Milliseconds(delay));
   SyncDisplay();
   Mock::VerifyAndClearExpectations(&delegate_);
 
   // The next key event happens after 1/|rate| seconds.
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(check_repeat_event);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromMilliseconds(1000 / rate));
+  task_environment_.FastForwardBy(base::Milliseconds(1000 / rate));
   SyncDisplay();
   Mock::VerifyAndClearExpectations(&delegate_);
 
@@ -445,7 +444,7 @@ TEST_P(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
     EXPECT_TRUE(event->flags() & EF_IS_REPEAT);
     EXPECT_EQ(KeyboardCode::VKEY_A, event->AsKeyEvent()->key_code());
   });
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(delay));
+  task_environment_.FastForwardBy(base::Milliseconds(delay));
   SyncDisplay();
   Mock::VerifyAndClearExpectations(&delegate_);
 
@@ -455,8 +454,7 @@ TEST_P(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
 
   // After that, no key repeat events are expected.
   EXPECT_CALL(delegate_, DispatchEvent(NotNull())).Times(0);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromMilliseconds(1000 / rate));
+  task_environment_.FastForwardBy(base::Milliseconds(1000 / rate));
   Sync();
   Mock::VerifyAndClearExpectations(&delegate_);
 

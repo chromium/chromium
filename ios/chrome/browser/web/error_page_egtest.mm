@@ -90,24 +90,24 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
   // Add some delay otherwise the back/forward navigations are occurring too
   // fast.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   // Navigate to a page which responds.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];

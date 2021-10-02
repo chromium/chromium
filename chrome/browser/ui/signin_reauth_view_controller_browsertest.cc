@@ -51,7 +51,7 @@ const char kReauthUserActionHistogramName[] =
 const char kReauthUserActionToFillPasswordHistogramName[] =
     "Signin.TransactionalReauthUserAction.ToFillPassword";
 
-const base::TimeDelta kReauthDialogTimeout = base::TimeDelta::FromSeconds(30);
+const base::TimeDelta kReauthDialogTimeout = base::Seconds(30);
 const char kReauthDonePath[] = "/embedded/xreauth/chrome?done";
 const char kReauthUnexpectedResponsePath[] =
     "/embedded/xreauth/chrome?unexpected";

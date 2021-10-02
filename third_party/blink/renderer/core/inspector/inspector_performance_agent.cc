@@ -146,7 +146,7 @@ base::TimeTicks InspectorPerformanceAgent::GetTimeTicksNow() {
 
 base::TimeTicks InspectorPerformanceAgent::GetThreadTimeNow() {
   return base::TimeTicks() +
-         base::TimeDelta::FromMicroseconds(
+         base::Microseconds(
              base::ThreadTicks::Now().since_origin().InMicroseconds());
 }
 

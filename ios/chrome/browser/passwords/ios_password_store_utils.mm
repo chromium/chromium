@@ -36,7 +36,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         FROM_HERE,
         base::BindOnce(&StoreMetricReporterHelper::StartMetricsReporting,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(30));
+        base::Seconds(30));
   }
   ~StoreMetricReporterHelper() override = default;
 

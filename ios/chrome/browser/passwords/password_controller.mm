@@ -335,11 +335,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
   // Hides notification after 3 seconds.
   __weak PasswordController* weakSelf = self;
-  _notifyAutoSigninTimer.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kNotifyAutoSigninDuration),
-      base::BindRepeating(^{
-        [weakSelf hideAutosigninNotification];
-      }));
+  _notifyAutoSigninTimer.Start(FROM_HERE,
+                               base::Seconds(kNotifyAutoSigninDuration),
+                               base::BindRepeating(^{
+                                 [weakSelf hideAutosigninNotification];
+                               }));
 }
 
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType

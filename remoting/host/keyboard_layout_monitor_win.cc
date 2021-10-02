@@ -34,8 +34,7 @@ namespace remoting {
 
 namespace {
 
-constexpr base::TimeDelta POLL_INTERVAL =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta POLL_INTERVAL = base::Milliseconds(1000);
 // If second is equivalent to first (generates the same functions/characters at
 // all shift levels), second will be removed from the map.
 constexpr std::pair<ui::DomCode, ui::DomCode> POSSIBLE_EQUIVALENTS[] = {

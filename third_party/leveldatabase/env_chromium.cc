@@ -60,7 +60,7 @@ const constexpr size_t kFileLimitToDisableEviction = 10'000;
 
 // The maximum time for the |Retrier| to indicate that an operation should
 // be retried.
-constexpr auto kMaxRetryDuration = base::TimeDelta::FromMilliseconds(1000);
+constexpr auto kMaxRetryDuration = base::Milliseconds(1000);
 
 const FilePath::CharType table_extension[] = FILE_PATH_LITERAL(".ldb");
 
@@ -91,7 +91,7 @@ class Retrier {
       : start_(base::subtle::TimeTicksNowIgnoringOverride()),
         limit_(start_ + kMaxRetryDuration),
         last_(start_),
-        time_to_sleep_(base::TimeDelta::FromMilliseconds(10)) {}
+        time_to_sleep_(base::Milliseconds(10)) {}
 
   Retrier(const Retrier&) = delete;
   Retrier& operator=(const Retrier&) = delete;
@@ -1019,7 +1019,7 @@ uint64_t ChromiumEnv::NowMicros() {
 
 void ChromiumEnv::SleepForMicroseconds(int micros) {
   // Round up to the next millisecond.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(micros));
+  base::PlatformThread::Sleep(base::Microseconds(micros));
 }
 
 class Thread : public base::PlatformThread::Delegate {

@@ -46,8 +46,7 @@ namespace {
 constexpr char kDefaultDeviceId[] = "";
 constexpr char kNonDefaultDeviceId[] = "valid-nondefault-device-id";
 constexpr char kUnauthorizedDeviceId[] = "unauthorized-device-id";
-constexpr base::TimeDelta kAuthTimeout =
-    base::TimeDelta::FromMilliseconds(10000);
+constexpr base::TimeDelta kAuthTimeout = base::Milliseconds(10000);
 
 class MockRenderCallback : public AudioRendererSink::RenderCallback {
  public:

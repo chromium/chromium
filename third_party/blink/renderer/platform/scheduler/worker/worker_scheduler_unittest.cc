@@ -57,7 +57,7 @@ void RunChainedTask(scoped_refptr<base::sequence_manager::TaskQueue> task_queue,
       FROM_HERE,
       base::BindOnce(&RunChainedTask, task_queue, count - 1, duration,
                      environment, base::Unretained(tasks)),
-      base::TimeDelta::FromMilliseconds(50));
+      base::Milliseconds(50));
 }
 
 class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
@@ -99,8 +99,7 @@ class WorkerSchedulerTest : public testing::Test {
         scheduler_(new WorkerThreadSchedulerForTest(ThreadType::kTestThread,
                                                     sequence_manager_.get(),
                                                     nullptr /* proxy */)) {
-    mock_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMicroseconds(5000));
+    mock_task_runner_->AdvanceMockTickClock(base::Microseconds(5000));
     start_time_ = mock_task_runner_->NowTicks();
   }
 
@@ -240,12 +239,11 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_RunThrottledTasks) {
 
   RunUntilIdle();
 
-  EXPECT_THAT(tasks,
-              ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(1),
-                          base::TimeTicks() + base::TimeDelta::FromSeconds(2),
-                          base::TimeTicks() + base::TimeDelta::FromSeconds(3),
-                          base::TimeTicks() + base::TimeDelta::FromSeconds(4),
-                          base::TimeTicks() + base::TimeDelta::FromSeconds(5)));
+  EXPECT_THAT(tasks, ElementsAre(base::TimeTicks() + base::Seconds(1),
+                                 base::TimeTicks() + base::Seconds(2),
+                                 base::TimeTicks() + base::Seconds(3),
+                                 base::TimeTicks() + base::Seconds(4),
+                                 base::TimeTicks() + base::Seconds(5)));
 }
 
 TEST_F(WorkerSchedulerTest,
@@ -267,17 +265,16 @@ TEST_F(WorkerSchedulerTest,
   worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
-                                base::TimeDelta::FromMilliseconds(100),
-                                mock_task_runner_, base::Unretained(&tasks)));
+                                base::Milliseconds(100), mock_task_runner_,
+                                base::Unretained(&tasks)));
 
   RunUntilIdle();
 
-  EXPECT_THAT(tasks,
-              ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(1),
-                          start_time_ + base::TimeDelta::FromSeconds(10),
-                          start_time_ + base::TimeDelta::FromSeconds(20),
-                          start_time_ + base::TimeDelta::FromSeconds(30),
-                          start_time_ + base::TimeDelta::FromSeconds(40)));
+  EXPECT_THAT(tasks, ElementsAre(base::TimeTicks() + base::Seconds(1),
+                                 start_time_ + base::Seconds(10),
+                                 start_time_ + base::Seconds(20),
+                                 start_time_ + base::Seconds(30),
+                                 start_time_ + base::Seconds(40)));
 }
 
 TEST_F(WorkerSchedulerTest, MAYBE_PausableTasks) {

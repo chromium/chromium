@@ -81,8 +81,8 @@ void CreateAndShowWidget(views::WidgetDelegateView* delegate,
 
   // Note: We cannot use the Window show/hide animations since they are disabled
   // for kiosk by command line.
-  ui::LayerAnimator* animator = new ui::LayerAnimator(
-          base::TimeDelta::FromMilliseconds(animation_time_ms));
+  ui::LayerAnimator* animator =
+      new ui::LayerAnimator(base::Milliseconds(animation_time_ms));
   native_view->layer()->SetAnimator(animator);
   widget->Show();
 
@@ -124,11 +124,9 @@ class IdleAppNameNotificationDelegateView
 
     // Set a timer which will trigger to remove the message after the given
     // time.
-    hide_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(message_visibility_time_in_ms),
-        this,
-        &IdleAppNameNotificationDelegateView::RemoveMessage);
+    hide_timer_.Start(FROM_HERE,
+                      base::Milliseconds(message_visibility_time_in_ms), this,
+                      &IdleAppNameNotificationDelegateView::RemoveMessage);
   }
 
   IdleAppNameNotificationDelegateView(

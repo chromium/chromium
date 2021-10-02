@@ -69,8 +69,8 @@ TEST(DataBufferTest, CreateEOSBuffer) {
 
 TEST(DataBufferTest, Timestamp) {
   const base::TimeDelta kZero;
-  const base::TimeDelta kTimestampA = base::TimeDelta::FromMicroseconds(1337);
-  const base::TimeDelta kTimestampB = base::TimeDelta::FromMicroseconds(1234);
+  const base::TimeDelta kTimestampA = base::Microseconds(1337);
+  const base::TimeDelta kTimestampB = base::Microseconds(1234);
 
   scoped_refptr<DataBuffer> buffer = new DataBuffer(0);
   EXPECT_TRUE(buffer->timestamp() == kZero);
@@ -84,8 +84,8 @@ TEST(DataBufferTest, Timestamp) {
 
 TEST(DataBufferTest, Duration) {
   const base::TimeDelta kZero;
-  const base::TimeDelta kDurationA = base::TimeDelta::FromMicroseconds(1337);
-  const base::TimeDelta kDurationB = base::TimeDelta::FromMicroseconds(1234);
+  const base::TimeDelta kDurationA = base::Microseconds(1337);
+  const base::TimeDelta kDurationB = base::Microseconds(1234);
 
   scoped_refptr<DataBuffer> buffer = new DataBuffer(0);
   EXPECT_TRUE(buffer->duration() == kZero);

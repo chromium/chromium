@@ -289,7 +289,7 @@ HRESULT DeckLinkCaptureDelegate::VideoInputFrameArrived(
     base::TimeDelta timestamp;
     if (SUCCEEDED(video_frame->GetStreamTime(&frame_time, &frame_duration,
                                              micros_time_scale))) {
-      timestamp = base::TimeDelta::FromMicroseconds(frame_time);
+      timestamp = base::Microseconds(frame_time);
     } else {
       timestamp = now - first_ref_time_;
     }

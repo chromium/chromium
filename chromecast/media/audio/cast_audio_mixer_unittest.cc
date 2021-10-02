@@ -404,7 +404,7 @@ TEST_F(CastAudioMixerTest, Delay) {
 
   // |delay| is the same because the Mixer and stream are
   // using the same AudioParameters.
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(1000);
+  base::TimeDelta delay = base::Microseconds(1000);
   EXPECT_CALL(source, OnMoreData(delay, _, 0, _));
   SignalPull(source_callback_, delay);
 

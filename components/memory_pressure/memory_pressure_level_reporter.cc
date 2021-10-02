@@ -73,9 +73,9 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
         break;
     }
 
-    base::UmaHistogramCustomTimes(
-        histogram_name, now - current_pressure_level_begin_,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(10), 50);
+    base::UmaHistogramCustomTimes(histogram_name,
+                                  now - current_pressure_level_begin_,
+                                  base::Seconds(1), base::Minutes(10), 50);
   }
 
   current_pressure_level_begin_ = now;
@@ -88,13 +88,13 @@ void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
   auto duration = now - current_pressure_level_begin_;
   auto duration_s = duration.InSeconds();
   accumulator_buckets_[current_pressure_level_] +=
-      duration - base::TimeDelta::FromSeconds(duration_s);
+      duration - base::Seconds(duration_s);
   auto accumulated_seconds =
       accumulator_buckets_[current_pressure_level_].InSeconds();
   if (accumulated_seconds > 0) {
     duration_s += accumulated_seconds;
     accumulator_buckets_[current_pressure_level_] -=
-        base::TimeDelta::FromSeconds(accumulated_seconds);
+        base::Seconds(accumulated_seconds);
   }
 
   if (duration_s) {
@@ -113,7 +113,7 @@ void MemoryPressureLevelReporter::StartPeriodicTimer() {
   if (!base::SequencedTaskRunnerHandle::IsSet())
     return;
   periodic_reporting_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(5),
+      FROM_HERE, base::Minutes(5),
       base::BindOnce(&MemoryPressureLevelReporter::OnMemoryPressureLevelChanged,
                      // Unretained is safe because |this| owns this timer.
                      base::Unretained(this), current_pressure_level_));

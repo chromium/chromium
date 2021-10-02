@@ -103,7 +103,7 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
     ASSERT_EQ(url2_, GetWebContents()->GetURL());
 
-    mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    mock_clock_.Advance(base::Milliseconds(100));
     ui::SetEventTickClockForTesting(&mock_clock_);
   }
 

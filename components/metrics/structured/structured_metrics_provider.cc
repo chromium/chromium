@@ -32,8 +32,7 @@ constexpr int kExternalMetricsIntervalMins = 10;
 // to the metrics service via ProvideIndependentMetrics. This is set carefully:
 // metrics logs are stored in a queue of limited size, and are uploaded roughly
 // every 30 minutes.
-constexpr base::TimeDelta kMinIndependentMetricsInterval =
-    base::TimeDelta::FromMinutes(45);
+constexpr base::TimeDelta kMinIndependentMetricsInterval = base::Minutes(45);
 
 // Directory containing serialized event protos to read.
 constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
@@ -131,7 +130,7 @@ void StructuredMetricsProvider::OnProfileAdded(
     return;
   init_state_ = InitState::kProfileAdded;
 
-  const auto save_delay = base::TimeDelta::FromMilliseconds(kSaveDelayMs);
+  const auto save_delay = base::Milliseconds(kSaveDelayMs);
 
   profile_key_data_ = std::make_unique<KeyData>(
       profile_path.Append(kProfileKeyDataPath), save_delay,
@@ -157,7 +156,7 @@ void StructuredMetricsProvider::OnProfileAdded(
 
   external_metrics_ = std::make_unique<ExternalMetrics>(
       base::FilePath(kExternalMetricsDir),
-      base::TimeDelta::FromMinutes(kExternalMetricsIntervalMins),
+      base::Minutes(kExternalMetricsIntervalMins),
       base::BindRepeating(
           &StructuredMetricsProvider::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
@@ -407,7 +406,7 @@ void StructuredMetricsProvider::WriteNowForTest() {
 void StructuredMetricsProvider::SetExternalMetricsDirForTest(
     const base::FilePath& dir) {
   external_metrics_ = std::make_unique<ExternalMetrics>(
-      dir, base::TimeDelta::FromMinutes(kExternalMetricsIntervalMins),
+      dir, base::Minutes(kExternalMetricsIntervalMins),
       base::BindRepeating(
           &StructuredMetricsProvider::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));

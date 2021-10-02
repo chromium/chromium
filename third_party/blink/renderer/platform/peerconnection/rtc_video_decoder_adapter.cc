@@ -215,7 +215,7 @@ bool RTCVideoDecoderAdapter::InitializeSync(
                               CrossThreadUnretained(this), config,
                               std::move(init_cb)))) {
     // TODO(crbug.com/1076817) Remove if a root cause is found.
-    if (!waiter.TimedWait(base::TimeDelta::FromSeconds(10))) {
+    if (!waiter.TimedWait(base::Seconds(10))) {
       RecordInitializationLatency(base::TimeTicks::Now() - *start_time_);
       return false;
     }
@@ -337,8 +337,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     buffer =
         media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
   }
-  buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(input_image.Timestamp()));
+  buffer->set_timestamp(base::Microseconds(input_image.Timestamp()));
 
   if (ShouldReinitializeForSettingHDRColorSpace(input_image)) {
     config_.set_color_space_info(

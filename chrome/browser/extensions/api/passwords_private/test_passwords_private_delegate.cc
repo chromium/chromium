@@ -195,9 +195,8 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   // Mar 03 2020 12:00:00 UTC
   credential.compromised_info->compromise_time = 1583236800000;
   credential.compromised_info->elapsed_time_since_compromise =
-      base::UTF16ToUTF8(TimeFormat::Simple(TimeFormat::FORMAT_ELAPSED,
-                                           TimeFormat::LENGTH_LONG,
-                                           base::TimeDelta::FromDays(3)));
+      base::UTF16ToUTF8(TimeFormat::Simple(
+          TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, base::Days(3)));
   credential.compromised_info->compromise_type =
       api::passwords_private::COMPROMISE_TYPE_LEAKED;
   std::vector<api::passwords_private::InsecureCredential> credentials;
@@ -273,9 +272,9 @@ TestPasswordsPrivateDelegate::GetPasswordCheckStatus() {
   status.already_processed = std::make_unique<int>(5);
   status.remaining_in_queue = std::make_unique<int>(10);
   status.elapsed_time_since_last_check =
-      std::make_unique<std::string>(base::UTF16ToUTF8(TimeFormat::Simple(
-          TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_SHORT,
-          base::TimeDelta::FromMinutes(5))));
+      std::make_unique<std::string>(base::UTF16ToUTF8(
+          TimeFormat::Simple(TimeFormat::FORMAT_ELAPSED,
+                             TimeFormat::LENGTH_SHORT, base::Minutes(5))));
   return status;
 }
 

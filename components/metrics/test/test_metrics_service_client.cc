@@ -74,7 +74,7 @@ std::unique_ptr<MetricsLogUploader> TestMetricsServiceClient::CreateUploader(
 }
 
 base::TimeDelta TestMetricsServiceClient::GetStandardUploadInterval() {
-  return base::TimeDelta::FromMinutes(5);
+  return base::Minutes(5);
 }
 
 bool TestMetricsServiceClient::IsReportingPolicyManaged() {

@@ -50,7 +50,7 @@ void MockFrameProvider::Read(ReadCB read_cb) {
         FROM_HERE,
         base::BindOnce(&MockFrameProvider::DoRead, base::Unretained(this),
                        std::move(read_cb)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&MockFrameProvider::DoRead,
@@ -61,7 +61,7 @@ void MockFrameProvider::Read(ReadCB read_cb) {
 void MockFrameProvider::Flush(base::OnceClosure flush_cb) {
   if (delay_flush_) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, std::move(flush_cb), base::TimeDelta::FromMilliseconds(10));
+        FROM_HERE, std::move(flush_cb), base::Milliseconds(10));
   } else {
     std::move(flush_cb).Run();
   }

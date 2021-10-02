@@ -477,24 +477,21 @@ class TimedEvents {
  public:
   // Use a non-zero start time to pass DCHECKs which ensure events have had a
   // time assigned.
-  TimedEvents() {
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
-  }
+  TimedEvents() { tick_clock_.Advance(base::Milliseconds(1)); }
 
   base::TimeTicks Now() {
     base::TimeTicks t = tick_clock_.NowTicks();
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    tick_clock_.Advance(base::Milliseconds(1));
     return t;
   }
 
   base::TimeTicks LeapForward(int time_in_millis) {
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(time_in_millis));
+    tick_clock_.Advance(base::Milliseconds(time_in_millis));
     return tick_clock_.NowTicks();
   }
 
   base::TimeTicks InFuture(int time_in_millis) {
-    return tick_clock_.NowTicks() +
-        base::TimeDelta::FromMilliseconds(time_in_millis);
+    return tick_clock_.NowTicks() + base::Milliseconds(time_in_millis);
   }
 
   void SendScrollEvents(ui::EventSink* sink,
@@ -517,7 +514,7 @@ class TimedEvents {
           ui::PointerDetails(ui::EventPointerType::kTouch, touch_id));
       ui::EventDispatchDetails details = sink->OnEventFromSource(&move);
       ASSERT_FALSE(details.dispatcher_destroyed);
-      tick_clock_.Advance(base::TimeDelta::FromMilliseconds(time_step_ms));
+      tick_clock_.Advance(base::Milliseconds(time_step_ms));
     }
   }
 
@@ -1188,7 +1185,7 @@ TEST_F(GestureRecognizerTest, GestureEventScrollBoundingBox) {
     ui::TouchEvent release(
         ui::ET_TOUCH_RELEASED,
         gfx::Point(kPositionX + kScrollAmount, kPositionY + kScrollAmount),
-        press.time_stamp() + base::TimeDelta::FromMilliseconds(50),
+        press.time_stamp() + base::Milliseconds(50),
         ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
     DispatchEventUsingWindowDispatcher(&release);
     EXPECT_EQ(
@@ -1782,7 +1779,7 @@ TEST_F(GestureRecognizerTest, AsynchronousGestureRecognition) {
   queued_delegate->Reset();
   ui::TouchEvent release(
       ui::ET_TOUCH_RELEASED, gfx::Point(101, 201),
-      press.time_stamp() + base::TimeDelta::FromMilliseconds(50),
+      press.time_stamp() + base::Milliseconds(50),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId1));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_FALSE(queued_delegate->tap());
@@ -2510,9 +2507,7 @@ TEST_F(GestureRecognizerTest, GestureEndLocation) {
   const gfx::Point end(150, 150);
   const gfx::Vector2d window_offset =
       window->bounds().origin().OffsetFromOrigin();
-  generator.GestureScrollSequence(begin, end,
-                                  base::TimeDelta::FromMilliseconds(20),
-                                  10);
+  generator.GestureScrollSequence(begin, end, base::Milliseconds(20), 10);
   EXPECT_EQ((begin - window_offset).ToString(),
             delegate.scroll_begin_position().ToString());
   EXPECT_EQ((end - window_offset).ToString(),

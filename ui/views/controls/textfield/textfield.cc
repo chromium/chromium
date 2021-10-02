@@ -155,7 +155,7 @@ base::TimeDelta GetPasswordRevealDuration(const ui::KeyEvent& event) {
     uint8_t is_mirroring =
         fromVKPropertyArray[ui::kPropertyFromVKIsMirroringIndex];
     if (!is_mirroring)
-      return base::TimeDelta::FromSeconds(1);
+      return base::Seconds(1);
   }
   return base::TimeDelta();
 }
@@ -196,16 +196,15 @@ base::TimeDelta Textfield::GetCaretBlinkInterval() {
 #if defined(OS_WIN)
   static const size_t system_value = ::GetCaretBlinkTime();
   if (system_value != 0) {
-    return (system_value == INFINITE)
-               ? base::TimeDelta()
-               : base::TimeDelta::FromMilliseconds(system_value);
+    return (system_value == INFINITE) ? base::TimeDelta()
+                                      : base::Milliseconds(system_value);
   }
 #elif defined(OS_MAC)
   base::TimeDelta system_value;
   if (ui::TextInsertionCaretBlinkPeriod(&system_value))
     return system_value;
 #endif
-  return base::TimeDelta::FromMilliseconds(500);
+  return base::Milliseconds(500);
 }
 
 // static

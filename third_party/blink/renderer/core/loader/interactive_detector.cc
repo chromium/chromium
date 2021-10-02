@@ -27,12 +27,12 @@ int g_num_long_input_events = 0;
 // The threshold to emit the "Long Input Delay" trace event is the 99th
 // percentile of the histogram on Windows Stable as of Feb 25, 2020.
 constexpr base::TimeDelta kInputDelayTraceEventThreshold =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // The threshold to emit the "Long First Input Delay" trace event is the 99th
 // percentile of the histogram on Windows Stable as of Feb 27, 2020.
 constexpr base::TimeDelta kFirstInputDelayTraceEventThreshold =
-    base::TimeDelta::FromMilliseconds(575);
+    base::Milliseconds(575);
 
 }  // namespace
 
@@ -42,7 +42,7 @@ const base::Feature kFixFirstInputDelayForDesktop{
 
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
-constexpr auto kTimeToInteractiveWindow = base::TimeDelta::FromSeconds(5);
+constexpr auto kTimeToInteractiveWindow = base::Seconds(5);
 // Network is considered "quiet" if there are no more than 2 active network
 // requests for this duration of time.
 constexpr int kNetworkQuietMaximumConnections = 2;
@@ -120,7 +120,7 @@ void InteractiveDetector::StartOrPostponeCITimer(
 
   // We give 1ms extra padding to the timer fire time to prevent floating point
   // arithmetic pitfalls when comparing window sizes.
-  timer_fire_time += base::TimeDelta::FromMilliseconds(1);
+  timer_fire_time += base::Milliseconds(1);
 
   // Return if there is an active timer scheduled to fire later than
   // |timer_fire_time|.
@@ -325,13 +325,11 @@ void InteractiveDetector::HandleForInputDelay(
     GetSupplementable()->Loader()->DidObserveInputDelay(delay);
   }
 
-  UMA_HISTOGRAM_CUSTOM_TIMES(kHistogramInputDelay, delay,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(60), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES(kHistogramInputDelay, delay, base::Milliseconds(1),
+                             base::Seconds(60), 50);
   UMA_HISTOGRAM_CUSTOM_TIMES(kHistogramInputTimestamp,
                              event_timestamp - page_event_times_.nav_start,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             base::Milliseconds(10), base::Minutes(10), 100);
 
   // Only update longest input delay if page was not backgrounded while the
   // input was queued.
@@ -633,8 +631,8 @@ base::TimeDelta InteractiveDetector::ComputeTotalBlockingTime() {
         std::max(long_task.Low(), page_event_times_.first_contentful_paint);
     base::TimeTicks clipped_end = std::min(long_task.High(), interactive_time_);
     total_blocking_time +=
-        std::max(base::TimeDelta(), clipped_end - clipped_start -
-                                        base::TimeDelta::FromMilliseconds(50));
+        std::max(base::TimeDelta(),
+                 clipped_end - clipped_start - base::Milliseconds(50));
   }
   return total_blocking_time;
 }

@@ -792,7 +792,7 @@ std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
   }
   auto web_event = std::make_unique<WebGestureEvent>(
       event_type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event.time()));
+      base::TimeTicks() + base::Milliseconds(event.time()));
   // NOTE: Source gesture events are synthetic ones that simulate
   // gesture from keyboard (zoom in/out) for now. Should populate Blink
   // event's fields better when extended to handle more cases.

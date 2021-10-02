@@ -202,7 +202,7 @@ void VideoPlaybackRoughnessReporter::ProcessFrameWindow() {
           total_error.InMillisecondsF() * total_error.InMillisecondsF();
     }
     win.size = frames_window_size_;
-    win.root_mean_square_error = base::TimeDelta::FromMillisecondsD(
+    win.root_mean_square_error = base::Milliseconds(
         std::sqrt(mean_square_error_ms2 / frames_window_size_));
 
     if (observed_change_in_parameters) {

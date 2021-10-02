@@ -153,7 +153,7 @@ WebImpressionOrError GetImpression(
 
   absl::optional<base::TimeDelta> expiry;
   if (impression_expiry_milliseconds)
-    expiry = base::TimeDelta::FromMilliseconds(*impression_expiry_milliseconds);
+    expiry = base::Milliseconds(*impression_expiry_milliseconds);
 
   UseCounter::Count(execution_context,
                     mojom::blink::WebFeature::kConversionAPIAll);

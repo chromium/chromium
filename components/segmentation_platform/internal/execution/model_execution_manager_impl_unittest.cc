@@ -43,8 +43,8 @@ namespace segmentation_platform {
 using Sample = SignalDatabase::Sample;
 
 namespace {
-constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kTwoSeconds = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kOneSecond = base::Seconds(1);
+constexpr base::TimeDelta kTwoSeconds = base::Seconds(2);
 }  // namespace
 
 class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
@@ -237,7 +237,7 @@ TEST_F(ModelExecutionManagerTest, SingleUserAction) {
 
   // Initialize with required metadata.
   segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  base::TimeDelta bucket_duration = base::TimeDelta::FromHours(3);
+  base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up a single user action feature.
   std::string user_action_name_1 = "some_action_1";
@@ -294,7 +294,7 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
 
   // Initialize with required metadata.
   segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  base::TimeDelta bucket_duration = base::TimeDelta::FromHours(3);
+  base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up 3 metadata feature, one of each signal type.
   std::string user_action_name = "some_user_action";
@@ -375,7 +375,7 @@ TEST_F(ModelExecutionManagerTest, SkipCollectionOnlyFeatures) {
 
   // Initialize with required metadata.
   segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  base::TimeDelta bucket_duration = base::TimeDelta::FromHours(3);
+  base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up 3 metadata feature, one of each signal type.
   std::string collected_user_action = "some_user_action";
@@ -446,7 +446,7 @@ TEST_F(ModelExecutionManagerTest, FilteredEnumSamples) {
 
   // Initialize with required metadata.
   segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  base::TimeDelta bucket_duration = base::TimeDelta::FromHours(3);
+  base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up a single enum histogram feature.
   std::string histogram_enum_name = "some_histogram_enum";
@@ -498,7 +498,7 @@ TEST_F(ModelExecutionManagerTest, MultipleFeaturesWithMultipleBuckets) {
 
   // Initialize with required metadata.
   segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  base::TimeDelta bucket_duration = base::TimeDelta::FromHours(3);
+  base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up metadata features where bucket_count is not equal to 1.
   std::string user_action_name = "some_user_action";

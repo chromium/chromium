@@ -429,14 +429,12 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
   normal_provider.SetWebsiteSetting(
       pattern_4, pattern_4, ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK),
-      {base::Time(base::Time::Now() + base::TimeDelta::FromDays(1)),
-       SessionModel::Durable});
+      {base::Time(base::Time::Now() + base::Days(1)), SessionModel::Durable});
   // Durable but expired
   normal_provider.SetWebsiteSetting(
       pattern_5, pattern_5, ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK),
-      {base::Time(base::Time::Now() - base::TimeDelta::FromDays(1)),
-       SessionModel::Durable});
+      {base::Time(base::Time::Now() - base::Days(1)), SessionModel::Durable});
   // Non-OTR provider, Non-OTR iterator has one setting (pattern 1) using
   // default params and one scoped to a UserSession lifetime model.
   {
@@ -594,7 +592,7 @@ TEST_F(PrefProviderTest, LastModified) {
                              ContentSettingsType::COOKIES,
                              std::make_unique<base::Value>(value->Clone()), {});
   // Make sure that the timestamps for pattern_1 and patter_2 are before |t2|.
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   base::Time t2 = test_clock.Now();
 
   base::Time last_modified = provider.GetWebsiteSettingLastModified(
@@ -751,8 +749,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
   provider.SetWebsiteSetting(
       primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK),
-      {content_settings::GetConstraintExpiration(
-           base::TimeDelta::FromSeconds(123)),
+      {content_settings::GetConstraintExpiration(base::Seconds(123)),
        SessionModel::Durable});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
@@ -766,7 +763,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
 
   // Now if we skip ahead our time our setting should be expired and no longer
   // valid.
-  FastForwardTime(base::TimeDelta::FromSeconds(200));
+  FastForwardTime(base::Seconds(200));
 
   EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
                          &provider, primary_url, primary_url,
@@ -792,8 +789,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
   provider.SetWebsiteSetting(
       primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK),
-      {content_settings::GetConstraintExpiration(
-           base::TimeDelta::FromSeconds(123)),
+      {content_settings::GetConstraintExpiration(base::Seconds(123)),
        SessionModel::Durable});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
@@ -818,7 +814,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
 
   // Now if we skip ahead our time our setting should be expired and no longer
   // valid.
-  FastForwardTime(base::TimeDelta::FromSeconds(200));
+  FastForwardTime(base::Seconds(200));
 
   EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
                          &provider2, primary_url, primary_url,
@@ -844,8 +840,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
   provider.SetWebsiteSetting(
       primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK),
-      {content_settings::GetConstraintExpiration(
-           base::TimeDelta::FromSeconds(123)),
+      {content_settings::GetConstraintExpiration(base::Seconds(123)),
        SessionModel::Durable});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
@@ -864,7 +859,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
 
   // Now if we skip ahead our time our setting should be expired and no longer
   // valid.
-  FastForwardTime(base::TimeDelta::FromSeconds(200));
+  FastForwardTime(base::Seconds(200));
 
   EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
                          &provider2, primary_url, primary_url,

@@ -13,7 +13,7 @@ CompositorTransformKeyframe::CompositorTransformKeyframe(
     CompositorTransformOperations value,
     const TimingFunction& timing_function)
     : transform_keyframe_(
-          gfx::TransformKeyframe::Create(base::TimeDelta::FromSecondsD(time),
+          gfx::TransformKeyframe::Create(base::Seconds(time),
                                          value.ReleaseGfxTransformOperations(),
                                          timing_function.CloneToCC())) {}
 

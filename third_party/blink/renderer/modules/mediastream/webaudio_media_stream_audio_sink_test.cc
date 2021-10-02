@@ -94,9 +94,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
   }
 
   // Make a second data delivery.
-  estimated_capture_time += source_bus->frames() *
-                            base::TimeDelta::FromSeconds(1) /
-                            source_params_.sample_rate();
+  estimated_capture_time +=
+      source_bus->frames() * base::Seconds(1) / source_params_.sample_rate();
   source_provider_->OnData(*source_bus, estimated_capture_time);
 
   // Verify that non-zero data samples are present in the results of the

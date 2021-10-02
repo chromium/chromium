@@ -149,7 +149,7 @@ TEST_F(LayerCopyAnimatorTest, Basic) {
         DCHECK(observer);
         layer->SetOpacity(0.f);
         ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-        settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1));
+        settings.SetTransitionDuration(base::Milliseconds(1));
         layer->SetOpacity(1.f);
 
         ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
@@ -163,7 +163,7 @@ TEST_F(LayerCopyAnimatorTest, Basic) {
   EXPECT_TRUE(copied_layer->GetAnimator()->is_animating());
   EXPECT_EQ(0.f, anim_layer->GetTargetOpacity());
 
-  Advance(base::TimeDelta::FromMilliseconds(1000));
+  Advance(base::Milliseconds(1000));
   EXPECT_EQ(3, observer.last_ended_sequence_epoch());
   EXPECT_EQ(1u, root_layer->children().size());
   EXPECT_EQ(1.f, anim_layer->GetTargetOpacity());
@@ -189,7 +189,7 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
         layer->SetOpacity(0.f);
         ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
         // Longer duration so that animation doesn't end after copy.
-        settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+        settings.SetTransitionDuration(base::Milliseconds(100));
         layer->SetOpacity(1.f);
 
         ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
@@ -212,7 +212,7 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
   EXPECT_TRUE(copied_layer->GetAnimator()->is_animating());
   EXPECT_EQ(0.f, anim_layer->GetTargetOpacity());
 
-  Advance(base::TimeDelta::FromMilliseconds(1000));
+  Advance(base::Milliseconds(1000));
 
   // When animation starts before copy, it registers the observer to fake
   // sequecne, hence become 6.
@@ -289,7 +289,7 @@ TEST_F(LayerCopyAnimatorTest, CancelByStop) {
         DCHECK(observer);
         layer->SetOpacity(0.f);
         ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-        settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+        settings.SetTransitionDuration(base::Milliseconds(100));
         layer->SetOpacity(1.f);
 
         ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
@@ -304,7 +304,7 @@ TEST_F(LayerCopyAnimatorTest, CancelByStop) {
   EXPECT_EQ(0.f, anim_layer->GetTargetOpacity());
   copied_layer->GetAnimator()->StopAnimating();
 
-  Advance(base::TimeDelta::FromMilliseconds(1000));
+  Advance(base::Milliseconds(1000));
 
   EXPECT_EQ(3, observer.last_ended_sequence_epoch());
   EXPECT_EQ(1u, root_layer->children().size());

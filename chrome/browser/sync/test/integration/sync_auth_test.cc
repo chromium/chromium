@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, MAYBE_TokenExpiry) {
   std::string old_token = GetSyncService(0)->GetAccessTokenForTest();
 
   // Wait until the token has expired.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(5));
+  base::PlatformThread::Sleep(base::Seconds(5));
 
   // Trigger an auth error on the server so PSS requests OA2TS for a new token
   // during the next sync cycle.

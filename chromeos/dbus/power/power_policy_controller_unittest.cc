@@ -492,16 +492,15 @@ TEST_F(PowerPolicyControllerTest, PolicyAutoScreenLockDelay) {
   // Longer AC delay.
   prefs.enable_auto_screen_lock = true;
   policy_controller_->ApplyPrefs(prefs);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(prefs.ac_screen_lock_delay_ms),
+  EXPECT_EQ(base::Milliseconds(prefs.ac_screen_lock_delay_ms),
             policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
 
   // Longer battery delay.
   prefs.ac_screen_lock_delay_ms = 1000;
   prefs.battery_screen_lock_delay_ms = 4000;
   policy_controller_->ApplyPrefs(prefs);
-  EXPECT_EQ(
-      base::TimeDelta::FromMilliseconds(prefs.battery_screen_lock_delay_ms),
-      policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
+  EXPECT_EQ(base::Milliseconds(prefs.battery_screen_lock_delay_ms),
+            policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
 }
 
 TEST_F(PowerPolicyControllerTest, FastSuspendWhenBacklightsForcedOff) {

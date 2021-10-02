@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Attempt to navigate the second tab to a.com.  This will attempt to reuse
   // the hung process.
-  base::TimeDelta kTimeout = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta kTimeout = base::Milliseconds(100);
   NavigationRequest::SetCommitTimeoutForTesting(kTimeout);
   GURL hung_url(embedded_test_server()->GetURL("a.com", "/title3.html"));
   UnresponsiveRendererObserver unresponsive_renderer_observer(new_contents);
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
   // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
   // fire before we call OnDetach().
-  rfh_d->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+  rfh_d->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
   RenderFrameDeletedObserver delete_d(rfh_d);
 
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   a1->DisableUnloadTimerForTesting();
   // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
   // fire before we call OnDetach().
-  b1->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+  b1->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
   // Add unload handler on A2, but not on the other frames.
   UnloadPrint(a2->frame_tree_node(), "A2");
@@ -1215,7 +1215,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FocusedFrameUnload) {
   EXPECT_EQ(B2->frame_tree_node(), frame_tree->GetFocusedFrame());
 
   // 2.2 Unload B2. Drop detach message to simulate a long unloading.
-  B2->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+  B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
   EXPECT_FALSE(B2->GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType::kUnloadHandler));
@@ -1451,7 +1451,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   // Increase Unload timeout to prevent the previous document from
   // being deleleted before it has finished running B2 unload handler.
   A1->DisableUnloadTimerForTesting();
-  B2->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+  B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
   // Add an unload handler to the subframe and try in that handler to preserve
   // state that we will try to recover later.
@@ -1556,8 +1556,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   // Increase Unload timeout to prevent the previous document from
   // being deleleted before it has finished running C3 unload handler.
   A1->DisableUnloadTimerForTesting();
-  B2->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
-  C3->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+  B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
+  C3->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
   // Add an unload handler to the subframe and try in that handler to preserve
   // state that we will try to recover later.

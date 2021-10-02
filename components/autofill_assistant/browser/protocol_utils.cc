@@ -264,7 +264,7 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
           action.wait_for_document_to_become_interactive().client_id(),
           base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
                          delegate->GetWeakPtr(),
-                         base::TimeDelta::FromMilliseconds(
+                         base::Milliseconds(
                              action.wait_for_document_to_become_interactive()
                                  .timeout_in_ms()),
                          DOCUMENT_INTERACTIVE));
@@ -272,12 +272,12 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithOptionalClientIdTimed(
           delegate, action,
           action.wait_for_document_to_become_complete().client_id(),
-          base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
-                         delegate->GetWeakPtr(),
-                         base::TimeDelta::FromMilliseconds(
-                             action.wait_for_document_to_become_complete()
-                                 .timeout_in_ms()),
-                         DOCUMENT_COMPLETE));
+          base::BindOnce(
+              &ActionDelegate::WaitUntilDocumentIsInReadyState,
+              delegate->GetWeakPtr(),
+              base::Milliseconds(action.wait_for_document_to_become_complete()
+                                     .timeout_in_ms()),
+              DOCUMENT_COMPLETE));
     case ActionProto::ActionInfoCase::kSendClickEvent:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_click_event().client_id(),
@@ -337,13 +337,13 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithClientIdTimed(
           delegate, action,
           action.wait_for_element_to_become_stable().client_id(),
-          base::BindOnce(&WebController::WaitUntilElementIsStable,
-                         delegate->GetWebController()->GetWeakPtr(),
-                         action.wait_for_element_to_become_stable()
-                             .stable_check_max_rounds(),
-                         base::TimeDelta::FromMilliseconds(
-                             action.wait_for_element_to_become_stable()
-                                 .stable_check_interval_ms())));
+          base::BindOnce(
+              &WebController::WaitUntilElementIsStable,
+              delegate->GetWebController()->GetWeakPtr(),
+              action.wait_for_element_to_become_stable()
+                  .stable_check_max_rounds(),
+              base::Milliseconds(action.wait_for_element_to_become_stable()
+                                     .stable_check_interval_ms())));
     case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.check_element_is_on_top().client_id(),

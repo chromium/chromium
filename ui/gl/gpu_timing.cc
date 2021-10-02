@@ -371,8 +371,7 @@ int64_t GPUTimingImpl::CalculateTimerOffset() {
       // We cannot expect these instructions to run with the accuracy
       // within 1 microsecond, instead discard differences which are less
       // than a single millisecond.
-      base::TimeDelta delta =
-          base::TimeDelta::FromMicroseconds(micro_offset - offset_);
+      base::TimeDelta delta = base::Microseconds(micro_offset - offset_);
 
       if (delta.magnitude().InMilliseconds() >= 1) {
         offset_ = micro_offset;

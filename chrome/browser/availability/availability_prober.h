@@ -136,7 +136,7 @@ class AvailabilityProber
     //   LINEAR: Each probe times out in |base_timeout|.
     //   EXPONENTIAL: Each probe times out in
     //                (|base_timeout| * 2 ^ |successive_timeout_count_|).
-    base::TimeDelta base_timeout = base::TimeDelta::FromSeconds(60);
+    base::TimeDelta base_timeout = base::Seconds(60);
   };
 
   enum class HttpMethod {

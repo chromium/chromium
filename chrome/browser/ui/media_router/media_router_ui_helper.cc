@@ -43,14 +43,13 @@ std::string GetHostFromURL(const GURL& gurl) {
 base::TimeDelta GetRouteRequestTimeout(MediaCastMode cast_mode) {
   switch (cast_mode) {
     case PRESENTATION:
-      return base::TimeDelta::FromSeconds(kCreateRouteTimeoutSeconds);
+      return base::Seconds(kCreateRouteTimeoutSeconds);
     case TAB_MIRROR:
-      return base::TimeDelta::FromSeconds(kCreateRouteTimeoutSecondsForTab);
+      return base::Seconds(kCreateRouteTimeoutSecondsForTab);
     case DESKTOP_MIRROR:
-      return base::TimeDelta::FromSeconds(kCreateRouteTimeoutSecondsForDesktop);
+      return base::Seconds(kCreateRouteTimeoutSecondsForDesktop);
     case LOCAL_FILE:
-      return base::TimeDelta::FromSeconds(
-          kCreateRouteTimeoutSecondsForLocalFile);
+      return base::Seconds(kCreateRouteTimeoutSecondsForLocalFile);
     default:
       NOTREACHED();
       return base::TimeDelta();

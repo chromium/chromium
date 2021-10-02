@@ -98,8 +98,7 @@ constexpr char kPublicKeyBase64[] =
 constexpr char kCertProfileId[] = "cert_profile_1";
 constexpr char kCertProfileName[] = "Certificate Profile 1";
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
-constexpr base::TimeDelta kCertProfileRenewalPeriod =
-    base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
 // Prefix + certificate profile name.
 constexpr char kCertScopeStrUser[] = "google/chromeos/user";
 constexpr char kCertScopeStrDevice[] = "google/chromeos/device";
@@ -1527,7 +1526,7 @@ class PrefServiceObserver {
 };
 
 TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
-  const base::TimeDelta kRenewalPeriod = base::TimeDelta::FromSeconds(1200300);
+  const base::TimeDelta kRenewalPeriod = base::Seconds(1200300);
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
                            /*is_va_enabled=*/true, kRenewalPeriod);

@@ -64,7 +64,7 @@ void UserModel::DidFinishProcessingInputEvent(const base::TimeTicks now) {
 
 base::TimeDelta UserModel::TimeLeftInUserGesture(base::TimeTicks now) const {
   base::TimeDelta escalated_priority_duration =
-      base::TimeDelta::FromMilliseconds(kGestureEstimationLimitMillis);
+      base::Milliseconds(kGestureEstimationLimitMillis);
 
   // If the input event is still pending, go into input prioritized policy and
   // check again later.
@@ -98,12 +98,12 @@ bool UserModel::IsGestureExpectedSoonImpl(
     if (IsGestureExpectedToContinue(now, prediction_valid_duration))
       return false;
     *prediction_valid_duration =
-        base::TimeDelta::FromMilliseconds(kExpectSubsequentGestureMillis);
+        base::Milliseconds(kExpectSubsequentGestureMillis);
     return true;
   } else {
     // If we have finished a gesture then a subsequent gesture is deemed likely.
     base::TimeDelta expect_subsequent_gesture_for =
-        base::TimeDelta::FromMilliseconds(kExpectSubsequentGestureMillis);
+        base::Milliseconds(kExpectSubsequentGestureMillis);
     if (last_continuous_gesture_time_.is_null() ||
         last_continuous_gesture_time_ + expect_subsequent_gesture_for <= now) {
       return false;
@@ -121,7 +121,7 @@ bool UserModel::IsGestureExpectedToContinue(
     return false;
 
   base::TimeDelta median_gesture_duration =
-      base::TimeDelta::FromMilliseconds(kMedianGestureDurationMillis);
+      base::Milliseconds(kMedianGestureDurationMillis);
   base::TimeTicks expected_gesture_end_time =
       last_gesture_start_time_ + median_gesture_duration;
 

@@ -33,7 +33,7 @@ namespace history {
 namespace {
 
 base::Time UnixUsecToTime(int64_t usec) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(usec);
+  return base::Time::UnixEpoch() + base::Microseconds(usec);
 }
 
 class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
@@ -85,7 +85,7 @@ void CheckDirectiveProcessingResult(
     return;
   }
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+  base::PlatformThread::Sleep(base::Milliseconds(100));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult, timeout,
                                 change_processor, num_changes));
@@ -176,8 +176,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest,
   sync_pb::GlobalIdDirective* global_id_directive =
       delete_directive.mutable_global_id_directive();
   global_id_directive->add_global_id(
-      (base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(1))
-          .ToInternalValue());
+      (base::Time::UnixEpoch() + base::Microseconds(1)).ToInternalValue());
 
   syncer::FakeSyncChangeProcessor change_processor;
 
@@ -223,8 +222,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
       entity_specs.mutable_history_delete_directive()
           ->mutable_global_id_directive();
   global_id_directive->add_global_id(
-      (base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(6))
-          .ToInternalValue());
+      (base::Time::UnixEpoch() + base::Microseconds(6)).ToInternalValue());
   global_id_directive->set_start_time_usec(3);
   global_id_directive->set_end_time_usec(10);
   directives.push_back(
@@ -233,8 +231,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
   // 2nd directive.
   global_id_directive->Clear();
   global_id_directive->add_global_id(
-      (base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(17))
-          .ToInternalValue());
+      (base::Time::UnixEpoch() + base::Microseconds(17)).ToInternalValue());
   global_id_directive->set_start_time_usec(13);
   global_id_directive->set_end_time_usec(19);
   directives.push_back(
@@ -253,10 +250,9 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
   // Inject a task to check status and keep message loop filled before directive
   // processing finishes.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckDirectiveProcessingResult,
-                     base::Time::Now() + base::TimeDelta::FromSeconds(10),
-                     &change_processor, 2));
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
   QueryURLResult query = QueryURL(test_url);
@@ -320,10 +316,9 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
   // Inject a task to check status and keep message loop filled before
   // directive processing finishes.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckDirectiveProcessingResult,
-                     base::Time::Now() + base::TimeDelta::FromSeconds(10),
-                     &change_processor, 2));
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
   QueryURLResult query = QueryURL(test_url);
@@ -387,10 +382,9 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
   // Inject a task to check status and keep message loop filled before
   // directive processing finishes.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckDirectiveProcessingResult,
-                     base::Time::Now() + base::TimeDelta::FromSeconds(10),
-                     &change_processor, 2));
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
   QueryURLResult query = QueryURL(test_url1);

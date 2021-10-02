@@ -153,7 +153,7 @@ base::Value ClientDirectiveToReadableDictionary(
   {
     std::u16string checkin_delay;
     bool success = base::TimeDurationFormatWithSeconds(
-        base::TimeDelta::FromMilliseconds(directive.checkin_delay_millis()),
+        base::Milliseconds(directive.checkin_delay_millis()),
         base::DurationFormatWidth::DURATION_WIDTH_NARROW, &checkin_delay);
     if (success) {
       dict.SetStringKey("Next enrollment", checkin_delay);
@@ -169,7 +169,7 @@ base::Value ClientDirectiveToReadableDictionary(
   {
     std::u16string retry_period;
     bool success = base::TimeDurationFormatWithSeconds(
-        base::TimeDelta::FromMilliseconds(directive.retry_period_millis()),
+        base::Milliseconds(directive.retry_period_millis()),
         base::DurationFormatWidth::DURATION_WIDTH_NARROW, &retry_period);
     if (!success) {
       retry_period = base::UTF8ToUTF16(
@@ -354,7 +354,7 @@ base::Value DeviceActivityStatusToReadableDictionary(
       "Last update time",
       base::TimeFormatShortDateAndTimeWithTimeZone(
           base::Time::FromTimeT(status.last_update_time().seconds()) +
-          base::TimeDelta::FromNanoseconds(status.last_update_time().nanos())));
+          base::Nanoseconds(status.last_update_time().nanos())));
 
   return dict;
 }

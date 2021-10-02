@@ -7847,7 +7847,7 @@ class RenderFrameHostManagerUnloadBrowserTest
   // processing to prevent any test flakiness.  This is the time that the ping
   // request will have to make it from the renderer to the test server.
   void ExtendSubframeUnloadTimeoutForTerminationPing(RenderFrameHostImpl* rfh) {
-    rfh->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+    rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
   }
 
  protected:
@@ -8171,7 +8171,7 @@ class AssertForegroundHelper {
         base::BindOnce(&AssertForegroundHelper::AssertForegroundAndRepost,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::cref(renderer_process), port_provider),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
 #else   // defined(OS_MAC)
   // Same as above without the Mac specific base::PortProvider.
@@ -8182,7 +8182,7 @@ class AssertForegroundHelper {
         base::BindOnce(&AssertForegroundHelper::AssertForegroundAndRepost,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::cref(renderer_process)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
 #endif  // defined(OS_MAC)
 

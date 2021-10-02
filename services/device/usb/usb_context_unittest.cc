@@ -36,7 +36,7 @@ TEST_F(UsbContextTest, GracefulShutdown) {
         new UsbContextForTest(platform_context));
   }
   base::TimeDelta elapse = base::TimeTicks::Now() - start;
-  if (elapse > base::TimeDelta::FromSeconds(2)) {
+  if (elapse > base::Seconds(2)) {
     FAIL();
   }
 }

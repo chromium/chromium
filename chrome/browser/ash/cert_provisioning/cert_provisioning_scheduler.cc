@@ -49,8 +49,7 @@ void EraseByKey(Container& container, const Value& value) {
   container.erase(iter);
 }
 
-const base::TimeDelta kInconsistentDataErrorRetryDelay =
-    base::TimeDelta::FromSeconds(30);
+const base::TimeDelta kInconsistentDataErrorRetryDelay = base::Seconds(30);
 
 policy::CloudPolicyClient* GetCloudPolicyClientForUser(Profile* profile) {
   policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
@@ -181,7 +180,7 @@ void CertProvisioningSchedulerImpl::ScheduleDailyUpdate() {
       FROM_HERE,
       base::BindOnce(&CertProvisioningSchedulerImpl::DailyUpdateCerts,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromDays(1));
+      base::Days(1));
 }
 
 void CertProvisioningSchedulerImpl::ScheduleRetry(
@@ -432,7 +431,7 @@ void CertProvisioningSchedulerImpl::UpdateCertListWithExistingCerts(
       continue;
     }
 
-    if ((now + base::TimeDelta::FromDays(1) + profile.renewal_period) >=
+    if ((now + base::Days(1) + profile.renewal_period) >=
         cert->valid_expiry()) {
       // The certificate should be renewed within 1 day.
       base::Time target_time = cert->valid_expiry() - profile.renewal_period;

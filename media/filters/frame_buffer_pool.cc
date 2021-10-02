@@ -227,8 +227,7 @@ void FrameBufferPool::OnVideoFrameDestroyed(
 
   base::EraseIf(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
     return !IsUsed(buf.get()) &&
-           now - buf->last_use_time >
-               base::TimeDelta::FromSeconds(kStaleFrameLimitSecs);
+           now - buf->last_use_time > base::Seconds(kStaleFrameLimitSecs);
   });
 }
 

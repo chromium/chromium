@@ -1221,7 +1221,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
                                 &kFalse, &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta duration = base::Milliseconds(10);
   AdvanceTimeTickClock(duration);
 
   PhishingDetectionDone(verdict.SerializeAsString());

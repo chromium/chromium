@@ -356,9 +356,8 @@ void SyntheticSmoothMoveGesture::ComputeNextMoveSegment() {
                params_.speed_in_pixels_s));
     DCHECK_GT(total_duration_in_us, 0);
     current_move_segment_start_time_ = current_move_segment_stop_time_;
-    current_move_segment_stop_time_ =
-        current_move_segment_start_time_ +
-        base::TimeDelta::FromMicroseconds(total_duration_in_us);
+    current_move_segment_stop_time_ = current_move_segment_start_time_ +
+                                      base::Microseconds(total_duration_in_us);
   }
 }
 

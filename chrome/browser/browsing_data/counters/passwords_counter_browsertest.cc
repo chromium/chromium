@@ -70,9 +70,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
-  void RevertTimeInDays(int days) {
-    time_ -= base::TimeDelta::FromDays(days);
-  }
+  void RevertTimeInDays(int days) { time_ -= base::Days(days); }
 
   void SetTimesUsed(int occurrences) { times_used_ = occurrences; }
 

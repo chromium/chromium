@@ -13,8 +13,7 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kMinimumSuspendDuration =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
 
 }  // namespace
 

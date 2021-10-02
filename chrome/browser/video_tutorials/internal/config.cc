@@ -63,7 +63,7 @@ base::TimeDelta Config::GetFetchFrequency() {
   int frequency_in_days = base::GetFieldTrialParamByFeatureAsInt(
       features::kVideoTutorials, kFetchFrequencyKey,
       kDefaultFetchFrequencyDays);
-  return base::TimeDelta::FromDays(frequency_in_days);
+  return base::Days(frequency_in_days);
 }
 
 // static

@@ -563,7 +563,7 @@ GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
 void GpuDataManagerImplPrivate::StartUmaTimer() {
   // Do not change kTimerInterval without also changing the UMA histogram name,
   // as histogram data from before/after the change will not be comparable.
-  constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(5);
+  constexpr base::TimeDelta kTimerInterval = base::Minutes(5);
   compositing_mode_timer_.Start(
       FROM_HERE, kTimerInterval, this,
       &GpuDataManagerImplPrivate::RecordCompositingMode);
@@ -744,7 +744,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
   base::TimeDelta delta;
   if (delayed &&
       !command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
-    delta = base::TimeDelta::FromSeconds(120);
+    delta = base::Seconds(120);
   }
 
   base::OnceClosure task = base::BindOnce(
@@ -811,7 +811,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedVulkanVersion(bool delayed) {
   base::TimeDelta delta;
   if (delayed &&
       !command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
-    delta = base::TimeDelta::FromSeconds(120);
+    delta = base::Seconds(120);
   }
 
   base::OnceClosure task = base::BindOnce(
@@ -993,8 +993,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   gpu_info_ = gpu_info;
   base::UmaHistogramCustomMicrosecondsTimes(
       "GPU.GPUInitializationTime.V3", gpu_info_.initialization_time,
-      base::TimeDelta::FromMilliseconds(5), base::TimeDelta::FromSeconds(5),
-      50);
+      base::Milliseconds(5), base::Seconds(5), 50);
   UMA_HISTOGRAM_EXACT_LINEAR("GPU.GpuCount", gpu_info_.GpuCount(), 10);
   RecordDiscreteGpuHistograms(gpu_info_);
 #if defined(OS_WIN)

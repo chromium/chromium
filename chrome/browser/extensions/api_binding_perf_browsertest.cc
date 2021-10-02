@@ -45,7 +45,7 @@ class APIBindingPerfBrowserTest : public ExtensionBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         "runTest(time => window.domAutomationController.send(time))",
         &time_elapsed_ms));
-    return base::TimeDelta::FromMillisecondsD(time_elapsed_ms);
+    return base::Milliseconds(time_elapsed_ms);
   }
 };
 

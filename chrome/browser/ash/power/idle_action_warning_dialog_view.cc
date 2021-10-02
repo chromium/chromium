@@ -55,9 +55,8 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
                                             nullptr /* parent */)
       ->Show();
 
-  update_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kCountdownUpdateIntervalMs),
-      this, &IdleActionWarningDialogView::UpdateTitle);
+  update_timer_.Start(FROM_HERE, base::Milliseconds(kCountdownUpdateIntervalMs),
+                      this, &IdleActionWarningDialogView::UpdateTitle);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::IDLE_ACTION_WARNING);
 }
 

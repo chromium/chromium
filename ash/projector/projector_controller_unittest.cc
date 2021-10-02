@@ -35,10 +35,8 @@ void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   result.transcription = "transcript text 1";
   result.is_final = true;
   result.timing_information = media::TimingInformation();
-  result.timing_information->audio_start_time =
-      base::TimeDelta::FromMilliseconds(0);
-  result.timing_information->audio_end_time =
-      base::TimeDelta::FromMilliseconds(3000);
+  result.timing_information->audio_start_time = base::Milliseconds(0);
+  result.timing_information->audio_end_time = base::Milliseconds(3000);
 
   std::vector<media::HypothesisParts> hypothesis_parts;
   std::string hypothesis_text[3] = {"transcript", "text", "1"};
@@ -46,7 +44,7 @@ void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   for (int i = 0; i < 3; i++) {
     hypothesis_parts.emplace_back(
         std::vector<std::string>({hypothesis_text[i]}),
-        base::TimeDelta::FromMilliseconds(hypothesis_time[i]));
+        base::Milliseconds(hypothesis_time[i]));
   }
 
   result.timing_information->hypothesis_parts = std::move(hypothesis_parts);

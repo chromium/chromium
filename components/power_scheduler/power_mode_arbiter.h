@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   // Limits the frequency at which we can run the UpdatePendingResets() task.
   // All pending resets are aligned to this time resolution. Public for testing.
   static constexpr base::TimeDelta kResetVoteTimeResolution =
-      base::TimeDelta::FromMilliseconds(100);
+      base::Milliseconds(100);
 
   static PowerModeArbiter* GetInstance();
 

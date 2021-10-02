@@ -43,8 +43,7 @@ const char* HighestPmfReporter::webpage_counts_metric_names[] = {
     "8to16min"};
 
 constexpr base::TimeDelta HighestPmfReporter::time_to_report[] = {
-    base::TimeDelta::FromMinutes(2), base::TimeDelta::FromMinutes(4),
-    base::TimeDelta::FromMinutes(8), base::TimeDelta::FromMinutes(16)};
+    base::Minutes(2), base::Minutes(4), base::Minutes(8), base::Minutes(16)};
 
 HighestPmfReporter& HighestPmfReporter::Instance() {
   DEFINE_STATIC_LOCAL(HighestPmfReporter, reporter, ());

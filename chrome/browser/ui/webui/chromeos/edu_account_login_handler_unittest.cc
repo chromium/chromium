@@ -300,8 +300,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
       kFakeParentGaiaId, kFakeParentCredential,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE),
       signin::AccessTokenInfo(kFakeAccessToken,
-                              base::Time::Now() + base::TimeDelta::FromHours(1),
-                              "id_token"));
+                              base::Time::Now() + base::Hours(1), "id_token"));
 
   constexpr char fake_rapt[] = "fakeReauthProofToken";
   // Simulate successful fetching of ReAuthProofToken.
@@ -359,8 +358,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
       kFakeParentGaiaId, kFakeParentCredential,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE),
       signin::AccessTokenInfo(kFakeAccessToken,
-                              base::Time::Now() + base::TimeDelta::FromHours(1),
-                              "id_token"));
+                              base::Time::Now() + base::Hours(1), "id_token"));
 
   // Simulate failed fetching of ReAuthProofToken.
   handler()->OnReAuthProofTokenFailure(

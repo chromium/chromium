@@ -33,8 +33,7 @@ using captured_sites_test_utils::GetParamAsString;
 
 namespace {
 
-constexpr base::TimeDelta kWaitForSaveFallbackInterval =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kWaitForSaveFallbackInterval = base::Seconds(5);
 
 // Return path to the Password Manager captured sites test root directory. The
 // directory contains subdirectories for different password manager test

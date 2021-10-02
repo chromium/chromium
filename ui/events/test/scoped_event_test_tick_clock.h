@@ -31,8 +31,7 @@ class ScopedEventTestTickClock {
   ~ScopedEventTestTickClock() { ui::SetEventTickClockForTesting(nullptr); }
 
   void SetNowSeconds(int64_t seconds) {
-    test_clock_.SetNowTicks(base::TimeTicks() +
-                            base::TimeDelta::FromSeconds(seconds));
+    test_clock_.SetNowTicks(base::TimeTicks() + base::Seconds(seconds));
   }
 
   void SetNowTicks(base::TimeTicks ticks) { test_clock_.SetNowTicks(ticks); }

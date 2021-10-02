@@ -153,7 +153,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainAnyOneAvailable) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(true, "", "a::1:2:3:4"));
 
-  RunFor(base::TimeDelta::FromMilliseconds(150));
+  RunFor(base::Milliseconds(150));
 }
 
 
@@ -188,7 +188,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainNone) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(false, "", ""));
 
-  RunFor(base::TimeDelta::FromSeconds(4));
+  RunFor(base::Seconds(4));
 }
 
 }  // namespace

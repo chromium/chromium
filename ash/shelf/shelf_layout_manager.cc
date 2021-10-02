@@ -1851,9 +1851,8 @@ void ShelfLayoutManager::UpdateAutoHideStateNow() {
 }
 
 void ShelfLayoutManager::StartAutoHideTimer() {
-  auto_hide_timer_.Start(FROM_HERE,
-                         base::TimeDelta::FromMilliseconds(kAutoHideDelayMS),
-                         this, &ShelfLayoutManager::UpdateAutoHideStateNow);
+  auto_hide_timer_.Start(FROM_HERE, base::Milliseconds(kAutoHideDelayMS), this,
+                         &ShelfLayoutManager::UpdateAutoHideStateNow);
 }
 
 void ShelfLayoutManager::StopAutoHideTimer() {

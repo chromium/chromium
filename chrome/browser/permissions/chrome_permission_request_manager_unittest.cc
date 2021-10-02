@@ -392,7 +392,7 @@ TEST_F(ChromePermissionRequestManagerTest,
 TEST_F(ChromePermissionRequestManagerTest,
        NotificationsAdaptiveActivationQuietUIWindowSize) {
   EXPECT_EQ(
-      base::TimeDelta::FromDays(90),  // Default value.
+      base::Days(90),  // Default value.
       QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize());
 
   base::test::ScopedFeatureList feature_list;
@@ -406,7 +406,7 @@ TEST_F(ChromePermissionRequestManagerTest,
       {features::kPermissionPredictions});
 
   ASSERT_EQ(
-      base::TimeDelta::FromDays(7),
+      base::Days(7),
       QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize());
 
   const char* origin_spec[]{"https://a.com", "https://b.com", "https://c.com",
@@ -424,7 +424,7 @@ TEST_F(ChromePermissionRequestManagerTest,
     if (i == 0) {
       // The history window size is 7 days. That will ignore previous denied
       // permission request as obsolete.
-      task_environment()->AdvanceClock(base::TimeDelta::FromDays(10));
+      task_environment()->AdvanceClock(base::Days(10));
     }
   }
 
@@ -557,7 +557,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   Deny();
 
   base::Time recorded_time = base::Time::Now();
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   base::Time from_time = base::Time::Now();
   GURL notification9("http://www.notification9.com/");
   NavigateAndCommit(notification9);
@@ -568,7 +568,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   base::Time to_time = base::Time::Now();
   GURL notification10("http://www.notification10.com/");
   NavigateAndCommit(notification10);
@@ -579,7 +579,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   GURL notification11("http://www.notification11.com/");
   NavigateAndCommit(notification11);
   permissions::MockPermissionRequest notification11_request(

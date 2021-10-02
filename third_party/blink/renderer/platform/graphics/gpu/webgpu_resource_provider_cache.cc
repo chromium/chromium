@@ -214,9 +214,8 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
 }
 void WebGPURecyclableResourceCache::StartResourceCleanUpTimer() {
   if (unused_providers_.size() > 0 && !timer_is_running_) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE, timer_func_,
-        base::TimeDelta::FromSeconds(kTimerDurationInSeconds));
+    task_runner_->PostDelayedTask(FROM_HERE, timer_func_,
+                                  base::Seconds(kTimerDurationInSeconds));
     timer_is_running_ = true;
   }
 }

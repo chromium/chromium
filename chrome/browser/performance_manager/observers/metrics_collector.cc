@@ -33,8 +33,7 @@ class UkmCollectionStateHolder
 
 // Delay the metrics report from for 5 minutes from when the main frame
 // navigation is committed.
-const base::TimeDelta kMetricsReportDelayTimeout =
-    base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kMetricsReportDelayTimeout = base::Minutes(5);
 
 const char kTabFromBackgroundedToFirstFaviconUpdatedUMA[] =
     "TabManager.Heuristics.FromBackgroundedToFirstFaviconUpdated";
@@ -112,11 +111,9 @@ void MetricsCollector::OnBeforeProcessNodeRemoved(
     return;
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime2.HighResolution",
-                             lifetime, base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromMinutes(5), 100);
+                             lifetime, base::Seconds(1), base::Minutes(5), 100);
   UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime2.LowResolution",
-                             lifetime, base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromDays(1), 100);
+                             lifetime, base::Seconds(1), base::Days(1), 100);
 }
 
 void MetricsCollector::OnTitleUpdated(const PageNode* page_node) {

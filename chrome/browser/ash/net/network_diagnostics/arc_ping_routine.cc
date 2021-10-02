@@ -109,7 +109,7 @@ void ArcPingRoutine::FetchManagedProperties(
       FROM_HERE,
       base::BindOnce(&ArcPingRoutine::HandleTimeout,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kTimeoutGetManagedPropertiesSeconds));
+      base::Seconds(kTimeoutGetManagedPropertiesSeconds));
 
   for (const std::string& guid : guids) {
     remote_cros_network_config_->GetManagedProperties(

@@ -1496,8 +1496,7 @@ TEST_F(PasswordStoreOriginTest,
   const GURL origin = GURL(origin_url);
   base::RepeatingCallback<bool(const GURL&)> filter =
       base::BindRepeating(&MatchesOrigin, origin);
-  base::Time time_after_creation_date =
-      form->date_created + base::TimeDelta::FromDays(1);
+  base::Time time_after_creation_date = form->date_created + base::Days(1);
   base::RunLoop run_loop;
   EXPECT_CALL(observer, OnLoginsChanged).Times(0);
   store()->RemoveLoginsByURLAndTime(filter, time_after_creation_date,
@@ -1514,7 +1513,7 @@ TEST_F(PasswordStoreTest, GetAllLoginsAsyncMetrics) {
   auto* mock_backend =
       static_cast<MockPasswordStoreBackend*>(store->GetBackendForTesting());
   store->Init(nullptr);
-  constexpr auto delta = base::TimeDelta::FromMilliseconds(123u);
+  constexpr auto delta = base::Milliseconds(123u);
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))

@@ -1196,7 +1196,7 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
 
   // Rewind the time by half a day, which shouldn't be enough to trigger a
   // network refresh.
-  base::Time fake_update = base::Time::Now() - base::TimeDelta::FromHours(12);
+  base::Time fake_update = base::Time::Now() - base::Hours(12);
   signin_client()->GetPrefs()->SetTime(AccountFetcherService::kLastUpdatePref,
                                        fake_update);
 
@@ -1215,7 +1215,7 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 
   // Rewind the last updated time enough to trigger a network refresh.
-  fake_update = base::Time::Now() - base::TimeDelta::FromHours(25);
+  fake_update = base::Time::Now() - base::Hours(25);
   signin_client()->GetPrefs()->SetTime(AccountFetcherService::kLastUpdatePref,
                                        fake_update);
 

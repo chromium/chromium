@@ -166,8 +166,7 @@ void DesktopSessionDurationTracker::EndSession(
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {
@@ -179,7 +178,7 @@ void DesktopSessionDurationTracker::InitInactivityTimeout() {
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_minutes);
 
-  inactivity_timeout_ = base::TimeDelta::FromMinutes(timeout_minutes);
+  inactivity_timeout_ = base::Minutes(timeout_minutes);
 }
 
 }  // namespace metrics

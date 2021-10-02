@@ -89,7 +89,7 @@ void AggregatableReportSender::SendReport(const GURL& url,
 
   auto it = loaders_in_progress_.insert(loaders_in_progress_.begin(),
                                         std::move(simple_url_loader));
-  simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
+  simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
   std::string contents_json;
   JSONStringValueSerializer serializer(&contents_json);

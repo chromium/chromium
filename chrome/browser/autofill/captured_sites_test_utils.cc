@@ -63,7 +63,7 @@ const char kCommandFileFlag[] = "command_file";
 
 // The maximum amount of time to wait for Chrome to finish autofilling a form.
 const base::TimeDelta kAutofillActionWaitForVisualUpdateTimeout =
-    base::TimeDelta::FromSeconds(3);
+    base::Seconds(3);
 
 // The number of tries the TestRecipeReplayer should perform when executing an
 // Chrome Autofill action.
@@ -732,8 +732,7 @@ bool TestRecipeReplayer::StartWebPageReplayServer(
   // process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, wpr_launch_waiter.QuitClosure(),
-      base::TimeDelta::FromSeconds(5));
+      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
   wpr_launch_waiter.Run();
 
   if (!web_page_replay_server_.IsValid()) {
@@ -927,8 +926,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
         while (!thread_finished) {
           base::RunLoop run_loop;
           base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-              FROM_HERE, run_loop.QuitClosure(),
-              base::TimeDelta::FromMilliseconds(1000));
+              FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
           run_loop.Run();
         }
       }
@@ -1178,7 +1176,7 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::DictStorage action) {
       return false;
     }
     int seconds = pause_time_container_iter->second.GetInt();
-    cool_off_time = base::TimeDelta::FromSeconds(seconds);
+    cool_off_time = base::Seconds(seconds);
   }
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, heart_beat.QuitClosure(), cool_off_time);

@@ -643,7 +643,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   EXPECT_EQ(image.repetition_count(), repetition_count_);
   for (size_t i = 0; i < image.GetFrameMetadata().size(); ++i) {
     const auto& data = image.GetFrameMetadata()[i];
-    EXPECT_EQ(data.duration, base::TimeDelta::FromMilliseconds(100));
+    EXPECT_EQ(data.duration, base::Milliseconds(100));
     if (i == frame_count_ - 1 && !last_frame_complete_)
       EXPECT_FALSE(data.complete);
     else
@@ -651,7 +651,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   }
 
   // Now the load is finished.
-  duration_ = base::TimeDelta::FromSeconds(1);
+  duration_ = base::Seconds(1);
   repetition_count_ = kAnimationLoopInfinite;
   frame_count_ = 6u;
   last_frame_complete_ = true;
@@ -665,9 +665,9 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   for (size_t i = 0; i < image.GetFrameMetadata().size(); ++i) {
     const auto& data = image.GetFrameMetadata()[i];
     if (i < 4u)
-      EXPECT_EQ(data.duration, base::TimeDelta::FromMilliseconds(100));
+      EXPECT_EQ(data.duration, base::Milliseconds(100));
     else
-      EXPECT_EQ(data.duration, base::TimeDelta::FromSeconds(1));
+      EXPECT_EQ(data.duration, base::Seconds(1));
     EXPECT_TRUE(data.complete);
   }
 }

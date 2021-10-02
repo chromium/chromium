@@ -53,7 +53,7 @@
 
 namespace {
 base::TimeTicks TimeTicksFromMillisecondsD(double seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(seconds);
+  return base::TimeTicks() + base::Milliseconds(seconds);
 }
 
 #define EXPECT_TIME_NEAR(expected, value)                              \
@@ -229,7 +229,7 @@ TEST_F(AnimationDocumentTimelineTest, PlaybackRateNormal) {
 }
 
 TEST_F(AnimationDocumentTimelineTest, PlaybackRateNormalWithOriginTime) {
-  base::TimeDelta origin_time = base::TimeDelta::FromMilliseconds(-1000);
+  base::TimeDelta origin_time = base::Milliseconds(-1000);
   DocumentTimeline* timeline = MakeGarbageCollected<DocumentTimeline>(
       document.Get(), origin_time, platform_timing);
   timeline->ResetForTesting();
@@ -266,7 +266,7 @@ TEST_F(AnimationDocumentTimelineTest, PlaybackRatePause) {
 }
 
 TEST_F(AnimationDocumentTimelineTest, PlaybackRatePauseWithOriginTime) {
-  base::TimeDelta origin_time = base::TimeDelta::FromMilliseconds(-1000);
+  base::TimeDelta origin_time = base::Milliseconds(-1000);
   DocumentTimeline* timeline = MakeGarbageCollected<DocumentTimeline>(
       document.Get(), origin_time, platform_timing);
   timeline->ResetForTesting();
@@ -331,7 +331,7 @@ TEST_F(AnimationDocumentTimelineTest, PlaybackRateFast) {
 
 TEST_F(AnimationDocumentTimelineTest, PlaybackRateFastWithOriginTime) {
   DocumentTimeline* timeline = MakeGarbageCollected<DocumentTimeline>(
-      document.Get(), base::TimeDelta::FromSeconds(-1000), platform_timing);
+      document.Get(), base::Seconds(-1000), platform_timing);
   timeline->ResetForTesting();
 
   GetAnimationClock().UpdateTime(TimeTicksFromMillisecondsD(100000));
@@ -391,13 +391,13 @@ TEST_F(AnimationDocumentTimelineTest, DelayBeforeAnimationStart) {
   // TODO: Put the animation startTime in the future when we add the capability
   // to change animation startTime
   EXPECT_CALL(*platform_timing,
-              WakeAfter(base::TimeDelta::FromSecondsD(
-                  timing.start_delay.InSecondsF() - MinimumDelay())));
+              WakeAfter(base::Seconds(timing.start_delay.InSecondsF() -
+                                      MinimumDelay())));
   UpdateClockAndService(0);
 
   EXPECT_CALL(*platform_timing,
-              WakeAfter(base::TimeDelta::FromSecondsD(
-                  timing.start_delay.InSecondsF() - MinimumDelay() - 1.5)));
+              WakeAfter(base::Seconds(timing.start_delay.InSecondsF() -
+                                      MinimumDelay() - 1.5)));
   UpdateClockAndService(1500);
 
   timeline->ScheduleServiceOnNextFrame();
@@ -441,11 +441,11 @@ TEST_F(AnimationDocumentTimelineTest,
   // As long as we are inside the rendering loop, we shouldn't update even
   // across tasks.
   base::TimeTicks before_time = GetAnimationClock().CurrentTime();
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   EXPECT_EQ(GetAnimationClock().CurrentTime(), before_time);
 
   AnimationClock::NotifyTaskStart();
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   EXPECT_EQ(GetAnimationClock().CurrentTime(), before_time);
 
   // Once we leave the rendering loop, however, it is valid for the time to
@@ -455,7 +455,7 @@ TEST_F(AnimationDocumentTimelineTest,
 
   // The clock shouldn't tick again until we change task, however.
   base::TimeTicks current_time = GetAnimationClock().CurrentTime();
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   EXPECT_EQ(GetAnimationClock().CurrentTime(), current_time);
   AnimationClock::NotifyTaskStart();
   EXPECT_GT(GetAnimationClock().CurrentTime(), current_time);
@@ -470,7 +470,7 @@ TEST_F(AnimationDocumentTimelineRealTimeTest,
   EXPECT_FALSE(
       document->Loader()->GetTiming().ReferenceMonotonicTime().is_null());
 
-  base::TimeDelta origin_time = base::TimeDelta::FromSeconds(1000);
+  base::TimeDelta origin_time = base::Seconds(1000);
   DocumentTimeline* timeline =
       MakeGarbageCollected<DocumentTimeline>(document.Get(), origin_time);
   timeline->SetPlaybackRate(0.5);

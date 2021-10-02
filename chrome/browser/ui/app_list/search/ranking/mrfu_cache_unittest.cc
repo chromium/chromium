@@ -35,7 +35,7 @@ class MrfuCacheTest : public testing::Test {
     params.boost_factor = 5.0f;
     params.max_items = 3u;
     params.min_score = 0.01f;
-    params.write_delay = base::TimeDelta::FromSeconds(0);
+    params.write_delay = base::Seconds(0);
     return params;
   }
 

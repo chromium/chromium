@@ -114,9 +114,8 @@ class TestMetricCollector : public MetricCollector {
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -420,7 +419,7 @@ TEST_F(MetricCollectorTest, StopTimer) {
 }
 
 TEST_F(MetricCollectorTest, ScheduleSuspendDoneCollection) {
-  const auto kSuspendDuration = base::TimeDelta::FromMinutes(3);
+  const auto kSuspendDuration = base::Minutes(3);
 
   metric_collector_->ScheduleSuspendDoneCollection(kSuspendDuration);
 
@@ -561,8 +560,7 @@ TEST_F(MetricCollectorTest, ZeroSamplingFactorDisablesTrigger) {
 
   // Calling ScheduleSuspendDoneCollection or ScheduleSessionRestoreCollection
   // should not start the timer that triggers collection.
-  metric_collector_->ScheduleSuspendDoneCollection(
-      base::TimeDelta::FromMinutes(10));
+  metric_collector_->ScheduleSuspendDoneCollection(base::Minutes(10));
   EXPECT_FALSE(metric_collector_->IsRunning());
 
   metric_collector_->ScheduleSessionRestoreCollection(100);
@@ -572,7 +570,7 @@ TEST_F(MetricCollectorTest, ZeroSamplingFactorDisablesTrigger) {
 TEST_F(MetricCollectorTest, ZeroPeriodicIntervalDisablesCollection) {
   // Define params with zero periodic interval.
   CollectionParams test_params;
-  test_params.periodic_interval = base::TimeDelta::FromMilliseconds(0);
+  test_params.periodic_interval = base::Milliseconds(0);
 
   metric_collector_ = std::make_unique<TestMetricCollector>(test_params);
   metric_collector_->Init();
@@ -583,7 +581,7 @@ TEST_F(MetricCollectorTest, ZeroPeriodicIntervalDisablesCollection) {
 
   // Advance the clock by 10 hours. We should have no profile and timer is not
   // running.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(10));
+  task_environment_.FastForwardBy(base::Hours(10));
 
   EXPECT_FALSE(metric_collector_->IsRunning())
       << "Sanity: timer should not be running.";

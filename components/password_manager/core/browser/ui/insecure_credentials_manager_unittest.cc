@@ -418,7 +418,7 @@ TEST_F(InsecureCredentialsManagerTest, StartWeakCheckOnEmptyPasswordsList) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
@@ -444,7 +444,7 @@ TEST_F(InsecureCredentialsManagerTest, WeakCredentialsNotFound) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(2 * kDelay));
+  AdvanceClock(base::Milliseconds(2 * kDelay));
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
@@ -472,7 +472,7 @@ TEST_F(InsecureCredentialsManagerTest, DetectedWeakCredential) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> weak_credentials =
@@ -506,7 +506,7 @@ TEST_F(InsecureCredentialsManagerTest,
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> weak_credentials =
@@ -539,7 +539,7 @@ TEST_F(InsecureCredentialsManagerTest,
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> weak_credentials =
@@ -573,7 +573,7 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> returned_weak_credentials =
@@ -613,7 +613,7 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> returned_weak_credentials =

@@ -12,8 +12,7 @@ namespace cc {
 BeginFrameTracker::BeginFrameTracker(const base::Location& location)
     : location_(location),
       location_string_(location.ToString()),
-      current_finished_at_(base::TimeTicks() +
-                           base::TimeDelta::FromMicroseconds(-1)) {}
+      current_finished_at_(base::TimeTicks() + base::Microseconds(-1)) {}
 
 BeginFrameTracker::~BeginFrameTracker() = default;
 
@@ -79,7 +78,7 @@ base::TimeDelta BeginFrameTracker::Interval() const {
   base::TimeDelta interval = current_args_.interval;
   // Normal interval will be ~16ms, 200Hz (5ms) screens are the fastest
   // easily available so anything less than that is likely an error.
-  if (interval < base::TimeDelta::FromMilliseconds(1)) {
+  if (interval < base::Milliseconds(1)) {
     interval = viz::BeginFrameArgs::DefaultInterval();
   }
   return interval;

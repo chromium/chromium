@@ -95,7 +95,7 @@ const char kDefaultCacheGuid[] = "CacheGuid";
 
 base::Time UseDateFromProtoValue(int64_t use_date_proto_value) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(use_date_proto_value));
+      base::Microseconds(use_date_proto_value));
 }
 
 const base::Time kDefaultTime = UseDateFromProtoValue(100);
@@ -461,7 +461,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   }
 
   void AdvanceTestClockByTwoYears() {
-    test_clock_.Advance(base::TimeDelta::FromDays(365 * 2));
+    test_clock_.Advance(base::Days(365 * 2));
   }
 
   AutofillWalletMetadataSyncBridge* bridge() { return bridge_.get(); }

@@ -48,8 +48,7 @@ const size_t kMaxBuckets = 10000;  // We don't ever want more than these many
                                    // and would cause crazy memory usage
 
 // Amount of time to give other processes to report their histograms.
-constexpr base::TimeDelta kHistogramsRefreshTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kHistogramsRefreshTimeout = base::Seconds(10);
 
 }  // namespace
 

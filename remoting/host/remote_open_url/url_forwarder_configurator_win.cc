@@ -38,7 +38,7 @@ namespace {
 // delay reporting USER_INTERVENTION_REQUIRED so that the client doesn't pop up
 // a toast when it's unnecessary.
 constexpr base::TimeDelta kReportUserInterventionRequiredDelay =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 base::win::ScopedHandle GetCurrentUserToken() {
   HANDLE user_token = nullptr;

@@ -508,8 +508,7 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
     auto image_transition = std::make_unique<UserSwitchFlipAnimation>(
         user_image_->width(), 0 /*start_degrees*/, 90 /*midpoint_degrees*/,
         180 /*end_degrees*/,
-        base::TimeDelta::FromMilliseconds(
-            login::kChangeUserAnimationDurationMs),
+        base::Milliseconds(login::kChangeUserAnimationDurationMs),
         gfx::Tween::Type::EASE_OUT,
         base::BindOnce(&LoginUserView::UpdateCurrentUserState,
                        base::Unretained(this)));
@@ -522,8 +521,8 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
     auto make_opacity_sequence = [is_opaque]() {
       auto make_opacity_element = [](float target_opacity) {
         auto element = ui::LayerAnimationElement::CreateOpacityElement(
-            target_opacity, base::TimeDelta::FromMilliseconds(
-                                login::kChangeUserAnimationDurationMs / 2.0f));
+            target_opacity,
+            base::Milliseconds(login::kChangeUserAnimationDurationMs / 2.0f));
         element->set_tween_type(gfx::Tween::Type::EASE_OUT);
         return element;
       };
@@ -677,7 +676,7 @@ void LoginUserView::UpdateOpacity() {
     auto settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
         view->layer()->GetAnimator());
     settings->SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kUserFadeAnimationDurationMs));
+        base::Milliseconds(kUserFadeAnimationDurationMs));
     settings->SetTweenType(gfx::Tween::Type::EASE_IN_OUT);
     return settings;
   };

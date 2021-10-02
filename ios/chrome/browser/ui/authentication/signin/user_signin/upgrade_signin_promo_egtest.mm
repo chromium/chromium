@@ -85,7 +85,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 // Tests that the sign-in promo is not visible at start-up with no identity.
 - (void)testNoSigninPromoWithNoIdentity {
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
@@ -120,7 +120,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
                           ios::ChromeIdentityCapabilityResult::kFalse)
           forIdentity:fakeIdentity];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]

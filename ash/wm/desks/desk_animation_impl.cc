@@ -42,8 +42,7 @@ constexpr char kDeskEndGestureSmoothnessHistogramName[] =
 // Swipes which are below this threshold are considered fast, and
 // RootWindowDeskSwitchAnimator will determine a different ending desk for these
 // swipes.
-constexpr base::TimeDelta kFastSwipeThresholdDuration =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kFastSwipeThresholdDuration = base::Milliseconds(500);
 
 bool IsForContinuousGestures(DesksSwitchSource source) {
   return source == DesksSwitchSource::kDeskSwitchTouchpad;

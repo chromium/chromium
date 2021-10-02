@@ -298,8 +298,7 @@ TEST_F(FuchsiaAudioCapturerSourceTest, CaptureTwoPackets) {
 
   base::TimeTicks ts = base::TimeTicks::FromZxTime(100);
   test_capturer_->SendData(ts, samples1.data());
-  test_capturer_->SendData(ts + base::TimeDelta::FromMilliseconds(10),
-                           samples2.data());
+  test_capturer_->SendData(ts + base::Milliseconds(10), samples2.data());
   base::RunLoop().RunUntilIdle();
 
   // Verify that both packets were received.

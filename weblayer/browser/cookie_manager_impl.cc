@@ -17,7 +17,7 @@
 
 namespace weblayer {
 namespace {
-constexpr base::TimeDelta kCookieFlushDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCookieFlushDelay = base::Seconds(1);
 
 void GetCookieComplete(CookieManager::GetCookieCallback callback,
                        const net::CookieAccessResultList& cookies,

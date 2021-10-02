@@ -138,7 +138,7 @@ TEST_F(RecoveryImprovedActionHandlerTest, Handle) {
       // execution is handled with some delay. This causes the run loop to
       // fail with a timeout.
       const base::test::ScopedRunLoopTimeout specific_timeout(
-          FROM_HERE, base::TimeDelta::FromSeconds(60));
+          FROM_HERE, base::Seconds(60));
       runloop.Run();
     }
   }

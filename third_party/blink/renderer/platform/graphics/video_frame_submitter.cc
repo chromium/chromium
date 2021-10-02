@@ -437,7 +437,7 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
     if (!context_provider) {
       // Delay to retry getting the context_provider.
       constexpr base::TimeDelta kGetContextProviderRetryTimeout =
-          base::TimeDelta::FromMilliseconds(150);
+          base::Milliseconds(150);
 
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
@@ -550,7 +550,7 @@ void VideoFrameSubmitter::UpdateSubmissionState() {
     // If there are any in-flight empty frame requests, this cancels them. We
     // want to wait until any group of state changes stabilizes.
     empty_frame_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(500),
+        FROM_HERE, base::Milliseconds(500),
         base::BindOnce(&VideoFrameSubmitter::SubmitEmptyFrameIfNeeded,
                        base::Unretained(this)));
   }

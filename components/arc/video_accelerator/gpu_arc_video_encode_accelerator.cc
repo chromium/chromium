@@ -211,7 +211,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
       gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),
       dummy_mailbox /* mailbox_holders */,
       base::NullCallback() /* mailbox_holder_release_cb_ */,
-      base::TimeDelta::FromMicroseconds(timestamp));
+      base::Microseconds(timestamp));
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";
     client_->NotifyError(Error::kInvalidArgumentError);

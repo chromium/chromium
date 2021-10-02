@@ -147,7 +147,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     if (request.GetURL().path() == "/slow-first-layout.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::TimeDelta::FromMilliseconds(500));
+              base::Milliseconds(500));
       resp->set_code(net::HTTP_OK);
       resp->set_content_type("application/javascript");
       resp->set_content(std::string());
@@ -160,7 +160,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     if (request.GetURL().path() == "/slow-add-world-text.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::TimeDelta::FromMilliseconds(500));
+              base::Milliseconds(500));
       resp->set_code(net::HTTP_OK);
       resp->set_content_type("application/javascript");
       resp->set_content(

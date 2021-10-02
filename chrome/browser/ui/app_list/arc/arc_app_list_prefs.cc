@@ -100,7 +100,7 @@ int current_icons_version = 1;
 constexpr int default_app_icon_dip_sizes[] = {16, 32, 48, 64};
 
 constexpr base::TimeDelta kDetectDefaultAppAvailabilityTimeout =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 // Accessor for deferred set notifications enabled requests in prefs.
 class NotificationsEnabledDeferred {
@@ -900,7 +900,7 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Arc.FirstAppLaunchRequest.TimeDelta",
           time - ash::UserSessionManager::GetInstance()->ui_shown_time(),
-          base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(2), 20);
+          base::Seconds(1), base::Minutes(2), 20);
     }
   }
 }

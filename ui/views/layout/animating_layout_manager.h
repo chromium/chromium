@@ -297,7 +297,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   // How long each animation takes. Depending on how far along an animation is,
   // a new target layout will either cause the animation to restart or redirect.
-  base::TimeDelta animation_duration_ = base::TimeDelta::FromMilliseconds(250);
+  base::TimeDelta animation_duration_ = base::Milliseconds(250);
 
   // The motion curve of the animation to perform.
   gfx::Tween::Type tween_type_ = gfx::Tween::EASE_IN_OUT;

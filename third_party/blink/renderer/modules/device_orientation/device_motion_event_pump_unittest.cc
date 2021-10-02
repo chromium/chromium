@@ -334,8 +334,7 @@ TEST_F(DeviceMotionEventPumpTest, PumpThrottlesEventRate) {
 
   base::RunLoop loop;
   blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
-      FROM_HERE, loop.QuitWhenIdleClosure(),
-      base::TimeDelta::FromMilliseconds(100));
+      FROM_HERE, loop.QuitWhenIdleClosure(), base::Milliseconds(100));
   loop.Run();
   controller()->UnregisterWithDispatcher();
 

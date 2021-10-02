@@ -230,8 +230,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
         std::make_unique<ScopedSynchronizationDisabler>();
     // TODO(crbug.com/989615): Investigate why this is necessary even with a
     // visible check below.
-    base::test::ios::SpinRunLoopWithMinDelay(
-        base::TimeDelta::FromSecondsD(0.5));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
@@ -275,8 +274,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
         std::make_unique<ScopedSynchronizationDisabler>();
       // TODO(crbug.com/989615): Investigate why this is necessary even with a
       // visible check below.
-      base::test::ios::SpinRunLoopWithMinDelay(
-          base::TimeDelta::FromSecondsD(0.5));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
@@ -319,8 +317,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
         std::make_unique<ScopedSynchronizationDisabler>();
       // TODO(crbug.com/989615): Investigate why this is necessary even with a
       // visible check below.
-      base::test::ios::SpinRunLoopWithMinDelay(
-          base::TimeDelta::FromSecondsD(0.5));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];

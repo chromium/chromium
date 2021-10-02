@@ -424,7 +424,7 @@ class DistilledPageImageLoadWaiter {
 
   void Wait() {
     base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
                       &DistilledPageImageLoadWaiter::OnTimer);
     runner_.Run();
   }

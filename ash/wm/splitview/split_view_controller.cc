@@ -114,7 +114,7 @@ constexpr int kPerformantSplitViewThresholdPixelsPerSec = 72;
 // If performant split view resizing is enabled, this is how often the divider
 // drag speed is checked.
 constexpr base::TimeDelta kPerformantSplitViewChunkTime =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // Records the animation smoothness when the divider is released during a resize
 // and animated to a fixed position ratio.
@@ -336,7 +336,7 @@ class SplitViewController::DividerSnapAnimation
         ending_position_(ending_position) {
     // Before you change this value, read the comment on kIsWindowMovedTimeoutMs
     // in tablet_mode_window_drag_delegate.cc.
-    SetSlideDuration(base::TimeDelta::FromMilliseconds(300));
+    SetSlideDuration(base::Milliseconds(300));
     SetTweenType(gfx::Tween::EASE_IN);
 
     aura::Window* window = split_view_controller->left_window()

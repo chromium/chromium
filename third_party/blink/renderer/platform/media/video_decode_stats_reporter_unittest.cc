@@ -66,7 +66,7 @@ media::PipelineStatistics MakeStats(int frames_decoded,
   stats.video_frames_decoded = frames_decoded;
   stats.video_frames_dropped = frames_dropped;
   stats.video_frames_decoded_power_efficient = power_efficient_decoded_frames;
-  stats.video_frame_duration_average = base::TimeDelta::FromSecondsD(1.0 / fps);
+  stats.video_frame_duration_average = base::Seconds(1.0 / fps);
   return stats;
 }
 
@@ -286,7 +286,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
         // Generally FPS is stabilized with a timer of ~3x the average frame
         // duration.
         base::TimeDelta frame_druation =
-            base::TimeDelta::FromSecondsD(1.0 / pipeline_framerate_);
+            base::Seconds(1.0 / pipeline_framerate_);
         EXPECT_EQ(CurrentStatsCbInterval(), frame_druation * 3);
       } else {
         // If the playback is struggling we will do it more slowly to avoid
@@ -381,11 +381,9 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
 };
 
 const base::TimeDelta VideoDecodeStatsReporterTest::kRecordingInterval =
-    base::TimeDelta::FromMilliseconds(
-        VideoDecodeStatsReporter::kRecordingIntervalMs);
+    base::Milliseconds(VideoDecodeStatsReporter::kRecordingIntervalMs);
 const base::TimeDelta VideoDecodeStatsReporterTest::kTinyFpsWindowDuration =
-    base::TimeDelta::FromMilliseconds(
-        VideoDecodeStatsReporter::kTinyFpsWindowMs);
+    base::Milliseconds(VideoDecodeStatsReporter::kTinyFpsWindowMs);
 
 TEST_F(VideoDecodeStatsReporterTest, RecordWhilePlaying) {
   StartPlayingAndStabilizeFramerate();
@@ -671,8 +669,7 @@ TEST_F(VideoDecodeStatsReporterTest, ThrottleFpsTimerIfNoDecodeProgress) {
   int stable_fps_samples = 1;
 
   // Now advance time to make it half way through framerate stabilization.
-  base::TimeDelta frame_duration =
-      base::TimeDelta::FromSecondsD(1.0 / pipeline_framerate_);
+  base::TimeDelta frame_duration = base::Seconds(1.0 / pipeline_framerate_);
   for (; stable_fps_samples < kRequiredStableFpsSamples / 2;
        stable_fps_samples++) {
     // The timer runs at 3x the frame duration when detecting framerate to

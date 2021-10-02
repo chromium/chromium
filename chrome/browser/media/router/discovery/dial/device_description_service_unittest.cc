@@ -80,7 +80,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
                   bool expired) {
     DeviceDescriptionService::CacheEntry cache_entry;
     cache_entry.expire_time =
-        base::Time::Now() + (expired ? -1 : 1) * base::TimeDelta::FromHours(12);
+        base::Time::Now() + (expired ? -1 : 1) * base::Hours(12);
     cache_entry.description_data = description_data;
     description_cache_[device_label] = cache_entry;
   }

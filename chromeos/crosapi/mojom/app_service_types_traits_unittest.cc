@@ -32,8 +32,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   icon_key->icon_effects = 2;
   input->icon_key = std::move(icon_key);
 
-  input->last_launch_time = base::Time() + base::TimeDelta::FromDays(1);
-  input->install_time = base::Time() + base::TimeDelta::FromDays(2);
+  input->last_launch_time = base::Time() + base::Days(1);
+  input->install_time = base::Time() + base::Days(2);
 
   input->install_reason = apps::mojom::InstallReason::kUser;
   input->recommendable = apps::mojom::OptionalBool::kTrue;
@@ -73,9 +73,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   EXPECT_EQ(output->icon_key->timeline, 1U);
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
 
-  EXPECT_EQ(output->last_launch_time,
-            base::Time() + base::TimeDelta::FromDays(1));
-  EXPECT_EQ(output->install_time, base::Time() + base::TimeDelta::FromDays(2));
+  EXPECT_EQ(output->last_launch_time, base::Time() + base::Days(1));
+  EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
 
   EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);

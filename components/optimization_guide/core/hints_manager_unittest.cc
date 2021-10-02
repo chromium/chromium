@@ -1641,7 +1641,7 @@ TEST_F(HintsManagerFetchingDisabledTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
@@ -1825,7 +1825,7 @@ TEST_F(HintsManagerTest, PurgeFetchedEntries) {
 }
 
 TEST_F(HintsManagerTest, HintFetcherPrefUpdated_URL) {
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time expiry = base::Time::Now() + base::Hours(1);
   optimization_guide::HintsFetcher::AddFetchedHostForTesting(
       pref_service(), "host-key.com", expiry);
   optimization_guide::HintsFetcher::AddFetchedHostForTesting(
@@ -1853,7 +1853,7 @@ TEST_F(HintsManagerTest, HintFetcherPrefUpdated_URL) {
 }
 
 TEST_F(HintsManagerTest, HintFetcherPrefUpdated_Hosts) {
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time expiry = base::Time::Now() + base::Hours(1);
   optimization_guide::HintsFetcher::AddFetchedHostForTesting(
       pref_service(), "host-key.com", expiry);
   optimization_guide::HintsFetcher::AddFetchedHostForTesting(
@@ -1913,7 +1913,7 @@ TEST_F(HintsManagerFetchingTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   // Hints fetcher should not even be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
 }
@@ -1934,7 +1934,7 @@ TEST_F(HintsManagerFetchingTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch but the fetch is not made.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
@@ -1967,7 +1967,7 @@ TEST_F(HintsManagerFetchingTest,
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
 
   // Force timer to expire after random delay and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
+  MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
@@ -1988,14 +1988,14 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire after random delay and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
+  MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   // Hints fetcher should not be even created.
   EXPECT_FALSE(batch_update_hints_fetcher());
 
   // Move it forward again to make sure timer is scheduled.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
   // Still no hosts or URLs, so hints fetcher should still not be even created.
@@ -2023,7 +2023,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
 
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
+  MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
@@ -2032,7 +2032,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
 
   // Move it forward again to make sure timer is scheduled.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
   // Urls didn't change and we have all URLs cached in store.
@@ -2058,11 +2058,11 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetch) {
 
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
+  MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 
   // Move it forward again to make sure timer is scheduled.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(2, batch_update_hints_fetcher()->num_fetches_requested());
 }
 
@@ -3312,7 +3312,7 @@ TEST_F(HintsManagerFetchingNoBatchUpdateTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   // Hints fetcher should not even be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
 }

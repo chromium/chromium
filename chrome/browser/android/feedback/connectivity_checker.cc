@@ -177,8 +177,7 @@ void JNI_ConnectivityChecker_CheckConnectivity(
 
   // This object will be deleted when the connectivity check has completed.
   ConnectivityChecker* connectivity_checker = new ConnectivityChecker(
-      profile, url, base::TimeDelta::FromMilliseconds(j_timeout_ms),
-      j_callback);
+      profile, url, base::Milliseconds(j_timeout_ms), j_callback);
   connectivity_checker->StartAsyncCheck();
 }
 

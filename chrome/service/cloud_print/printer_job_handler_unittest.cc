@@ -600,8 +600,8 @@ void PrinterJobHandlerTest::BeginTest(int timeout_seconds) {
   base::RunLoop run_loop;
   active_run_loop_quit_closure_ = run_loop.QuitWhenIdleClosure();
 
-  base::test::ScopedRunLoopTimeout run_timeout(
-      FROM_HERE, base::TimeDelta::FromSeconds(timeout_seconds));
+  base::test::ScopedRunLoopTimeout run_timeout(FROM_HERE,
+                                               base::Seconds(timeout_seconds));
   run_loop.Run();
 }
 
@@ -745,7 +745,7 @@ TEST_F(PrinterJobHandlerTest, DISABLED_ManyFailureTest) {
       base::BindOnce(&net::FakeURLFetcherFactory::SetFakeResponse,
                      base::Unretained(&factory_), TicketURI(1),
                      kExamplePrintTicket, net::HTTP_OK, net::OK),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   BeginTest(5);
 }

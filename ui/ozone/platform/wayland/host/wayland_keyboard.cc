@@ -206,8 +206,8 @@ void WaylandKeyboard::RepeatInfo(void* data,
   handler.SetAutoRepeatEnabled(rate != 0);
   if (handler.IsAutoRepeatEnabled()) {
     // The rate is in characters per second.
-    handler.SetAutoRepeatRate(base::TimeDelta::FromMilliseconds(delay),
-                              base::TimeDelta::FromSecondsD(1.0 / rate));
+    handler.SetAutoRepeatRate(base::Milliseconds(delay),
+                              base::Seconds(1.0 / rate));
   }
 }
 

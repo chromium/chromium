@@ -100,10 +100,9 @@ int64_t ComputeCurrentTicks() {
   size_t size = sizeof(boottime);
   int kr = sysctl(mib, base::size(mib), &boottime, &size, nullptr, 0);
   DCHECK_EQ(KERN_SUCCESS, kr);
-  base::TimeDelta time_difference =
-      base::subtle::TimeNowIgnoringOverride() -
-      (base::Time::FromTimeT(boottime.tv_sec) +
-       base::TimeDelta::FromMicroseconds(boottime.tv_usec));
+  base::TimeDelta time_difference = base::subtle::TimeNowIgnoringOverride() -
+                                    (base::Time::FromTimeT(boottime.tv_sec) +
+                                     base::Microseconds(boottime.tv_usec));
   return time_difference.InMicroseconds();
 #else
   // mach_absolute_time is it when it comes to ticks on the Mac.  Other calls

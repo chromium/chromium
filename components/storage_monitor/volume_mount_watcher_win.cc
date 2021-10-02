@@ -255,8 +255,7 @@ void EjectDeviceInThreadPool(
                                 0, nullptr, 0, &bytes_returned, nullptr);
   if (!locked) {
     const int kNumLockRetries = 1;
-    const base::TimeDelta kLockRetryInterval =
-        base::TimeDelta::FromMilliseconds(500);
+    const base::TimeDelta kLockRetryInterval = base::Milliseconds(500);
     if (iteration < kNumLockRetries) {
       // Try again -- the lock may have been a transient one. This happens on
       // things like AV disk lock for some reason, or another process

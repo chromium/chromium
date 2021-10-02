@@ -37,8 +37,7 @@ namespace {
 
 using ::testing::ElementsAre;
 
-constexpr base::TimeDelta kExpiredReportOffset =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
 
 class ConstantStartupDelayPolicy : public ConversionPolicy {
  public:
@@ -135,10 +134,10 @@ class TestConversionReporter
 
 // Time after impression that a conversion can first be sent. See
 // ConversionStorageDelegateImpl::GetReportTimeForConversion().
-constexpr base::TimeDelta kFirstReportingWindow = base::TimeDelta::FromDays(2);
+constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 
 // Give impressions a sufficiently long expiry.
-constexpr base::TimeDelta kImpressionExpiry = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
 const size_t kMaxSentReportsToStore = 3;
 
@@ -274,10 +273,10 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportQueued) {
   // sent. Make sure the report is not queued earlier than this.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval -
-                                  base::TimeDelta::FromMinutes(1));
+                                  base::Minutes(1));
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_EQ(1u, test_reporter_->num_reports());
 }
 
@@ -351,11 +350,11 @@ TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval -
-                                  base::TimeDelta::FromMilliseconds(1));
+                                  base::Milliseconds(1));
   EXPECT_EQ(base::Time(), test_reporter_->last_report_time());
 
   // The report is first in the queuing window.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
 
   // Simulate the reporter sending the report only once the actual report time
@@ -370,10 +369,10 @@ TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   test_reporter_->WaitForNumReports(3);
   // At this point, the report has been added directly to the reporter with the
   // updated report time of +5 minutes.
-  expected_report_time += base::TimeDelta::FromMinutes(5);
+  expected_report_time += base::Minutes(5);
   EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
   test_reporter_->RunDeferredCallbacks();
 
@@ -381,10 +380,10 @@ TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   test_reporter_->WaitForNumReports(4);
   // At this point, the report has been added directly to the reporter with the
   // updated report time of +15 minutes.
-  expected_report_time += base::TimeDelta::FromMinutes(15);
+  expected_report_time += base::Minutes(15);
   EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  task_environment_.FastForwardBy(base::Minutes(15));
   EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
   test_reporter_->RunDeferredCallbacks();
 
@@ -413,10 +412,10 @@ TEST_F(ConversionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
   EXPECT_EQ(3u, test_reporter_->num_reports());
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kOffline);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::Minutes(30));
   EXPECT_EQ(3u, test_reporter_->num_reports());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::Minutes(30));
   EXPECT_EQ(3u, test_reporter_->num_reports());
 
   // kFailed =1.
@@ -433,7 +432,7 @@ TEST_F(ConversionManagerImplTest, ReportExpiredAtStartup_Sent) {
 
   // Fast-forward past the reporting window and past report expiry.
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(100));
+  task_environment_.FastForwardBy(base::Days(100));
 
   // Simulate startup and ensure the report is sent before being expired.
   CreateManager();
@@ -622,7 +621,7 @@ TEST_F(ConversionManagerImplTest, ExpiredReportsAtStartup_Queued) {
   // (kFirstReportingWindow+ 1 minute).
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   (2 * kConversionManagerQueueReportsInterval) +
-                                  base::TimeDelta::FromMinutes(1));
+                                  base::Minutes(1));
 
   // Create the manager and check that the first report is queued immediately.
   CreateManager();
@@ -646,7 +645,7 @@ TEST_F(ConversionManagerImplTest, ClearData) {
 
     base::RunLoop run_loop;
     conversion_manager_->ClearData(
-        start, start + base::TimeDelta::FromMinutes(1),
+        start, start + base::Minutes(1),
         base::BindLambdaForTesting(
             [match_url](const url::Origin& _) { return match_url; }),
         run_loop.QuitClosure());
@@ -684,7 +683,7 @@ TEST_F(ConversionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
   conversion_manager_->SendReportsForWebUI(base::DoNothing());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(0));
+  task_environment_.FastForwardBy(base::Minutes(0));
   EXPECT_EQ(1u, test_reporter_->num_reports());
 }
 
@@ -708,16 +707,15 @@ TEST_F(ConversionManagerImplTest, MAYBE_ExpiredReportsAtStartup_Delayed) {
 
   // Fast forward past the expected report time of the first conversion, t =
   // (kFirstReportingWindow+ 1 minute).
-  task_environment_.FastForwardBy(kFirstReportingWindow +
-                                  base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(kFirstReportingWindow + base::Minutes(1));
 
   CreateManager();
   test_reporter_->WaitForNumReports(1);
 
   // Ensure that the expired report is delayed based on the time the browser
   // started.
-  EXPECT_EQ(start_time + kFirstReportingWindow +
-                base::TimeDelta::FromMinutes(1) + kExpiredReportOffset,
+  EXPECT_EQ(start_time + kFirstReportingWindow + base::Minutes(1) +
+                kExpiredReportOffset,
             test_reporter_->last_report_time());
 }
 
@@ -733,8 +731,7 @@ TEST_F(ConversionManagerImplTest, NonExpiredReportsQueuedAtStartup_NotDelayed) {
   conversion_manager_.reset();
 
   // Fast forward just before the expected report time.
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(1));
 
   // Ensure that this report does not receive additional delay.
   CreateManager();
@@ -812,9 +809,7 @@ TEST_F(ConversionManagerImplTest,
 TEST_F(ConversionManagerImplTest, ConversionPrioritization_OneReportSent) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
   conversion_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now())
-          .SetExpiry(base::TimeDelta::FromDays(7))
-          .Build());
+      ImpressionBuilder(clock().Now()).SetExpiry(base::Days(7)).Build());
   ExpectNumStoredImpressions(1u);
 
   conversion_manager_->HandleConversion(
@@ -825,14 +820,13 @@ TEST_F(ConversionManagerImplTest, ConversionPrioritization_OneReportSent) {
       ConversionBuilder().SetPriority(1).Build());
   ExpectNumStoredReports(3u);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(7) -
-                                  base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
   EXPECT_EQ(3u, test_reporter_->num_reports());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   conversion_manager_->HandleConversion(
       ConversionBuilder().SetPriority(2).Build());
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_EQ(3u, test_reporter_->num_reports());
 }
 

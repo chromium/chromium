@@ -80,14 +80,12 @@ bool IsSupportedBitstreamAudioCodecHelper(::media::AudioCodec codec, int mask) {
 // we don't need a larger capacity. Otherwise audio renderer will double the
 // buffer size when underrun happens, which will cause the playback paused to
 // wait long time for enough buffers.
-constexpr base::TimeDelta kAudioRendererMaxCapacity =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kAudioRendererMaxCapacity = base::Seconds(5);
 // Audio renderer algorithm starting capacity.  Configure large enough to
 // prevent underrun.
-constexpr base::TimeDelta kAudioRendererStartingCapacity =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kAudioRendererStartingCapacity = base::Seconds(5);
 constexpr base::TimeDelta kAudioRendererStartingCapacityEncrypted =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 #endif  // defined(OS_ANDROID)
 
 CastContentRendererClient::CastContentRendererClient()

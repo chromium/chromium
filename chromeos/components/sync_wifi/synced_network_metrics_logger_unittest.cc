@@ -105,9 +105,7 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
   }
 
   // Skips the system clock ahead by 10 seconds.
-  void SkipAhead() {
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
-  }
+  void SkipAhead() { task_environment_.FastForwardBy(base::Seconds(10)); }
 
  private:
   std::unique_ptr<NetworkTestHelper> network_test_helper_;

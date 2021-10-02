@@ -113,7 +113,7 @@ void SharesheetClient::Share(
             FROM_HERE,
             base::BindOnce(std::move(callback),
                            blink::mojom::ShareError::CANCELED),
-            base::TimeDelta::FromSecondsD(delay_seconds));
+            base::Seconds(delay_seconds));
     return;
   }
 
@@ -194,7 +194,7 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
     PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(current_share_->file_paths), base::TimeDelta::FromMinutes(0));
+        std::move(current_share_->file_paths), base::Minutes(0));
     current_share_ = absl::nullopt;
     return;
   }

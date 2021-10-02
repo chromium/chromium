@@ -269,7 +269,7 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
       // to match the old behavior.
       PLOG(ERROR) << "Overwriting DisplayVersion in 10s after failing to wait "
                      "for the MSI mutex";
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(10));
+      base::PlatformThread::Sleep(base::Seconds(10));
     } else if (wait_result == WAIT_ABANDONED || wait_result == WAIT_OBJECT_0) {
       VLOG(1) << "Acquired MSI mutex; overwriting DisplayVersion.";
       acquired_mutex = true;
@@ -477,9 +477,8 @@ installer::InstallStatus RepeatDeleteOldVersions(
     //   shutdown: old files can't be deleted because Chrome is still in use.
     // Wait 5 minutes after an unsuccessful attempt because retrying immediately
     // is likely to fail again.
-    const base::TimeDelta max_wait_time = num_attempts == 0
-                                              ? base::TimeDelta::FromSeconds(15)
-                                              : base::TimeDelta::FromMinutes(5);
+    const base::TimeDelta max_wait_time =
+        num_attempts == 0 ? base::Seconds(15) : base::Minutes(5);
     if (setup_singleton.WaitForInterrupt(max_wait_time)) {
       VLOG(1) << "Exiting --delete-old-versions process because another "
                  "process tries to acquire the SetupSingleton.";

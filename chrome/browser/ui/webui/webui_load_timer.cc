@@ -16,8 +16,7 @@ namespace {
 // call this frequently.
 void CallUmaHistogramTimes(const std::string& name, base::TimeDelta duration) {
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(10), 50,
+      name, base::Milliseconds(1), base::Seconds(10), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   DCHECK(histogram);
   histogram->AddTime(duration);

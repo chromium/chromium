@@ -64,8 +64,8 @@ void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
   base::UmaHistogramCustomTimes(
       /*name=*/GetHistogramName("Ash.AmbientMode.EngagementTime", tablet_mode),
       /*sample=*/time_delta,
-      /*min=*/base::TimeDelta::FromHours(0),
-      /*max=*/base::TimeDelta::FromHours(24),
+      /*min=*/base::Hours(0),
+      /*max=*/base::Hours(24),
       /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
 }
 

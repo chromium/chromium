@@ -65,8 +65,7 @@ base::Value NetLogRejectedRequestParams(const std::string* url_id,
 URLRequestThrottlerEntry::URLRequestThrottlerEntry(
     URLRequestThrottlerManager* manager,
     const std::string& url_id)
-    : sliding_window_period_(
-          base::TimeDelta::FromMilliseconds(kDefaultSlidingWindowPeriodMs)),
+    : sliding_window_period_(base::Milliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
       is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
@@ -88,8 +87,7 @@ URLRequestThrottlerEntry::URLRequestThrottlerEntry(
     double multiply_factor,
     double jitter_factor,
     int maximum_backoff_ms)
-    : sliding_window_period_(
-          base::TimeDelta::FromMilliseconds(sliding_window_period_ms)),
+    : sliding_window_period_(base::Milliseconds(sliding_window_period_ms)),
       max_send_threshold_(max_send_threshold),
       is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),

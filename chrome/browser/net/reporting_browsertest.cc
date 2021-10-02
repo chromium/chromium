@@ -126,7 +126,7 @@ void ReportingBrowserTest::SetUp() {
 
   // Make report delivery happen instantly.
   net::ReportingPolicy policy;
-  policy.delivery_interval = base::TimeDelta::FromSeconds(0);
+  policy.delivery_interval = base::Seconds(0);
   net::ReportingPolicy::UsePolicyForTesting(policy);
 }
 

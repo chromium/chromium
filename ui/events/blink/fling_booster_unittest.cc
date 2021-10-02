@@ -25,8 +25,7 @@ static constexpr TimeDelta kEventDelta = TimeDelta::FromMilliseconds(10);
 // Constants from fling_booster.cc
 static constexpr double kMinBoostScrollSpeed = 150.;
 static constexpr double kMinBoostFlingSpeed = 350.;
-static constexpr base::TimeDelta kFlingBoostTimeoutDelay =
-    base::TimeDelta::FromSecondsD(0.05);
+static constexpr base::TimeDelta kFlingBoostTimeoutDelay = base::Seconds(0.05);
 
 class FlingBoosterTest : public testing::Test {
  public:

@@ -564,7 +564,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
     url_row.set_title(u"Google Search");
     url_row.set_typed_count(1);
     url_row.set_visit_count(1);
-    url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(1));
+    url_row.set_last_visit(base::Time::Now() - base::Hours(1));
     return url_row;
   }
 
@@ -574,7 +574,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
     url_row.set_title(u"Google Maps");
     url_row.set_typed_count(2);
     url_row.set_visit_count(3);
-    url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(2));
+    url_row.set_last_visit(base::Time::Now() - base::Hours(2));
     return url_row;
   }
 
@@ -583,7 +583,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
     url_row.set_id(30);
     url_row.set_title(u"Google News");
     url_row.set_visit_count(5);
-    url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(3));
+    url_row.set_last_visit(base::Time::Now() - base::Hours(3));
     return url_row;
   }
 
@@ -946,7 +946,7 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
 
   GURL url("http://google.com");
 
-  base::Time visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time visit_time = base::Time::Now() - base::Days(1);
   HistoryAddPageArgs request(url, visit_time, nullptr, 0, GURL(),
                              RedirectList(),
                              ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
@@ -1081,11 +1081,11 @@ TEST_F(HistoryBackendTest, AddPagesWithDetails) {
   URLRow row3(GURL("https://mail.google.com/"));
   row3.set_visit_count(1);
   row3.set_typed_count(1);
-  row3.set_last_visit(base::Time::Now() - base::TimeDelta::FromDays(7 - 1));
+  row3.set_last_visit(base::Time::Now() - base::Days(7 - 1));
   URLRow row4(GURL("https://maps.google.com/"));
   row4.set_visit_count(1);
   row4.set_typed_count(1);
-  row4.set_last_visit(base::Time::Now() - base::TimeDelta::FromDays(365 + 2));
+  row4.set_last_visit(base::Time::Now() - base::Days(365 + 2));
 
   URLRows rows;
   rows.push_back(row1);
@@ -1459,7 +1459,7 @@ TEST_F(HistoryBackendTest, AddPageVisitNotLastVisit) {
 
   // Create visit times
   base::Time recent_time = base::Time::Now();
-  base::TimeDelta visit_age = base::TimeDelta::FromDays(3);
+  base::TimeDelta visit_age = base::Days(3);
   base::Time older_time = recent_time - visit_age;
 
   // Visit the url with recent time.
@@ -1890,14 +1890,14 @@ TEST_F(HistoryBackendTest, AddVisitsSource) {
 
   GURL url1("http://www.cnn.com");
   std::vector<VisitInfo> visits1, visits2;
-  visits1.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(5),
+  visits1.emplace_back(base::Time::Now() - base::Days(5),
                        ui::PAGE_TRANSITION_LINK);
-  visits1.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(1),
+  visits1.emplace_back(base::Time::Now() - base::Days(1),
                        ui::PAGE_TRANSITION_LINK);
   visits1.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
 
   GURL url2("http://www.example.com");
-  visits2.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(10),
+  visits2.emplace_back(base::Time::Now() - base::Days(10),
                        ui::PAGE_TRANSITION_LINK);
   visits2.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
 
@@ -1933,9 +1933,9 @@ TEST_F(HistoryBackendTest, GetMostRecentVisits) {
 
   GURL url1("http://www.cnn.com");
   std::vector<VisitInfo> visits1;
-  visits1.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(5),
+  visits1.emplace_back(base::Time::Now() - base::Days(5),
                        ui::PAGE_TRANSITION_LINK);
-  visits1.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(1),
+  visits1.emplace_back(base::Time::Now() - base::Days(1),
                        ui::PAGE_TRANSITION_LINK);
   visits1.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
 
@@ -1961,15 +1961,12 @@ TEST_F(HistoryBackendTest, RemoveVisitsTransitions) {
   backend_->DeleteAllHistory();
 
   GURL url1("http://www.cnn.com");
-  VisitInfo typed_visit(
-      base::Time::Now() - base::TimeDelta::FromDays(6),
-      ui::PAGE_TRANSITION_TYPED);
-  VisitInfo reload_visit(
-      base::Time::Now() - base::TimeDelta::FromDays(5),
-      ui::PAGE_TRANSITION_RELOAD);
-  VisitInfo link_visit(
-      base::Time::Now() - base::TimeDelta::FromDays(4),
-      ui::PAGE_TRANSITION_LINK);
+  VisitInfo typed_visit(base::Time::Now() - base::Days(6),
+                        ui::PAGE_TRANSITION_TYPED);
+  VisitInfo reload_visit(base::Time::Now() - base::Days(5),
+                         ui::PAGE_TRANSITION_RELOAD);
+  VisitInfo link_visit(base::Time::Now() - base::Days(4),
+                       ui::PAGE_TRANSITION_LINK);
   std::vector<VisitInfo> visits_to_add;
   visits_to_add.push_back(typed_visit);
   visits_to_add.push_back(reload_visit);
@@ -2014,12 +2011,12 @@ TEST_F(HistoryBackendTest, RemoveVisitsSource) {
 
   GURL url1("http://www.cnn.com");
   std::vector<VisitInfo> visits1, visits2;
-  visits1.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(5),
+  visits1.emplace_back(base::Time::Now() - base::Days(5),
                        ui::PAGE_TRANSITION_LINK);
   visits1.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
 
   GURL url2("http://www.example.com");
-  visits2.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(10),
+  visits2.emplace_back(base::Time::Now() - base::Days(10),
                        ui::PAGE_TRANSITION_LINK);
   visits2.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
 
@@ -2495,9 +2492,9 @@ TEST_F(HistoryBackendTest, UpdateFaviconMappingsAndFetchNoDB) {
 
 TEST_F(HistoryBackendTest, GetCountsAndLastVisitForOrigins) {
   base::Time now = base::Time::Now();
-  base::Time tomorrow = now + base::TimeDelta::FromDays(1);
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
-  base::Time last_week = now - base::TimeDelta::FromDays(7);
+  base::Time tomorrow = now + base::Days(1);
+  base::Time yesterday = now - base::Days(1);
+  base::Time last_week = now - base::Days(7);
 
   backend_->AddPageVisit(GURL("http://cnn.com/intl"), yesterday, 0,
                          ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false,
@@ -2551,12 +2548,12 @@ TEST_F(HistoryBackendTest, UpdateVisitDuration) {
 
   GURL url1("http://www.cnn.com");
   std::vector<VisitInfo> visit_info1, visit_info2;
-  base::Time start_ts = base::Time::Now() - base::TimeDelta::FromDays(5);
-  base::Time end_ts = start_ts + base::TimeDelta::FromDays(2);
+  base::Time start_ts = base::Time::Now() - base::Days(5);
+  base::Time end_ts = start_ts + base::Days(2);
   visit_info1.emplace_back(start_ts, ui::PAGE_TRANSITION_LINK);
 
   GURL url2("http://www.example.com");
-  visit_info2.emplace_back(base::Time::Now() - base::TimeDelta::FromDays(10),
+  visit_info2.emplace_back(base::Time::Now() - base::Days(10),
                            ui::PAGE_TRANSITION_LINK);
 
   // Clear all history.
@@ -2714,14 +2711,14 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
   ASSERT_TRUE(backend_.get());
   // Since history operations are dependent on the local timezone, make all
   // entries relative to a fixed, local reference time.
-  base::Time reference_time = base::Time::UnixEpoch().LocalMidnight() +
-                              base::TimeDelta::FromHours(12);
+  base::Time reference_time =
+      base::Time::UnixEpoch().LocalMidnight() + base::Hours(12);
 
   // Insert 4 entries into the database.
   HistoryAddPageArgs args[4];
   for (size_t i = 0; i < base::size(args); ++i) {
     args[i].url = GURL("http://example" + base::NumberToString(i) + ".com");
-    args[i].time = reference_time + base::TimeDelta::FromDays(i);
+    args[i].time = reference_time + base::Days(i);
     backend_->AddPage(args[i]);
   }
 
@@ -3236,7 +3233,7 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
   for (size_t i = 0; i < pages.size(); ++i) {
     HistoryAddPageArgs args;
     args.url = GURL("http://example" + base::NumberToString(i + 1) + ".com");
-    args.time = base::Time::Now() - base::TimeDelta::FromDays(i + 1);
+    args.time = base::Time::Now() - base::Days(i + 1);
     args.transition = pages[i].first;
     args.consider_for_ntp_most_visited = pages[i].second;
     backend_->AddPage(args);
@@ -3272,7 +3269,7 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
     // Each visit should have a unique `visit_time` to avoid deduping visits to
     // the same URL. The exact times don't matter, but we use increasing values
     // to making the test cases easy to reason about.
-    last_visit_time += base::TimeDelta::FromMilliseconds(1);
+    last_visit_time += base::Milliseconds(1);
     return backend_->AddPageVisit(
         GURL(url), last_visit_time, /*referring_visit=*/0,
         // Must set this so that the visit is considered 'visible'.
@@ -3384,7 +3381,7 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
 TEST_F(HistoryBackendTest, GetRecentClusterIdsAndAnnotatedVisits) {
   const auto time_now = base::Time::Now();
   const auto get_relative_time = [&](int seconds) {
-    return time_now + base::TimeDelta::FromSeconds(seconds);
+    return time_now + base::Seconds(seconds);
   };
 
   const auto add_annotated_visit = [&](int relative_time) {
@@ -3508,7 +3505,7 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
     // Each visit should have a unique `visit_time` to avoid deduping visits to
     // the same URL. The exact times don't matter, but we use increasing
     // values to make the test cases easy to reason about.
-    last_visit_time += base::TimeDelta::FromMilliseconds(1);
+    last_visit_time += base::Milliseconds(1);
     ui::PageTransition transition =
         is_redirect ? ui::PageTransition::PAGE_TRANSITION_IS_REDIRECT_MASK
                     : ui::PageTransition::PAGE_TRANSITION_CHAIN_START;

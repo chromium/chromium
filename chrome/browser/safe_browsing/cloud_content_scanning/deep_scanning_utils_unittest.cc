@@ -32,9 +32,9 @@ constexpr BinaryUploadService::Result kAllBinaryUploadServiceResults[]{
 
 constexpr int64_t kTotalBytes = 1000;
 
-constexpr base::TimeDelta kDuration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDuration = base::Seconds(10);
 
-constexpr base::TimeDelta kInvalidDuration = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kInvalidDuration = base::Seconds(0);
 
 }  // namespace
 

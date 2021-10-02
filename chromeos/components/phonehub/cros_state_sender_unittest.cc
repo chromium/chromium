@@ -65,28 +65,28 @@ TEST_F(CrosStateSenderTest, PerformUpdateCrosStateRetrySequence) {
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
   // The retry time follows a doubling sequence.
-  EXPECT_EQ(base::TimeDelta::FromSeconds(15u), GetRetryDelay());
+  EXPECT_EQ(base::Seconds(15u), GetRetryDelay());
   mock_timer_->Fire();
   EXPECT_TRUE(mock_timer_->IsRunning());
   EXPECT_EQ(2u, fake_message_sender_->GetCrosStateCallCount());
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(30u), GetRetryDelay());
+  EXPECT_EQ(base::Seconds(30u), GetRetryDelay());
   mock_timer_->Fire();
   EXPECT_TRUE(mock_timer_->IsRunning());
   EXPECT_EQ(3u, fake_message_sender_->GetCrosStateCallCount());
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(60u), GetRetryDelay());
+  EXPECT_EQ(base::Seconds(60u), GetRetryDelay());
   mock_timer_->Fire();
   EXPECT_TRUE(mock_timer_->IsRunning());
   EXPECT_EQ(4u, fake_message_sender_->GetCrosStateCallCount());
 
   // The phone model becomes populated, stops retrying.
-  EXPECT_EQ(base::TimeDelta::FromSeconds(120u), GetRetryDelay());
+  EXPECT_EQ(base::Seconds(120u), GetRetryDelay());
   phone_model_->SetPhoneStatusModel(CreateFakePhoneStatusModel());
   mock_timer_->Fire();
   EXPECT_FALSE(mock_timer_->IsRunning());
   EXPECT_EQ(4u, fake_message_sender_->GetCrosStateCallCount());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(120u), GetRetryDelay());
+  EXPECT_EQ(base::Seconds(120u), GetRetryDelay());
 
   fake_connection_manager_->SetStatus(
       secure_channel::ConnectionManager::Status::kConnecting);

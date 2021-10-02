@@ -78,7 +78,7 @@ int UpdaterPrefsImpl::CountServerStarts() {
 
 scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   std::unique_ptr<ScopedPrefsLock> lock =
-      AcquireGlobalPrefsLock(scope, base::TimeDelta::FromMinutes(2));
+      AcquireGlobalPrefsLock(scope, base::Minutes(2));
   if (!lock)
     return nullptr;
 

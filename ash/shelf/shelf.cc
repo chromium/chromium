@@ -326,7 +326,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 
   // Delay before dimming the shelf.
-  const base::TimeDelta kDimDelay = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta kDimDelay = base::Seconds(5);
 };
 
 // Shelf ---------------------------------------------------------------------

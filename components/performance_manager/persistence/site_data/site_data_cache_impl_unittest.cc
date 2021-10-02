@@ -23,7 +23,7 @@ namespace performance_manager {
 
 namespace {
 
-constexpr base::TimeDelta kDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kDelay = base::Minutes(1);
 
 class MockSiteCache : public testing::NoopSiteDataStore {
  public:

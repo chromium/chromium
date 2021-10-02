@@ -726,8 +726,8 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
   content_layer_client.set_bounds(visible_rect.size());
 
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(2)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(3))};
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3))};
 
   gfx::Size image_size(100, 100);
   PaintImage static_image = CreateDiscardablePaintImage(image_size);
@@ -809,8 +809,8 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
   shader_record->push<DrawImageOp>(static_image, 0.f, 0.f);
 
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1))};
+      FrameMetadata(true, base::Milliseconds(1)),
+      FrameMetadata(true, base::Milliseconds(1))};
   PaintImage animated_image = CreateAnimatedImage(gfx::Size(100, 100), frames);
   shader_record->push<DrawImageOp>(animated_image, 0.f, 0.f);
 
@@ -856,8 +856,8 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintFilters) {
   filter_record->push<DrawImageOp>(static_image, 0.f, 0.f);
 
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1))};
+      FrameMetadata(true, base::Milliseconds(1)),
+      FrameMetadata(true, base::Milliseconds(1))};
   PaintImage animated_image = CreateAnimatedImage(gfx::Size(100, 100), frames);
   filter_record->push<DrawImageOp>(animated_image, 0.f, 0.f);
 
@@ -923,8 +923,8 @@ TEST_F(DiscardableImageMapTest, EmbeddedShaderWithAnimatedImages) {
   SkRect tile = SkRect::MakeWH(100, 100);
   auto shader_record = sk_make_sp<PaintOpBuffer>();
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1))};
+      FrameMetadata(true, base::Milliseconds(1)),
+      FrameMetadata(true, base::Milliseconds(1))};
   PaintImage animated_image = CreateAnimatedImage(gfx::Size(100, 100), frames);
   shader_record->push<DrawImageOp>(animated_image, 0.f, 0.f);
   auto shader_with_image = PaintShader::MakePaintRecord(
@@ -1070,8 +1070,8 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
   content_layer_client.set_bounds(visible_rect.size());
 
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(1)),
+      FrameMetadata(true, base::Milliseconds(1)),
+      FrameMetadata(true, base::Milliseconds(1)),
   };
   auto image = CreateAnimatedImage(gfx::Size(100, 100), frames);
   content_layer_client.add_draw_image(image, gfx::Point(0, 0));

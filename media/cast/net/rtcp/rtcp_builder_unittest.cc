@@ -26,8 +26,7 @@ namespace cast {
 namespace {
 static const uint32_t kSendingSsrc = 0x12345678;
 static const uint32_t kMediaSsrc = 0x87654321;
-static const base::TimeDelta kDefaultDelay =
-    base::TimeDelta::FromMilliseconds(100);
+static const base::TimeDelta kDefaultDelay = base::Milliseconds(100);
 
 RtcpReportBlock GetReportBlock() {
   RtcpReportBlock report_block;
@@ -227,7 +226,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithRrtrCastMessageAndLog) {
                                        nullptr, &rtcp_events, kDefaultDelay));
 
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeBaseMs));
+  testing_clock.Advance(base::Milliseconds(kTimeBaseMs));
 
   p.AddReceiverLog(kSendingSsrc);
   p.AddReceiverFrameLog(test_rtp_timestamp().lower_32_bits(), 2, kTimeBaseMs);
@@ -240,7 +239,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithRrtrCastMessageAndLog) {
   frame_event.media_type = VIDEO_EVENT;
   frame_event.timestamp = testing_clock.NowTicks();
   event_subscriber.OnReceiveFrameEvent(frame_event);
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeDelayMs));
+  testing_clock.Advance(base::Milliseconds(kTimeDelayMs));
 
   PacketEvent packet_event;
   packet_event.rtp_timestamp = test_rtp_timestamp();
@@ -268,7 +267,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithOversizedFrameLog) {
   RtcpReportBlock report_block = GetReportBlock();
 
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeBaseMs));
+  testing_clock.Advance(base::Milliseconds(kTimeBaseMs));
 
   p.AddReceiverLog(kSendingSsrc);
 
@@ -296,7 +295,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithOversizedFrameLog) {
     packet_event.timestamp = testing_clock.NowTicks();
     packet_event.packet_id = kLostPacketId1;
     event_subscriber.OnReceivePacketEvent(packet_event);
-    testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeDelayMs));
+    testing_clock.Advance(base::Milliseconds(kTimeDelayMs));
   }
 
   ReceiverRtcpEventSubscriber::RtcpEvents rtcp_events;
@@ -318,7 +317,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithTooManyLogFrames) {
   RtcpReportBlock report_block = GetReportBlock();
 
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeBaseMs));
+  testing_clock.Advance(base::Milliseconds(kTimeBaseMs));
 
   p.AddReceiverLog(kSendingSsrc);
 
@@ -341,7 +340,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithTooManyLogFrames) {
     frame_event.media_type = VIDEO_EVENT;
     frame_event.timestamp = testing_clock.NowTicks();
     event_subscriber.OnReceiveFrameEvent(frame_event);
-    testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeDelayMs));
+    testing_clock.Advance(base::Milliseconds(kTimeDelayMs));
   }
 
   ReceiverRtcpEventSubscriber::RtcpEvents rtcp_events;
@@ -362,7 +361,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithOldLogFrames) {
   RtcpReportBlock report_block = GetReportBlock();
 
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeBaseMs));
+  testing_clock.Advance(base::Milliseconds(kTimeBaseMs));
 
   p.AddReceiverLog(kSendingSsrc);
 
@@ -384,8 +383,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportWithOldLogFrames) {
     frame_event.media_type = VIDEO_EVENT;
     frame_event.timestamp = testing_clock.NowTicks();
     event_subscriber.OnReceiveFrameEvent(frame_event);
-    testing_clock.Advance(
-        base::TimeDelta::FromMilliseconds(kTimeBetweenEventsMs));
+    testing_clock.Advance(base::Milliseconds(kTimeBetweenEventsMs));
   }
 
   ReceiverRtcpEventSubscriber::RtcpEvents rtcp_events;
@@ -403,7 +401,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportRedundancy) {
   RtcpReportBlock report_block = GetReportBlock();
 
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(time_base_ms));
+  testing_clock.Advance(base::Milliseconds(time_base_ms));
 
   ReceiverRtcpEventSubscriber event_subscriber(500, VIDEO_EVENT);
   size_t packet_count = kNumResends * kResendDelay + 10;
@@ -439,8 +437,7 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportRedundancy) {
                    BuildRtcpFromReceiver(&report_block, nullptr, nullptr,
                                          nullptr, &rtcp_events, kDefaultDelay));
 
-    testing_clock.Advance(
-        base::TimeDelta::FromMilliseconds(kTimeBetweenEventsMs));
+    testing_clock.Advance(base::Milliseconds(kTimeBetweenEventsMs));
     time_base_ms += kTimeBetweenEventsMs;
   }
 }

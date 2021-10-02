@@ -496,7 +496,7 @@ TEST_F(RecentTabsSubMenuModelTabRestoreTest,
 TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   // Tabs are populated in decreasing timestamp.
   base::Time timestamp = base::Time::Now();
-  const base::TimeDelta time_delta = base::TimeDelta::FromMinutes(10);
+  const base::TimeDelta time_delta = base::Minutes(10);
 
   RecentTabsBuilderTestHelper recent_tabs_builder;
 
@@ -599,8 +599,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   DisableSync();
 
   // Before creating menu fill foreign sessions.
-  base::Time update_timestamp =
-      base::Time::Now() - base::TimeDelta::FromMinutes(10);
+  base::Time update_timestamp = base::Time::Now() - base::Minutes(10);
 
   RecentTabsBuilderTestHelper recent_tabs_builder;
 
@@ -671,7 +670,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   previous_enable_count = model.enable_count();
   previous_execute_count = model.execute_count();
 
-  update_timestamp = base::Time::Now() - base::TimeDelta::FromMinutes(5);
+  update_timestamp = base::Time::Now() - base::Minutes(5);
 
   // Add tab to the only window.
   recent_tabs_builder.AddTabWithInfo(0, 0, update_timestamp, std::u16string());

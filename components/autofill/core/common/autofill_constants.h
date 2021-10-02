@@ -80,10 +80,8 @@ enum ShowPasswordSuggestionsOptions {
 };
 
 // Constants for the soft/hard deletion of Autofill data.
-constexpr base::TimeDelta kDisusedDataModelTimeDelta =
-    base::TimeDelta::FromDays(180);
-constexpr base::TimeDelta kDisusedDataModelDeletionTimeDelta =
-    base::TimeDelta::FromDays(395);
+constexpr base::TimeDelta kDisusedDataModelTimeDelta = base::Days(180);
+constexpr base::TimeDelta kDisusedDataModelDeletionTimeDelta = base::Days(395);
 
 // Returns if the entry with the given |use_date| is deletable? (i.e. has not
 // been used for a long time).

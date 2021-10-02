@@ -282,7 +282,7 @@ bool PromoService::IsBlockedAfterClearingExpired(
   if (promo_id.empty() || !CanBlockPromos())
     return false;
 
-  auto expired_delta = base::TimeDelta::FromDays(kDaysThatBlocklistExpiresIn);
+  auto expired_delta = base::Days(kDaysThatBlocklistExpiresIn);
   auto expired_time = base::Time::Now() - expired_delta;
   double expired = expired_time.ToDeltaSinceWindowsEpoch().InSecondsF();
 

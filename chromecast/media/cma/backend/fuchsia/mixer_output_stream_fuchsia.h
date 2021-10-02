@@ -66,7 +66,7 @@ class MixerOutputStreamFuchsia : public MixerOutputStream {
   // Current min lead time for the stream. This value is updated by
   // AudioRenderer::OnMinLeadTimeChanged event. Assume 50ms until we get the
   // first OnMinLeadTimeChanged event.
-  base::TimeDelta min_lead_time_ = base::TimeDelta::FromMilliseconds(50);
+  base::TimeDelta min_lead_time_ = base::Milliseconds(50);
 };
 
 }  // namespace media

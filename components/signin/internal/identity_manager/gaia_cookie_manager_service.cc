@@ -257,9 +257,8 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::Start(
 
   // Some fetches may timeout.  Start a timer to decide when the result fetcher
   // has waited long enough.
-  timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kExternalCCResultTimeoutSeconds),
-      this, &GaiaCookieManagerService::ExternalCcResultFetcher::Timeout);
+  timer_.Start(FROM_HERE, base::Seconds(kExternalCCResultTimeoutSeconds), this,
+               &GaiaCookieManagerService::ExternalCcResultFetcher::Timeout);
 }
 
 bool GaiaCookieManagerService::ExternalCcResultFetcher::IsRunning() {

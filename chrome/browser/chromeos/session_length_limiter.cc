@@ -202,10 +202,9 @@ void SessionLengthLimiter::UpdateLimit() {
   }
 
   // Clamp the session length limit to the valid range.
-  const base::TimeDelta session_length_limit =
-      base::TimeDelta::FromMilliseconds(
-          base::clamp(session_length_limit_pref->GetValue()->GetInt(),
-                      kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
+  const base::TimeDelta session_length_limit = base::Milliseconds(
+      base::clamp(session_length_limit_pref->GetValue()->GetInt(),
+                  kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
 
   // Calculate the session stop time.
   const base::Time session_stop_time =

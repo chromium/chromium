@@ -45,13 +45,11 @@ namespace extensions {
 namespace {
 
 // Wait this long before trying to garbage collect extensions again.
-constexpr base::TimeDelta kGarbageCollectRetryDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kGarbageCollectRetryDelay = base::Seconds(30);
 
 // Wait this long after startup to see if there are any extensions which can be
 // garbage collected.
-constexpr base::TimeDelta kGarbageCollectStartupDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kGarbageCollectStartupDelay = base::Seconds(30);
 
 typedef std::multimap<std::string, base::FilePath> ExtensionPathsMultimap;
 

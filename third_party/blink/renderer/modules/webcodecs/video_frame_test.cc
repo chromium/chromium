@@ -57,7 +57,7 @@ class VideoFrameTest : public testing::Test {
     return MakeGarbageCollected<VideoFrame>(std::move(handle));
   }
   scoped_refptr<media::VideoFrame> CreateDefaultBlackMediaVideoFrame() {
-    return CreateBlackMediaVideoFrame(base::TimeDelta::FromMicroseconds(1000),
+    return CreateBlackMediaVideoFrame(base::Microseconds(1000),
                                       media::PIXEL_FORMAT_I420,
                                       gfx::Size(112, 208) /* coded_size */,
                                       gfx::Size(100, 200) /* visible_size */);
@@ -85,7 +85,7 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   V8TestingScope scope;
 
   scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
-      base::TimeDelta::FromMicroseconds(1000), media::PIXEL_FORMAT_I420,
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
       gfx::Size(112, 208) /* coded_size */,
       gfx::Size(100, 200) /* visible_size */);
   VideoFrame* blink_frame =

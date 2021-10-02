@@ -77,17 +77,15 @@ const int kMaxBitrateBps = 1e8;  // 100 Mbps.
 // Frequency of polling the event and control data channels for their current
 // state while waiting for them to close.
 constexpr base::TimeDelta kDefaultDataChannelStatePollingInterval =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // The maximum amount of time we will wait for the data channels to close before
 // closing the PeerConnection.
-constexpr base::TimeDelta kWaitForDataChannelsClosedTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kWaitForDataChannelsClosedTimeout = base::Seconds(5);
 
 // The maximum amount of time we will wait for a thread join before we crash the
 // host.
-constexpr base::TimeDelta kWaitForThreadJoinTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kWaitForThreadJoinTimeout = base::Seconds(30);
 
 base::TimeDelta data_channel_state_polling_interval =
     kDefaultDataChannelStatePollingInterval;
@@ -1185,9 +1183,9 @@ void WebrtcTransport::EnsurePendingTransportInfoMessage() {
 
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.
-    transport_info_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kTransportInfoSendDelayMs),
-        this, &WebrtcTransport::SendTransportInfo);
+    transport_info_timer_.Start(FROM_HERE,
+                                base::Milliseconds(kTransportInfoSendDelayMs),
+                                this, &WebrtcTransport::SendTransportInfo);
   }
 }
 

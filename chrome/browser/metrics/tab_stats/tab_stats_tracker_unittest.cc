@@ -123,7 +123,7 @@ class TestTabStatsTracker : public TabStatsTracker {
             reporting_delegate_for_testing(), tab_stats_data_store()));
 
     // Update the daily event registry to the previous day and trigger it.
-    base::Time last_time = base::Time::Now() - base::TimeDelta::FromHours(25);
+    base::Time last_time = base::Time::Now() - base::Hours(25);
     pref_service_->SetInt64(prefs::kTabStatsDailySample,
                             last_time.since_origin().InMicroseconds());
     CheckDailyEventInterval();
@@ -408,7 +408,7 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
 }
 
 TEST_F(TabStatsTrackerTest, TabUsageGetsReported) {
-  constexpr base::TimeDelta kValidLongInterval = base::TimeDelta::FromHours(12);
+  constexpr base::TimeDelta kValidLongInterval = base::Hours(12);
   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =
       tab_stats_tracker_->data_store()->AddInterval();
 

@@ -121,7 +121,7 @@ void ShelfButtonPressedMetricTrackerTest::SetUp() {
 
   // Ensure the TickClock->NowTicks() doesn't return base::TimeTicks because
   // ShelfButtonPressedMetricTracker interprets that value as unset.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+  tick_clock_.Advance(base::Milliseconds(100));
 }
 
 void ShelfButtonPressedMetricTrackerTest::TearDown() {
@@ -280,8 +280,7 @@ TEST_F(ShelfButtonPressedMetricTrackerTest,
   base::HistogramTester histogram_tester;
 
   ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  tick_clock_.Advance(
-      base::TimeDelta::FromMilliseconds(kTimeDeltaInMilliseconds));
+  tick_clock_.Advance(base::Milliseconds(kTimeDeltaInMilliseconds));
   ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
 
   histogram_tester.ExpectTotalCount(

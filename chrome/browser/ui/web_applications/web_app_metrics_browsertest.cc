@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(1);
+                 base::Hours(1);
         },
         nullptr, nullptr);
     app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(3);
+                 base::Hours(3);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnBrowserNoLongerActive(app_browser);
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(7);
+                 base::Hours(7);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnBrowserSetLastActive(app_browser);
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(1);
+                 base::Hours(1);
         },
         nullptr, nullptr);
     app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(3);
+                 base::Hours(3);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnBrowserSetLastActive(app_browser);
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(7);
+                 base::Hours(7);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnBrowserNoLongerActive(app_browser);
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(1);
+                 base::Hours(1);
         },
         nullptr, nullptr);
     app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(18);
+                 base::Hours(18);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnBrowserNoLongerActive(app_browser);
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(1);
+                 base::Hours(1);
         },
         nullptr, nullptr);
     app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(3);
+                 base::Hours(3);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnSuspend();
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
     base::subtle::ScopedTimeClockOverrides override(
         []() {
           return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(7);
+                 base::Hours(7);
         },
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnBrowserSetLastActive(app_browser);

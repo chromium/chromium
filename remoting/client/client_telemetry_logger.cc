@@ -267,7 +267,7 @@ void ClientTelemetryLogger::RefreshSessionIdIfOutdated() {
     return;
   }
 
-  base::TimeDelta max_age = base::TimeDelta::FromDays(kMaxSessionIdAgeDays);
+  base::TimeDelta max_age = base::Days(kMaxSessionIdAgeDays);
   if (base::TimeTicks::Now() - session_id_generation_time_ > max_age) {
     // Log the old session ID.
     ChromotingEvent event = MakeSessionIdOldEvent();

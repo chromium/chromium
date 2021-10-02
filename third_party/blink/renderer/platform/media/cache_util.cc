@@ -97,7 +97,7 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
     return base::TimeDelta();
 
   // Max cache timeout ~= 1 month.
-  base::TimeDelta ret = base::TimeDelta::FromDays(30);
+  base::TimeDelta ret = base::Days(30);
 
   const char kMaxAgePrefix[] = "max-age=";
   const size_t kMaxAgePrefixLen = base::size(kMaxAgePrefix) - 1;

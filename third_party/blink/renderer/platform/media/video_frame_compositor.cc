@@ -36,13 +36,13 @@ VideoFrameCompositor::VideoFrameCompositor(
       tick_clock_(base::DefaultTickClock::GetInstance()),
       background_rendering_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kBackgroundRenderingTimeoutMs),
+          base::Milliseconds(kBackgroundRenderingTimeoutMs),
           base::BindRepeating(&VideoFrameCompositor::BackgroundRender,
                               base::Unretained(this),
                               RenderingMode::kBackground)),
       force_begin_frames_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kForceBeginFramesTimeoutMs),
+          base::Milliseconds(kForceBeginFramesTimeoutMs),
           base::BindRepeating(&VideoFrameCompositor::StopForceBeginFrames,
                               base::Unretained(this))),
       submitter_(std::move(submitter)) {
@@ -272,7 +272,7 @@ void VideoFrameCompositor::UpdateCurrentFrameIfStale(UpdateType type) {
   const base::TimeDelta interval = now - last_background_render_;
 
   // Cap updates to 250Hz which should be more than enough for everyone.
-  if (interval < base::TimeDelta::FromMilliseconds(4))
+  if (interval < base::Milliseconds(4))
     return;
 
   {

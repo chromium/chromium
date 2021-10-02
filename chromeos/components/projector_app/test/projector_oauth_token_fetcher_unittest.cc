@@ -17,7 +17,7 @@ namespace {
 const char kTestUserEmail[] = "testuser1@gmail.com";
 const char kTestUser2Email[] = "testuser2@gmail.com";
 
-const base::TimeDelta kExpiryTimeFromNow = base::TimeDelta::FromMinutes(10);
+const base::TimeDelta kExpiryTimeFromNow = base::Minutes(10);
 }  // namespace
 
 namespace chromeos {

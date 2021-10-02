@@ -43,8 +43,8 @@ class AutoclickScrollPositionHandler : public gfx::AnimationDelegate {
   void SetScrollPointCenterInScreen(const gfx::Point& scroll_point_center);
 
  private:
-  static constexpr auto kOpaqueTime = base::TimeDelta::FromMilliseconds(500);
-  static constexpr auto kFadeTime = base::TimeDelta::FromMilliseconds(500);
+  static constexpr auto kOpaqueTime = base::Milliseconds(500);
+  static constexpr auto kFadeTime = base::Milliseconds(500);
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;

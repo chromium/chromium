@@ -509,7 +509,7 @@ void OnError(base::Time start) {
   // If the Mojo pipe disconnection happens in 1000 ms after the service
   // is initialized, we consider it as a failure. Normally it's caused
   // by the Mojo service itself or misconfigured on Chrome OS.
-  if (base::Time::Now() - start < base::TimeDelta::FromMilliseconds(1000)) {
+  if (base::Time::Now() - start < base::Milliseconds(1000)) {
     LogEvent(ImeServiceEvent::kInitFailed);
   } else {
     LogEvent(ImeServiceEvent::kServiceDisconnected);

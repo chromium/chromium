@@ -365,7 +365,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
         FROM_HERE,
         base::BindOnce(&PrintSessionImpl::StartPrintAfterPluginIsLoaded,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
     LOG(WARNING) << "PDF plugin not ready yet.  Can't start print preview.";
     return;
   }
@@ -377,7 +377,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
       FROM_HERE,
       base::BindOnce(&PrintSessionImpl::StartPrintNow,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void PrintSessionImpl::StartPrintNow() {

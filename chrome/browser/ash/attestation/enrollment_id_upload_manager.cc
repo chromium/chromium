@@ -165,7 +165,7 @@ void EnrollmentIdUploadManager::RescheduleGetEnrollmentId() {
         FROM_HERE,
         base::BindOnce(&EnrollmentIdUploadManager::GetEnrollmentId,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(retry_delay_));
+        base::Seconds(retry_delay_));
   } else {
     LOG(WARNING) << "EnrollmentIdUploadManager: Retry limit exceeded.";
     request_in_flight_ = false;

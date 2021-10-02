@@ -75,8 +75,8 @@ void FakeDemuxerStream::Initialize() {
   num_configs_left_ = num_configs_;
   num_buffers_left_in_current_config_ = num_buffers_in_one_config_;
   num_buffers_returned_ = 0;
-  current_timestamp_ = base::TimeDelta::FromMilliseconds(kStartTimestampMs);
-  duration_ = base::TimeDelta::FromMilliseconds(kDurationMs);
+  current_timestamp_ = base::Milliseconds(kStartTimestampMs);
+  duration_ = base::Milliseconds(kDurationMs);
   next_size_ = start_coded_size_;
   next_read_num_ = 0;
 }

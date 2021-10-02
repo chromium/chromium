@@ -103,7 +103,7 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
 }  // namespace
 
 const constexpr base::TimeDelta kConversionManagerQueueReportsInterval =
-    base::TimeDelta::FromMinutes(30);
+    base::Minutes(30);
 
 ConversionManager* ConversionManagerProviderImpl::GetManager(
     WebContents* web_contents) const {

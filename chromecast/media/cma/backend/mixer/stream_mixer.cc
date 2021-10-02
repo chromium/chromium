@@ -75,10 +75,8 @@ const int kMediaDuckFadeMs = 150;
 const int kMediaUnduckFadeMs = 700;
 const int kDefaultFilterFrameAlignment = 64;
 
-constexpr base::TimeDelta kMixerThreadCheckTimeout =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kHealthCheckInterval =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kMixerThreadCheckTimeout = base::Seconds(10);
+constexpr base::TimeDelta kHealthCheckInterval = base::Seconds(5);
 
 int GetFixedOutputSampleRate() {
   int fixed_sample_rate = GetSwitchValueNonNegativeInt(
@@ -103,7 +101,7 @@ base::TimeDelta GetNoInputCloseTimeout() {
   if (close_timeout_ms < 0) {
     return base::TimeDelta::Max();
   }
-  return base::TimeDelta::FromMilliseconds(close_timeout_ms);
+  return base::Milliseconds(close_timeout_ms);
 }
 
 void UseHighPriority() {

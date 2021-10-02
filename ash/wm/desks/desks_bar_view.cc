@@ -80,8 +80,7 @@ constexpr int kVerticalDotsButtonVerticalPadding = 8;
 constexpr int kVerticalDotsButtonRightPadding = 8;
 
 // The duration of scrolling one page.
-constexpr base::TimeDelta kBarScrollDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kBarScrollDuration = base::Milliseconds(250);
 
 gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   DCHECK(event.IsGestureEvent());

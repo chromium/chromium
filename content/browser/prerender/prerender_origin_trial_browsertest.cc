@@ -234,8 +234,7 @@ class PrerenderOriginTrialBrowserTest
     EXPECT_TRUE(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(100));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
     run_loop.Run();
     EXPECT_FALSE(prerender_requested_);
   }

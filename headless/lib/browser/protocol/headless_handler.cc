@@ -121,8 +121,8 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   bool no_display_updates = in_no_display_updates.fromMaybe(false);
 
   if (in_frame_time_ticks.isJust()) {
-    frame_time_ticks = base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
-                                               in_frame_time_ticks.fromJust());
+    frame_time_ticks =
+        base::TimeTicks() + base::Milliseconds(in_frame_time_ticks.fromJust());
   } else {
     frame_time_ticks = base::TimeTicks::Now();
   }
@@ -134,7 +134,7 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
           Response::InvalidParams("interval has to be greater than 0"));
       return;
     }
-    interval = base::TimeDelta::FromMillisecondsD(interval_double);
+    interval = base::Milliseconds(interval_double);
   } else {
     interval = viz::BeginFrameArgs::DefaultInterval();
   }

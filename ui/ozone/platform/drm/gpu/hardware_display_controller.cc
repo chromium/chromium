@@ -421,8 +421,7 @@ gfx::Size HardwareDisplayController::GetModeSize() const {
 base::TimeDelta HardwareDisplayController::GetRefreshInterval() const {
   // If there are multiple CRTCs they should all have the same refresh rate.
   float vrefresh = ModeRefreshRate(crtc_controllers_[0]->mode());
-  return vrefresh ? base::TimeDelta::FromSeconds(1) / vrefresh
-                  : base::TimeDelta();
+  return vrefresh ? base::Seconds(1) / vrefresh : base::TimeDelta();
 }
 
 base::TimeTicks HardwareDisplayController::GetTimeOfLastFlip() const {

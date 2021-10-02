@@ -20,8 +20,7 @@ OfflinerPolicyUtils::CheckRequestExpirationStatus(
   DCHECK(policy);
 
   if (OfflineTimeNow() - request->creation_time() >=
-      base::TimeDelta::FromSeconds(
-          policy->GetRequestExpirationTimeInSeconds())) {
+      base::Seconds(policy->GetRequestExpirationTimeInSeconds())) {
     return RequestExpirationStatus::EXPIRED;
   }
   if (request->started_attempt_count() >= policy->GetMaxStartedTries())

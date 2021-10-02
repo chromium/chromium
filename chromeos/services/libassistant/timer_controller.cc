@@ -53,20 +53,19 @@ std::vector<AssistantTimer> GetTimers(
     timer.id = event.timer_data.timer_id;
     timer.label = event.timer_data.label;
     timer.state = GetTimerState(event.timer_data.state);
-    timer.original_duration = base::TimeDelta::FromMilliseconds(
-        event.timer_data.original_duration_ms);
+    timer.original_duration =
+        base::Milliseconds(event.timer_data.original_duration_ms);
 
     // LibAssistant provides |fire_time_ms| as an offset from unix epoch.
-    timer.fire_time =
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromMilliseconds(event.timer_data.fire_time_ms);
+    timer.fire_time = base::Time::UnixEpoch() +
+                      base::Milliseconds(event.timer_data.fire_time_ms);
 
     // If the |timer| is paused, LibAssistant will specify the amount of time
     // remaining. Otherwise we calculate it based on |fire_time|.
-    timer.remaining_time = timer.state == AssistantTimerState::kPaused
-                               ? base::TimeDelta::FromMilliseconds(
-                                     event.timer_data.remaining_duration_ms)
-                               : timer.fire_time - base::Time::Now();
+    timer.remaining_time =
+        timer.state == AssistantTimerState::kPaused
+            ? base::Milliseconds(event.timer_data.remaining_duration_ms)
+            : timer.fire_time - base::Time::Now();
 
     result.push_back(timer);
   }

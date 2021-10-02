@@ -126,7 +126,7 @@ class NET_EXPORT HostCache {
           absl::optional<base::TimeDelta> ttl)
         : error_(error),
           source_(source),
-          ttl_(ttl ? ttl.value() : base::TimeDelta::FromSeconds(-1)) {
+          ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
       DCHECK(!ttl || ttl.value() >= base::TimeDelta());
       SetResult(std::forward<T>(results));
     }
@@ -281,7 +281,7 @@ class NET_EXPORT HostCache {
     // If this flag is null, HostCache will set it to false for simplicity.
     absl::optional<bool> pinning_;
     // TTL obtained from the nameserver. Negative if unknown.
-    base::TimeDelta ttl_ = base::TimeDelta::FromSeconds(-1);
+    base::TimeDelta ttl_ = base::Seconds(-1);
 
     base::TimeTicks expires_;
     // Copied from the cache's network_changes_ when the entry is set; can

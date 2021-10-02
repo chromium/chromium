@@ -53,7 +53,7 @@ class MetricsBrowserTest : public WebLayerBrowserTest {
                                              base::Unretained(this)));
     WebLayerMetricsServiceClient::GetInstance()->SetFastStartupForTesting(true);
     WebLayerMetricsServiceClient::GetInstance()->SetUploadIntervalForTesting(
-        base::TimeDelta::FromMilliseconds(10));
+        base::Milliseconds(10));
     WebLayerBrowserTest::SetUp();
   }
 

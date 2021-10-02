@@ -214,8 +214,7 @@ class WindowCycleControllerTest : public AshTestBase {
 
     shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
-    shelf_view_test_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+    shelf_view_test_->SetAnimationDuration(base::Milliseconds(1));
   }
 
   const aura::Window::Windows GetWindows(WindowCycleController* controller) {
@@ -266,8 +265,8 @@ class WindowCycleControllerTest : public AshTestBase {
 
   void Scroll(float x_offset, float y_offset, int fingers) {
     GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::TimeDelta::FromMilliseconds(5),
-        GetOffsetX(x_offset), GetOffsetY(y_offset), /*steps=*/100, fingers);
+        gfx::Point(), base::Milliseconds(5), GetOffsetX(x_offset),
+        GetOffsetY(y_offset), /*steps=*/100, fingers);
   }
 
   void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
@@ -1565,7 +1564,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   auto drag_origin = preview_items[0]->GetBoundsInScreen().CenterPoint();
   auto drag_dest = preview_items[1]->GetBoundsInScreen().CenterPoint();
   event_generator->GestureScrollSequence(drag_origin, drag_dest,
-                                         base::TimeDelta::FromSeconds(1), 10);
+                                         base::Seconds(1), 10);
   EXPECT_EQ(drag_origin, preview_items[0]->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(window2.get(), GetTargetWindow());
 
@@ -1574,7 +1573,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   drag_origin = preview_items[1]->GetBoundsInScreen().CenterPoint();
   drag_dest = preview_items[0]->GetBoundsInScreen().CenterPoint();
   event_generator->GestureScrollSequence(drag_origin, drag_dest,
-                                         base::TimeDelta::FromSeconds(1), 10);
+                                         base::Seconds(1), 10);
   EXPECT_TRUE(base::IsApproximatelyEqual(
       drag_dest.x(), preview_items[1]->GetBoundsInScreen().CenterPoint().x(),
       10));
@@ -1595,7 +1594,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   drag_origin = preview_items[3]->GetBoundsInScreen().CenterPoint();
   drag_dest = preview_items[1]->GetBoundsInScreen().CenterPoint();
   event_generator->GestureScrollSequence(drag_origin, drag_dest,
-                                         base::TimeDelta::FromSeconds(1), 10);
+                                         base::Seconds(1), 10);
   EXPECT_EQ(cycle_view_bounds.right(),
             preview_items[4]->GetBoundsInScreen().right() +
                 WindowCycleView::kInsideBorderHorizontalPaddingDp);
@@ -1607,7 +1606,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   drag_dest = preview_items[4]->GetBoundsInScreen().CenterPoint();
   drag_dest.set_y(cycle_view_bounds.bottom() + 100);
   event_generator->GestureScrollSequence(drag_origin, drag_dest,
-                                         base::TimeDelta::FromSeconds(1), 10);
+                                         base::Seconds(1), 10);
   EXPECT_TRUE(base::IsApproximatelyEqual(
       drag_dest.x(), preview_items[3]->GetBoundsInScreen().CenterPoint().x(),
       10));
@@ -1635,8 +1634,8 @@ TEST_F(WindowCycleControllerTest, VerticalTouchScroll) {
   auto preview_items = GetWindowCycleItemViews();
   auto drag_origin = preview_items[0]->GetBoundsInScreen().CenterPoint();
   auto drag_dest = drag_origin + gfx::Vector2d(0, 200);
-  event_generator->GestureScrollSequence(
-      drag_origin, drag_dest, base::TimeDelta::FromMilliseconds(10), 10);
+  event_generator->GestureScrollSequence(drag_origin, drag_dest,
+                                         base::Milliseconds(10), 10);
   EXPECT_EQ(drag_origin, preview_items[0]->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(window2.get(), GetTargetWindow());
 }
@@ -3014,8 +3013,7 @@ class MultiUserWindowCycleControllerTest
     WindowCycleList::DisableInitialDelayForTesting();
     shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
-    shelf_view_test_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+    shelf_view_test_->SetAnimationDuration(base::Milliseconds(1));
 
     generator_ = GetEventGenerator();
 

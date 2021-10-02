@@ -39,8 +39,8 @@ void CopyConvertFromInterleaved(
 
 static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
   DCHECK_GT(sample_rate, 0);
-  return base::TimeDelta::FromMicroseconds(
-      frames * base::Time::kMicrosecondsPerSecond / sample_rate);
+  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                            sample_rate);
 }
 
 AudioBufferMemoryPool::AudioBufferMemoryPool() = default;

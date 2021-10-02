@@ -644,7 +644,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
             GetClipboard()->WriteClipboardData(std::move(original_data));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(original_data)),
-      base::TimeDelta::FromMilliseconds(200));
+      base::Milliseconds(200));
 }
 
 void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {

@@ -373,7 +373,7 @@ std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(
   if (last_update_time > now)
     return std::string();
   const base::TimeDelta elapsed_time =
-      base::TimeDelta::FromMicroseconds(now - last_update_time);
+      base::Microseconds(now - last_update_time);
   return base::UTF16ToUTF8(
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                              ui::TimeFormat::LENGTH_SHORT, elapsed_time));

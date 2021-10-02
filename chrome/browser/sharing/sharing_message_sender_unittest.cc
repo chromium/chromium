@@ -37,7 +37,7 @@ const char kSenderSenderIdFcmToken[] = "sender_sender_id_fcm_token";
 const char kSenderSenderIdP256dh[] = "sender_sender_id_p256dh";
 const char kSenderSenderIdAuthSecret[] = "sender_sender_id_auth_secret";
 const char kSenderMessageID[] = "sender_message_id";
-constexpr base::TimeDelta kTimeToLive = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTimeToLive = base::Seconds(10);
 
 namespace {
 

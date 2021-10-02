@@ -14,7 +14,7 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultExpiry = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
 
 AttributionReport GetReport(base::Time impression_time,
                             base::Time conversion_time,
@@ -43,7 +43,7 @@ TEST_F(ConversionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time impression_time = base::Time::Now();
   const AttributionReport report =
       GetReport(impression_time, /*conversion_time=*/impression_time);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
+  EXPECT_EQ(impression_time + base::Days(2),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -51,10 +51,10 @@ TEST_F(ConversionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
 TEST_F(ConversionStorageDelegateImplTest,
        ConversionImmediatelyBeforeWindow_NextWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(2) -
-                               base::TimeDelta::FromMinutes(1);
+  base::Time conversion_time =
+      impression_time + base::Days(2) - base::Minutes(1);
   const AttributionReport report = GetReport(impression_time, conversion_time);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(7),
+  EXPECT_EQ(impression_time + base::Days(7),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -65,10 +65,10 @@ TEST_F(ConversionStorageDelegateImplTest,
 
   // The deadline for a window is 1 hour before the window. Use a time just
   // before the deadline.
-  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(2) -
-                               base::TimeDelta::FromMinutes(61);
+  base::Time conversion_time =
+      impression_time + base::Days(2) - base::Minutes(61);
   const AttributionReport report = GetReport(impression_time, conversion_time);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
+  EXPECT_EQ(impression_time + base::Days(2),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -76,13 +76,12 @@ TEST_F(ConversionStorageDelegateImplTest,
 TEST_F(ConversionStorageDelegateImplTest,
        ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::TimeDelta::FromHours(1);
+  base::Time conversion_time = impression_time + base::Hours(1);
 
   // Set the impression to expire before the two day window.
-  const AttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromHours(2));
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
+  const AttributionReport report = GetReport(impression_time, conversion_time,
+                                             /*expiry=*/base::Hours(2));
+  EXPECT_EQ(impression_time + base::Days(2),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -90,16 +89,14 @@ TEST_F(ConversionStorageDelegateImplTest,
 TEST_F(ConversionStorageDelegateImplTest,
        ImpressionExpiryBeforeSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
+  base::Time conversion_time = impression_time + base::Days(3);
 
   // Set the impression to expire before the two day window.
-  const AttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromDays(4));
+  const AttributionReport report = GetReport(impression_time, conversion_time,
+                                             /*expiry=*/base::Days(4));
 
   // The expiry window is reported one hour after expiry time.
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
-                base::TimeDelta::FromHours(1),
+  EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -107,16 +104,14 @@ TEST_F(ConversionStorageDelegateImplTest,
 TEST_F(ConversionStorageDelegateImplTest,
        ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(7);
+  base::Time conversion_time = impression_time + base::Days(7);
 
   // Set the impression to expire before the two day window.
-  const AttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromDays(9));
+  const AttributionReport report = GetReport(impression_time, conversion_time,
+                                             /*expiry=*/base::Days(9));
 
   // The expiry window is reported one hour after expiry time.
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(9) +
-                base::TimeDelta::FromHours(1),
+  EXPECT_EQ(impression_time + base::Days(9) + base::Hours(1),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -124,13 +119,11 @@ TEST_F(ConversionStorageDelegateImplTest,
 TEST_F(ConversionStorageDelegateImplTest,
        SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
+  base::Time conversion_time = impression_time + base::Days(3);
   const AttributionReport report =
       GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromDays(1),
-                StorableSource::SourceType::kEvent);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2) +
-                base::TimeDelta::FromHours(1),
+                /*expiry=*/base::Days(1), StorableSource::SourceType::kEvent);
+  EXPECT_EQ(impression_time + base::Days(2) + base::Hours(1),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }
@@ -138,13 +131,11 @@ TEST_F(ConversionStorageDelegateImplTest,
 TEST_F(ConversionStorageDelegateImplTest,
        SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
+  base::Time conversion_time = impression_time + base::Days(3);
   const AttributionReport report =
       GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromDays(4),
-                StorableSource::SourceType::kEvent);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
-                base::TimeDelta::FromHours(1),
+                /*expiry=*/base::Days(4), StorableSource::SourceType::kEvent);
+  EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             ConversionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }

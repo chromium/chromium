@@ -46,27 +46,26 @@ class SignalKeyTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    test_clock_.SetNow(base::Time::UnixEpoch() + base::TimeDelta::FromHours(8));
+    test_clock_.SetNow(base::Time::UnixEpoch() + base::Hours(8));
   }
 
   base::SimpleTestClock test_clock_;
 };
 
 TEST_F(SignalKeyTest, TestConvertToAndFromBinary) {
-  VerifyConversion(
-      SignalKey(SignalKey::Kind::USER_ACTION, 1, test_clock_.Now(),
-                test_clock_.Now() + base::TimeDelta::FromSeconds(10)));
-  VerifyConversion(
-      SignalKey(SignalKey::Kind::HISTOGRAM_VALUE, 2, base::Time::Now(),
-                test_clock_.Now() + base::TimeDelta::FromSeconds(20)));
-  VerifyConversion(
-      SignalKey(SignalKey::Kind::HISTOGRAM_ENUM, 3, base::Time::Now(),
-                test_clock_.Now() + base::TimeDelta::FromSeconds(30)));
+  VerifyConversion(SignalKey(SignalKey::Kind::USER_ACTION, 1, test_clock_.Now(),
+                             test_clock_.Now() + base::Seconds(10)));
+  VerifyConversion(SignalKey(SignalKey::Kind::HISTOGRAM_VALUE, 2,
+                             base::Time::Now(),
+                             test_clock_.Now() + base::Seconds(20)));
+  VerifyConversion(SignalKey(SignalKey::Kind::HISTOGRAM_ENUM, 3,
+                             base::Time::Now(),
+                             test_clock_.Now() + base::Seconds(30)));
 }
 
 TEST_F(SignalKeyTest, TestValidity) {
   SignalKey valid_key(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
-                      test_clock_.Now() + base::TimeDelta::FromSeconds(10));
+                      test_clock_.Now() + base::Seconds(10));
   EXPECT_TRUE(valid_key.IsValid());
 
   // A default constructed key should not be valid.
@@ -95,7 +94,7 @@ TEST_F(SignalKeyTest, TestUsesSafeBinaryFormat) {
   // By testing that the underlying format is the binary version of
   // SignalKeyInternal, we can ensure API guarantees based on SignalKeyInternal.
   SignalKey key(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
-                test_clock_.Now() + base::TimeDelta::FromSeconds(10));
+                test_clock_.Now() + base::Seconds(10));
 
   std::string binary_key = key.ToBinary();
   SignalKeyInternal internal_key;
@@ -108,7 +107,7 @@ TEST_F(SignalKeyTest, TestUsesSafeBinaryFormat) {
 
 TEST_F(SignalKeyTest, TestGetPrefixInBinary) {
   SignalKey key(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
-                test_clock_.Now() + base::TimeDelta::FromSeconds(10));
+                test_clock_.Now() + base::Seconds(10));
 
   std::string binary_prefix = key.GetPrefixInBinary();
   SignalKeyInternal::Prefix prefix;
@@ -122,7 +121,7 @@ TEST_F(SignalKeyTest, EarliestEndTimeComesFirst) {
                   test_clock_.Now());
 
   SignalKey late(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
-                 test_clock_.Now() + base::TimeDelta::FromSeconds(20));
+                 test_clock_.Now() + base::Seconds(20));
 
   EXPECT_LT(CompareBinaryKeys(early, late), 0);
 }
@@ -138,21 +137,21 @@ TEST_F(SignalKeyTest, EqualKeysHaveEqualBinaryKeys) {
 
 TEST_F(SignalKeyTest, EndTimeMoreSignificantThanStartTime) {
   SignalKey early_end(SignalKey::Kind::USER_ACTION, 42,
-                      test_clock_.Now() + base::TimeDelta::FromSeconds(20),
-                      test_clock_.Now() + base::TimeDelta::FromSeconds(20));
+                      test_clock_.Now() + base::Seconds(20),
+                      test_clock_.Now() + base::Seconds(20));
   SignalKey early_start(SignalKey::Kind::USER_ACTION, 42,
-                        test_clock_.Now() + base::TimeDelta::FromSeconds(10),
-                        test_clock_.Now() + base::TimeDelta::FromSeconds(30));
+                        test_clock_.Now() + base::Seconds(10),
+                        test_clock_.Now() + base::Seconds(30));
 
   EXPECT_LT(CompareBinaryKeys(early_end, early_start), 0);
 }
 
 TEST_F(SignalKeyTest, OrderByStartTimeIfEverythingElseIsEqual) {
   SignalKey early_start(SignalKey::Kind::USER_ACTION, 42,
-                        test_clock_.Now() + base::TimeDelta::FromSeconds(10),
+                        test_clock_.Now() + base::Seconds(10),
                         test_clock_.Now());
   SignalKey late_start(SignalKey::Kind::USER_ACTION, 42,
-                       test_clock_.Now() + base::TimeDelta::FromSeconds(20),
+                       test_clock_.Now() + base::Seconds(20),
                        test_clock_.Now());
 
   EXPECT_LT(CompareBinaryKeys(early_start, late_start), 0);
@@ -178,7 +177,7 @@ TEST_F(SignalKeyTest, DifferentKindGivesDifferentKey) {
 
 TEST_F(SignalKeyTest, TestKeyDebugStringRepresentation) {
   SignalKey key(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
-                test_clock_.Now() + base::TimeDelta::FromSeconds(10));
+                test_clock_.Now() + base::Seconds(10));
 
   EXPECT_EQ(
       "{kind=1, name_hash=42, range_start=1970-01-01 08:00:00.000 UTC, "

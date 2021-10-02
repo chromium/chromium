@@ -1140,8 +1140,8 @@ std::vector<mojom::PreviousWinPtr> CreateWinList(
 }
 
 TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(100);
-  base::TimeDelta tiny_delta = base::TimeDelta::FromMilliseconds(500);
+  base::TimeDelta delta = base::Seconds(100);
+  base::TimeDelta tiny_delta = base::Milliseconds(500);
 
   base::Time time1 = auction_start_time_ - delta - delta;
   base::Time time2 = auction_start_time_ - delta - tiny_delta;

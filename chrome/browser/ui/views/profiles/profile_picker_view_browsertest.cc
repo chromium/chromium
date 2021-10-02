@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Make it work without waiting for a long delay.
   ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
   // Add an account - simulate a successful Gaia sign-in.
   CoreAccountInfo core_account_info =
@@ -798,8 +798,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
-  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
-      base::TimeDelta::FromSeconds(0));
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
@@ -820,8 +819,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenProfile_Settings) {
-  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
-      base::TimeDelta::FromSeconds(0));
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
@@ -885,8 +883,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Regression test for https://crbug.com/1199035
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenProfile_Guest) {
-  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
-      base::TimeDelta::FromSeconds(0));
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();

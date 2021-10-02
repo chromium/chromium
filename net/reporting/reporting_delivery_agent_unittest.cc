@@ -127,7 +127,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
   const std::string kType_ = "type";
-  const base::Time kExpires_ = base::Time::Now() + base::TimeDelta::FromDays(7);
+  const base::Time kExpires_ = base::Time::Now() + base::Days(7);
   const ReportingEndpointGroupKey kGroupKey_ =
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_);
   const ReportingEndpointGroupKey kDocumentGroupKey_ =
@@ -445,7 +445,7 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
-  tick_clock()->Advance(base::TimeDelta::FromMilliseconds(kAgeMillis));
+  tick_clock()->Advance(base::Milliseconds(kAgeMillis));
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();

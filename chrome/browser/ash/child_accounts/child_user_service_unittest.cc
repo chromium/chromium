@@ -48,8 +48,8 @@ class ChildUserServiceTest : public testing::Test {
     registry->OnAppAvailable(app_time::GetChromeAppId());
     registry->SetAppLimit(
         app_time::GetChromeAppId(),
-        app_time::AppLimit(app_time::AppRestriction::kTimeLimit,
-                           base::TimeDelta::FromHours(1), base::Time::Now()));
+        app_time::AppLimit(app_time::AppRestriction::kTimeLimit, base::Hours(1),
+                           base::Time::Now()));
   }
 
   Profile* profile() { return &profile_; }

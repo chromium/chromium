@@ -59,61 +59,37 @@ TEST_F(BackgroundTabLoadingPolicyHelpersTest, CalculateAgeScore) {
   tab_age_score.reserve(1000);
 
   // Generate some known edge cases.
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(-1001), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(-1000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(-999), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(-500), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(0), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(500), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(999), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(1000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromMilliseconds(1001), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(-1001), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(-1000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(-999), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(-500), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(0), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(500), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(999), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(1000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Milliseconds(1001), 0.0));
 
   // Generate a logarithmic selection of ages to test the whole range.
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(-1000000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(-100000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(-10000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(-1000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(-100), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(-10), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(10), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(100), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(1000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(10000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(100000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(1000000), 0.0));
-  tab_age_score.push_back(
-      std::make_pair(base::TimeDelta::FromSeconds(10000000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(-1000000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(-100000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(-10000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(-1000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(-100), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(-10), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(10), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(100), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(1000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(10000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(100000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(1000000), 0.0));
+  tab_age_score.push_back(std::make_pair(base::Seconds(10000000), 0.0));
 
   constexpr int kMonthInSeconds = 60 * 60 * 24 * 31;
 
   // Generate a bunch more random ages.
   for (size_t i = tab_age_score.size(); i < 1000; ++i) {
-    tab_age_score.push_back(
-        std::make_pair(base::TimeDelta::FromSeconds(
-                           base::RandInt(-kMonthInSeconds, kMonthInSeconds)),
-                       0.0));
+    tab_age_score.push_back(std::make_pair(
+        base::Seconds(base::RandInt(-kMonthInSeconds, kMonthInSeconds)), 0.0));
   }
 
   // Calculate the tab scores.

@@ -34,9 +34,9 @@ class GamepadComparisonsTest : public testing::Test {
 
   Gamepad* CreateGamepad() {
     base::TimeTicks dummy_time_origin =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(1000);
+        base::TimeTicks() + base::Microseconds(1000);
     base::TimeTicks dummy_time_floor =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(2000);
+        base::TimeTicks() + base::Microseconds(2000);
     return MakeGarbageCollected<Gamepad>(nullptr, 0, dummy_time_origin,
                                          dummy_time_floor);
   }

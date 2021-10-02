@@ -15,9 +15,9 @@
 // percentile of time spent in background is 2.5 hours, and the 95th is 24 hour.
 // In order to guide the selection of an appropriate observation window we are
 // proposing using a CUSTOM_TIMES histogram from 1s to 48h, with 100 buckets.
-#define HEURISTICS_HISTOGRAM(name, sample)                                  \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::TimeDelta::FromSeconds(1), \
-                             base::TimeDelta::FromHours(48), 100)
+#define HEURISTICS_HISTOGRAM(name, sample)                                    \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Seconds(1), base::Hours(48), \
+                             100)
 
 namespace performance_manager {
 

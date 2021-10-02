@@ -207,7 +207,7 @@ TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
 
   {
     DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
-    base::Time recent = base::Time::Now() - base::TimeDelta::FromHours(2);
+    base::Time recent = base::Time::Now() - base::Hours(2);
     update->SetDoubleKey("42", recent.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
 
@@ -266,7 +266,7 @@ TEST_F(PromoServiceTest, BlocklistExpiration) {
   {
     DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
     ASSERT_EQ(0u, update->DictSize());
-    base::Time past = base::Time::Now() - base::TimeDelta::FromDays(365);
+    base::Time past = base::Time::Now() - base::Days(365);
     update->SetDoubleKey("42", past.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
 

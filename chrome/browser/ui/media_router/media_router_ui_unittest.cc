@@ -198,7 +198,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     EXPECT_CALL(
         *mock_router_,
         CreateRouteInternal(media_source.id(), kSinkId, _, web_contents(), _,
-                            base::TimeDelta::FromSeconds(60), is_incognito));
+                            base::Seconds(60), is_incognito));
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
     for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
@@ -213,9 +213,8 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     ui_->OnResultsUpdated({{sink, {cast_mode}}});
     MediaRouteResponseCallback callback;
     EXPECT_CALL(*mock_router_,
-                CreateRouteInternal(
-                    _, _, _, _, _,
-                    base::TimeDelta::FromSeconds(timeout_seconds), false))
+                CreateRouteInternal(_, _, _, _, _,
+                                    base::Seconds(timeout_seconds), false))
         .WillOnce(SaveArgWithMove<4>(&callback));
     for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());

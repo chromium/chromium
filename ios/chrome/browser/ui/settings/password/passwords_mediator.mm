@@ -31,8 +31,7 @@
 
 namespace {
 // Amount of time after which timestamp is shown instead of "just now".
-constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 }  // namespace
 
 @interface PasswordsMediator () <PasswordCheckObserver,

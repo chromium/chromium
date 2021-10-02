@@ -657,8 +657,7 @@ TEST_P(HintCacheTest, StoreValidFetchedHintsWithServerProvidedExpiryTime) {
   EXPECT_TRUE(hint_cache()->GetHostKeyedHintIfLoaded("host.domain.org"));
 
   // Set time so hint should be expired.
-  MoveClockForwardBy(
-      base::TimeDelta::FromSeconds(kFetchedHintExpirationSecs + 1));
+  MoveClockForwardBy(base::Seconds(kFetchedHintExpirationSecs + 1));
   EXPECT_FALSE(hint_cache()->GetHostKeyedHintIfLoaded("host.domain.org"));
 }
 
@@ -696,7 +695,7 @@ TEST_P(HintCacheTest, StoreValidFetchedHintsWithDefaultExpiryTime) {
   // Set time so hint should be expired.
   MoveClockForwardBy(
       optimization_guide::features::StoredFetchedHintsFreshnessDuration() +
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   EXPECT_FALSE(hint_cache()->GetHostKeyedHintIfLoaded("host.domain.org"));
 }
 

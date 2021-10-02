@@ -417,8 +417,7 @@ void SessionEnding() {
   // the same time or they would interfere with each other.
   absl::optional<ShutdownWatcherHelper> shutdown_watcher;
   absl::optional<base::WatchHangsInScope> watch_hangs_scope;
-  constexpr base::TimeDelta kShutdownHangDelay{
-      base::TimeDelta::FromSeconds(90)};
+  constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(90)};
   if (base::HangWatcher::IsCrashReportingEnabled()) {
     // Use ShutdownWatcherHelper logic to choose delay to get identical
     // behavior.

@@ -77,11 +77,10 @@ struct NetworkPerformanceParams {
                            double signaling_latency_ms)
       : bandwidth_kbps(bandwidth_kbps),
         max_buffers(buffer_s * bandwidth_kbps * 1000 / 8),
-        latency_average(base::TimeDelta::FromMillisecondsD(latency_average_ms)),
-        latency_stddev(base::TimeDelta::FromMillisecondsD(latency_stddev_ms)),
+        latency_average(base::Milliseconds(latency_average_ms)),
+        latency_stddev(base::Milliseconds(latency_stddev_ms)),
         out_of_order_rate(out_of_order_rate),
-        signaling_latency(
-            base::TimeDelta::FromMillisecondsD(signaling_latency_ms)) {}
+        signaling_latency(base::Milliseconds(signaling_latency_ms)) {}
 
   int bandwidth_kbps;
   int max_buffers;
@@ -494,8 +493,8 @@ void ProtocolPerfTest::MeasureTotalLatency(bool use_webrtc) {
 
   int total_frames = 0;
 
-  const base::TimeDelta kWarmUpTime = base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kTestTime = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta kWarmUpTime = base::Seconds(2);
+  const base::TimeDelta kTestTime = base::Seconds(5);
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   while ((base::TimeTicks::Now() - start_time) < (kWarmUpTime + kTestTime)) {
@@ -590,8 +589,8 @@ void ProtocolPerfTest::MeasureScrollPerformance(bool use_webrtc) {
   StartHostAndClient(use_webrtc);
   ASSERT_NO_FATAL_FAILURE(WaitConnected());
 
-  const base::TimeDelta kWarmUpTime = base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kTestTime = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kWarmUpTime = base::Seconds(2);
+  const base::TimeDelta kTestTime = base::Seconds(2);
 
   int num_frames = 0;
   int warm_up_frames = 0;

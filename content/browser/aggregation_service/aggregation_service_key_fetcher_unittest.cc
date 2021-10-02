@@ -208,11 +208,11 @@ TEST_F(AggregationServiceKeyFetcherTest,
   base::Time now = clock().Now();
 
   PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
-  SetPublicKeysInStorage(
-      origin, PublicKeyset(/*keys=*/{key}, /*fetch_time=*/now,
-                           /*expiry_time=*/now + base::TimeDelta::FromDays(1)));
+  SetPublicKeysInStorage(origin,
+                         PublicKeyset(/*keys=*/{key}, /*fetch_time=*/now,
+                                      /*expiry_time=*/now + base::Days(1)));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(2));
+  task_environment_.FastForwardBy(base::Days(2));
 
   ExpectKeyFetchFailure(origin,
                         AggregationServiceKeyFetcher::PublicKeyFetchStatus::

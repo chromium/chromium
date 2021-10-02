@@ -80,8 +80,7 @@ class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
 // implementation is not important; it's only important that distinct inputs map
 // to distinct outputs.
 base::Time WrapTime(int64_t time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(time));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time));
 }
 
 // Populates |seed| with simple test data. The resulting seed will contain one
@@ -153,7 +152,7 @@ void SetAllSeedPrefsToNonDefaultValues(PrefService* prefs) {
   prefs->SetString(prefs::kVariationsSafeSeedSignature, "f");
   prefs->SetString(prefs::kVariationsSeedSignature, "g");
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromDays(1);
+  const base::TimeDelta delta = base::Days(1);
   prefs->SetTime(prefs::kVariationsSafeSeedDate, now - delta);
   prefs->SetTime(prefs::kVariationsSafeSeedFetchTime, now - delta * 2);
   prefs->SetTime(prefs::kVariationsSeedDate, now - delta * 3);
@@ -418,7 +417,7 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_ValidSeed) {
   const std::string base64_seed = SerializeSeedBase64(seed);
   const std::string base64_seed_signature = "a test signature, ignored.";
   const base::Time reference_date = base::Time::Now();
-  const base::Time fetch_time = reference_date - base::TimeDelta::FromDays(3);
+  const base::Time fetch_time = reference_date - base::Days(3);
   const std::string locale = "en-US";
   const std::string permanent_consistency_country = "us";
   const std::string session_consistency_country = "ca";

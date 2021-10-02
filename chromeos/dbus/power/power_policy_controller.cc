@@ -532,7 +532,7 @@ base::TimeDelta PowerPolicyController::GetMaxPolicyAutoScreenLockDelay() {
   }
   int ac_delay = prefs_policy_.ac_delays().screen_lock_ms();
   int battery_delay = prefs_policy_.battery_delays().screen_lock_ms();
-  return base::TimeDelta::FromMilliseconds(std::max(ac_delay, battery_delay));
+  return base::Milliseconds(std::max(ac_delay, battery_delay));
 }
 
 int PowerPolicyController::AddScreenWakeLock(WakeLockReason reason,

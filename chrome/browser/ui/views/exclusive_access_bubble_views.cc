@@ -176,7 +176,7 @@ void ExclusiveAccessBubbleViews::HideImmediately() {
 
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
-  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
+  animation_->SetSlideDuration(base::Milliseconds(150));
   animation_->Hide();
 }
 
@@ -298,14 +298,14 @@ void ExclusiveAccessBubbleViews::Hide() {
   DCHECK(!IsHideTimeoutRunning());
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kTimeout);
 
-  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(700));
+  animation_->SetSlideDuration(base::Milliseconds(700));
   animation_->Hide();
 }
 
 void ExclusiveAccessBubbleViews::Show() {
   if (animation_->IsShowing())
     return;
-  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(350));
+  animation_->SetSlideDuration(base::Milliseconds(350));
   animation_->Show();
 }
 

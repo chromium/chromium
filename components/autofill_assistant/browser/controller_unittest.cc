@@ -630,7 +630,7 @@ TEST_F(ControllerTest, UpdateClientSettings) {
   EXPECT_CALL(mock_observer_,
               OnClientSettingsChanged(
                   AllOf(Field(&ClientSettings::periodic_script_check_interval,
-                              base::TimeDelta::FromMilliseconds(1)),
+                              base::Milliseconds(1)),
                         Field(&ClientSettings::display_strings_locale, "en-US"),
                         Field(&ClientSettings::display_strings,
                               initial_client_settings.display_strings))))
@@ -638,7 +638,7 @@ TEST_F(ControllerTest, UpdateClientSettings) {
   EXPECT_CALL(mock_observer_,
               OnClientSettingsChanged(
                   AllOf(Field(&ClientSettings::periodic_script_check_interval,
-                              base::TimeDelta::FromMilliseconds(1)),
+                              base::Milliseconds(1)),
                         Field(&ClientSettings::display_strings_locale, "fr-FR"),
                         Field(&ClientSettings::display_strings,
                               changed_client_settings.display_strings))))
@@ -646,7 +646,7 @@ TEST_F(ControllerTest, UpdateClientSettings) {
   Start("http://a.example.com/path");
   EXPECT_THAT(controller_->GetSettings(),
               AllOf(Field(&ClientSettings::periodic_script_check_interval,
-                          base::TimeDelta::FromMilliseconds(1)),
+                          base::Milliseconds(1)),
                     Field(&ClientSettings::display_strings_locale, "fr-FR"),
                     Field(&ClientSettings::display_strings,
                           changed_client_settings.display_strings)));
@@ -995,7 +995,7 @@ TEST_F(ControllerTest, KeepCheckingForElement) {
   EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
 
   for (int i = 0; i < 3; i++) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::Seconds(1));
     EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
   }
 
@@ -1004,7 +1004,7 @@ TEST_F(ControllerTest, KeepCheckingForElement) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   EXPECT_EQ(AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT,
             controller_->GetState());
@@ -1037,7 +1037,7 @@ TEST_F(ControllerTest, ScriptTimeoutError) {
   Start("http://a.example.com/path");
   for (int i = 0; i < 30; i++) {
     EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::Seconds(1));
   }
   EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
   EXPECT_EQ("I give up", controller_->GetStatusMessage());
@@ -1071,13 +1071,13 @@ TEST_F(ControllerTest, ScriptTimeoutWarning) {
   // Warning after 4s, script succeeds and the client continues to wait.
   for (int i = 0; i < 4; i++) {
     EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::Seconds(1));
   }
   EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
   EXPECT_EQ("This is slow", controller_->GetStatusMessage());
   for (int i = 0; i < 10; i++) {
     EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1239,7 +1239,7 @@ TEST_F(ControllerTest, WaitForNavigationActionTimesOut) {
 
   // No navigation event happened within the action timeout and the script ends.
   EXPECT_THAT(processed_actions_capture, SizeIs(0));
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   ASSERT_THAT(processed_actions_capture, SizeIs(2));
   EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[0].status());
@@ -1277,7 +1277,7 @@ TEST_F(ControllerTest, WaitForNavigationActionStartWithinTimeout) {
           GURL("http://a.example.com/path"), web_contents()->GetMainFrame());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   // Navigation finishes and the script ends.
   EXPECT_THAT(processed_actions_capture, SizeIs(0));
@@ -3003,7 +3003,7 @@ TEST_F(ControllerTest, EndPromptWithOnEndNavigation) {
           GURL("http://a.example.com/path"), web_contents()->GetMainFrame());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   // Commit the navigation, which will end the current prompt.
   EXPECT_THAT(processed_actions_capture, SizeIs(0));
@@ -3254,11 +3254,11 @@ TEST_F(ControllerTest, Details) {
 
   // Set 2 details in 1s (which directly clears the current details).
   controller_->SetDetails(std::make_unique<Details>(),
-                          base::TimeDelta::FromMilliseconds(1000));
+                          base::Milliseconds(1000));
   EXPECT_THAT(controller_->GetDetails(), IsEmpty());
   EXPECT_THAT(observed_details, IsEmpty());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
   EXPECT_THAT(controller_->GetDetails(), SizeIs(1));
   EXPECT_THAT(observed_details, SizeIs(1));
 
@@ -3268,29 +3268,27 @@ TEST_F(ControllerTest, Details) {
   EXPECT_THAT(observed_details, SizeIs(2));
 
   // Delay the appending of the details.
-  controller_->AppendDetails(
-      std::make_unique<Details>(),
-      /* delay= */ base::TimeDelta::FromMilliseconds(1000));
+  controller_->AppendDetails(std::make_unique<Details>(),
+                             /* delay= */ base::Milliseconds(1000));
   EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
   EXPECT_THAT(observed_details, SizeIs(2));
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(999));
+  task_environment()->FastForwardBy(base::Milliseconds(999));
   EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
   EXPECT_THAT(observed_details, SizeIs(2));
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment()->FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(controller_->GetDetails(), SizeIs(3));
   EXPECT_THAT(observed_details, SizeIs(3));
 
   // Setting the details clears the timers.
-  controller_->AppendDetails(
-      std::make_unique<Details>(),
-      /* delay= */ base::TimeDelta::FromMilliseconds(1000));
+  controller_->AppendDetails(std::make_unique<Details>(),
+                             /* delay= */ base::Milliseconds(1000));
   controller_->SetDetails(nullptr, base::TimeDelta());
   EXPECT_THAT(controller_->GetDetails(), IsEmpty());
   EXPECT_THAT(observed_details, IsEmpty());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(2000));
+  task_environment()->FastForwardBy(base::Milliseconds(2000));
   EXPECT_THAT(controller_->GetDetails(), IsEmpty());
   EXPECT_THAT(observed_details, IsEmpty());
 }

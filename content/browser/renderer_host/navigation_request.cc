@@ -159,8 +159,7 @@ namespace {
 // Default timeout for the READY_TO_COMMIT -> COMMIT transition. Chosen
 // initially based on the Navigation.ReadyToCommitUntilCommit UMA, and then
 // refined based on feedback based on CrashExitCodes.Renderer/RESULT_CODE_HUNG.
-constexpr base::TimeDelta kDefaultCommitTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kDefaultCommitTimeout = base::Seconds(30);
 
 // Timeout for the READY_TO_COMMIT -> COMMIT transition.
 // Overrideable via SetCommitTimeoutForTesting.
@@ -437,8 +436,8 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 #define LOG_NAVIGATION_TIMING_HISTOGRAM(histogram, transition, is_background, \
                                         duration)                             \
   do {                                                                        \
-    const base::TimeDelta kMinTime = base::TimeDelta::FromMilliseconds(1);    \
-    const base::TimeDelta kMaxTime = base::TimeDelta::FromMinutes(3);         \
+    const base::TimeDelta kMinTime = base::Milliseconds(1);                   \
+    const base::TimeDelta kMaxTime = base::Minutes(3);                        \
     const int kBuckets = 50;                                                  \
     UMA_HISTOGRAM_CUSTOM_TIMES("Navigation." histogram, duration, kMinTime,   \
                                kMaxTime, kBuckets);                           \

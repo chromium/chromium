@@ -25,8 +25,8 @@ SpellCheckHostMetrics::SpellCheckHostMetrics()
       start_time_(base::TimeTicks::Now()) {
   const uint64_t kHistogramTimerDurationInMinutes = 30;
   recording_timer_.Start(FROM_HERE,
-      base::TimeDelta::FromMinutes(kHistogramTimerDurationInMinutes),
-      this, &SpellCheckHostMetrics::OnHistogramTimerExpired);
+                         base::Minutes(kHistogramTimerDurationInMinutes), this,
+                         &SpellCheckHostMetrics::OnHistogramTimerExpired);
   RecordWordCounts();
 }
 
@@ -78,7 +78,8 @@ void SpellCheckHostMetrics::OnHistogramTimerExpired() {
     // a 30 minute interval. If the time was 0 we will end up dividing by zero.
     CHECK_NE(0, since_start.InSeconds());
     size_t checked_words_per_hour = spellchecked_word_count_ *
-        base::TimeDelta::FromHours(1).InSeconds() / since_start.InSeconds();
+                                    base::Hours(1).InSeconds() /
+                                    since_start.InSeconds();
     base::UmaHistogramCounts1M(
         "SpellCheck.CheckedWordsPerHour",
         base::saturated_cast<int>(checked_words_per_hour));

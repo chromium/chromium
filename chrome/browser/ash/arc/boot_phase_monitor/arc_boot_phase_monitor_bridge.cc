@@ -41,8 +41,7 @@ class DefaultDelegateImpl : public ArcBootPhaseMonitorBridge::Delegate {
     VLOG(2) << "Launching the first app took "
             << delta.InMillisecondsRoundedUp() << " ms.";
     UMA_HISTOGRAM_CUSTOM_TIMES("Arc.FirstAppLaunchDelay.TimeDelta", delta,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(2), 50);
+                               base::Milliseconds(1), base::Minutes(2), 50);
   }
 };
 

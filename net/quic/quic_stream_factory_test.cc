@@ -618,7 +618,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     }
 
     quic_params_->max_server_configs_stored_in_properties = 1;
-    quic_params_->idle_connection_timeout = base::TimeDelta::FromSeconds(500);
+    quic_params_->idle_connection_timeout = base::Seconds(500);
     Initialize();
     factory_->set_is_quic_known_to_work_on_current_network(true);
     ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -635,7 +635,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     const AlternativeService alternative_service1(
         kProtoQUIC, scheme_host_port_.host(), scheme_host_port_.port());
     AlternativeServiceInfoVector alternative_service_info_vector;
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     alternative_service_info_vector.push_back(
         AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
             alternative_service1, expiration, {version_}));
@@ -1263,7 +1263,7 @@ TEST_P(QuicStreamFactoryTest, DontRequireConfirmationFromSameIP) {
 
 TEST_P(QuicStreamFactoryTest, CachedInitialRtt) {
   ServerNetworkStats stats;
-  stats.srtt = base::TimeDelta::FromMilliseconds(10);
+  stats.srtt = base::Milliseconds(10);
   http_server_properties_->SetServerNetworkStats(url::SchemeHostPort(url_),
                                                  NetworkIsolationKey(), stats);
   quic_params_->estimate_initial_rtt = true;
@@ -1319,7 +1319,7 @@ TEST_P(QuicStreamFactoryTest, CachedInitialRttWithNetworkIsolationKey) {
   http_server_properties_ = std::make_unique<HttpServerProperties>();
 
   ServerNetworkStats stats;
-  stats.srtt = base::TimeDelta::FromMilliseconds(10);
+  stats.srtt = base::Milliseconds(10);
   http_server_properties_->SetServerNetworkStats(url::SchemeHostPort(url_),
                                                  kNetworkIsolationKey1, stats);
   quic_params_->estimate_initial_rtt = true;
@@ -3054,7 +3054,7 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
     // Next connectivity probe is scheduled to be sent in 2 *
     // kDefaultRTTMilliSecs.
     base::TimeDelta retry_connectivity_probe_delay =
-        base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+        base::Milliseconds(2 * kDefaultRTTMilliSecs);
     // Fast forward to send the second connectivity probe. The write will be
     // asynchronous and complete after the read completes.
     task_runner->FastForwardBy(retry_connectivity_probe_delay);
@@ -3157,8 +3157,7 @@ TEST_P(QuicStreamFactoryTest, MigrationTimeoutWithNoNewNetwork) {
   EXPECT_EQ(true, session->connection()->writer()->IsWriteBlocked());
 
   // Migration will be timed out after kWaitTimeForNewNetwokSecs.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromSeconds(kWaitTimeForNewNetworkSecs));
+  task_runner->FastForwardBy(base::Seconds(kWaitTimeForNewNetworkSecs));
 
   // The connection should now be closed. A request for response
   // headers should fail.
@@ -4306,8 +4305,7 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
 
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs));
+  task_runner->FastForwardBy(base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
 
   // Verify that the session is still alive.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -4473,8 +4471,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
     // kDefaultRTTMilliSecs.
     EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
     next_task_delay = task_runner->NextPendingTaskDelay();
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-              next_task_delay);
+    EXPECT_EQ(base::Milliseconds(2 * kDefaultRTTMilliSecs), next_task_delay);
   }
 
   // The connection should still be alive, and not marked as going away.
@@ -4509,8 +4506,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
 
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs));
+  task_runner->FastForwardBy(base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
 
   // Verify that the session is still alive.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -4946,8 +4942,7 @@ TEST_P(QuicStreamFactoryTest, PortMigrationProbingReceivedStatelessReset) {
   // kDefaultRTTMilliSecs.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+  EXPECT_EQ(base::Milliseconds(2 * kDefaultRTTMilliSecs), next_task_delay);
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5360,8 +5355,7 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
     // kDefaultRTTMilliSecs.
     EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
     next_task_delay = task_runner->NextPendingTaskDelay();
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-              next_task_delay);
+    EXPECT_EQ(base::Milliseconds(2 * kDefaultRTTMilliSecs), next_task_delay);
   } else {
     // The retry mechanism is internal to path validator.
     EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
@@ -5548,8 +5542,7 @@ TEST_P(QuicStreamFactoryTest, MultiplePortMigrationsExceedsMaxLimit) {
     // kDefaultRTTMilliSecs.
     EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
     next_task_delay = task_runner->NextPendingTaskDelay();
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-              next_task_delay);
+    EXPECT_EQ(base::Milliseconds(2 * kDefaultRTTMilliSecs), next_task_delay);
 
     // The connection should still be alive, and not marked as going away.
     EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5987,8 +5980,7 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs));
+  task_runner->FastForwardBy(base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
 
   // Verify that the session is still alive.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -6171,8 +6163,7 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
   // There's one more task to mgirate back to the default network in 0.4s.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs));
+  task_runner->FastForwardBy(base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
 
   // Verify that the session is still alive.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -6865,7 +6856,7 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnAsyncWriteError) {
   // There should be one task posted to migrate back to the default network in
   // kMinRetryTimeForDefaultNetworkSecs.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs),
+  EXPECT_EQ(base::Seconds(kMinRetryTimeForDefaultNetworkSecs),
             task_runner->NextPendingTaskDelay());
 
   // Verify that response headers on the migrated socket were delivered to the
@@ -7013,7 +7004,7 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   // kMinRetryTimeForDefaultNetworkSecs.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   base::TimeDelta expected_delay =
-      base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs);
+      base::Seconds(kMinRetryTimeForDefaultNetworkSecs);
   EXPECT_EQ(expected_delay, task_runner->NextPendingTaskDelay());
 
   // Verify that response headers on the migrated socket were delivered to the
@@ -7395,8 +7386,7 @@ void QuicStreamFactoryTestBase::
   // There should be a new task posted to migrate back to the default network.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs),
-            next_task_delay);
+  EXPECT_EQ(base::Seconds(kMinRetryTimeForDefaultNetworkSecs), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
 
   if (!version_.HasIetfQuicFrames()) {
@@ -7404,8 +7394,7 @@ void QuicStreamFactoryTestBase::
     // will retry migrate back.
     EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
     next_task_delay = task_runner->NextPendingTaskDelay();
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-              next_task_delay);
+    EXPECT_EQ(base::Milliseconds(2 * kDefaultRTTMilliSecs), next_task_delay);
   }
 
   // Deliver the signal that the default network is disconnected.
@@ -10027,8 +10016,7 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
 // enabled, and a custom retransmittable on wire timeout is specified, the
 // custom value is used.
 TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
-  constexpr base::TimeDelta custom_timeout_value =
-      base::TimeDelta::FromMilliseconds(200);
+  constexpr base::TimeDelta custom_timeout_value = base::Milliseconds(200);
   quic_params_->retransmittable_on_wire_timeout = custom_timeout_value;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
@@ -10202,8 +10190,7 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
 // retransmittable-on-wire timeout is specified, the ping alarm is set up to
 // send retransmittable pings with the custom value.
 TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeout) {
-  constexpr base::TimeDelta custom_timeout_value =
-      base::TimeDelta::FromMilliseconds(200);
+  constexpr base::TimeDelta custom_timeout_value = base::Milliseconds(200);
   quic_params_->retransmittable_on_wire_timeout = custom_timeout_value;
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -10336,7 +10323,7 @@ TEST_P(QuicStreamFactoryTest, NoRetransmittableOnWireTimeout) {
   // packet, it will not have the same retransmission timeout as the
   // default value of retransmittable-on-wire-ping timeout.
   ServerNetworkStats stats;
-  stats.srtt = base::TimeDelta::FromMilliseconds(200);
+  stats.srtt = base::Milliseconds(200);
   http_server_properties_->SetServerNetworkStats(url::SchemeHostPort(url_),
                                                  NetworkIsolationKey(), stats);
   quic_params_->estimate_initial_rtt = true;
@@ -10468,8 +10455,7 @@ TEST_P(QuicStreamFactoryTest, NoRetransmittableOnWireTimeout) {
 // send retransmittable pings to the peer with custom value.
 TEST_P(QuicStreamFactoryTest,
        CustomRetransmittableOnWireTimeoutWithMigrationOnNetworkChangeOnly) {
-  constexpr base::TimeDelta custom_timeout_value =
-      base::TimeDelta::FromMilliseconds(200);
+  constexpr base::TimeDelta custom_timeout_value = base::Milliseconds(200);
   quic_params_->retransmittable_on_wire_timeout = custom_timeout_value;
   quic_params_->migrate_sessions_on_network_change_v2 = true;
   Initialize();
@@ -10604,7 +10590,7 @@ TEST_P(QuicStreamFactoryTest,
   // packet, it will not have the same retransmission timeout as the
   // default value of retransmittable-on-wire-ping timeout.
   ServerNetworkStats stats;
-  stats.srtt = base::TimeDelta::FromMilliseconds(200);
+  stats.srtt = base::Milliseconds(200);
   http_server_properties_->SetServerNetworkStats(url::SchemeHostPort(url_),
                                                  NetworkIsolationKey(), stats);
   quic_params_->estimate_initial_rtt = true;
@@ -11282,7 +11268,7 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
   // The migrate back timer will fire. Due to default network
   // being disconnected, no attempt will be exercised to migrate back.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs),
+  EXPECT_EQ(base::Seconds(kMinRetryTimeForDefaultNetworkSecs),
             task_runner->NextPendingTaskDelay());
   task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
@@ -11308,7 +11294,7 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
     EXPECT_TRUE(HasActiveSession(scheme_host_port_));
     // A task is posted to migrate back to the default network in 2^i seconds.
     EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(UINT64_C(1) << i),
+    EXPECT_EQ(base::Seconds(UINT64_C(1) << i),
               task_runner->NextPendingTaskDelay());
     task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
   }
@@ -11322,8 +11308,7 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
 TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
   // The customized threshold is 15s.
   quic_params_->migrate_idle_sessions = true;
-  quic_params_->idle_session_migration_period =
-      base::TimeDelta::FromSeconds(15);
+  quic_params_->idle_session_migration_period = base::Seconds(15);
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -11489,7 +11474,7 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
   // The migrate back timer will fire. Due to default network
   // being disconnected, no attempt will be exercised to migrate back.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs),
+  EXPECT_EQ(base::Seconds(kMinRetryTimeForDefaultNetworkSecs),
             task_runner->NextPendingTaskDelay());
   task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
@@ -11515,7 +11500,7 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
     EXPECT_TRUE(HasActiveSession(scheme_host_port_));
     // A task is posted to migrate back to the default network in 2^i seconds.
     EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(UINT64_C(1) << i),
+    EXPECT_EQ(base::Seconds(UINT64_C(1) << i),
               task_runner->NextPendingTaskDelay());
     task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
   }
@@ -12059,7 +12044,7 @@ TEST_P(QuicStreamFactoryTest, EnableNotLoadFromDiskCache) {
 }
 
 TEST_P(QuicStreamFactoryTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
-  quic_params_->reduced_ping_timeout = base::TimeDelta::FromSeconds(10);
+  quic_params_->reduced_ping_timeout = base::Seconds(10);
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -12423,7 +12408,7 @@ TEST_P(QuicStreamFactoryTest,
       kDefaultServerHostName, kDefaultServerPort, PRIVACY_MODE_DISABLED);
 
   quic_params_->max_server_configs_stored_in_properties = 1;
-  quic_params_->idle_connection_timeout = base::TimeDelta::FromSeconds(500);
+  quic_params_->idle_connection_timeout = base::Seconds(500);
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   crypto_client_stream_factory_.set_handshake_mode(
@@ -12442,7 +12427,7 @@ TEST_P(QuicStreamFactoryTest,
     const AlternativeService alternative_service1(
         kProtoQUIC, scheme_host_port_.host(), scheme_host_port_.port());
     AlternativeServiceInfoVector alternative_service_info_vector;
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     alternative_service_info_vector.push_back(
         AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
             alternative_service1, expiration, {version_}));
@@ -13574,10 +13559,8 @@ TEST_P(QuicStreamFactoryTest, HostResolverUsesParams) {
 // |quic_max_idle_time_before_crypto_handshake| to QuicStreamFactory,
 // checks that its internal quic::QuicConfig is correct.
 TEST_P(QuicStreamFactoryTest, ConfigMaxTimeBeforeCryptoHandshake) {
-  quic_params_->max_time_before_crypto_handshake =
-      base::TimeDelta::FromSeconds(11);
-  quic_params_->max_idle_time_before_crypto_handshake =
-      base::TimeDelta::FromSeconds(13);
+  quic_params_->max_time_before_crypto_handshake = base::Seconds(11);
+  quic_params_->max_idle_time_before_crypto_handshake = base::Seconds(13);
   Initialize();
 
   const quic::QuicConfig* config =
@@ -14979,8 +14962,7 @@ TEST_P(QuicStreamFactoryTest, ConfigInitialRttForHandshake) {
     // IETF QUIC uses a different handshake timeout management system.
     return;
   }
-  constexpr base::TimeDelta kInitialRtt =
-      base::TimeDelta::FromMilliseconds(400);
+  constexpr base::TimeDelta kInitialRtt = base::Milliseconds(400);
   quic_params_->initial_rtt_for_handshake = kInitialRtt;
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);

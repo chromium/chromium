@@ -103,8 +103,8 @@ void CloudPrintAuth::OnRefreshTokenResponse(const std::string& access_token,
   // Schedule a task to refresh the access token again when it is about to
   // expire.
   DCHECK(expires_in_seconds > kTokenRefreshGracePeriodSecs);
-  base::TimeDelta refresh_delay = base::TimeDelta::FromSeconds(
-      expires_in_seconds - kTokenRefreshGracePeriodSecs);
+  base::TimeDelta refresh_delay =
+      base::Seconds(expires_in_seconds - kTokenRefreshGracePeriodSecs);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&CloudPrintAuth::RefreshAccessToken, this),
       refresh_delay);

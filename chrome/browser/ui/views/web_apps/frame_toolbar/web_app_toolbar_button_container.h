@@ -41,11 +41,11 @@ class WebAppToolbarButtonContainer : public views::View,
   // These control how long it takes for the origin text and menu button
   // highlight to fade in, pause then fade out.
   static constexpr base::TimeDelta kOriginFadeInDuration =
-      base::TimeDelta::FromMilliseconds(800);
+      base::Milliseconds(800);
   static constexpr base::TimeDelta kOriginPauseDuration =
-      base::TimeDelta::FromMilliseconds(2500);
+      base::Milliseconds(2500);
   static constexpr base::TimeDelta kOriginFadeOutDuration =
-      base::TimeDelta::FromMilliseconds(800);
+      base::Milliseconds(800);
 
   // The total duration of the origin fade animation.
   static base::TimeDelta OriginTotalDuration();
@@ -88,7 +88,7 @@ class WebAppToolbarButtonContainer : public views::View,
 
   // Duration to wait before starting the opening animation.
   static constexpr base::TimeDelta kTitlebarAnimationDelay =
-      base::TimeDelta::FromMilliseconds(750);
+      base::Milliseconds(750);
 
   // PageActionIconContainer:
   void AddPageActionIcon(std::unique_ptr<views::View> icon) override;

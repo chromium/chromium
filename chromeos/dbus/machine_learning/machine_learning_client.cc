@@ -22,7 +22,7 @@ namespace {
 // TODO(crbug.com/1163656): the tast test platform.MLServiceBootstrap flakiness
 // shows ml-service bootstrap fails occasionally for timeout. Try to fix this
 // with a long period (2 minutes).
-constexpr base::TimeDelta kLongTimeout = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kLongTimeout = base::Minutes(2);
 
 MachineLearningClient* g_instance = nullptr;
 

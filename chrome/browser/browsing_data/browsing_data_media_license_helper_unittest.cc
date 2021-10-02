@@ -136,10 +136,10 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   virtual void PopulateTestMediaLicenseData(const GURL& origin1,
                                             const GURL& origin2,
                                             const GURL& origin3) {
-    const base::Time ten_days_ago = now_ - base::TimeDelta::FromDays(10);
-    const base::Time twenty_days_ago = now_ - base::TimeDelta::FromDays(20);
-    const base::Time thirty_days_ago = now_ - base::TimeDelta::FromDays(30);
-    const base::Time sixty_days_ago = now_ - base::TimeDelta::FromDays(60);
+    const base::Time ten_days_ago = now_ - base::Days(10);
+    const base::Time twenty_days_ago = now_ - base::Days(20);
+    const base::Time thirty_days_ago = now_ - base::Days(30);
+    const base::Time sixty_days_ago = now_ - base::Days(60);
 
     std::string clearkey_fsid = CreateFileSystem(kClearKeyCdmPluginId, origin1);
     storage::FileSystemURL clearkey_file =

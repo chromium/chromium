@@ -29,7 +29,7 @@ class ScoreNormalizer {
     int32_t version = 1;
 
     // How long to wait until writing any updates to disk.
-    base::TimeDelta write_delay = base::TimeDelta::FromSeconds(30);
+    base::TimeDelta write_delay = base::Seconds(30);
 
     // TODO(crbug.com/1199206): Add model parameters.
   };

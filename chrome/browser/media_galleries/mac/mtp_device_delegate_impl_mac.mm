@@ -327,7 +327,7 @@ void MTPDeviceDelegateImplMac::ReadDirectoryImpl(
       FROM_HERE,
       base::BindOnce(&MTPDeviceDelegateImplMac::ReadDirectoryTimeout,
                      weak_factory_.GetWeakPtr(), root),
-      base::TimeDelta::FromSeconds(kReadDirectoryTimeLimitSeconds));
+      base::Seconds(kReadDirectoryTimeLimitSeconds));
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectoryTimeout(

@@ -68,8 +68,7 @@ CaptureModeController* g_instance = nullptr;
 
 // The amount of time that can elapse from the prior screenshot to be considered
 // consecutive.
-constexpr base::TimeDelta kConsecutiveScreenshotThreshold =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kConsecutiveScreenshotThreshold = base::Seconds(5);
 
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureStoppedNotificationId[] =
@@ -89,8 +88,7 @@ constexpr char k24HourTimeFmtStr[] = "%02d.%02d.%02d";
 constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
 
 // Duration to clear the capture region selection from the previous session.
-constexpr base::TimeDelta kResetCaptureRegionDuration =
-    base::TimeDelta::FromMinutes(8);
+constexpr base::TimeDelta kResetCaptureRegionDuration = base::Minutes(8);
 
 // The name of a file path pref for the user-selected custom path to which
 // captured images and videos should be saved.
@@ -343,14 +341,14 @@ CaptureModeController::CaptureModeController(
 
   // Schedule recording of the number of screenshots taken per day.
   num_screenshots_taken_in_last_day_scheduler_.Start(
-      FROM_HERE, base::TimeDelta::FromDays(1),
+      FROM_HERE, base::Days(1),
       base::BindRepeating(
           &CaptureModeController::RecordAndResetScreenshotsTakenInLastDay,
           weak_ptr_factory_.GetWeakPtr()));
 
   // Schedule recording of the number of screenshots taken per week.
   num_screenshots_taken_in_last_week_scheduler_.Start(
-      FROM_HERE, base::TimeDelta::FromDays(7),
+      FROM_HERE, base::Days(7),
       base::BindRepeating(
           &CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek,
           weak_ptr_factory_.GetWeakPtr()));

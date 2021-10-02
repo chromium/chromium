@@ -94,7 +94,7 @@ void ImageFetchTabHelper::GetImageData(const GURL& url,
   // |this| is captured into the callback of GetImageDataByJs, which will always
   // be invoked before the |this| is destroyed, so it's safe.
   GetImageDataByJs(
-      url, base::TimeDelta::FromMilliseconds(kGetImageDataByJsTimeout),
+      url, base::Milliseconds(kGetImageDataByJsTimeout),
       base::BindOnce(&ImageFetchTabHelper::JsCallbackOfGetImageData,
                      base::Unretained(this), url, referrer, callback));
 }

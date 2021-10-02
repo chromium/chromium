@@ -59,7 +59,7 @@ namespace {
 const char kAnimatedIdentityKeyName[] = "animated_identity_user_data";
 
 constexpr base::TimeDelta kDelayForCrossWindowAnimationReplay =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // UserData attached to the user profile, keeping track of the last time the
 // animation was shown to the user.

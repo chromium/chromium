@@ -274,7 +274,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkmCustomRecorder) {
 
 // Tests that link generation success latency logs to the right histogram.
 TEST_F(SharedHighlightingMetricsTest, LinkGeneratedSuccessLatency) {
-  base::TimeDelta test_delta = base::TimeDelta::FromMilliseconds(2000);
+  base::TimeDelta test_delta = base::Milliseconds(2000);
 
   LogGenerateSuccessLatency(test_delta);
 
@@ -284,7 +284,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedSuccessLatency) {
 
 // Tests that link generation failure latency logs to the right histogram.
 TEST_F(SharedHighlightingMetricsTest, LinkGeneratedErrorLatency) {
-  base::TimeDelta test_delta = base::TimeDelta::FromMilliseconds(2000);
+  base::TimeDelta test_delta = base::Milliseconds(2000);
 
   LogGenerateErrorLatency(test_delta);
 

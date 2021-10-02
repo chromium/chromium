@@ -65,7 +65,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
         called = true;
       }),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::TimeDelta::FromSeconds(2 * js_timeout));
+      base::Seconds(2 * js_timeout));
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
     return called;
@@ -94,7 +94,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
         called = true;
       }),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::TimeDelta::FromSeconds(2 * js_timeout));
+      base::Seconds(2 * js_timeout));
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
     return called;
@@ -124,7 +124,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
       // case tests the timeout, it will take at least this long to execute.
       // This value should be very small to avoid increasing test suite
       // execution time, but long enough to avoid flake.
-      base::TimeDelta::FromMilliseconds(5));
+      base::Milliseconds(5));
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
@@ -182,7 +182,7 @@ TEST_F(WebFrameImplIntTest, PreventMessageReplay) {
         called = true;
       }),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::TimeDelta::FromSeconds(2 * js_timeout));
+      base::Seconds(2 * js_timeout));
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
     return called;
@@ -292,7 +292,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
           called = true;
         }),
         // Increase feature timeout in order to fail on test specific timeout.
-        base::TimeDelta::FromSeconds(2 * js_timeout)));
+        base::Seconds(2 * js_timeout)));
   }
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
@@ -338,7 +338,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
           called = true;
         }),
         // Increase feature timeout in order to fail on test specific timeout.
-        base::TimeDelta::FromSeconds(2 * js_timeout)));
+        base::Seconds(2 * js_timeout)));
   }
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {

@@ -567,8 +567,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   GURL https_url = https_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
 
-  const base::TimeDelta kMinForegroundTime =
-      base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kMinForegroundTime = base::Milliseconds(10);
 
   // Ensure that the tab is open for more than 0 ms, even in the face of bots
   // with bad clocks.

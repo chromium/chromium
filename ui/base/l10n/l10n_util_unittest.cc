@@ -584,7 +584,7 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
 
   // Verify that base::TimeDurationFormat() works for all available locales:
   // http://crbug.com/707515
-  base::TimeDelta kDelta = base::TimeDelta::FromMinutes(15 * 60 + 42);
+  base::TimeDelta kDelta = base::Minutes(15 * 60 + 42);
   for (const std::string& locale : l10n_util::GetAvailableICULocales()) {
     base::i18n::SetICUDefaultLocale(locale);
     std::u16string str;

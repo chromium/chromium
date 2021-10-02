@@ -66,7 +66,7 @@ void LegacyMetricsClient::SetMetricsRecorder(
 
 void LegacyMetricsClient::Start(base::TimeDelta report_interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(report_interval, base::TimeDelta::FromSeconds(0));
+  DCHECK_GT(report_interval, base::Seconds(0));
 
   // Start recording user events.
   user_events_recorder_ = std::make_unique<LegacyMetricsUserActionRecorder>();

@@ -398,7 +398,7 @@ void HeadlessShell::DevToolsTargetReady() {
         FROM_HERE,
         base::BindOnce(&HeadlessShell::FetchTimeout,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(timeout_ms));
+        base::Milliseconds(timeout_ms));
   }
   // TODO(skyostil): Implement more features to demonstrate the devtools API.
 }

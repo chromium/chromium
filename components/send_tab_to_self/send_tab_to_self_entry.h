@@ -17,7 +17,7 @@ class SendTabToSelfSpecifics;
 
 namespace send_tab_to_self {
 
-constexpr base::TimeDelta kExpiryTime = base::TimeDelta::FromDays(10);
+constexpr base::TimeDelta kExpiryTime = base::Days(10);
 
 class SendTabToSelfLocal;
 

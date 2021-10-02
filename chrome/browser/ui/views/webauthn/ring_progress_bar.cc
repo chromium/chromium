@@ -18,8 +18,7 @@
 
 namespace {
 constexpr float kStrokeWidth = 4;
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
 static constexpr SkColor kRingColor = SkColorSetRGB(66, 133, 224);
 static constexpr SkColor kBackgroundColor = SkColorSetRGB(218, 220, 224);
 }  // namespace

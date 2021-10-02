@@ -153,8 +153,7 @@ void ShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
 void ShareHistory::Clear(const base::Time& start, const base::Time& end) {
   google::protobuf::RepeatedPtrField<mojom::DayShareHistory> histories_to_keep;
   for (const auto& day : history_.day_histories()) {
-    base::Time day_start =
-        base::Time::UnixEpoch() + base::TimeDelta::FromDays(day.day());
+    base::Time day_start = base::Time::UnixEpoch() + base::Days(day.day());
     if (!DayOverlapsTimeRange(day_start, start, end)) {
       mojom::DayShareHistory this_day;
       this_day.CopyFrom(day);

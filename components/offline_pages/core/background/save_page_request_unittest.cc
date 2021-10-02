@@ -52,7 +52,7 @@ TEST_F(SavePageRequestTest, StartAndCompleteRequest) {
                           kUserRequested);
   request.set_request_origin(kRequestOrigin);
 
-  base::Time start_time = creation_time + base::TimeDelta::FromHours(3);
+  base::Time start_time = creation_time + base::Hours(3);
   request.MarkAttemptStarted(start_time);
 
   // Most things don't change about the request.
@@ -86,7 +86,7 @@ TEST_F(SavePageRequestTest, StartAndAbortRequest) {
   SavePageRequest request(kRequestId, kUrl1, kClientId, creation_time,
                           kUserRequested);
 
-  base::Time start_time = creation_time + base::TimeDelta::FromHours(3);
+  base::Time start_time = creation_time + base::Hours(3);
   request.MarkAttemptStarted(start_time);
 
   // Most things don't change about the request.

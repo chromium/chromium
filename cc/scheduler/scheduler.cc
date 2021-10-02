@@ -30,8 +30,7 @@ namespace cc {
 namespace {
 // This is a fudge factor we subtract from the deadline to account
 // for message latency and kernel scheduling variability.
-const base::TimeDelta kDeadlineFudgeFactor =
-    base::TimeDelta::FromMicroseconds(1000);
+const base::TimeDelta kDeadlineFudgeFactor = base::Microseconds(1000);
 }  // namespace
 
 Scheduler::Scheduler(
@@ -169,14 +168,12 @@ void Scheduler::DidSubmitCompositorFrame(uint32_t frame_token,
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Scheduling.Renderer.FrameProduction.TimeUnused",
         cc_frame_time_available_ - cc_begin_impl_to_submit_,
-        base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(50), 50);
+        base::Microseconds(1), base::Milliseconds(50), 50);
   } else {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Scheduling.Renderer.FrameProduction.TimeOverused",
         cc_begin_impl_to_submit_ - cc_frame_time_available_,
-        base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(50), 50);
+        base::Microseconds(1), base::Milliseconds(50), 50);
   }
 
   compositor_frame_reporting_controller_->DidSubmitCompositorFrame(

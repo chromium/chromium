@@ -42,7 +42,7 @@ constexpr AnimationKeyFrame kAnimationKeyFrames[] = {
 HoldingSpaceProgressRingPulseAnimation::HoldingSpaceProgressRingPulseAnimation()
     : HoldingSpaceProgressRingAnimation(
           Type::kPulse,
-          base::TimeDelta::FromMilliseconds(kAnimationDurationInMs),
+          base::Milliseconds(kAnimationDurationInMs),
           /*is_cyclic=*/false) {
 #if DCHECK_IS_ON()
   constexpr size_t kAnimationKeyFramesCount = base::size(kAnimationKeyFrames);

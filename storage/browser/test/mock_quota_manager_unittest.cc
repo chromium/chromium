@@ -209,8 +209,8 @@ TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
 
   base::Time now = base::Time::Now();
   base::Time then = base::Time();
-  base::TimeDelta an_hour = base::TimeDelta::FromMilliseconds(3600000);
-  base::TimeDelta a_minute = base::TimeDelta::FromMilliseconds(60000);
+  base::TimeDelta an_hour = base::Milliseconds(3600000);
+  base::TimeDelta a_minute = base::Milliseconds(60000);
 
   GetModifiedBuckets(kTemporary, then, base::Time::Max());
   EXPECT_TRUE(buckets().empty());

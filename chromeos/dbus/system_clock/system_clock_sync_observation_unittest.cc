@@ -15,9 +15,8 @@
 namespace ash {
 
 namespace {
-constexpr base::TimeDelta kLongTimeout = base::TimeDelta::FromSeconds(100);
-constexpr base::TimeDelta kShortTimeout =
-    base::TimeDelta::FromMicroseconds(200);
+constexpr base::TimeDelta kLongTimeout = base::Seconds(100);
+constexpr base::TimeDelta kShortTimeout = base::Microseconds(200);
 }  // namespace
 
 class SystemClockSyncObservationTest : public testing::Test {

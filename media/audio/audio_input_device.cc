@@ -262,11 +262,11 @@ void AudioInputDevice::OnStreamCreated(
   const bool stop_at_first_alive_notification = false;
   const bool pause_check_during_suspend = true;
 #endif
-  alive_checker_ = std::make_unique<AliveChecker>(
-      base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
-      base::TimeDelta::FromSeconds(kCheckMissingCallbacksIntervalSeconds),
-      base::TimeDelta::FromSeconds(kMissingCallbacksTimeBeforeErrorSeconds),
-      stop_at_first_alive_notification, pause_check_during_suspend);
+    alive_checker_ = std::make_unique<AliveChecker>(
+        base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
+        base::Seconds(kCheckMissingCallbacksIntervalSeconds),
+        base::Seconds(kMissingCallbacksTimeBeforeErrorSeconds),
+        stop_at_first_alive_notification, pause_check_during_suspend);
   }
 
   // Unretained is safe since |alive_checker_| outlives |audio_callback_|.
@@ -464,8 +464,7 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   // the audio delay measurement.
   // TODO(olka, tommi): Take advantage of |capture_time| in the renderer.
   const base::TimeTicks capture_time =
-      base::TimeTicks() +
-      base::TimeDelta::FromMicroseconds(buffer->params.capture_time_us);
+      base::TimeTicks() + base::Microseconds(buffer->params.capture_time_us);
   const base::TimeTicks now_time = base::TimeTicks::Now();
   DCHECK_GE(now_time, capture_time);
 

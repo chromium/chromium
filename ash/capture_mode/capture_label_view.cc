@@ -44,25 +44,20 @@ constexpr int kCountDownStartSeconds = 3;
 constexpr int kCountDownEndSeconds = 1;
 
 constexpr base::TimeDelta kCaptureLabelOpacityFadeoutDuration =
-    base::TimeDelta::FromMilliseconds(33);
+    base::Milliseconds(33);
 // Opacity fade in animation duration and scale up animation duration when the
 // timeout label enters 3.
-constexpr base::TimeDelta kCountDownEnter3Duration =
-    base::TimeDelta::FromMilliseconds(267);
+constexpr base::TimeDelta kCountDownEnter3Duration = base::Milliseconds(267);
 // Opacity fade out animation duration and scale down animation duration when
 // the timeout label exits 1.
-constexpr base::TimeDelta kCountDownExit1Duration =
-    base::TimeDelta::FromMilliseconds(333);
+constexpr base::TimeDelta kCountDownExit1Duration = base::Milliseconds(333);
 // For other number enter/exit fade in/out, scale up/down animation duration.
-constexpr base::TimeDelta kCountDownEnterExitDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kCountDownEnterExitDuration = base::Milliseconds(167);
 
 // Delay to enter number 3 to start count down.
-constexpr base::TimeDelta kStartCountDownDelay =
-    base::TimeDelta::FromMilliseconds(233);
+constexpr base::TimeDelta kStartCountDownDelay = base::Milliseconds(233);
 // Delay to exit a number after entering animation is completed.
-constexpr base::TimeDelta kCountDownExitDelay =
-    base::TimeDelta::FromMilliseconds(667);
+constexpr base::TimeDelta kCountDownExitDelay = base::Milliseconds(667);
 
 // Different scales for enter/exiting countdown numbers.
 constexpr float kEnterLabelScaleDown = 0.8f;

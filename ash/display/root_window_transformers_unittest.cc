@@ -341,9 +341,8 @@ TEST_F(RootWindowTransformersTest, TouchScaleAndMagnify) {
   EXPECT_FLOAT_EQ(0.2f, event_handler.touch_radius_x());
   EXPECT_FLOAT_EQ(0.2f, event_handler.touch_radius_y());
 
-  generator.ScrollSequence(gfx::Point(0, 0),
-                           base::TimeDelta::FromMilliseconds(100), 10.0, 1.0, 5,
-                           1);
+  generator.ScrollSequence(gfx::Point(0, 0), base::Milliseconds(100), 10.0, 1.0,
+                           5, 1);
 
   // ordinal_offset is invariant to the device scale factor.
   EXPECT_FLOAT_EQ(event_handler.scroll_x_offset(),
@@ -517,7 +516,7 @@ TEST_F(RootWindowTransformersTest,
   ui::Layer* layer = root_window->layer();
   {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+    settings.SetTransitionDuration(base::Milliseconds(100));
     gfx::Transform transform;
     transform.Translate(100, 200);
     layer->SetTransform(transform);
@@ -544,7 +543,7 @@ TEST_F(RootWindowTransformersTest,
   ui::Layer* layer = root_window->layer();
   {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+    settings.SetTransitionDuration(base::Milliseconds(100));
     gfx::Transform transform;
     transform.Translate(100, 200);
     layer->SetTransform(transform);
@@ -570,7 +569,7 @@ TEST_F(RootWindowTransformersTest, ShouldSetWindowSizeDuringOpacityAnimation) {
   {
     ui::Layer* layer = root_window->layer();
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+    settings.SetTransitionDuration(base::Milliseconds(100));
     layer->SetOpacity(0.1f);
   }
 

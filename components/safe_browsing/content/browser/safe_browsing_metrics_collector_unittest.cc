@@ -94,8 +94,7 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
 TEST_F(SafeBrowsingMetricsCollectorTest,
        StartLogging_LastLoggingIntervalLongerThanScheduleInterval) {
   base::HistogramTester histograms;
-  SetSafeBrowsingMetricsLastLogTime(base::Time::Now() -
-                                    base::TimeDelta::FromHours(25));
+  SetSafeBrowsingMetricsLastLogTime(base::Time::Now() - base::Hours(25));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   SetExtendedReportingPrefForTests(&pref_service_, true);
   metrics_collector_->StartLogging();
@@ -110,7 +109,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectBucketCount(
       "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
       /* sample */ 1, /* expected_count */ 0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
+  task_environment_.FastForwardBy(base::Hours(23));
   // Shouldn't log new data before the scheduled time.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 1);
@@ -122,7 +121,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectBucketCount(
       "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
       /* sample */ 1, /* expected_count */ 0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   // Should log when the scheduled time arrives.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 2);
@@ -134,7 +133,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectBucketCount(
       "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
       /* sample */ 1, /* expected_count */ 0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(24));
+  task_environment_.FastForwardBy(base::Hours(24));
   // Should log when the scheduled time arrives.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 3);
@@ -150,7 +149,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   // Should now detect SafeBrowsing as Managed.
   pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
                                std::make_unique<base::Value>(true));
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(24));
+  task_environment_.FastForwardBy(base::Hours(24));
   histograms.ExpectBucketCount(
       "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
       /* sample */ 0, /* expected_count */ 3);
@@ -162,18 +161,17 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 TEST_F(SafeBrowsingMetricsCollectorTest,
        StartLogging_LastLoggingIntervalShorterThanScheduleInterval) {
   base::HistogramTester histograms;
-  SetSafeBrowsingMetricsLastLogTime(base::Time::Now() -
-                                    base::TimeDelta::FromHours(1));
+  SetSafeBrowsingMetricsLastLogTime(base::Time::Now() - base::Hours(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   metrics_collector_->StartLogging();
   // Should not log immediately because the last logging interval is shorter
   // than the interval.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
+  task_environment_.FastForwardBy(base::Hours(23));
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(24));
+  task_environment_.FastForwardBy(base::Hours(24));
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 2);
 }
@@ -181,8 +179,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 TEST_F(SafeBrowsingMetricsCollectorTest,
        StartLogging_PrefChangeBetweenLogging) {
   base::HistogramTester histograms;
-  SetSafeBrowsingMetricsLastLogTime(base::Time::Now() -
-                                    base::TimeDelta::FromHours(25));
+  SetSafeBrowsingMetricsLastLogTime(base::Time::Now() - base::Hours(25));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   metrics_collector_->StartLogging();
   histograms.ExpectTotalCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
@@ -190,7 +187,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 1);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(24));
+  task_environment_.FastForwardBy(base::Hours(24));
   histograms.ExpectTotalCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                               /* expected_count */ 2);
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
@@ -203,7 +200,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   for (int i = 0; i < 29; i++) {
     metrics_collector_->AddSafeBrowsingEventToPref(
         EventType::DATABASE_INTERSTITIAL_BYPASS);
@@ -214,7 +211,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   EXPECT_EQ(30u, timestamps->GetList().size());
   EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
 
@@ -251,16 +248,14 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
-                         EventType::CSD_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
-                         EventType::CSD_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   // Changing enhanced protection to standard protection should log the metric.
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectUniqueSample("SafeBrowsing.EsbDisabled.LastBypassEventType",
@@ -268,7 +263,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
                                 /* expected_count */ 1);
   histograms.ExpectUniqueTimeSample(
       "SafeBrowsing.EsbDisabled.LastBypassEventInterval.CsdInterstitialBypass",
-      /* sample */ base::TimeDelta::FromHours(1),
+      /* sample */ base::Hours(1),
       /* expected_count */ 1);
   histograms.ExpectBucketCount(
       "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
@@ -294,9 +289,9 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
                                 /* expected_count */ 1);
 
   // Changing enhanced protection to no protection should log the metric.
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::REAL_TIME_INTERSTITIAL_BYPASS);
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 2);
@@ -307,7 +302,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectTimeBucketCount(
       "SafeBrowsing.EsbDisabled.LastBypassEventInterval."
       "RealTimeInterstitialBypass",
-      /* sample */ base::TimeDelta::FromDays(1),
+      /* sample */ base::Days(1),
       /* expected_count */ 1);
   histograms.ExpectBucketCount(
       "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
@@ -336,7 +331,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectBucketCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
                                /* sample */ 0,
@@ -346,7 +341,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
                               /* expected_count */ 1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   histograms.ExpectBucketCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
                                /* sample */ 1,
@@ -358,7 +353,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
                               /* expected_count */ 2);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(7));
+  task_environment_.FastForwardBy(base::Days(7));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectBucketCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
                                /* sample */ 7,
@@ -381,32 +376,32 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 2);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 3);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   // The metric is not logged because it is already logged 3 times in a week.
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 3);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(7));
+  task_environment_.FastForwardBy(base::Days(7));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   // The metric is logged again because the oldest entry is more than 7 days
@@ -420,7 +415,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
 
   pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
@@ -434,16 +429,15 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->StartLogging();
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
-                         EventType::CSD_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::REAL_TIME_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectTotalCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* expected_count */ 1);
@@ -467,9 +461,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       /* sample */ 1,
       /* expected_count */ 1);
 
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
-                         EventType::CSD_INTERSTITIAL_BYPASS);
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);
+  task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectTotalCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* expected_count */ 2);
@@ -483,7 +476,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       /* sample */ 2,
       /* expected_count */ 1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectTotalCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* expected_count */ 3);
@@ -504,10 +497,10 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->StartLogging();
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 0,
@@ -527,7 +520,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       /* sample */ 1,
       /* expected_count */ 1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));
+  task_environment_.FastForwardBy(base::Days(28));
   // The event is older than 28 days, so it shouldn't be counted.
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
@@ -546,22 +539,22 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->StartLogging();
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 1,
       /* expected_count */ 1);
 
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Daily.BypassCountLast28Days.StandardProtection.AllEvents",
       /* sample */ 2,
@@ -574,12 +567,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   metrics_collector_->StartLogging();
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  FastForwardAndAddEvent(base::TimeDelta::FromDays(1),
-                         EventType::CSD_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::Days(1), EventType::CSD_INTERSTITIAL_BYPASS);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(30));
+  task_environment_.FastForwardBy(base::Days(30));
   const base::Value* db_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
   // The event is removed from pref because it was logged more than 30 days.
@@ -589,7 +581,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   // The CSD event is still in pref because it was logged less than 30 days.
   EXPECT_EQ(1u, csd_timestamps->GetList().size());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   // The CSD event is also removed because it was logged more than 30 days now.
   EXPECT_EQ(0u, csd_timestamps->GetList().size());
 
@@ -619,16 +611,15 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
   EXPECT_EQ(absl::nullopt, metrics_collector_->GetLatestEventTimestamp(
                                EventType::DATABASE_INTERSTITIAL_BYPASS));
   // Timestamps are rounded to second when stored in prefs.
-  base::Time rounded_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
-          base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  base::Time rounded_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Seconds(base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(1),
+  EXPECT_EQ(rounded_time + base::Hours(1),
             metrics_collector_->GetLatestEventTimestamp(
                 EventType::DATABASE_INTERSTITIAL_BYPASS));
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(1),
+  task_environment_.FastForwardBy(base::Days(1));
+  EXPECT_EQ(rounded_time + base::Hours(1),
             metrics_collector_->GetLatestEventTimestamp(
                 EventType::DATABASE_INTERSTITIAL_BYPASS));
 }

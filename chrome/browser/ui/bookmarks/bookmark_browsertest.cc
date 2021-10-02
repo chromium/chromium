@@ -109,7 +109,7 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
     {
       base::RunLoop loop;
       base::RepeatingTimer timer;
-      timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(15),
+      timer.Start(FROM_HERE, base::Milliseconds(15),
                   base::BindRepeating(&CheckAnimation, browser(), &loop));
       loop.Run();
     }

@@ -583,8 +583,8 @@ const NetLogWithSource* HttpStreamFactory::JobController::GetNetLog() const {
 void HttpStreamFactory::JobController::MaybeSetWaitTimeForMainJob(
     const base::TimeDelta& delay) {
   if (main_job_is_blocked_) {
-    main_job_wait_time_ = std::min(
-        delay, base::TimeDelta::FromSeconds(kMaxDelayTimeForMainJobSecs));
+    main_job_wait_time_ =
+        std::min(delay, base::Seconds(kMaxDelayTimeForMainJobSecs));
   }
 }
 

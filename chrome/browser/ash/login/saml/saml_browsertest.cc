@@ -1522,10 +1522,8 @@ void FakeGetCertificateCallbackTrue(
   std::move(callback).Run(attestation::ATTESTATION_SUCCESS, "certificate");
 }
 
-constexpr base::TimeDelta kTimeoutTaskDelay =
-    base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kBuildResponseTaskDelay =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTimeoutTaskDelay = base::Milliseconds(500);
+constexpr base::TimeDelta kBuildResponseTaskDelay = base::Seconds(3);
 static_assert(
     kTimeoutTaskDelay < kBuildResponseTaskDelay,
     "kTimeoutTaskDelay should be less than kBuildResponseTaskDelay to trigger "

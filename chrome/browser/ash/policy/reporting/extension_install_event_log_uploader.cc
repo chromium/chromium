@@ -250,7 +250,7 @@ void ExtensionInstallEventLogUploader::PostTaskForStartSerialization() {
       FROM_HERE,
       base::BindOnce(&ExtensionInstallEventLogUploader::StartSerialization,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(retry_backoff_ms_));
+      base::Milliseconds(retry_backoff_ms_));
 }
 
 void ExtensionInstallEventLogUploader::OnSerialized(

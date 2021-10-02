@@ -13,10 +13,8 @@
 
 namespace {
 
-constexpr base::TimeDelta kFilterDeviceFoundTimeout =
-    base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kFilterDeviceLostTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kFilterDeviceFoundTimeout = base::Seconds(1);
+constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(5);
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
 

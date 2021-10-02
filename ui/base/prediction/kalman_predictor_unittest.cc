@@ -143,7 +143,7 @@ TEST_F(KalmanPredictorTest, TimeInterval) {
     predictor_->Update(data);
   }
   EXPECT_EQ(predictor_->TimeInterval().InMillisecondsF(),
-            base::TimeDelta::FromMilliseconds(7).InMillisecondsF());
+            base::Milliseconds(7).InMillisecondsF());
 }
 
 // Test the benefit from the heuristic approach on noisy data.

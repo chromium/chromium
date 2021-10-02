@@ -19,8 +19,7 @@ namespace {
 
 // Repeat timer interval between each checking that whether a task is created
 // for each app launching.
-constexpr base::TimeDelta kCheckCycleInterval =
-    base::TimeDelta::FromSeconds(600);
+constexpr base::TimeDelta kCheckCycleInterval = base::Seconds(600);
 
 }  // namespace
 

@@ -563,9 +563,9 @@ void AppServiceAppWindowArcTracker::HandlePlayStoreLaunch(
     if (sscanf(param.c_str(), arc::kRequestStartTimeParamTemplate,
                &start_request_ms) != 1)
       continue;
-    const base::TimeDelta launch_time =
-        base::TimeTicks::Now() - base::TimeTicks() -
-        base::TimeDelta::FromMilliseconds(start_request_ms);
+    const base::TimeDelta launch_time = base::TimeTicks::Now() -
+                                        base::TimeTicks() -
+                                        base::Milliseconds(start_request_ms);
     DCHECK_GE(launch_time, base::TimeDelta());
     arc::UpdatePlayStoreLaunchTime(launch_time);
   }

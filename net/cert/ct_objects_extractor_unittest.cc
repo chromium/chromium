@@ -64,8 +64,7 @@ TEST_F(CTObjectsExtractorTest, ExtractEmbeddedSCT) {
   EXPECT_EQ(ct::GetTestPublicKeyId(), sct->log_id);
 
   base::Time expected_timestamp =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(1365181456275);
+      base::Time::UnixEpoch() + base::Milliseconds(1365181456275);
   EXPECT_EQ(expected_timestamp, sct->timestamp);
 }
 
@@ -84,8 +83,7 @@ TEST_F(CTObjectsExtractorTest, ExtractEmbeddedSCTListWithUIDs) {
   EXPECT_EQ(ct::GetTestPublicKeyId(), sct->log_id);
 
   base::Time expected_timestamp =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(1365181456275);
+      base::Time::UnixEpoch() + base::Milliseconds(1365181456275);
   EXPECT_EQ(expected_timestamp, sct->timestamp);
 }
 

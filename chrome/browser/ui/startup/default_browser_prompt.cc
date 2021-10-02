@@ -111,7 +111,7 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
       return false;  // Failed to parse a reasonable period.
     base::Time show_on_or_after =
         base::Time::FromInternalValue(last_dismissed_value) +
-        base::TimeDelta::FromDays(period_days);
+        base::Days(period_days);
     if (base::Time::Now() < show_on_or_after)
       return false;
   }

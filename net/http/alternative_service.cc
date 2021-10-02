@@ -189,7 +189,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
                                            alternative_service_entry.port);
     base::Time expiration =
         base::Time::Now() +
-        base::TimeDelta::FromSeconds(alternative_service_entry.max_age_seconds);
+        base::Seconds(alternative_service_entry.max_age_seconds);
     AlternativeServiceInfo alternative_service_info;
     if (protocol == kProtoQUIC) {
       alternative_service_info =

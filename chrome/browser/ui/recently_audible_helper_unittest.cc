@@ -136,7 +136,7 @@ TEST_F(RecentlyAudibleHelperTest, AllStateTransitions) {
   VerifyAndClearExpectations();
 
   // Keep audio playing and don't expect any transitions.
-  AdvanceTime(base::TimeDelta::FromSeconds(30));
+  AdvanceTime(base::Seconds(30));
   ExpectCurrentlyAudible();
   VerifyAndClearExpectations();
 
@@ -156,7 +156,7 @@ TEST_F(RecentlyAudibleHelperTest, AllStateTransitions) {
   VerifyAndClearExpectations();
 
   // Advance time and stop audio, not expecting a transition.
-  AdvanceTime(base::TimeDelta::FromSeconds(30));
+  AdvanceTime(base::Seconds(30));
   SimulateAudioStops();
   ExpectRecentlyAudible();
   VerifyAndClearExpectations();

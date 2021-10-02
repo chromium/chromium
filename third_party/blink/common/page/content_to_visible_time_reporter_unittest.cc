@@ -41,9 +41,8 @@ constexpr char kWebContentsUnOccludedHistogram[] =
 constexpr char kBfcacheRestoreHistogram[] =
     "BackForwardCache.Restore.NavigationToFirstPaint";
 
-constexpr base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(42);
-constexpr base::TimeDelta kOtherDuration =
-    base::TimeDelta::FromMilliseconds(4242);
+constexpr base::TimeDelta kDuration = base::Milliseconds(42);
+constexpr base::TimeDelta kOtherDuration = base::Milliseconds(4242);
 
 class ContentToVisibleTimeReporterTest : public testing::Test {
  protected:
@@ -502,7 +501,7 @@ class RecordContentToVisibleTimeRequest_MergeRequestTest
   base::TimeTicks RandomRequestTimeTicks() const {
     uint16_t number;
     base::RandBytes(&number, sizeof(number));
-    return base::TimeTicks::Now() - base::TimeDelta::FromMilliseconds(number);
+    return base::TimeTicks::Now() - base::Milliseconds(number);
   }
 };
 

@@ -54,8 +54,7 @@ class StreamingReceiverSessionClient
 
   // Max time for which streaming may wait for AV Settings receipt before being
   // treated as a failure.
-  static constexpr base::TimeDelta kMaxAVSettingsWaitTime =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kMaxAVSettingsWaitTime = base::Seconds(5);
 
   // Creates a new instance of this class. |handler| must persist for the
   // lifetime of this instance.

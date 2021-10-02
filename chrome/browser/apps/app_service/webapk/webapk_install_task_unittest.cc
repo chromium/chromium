@@ -322,7 +322,7 @@ TEST_F(WebApkInstallTaskTest, MinterTimeout) {
 
   bool install_success;
   apps::WebApkInstallTask install_task(profile(), app_id);
-  install_task.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(100));
+  install_task.SetTimeoutForTesting(base::Milliseconds(100));
   base::RunLoop run_loop;
   install_task.Start(base::BindLambdaForTesting([&](bool success) {
     install_success = success;

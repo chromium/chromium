@@ -30,7 +30,7 @@ HatsConfig::HatsConfig(const base::Feature& feature,
 const HatsConfig kHatsGeneralSurvey = {
     ::features::kHappinessTrackingSystem,         // feature
     "Browser.ChromeOS.HatsSatisfaction.General",  // histogram_name
-    base::TimeDelta::FromDays(7),                 // new_device_threshold
+    base::Days(7),                                // new_device_threshold
     prefs::kHatsDeviceIsSelected,                 // is_selected_pref_name
     prefs::kHatsSurveyCycleEndTimestamp,  // cycle_end_timestamp_pref_name
 };
@@ -39,7 +39,7 @@ const HatsConfig kHatsGeneralSurvey = {
 const HatsConfig kHatsOnboardingSurvey = {
     ::features::kHappinessTrackingSystemOnboarding,            // feature
     "Browser.ChromeOS.HatsSatisfaction.OnboardingExperience",  // histogram_name
-    base::TimeDelta::FromMinutes(30),        // new_device_threshold
+    base::Minutes(30),                       // new_device_threshold
     prefs::kHatsOnboardingDeviceIsSelected,  // is_selected_pref_name
     prefs::kHatsOnboardingSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
@@ -49,7 +49,7 @@ const HatsConfig kHatsOnboardingSurvey = {
 const HatsConfig kHatsSmartLockSurvey = {
     ::features::kHappinessTrackingSystemSmartLock,  // feature
     "Browser.ChromeOS.HatsSatisfaction.SmartLock",  // histogram_name
-    base::TimeDelta::FromDays(7),                   // hatsNewDeviceThreshold
+    base::Days(7),                                  // hatsNewDeviceThreshold
     prefs::kHatsSmartLockDeviceIsSelected,          // hatsIsSelectedPrefName
     prefs::kHatsSmartLockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
 };
@@ -59,7 +59,7 @@ const HatsConfig kHatsSmartLockSurvey = {
 const HatsConfig kHatsUnlockSurvey = {
     ::features::kHappinessTrackingSystemUnlock,  // feature
     "Browser.ChromeOS.HatsSatisfaction.Unlock",  // histogram_name
-    base::TimeDelta::FromDays(7),                // hatsNewDeviceThreshold
+    base::Days(7),                               // hatsNewDeviceThreshold
     prefs::kHatsUnlockDeviceIsSelected,          // hatsIsSelectedPrefName
     prefs::kHatsUnlockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
 };

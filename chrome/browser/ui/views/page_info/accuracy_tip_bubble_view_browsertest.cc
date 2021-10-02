@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
   EXPECT_FALSE(IsUIShowing());
 
   // But a week later it shows up again with an opt-out button.
-  clock.Advance(base::TimeDelta::FromDays(7));
+  clock.Advance(base::Days(7));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
   ClickExtraButton();
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   for (int i = 0;
        i < accuracy_tips::features::kMinPromptCountRequiredForSurvey.Get();
        i++) {
-    clock.Advance(base::TimeDelta::FromDays(7));
+    clock.Advance(base::Days(7));
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
     EXPECT_TRUE(IsUIShowing());
@@ -335,8 +335,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   bool enable_metrics = true;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &enable_metrics);
-  browser()->profile()->SetCreationTimeForTesting(
-      base::Time::Now() - base::TimeDelta::FromDays(45));
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(45));
 
   clock.Advance(accuracy_tips::features::kMinTimeToShowSurvey.Get());
   ui_test_utils::NavigateToURLWithDisposition(
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   for (int i = 0;
        i < accuracy_tips::features::kMinPromptCountRequiredForSurvey.Get();
        i++) {
-    clock.Advance(base::TimeDelta::FromDays(7));
+    clock.Advance(base::Days(7));
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
     EXPECT_TRUE(IsUIShowing());
@@ -377,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   bool enable_metrics = true;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &enable_metrics);
-  browser()->profile()->SetCreationTimeForTesting(
-      base::Time::Now() - base::TimeDelta::FromDays(45));
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(45));
 
   // Delete all history...
   tips_service->OnURLsDeleted(nullptr, history::DeletionInfo::ForAllHistory());

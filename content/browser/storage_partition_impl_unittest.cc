@@ -233,7 +233,7 @@ class RemoveInterestGroupTester {
     blink::InterestGroup group;
     group.owner = origin;
     group.name = "Name";
-    group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+    group.expiry = base::Time::Now() + base::Days(30);
     storage_partition_->GetInterestGroupManager()->JoinInterestGroup(
         group, origin.GetURL());
   }
@@ -335,7 +335,7 @@ class RemoveLocalStorageTester {
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin1), {}).ok());
 
-    base::Time one_day_ago = now - base::TimeDelta::FromDays(1);
+    base::Time one_day_ago = now - base::Days(1);
     data.set_last_modified(one_day_ago.ToInternalValue());
     ASSERT_TRUE(
         db.Put(CreateMetaDataKey(origin2),
@@ -343,7 +343,7 @@ class RemoveLocalStorageTester {
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin2), {}).ok());
 
-    base::Time sixty_days_ago = now - base::TimeDelta::FromDays(60);
+    base::Time sixty_days_ago = now - base::Days(60);
     data.set_last_modified(sixty_days_ago.ToInternalValue());
     ASSERT_TRUE(
         db.Put(CreateMetaDataKey(origin3),
@@ -517,8 +517,8 @@ class RemovePluginPrivateDataTester {
   //   url2 - Widevine - 2 files - timestamps now and 60 days ago
   void AddPluginPrivateTestData(const GURL& url1, const GURL& url2) {
     base::Time now = base::Time::Now();
-    base::Time ten_days_ago = now - base::TimeDelta::FromDays(10);
-    base::Time sixty_days_ago = now - base::TimeDelta::FromDays(60);
+    base::Time ten_days_ago = now - base::Days(10);
+    base::Time sixty_days_ago = now - base::Days(60);
 
     // Create a PluginPrivateFileSystem for ClearKey and add a single file
     // with a timestamp of 1 day ago.
@@ -1160,7 +1160,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForLastHour) {
       GetMockManager(), kStorageKey2, "perm_bucket_now", kPersistent, now);
 
   // Buckets modified a day ago.
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
   storage::BucketInfo host1_temp_bucket_yesterday =
       AddQuotaManagedBucket(GetMockManager(), kStorageKey1,
                             "temp_bucket_yesterday", kTemporary, yesterday);
@@ -1182,10 +1182,8 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForLastHour) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClearQuotaDataForOrigin, partition, GURL(),
-                     base::Time::Now() - base::TimeDelta::FromHours(1),
-                     &run_loop));
+      FROM_HERE, base::BindOnce(&ClearQuotaDataForOrigin, partition, GURL(),
+                                base::Time::Now() - base::Hours(1), &run_loop));
   run_loop.Run();
 
   EXPECT_EQ(GetMockManager()->BucketDataCount(kClientFile), 4);
@@ -1214,7 +1212,7 @@ TEST_F(StoragePartitionImplTest,
 
   // Buckets modified yesterday.
   base::Time now = base::Time::Now();
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
   storage::BucketInfo temp_bucket_yesterday =
       AddQuotaManagedBucket(GetMockManager(), kStorageKey,
                             "temp_bucket_yesterday", kTemporary, yesterday);
@@ -1223,7 +1221,7 @@ TEST_F(StoragePartitionImplTest,
                             "perm_bucket_yesterday", kPersistent, yesterday);
 
   // Buckets modified 10 days ago.
-  base::Time ten_days_ago = now - base::TimeDelta::FromDays(10);
+  base::Time ten_days_ago = now - base::Days(10);
   storage::BucketInfo temp_bucket_ten_days_ago = AddQuotaManagedBucket(
       GetMockManager(), kStorageKey, "temp_bucket_ten_days_ago", kTemporary,
       ten_days_ago);
@@ -1239,10 +1237,8 @@ TEST_F(StoragePartitionImplTest,
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClearQuotaDataForNonPersistent, partition,
-                     base::Time::Now() - base::TimeDelta::FromDays(7),
-                     &run_loop));
+      FROM_HERE, base::BindOnce(&ClearQuotaDataForNonPersistent, partition,
+                                base::Time::Now() - base::Days(7), &run_loop));
   run_loop.Run();
 
   EXPECT_EQ(GetMockManager()->BucketDataCount(kClientFile), 3);
@@ -1393,7 +1389,7 @@ TEST_F(StoragePartitionImplTest, RemoveCookieLastHour) {
   tester.AddCookie(kOrigin);
   ASSERT_TRUE(tester.ContainsCookie(kOrigin));
 
-  base::Time an_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time an_hour_ago = base::Time::Now() - base::Hours(1);
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1525,7 +1521,7 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
-  base::Time a_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
+  base::Time a_week_ago = base::Time::Now() - base::Days(7);
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1636,9 +1632,9 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheDateRange) {
   RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
 
   base::Time current_time = base::Time::NowFromSystemTime();
-  base::Time out_of_range_time = current_time - base::TimeDelta::FromHours(3);
-  base::Time begin_time = current_time - base::TimeDelta::FromHours(2);
-  base::Time in_range_time = current_time - base::TimeDelta::FromHours(1);
+  base::Time out_of_range_time = current_time - base::Hours(3);
+  base::Time begin_time = current_time - base::Hours(2);
+  base::Time in_range_time = current_time - base::Hours(1);
 
   GURL origin = GURL("http://host1:1/");
   std::string data("SomeData");
@@ -1807,7 +1803,7 @@ TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataLastWeek) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
-  base::Time a_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
+  base::Time a_week_ago = base::Time::Now() - base::Days(7);
 
   RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
   tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
@@ -1925,8 +1921,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   ConversionManagerImpl* conversion_manager = partition->GetConversionManager();
 
   base::Time now = base::Time::Now();
-  auto impression =
-      ImpressionBuilder(now).SetExpiry(base::TimeDelta::FromDays(2)).Build();
+  auto impression = ImpressionBuilder(now).SetExpiry(base::Days(2)).Build();
   conversion_manager->HandleImpression(impression);
   conversion_manager->HandleConversion(DefaultConversion());
 
@@ -1948,8 +1943,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   ConversionManagerImpl* conversion_manager = partition->GetConversionManager();
 
   base::Time now = base::Time::Now();
-  auto impression =
-      ImpressionBuilder(now).SetExpiry(base::TimeDelta::FromDays(2)).Build();
+  auto impression = ImpressionBuilder(now).SetExpiry(base::Days(2)).Build();
   conversion_manager->HandleImpression(impression);
   conversion_manager->HandleConversion(DefaultConversion());
 
@@ -1979,7 +1973,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
     auto origin = url::Origin::Create(
         GURL(base::StringPrintf("https://www.%d.test/", i)));
     auto impression = ImpressionBuilder(now)
-                          .SetExpiry(base::TimeDelta::FromDays(2))
+                          .SetExpiry(base::Days(2))
                           .SetImpressionOrigin(origin)
                           .SetReportingOrigin(origin)
                           .SetConversionOrigin(origin)
@@ -2010,13 +2004,12 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
         GURL(base::StringPrintf("https://reporter-%d.com/", i)));
     auto conv = url::Origin::Create(
         GURL(base::StringPrintf("https://conv-%d.com/", i)));
-    conversion_manager->HandleImpression(
-        ImpressionBuilder(now)
-            .SetImpressionOrigin(impression)
-            .SetReportingOrigin(reporter)
-            .SetConversionOrigin(conv)
-            .SetExpiry(base::TimeDelta::FromDays(2))
-            .Build());
+    conversion_manager->HandleImpression(ImpressionBuilder(now)
+                                             .SetImpressionOrigin(impression)
+                                             .SetReportingOrigin(reporter)
+                                             .SetConversionOrigin(conv)
+                                             .SetExpiry(base::Days(2))
+                                             .Build());
     conversion_manager->HandleConversion(
         StorableTrigger(123, net::SchemefulSite(conv), reporter,
                         /*event_source_trigger_data=*/0,
@@ -2051,8 +2044,8 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
       content::StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   const uint32_t kTestQuotaClearMask = 0;
   const auto kTestOrigin = GURL("https://example.com");
-  const auto kBeginTime = base::Time() + base::TimeDelta::FromHours(1);
-  const auto kEndTime = base::Time() + base::TimeDelta::FromHours(2);
+  const auto kBeginTime = base::Time() + base::Hours(1);
+  const auto kEndTime = base::Time() + base::Hours(2);
   const auto origin_callback_valid =
       [&](base::RepeatingCallback<bool(const url::Origin&)> callback) {
         return callback.Run(url::Origin::Create(kTestOrigin));

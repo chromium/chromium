@@ -35,20 +35,17 @@ constexpr int kSplitviewDividerShortSideLength = 8;
 constexpr int kSplitviewDividerEnlargedShortSideLength = 16;
 
 // The time duration for the window transformation animations.
-constexpr auto kSplitviewWindowTransformDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kSplitviewWindowTransformDuration = base::Milliseconds(250);
 
 // The time duration for the divider animations when dragging starts and ends.
 constexpr auto kSplitviewDividerSelectionStatusChangeDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // The time duration for the divider spawning animation.
-constexpr auto kSplitviewDividerSpawnDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr auto kSplitviewDividerSpawnDuration = base::Milliseconds(100);
 
 // The delay before the divider spawning animation.
-constexpr auto kSplitviewDividerSpawnDelay =
-    base::TimeDelta::FromMilliseconds(183);
+constexpr auto kSplitviewDividerSpawnDelay = base::Milliseconds(183);
 
 // The thickness of the divider's handler.
 constexpr int kSplitviewWhiteBarShortSideLength = 2;

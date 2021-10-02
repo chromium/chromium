@@ -254,7 +254,7 @@ TEST_F(TileServiceSchedulerTest, FirstKickoffNotOverride) {
   auto now = clock()->Now();
   tile_service_scheduler()->OnTileManagerInitialized(TileGroupStatus::kNoTiles);
   EXPECT_EQ(prefs()->GetTime(kFirstScheduleTimeKey), now);
-  auto two_hours_later = now + base::TimeDelta::FromHours(2);
+  auto two_hours_later = now + base::Hours(2);
   clock()->SetNow(two_hours_later);
   tile_service_scheduler()->OnTileManagerInitialized(TileGroupStatus::kNoTiles);
   tile_service_scheduler()->OnTileManagerInitialized(TileGroupStatus::kNoTiles);
@@ -284,7 +284,7 @@ TEST_F(TileServiceSchedulerTest, FirstRunFinishedAfterInstantFetchComplete) {
   // tiles, the scheduler should start a new first kickoff flow.
   scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
       query_tiles::switches::kQueryTilesInstantBackgroundTask);
-  auto two_hours_later = now + base::TimeDelta::FromHours(2);
+  auto two_hours_later = now + base::Hours(2);
   clock()->SetNow(two_hours_later);
   EXPECT_CALL(*native_scheduler(), Schedule(_)).Times(1);
   tile_service_scheduler()->OnTileManagerInitialized(TileGroupStatus::kNoTiles);

@@ -114,8 +114,7 @@ class DisplayTimeSource {
   }
 
  private:
-  base::TimeTicks next_display_time_ =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+  base::TimeTicks next_display_time_ = base::TimeTicks() + base::Seconds(1);
 };
 
 }  // namespace
@@ -8805,9 +8804,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ false);
   gfx::DelegatedInkMetadata later_metadata(
       gfx::PointF(92, 35), 0.08, SK_ColorYELLOW,
-      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(50),
+      base::TimeTicks::Now() + base::Microseconds(50),
       gfx::RectF(35, 55, 128, 256),
-      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(52),
+      base::TimeTicks::Now() + base::Microseconds(52),
       /*hovering*/ true);
 
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();

@@ -86,7 +86,7 @@ TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
     CopyLayerContentToLayer(&layer1, cancelable.callback());
 
     GenerateOneFrame();
-    Advance(base::TimeDelta::FromMilliseconds(1000));
+    Advance(base::Milliseconds(1000));
     EXPECT_TRUE(called);
   }
 
@@ -103,7 +103,7 @@ TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
     cancelable.Cancel();
 
     GenerateOneFrame();
-    Advance(base::TimeDelta::FromMilliseconds(1000));
+    Advance(base::Milliseconds(1000));
     EXPECT_FALSE(called);
   }
 }

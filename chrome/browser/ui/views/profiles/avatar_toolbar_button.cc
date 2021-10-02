@@ -53,7 +53,7 @@ constexpr int kIconSizeForNonTouchUi = 22;
 
 // static
 base::TimeDelta AvatarToolbarButton::g_iph_min_delay_after_creation =
-    base::TimeDelta::FromSeconds(2);
+    base::Seconds(2);
 
 AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     : AvatarToolbarButton(browser_view, nullptr) {}

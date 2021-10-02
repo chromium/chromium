@@ -30,7 +30,7 @@ class RetryTimerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void FastForwardOneSecond() {
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   base::RepeatingCallback<void(base::OnceCallback<void(const ClientStatus&)>)>
@@ -80,24 +80,24 @@ class RetryTimerTest : public testing::Test {
 };
 
 TEST_F(RetryTimerTest, TryOnceAndSucceed) {
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
+  RetryTimer retry_timer(base::Seconds(1));
   EXPECT_CALL(done_callback_, Run(EqualsStatus(OkClientStatus())));
-  retry_timer.Start(base::TimeDelta::FromSeconds(10), SucceedsOnceCallback(0),
+  retry_timer.Start(base::Seconds(10), SucceedsOnceCallback(0),
                     done_callback_.Get());
   EXPECT_EQ(1, try_count_);
 }
 
 TEST_F(RetryTimerTest, TryOnceAndFail) {
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
+  RetryTimer retry_timer(base::Seconds(1));
   EXPECT_CALL(done_callback_, Run(EqualsStatus(ClientStatus())));
-  retry_timer.Start(base::TimeDelta::FromSeconds(0), AlwaysFailsCallback(),
+  retry_timer.Start(base::Seconds(0), AlwaysFailsCallback(),
                     done_callback_.Get());
   EXPECT_EQ(1, try_count_);
 }
 
 TEST_F(RetryTimerTest, TryMultipleTimesAndSucceed) {
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-  retry_timer.Start(base::TimeDelta::FromSeconds(10), SucceedsOnceCallback(2),
+  RetryTimer retry_timer(base::Seconds(1));
+  retry_timer.Start(base::Seconds(10), SucceedsOnceCallback(2),
                     done_callback_.Get());
   EXPECT_EQ(1, try_count_);
   FastForwardOneSecond();
@@ -108,8 +108,8 @@ TEST_F(RetryTimerTest, TryMultipleTimesAndSucceed) {
 }
 
 TEST_F(RetryTimerTest, TryMultipleTimesAndFail) {
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-  retry_timer.Start(base::TimeDelta::FromSeconds(2), AlwaysFailsCallback(),
+  RetryTimer retry_timer(base::Seconds(1));
+  retry_timer.Start(base::Seconds(2), AlwaysFailsCallback(),
                     done_callback_.Get());
   EXPECT_EQ(1, try_count_);
   FastForwardOneSecond();
@@ -121,8 +121,8 @@ TEST_F(RetryTimerTest, TryMultipleTimesAndFail) {
 
 TEST_F(RetryTimerTest, Cancel) {
   EXPECT_CALL(done_callback_, Run(_)).Times(0);
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-  retry_timer.Start(base::TimeDelta::FromSeconds(10), AlwaysFailsCallback(),
+  RetryTimer retry_timer(base::Seconds(1));
+  retry_timer.Start(base::Seconds(10), AlwaysFailsCallback(),
                     done_callback_.Get());
   EXPECT_EQ(1, try_count_);
   retry_timer.Cancel();
@@ -131,9 +131,8 @@ TEST_F(RetryTimerTest, Cancel) {
 
 TEST_F(RetryTimerTest, CancelWithPendingCallbacks) {
   EXPECT_CALL(done_callback_, Run(_)).Times(0);
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-  retry_timer.Start(base::TimeDelta::FromSeconds(10), CaptureCallback(),
-                    done_callback_.Get());
+  RetryTimer retry_timer(base::Seconds(1));
+  retry_timer.Start(base::Seconds(10), CaptureCallback(), done_callback_.Get());
   ASSERT_TRUE(captured_callback_);
   retry_timer.Cancel();
   std::move(captured_callback_).Run(OkClientStatus());  // Should do nothing
@@ -142,8 +141,8 @@ TEST_F(RetryTimerTest, CancelWithPendingCallbacks) {
 TEST_F(RetryTimerTest, GiveUpWhenLeavingScope) {
   EXPECT_CALL(done_callback_, Run(_)).Times(0);
   {
-    RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-    retry_timer.Start(base::TimeDelta::FromSeconds(10), AlwaysFailsCallback(),
+    RetryTimer retry_timer(base::Seconds(1));
+    retry_timer.Start(base::Seconds(10), AlwaysFailsCallback(),
                       done_callback_.Get());
     EXPECT_EQ(1, try_count_);
   }
@@ -153,8 +152,8 @@ TEST_F(RetryTimerTest, GiveUpWhenLeavingScope) {
 TEST_F(RetryTimerTest, GiveUpWhenLeavingScopeWithPendingCallback) {
   EXPECT_CALL(done_callback_, Run(_)).Times(0);
   {
-    RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-    retry_timer.Start(base::TimeDelta::FromSeconds(10), CaptureCallback(),
+    RetryTimer retry_timer(base::Seconds(1));
+    retry_timer.Start(base::Seconds(10), CaptureCallback(),
                       done_callback_.Get());
     ASSERT_TRUE(captured_callback_);
   }
@@ -164,12 +163,12 @@ TEST_F(RetryTimerTest, GiveUpWhenLeavingScopeWithPendingCallback) {
 TEST_F(RetryTimerTest, RestartOverridesFirstCall) {
   EXPECT_CALL(done_callback_, Run(_)).Times(0);
 
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-  retry_timer.Start(base::TimeDelta::FromSeconds(1), AlwaysFailsCallback(),
+  RetryTimer retry_timer(base::Seconds(1));
+  retry_timer.Start(base::Seconds(1), AlwaysFailsCallback(),
                     done_callback_.Get());
   base::MockCallback<base::OnceCallback<void(const ClientStatus&)>>
       done_callback2;
-  retry_timer.Start(base::TimeDelta::FromSeconds(1), AlwaysFailsCallback(),
+  retry_timer.Start(base::Seconds(1), AlwaysFailsCallback(),
                     done_callback2.Get());
   EXPECT_EQ(2, try_count_);
   EXPECT_CALL(done_callback2, Run(EqualsStatus(ClientStatus())));
@@ -180,14 +179,13 @@ TEST_F(RetryTimerTest, RestartOverridesFirstCall) {
 TEST_F(RetryTimerTest, RestartOverridesFirstCallWithPendingTask) {
   EXPECT_CALL(done_callback_, Run(_)).Times(0);
 
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
-  retry_timer.Start(base::TimeDelta::FromSeconds(1), CaptureCallback(),
-                    done_callback_.Get());
+  RetryTimer retry_timer(base::Seconds(1));
+  retry_timer.Start(base::Seconds(1), CaptureCallback(), done_callback_.Get());
   ASSERT_TRUE(captured_callback_);
 
   base::MockCallback<base::OnceCallback<void(const ClientStatus&)>>
       done_callback2;
-  retry_timer.Start(base::TimeDelta::FromSeconds(1), AlwaysFailsCallback(),
+  retry_timer.Start(base::Seconds(1), AlwaysFailsCallback(),
                     done_callback2.Get());
 
   std::move(captured_callback_).Run(OkClientStatus());  // Should do nothing
@@ -198,10 +196,10 @@ TEST_F(RetryTimerTest, RestartOverridesFirstCallWithPendingTask) {
 }
 
 TEST_F(RetryTimerTest, Running) {
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
+  RetryTimer retry_timer(base::Seconds(1));
   EXPECT_FALSE(retry_timer.running());
 
-  retry_timer.Start(base::TimeDelta::FromSeconds(10), SucceedsOnceCallback(1),
+  retry_timer.Start(base::Seconds(10), SucceedsOnceCallback(1),
                     done_callback_.Get());
   EXPECT_TRUE(retry_timer.running());
 
@@ -211,10 +209,10 @@ TEST_F(RetryTimerTest, Running) {
 }
 
 TEST_F(RetryTimerTest, NotRunningAfterCancel) {
-  RetryTimer retry_timer(base::TimeDelta::FromSeconds(1));
+  RetryTimer retry_timer(base::Seconds(1));
   EXPECT_FALSE(retry_timer.running());
 
-  retry_timer.Start(base::TimeDelta::FromSeconds(10), SucceedsOnceCallback(1),
+  retry_timer.Start(base::Seconds(10), SucceedsOnceCallback(1),
                     done_callback_.Get());
   EXPECT_TRUE(retry_timer.running());
   retry_timer.Cancel();

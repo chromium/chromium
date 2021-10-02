@@ -19,10 +19,8 @@ struct GesturesTimer {
     callback_ = callback;
     callback_data_ = callback_data;
     timer_.Start(FROM_HERE,
-                 base::TimeDelta::FromMicroseconds(
-                     delay * base::Time::kMicrosecondsPerSecond),
-                 this,
-                 &GesturesTimer::OnTimerExpired);
+                 base::Microseconds(delay * base::Time::kMicrosecondsPerSecond),
+                 this, &GesturesTimer::OnTimerExpired);
   }
 
   void Cancel() { timer_.Stop(); }
@@ -32,11 +30,10 @@ struct GesturesTimer {
     // Run the callback and reschedule the next run if requested.
     stime_t next_delay = callback_(ui::StimeNow(), callback_data_);
     if (next_delay >= 0) {
-      timer_.Start(FROM_HERE,
-                   base::TimeDelta::FromMicroseconds(
-                       next_delay * base::Time::kMicrosecondsPerSecond),
-                   this,
-                   &GesturesTimer::OnTimerExpired);
+      timer_.Start(
+          FROM_HERE,
+          base::Microseconds(next_delay * base::Time::kMicrosecondsPerSecond),
+          this, &GesturesTimer::OnTimerExpired);
     }
   }
 

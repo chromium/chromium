@@ -65,7 +65,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   size_t buffer_size = sizeof(buffer) / sizeof(uint8_t);
   const uint8_t side_buffer[] = "XX";
   size_t side_buffer_size = sizeof(side_buffer) / sizeof(uint8_t);
-  base::TimeDelta pts = base::TimeDelta::FromMilliseconds(5);
+  base::TimeDelta pts = base::Milliseconds(5);
 
   // 1. To DecoderBuffer
   scoped_refptr<DecoderBuffer> input_buffer = DecoderBuffer::CopyFrom(

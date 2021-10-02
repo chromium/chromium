@@ -14,7 +14,7 @@ namespace content {
 namespace {
 
 base::TimeTicks AdvanceTime(base::TimeTicks* time, int milliseconds) {
-  *time += base::TimeDelta::FromMilliseconds(milliseconds);
+  *time += base::Milliseconds(milliseconds);
   return *time;
 }
 

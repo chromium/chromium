@@ -166,8 +166,7 @@ bool HandleDebugURL(const GURL& url,
     // Webdriver-safe url to hang the ui thread. Webdriver waits for the onload
     // event in javascript which needs a little more time to fire.
     GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&HangCurrentThread),
-        base::TimeDelta::FromSeconds(2));
+        FROM_HERE, base::BindOnce(&HangCurrentThread), base::Seconds(2));
     return true;
   }
 

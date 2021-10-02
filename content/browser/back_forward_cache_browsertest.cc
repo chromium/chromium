@@ -536,8 +536,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
 
   const int kMaxBufferedBytesPerRequest = 7000;
   const int kMaxBufferedBytesPerProcess = 10000;
-  const base::TimeDelta kGracePeriodToFinishLoading =
-      base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
 
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
@@ -917,9 +916,7 @@ class FakeIdleTimeProvider : public IdleTimeProvider {
   FakeIdleTimeProvider(const FakeIdleTimeProvider&) = delete;
   FakeIdleTimeProvider& operator=(const FakeIdleTimeProvider&) = delete;
 
-  base::TimeDelta CalculateIdleTime() override {
-    return base::TimeDelta::FromSeconds(0);
-  }
+  base::TimeDelta CalculateIdleTime() override { return base::Seconds(0); }
 
   bool CheckIdleStateIsLocked() override { return false; }
 };
@@ -4423,7 +4420,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // immediately evicted) by checking after 3 seconds.
   base::RunLoop loop;
   base::OneShotTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromSeconds(3), loop.QuitClosure());
+  timer.Start(FROM_HERE, base::Seconds(3), loop.QuitClosure());
   loop.Run();
   EXPECT_EQ(nullptr, fetch2_response.http_request());
 
@@ -4480,7 +4477,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // redirects of keepalive fetches and the redirect request should be sent.
   base::RunLoop loop;
   base::OneShotTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromSeconds(3), loop.QuitClosure());
+  timer.Start(FROM_HERE, base::Seconds(3), loop.QuitClosure());
   loop.Run();
   EXPECT_EQ(nullptr, fetch2_response.http_request());
 
@@ -5241,7 +5238,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      kGracePeriodToFinishLoading + base::TimeDelta::FromSeconds(1));
+      kGracePeriodToFinishLoading + base::Seconds(1));
   run_loop.Run();
 
   // Ensure that the page is still in bfcache.
@@ -5286,7 +5283,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      kGracePeriodToFinishLoading + base::TimeDelta::FromSeconds(1));
+      kGracePeriodToFinishLoading + base::Seconds(1));
   run_loop.Run();
 
   // Ensure that the page is still in bfcache.
@@ -6489,10 +6486,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
   base::TimeDelta time_to_live_in_back_forward_cache =
       BackForwardCacheImpl::GetTimeToLiveInBackForwardCache();
   // This should match the value we set in EnableFeatureAndSetParams.
-  EXPECT_EQ(time_to_live_in_back_forward_cache,
-            base::TimeDelta::FromSeconds(3600));
+  EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
 
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta delta = base::Milliseconds(1);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));

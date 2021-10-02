@@ -1764,7 +1764,7 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
   // Add an epsilon since the trace viewer interprets timestamp ranges
   // as closed on the left and open on the right. i.e.: [begin, end).
   // The last sub event isn't nested properly without the epsilon.
-  auto epsilon = base::TimeDelta::FromMicroseconds(1);
+  auto epsilon = base::Microseconds(1);
   static const char* SwapEvents = "SwapEvents";
   const int64_t trace_id = oldFrameId;
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
@@ -1916,8 +1916,8 @@ bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
   // reporting purpose.
   if (!eglGetCompositorTimingANDROID(GetDisplay(), surface_, 1, &interval_name,
                                      &composite_interval_ns)) {
-    *composite_interval = base::TimeDelta::FromNanoseconds(
-        base::TimeTicks::kNanosecondsPerSecond / 60);
+    *composite_interval =
+        base::Nanoseconds(base::TimeTicks::kNanosecondsPerSecond / 60);
     // If we couldn't get the correct presentation time due to some errors,
     // return the current time.
     *presentation_time = base::TimeTicks::Now();
@@ -1929,7 +1929,7 @@ bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
     return false;
   }
   DCHECK_GT(composite_interval_ns, 0);
-  *composite_interval = base::TimeDelta::FromNanoseconds(composite_interval_ns);
+  *composite_interval = base::Nanoseconds(composite_interval_ns);
 
   // Get the all available timestamps for the frame. If a frame is invalid or
   // an error is generated,  we will treat it as a frame done for timestamp
@@ -1972,12 +1972,12 @@ bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
         presentation_time_ns == EGL_TIMESTAMP_PENDING_ANDROID) {
       *presentation_time = base::TimeTicks::Now();
     } else {
-      *presentation_time = base::TimeTicks() + base::TimeDelta::FromNanoseconds(
-                                                   presentation_time_ns);
+      *presentation_time =
+          base::TimeTicks() + base::Nanoseconds(presentation_time_ns);
     }
   } else {
-    *presentation_time = base::TimeTicks() +
-                         base::TimeDelta::FromNanoseconds(presentation_time_ns);
+    *presentation_time =
+        base::TimeTicks() + base::Nanoseconds(presentation_time_ns);
     *presentation_flags = presentation_flags_;
   }
 
@@ -1987,8 +1987,8 @@ bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
       writes_done_time_ns == EGL_TIMESTAMP_PENDING_ANDROID) {
     *writes_done_time = base::TimeTicks();
   } else {
-    *writes_done_time = base::TimeTicks() +
-                        base::TimeDelta::FromNanoseconds(writes_done_time_ns);
+    *writes_done_time =
+        base::TimeTicks() + base::Nanoseconds(writes_done_time_ns);
   }
 
   return true;

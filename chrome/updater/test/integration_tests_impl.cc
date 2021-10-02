@@ -252,8 +252,7 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
     return false;
 
   // TODO(crbug.com/1096654): Get the timeout from TestTimeouts.
-  return process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(45),
-                                        exit_code);
+  return process.WaitForExitWithTimeout(base::Seconds(45), exit_code);
 }
 
 void SleepFor(int seconds) {
@@ -263,7 +262,7 @@ void SleepFor(int seconds) {
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&sleep)),
-      base::TimeDelta::FromSeconds(seconds));
+      base::Seconds(seconds));
   sleep.Wait();
   VLOG(2) << "Sleep complete.";
 }
@@ -274,7 +273,7 @@ bool WaitFor(base::RepeatingCallback<bool()> predicate) {
   while (base::TimeTicks::Now() < deadline) {
     if (predicate.Run())
       return true;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+    base::PlatformThread::Sleep(base::Milliseconds(200));
   }
   return false;
 }

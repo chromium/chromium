@@ -88,7 +88,7 @@ std::string BeginFrameId::ToString() const {
 BeginFrameArgs::BeginFrameArgs()
     : frame_time(base::TimeTicks::Min()),
       deadline(base::TimeTicks::Min()),
-      interval(base::TimeDelta::FromMicroseconds(-1)),
+      interval(base::Microseconds(-1)),
       frame_id(BeginFrameId(0, kInvalidFrameNumber)) {}
 
 BeginFrameArgs::BeginFrameArgs(uint64_t source_id,

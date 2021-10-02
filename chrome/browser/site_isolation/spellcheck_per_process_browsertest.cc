@@ -76,7 +76,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
     ui_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockSpellCheckHost::Timeout, base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
 
     base::RunLoop run_loop;
     quit_ = run_loop.QuitClosure();
@@ -234,7 +234,7 @@ class SpellCheckBrowserTestHelper {
         FROM_HERE,
         base::BindOnce(&SpellCheckBrowserTestHelper::Timeout,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
 
     base::RunLoop run_loop;
     quit_on_bind_closure_ = run_loop.QuitClosure();

@@ -289,7 +289,7 @@ std::string GetLastSyncedTimeString(base::Time last_synced_time) {
 
   base::TimeDelta time_since_last_sync = base::Time::Now() - last_synced_time;
 
-  if (time_since_last_sync < base::TimeDelta::FromMinutes(1))
+  if (time_since_last_sync < base::Minutes(1))
     return "Just now";
 
   return GetTimeDeltaDebugString(time_since_last_sync) + " ago";

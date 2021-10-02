@@ -211,7 +211,7 @@ TEST_F(SSLConnectJobTest, TCPFail) {
 }
 
 TEST_F(SSLConnectJobTest, TCPTimeout) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // Make request hang.
   host_resolver_.set_ondemand_mode(true);
@@ -233,7 +233,7 @@ TEST_F(SSLConnectJobTest, TCPTimeout) {
 }
 
 TEST_F(SSLConnectJobTest, SSLTimeoutSyncConnect) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // DNS lookup and transport connect complete synchronously, but SSL
   // negotiation hangs.
@@ -262,7 +262,7 @@ TEST_F(SSLConnectJobTest, SSLTimeoutSyncConnect) {
 }
 
 TEST_F(SSLConnectJobTest, SSLTimeoutAsyncTcpConnect) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // DNS lookup is asynchronous, and later SSL negotiation hangs.
   host_resolver_.set_ondemand_mode(true);
@@ -337,7 +337,7 @@ TEST_F(SSLConnectJobTest, BasicDirectAsync) {
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_TRUE(host_resolver_.has_pending_requests());
   EXPECT_EQ(MEDIUM, host_resolver_.last_request_priority());
-  FastForwardBy(base::TimeDelta::FromSeconds(5));
+  FastForwardBy(base::Seconds(5));
 
   base::TimeTicks resolve_complete_time = base::TimeTicks::Now();
   host_resolver_.ResolveAllPending();
@@ -959,7 +959,7 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthChallenge) {
 
   // While waiting for auth credentials to be provided, the Job should not time
   // out.
-  FastForwardBy(base::TimeDelta::FromDays(1));
+  FastForwardBy(base::Days(1));
   test_delegate.WaitForAuthChallenge(1);
   EXPECT_FALSE(test_delegate.has_result());
 

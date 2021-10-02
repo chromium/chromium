@@ -283,8 +283,8 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     scoped_refptr<DecoderBuffer> buffer =
         DecoderBuffer::CopyFrom(data.data(), data.size());
 
-    buffer->set_timestamp(base::TimeDelta::FromMilliseconds(timestamp_ms));
-    buffer->set_duration(base::TimeDelta::FromMilliseconds(10));
+    buffer->set_timestamp(base::Milliseconds(timestamp_ms));
+    buffer->set_duration(base::Milliseconds(10));
     buffer->set_is_key_frame(true);
 
     return buffer;
@@ -296,8 +296,8 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     scoped_refptr<DecoderBuffer> buffer =
         DecoderBuffer::CopyFrom(data.data(), data.size());
 
-    buffer->set_timestamp(base::TimeDelta::FromMilliseconds(timestamp_ms));
-    buffer->set_duration(base::TimeDelta::FromMilliseconds(10));
+    buffer->set_timestamp(base::Milliseconds(timestamp_ms));
+    buffer->set_duration(base::Milliseconds(10));
     buffer->set_is_key_frame(true);
 
     return buffer;

@@ -71,15 +71,14 @@ class ConstrainedWebDialogBrowserTest : public InProcessBrowserTest {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     while (!condition.Run()) {
       const base::TimeTicks current_time = base::TimeTicks::Now();
-      if (current_time - start_time > base::TimeDelta::FromSeconds(5)) {
+      if (current_time - start_time > base::Seconds(5)) {
         ADD_FAILURE() << "Condition not met within five seconds.";
         return false;
       }
 
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(20));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(20));
       run_loop.Run();
     }
     return true;

@@ -319,9 +319,9 @@ class UMAHistogramReporter {
   void RecordLongTimesHistogram(const std::string& name,
                                 const base::TimeDelta& sample) const {
     // See UMA_HISTOGRAM_LONG_TIMES for the parameters to |FactoryTimeGet|.
-    auto* histogram = base::Histogram::FactoryTimeGet(
-        FullName(name), base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromHours(1), 100, kUmaHistogramFlag);
+    auto* histogram =
+        base::Histogram::FactoryTimeGet(FullName(name), base::Milliseconds(1),
+                                        base::Hours(1), 100, kUmaHistogramFlag);
     if (histogram)
       histogram->AddTime(sample);
   }
@@ -499,12 +499,11 @@ class ReporterRunner {
       base::Time now = Now();
       if (local_state->HasPrefPath(prefs::kSwReporterLastTimeTriggered)) {
         base::Time last_time_triggered =
-            base::Time() +
-            base::TimeDelta::FromMicroseconds(
-                local_state->GetInt64(prefs::kSwReporterLastTimeTriggered));
+            base::Time() + base::Microseconds(local_state->GetInt64(
+                               prefs::kSwReporterLastTimeTriggered));
         base::Time next_trigger =
             last_time_triggered +
-            base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns);
+            base::Days(kDaysBetweenSuccessfulSwReporterRuns);
         should_run_ = next_trigger <= now || last_time_triggered > now;
       } else {
         should_run_ = true;
@@ -512,12 +511,10 @@ class ReporterRunner {
 
       if (local_state->HasPrefPath(prefs::kSwReporterLastTimeSentReport)) {
         base::Time last_time_sent_logs =
-            base::Time() +
-            base::TimeDelta::FromMicroseconds(
-                local_state->GetInt64(prefs::kSwReporterLastTimeSentReport));
+            base::Time() + base::Microseconds(local_state->GetInt64(
+                               prefs::kSwReporterLastTimeSentReport));
         base::Time next_time_send_logs =
-            last_time_sent_logs +
-            base::TimeDelta::FromDays(kDaysBetweenReporterLogsSent);
+            last_time_sent_logs + base::Days(kDaysBetweenReporterLogsSent);
         in_logs_upload_period_ =
             next_time_send_logs <= now || last_time_sent_logs > now;
       } else {
@@ -617,8 +614,7 @@ class ReporterRunner {
     // QueryUnbiasedInterruptTime returns units of 100 nanoseconds. See
     // https://docs.microsoft.com/en-us/windows/win32/api/realtimeapiset/nf-realtimeapiset-queryunbiasedinterrupttime
     base::TimeDelta running_time_without_sleep =
-        base::TimeDelta::FromNanoseconds(
-            100 * (now_without_sleep - start_time_without_sleep));
+        base::Nanoseconds(100 * (now_without_sleep - start_time_without_sleep));
 
     // Tries to run the next invocation in the queue.
     if (!invocations_.container().empty()) {

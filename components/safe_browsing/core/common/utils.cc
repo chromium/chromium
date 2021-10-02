@@ -83,7 +83,7 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name) {
     return zero_delay;
 
   base::Time next_event = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(seconds_since_epoch));
+      base::Seconds(seconds_since_epoch));
   base::Time now = base::Time::Now();
   if (now > next_event)
     return zero_delay;

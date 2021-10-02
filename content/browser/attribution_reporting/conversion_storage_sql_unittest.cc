@@ -190,15 +190,14 @@ TEST_F(ConversionStorageSqlTest, ClearDataWithVestigialConversion) {
   OpenDatabase();
 
   base::Time start = clock()->Now();
-  auto impression =
-      ImpressionBuilder(start).SetExpiry(base::TimeDelta::FromDays(30)).Build();
+  auto impression = ImpressionBuilder(start).SetExpiry(base::Days(30)).Build();
   storage()->StoreImpression(impression);
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
@@ -226,15 +225,14 @@ TEST_F(ConversionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   OpenDatabase();
 
   base::Time start = clock()->Now();
-  auto impression =
-      ImpressionBuilder(start).SetExpiry(base::TimeDelta::FromDays(30)).Build();
+  auto impression = ImpressionBuilder(start).SetExpiry(base::Days(30)).Build();
   storage()->StoreImpression(impression);
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
@@ -262,16 +260,15 @@ TEST_F(ConversionStorageSqlTest, DeleteEverything) {
 
   base::Time start = clock()->Now();
   for (int i = 0; i < 10; i++) {
-    auto impression = ImpressionBuilder(start)
-                          .SetExpiry(base::TimeDelta::FromDays(30))
-                          .Build();
+    auto impression =
+        ImpressionBuilder(start).SetExpiry(base::Days(30)).Build();
     storage()->StoreImpression(impression);
-    clock()->Advance(base::TimeDelta::FromDays(1));
+    clock()->Advance(base::Days(1));
   }
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
@@ -337,7 +334,7 @@ TEST_F(ConversionStorageSqlTest,
   OpenDatabase();
   delegate()->set_max_conversions_per_impression(1);
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(7),
+      .time_window = base::Days(7),
       .max_contributions_per_window = INT_MAX,
   });
   const url::Origin impression_origin =
@@ -347,13 +344,13 @@ TEST_F(ConversionStorageSqlTest,
   const url::Origin conversion_origin =
       url::Origin::Create(GURL("https://b.example/"));
   storage()->StoreImpression(ImpressionBuilder(clock()->Now())
-                                 .SetExpiry(base::TimeDelta::FromDays(30))
+                                 .SetExpiry(base::Days(30))
                                  .SetImpressionOrigin(impression_origin)
                                  .SetReportingOrigin(reporting_origin)
                                  .SetConversionOrigin(conversion_origin)
                                  .Build());
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreConversionReport(
@@ -375,7 +372,7 @@ TEST_F(ConversionStorageSqlTest,
               .Build()));
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_TRUE(storage()->DeleteConversion(AttributionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
@@ -397,7 +394,7 @@ TEST_F(ConversionStorageSqlTest,
   OpenDatabase();
   delegate()->set_max_conversions_per_impression(1);
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(7),
+      .time_window = base::Days(7),
       .max_contributions_per_window = INT_MAX,
   });
   const url::Origin impression_origin =
@@ -407,13 +404,13 @@ TEST_F(ConversionStorageSqlTest,
   const url::Origin conversion_origin =
       url::Origin::Create(GURL("https://sub.impression.example/"));
   storage()->StoreImpression(ImpressionBuilder(clock()->Now())
-                                 .SetExpiry(base::TimeDelta::FromDays(30))
+                                 .SetExpiry(base::Days(30))
                                  .SetImpressionOrigin(impression_origin)
                                  .SetReportingOrigin(reporting_origin)
                                  .SetConversionOrigin(conversion_origin)
                                  .Build());
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreConversionReport(
@@ -435,7 +432,7 @@ TEST_F(ConversionStorageSqlTest,
               .Build()));
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_TRUE(storage()->DeleteConversion(AttributionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
@@ -527,15 +524,13 @@ TEST_F(ConversionStorageSqlTest, MaxUint64StorageSucceeds) {
 TEST_F(ConversionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
   OpenDatabase();
 
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
   // Store another impression to trigger the expiry logic.
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
 
   CloseDatabase();
   ExpectImpressionRows(2u);
@@ -544,16 +539,14 @@ TEST_F(ConversionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
 TEST_F(ConversionStorageSqlTest, ImpressionExpired_Deleted) {
   OpenDatabase();
 
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
+  clock()->Advance(base::Milliseconds(3));
   // Store another impression to trigger the expiry logic.
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
 
   CloseDatabase();
   ExpectImpressionRows(1u);
@@ -562,19 +555,16 @@ TEST_F(ConversionStorageSqlTest, ImpressionExpired_Deleted) {
 TEST_F(ConversionStorageSqlTest, ImpressionExpired_TooFrequent_NotDeleted) {
   OpenDatabase();
 
-  delegate()->set_delete_expired_impressions_frequency(
-      base::TimeDelta::FromMilliseconds(4));
+  delegate()->set_delete_expired_impressions_frequency(base::Milliseconds(4));
 
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
+  clock()->Advance(base::Milliseconds(3));
   // Store another impression to trigger the expiry logic.
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
 
   CloseDatabase();
   ExpectImpressionRows(2u);
@@ -584,19 +574,17 @@ TEST_F(ConversionStorageSqlTest,
        ExpiredImpressionWithPendingConversion_NotDeleted) {
   OpenDatabase();
 
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
+  clock()->Advance(base::Milliseconds(3));
   // Store another impression to trigger the expiry logic.
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
 
   CloseDatabase();
   ExpectImpressionRows(2u);
@@ -605,21 +593,18 @@ TEST_F(ConversionStorageSqlTest,
 TEST_F(ConversionStorageSqlTest, TwoImpressionsOneExpired_OneDeleted) {
   OpenDatabase();
 
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(4))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(4))
+                                 .Build());
 
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
+  clock()->Advance(base::Milliseconds(3));
   // Store another impression to trigger the expiry logic.
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
 
   CloseDatabase();
   ExpectImpressionRows(2u);
@@ -631,26 +616,24 @@ TEST_F(ConversionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   const int kReportTime = 5;
   delegate()->set_report_time_ms(kReportTime);
 
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
+  clock()->Advance(base::Milliseconds(3));
   // Advance past the default report time.
-  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+  clock()->Advance(base::Milliseconds(kReportTime));
 
   std::vector<AttributionReport> reports =
       storage()->GetConversionsToReport(clock()->Now());
   EXPECT_EQ(1u, reports.size());
   EXPECT_TRUE(storage()->DeleteConversion(*reports[0].conversion_id));
   // Store another impression to trigger the expiry logic.
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetExpiry(base::Milliseconds(3))
+                                 .Build());
 
   CloseDatabase();
   ExpectImpressionRows(1u);

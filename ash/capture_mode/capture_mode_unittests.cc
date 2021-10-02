@@ -452,8 +452,7 @@ class CaptureModeTest : public AshTestBase {
     while (!controller->is_recording_in_progress()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }
   }
@@ -482,7 +481,7 @@ class CaptureModeTest : public AshTestBase {
     base::RunLoop loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
-        base::TimeDelta::FromSeconds(seconds));
+        base::Seconds(seconds));
     loop.Run();
   }
 
@@ -3678,13 +3677,13 @@ TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
   SelectRegion(capture_region);
   take_n_screenshots(3);
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 3, 0);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 3, 1);
 
   // Take only one screenshot. This should not be recorded.
   take_n_screenshots(1);
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 1, 0);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 1, 0);
 
   // Take a screenshot, change source and take another screenshot. This should
@@ -3694,7 +3693,7 @@ TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
                                          CaptureModeType::kImage);
   controller->PerformCapture();
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 2, 0);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 2, 1);
 }
 
@@ -3712,7 +3711,7 @@ TEST_F(CaptureModeMockTimeTest, ClearUserCaptureRegionBetweenSessions) {
 
   // Start region image capture again shortly after the previous capture
   // session, we should still be able to reuse the previous capture region.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment()->FastForwardBy(base::Minutes(1));
   StartImageRegionCapture();
   EXPECT_EQ(capture_region, controller->user_capture_region());
   auto* event_generator = GetEventGenerator();
@@ -3722,7 +3721,7 @@ TEST_F(CaptureModeMockTimeTest, ClearUserCaptureRegionBetweenSessions) {
 
   // Wait for 8 second and then start region image capture again. We should have
   // forgot the previous capture region.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(8));
+  task_environment()->FastForwardBy(base::Minutes(8));
   StartImageRegionCapture();
   EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
 }

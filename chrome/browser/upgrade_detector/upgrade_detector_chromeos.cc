@@ -34,18 +34,17 @@ namespace {
 
 // How long to wait (each cycle) before checking which severity level we should
 // be at. Once we reach the highest severity, the timer will stop.
-constexpr base::TimeDelta kNotifyCycleDelta = base::TimeDelta::FromMinutes(20);
+constexpr base::TimeDelta kNotifyCycleDelta = base::Minutes(20);
 
 // The default amount of time it takes for the detector's annoyance level
 // (upgrade_notification_stage()) to reach UPGRADE_ANNOYANCE_HIGH once an
 // upgrade is detected.
-constexpr base::TimeDelta kDefaultHighThreshold = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kDefaultHighThreshold = base::Days(7);
 
 // The default amount of time it takes for the detector's annoyance level
 // (upgrade_notification_stage()) to reach UPGRADE_ANNOYANCE_ELEVATED once an
 // upgrade is detected.
-constexpr base::TimeDelta kDefaultElevatedThreshold =
-    base::TimeDelta::FromDays(4);
+constexpr base::TimeDelta kDefaultElevatedThreshold = base::Days(4);
 
 // The default amount of time between the detector's annoyance level change
 // from UPGRADE_ANNOYANCE_ELEVATED to UPGRADE_ANNOYANCE_HIGH.
@@ -168,10 +167,10 @@ base::TimeDelta UpgradeDetectorChromeos::GetRelaunchHeadsUpPeriod() {
       local_state->FindPreference(prefs::kRelaunchHeadsUpPeriod);
   const int value = preference->GetValue()->GetInt();
   // Enforce the preference's documented minimum value.
-  static constexpr base::TimeDelta kMinValue = base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kMinValue = base::Hours(1);
   if (preference->IsDefaultValue() || value < kMinValue.InMilliseconds())
     return base::TimeDelta();
-  return base::TimeDelta::FromMilliseconds(value);
+  return base::Milliseconds(value);
 }
 
 void UpgradeDetectorChromeos::CalculateDeadlines() {
@@ -326,6 +325,5 @@ base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
 // static
 UpgradeDetector::RelaunchWindow UpgradeDetector::GetDefaultRelaunchWindow() {
   // Two hours starting at 2am.
-  return RelaunchWindow(/*start_hour=*/2, /*start_minute=*/0,
-                        base::TimeDelta::FromHours(2));
+  return RelaunchWindow(/*start_hour=*/2, /*start_minute=*/0, base::Hours(2));
 }

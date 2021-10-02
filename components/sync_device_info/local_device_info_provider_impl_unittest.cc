@@ -272,8 +272,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   auto device_info_restored_from_store = std::make_unique<DeviceInfo>(
       kLocalDeviceGuid, "name", "chrome_version", "user_agent",
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id", "manufacturer",
-      "model", "full_hardware_class", base::Time(),
-      base::TimeDelta::FromDays(1),
+      "model", "full_hardware_class", base::Time(), base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/true,
       /*sharing_info=*/absl::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes);

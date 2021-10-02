@@ -384,7 +384,7 @@ class PerfIterator {
     if (warmup_) {
       warmup_ = false;
       if (for_linux_perf_)
-        base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+        base::PlatformThread::Sleep(base::Seconds(1));
       else
         time = base::TimeTicks::Now();
     } else if (!for_linux_perf_) {

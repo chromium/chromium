@@ -91,7 +91,7 @@ void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
   // it's safe to use Unretained here.
   ignore_load_requests_timer_.reset(new base::OneShotTimer());
   ignore_load_requests_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaximumIgnoreLoadRequestsTime),
+      FROM_HERE, base::Seconds(kMaximumIgnoreLoadRequestsTime),
       base::BindOnce(&NewTabPageTabHelper::DisableIgnoreLoadRequests,
                      base::Unretained(this)));
 }

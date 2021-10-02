@@ -26,7 +26,7 @@
 namespace {
 
 constexpr base::TimeDelta kRendererHighMemoryUsageDetectionWindow =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 content::WebContents* g_last_visible_web_contents = nullptr;
 

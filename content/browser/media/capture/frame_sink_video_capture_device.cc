@@ -112,7 +112,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
   capturer_->SetFormat(capture_params_.requested_format.pixel_format,
                        gfx::ColorSpace::CreateREC709());
   capturer_->SetMinCapturePeriod(
-      base::TimeDelta::FromMicroseconds(base::saturated_cast<int64_t>(
+      base::Microseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /
           capture_params_.requested_format.frame_rate)));
   const auto& constraints = capture_params_.SuggestConstraints();

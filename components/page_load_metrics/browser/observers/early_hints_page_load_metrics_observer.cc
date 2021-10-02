@@ -81,7 +81,6 @@ void EarlyHintsPageLoadMetricsObserver::RecordHistograms(
     base::UmaHistogramCustomTimes(
         internal::kHistogramEarlyHintsPreloadFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
 }

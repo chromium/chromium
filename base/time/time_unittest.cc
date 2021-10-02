@@ -1235,7 +1235,7 @@ TEST(ZxTimeTest, ToFromConversions) {
 TEST(TimeTicks, Deltas) {
   for (int index = 0; index < 50; index++) {
     TimeTicks ticks_start = TimeTicks::Now();
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+    base::PlatformThread::Sleep(base::Milliseconds(10));
     TimeTicks ticks_stop = TimeTicks::Now();
     TimeDelta delta = ticks_stop - ticks_start;
     // Note:  Although we asked for a 10ms sleep, if the
@@ -1411,7 +1411,7 @@ TEST(ThreadTicks, ThreadNow) {
     // Make sure that ThreadNow value is non-zero.
     EXPECT_GT(begin_thread, ThreadTicks());
     // Sleep for 10 milliseconds to get the thread de-scheduled.
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+    base::PlatformThread::Sleep(base::Milliseconds(10));
     ThreadTicks end_thread = ThreadTicks::Now();
     TimeTicks end = TimeTicks::Now();
     TimeDelta delta = end - begin;
@@ -1426,7 +1426,7 @@ TEST(ThreadTicks, ThreadNow) {
 
 TEST(TimeTicks, SnappedToNextTickBasic) {
   base::TimeTicks phase = base::TimeTicks::FromInternalValue(4000);
-  base::TimeDelta interval = base::TimeDelta::FromMicroseconds(1000);
+  base::TimeDelta interval = base::Microseconds(1000);
   base::TimeTicks timestamp;
 
   // Timestamp in previous interval.
@@ -1469,7 +1469,7 @@ TEST(TimeTicks, SnappedToNextTickOverflow) {
   // int(big_timestamp / interval) < 0, so this causes a crash if the number of
   // intervals elapsed is attempted to be stored in an int.
   base::TimeTicks phase = base::TimeTicks::FromInternalValue(0);
-  base::TimeDelta interval = base::TimeDelta::FromMicroseconds(4000);
+  base::TimeDelta interval = base::Microseconds(4000);
   base::TimeTicks big_timestamp =
       base::TimeTicks::FromInternalValue(8635916564000);
 

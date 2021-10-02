@@ -111,7 +111,7 @@ struct CertProfile {
   bool is_va_enabled = true;
   // Default renewal period 0 means that a certificate will be renewed only
   // after the previous one has expired (0 seconds before it is expires).
-  base::TimeDelta renewal_period = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta renewal_period = base::Seconds(0);
 
   // IMPORTANT:
   // Increment this when you add/change any member in CertProfile (and update

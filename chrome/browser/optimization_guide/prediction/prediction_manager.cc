@@ -54,7 +54,7 @@ namespace {
 // Provide a random time delta in seconds before fetching models and host model
 // features.
 base::TimeDelta RandomFetchDelay() {
-  return base::TimeDelta::FromSeconds(base::RandInt(
+  return base::Seconds(base::RandInt(
       optimization_guide::features::PredictionModelFetchRandomMinDelaySecs(),
       optimization_guide::features::PredictionModelFetchRandomMaxDelaySecs()));
 }
@@ -1080,7 +1080,7 @@ void PredictionManager::MaybeScheduleModelFetch() {
     return;
 
   if (switches::ShouldOverrideFetchModelsAndFeaturesTimer()) {
-    fetch_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+    fetch_timer_.Start(FROM_HERE, base::Seconds(1), this,
                        &PredictionManager::FetchModels);
   } else {
     ScheduleModelsFetch();
@@ -1089,16 +1089,14 @@ void PredictionManager::MaybeScheduleModelFetch() {
 
 base::Time PredictionManager::GetLastFetchAttemptTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(
-          pref_service_->GetInt64(prefs::kModelAndFeaturesLastFetchAttempt)));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+      pref_service_->GetInt64(prefs::kModelAndFeaturesLastFetchAttempt)));
 }
 
 base::Time PredictionManager::GetLastFetchSuccessTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(
-          pref_service_->GetInt64(prefs::kModelLastFetchSuccess)));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+      pref_service_->GetInt64(prefs::kModelLastFetchSuccess)));
 }
 
 void PredictionManager::ScheduleModelsFetch() {

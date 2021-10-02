@@ -366,7 +366,7 @@ void LaunchCrostiniAppImpl(
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AddSpinner, restart_id, app_id, profile),
-      base::TimeDelta::FromMilliseconds(kDelayBeforeSpinnerMs));
+      base::Milliseconds(kDelayBeforeSpinnerMs));
 }
 
 void LaunchCrostiniApp(Profile* profile,
@@ -557,9 +557,8 @@ bool ShouldWarnAboutExpiredVersion(Profile* profile,
 std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
   // Only estimate once we've spent at least 3 seconds OR gotten 10% of the way
   // through.
-  constexpr base::TimeDelta kMinTimeForEstimate =
-      base::TimeDelta::FromSeconds(3);
-  constexpr base::TimeDelta kTimeDeltaZero = base::TimeDelta::FromSeconds(0);
+  constexpr base::TimeDelta kMinTimeForEstimate = base::Seconds(3);
+  constexpr base::TimeDelta kTimeDeltaZero = base::Seconds(0);
   constexpr int kMinPercentForEstimate = 10;
   base::TimeDelta elapsed = base::TimeTicks::Now() - start;
   if ((elapsed >= kMinTimeForEstimate && percent > 0) ||

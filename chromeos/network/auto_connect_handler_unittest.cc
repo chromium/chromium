@@ -667,7 +667,7 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyAfterScanComplete) {
 }
 
 TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyRescanDueToHiddenSsids) {
-  const base::TimeDelta kScanDelay = base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta kScanDelay = base::Seconds(30);
   // Initial state: wifi0 is online, wifi1 is idle.
   std::string wifi0_service_path =
       ConfigureService(kConfigWifi0UnmanagedSharedConnected);
@@ -718,7 +718,7 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyRescanDueToHiddenSsids) {
 }
 
 TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyRescanOnlyOnce) {
-  const base::TimeDelta kScanDelay = base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta kScanDelay = base::Seconds(30);
   // Initial state: wifi0 is online, wifi1 is idle.
   std::string wifi0_service_path =
       ConfigureService(kConfigWifi0UnmanagedSharedConnected);

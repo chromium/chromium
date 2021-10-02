@@ -131,8 +131,8 @@ TEST(PlaybackImageProviderTest, RefAndUnrefDecode) {
 TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
   MockDecodeCache cache;
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(2)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(3))};
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3))};
   PaintImage image = CreateAnimatedImage(gfx::Size(10, 10), frames);
 
   base::flat_map<PaintImage::Id, size_t> image_to_frame;

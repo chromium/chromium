@@ -49,8 +49,7 @@ using protocol::ErrorCode;
 namespace {
 
 const char kTestAccessCode[] = "888888";
-constexpr base::TimeDelta kTestAccessCodeLifetime =
-    base::TimeDelta::FromSeconds(666);
+constexpr base::TimeDelta kTestAccessCodeLifetime = base::Seconds(666);
 const char kTestClientUsername[] = "some_user@gmail.com";
 const char kTestStunServer[] = "test_relay_server.com";
 

@@ -38,8 +38,7 @@ void StarScanLoadObserver::ReadyToCommitNavigation(
   ++g_loading_webcontents_;
 
   // Set timer as a fallback if loading is too slow.
-  constexpr base::TimeDelta kReenableStarScanDelta =
-      base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kReenableStarScanDelta = base::Seconds(10);
   timer_.Start(FROM_HERE, kReenableStarScanDelta, this,
                &StarScanLoadObserver::DidStopLoading);
 }

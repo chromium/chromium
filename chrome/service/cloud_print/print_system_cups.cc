@@ -51,11 +51,10 @@ const char kCUPSDefaultSupportedTypes[] =
     "application/pdf,application/postscript,image/jpeg,image/png,image/gif";
 
 // Time interval to check for printer's updates.
-constexpr base::TimeDelta kCheckForPrinterUpdatesTime =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kCheckForPrinterUpdatesTime = base::Minutes(5);
 
 // Job update timeout
-constexpr base::TimeDelta kJobUpdateTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kJobUpdateTimeout = base::Seconds(5);
 
 // Job id for dry run (it should not affect CUPS job ids, since 0 job-id is
 // invalid in CUPS.
@@ -416,7 +415,7 @@ PrintSystemCUPS::PrintSystemCUPS(
   if (print_system_settings) {
     int timeout;
     if (print_system_settings->GetInteger(kCUPSUpdateTimeoutMs, &timeout))
-      update_timeout_ = base::TimeDelta::FromMilliseconds(timeout);
+      update_timeout_ = base::Milliseconds(timeout);
 
     int encryption;
     if (print_system_settings->GetInteger(kCUPSEncryption, &encryption))

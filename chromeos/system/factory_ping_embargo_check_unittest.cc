@@ -24,8 +24,7 @@ namespace {
 // return value will be "2018-01-21".
 std::string GenerateEmbargoEndDate(int days_offset) {
   base::Time::Exploded exploded;
-  const base::Time target_time =
-      base::Time::Now() + base::TimeDelta::FromDays(days_offset);
+  const base::Time target_time = base::Time::Now() + base::Days(days_offset);
   target_time.UTCExplode(&exploded);
 
   const std::string embargo_end_date_string = base::StringPrintf(

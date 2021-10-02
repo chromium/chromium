@@ -50,10 +50,10 @@ FakeSendTabToSelfModel::GetTargetDeviceInfoSortedList() {
        sync_pb::SyncEnums_DeviceType_TYPE_LINUX, base::Time::Now()},
       {"Fake Desktop 2 Long", "Fake Desktop 2", "D0001",
        sync_pb::SyncEnums_DeviceType_TYPE_WIN,
-       base::Time::Now() - base::TimeDelta::FromDays(1)},
+       base::Time::Now() - base::Days(1)},
       {"Fake Phone Long", "Fake Phone", "D0002",
        sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
-       base::Time::Now() - base::TimeDelta::FromDays(7)},
+       base::Time::Now() - base::Days(7)},
   };
 }
 

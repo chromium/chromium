@@ -216,7 +216,7 @@ void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
   result = list->GetBoolean(1, &sts_include_subdomains);
   DCHECK(result);
 
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddHSTS(domain, expiry, sts_include_subdomains,
                                base::DoNothing());
 }
@@ -260,7 +260,7 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
 
   url::Origin origin = url::Origin::Create(GURL("https://" + domain));
 
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddExpectCT(
       domain, expiry, enforce, GURL(report_uri_str),
       net::NetworkIsolationKey(origin /* top_frame_site */,

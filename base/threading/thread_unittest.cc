@@ -59,7 +59,7 @@ class SleepInsideInitThread : public Thread {
   ~SleepInsideInitThread() override { Stop(); }
 
   void Init() override {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(500));
+    base::PlatformThread::Sleep(base::Milliseconds(500));
     init_called_ = true;
   }
   bool InitCalled() { return init_called_; }
@@ -211,7 +211,7 @@ TEST_F(ThreadTest, StartWithOptions_NonJoinable) {
 
   // Unblock the task and give a bit of extra time to unwind QuitWhenIdle().
   block_event.Signal();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(20));
+  base::PlatformThread::Sleep(base::Milliseconds(20));
 
   // The thread should now have stopped on its own.
   EXPECT_FALSE(a->IsRunning());
@@ -231,7 +231,7 @@ TEST_F(ThreadTest, TwoTasksOnJoinableThread) {
     a.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(static_cast<void (*)(base::TimeDelta)>(
                                       &base::PlatformThread::Sleep),
-                                  base::TimeDelta::FromMilliseconds(20)));
+                                  base::Milliseconds(20)));
     a.task_runner()->PostTask(FROM_HERE,
                               base::BindOnce(&ToggleValue, &was_invoked));
   }
@@ -257,7 +257,7 @@ TEST_F(ThreadTest, DISABLED_DestroyWhileRunningNonJoinableIsSafe) {
 
   // Attempt to catch use-after-frees from the non-joinable thread in the
   // scope of this test if any.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(20));
+  base::PlatformThread::Sleep(base::Milliseconds(20));
 }
 
 TEST_F(ThreadTest, StopSoon) {
@@ -385,7 +385,7 @@ TEST_F(ThreadTest, StartTwiceNonJoinableNotAllowed) {
   a->StopSoon();
   base::PlatformThread::YieldCurrentThread();
   last_task_event.Wait();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(20));
+  base::PlatformThread::Sleep(base::Milliseconds(20));
 
   // This test assumes that the above was sufficient to let the thread fully
   // stop.
@@ -511,8 +511,7 @@ TEST_F(ThreadTest, FlushForTesting) {
   // Flushing a thread with no tasks shouldn't block.
   a.FlushForTesting();
 
-  constexpr base::TimeDelta kSleepPerTestTask =
-      base::TimeDelta::FromMilliseconds(50);
+  constexpr base::TimeDelta kSleepPerTestTask = base::Milliseconds(50);
   constexpr size_t kNumSleepTasks = 5;
 
   const base::TimeTicks ticks_before_post = base::TimeTicks::Now();

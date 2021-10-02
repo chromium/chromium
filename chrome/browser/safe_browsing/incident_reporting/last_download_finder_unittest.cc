@@ -249,8 +249,8 @@ class LastDownloadFinderTest : public testing::Test {
     row.tab_referrer_url = GURL("http://tab-referrer.example.com/");
     row.mime_type = "application/octet-stream";
     row.original_mime_type = "application/octet-stream";
-    row.start_time = now - base::TimeDelta::FromMinutes(10);
-    row.end_time = now - base::TimeDelta::FromMinutes(9);
+    row.start_time = now - base::Minutes(10);
+    row.end_time = now - base::Minutes(9);
     row.received_bytes = 47;
     row.total_bytes = 47;
     row.state = history::DownloadState::COMPLETE;
@@ -260,7 +260,7 @@ class LastDownloadFinderTest : public testing::Test {
     row.id = download_id_++;
     row.guid = base::GenerateGUID();
     row.opened = false;
-    row.last_access_time = now - base::TimeDelta::FromMinutes(5);
+    row.last_access_time = now - base::Minutes(5);
     row.transient = false;
 
     return row;

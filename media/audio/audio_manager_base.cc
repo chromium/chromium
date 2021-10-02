@@ -428,8 +428,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   if (it != output_dispatchers_.end())
     return (*it)->dispatcher->CreateStreamProxy();
 
-  const base::TimeDelta kCloseDelay =
-      base::TimeDelta::FromSeconds(kStreamCloseDelaySeconds);
+  const base::TimeDelta kCloseDelay = base::Seconds(kStreamCloseDelaySeconds);
   std::unique_ptr<AudioOutputDispatcher> dispatcher;
   if (output_params.format() != AudioParameters::AUDIO_FAKE &&
       !output_params.IsBitstreamFormat()) {

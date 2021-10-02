@@ -107,9 +107,8 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
 
   // If we have a non-fresh, but not expired result, we SHOULD NOT try to
   // execute the model.
-  base::Time not_expired_timestamp = clock_.Now() -
-                                     base::TimeDelta::FromDays(1) +
-                                     base::TimeDelta::FromHours(1);
+  base::Time not_expired_timestamp =
+      clock_.Now() - base::Days(1) + base::Hours(1);
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
       not_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -119,9 +118,8 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   model_execution_scheduler_->OnNewModelInfoReady(*segment_info);
 
   // If we have an expired result, we SHOULD try to execute the model.
-  base::Time just_expired_timestamp = clock_.Now() -
-                                      base::TimeDelta::FromDays(1) -
-                                      base::TimeDelta::FromHours(1);
+  base::Time just_expired_timestamp =
+      clock_.Now() - base::Days(1) - base::Hours(1);
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
       just_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());

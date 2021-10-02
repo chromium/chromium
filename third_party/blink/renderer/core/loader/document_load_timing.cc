@@ -73,8 +73,7 @@ void DocumentLoadTiming::NotifyDocumentTimingChanged() {
 
 void DocumentLoadTiming::EnsureReferenceTimesSet() {
   if (reference_wall_time_.is_zero()) {
-    reference_wall_time_ =
-        base::TimeDelta::FromSecondsD(clock_->Now().ToDoubleT());
+    reference_wall_time_ = base::Seconds(clock_->Now().ToDoubleT());
   }
   if (reference_monotonic_time_.is_null())
     reference_monotonic_time_ = tick_clock_->NowTicks();
@@ -92,8 +91,7 @@ int64_t DocumentLoadTiming::ZeroBasedDocumentTimeToMonotonicTime(
   if (reference_monotonic_time_.is_null())
     return 0;
   base::TimeTicks monotonic_time =
-      reference_monotonic_time_ +
-      base::TimeDelta::FromMillisecondsD(dom_event_time);
+      reference_monotonic_time_ + base::Milliseconds(dom_event_time);
   return monotonic_time.since_origin().InMilliseconds();
 }
 

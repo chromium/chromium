@@ -137,7 +137,7 @@ TEST_F(ChildProcessTaskTest, TestAll) {
 
   const int64_t bytes_read = 1024;
   task->OnNetworkBytesRead(bytes_read);
-  task->Refresh(base::TimeDelta::FromSeconds(1), REFRESH_TYPE_NETWORK_USAGE);
+  task->Refresh(base::Seconds(1), REFRESH_TYPE_NETWORK_USAGE);
 
   EXPECT_EQ(bytes_read, task->GetNetworkUsageRate());
 

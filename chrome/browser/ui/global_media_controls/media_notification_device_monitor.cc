@@ -95,7 +95,7 @@ void PollingDeviceMonitorImpl::StartMonitoring() {
         FROM_HERE,
         base::BindOnce(&PollingDeviceMonitorImpl::PollDeviceProvider,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(kPollingIntervalSeconds));
+        base::Seconds(kPollingIntervalSeconds));
   }
 }
 
@@ -142,7 +142,7 @@ void PollingDeviceMonitorImpl::OnDeviceDescriptionsRecieved(
       FROM_HERE,
       base::BindOnce(&PollingDeviceMonitorImpl::PollDeviceProvider,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kPollingIntervalSeconds));
+      base::Seconds(kPollingIntervalSeconds));
 }
 
 void PollingDeviceMonitorImpl::NotifyObservers() {

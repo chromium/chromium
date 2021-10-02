@@ -465,7 +465,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
                                         device_closed->Signal();
                                       },
                                       base::Unretained(&device_closed))));
-    base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
+    base::TimeDelta kWaitTimeoutSecs = base::Seconds(3);
     EXPECT_TRUE(device_closed.TimedWait(kWaitTimeoutSecs));
     EXPECT_EQ(CameraDeviceContext::State::kStopped, GetState());
   }
@@ -616,7 +616,7 @@ TEST_F(CameraDeviceDelegateTest, StopBeforeOpened) {
                      base::BindOnce(&base::WaitableEvent::Signal,
                                     base::Unretained(&device_closed))));
   stop_posted.Signal();
-  EXPECT_TRUE(device_closed.TimedWait(base::TimeDelta::FromSeconds(3)));
+  EXPECT_TRUE(device_closed.TimedWait(base::Seconds(3)));
   EXPECT_EQ(CameraDeviceContext::State::kStopped, GetState());
 
   ResetDevice();

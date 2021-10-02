@@ -308,9 +308,8 @@ void FakePacketSocketFactory::ReceivePacket(
   ++total_packets_received_;
 
   if (latency_average_ > base::TimeDelta()) {
-    delay += base::TimeDelta::FromMillisecondsD(
-        GetNormalRandom(latency_average_.InMillisecondsF(),
-                        latency_stddev_.InMillisecondsF()));
+    delay += base::Milliseconds(GetNormalRandom(
+        latency_average_.InMillisecondsF(), latency_stddev_.InMillisecondsF()));
   }
   if (delay < base::TimeDelta())
     delay = base::TimeDelta();

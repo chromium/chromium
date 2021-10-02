@@ -274,7 +274,7 @@ constexpr char kShakaPackagerUMA[] = "Media.MSE.DetectedShakaPackagerInMp4";
 TEST_F(MP4StreamParserTest, DidNotUseShakaPackager) {
   // Encrypted files have non-zero duration and are treated as recorded streams.
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(2736066);
+  params.duration = base::Microseconds(2736066);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -288,7 +288,7 @@ TEST_F(MP4StreamParserTest, DidNotUseShakaPackager) {
 
 TEST_F(MP4StreamParserTest, UsedShakaPackager) {
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(2736000);
+  params.duration = base::Microseconds(2736000);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -462,7 +462,7 @@ TEST_F(MP4StreamParserTest, MissingSampleEncryptionInfo) {
   // Encrypted test mp4 files have non-zero duration and are treated as
   // recorded streams.
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(23219);
+  params.duration = base::Microseconds(23219);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_video_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -490,7 +490,7 @@ TEST_F(MP4StreamParserTest, HEVC_in_MP4_container) {
   EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type hev1"));
 #endif
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(1002000);
+  params.duration = base::Microseconds(1002000);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -569,7 +569,7 @@ TEST_F(MP4StreamParserTest, CencWithEncryptionInfoStoredAsAuxDataInMdat) {
   // Encrypted test mp4 files have non-zero duration and are treated as
   // recorded streams.
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(2736066);
+  params.duration = base::Microseconds(2736066);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -583,7 +583,7 @@ TEST_F(MP4StreamParserTest, CencWithSampleEncryptionBox) {
   // Encrypted test mp4 files have non-zero duration and are treated as
   // recorded streams.
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(2736066);
+  params.duration = base::Microseconds(2736066);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -595,7 +595,7 @@ TEST_F(MP4StreamParserTest, CencWithSampleEncryptionBox) {
 
 TEST_F(MP4StreamParserTest, NaturalSizeWithoutPASP) {
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(1000966);
+  params.duration = base::Microseconds(1000966);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -609,7 +609,7 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithoutPASP) {
 
 TEST_F(MP4StreamParserTest, NaturalSizeWithPASP) {
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(1000966);
+  params.duration = base::Microseconds(1000966);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -634,7 +634,7 @@ TEST_F(MP4StreamParserTest, DemuxingAC3) {
 #endif
 
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(1045000);
+  params.duration = base::Microseconds(1045000);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_video_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -658,7 +658,7 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
 #endif
 
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMicroseconds(1045000);
+  params.duration = base::Microseconds(1045000);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_video_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -787,7 +787,7 @@ TEST_F(MP4StreamParserTest, TextTrackDetection) {
 
 TEST_F(MP4StreamParserTest, MultiTrackFile) {
   auto params = GetDefaultInitParametersExpectations();
-  params.duration = base::TimeDelta::FromMilliseconds(4248);
+  params.duration = base::Milliseconds(4248);
   params.liveness = DemuxerStream::LIVENESS_RECORDED;
   params.detected_audio_track_count = 2;
   params.detected_video_track_count = 2;

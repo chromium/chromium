@@ -109,13 +109,11 @@
 namespace {
 // The maximum amount of time to wait for Chrome's AppShimListener to be
 // ready.
-constexpr base::TimeDelta kPollTimeoutSeconds =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kPollTimeoutSeconds = base::Seconds(60);
 
 // The period in between attempts to check of Chrome's AppShimListener is
 // ready.
-constexpr base::TimeDelta kPollPeriodMsec =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kPollPeriodMsec = base::Milliseconds(100);
 
 }  // namespace
 

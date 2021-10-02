@@ -212,8 +212,8 @@ bool NotificationPromo::ExceedsMaxSeconds() const {
   if (max_seconds_ == 0 || first_view_time_ == 0)
     return false;
 
-  const base::Time last_view_time = base::Time::FromDoubleT(first_view_time_) +
-                                    base::TimeDelta::FromSeconds(max_seconds_);
+  const base::Time last_view_time =
+      base::Time::FromDoubleT(first_view_time_) + base::Seconds(max_seconds_);
   return last_view_time < base::Time::Now();
 }
 

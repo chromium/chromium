@@ -49,7 +49,7 @@
 namespace feed {
 namespace {
 constexpr char kApplicationXProtobuf[] = "application/x-protobuf";
-constexpr base::TimeDelta kNetworkTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kNetworkTimeout = base::Seconds(30);
 constexpr char kDiscoverHost[] = "https://discover-pa.googleapis.com/";
 
 signin::ScopeSet GetAuthScopes() {

@@ -605,12 +605,12 @@ void LogSigninAccountReconciliationDuration(base::TimeDelta duration,
                                             bool successful) {
   if (successful) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Signin.Reconciler.Duration.UpTo3mins.Success",
-                               duration, base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(3), 100);
+                               duration, base::Milliseconds(1),
+                               base::Minutes(3), 100);
   } else {
     UMA_HISTOGRAM_CUSTOM_TIMES("Signin.Reconciler.Duration.UpTo3mins.Failure",
-                               duration, base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(3), 100);
+                               duration, base::Milliseconds(1),
+                               base::Minutes(3), 100);
   }
 }
 
@@ -665,8 +665,7 @@ void LogCookieJarStableAge(const base::TimeDelta stable_age,
   INVESTIGATOR_HISTOGRAM_CUSTOM_COUNTS(
       "Signin.CookieJar.StableAge", type,
       base::saturated_cast<int>(stable_age.InSeconds()), 1,
-      base::saturated_cast<int>(base::TimeDelta::FromDays(365).InSeconds()),
-      100);
+      base::saturated_cast<int>(base::Days(365).InSeconds()), 100);
 }
 
 void LogCookieJarCounts(const int signed_in,

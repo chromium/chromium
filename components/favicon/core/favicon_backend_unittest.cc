@@ -930,8 +930,7 @@ TEST_F(FaviconBackendTest, MergeIdenticalFaviconDoesNotChangeLastUpdatedTime) {
                                                 &favicon_bitmaps));
 
   // Change the last updated time of the just added favicon bitmap.
-  const base::Time kLastUpdateTime =
-      base::Time::Now() - base::TimeDelta::FromDays(314);
+  const base::Time kLastUpdateTime = base::Time::Now() - base::Days(314);
   backend_->db()->SetFaviconBitmapLastUpdateTime(favicon_bitmaps[0].bitmap_id,
                                                  kLastUpdateTime);
 

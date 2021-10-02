@@ -21,15 +21,11 @@ const void* const kSessionMetricsHelperDataKey = &kSessionMetricsHelperDataKey;
 
 // minimum duration: 7 seconds for video, no minimum for headset/vr modes
 // maximum gap: 7 seconds between videos.  no gap for headset/vr-modes
-constexpr base::TimeDelta kMinimumVideoSessionDuration(
-    base::TimeDelta::FromSecondsD(7));
-constexpr base::TimeDelta kMaximumVideoSessionGap(
-    base::TimeDelta::FromSecondsD(7));
+constexpr base::TimeDelta kMinimumVideoSessionDuration(base::Seconds(7));
+constexpr base::TimeDelta kMaximumVideoSessionGap(base::Seconds(7));
 
-constexpr base::TimeDelta kMinimumHeadsetSessionDuration(
-    base::TimeDelta::FromSecondsD(0));
-constexpr base::TimeDelta kMaximumHeadsetSessionGap(
-    base::TimeDelta::FromSecondsD(0));
+constexpr base::TimeDelta kMinimumHeadsetSessionDuration(base::Seconds(0));
+constexpr base::TimeDelta kMaximumHeadsetSessionGap(base::Seconds(0));
 
 // Handles the lifetime of the helper which is attached to a WebContents.
 class SessionMetricsHelperData : public base::SupportsUserData::Data {

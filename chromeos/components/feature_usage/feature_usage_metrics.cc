@@ -33,11 +33,11 @@ std::string FeatureToHistogram(const std::string& feature_name) {
 
 // First time periodic metrics are reported after 'kInitialInterval` time.
 constexpr base::TimeDelta FeatureUsageMetrics::kInitialInterval =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 // Consecutive reports run every `kRepeatedInterval`
 constexpr base::TimeDelta FeatureUsageMetrics::kRepeatedInterval =
-    base::TimeDelta::FromMinutes(30);
+    base::Minutes(30);
 
 FeatureUsageMetrics::FeatureUsageMetrics(const std::string& feature_name,
                                          Delegate* const delegate)

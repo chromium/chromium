@@ -28,8 +28,8 @@
 //   (IO) thread has become sufficiently unresponsive, while other threads are
 //   sufficiently responsive.
 //
-//   base::TimeDelta sleep_time = base::TimeDelta::FromSeconds(5);
-//   base::TimeDelta unresponsive_time = base::TimeDelta::FromSeconds(10);
+//   base::TimeDelta sleep_time = base::Seconds(5);
+//   base::TimeDelta unresponsive_time = base::Seconds(10);
 //   uint32_t unresponsive_threshold = ThreadWatcherList::kUnresponsiveCount;
 //   bool crash_on_hang = false;
 //   ThreadWatcher::StartWatching(

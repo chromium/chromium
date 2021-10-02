@@ -23,11 +23,9 @@
 
 namespace {
 
-constexpr base::TimeDelta kIdentityAnimationDuration =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
 
-constexpr base::TimeDelta kAvatarHighlightAnimationDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAvatarHighlightAnimationDuration = base::Seconds(2);
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();

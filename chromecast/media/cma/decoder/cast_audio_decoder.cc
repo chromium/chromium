@@ -49,7 +49,7 @@ class DecoderBuffer : public ::media::DecoderBuffer {
             std::unique_ptr<uint8_t[]>(const_cast<uint8_t*>(buffer->data())),
             buffer->data_size()),
         buffer_(std::move(buffer)) {
-    set_timestamp(::base::TimeDelta::FromMicroseconds(buffer_->timestamp()));
+    set_timestamp(::base::Microseconds(buffer_->timestamp()));
   }
 
  private:
@@ -144,8 +144,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     }
 
     // FFmpegAudioDecoder requires a timestamp to be set.
-    base::TimeDelta timestamp =
-        base::TimeDelta::FromMicroseconds(data->timestamp());
+    base::TimeDelta timestamp = base::Microseconds(data->timestamp());
     if (timestamp == ::media::kNoTimestamp)
       data->set_timestamp(base::TimeDelta());
 
@@ -280,9 +279,9 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       NOTREACHED();
     }
 
-    result->set_duration(base::TimeDelta::FromMicroseconds(
-        num_frames * base::Time::kMicrosecondsPerSecond /
-        output_config_.samples_per_second));
+    result->set_duration(
+        base::Microseconds(num_frames * base::Time::kMicrosecondsPerSecond /
+                           output_config_.samples_per_second));
     return base::MakeRefCounted<media::DecoderBufferAdapter>(output_config_.id,
                                                              result);
   }

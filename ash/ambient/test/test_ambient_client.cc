@@ -18,8 +18,7 @@ namespace {
 
 const char* kTestGaiaId = "0123456789";
 
-constexpr base::TimeDelta kDefaultTokenExpirationDelay =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kDefaultTokenExpirationDelay = base::Seconds(60);
 
 // A simple SharedURLLoaderFactory implementation for tests.
 class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {

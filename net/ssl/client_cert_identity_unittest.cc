@@ -36,8 +36,7 @@ TEST(ClientCertIdentitySorter, SortClientCertificates) {
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=not yet valid", 2,
-      now + base::TimeDelta::FromDays(10), now + base::TimeDelta::FromDays(15),
-      {}, &der_cert));
+      now + base::Days(10), now + base::Days(15), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(
       base::as_bytes(base::make_span(der_cert)));
   ASSERT_TRUE(cert);
@@ -45,8 +44,7 @@ TEST(ClientCertIdentitySorter, SortClientCertificates) {
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=older cert", 3,
-      now - base::TimeDelta::FromDays(5), now + base::TimeDelta::FromDays(5),
-      {}, &der_cert));
+      now - base::Days(5), now + base::Days(5), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(
       base::as_bytes(base::make_span(der_cert)));
   ASSERT_TRUE(cert);
@@ -54,8 +52,7 @@ TEST(ClientCertIdentitySorter, SortClientCertificates) {
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=newer cert", 2,
-      now - base::TimeDelta::FromDays(3), now + base::TimeDelta::FromDays(5),
-      {}, &der_cert));
+      now - base::Days(3), now + base::Days(5), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(
       base::as_bytes(base::make_span(der_cert)));
   ASSERT_TRUE(cert);

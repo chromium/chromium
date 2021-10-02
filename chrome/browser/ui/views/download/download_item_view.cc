@@ -291,7 +291,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       mode_(download::DownloadItemMode::kNormal),
       indeterminate_progress_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(30),
+          base::Milliseconds(30),
           base::BindRepeating(
               [](DownloadItemView* view) {
                 if (view->model_->PercentComplete() < 0)
@@ -301,7 +301,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       accessible_alert_(accessible_alert),
       accessible_alert_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMinutes(3),
+          base::Minutes(3),
           base::BindRepeating(&DownloadItemView::AnnounceAccessibleAlert,
                               base::Unretained(this))),
       current_scale_(/*AddedToWidget() set the right DPI*/ 1.0f) {
@@ -361,10 +361,10 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
 
   dropdown_button_ = AddChildView(std::make_unique<ContextMenuButton>(this));
 
-  complete_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(2500));
+  complete_animation_.SetSlideDuration(base::Milliseconds(2500));
   complete_animation_.SetTweenType(gfx::Tween::LINEAR);
 
-  scanning_animation_.SetThrobDuration(base::TimeDelta::FromMilliseconds(2500));
+  scanning_animation_.SetThrobDuration(base::Milliseconds(2500));
   scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
 
   // Further configure default state, e.g. child visibility.
@@ -529,7 +529,7 @@ void DownloadItemView::OnDownloadOpened() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(reenable), weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(3));
+      base::Seconds(3));
 
   shelf_->AutoClose();
 }

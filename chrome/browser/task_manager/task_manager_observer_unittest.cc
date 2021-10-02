@@ -47,8 +47,8 @@ class TaskManagerObserverTest : public testing::Test {
 // Validates that the minimum refresh time to be requested is one second. Also
 // validates the desired resource flags.
 TEST_F(TaskManagerObserverTest, Basic) {
-  base::TimeDelta refresh_time1 = base::TimeDelta::FromSeconds(2);
-  base::TimeDelta refresh_time2 = base::TimeDelta::FromMilliseconds(999);
+  base::TimeDelta refresh_time1 = base::Seconds(2);
+  base::TimeDelta refresh_time2 = base::Milliseconds(999);
   int64_t flags1 = RefreshType::REFRESH_TYPE_CPU |
                    RefreshType::REFRESH_TYPE_WEBCACHE_STATS |
                    RefreshType::REFRESH_TYPE_HANDLES;
@@ -59,7 +59,7 @@ TEST_F(TaskManagerObserverTest, Basic) {
   TestObserver observer2(refresh_time2, flags2);
 
   EXPECT_EQ(refresh_time1, observer1.desired_refresh_time());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), observer2.desired_refresh_time());
+  EXPECT_EQ(base::Seconds(1), observer2.desired_refresh_time());
   EXPECT_EQ(flags1, observer1.desired_resources_flags());
   EXPECT_EQ(flags2, observer2.desired_resources_flags());
 }
@@ -71,10 +71,10 @@ TEST_F(TaskManagerObserverTest, TaskManagerResponseToObservers) {
   EXPECT_EQ(0, task_manager().GetEnabledFlags());
 
   // Add a bunch of observers and make sure the task manager responds correctly.
-  base::TimeDelta refresh_time1 = base::TimeDelta::FromSeconds(3);
-  base::TimeDelta refresh_time2 = base::TimeDelta::FromSeconds(10);
-  base::TimeDelta refresh_time3 = base::TimeDelta::FromSeconds(3);
-  base::TimeDelta refresh_time4 = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta refresh_time1 = base::Seconds(3);
+  base::TimeDelta refresh_time2 = base::Seconds(10);
+  base::TimeDelta refresh_time3 = base::Seconds(3);
+  base::TimeDelta refresh_time4 = base::Seconds(2);
   int64_t flags1 = RefreshType::REFRESH_TYPE_CPU |
                    RefreshType::REFRESH_TYPE_WEBCACHE_STATS |
                    RefreshType::REFRESH_TYPE_HANDLES;

@@ -84,7 +84,7 @@ class PermissionActionHistoryTest : public testing::Test {
       GetPermissionActionsHistory()->RecordAction(entry.action,
                                                        entry.type);
       if (entry.advance_clock)
-        task_environment_.AdvanceClock(base::TimeDelta::FromDays(1));
+        task_environment_.AdvanceClock(base::Days(1));
     }
   }
 
@@ -122,7 +122,7 @@ TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
   }
 
   auto entries_1_day = GetPermissionActionsHistory()->GetHistory(
-      base::Time::Now() - base::TimeDelta::FromDays(1));
+      base::Time::Now() - base::Days(1));
 
   EXPECT_TRUE(std::equal(entries_1_day.begin(), entries_1_day.end(),
                          std::vector<PermissionActionsHistory::Entry>(
@@ -162,53 +162,45 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
       // Misc and baseline tests cases.
       {base::Time(), base::Time::Max(), 0, 0},
       {base::Time(), base::Time::Now(), 1, 1},
-      {base::Time(), base::Time::Now() + base::TimeDelta::FromMicroseconds(1),
-       0, 0},
+      {base::Time(), base::Time::Now() + base::Microseconds(1), 0, 0},
 
       // Test cases specifying only the upper bound.
-      {base::Time(), base::Time::Now() - base::TimeDelta::FromDays(1), 4, 2},
-      {base::Time(), base::Time::Now() - base::TimeDelta::FromDays(2), 6, 3},
-      {base::Time(), base::Time::Now() - base::TimeDelta::FromDays(3), 7, 4},
+      {base::Time(), base::Time::Now() - base::Days(1), 4, 2},
+      {base::Time(), base::Time::Now() - base::Days(2), 6, 3},
+      {base::Time(), base::Time::Now() - base::Days(3), 7, 4},
 
       // Test cases specifying only the lower bound.
-      {base::Time::Now() - base::TimeDelta::FromDays(3), base::Time::Max(), 0,
-       0},
-      {base::Time::Now() - base::TimeDelta::FromDays(2), base::Time::Max(), 1,
-       1},
-      {base::Time::Now() - base::TimeDelta::FromDays(1), base::Time::Max(), 3,
-       2},
+      {base::Time::Now() - base::Days(3), base::Time::Max(), 0, 0},
+      {base::Time::Now() - base::Days(2), base::Time::Max(), 1, 1},
+      {base::Time::Now() - base::Days(1), base::Time::Max(), 3, 2},
       {base::Time::Now(), base::Time::Max(), 6, 3},
 
       // Test cases with both bounds.
-      {base::Time::Now() - base::TimeDelta::FromDays(3),
-       base::Time::Now() + base::TimeDelta::FromMicroseconds(1), 0, 0},
-      {base::Time::Now() - base::TimeDelta::FromDays(3), base::Time::Now(), 1,
-       1},
-      {base::Time::Now() - base::TimeDelta::FromDays(3),
-       base::Time::Now() - base::TimeDelta::FromDays(1), 4, 2},
-      {base::Time::Now() - base::TimeDelta::FromDays(3),
-       base::Time::Now() - base::TimeDelta::FromDays(2), 6, 3},
-      {base::Time::Now() - base::TimeDelta::FromDays(3),
-       base::Time::Now() - base::TimeDelta::FromDays(3), 7, 4},
-
-      {base::Time::Now() - base::TimeDelta::FromDays(2),
-       base::Time::Now() + base::TimeDelta::FromMicroseconds(1), 1, 1},
-      {base::Time::Now() - base::TimeDelta::FromDays(2), base::Time::Now(), 2,
+      {base::Time::Now() - base::Days(3),
+       base::Time::Now() + base::Microseconds(1), 0, 0},
+      {base::Time::Now() - base::Days(3), base::Time::Now(), 1, 1},
+      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(1), 4,
        2},
-      {base::Time::Now() - base::TimeDelta::FromDays(2),
-       base::Time::Now() - base::TimeDelta::FromDays(1), 5, 3},
-      {base::Time::Now() - base::TimeDelta::FromDays(2),
-       base::Time::Now() - base::TimeDelta::FromDays(2), 7, 4},
-
-      {base::Time::Now() - base::TimeDelta::FromDays(1),
-       base::Time::Now() + base::TimeDelta::FromMicroseconds(1), 3, 2},
-      {base::Time::Now() - base::TimeDelta::FromDays(1), base::Time::Now(), 4,
+      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(2), 6,
        3},
-      {base::Time::Now() - base::TimeDelta::FromDays(1),
-       base::Time::Now() - base::TimeDelta::FromDays(1), 7, 4},
+      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(3), 7,
+       4},
 
-      {base::Time::Now(),
-       base::Time::Now() + base::TimeDelta::FromMicroseconds(1), 6, 3},
+      {base::Time::Now() - base::Days(2),
+       base::Time::Now() + base::Microseconds(1), 1, 1},
+      {base::Time::Now() - base::Days(2), base::Time::Now(), 2, 2},
+      {base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1), 5,
+       3},
+      {base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(2), 7,
+       4},
+
+      {base::Time::Now() - base::Days(1),
+       base::Time::Now() + base::Microseconds(1), 3, 2},
+      {base::Time::Now() - base::Days(1), base::Time::Now(), 4, 3},
+      {base::Time::Now() - base::Days(1), base::Time::Now() - base::Days(1), 7,
+       4},
+
+      {base::Time::Now(), base::Time::Now() + base::Microseconds(1), 6, 3},
       {base::Time::Now(), base::Time::Now(), 7, 4},
   };
 

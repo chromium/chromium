@@ -71,7 +71,7 @@ class ReportingCacheTest : public ReportingTestBase,
     policy.max_report_count = 5;
     policy.max_endpoints_per_origin = 3;
     policy.max_endpoint_count = 5;
-    policy.max_group_staleness = base::TimeDelta::FromDays(3);
+    policy.max_group_staleness = base::Days(3);
     UsePolicy(policy);
 
     if (GetParam())
@@ -199,8 +199,8 @@ class ReportingCacheTest : public ReportingTestBase,
   const std::string kType_ = "default";
   const base::TimeTicks kNowTicks_ = tick_clock()->NowTicks();
   const base::Time kNow_ = clock()->Now();
-  const base::Time kExpires1_ = kNow_ + base::TimeDelta::FromDays(7);
-  const base::Time kExpires2_ = kExpires1_ + base::TimeDelta::FromDays(7);
+  const base::Time kExpires1_ = kNow_ + base::Days(7);
+  const base::Time kExpires2_ = kExpires1_ + base::Days(7);
   // There are 2^3 = 8 of these to test the different combinations of matching
   // vs mismatching NIK, origin, and group.
   const ReportingEndpointGroupKey kGroupKey11_ =
@@ -378,11 +378,11 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   const ReportingReport* report1 =
       AddAndReturnReport(kNik_, kUrl1_, kUserAgent_, kGroup1_, kType_,
                          std::make_unique<base::DictionaryValue>(), 0,
-                         now + base::TimeDelta::FromSeconds(200), 0);
+                         now + base::Seconds(200), 0);
   const ReportingReport* report2 =
       AddAndReturnReport(kOtherNik_, kUrl1_, kUserAgent_, kGroup2_, kType_,
                          std::make_unique<base::DictionaryValue>(), 0,
-                         now + base::TimeDelta::FromSeconds(100), 1);
+                         now + base::Seconds(100), 1);
   // Mark report1 and report2 as pending.
   EXPECT_THAT(cache()->GetReportsToDeliver(),
               ::testing::UnorderedElementsAre(report1, report2));
@@ -424,11 +424,11 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   const ReportingReport* report3 =
       AddAndReturnReport(kNik_, kUrl2_, kUserAgent_, kGroup1_, kType_,
                          std::make_unique<base::DictionaryValue>(), 2,
-                         now + base::TimeDelta::FromSeconds(200), 0);
+                         now + base::Seconds(200), 0);
   const ReportingReport* report4 =
       AddAndReturnReport(kOtherNik_, kUrl1_, kUserAgent_, kGroup1_, kType_,
                          std::make_unique<base::DictionaryValue>(), 0,
-                         now + base::TimeDelta::FromSeconds(300), 0);
+                         now + base::Seconds(300), 0);
   actual = cache()->GetReportsAsValue();
   expected = base::test::ParseJson(base::StringPrintf(
       R"json(
@@ -998,8 +998,7 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
 
   // These times are bogus but we need a reproducible expiry timestamp for this
   // test case.
-  const base::TimeTicks expires_ticks =
-      base::TimeTicks() + base::TimeDelta::FromDays(7);
+  const base::TimeTicks expires_ticks = base::TimeTicks() + base::Days(7);
   const base::Time expires =
       base::Time::UnixEpoch() + (expires_ticks - base::TimeTicks::UnixEpoch());
   ASSERT_TRUE(SetEndpointInCache(kGroupKey11_, kEndpoint1_, expires,
@@ -1211,7 +1210,7 @@ TEST_P(ReportingCacheTest, GetCandidateEndpointsExcludesExpired) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey21_, kEndpoint1_, kExpires1_));
   ASSERT_TRUE(SetEndpointInCache(kGroupKey22_, kEndpoint2_, kExpires2_));
   // Make kExpires1_ expired but not kExpires2_.
-  clock()->Advance(base::TimeDelta::FromDays(8));
+  clock()->Advance(base::Days(8));
   ASSERT_GT(clock()->Now(), kExpires1_);
   ASSERT_LT(clock()->Now(), kExpires2_);
 
@@ -1399,7 +1398,7 @@ TEST_P(ReportingCacheTest, EvictOldestReport) {
     cache()->AddReport(kReportingSource_, kNik_, kUrl1_, kUserAgent_, kGroup1_,
                        kType_, std::make_unique<base::DictionaryValue>(), 0,
                        tick_clock()->NowTicks(), 0);
-    tick_clock()->Advance(base::TimeDelta::FromMinutes(1));
+    tick_clock()->Advance(base::Minutes(1));
   }
   EXPECT_EQ(max_report_count, report_count());
 
@@ -1432,7 +1431,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
         AddAndReturnReport(kNik_, kUrl1_, kUserAgent_, kGroup1_, kType_,
                            std::make_unique<base::DictionaryValue>(), 0,
                            tick_clock()->NowTicks(), 0));
-    tick_clock()->Advance(base::TimeDelta::FromMinutes(1));
+    tick_clock()->Advance(base::Minutes(1));
   }
   EXPECT_EQ(max_report_count, report_count());
 
@@ -1482,9 +1481,9 @@ TEST_P(ReportingCacheTest, EvictExpiredGroups) {
   EXPECT_EQ(policy().max_endpoints_per_origin, cache()->GetEndpointCount());
 
   // Make the group expired (but not stale).
-  clock()->SetNow(kExpires1_ - base::TimeDelta::FromMinutes(1));
+  clock()->SetNow(kExpires1_ - base::Minutes(1));
   cache()->GetCandidateEndpointsForDelivery(kGroupKey11_);
-  clock()->SetNow(kExpires1_ + base::TimeDelta::FromMinutes(1));
+  clock()->SetNow(kExpires1_ + base::Minutes(1));
 
   // Insert one more endpoint in a different group (not expired); eviction
   // should be triggered and the expired group should be deleted.
@@ -1533,7 +1532,7 @@ TEST_P(ReportingCacheTest, EvictFromStalestGroup) {
         EndpointGroupExistsInCache(group_key, OriginSubdomains::DEFAULT));
     // Mark group used.
     cache()->GetCandidateEndpointsForDelivery(group_key);
-    clock()->Advance(base::TimeDelta::FromMinutes(1));
+    clock()->Advance(base::Minutes(1));
   }
   EXPECT_EQ(policy().max_endpoints_per_origin, cache()->GetEndpointCount());
 
@@ -1621,7 +1620,7 @@ TEST_P(ReportingCacheTest, EvictEndpointsOverGlobalLimitFromStalestClient) {
                                         kGroup1_);
     ASSERT_TRUE(SetEndpointInCache(group_key, MakeURL(i), kExpires1_));
     EXPECT_EQ(i + 1, cache()->GetEndpointCount());
-    clock()->Advance(base::TimeDelta::FromMinutes(1));
+    clock()->Advance(base::Minutes(1));
   }
   EXPECT_EQ(policy().max_endpoint_count, cache()->GetEndpointCount());
 
@@ -1654,13 +1653,13 @@ TEST_P(ReportingCacheTest, AddClientsLoadedFromStore) {
                          ReportingEndpoint::EndpointInfo{kEndpoint1_});
   std::vector<CachedReportingEndpointGroup> groups;
   groups.emplace_back(kGroupKey21_, OriginSubdomains::DEFAULT,
-                      now + base::TimeDelta::FromMinutes(2) /* expires */,
+                      now + base::Minutes(2) /* expires */,
                       now /* last_used */);
   groups.emplace_back(kGroupKey11_, OriginSubdomains::DEFAULT,
-                      now + base::TimeDelta::FromMinutes(1) /* expires */,
+                      now + base::Minutes(1) /* expires */,
                       now /* last_used */);
   groups.emplace_back(kGroupKey22_, OriginSubdomains::DEFAULT,
-                      now + base::TimeDelta::FromMinutes(3) /* expires */,
+                      now + base::Minutes(3) /* expires */,
                       now /* last_used */);
   store()->SetPrestoredClients(endpoints, groups);
 
@@ -1672,15 +1671,12 @@ TEST_P(ReportingCacheTest, AddClientsLoadedFromStore) {
   EXPECT_TRUE(EndpointExistsInCache(kGroupKey11_, kEndpoint2_));
   EXPECT_TRUE(EndpointExistsInCache(kGroupKey21_, kEndpoint1_));
   EXPECT_TRUE(EndpointExistsInCache(kGroupKey22_, kEndpoint2_));
-  EXPECT_TRUE(
-      EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT,
-                                 now + base::TimeDelta::FromMinutes(1)));
-  EXPECT_TRUE(
-      EndpointGroupExistsInCache(kGroupKey21_, OriginSubdomains::DEFAULT,
-                                 now + base::TimeDelta::FromMinutes(2)));
-  EXPECT_TRUE(
-      EndpointGroupExistsInCache(kGroupKey22_, OriginSubdomains::DEFAULT,
-                                 now + base::TimeDelta::FromMinutes(3)));
+  EXPECT_TRUE(EndpointGroupExistsInCache(
+      kGroupKey11_, OriginSubdomains::DEFAULT, now + base::Minutes(1)));
+  EXPECT_TRUE(EndpointGroupExistsInCache(
+      kGroupKey21_, OriginSubdomains::DEFAULT, now + base::Minutes(2)));
+  EXPECT_TRUE(EndpointGroupExistsInCache(
+      kGroupKey22_, OriginSubdomains::DEFAULT, now + base::Minutes(3)));
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin2_));
 }

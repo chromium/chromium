@@ -37,7 +37,7 @@ constexpr int kElementSpacing = 16;
 constexpr int kVolumeBarHeight = 16;
 constexpr int kVolumePopupPadding = 16;
 constexpr int kVolumePopupBottomInset = 32;
-constexpr base::TimeDelta kUiHideDelay = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kUiHideDelay = base::Seconds(3);
 
 }  // namespace
 

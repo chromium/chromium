@@ -209,8 +209,7 @@ void CertificateProvisioningUiHandler::OnVisibleStateChanged() {
     update_after_hold_back_ = true;
     return;
   }
-  constexpr base::TimeDelta kTimeToHoldBackUpdates =
-      base::TimeDelta::FromMilliseconds(300);
+  constexpr base::TimeDelta kTimeToHoldBackUpdates = base::Milliseconds(300);
   hold_back_updates_timer_.Start(
       FROM_HERE, kTimeToHoldBackUpdates,
       base::BindOnce(

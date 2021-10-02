@@ -377,24 +377,24 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestShouldShowAnything) {
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
   SetStateTime(profile_.get(), fake_package2,
                app_list::ArcAppReinstallSearchProvider::kInstallTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   // Expect this to now say we shouldn't show, since a package was installed
   // well within an install grace.
   EXPECT_FALSE(app_provider_->ShouldShowAnything());
   SetStateTime(profile_.get(), fake_package2,
                app_list::ArcAppReinstallSearchProvider::kInstallTime,
-               base::Time::Now() - base::TimeDelta::FromDays(30));
+               base::Time::Now() - base::Days(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 
   // Testing for opens: if an a recommendation is opened within the grace
   // period, we won't show anything. That's 72 hours (per configuration here).
   SetStateTime(profile_.get(), fake_package3,
                app_list::ArcAppReinstallSearchProvider::kOpenTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   EXPECT_FALSE(app_provider_->ShouldShowAnything());
   SetStateTime(profile_.get(), fake_package3,
                app_list::ArcAppReinstallSearchProvider::kOpenTime,
-               base::Time::Now() - base::TimeDelta::FromDays(30));
+               base::Time::Now() - base::Days(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 
   // Testing for impression counts: If we've shown a result more than the
@@ -407,12 +407,12 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestShouldShowAnything) {
   // shown recently.
   SetStateTime(profile_.get(), fake_package4,
                app_list::ArcAppReinstallSearchProvider::kImpressionTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   EXPECT_FALSE(app_provider_->ShouldShowAnything());
   // shown long ago.
   SetStateTime(profile_.get(), fake_package4,
                app_list::ArcAppReinstallSearchProvider::kImpressionTime,
-               base::Time::Now() - base::TimeDelta::FromDays(30));
+               base::Time::Now() - base::Days(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 
   // Shown recently, but not frequently.
@@ -420,7 +420,7 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestShouldShowAnything) {
                 app_list::ArcAppReinstallSearchProvider::kImpressionCount, 3);
   SetStateTime(profile_.get(), fake_package4,
                app_list::ArcAppReinstallSearchProvider::kImpressionTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 }
 

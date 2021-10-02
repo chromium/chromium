@@ -267,7 +267,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
             std::move(finish_callback));
         break;
       case ResponseMode::kDispatchAfter1sDelay:
-        task_environment_->AdvanceClock(base::TimeDelta::FromSeconds(1));
+        task_environment_->AdvanceClock(base::Seconds(1));
         FakeServiceWorker::DispatchFetchEventForMainResource(
             std::move(params), response_callback.Unbind(),
             std::move(finish_callback));
@@ -1125,13 +1125,11 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, TimingInfo) {
   auto& info = client_.response_head();
   EXPECT_EQ(200, info->headers->response_code());
   ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            info->load_timing.service_worker_ready_time -
-                info->load_timing.service_worker_start_time);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            info->load_timing.service_worker_fetch_start -
-                info->load_timing.service_worker_start_time);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
+  EXPECT_EQ(base::Seconds(1), info->load_timing.service_worker_ready_time -
+                                  info->load_timing.service_worker_start_time);
+  EXPECT_EQ(base::Seconds(1), info->load_timing.service_worker_fetch_start -
+                                  info->load_timing.service_worker_start_time);
+  EXPECT_EQ(base::Seconds(1),
             info->load_timing.service_worker_respond_with_settled -
                 info->load_timing.service_worker_start_time);
 }

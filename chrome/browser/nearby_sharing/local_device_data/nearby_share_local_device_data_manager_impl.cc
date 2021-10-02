@@ -39,10 +39,8 @@ constexpr std::array<char, 36> kAlphaNumericChars = {
     'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
     'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-constexpr base::TimeDelta kUpdateDeviceDataTimeout =
-    base::TimeDelta::FromSeconds(30);
-constexpr base::TimeDelta kDeviceDataDownloadPeriod =
-    base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta kUpdateDeviceDataTimeout = base::Seconds(30);
+constexpr base::TimeDelta kDeviceDataDownloadPeriod = base::Hours(12);
 
 // Returns a truncated version of |name| that is |overflow_length| characters
 // too long. For example, name="Reallylongname" with overflow_length=5 will

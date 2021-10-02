@@ -48,10 +48,9 @@ namespace {
 using ::ui::mojom::DragOperation;
 
 // The duration of the drag cancel animation in millisecond.
-constexpr base::TimeDelta kCancelAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kCancelAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kTouchCancelAnimationDuration =
-    base::TimeDelta::FromMilliseconds(20);
+    base::Milliseconds(20);
 // The frame rate of the drag cancel animation in hertz.
 const int kCancelAnimationFrameRate = 60;
 

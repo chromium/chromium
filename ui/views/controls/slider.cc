@@ -74,7 +74,7 @@ float GetNearestAllowedValue(const base::flat_set<float>& allowed_values,
 }  // namespace
 
 Slider::Slider(SliderListener* listener) : listener_(listener) {
-  highlight_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
+  highlight_animation_.SetSlideDuration(base::Milliseconds(150));
   SetFlipCanvasOnPaintForRTLUI(true);
 #if defined(OS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -188,7 +188,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
     if (!move_animation_) {
       initial_animating_value_ = old_value;
       move_animation_ = std::make_unique<gfx::SlideAnimation>(this);
-      move_animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
+      move_animation_->SetSlideDuration(base::Milliseconds(150));
       move_animation_->Show();
     }
     OnPropertyChanged(&value_, kPropertyEffectsNone);

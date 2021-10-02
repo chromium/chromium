@@ -99,8 +99,7 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
               compositor_task_runner_.get()),
           viz::BeginFrameSource::kNotRestartableId);
       begin_frame_source_->OnUpdateVSyncParameters(
-          base::TimeTicks::Now(),
-          base::TimeDelta::FromMilliseconds(1000.f / refresh_rate_));
+          base::TimeTicks::Now(), base::Milliseconds(1000.f / refresh_rate_));
       display_begin_frame_source_ = begin_frame_source_.get();
     }
     scheduler = std::make_unique<viz::DisplayScheduler>(

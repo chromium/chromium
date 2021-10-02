@@ -565,8 +565,8 @@ CreditCardFIDOAuthenticator::ParseRequestOptions(
 
   const auto* timeout = request_options.FindKeyOfType(
       "timeout_millis", base::Value::Type::INTEGER);
-  options->timeout = base::TimeDelta::FromMilliseconds(
-      timeout ? timeout->GetInt() : kWebAuthnTimeoutMs);
+  options->timeout =
+      base::Milliseconds(timeout ? timeout->GetInt() : kWebAuthnTimeoutMs);
 
   options->user_verification = UserVerificationRequirement::kRequired;
 
@@ -632,8 +632,8 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
 
   const auto* timeout = creation_options.FindKeyOfType(
       "timeout_millis", base::Value::Type::INTEGER);
-  options->timeout = base::TimeDelta::FromMilliseconds(
-      timeout ? timeout->GetInt() : kWebAuthnTimeoutMs);
+  options->timeout =
+      base::Milliseconds(timeout ? timeout->GetInt() : kWebAuthnTimeoutMs);
 
   const auto* attestation =
       creation_options.FindStringKey("attestation_conveyance_preference");

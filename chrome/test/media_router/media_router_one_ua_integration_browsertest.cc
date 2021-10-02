@@ -57,7 +57,7 @@ class MediaRouterIntegrationOneUABrowserTest
     test_provider_->CaptureOffScreenTab(GetActiveWebContents(), receiver_page,
                                         presentation_id);
     // Wait for offscreen tab to be created and loaded.
-    Wait(base::TimeDelta::FromSeconds(3));
+    Wait(base::Seconds(3));
   }
 };
 

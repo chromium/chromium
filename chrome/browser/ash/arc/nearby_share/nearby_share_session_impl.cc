@@ -49,11 +49,9 @@ namespace {
 // will not be found. To get around this, NearbyShareSessionImpl will wait a
 // little while for the Wayland message to be processed and the window to be
 // initialized.
-constexpr base::TimeDelta kWindowInitializationTimeout =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kWindowInitializationTimeout = base::Seconds(1);
 
-constexpr base::TimeDelta kProgressBarUpdateInterval =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kProgressBarUpdateInterval = base::Milliseconds(1500);
 
 constexpr uint64_t kShowProgressBarMinSizeInBytes = 12000000;  // 12MB.
 

@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
   // Time after a dark resume when wake lock count is checked and a decision is
   // made to re-suspend or wait for wake lock release.
   static constexpr base::TimeDelta kDarkResumeWakeLockCheckTimeout =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   // chromeos::PowerManagerClient::Observer overrides.
   void PowerManagerInitialized() override;

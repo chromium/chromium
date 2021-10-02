@@ -18,16 +18,14 @@ namespace syncer {
 namespace {
 
 // Possible nudge delays for local changes.
-constexpr base::TimeDelta kMinLocalChangeNudgeDelay =
-    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kMinLocalChangeNudgeDelay = base::Milliseconds(50);
 constexpr base::TimeDelta kMediumLocalChangeNudgeDelay =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kBigLocalChangeNudgeDelay =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(200);
+constexpr base::TimeDelta kBigLocalChangeNudgeDelay = base::Milliseconds(2000);
 constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
-    base::TimeDelta::FromSeconds(11);
+    base::Seconds(11);
 
 const size_t kDefaultMaxPayloadsPerType = 10;
 
@@ -322,15 +320,14 @@ bool DataTypeTracker::IsBlocked() const {
 
 base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
   DCHECK(IsBlocked());
-  return std::max(base::TimeDelta::FromSeconds(0),
-                  unblock_time_ - base::TimeTicks::Now());
+  return std::max(base::Seconds(0), unblock_time_ - base::TimeTicks::Now());
 }
 
 base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
   if (GetBlockingMode() !=
       WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
     NOTREACHED();
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   }
   return wait_interval_->length;
 }

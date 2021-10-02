@@ -468,17 +468,15 @@ void OmahaService::StartInternal() {
   // If the |next_tries_time_| is more than kHoursBetweenRequests hours away,
   // there is a possibility that the clock has been tampered with. Reschedule
   // the ping to be the usual interval after the last successful one.
-  if (next_tries_time_ - now >
-      base::TimeDelta::FromHours(kHoursBetweenRequests)) {
-    next_tries_time_ =
-        last_sent_time_ + base::TimeDelta::FromHours(kHoursBetweenRequests);
+  if (next_tries_time_ - now > base::Hours(kHoursBetweenRequests)) {
+    next_tries_time_ = last_sent_time_ + base::Hours(kHoursBetweenRequests);
     persist_again = true;
   }
 
   // Fire a ping as early as possible if the version changed.
   const base::Version& current_version = version_info::GetVersion();
   if (last_sent_version_ < current_version) {
-    next_tries_time_ = base::Time::Now() - base::TimeDelta::FromSeconds(1);
+    next_tries_time_ = base::Time::Now() - base::Seconds(1);
     number_of_tries_ = 0;
     persist_again = true;
   }
@@ -756,10 +754,10 @@ void OmahaService::OnURLLoadComplete(
   number_of_tries_ = 0;
   // Schedule the next request. If requset that just finished was an install
   // notification, send an active ping immediately.
-  next_tries_time_ = sending_install_event_
-                         ? base::Time::Now()
-                         : base::Time::Now() + base::TimeDelta::FromHours(
-                                                   kHoursBetweenRequests);
+  next_tries_time_ =
+      sending_install_event_
+          ? base::Time::Now()
+          : base::Time::Now() + base::Hours(kHoursBetweenRequests);
   current_ping_time_ = next_tries_time_;
   last_sent_time_ = base::Time::Now();
   last_sent_version_ = version_info::GetVersion();

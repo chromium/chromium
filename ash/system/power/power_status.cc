@@ -35,21 +35,19 @@ std::u16string GetBatteryTimeAccessibilityString(int hour, int min) {
   if (hour && !min) {
     return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                   ui::TimeFormat::LENGTH_LONG,
-                                  base::TimeDelta::FromHours(hour));
+                                  base::Hours(hour));
   }
   if (min && !hour) {
     return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                   ui::TimeFormat::LENGTH_LONG,
-                                  base::TimeDelta::FromMinutes(min));
+                                  base::Minutes(min));
   }
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_BATTERY_TIME_ACCESSIBLE,
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_LONG,
-                             base::TimeDelta::FromHours(hour)),
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(hour)),
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_LONG,
-                             base::TimeDelta::FromMinutes(min)));
+                             ui::TimeFormat::LENGTH_LONG, base::Minutes(min)));
 }
 
 int PowerSourceToMessageID(
@@ -179,7 +177,7 @@ absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToEmpty() const {
       proto_.battery_time_to_empty_sec() < 0) {
     return absl::nullopt;
   }
-  return base::TimeDelta::FromSeconds(proto_.battery_time_to_empty_sec());
+  return base::Seconds(proto_.battery_time_to_empty_sec());
 }
 
 absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
@@ -189,7 +187,7 @@ absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
       proto_.battery_time_to_full_sec() < 0) {
     return absl::nullopt;
   }
-  return base::TimeDelta::FromSeconds(proto_.battery_time_to_full_sec());
+  return base::Seconds(proto_.battery_time_to_full_sec());
 }
 
 bool PowerStatus::IsLinePowerConnected() const {

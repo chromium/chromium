@@ -1334,8 +1334,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::MailboxHoldersReleased(
   while (it != resources_pool_.end()) {
     FrameResources* resources = *it;
 
-    constexpr base::TimeDelta kStaleFrameLimit =
-        base::TimeDelta::FromSeconds(10);
+    constexpr base::TimeDelta kStaleFrameLimit = base::Seconds(10);
     if (!resources->is_used() &&
         now - resources->last_use_time() > kStaleFrameLimit) {
       resources_pool_.erase(it++);

@@ -133,8 +133,7 @@ void XServerClipboard::OnSetSelectionOwnerNotify(x11::Atom selection,
   // A reasonable timeout allows for misbehaving apps that don't respond
   // quickly to our requests.
   if (!get_selections_time_.is_null() &&
-      (base::TimeTicks::Now() - get_selections_time_) <
-          base::TimeDelta::FromSeconds(5)) {
+      (base::TimeTicks::Now() - get_selections_time_) < base::Seconds(5)) {
     // TODO(lambroslambrou): Instead of ignoring this notification, cancel any
     // pending request operations and ignore the resulting events, before
     // dispatching new requests here.

@@ -67,9 +67,9 @@ void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
   base::UmaHistogramTimes("Quota.TimeSpentToAEvictionRound",
                           now - round_statistics_.start_time);
   if (!time_of_end_of_last_round_.is_null()) {
-    base::UmaHistogramCustomTimes(
-        "Quota.TimeDeltaOfEvictionRounds", now - time_of_end_of_last_round_,
-        base::TimeDelta::FromMinutes(1), base::TimeDelta::FromDays(1), 50);
+    base::UmaHistogramCustomTimes("Quota.TimeDeltaOfEvictionRounds",
+                                  now - time_of_end_of_last_round_,
+                                  base::Minutes(1), base::Days(1), 50);
   }
   time_of_end_of_last_round_ = now;
 
@@ -128,9 +128,9 @@ void QuotaTemporaryStorageEvictor::Start() {
   if (histogram_timer_.IsRunning())
     return;
 
-  histogram_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(kHistogramReportIntervalMinutes),
-      this, &QuotaTemporaryStorageEvictor::ReportPerHourHistogram);
+  histogram_timer_.Start(FROM_HERE,
+                         base::Minutes(kHistogramReportIntervalMinutes), this,
+                         &QuotaTemporaryStorageEvictor::ReportPerHourHistogram);
 }
 
 void QuotaTemporaryStorageEvictor::StartEvictionTimerWithDelay(
@@ -138,8 +138,8 @@ void QuotaTemporaryStorageEvictor::StartEvictionTimerWithDelay(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (eviction_timer_.IsRunning() || timer_disabled_for_testing_)
     return;
-  eviction_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay_ms),
-                        this, &QuotaTemporaryStorageEvictor::ConsiderEviction);
+  eviction_timer_.Start(FROM_HERE, base::Milliseconds(delay_ms), this,
+                        &QuotaTemporaryStorageEvictor::ConsiderEviction);
 }
 
 void QuotaTemporaryStorageEvictor::ConsiderEviction() {

@@ -333,9 +333,8 @@ TEST_F(UsageStatsDatabaseTest, ExpiryDeletesOldEvents) {
 
   // Advance "now" by 7 days + 9 seconds so that the first two events are > 7
   // days old.
-  now = now +
-        base::TimeDelta::FromDays(UsageStatsDatabase::EXPIRY_THRESHOLD_DAYS) +
-        base::TimeDelta::FromSeconds(9);
+  now = now + base::Days(UsageStatsDatabase::EXPIRY_THRESHOLD_DAYS) +
+        base::Seconds(9);
   usage_stats_database()->ExpireEvents(now);
 
   fake_website_event_db()->LoadCallback(true);

@@ -429,25 +429,24 @@ void PerfCollector::SetCollectionParamsFromVariationParams(
   int64_t value;
   CollectionParams& collector_params = collection_params();
   if (GetInt64Param(params, "ProfileCollectionDurationSec", &value)) {
-    collector_params.collection_duration = base::TimeDelta::FromSeconds(value);
+    collector_params.collection_duration = base::Seconds(value);
   }
   if (GetInt64Param(params, "PeriodicProfilingIntervalMs", &value)) {
-    collector_params.periodic_interval =
-        base::TimeDelta::FromMilliseconds(value);
+    collector_params.periodic_interval = base::Milliseconds(value);
   }
   if (GetInt64Param(params, "ResumeFromSuspend::SamplingFactor", &value)) {
     collector_params.resume_from_suspend.sampling_factor = value;
   }
   if (GetInt64Param(params, "ResumeFromSuspend::MaxDelaySec", &value)) {
     collector_params.resume_from_suspend.max_collection_delay =
-        base::TimeDelta::FromSeconds(value);
+        base::Seconds(value);
   }
   if (GetInt64Param(params, "RestoreSession::SamplingFactor", &value)) {
     collector_params.restore_session.sampling_factor = value;
   }
   if (GetInt64Param(params, "RestoreSession::MaxDelaySec", &value)) {
     collector_params.restore_session.max_collection_delay =
-        base::TimeDelta::FromSeconds(value);
+        base::Seconds(value);
   }
 
   const std::string best_cpu_specifier =

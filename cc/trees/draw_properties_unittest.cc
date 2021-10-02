@@ -1745,7 +1745,7 @@ TEST_F(DrawPropertiesTest,
       std::unique_ptr<gfx::AnimationCurve>(new FakeTransformTransition(1.0)), 0,
       1, KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(
       grand_child->element_id(), timeline_impl(), std::move(keyframe_model));
 
@@ -6496,7 +6496,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(child->element_id(), timeline(),
                                          std::move(keyframe_model));
   UpdateMainDrawProperties();
@@ -6525,7 +6525,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   AddKeyframeModelToElementWithExistingKeyframeEffect(
       child->element_id(), timeline(), std::move(keyframe_model));
   UpdateMainDrawProperties();
@@ -6639,8 +6639,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
+  curve->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
@@ -6672,8 +6672,8 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
+  curve->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
@@ -6785,8 +6785,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingPendingLayerImpl) {
           gfx::CubicBezierTimingFunction::EaseType::EASE);
   curve->AddKeyframe(
       gfx::FloatKeyframe::Create(base::TimeDelta(), 0.9f, std::move(func)));
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), 0.3f, nullptr));
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::Seconds(1.0), 0.3f, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
@@ -7598,7 +7598,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, OpacityAnimationsTrackingTest) {
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   KeyframeModel* keyframe_model_ptr = keyframe_model.get();
   AddKeyframeModelToElementWithExistingKeyframeEffect(
       animated->element_id(), timeline(), std::move(keyframe_model));
@@ -7609,7 +7609,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, OpacityAnimationsTrackingTest) {
   EXPECT_FALSE(node->is_currently_animating_opacity);
   EXPECT_TRUE(node->has_potential_opacity_animation);
 
-  keyframe_model_ptr->set_time_offset(base::TimeDelta::FromMilliseconds(0));
+  keyframe_model_ptr->set_time_offset(base::Milliseconds(0));
   host()->AnimateLayers(base::TimeTicks::Max());
   node = GetEffectNode(animated.get());
   EXPECT_TRUE(node->is_currently_animating_opacity);
@@ -7650,13 +7650,13 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
+  curve->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   KeyframeModel* keyframe_model_ptr = keyframe_model.get();
   AddKeyframeModelToElementWithExistingKeyframeEffect(
       animated->element_id(), timeline(), std::move(keyframe_model));
@@ -7667,7 +7667,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
   EXPECT_FALSE(node->is_currently_animating);
   EXPECT_TRUE(node->has_potential_animation);
 
-  keyframe_model_ptr->set_time_offset(base::TimeDelta::FromMilliseconds(0));
+  keyframe_model_ptr->set_time_offset(base::Milliseconds(0));
   host()->AnimateLayers(base::TimeTicks::Max());
   node = GetTransformNode(animated.get());
   EXPECT_TRUE(node->is_currently_animating);

@@ -136,8 +136,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
     CHECK(url_db);
 
     const base::Time visit_time =
-        base::Time::Now() - base::TimeDelta::FromDays(
-            test_row.days_from_now);
+        base::Time::Now() - base::Days(test_row.days_from_now);
 
     history::URLRow row(test_row.url);
     row.set_title(test_row.title);

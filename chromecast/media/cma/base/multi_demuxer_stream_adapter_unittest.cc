@@ -88,10 +88,10 @@ void MultiDemuxerStreamAdaptersTest::Start() {
       FROM_HERE,
       base::BindOnce(&MultiDemuxerStreamAdaptersTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
 
-  media_task_runner_factory_ = new BalancedMediaTaskRunnerFactory(
-      base::TimeDelta::FromMilliseconds(kMaxPtsDiffMs));
+  media_task_runner_factory_ =
+      new BalancedMediaTaskRunnerFactory(base::Milliseconds(kMaxPtsDiffMs));
 
   coded_frame_providers_.clear();
   frame_received_count_ = 0;

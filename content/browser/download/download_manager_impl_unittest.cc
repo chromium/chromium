@@ -831,7 +831,7 @@ class DownloadManagerWithExpirationTest : public DownloadManagerTest {
 TEST_F(DownloadManagerWithExpirationTest, DeleteExpiredDownload) {
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://example.com/1.zip");
-  auto expired_start_time = base::Time::Now() - base::TimeDelta::FromDays(10);
+  auto expired_start_time = base::Time::Now() - base::Days(10);
   download::DownloadItem* download_item = CreateDownloadItem(
       expired_start_time, url_chain, download::DownloadItem::INTERRUPTED);
   EXPECT_FALSE(download_item)

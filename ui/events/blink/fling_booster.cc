@@ -23,8 +23,7 @@ const double kMinBoostTouchScrollSpeedSquare = 150 * 150.;
 // ticks, scrolls or flings of sufficient velocity relative to the current fling
 // are received. The default value on Android native views is 40ms, but we use a
 // slightly increased value to accomodate small IPC message delays.
-constexpr base::TimeDelta kFlingBoostTimeoutDelay =
-    base::TimeDelta::FromSecondsD(0.05);
+constexpr base::TimeDelta kFlingBoostTimeoutDelay = base::Seconds(0.05);
 }  // namespace
 
 namespace ui {

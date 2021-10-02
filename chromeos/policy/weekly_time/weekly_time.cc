@@ -15,11 +15,11 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kWeek = base::TimeDelta::FromDays(7);
-constexpr base::TimeDelta kDay = base::TimeDelta::FromDays(1);
-constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kSecond = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kWeek = base::Days(7);
+constexpr base::TimeDelta kDay = base::Days(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
+constexpr base::TimeDelta kMinute = base::Minutes(1);
+constexpr base::TimeDelta kSecond = base::Seconds(1);
 
 }  // namespace
 
@@ -69,7 +69,7 @@ base::TimeDelta WeeklyTime::GetDurationTo(const WeeklyTime& other) const {
       other_converted.milliseconds() - milliseconds_;
   if (duration < 0)
     duration += kWeek.InMilliseconds();
-  return base::TimeDelta::FromMilliseconds(duration);
+  return base::Milliseconds(duration);
 }
 
 WeeklyTime WeeklyTime::AddMilliseconds(int milliseconds) const {

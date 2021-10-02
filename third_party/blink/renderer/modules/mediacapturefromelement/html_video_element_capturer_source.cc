@@ -136,7 +136,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
 
   // Calculate the time in the future where the next frame should be created.
   const base::TimeDelta frame_interval =
-      base::TimeDelta::FromMicroseconds(1E6 / capture_frame_rate_);
+      base::Microseconds(1E6 / capture_frame_rate_);
   if (next_capture_time_.is_null()) {
     next_capture_time_ = current_time + frame_interval;
   } else {

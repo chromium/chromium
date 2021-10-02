@@ -467,7 +467,7 @@ class HttpNetworkTransactionTest : public PlatformTest,
     base::RunLoop().RunUntilIdle();
     // Set an initial delay to ensure that the first call to TimeTicks::Now()
     // before incrementing the counter does not return a null value.
-    FastForwardBy(base::TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
   }
 
   void TearDown() override {
@@ -1647,8 +1647,7 @@ TEST_F(HttpNetworkTransactionTest, Ignores1xx) {
 }
 
 TEST_F(HttpNetworkTransactionTest, LoadTimingMeasuresTimeToFirstByteForHttp) {
-  static const base::TimeDelta kDelayAfterFirstByte =
-      base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kDelayAfterFirstByte = base::Milliseconds(10);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -1718,8 +1717,7 @@ TEST_F(HttpNetworkTransactionTest, LoadTimingMeasuresTimeToFirstByteForHttp) {
 // Tests that the time-to-first-byte reported in a transaction's load timing
 // info uses the first response, even if 1XX/informational.
 void HttpNetworkTransactionTest::Check100ResponseTiming(bool use_spdy) {
-  static const base::TimeDelta kDelayAfter100Response =
-      base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kDelayAfter100Response = base::Milliseconds(10);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -11327,7 +11325,7 @@ TEST_F(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaHttpsProxy) {
   RecordingTestNetLog net_log;
   session_deps_.net_log = &net_log;
 
-  const base::TimeDelta kTimeIncrement = base::TimeDelta::FromSeconds(4);
+  const base::TimeDelta kTimeIncrement = base::Seconds(4);
   session_deps_.host_resolver->set_ondemand_mode(true);
 
   HttpRequestInfo request;
@@ -11491,7 +11489,7 @@ TEST_F(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaSpdyProxy) {
   RecordingTestNetLog net_log;
   session_deps_.net_log = &net_log;
 
-  const base::TimeDelta kTimeIncrement = base::TimeDelta::FromSeconds(4);
+  const base::TimeDelta kTimeIncrement = base::Seconds(4);
   session_deps_.host_resolver->set_ondemand_mode(true);
 
   HttpRequestInfo request;
@@ -12637,7 +12635,7 @@ std::unique_ptr<HttpNetworkSession> SetupSessionForGroupIdTests(
   HttpServerProperties* http_server_properties =
       session->http_server_properties();
   AlternativeService alternative_service(kProtoHTTP2, "", 444);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort("https", "host.with.alternate", 443),
       NetworkIsolationKey(), alternative_service, expiration);
@@ -13734,7 +13732,7 @@ TEST_F(HttpNetworkTransactionTest,
       session->http_server_properties();
   AlternativeService alternative_service(kProtoHTTP2, "different.example.org",
                                          444);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -13775,7 +13773,7 @@ TEST_F(HttpNetworkTransactionTest,
   HttpServerProperties* http_server_properties =
       session->http_server_properties();
   AlternativeService alternative_service(kProtoHTTP2, "", 444);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -13795,7 +13793,7 @@ TEST_F(HttpNetworkTransactionTest, ClearAlternativeServices) {
       session->http_server_properties();
   url::SchemeHostPort test_server("https", "www.example.org", 443);
   AlternativeService alternative_service(kProtoQUIC, "", 80);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetQuicAlternativeService(
       test_server, NetworkIsolationKey(), alternative_service, expiration,
       session->context().quic_context->params()->supported_versions);
@@ -13954,7 +13952,7 @@ TEST_F(HttpNetworkTransactionTest, IdentifyQuicBroken) {
   HttpServerProperties* http_server_properties =
       session->http_server_properties();
   AlternativeService alternative_service(kProtoQUIC, alternative);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetQuicAlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration,
       DefaultSupportedQuicVersions());
@@ -14017,7 +14015,7 @@ TEST_F(HttpNetworkTransactionTest, IdentifyQuicNotBroken) {
 
   // Set up two QUIC alternative services for server.
   AlternativeServiceInfoVector alternative_service_info_vector;
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
 
   AlternativeService alternative_service1(kProtoQUIC, alternative1);
   alternative_service_info_vector.push_back(
@@ -14089,7 +14087,7 @@ TEST_F(HttpNetworkTransactionTest, MarkBrokenAlternateProtocolAndFallback) {
   // Port is ignored by MockConnect anyway.
   const AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                                666);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration);
 
@@ -14154,7 +14152,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedBlocked) {
   const int kUnrestrictedAlternatePort = 1024;
   AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                          kUnrestrictedAlternatePort);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(restricted_port_request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -14205,7 +14203,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedPermitted) {
   const int kUnrestrictedAlternatePort = 1024;
   AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                          kUnrestrictedAlternatePort);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(restricted_port_request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -14255,7 +14253,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedAllowed) {
   const int kRestrictedAlternatePort = 80;
   AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                          kRestrictedAlternatePort);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(restricted_port_request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -14305,7 +14303,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortUnrestrictedAllowed1) {
   const int kRestrictedAlternatePort = 80;
   AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                          kRestrictedAlternatePort);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(unrestricted_port_request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -14355,7 +14353,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortUnrestrictedAllowed2) {
   const int kUnrestrictedAlternatePort = 1025;
   AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                          kUnrestrictedAlternatePort);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(unrestricted_port_request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -14397,7 +14395,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolUnsafeBlocked) {
   const int kUnsafePort = 7;
   AlternativeService alternative_service(kProtoHTTP2, "www.example.org",
                                          kUnsafePort);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort(request.url), NetworkIsolationKey(),
       alternative_service, expiration);
@@ -14728,7 +14726,7 @@ TEST_F(HttpNetworkTransactionTest, UseOriginNotAlternativeForProxy) {
   url::SchemeHostPort server("https", "www.example.org", 443);
   HostPortPair alternative("www.example.com", 443);
   AlternativeService alternative_service(kProtoHTTP2, alternative);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration);
 
@@ -15966,10 +15964,10 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   CommonConnectJobParams common_connect_job_params(
       session->CreateCommonConnectJobParams());
   TransportClientSocketPool* transport_pool = new TransportClientSocketPool(
-      50,                                // Max sockets for pool
-      1,                                 // Max sockets per group
-      base::TimeDelta::FromSeconds(10),  // unused_idle_socket_timeout
-      ProxyServer::Direct(), false,      // is_for_websockets
+      50,                            // Max sockets for pool
+      1,                             // Max sockets per group
+      base::Seconds(10),             // unused_idle_socket_timeout
+      ProxyServer::Direct(), false,  // is_for_websockets
       &common_connect_job_params);
   auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
   mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
@@ -17760,7 +17758,7 @@ TEST_F(HttpNetworkTransactionTest, AlternativeServiceNotOnHttp11) {
   HttpServerProperties* http_server_properties =
       session->http_server_properties();
   AlternativeService alternative_service(kProtoHTTP2, alternative);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration);
 
@@ -17828,7 +17826,7 @@ TEST_F(HttpNetworkTransactionTest, FailedAlternativeServiceIsNotUserVisible) {
   HttpServerProperties* http_server_properties =
       session->http_server_properties();
   AlternativeService alternative_service(kProtoHTTP2, alternative);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration);
 
@@ -17938,7 +17936,7 @@ TEST_F(HttpNetworkTransactionTest, AlternativeServiceShouldNotPoolToHttp11) {
   HttpServerProperties* http_server_properties =
       session->http_server_properties();
   AlternativeService alternative_service(kProtoHTTP2, alternative);
-  base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       server, NetworkIsolationKey(), alternative_service, expiration);
 
@@ -20417,8 +20415,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
        CreateReportRestartWithAuth) {
   std::string extra_header_string = extra_headers_.ToString();
-  static const base::TimeDelta kSleepDuration =
-      base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kSleepDuration = base::Milliseconds(10);
 
   MockWrite data_writes1[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -20521,8 +20518,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
        CreateReportRestartWithAuthAsync) {
   std::string extra_header_string = extra_headers_.ToString();
-  static const base::TimeDelta kSleepDuration =
-      base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kSleepDuration = base::Milliseconds(10);
 
   MockWrite data_writes1[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -21184,8 +21180,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
 
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest, ReportElapsedTime) {
   std::string extra_header_string = extra_headers_.ToString();
-  static const base::TimeDelta kSleepDuration =
-      base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kSleepDuration = base::Milliseconds(10);
 
   std::vector<MockWrite> data_writes = {
       MockWrite(ASYNC, 0,
@@ -21262,7 +21257,7 @@ TEST_F(HttpNetworkTransactionTest, AlwaysFailRequestToCache) {
 }
 
 TEST_F(HttpNetworkTransactionTest, ZeroRTTDoesntConfirm) {
-  static const base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kDelay = base::Milliseconds(10);
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
@@ -21328,7 +21323,7 @@ TEST_F(HttpNetworkTransactionTest, ZeroRTTDoesntConfirm) {
 }
 
 TEST_F(HttpNetworkTransactionTest, ZeroRTTSyncConfirmSyncWrite) {
-  static const base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kDelay = base::Milliseconds(10);
   HttpRequestInfo request;
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
@@ -21451,7 +21446,7 @@ TEST_F(HttpNetworkTransactionTest, ZeroRTTSyncConfirmAsyncWrite) {
 }
 
 TEST_F(HttpNetworkTransactionTest, ZeroRTTAsyncConfirmSyncWrite) {
-  static const base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  static const base::TimeDelta kDelay = base::Milliseconds(10);
   HttpRequestInfo request;
   request.method = "POST";
   request.url = GURL("https://www.example.org/");

@@ -80,8 +80,7 @@ bool ResetSettingsHandler::ShouldShowResetProfileBanner(Profile* profile) {
 
   // Otherwise, only show the banner if it has been less than |kBannerShowTime|
   // since reset.
-  static constexpr base::TimeDelta kBannerShowTime =
-      base::TimeDelta::FromDays(5);
+  static constexpr base::TimeDelta kBannerShowTime = base::Days(5);
   const base::TimeDelta since_reset = base::Time::Now() - reset_time;
   return since_reset < kBannerShowTime;
 }

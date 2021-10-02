@@ -230,7 +230,7 @@ class VideoSenderTest : public ::testing::Test {
   }
 
   void RunTasks(int during_ms) {
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(during_ms));
+    task_runner_->Sleep(base::Milliseconds(during_ms));
   }
 
   base::SimpleTestTickClock testing_clock_;
@@ -327,7 +327,7 @@ TEST_F(VideoSenderTest, RtcpTimer) {
 
   // Make sure that we send at least one RTCP packet.
   base::TimeDelta max_rtcp_timeout =
-      base::TimeDelta::FromMilliseconds(1 + kRtcpReportIntervalMs * 3 / 2);
+      base::Milliseconds(1 + kRtcpReportIntervalMs * 3 / 2);
 
   RunTasks(max_rtcp_timeout.InMilliseconds());
   EXPECT_LE(1, transport_->number_of_rtp_packets());
@@ -360,7 +360,7 @@ TEST_F(VideoSenderTest, ResendTimer) {
   video_sender_->InsertRawVideoFrame(video_frame, reference_time);
 
   base::TimeDelta max_resend_timeout =
-      base::TimeDelta::FromMilliseconds(1 + kDefaultRtpMaxDelayMs);
+      base::Milliseconds(1 + kDefaultRtpMaxDelayMs);
 
   // Make sure that we do a re-send.
   RunTasks(max_resend_timeout.InMilliseconds());
@@ -626,8 +626,7 @@ TEST_F(VideoSenderTest, CancelSendingOnReceivingPli) {
   video_sender_->OnReceivedPli();
   video_frame = GetNewVideoFrame();
   video_sender_->InsertRawVideoFrame(
-      video_frame,
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(1000));
+      video_frame, testing_clock_.NowTicks() + base::Milliseconds(1000));
   RunTasks(33);
   transport_->SetPause(false);
   RunTasks(33);

@@ -199,7 +199,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     mixer_->Connect();
 
     saved_volumes_writer_ = std::make_unique<base::ImportantFileWriter>(
-        storage_path_, thread_.task_runner(), base::TimeDelta::FromSeconds(1));
+        storage_path_, thread_.task_runner(), base::Seconds(1));
 
     double dbfs;
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,

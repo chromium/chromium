@@ -141,7 +141,7 @@ class DevToolsBackgroundServicesContextTest
   }
 
   void SimulateOneWeekPassing() {
-    base::Time one_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
+    base::Time one_week_ago = base::Time::Now() - base::Days(7);
     context_->expiration_times_
         [devtools::proto::BackgroundService::BACKGROUND_FETCH] = one_week_ago;
   }

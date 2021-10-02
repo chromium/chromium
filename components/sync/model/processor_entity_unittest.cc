@@ -105,8 +105,7 @@ CommitResponseData GenerateAckData(const CommitRequestData& request,
 // tests.
 class ProcessorEntityTest : public ::testing::Test {
  public:
-  ProcessorEntityTest()
-      : ctime_(base::Time::Now() - base::TimeDelta::FromSeconds(1)) {}
+  ProcessorEntityTest() : ctime_(base::Time::Now() - base::Seconds(1)) {}
 
   std::unique_ptr<ProcessorEntity> CreateNew() {
     return ProcessorEntity::CreateNew(kKey, kHash, "", ctime_);

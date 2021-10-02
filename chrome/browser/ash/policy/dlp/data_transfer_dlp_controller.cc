@@ -31,8 +31,7 @@ namespace {
 // - at 5 ms DataTransferDlpBlinkBrowserTest.Reporting test starts to be flaky
 // - 100 ms is approximately the time a human needs to press a key.
 // See DataTransferDlpController::LastReportedEndpoints struct for details.
-const base::TimeDelta kSkipReportingTimeout =
-    base::TimeDelta::FromMilliseconds(50);
+const base::TimeDelta kSkipReportingTimeout = base::Milliseconds(50);
 
 bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
   if (!data_dst || !data_dst->IsUrlType())

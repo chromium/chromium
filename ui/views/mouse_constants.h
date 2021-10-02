@@ -11,8 +11,7 @@ namespace views {
 
 // The amount of time, in milliseconds, between clicks until they're
 // considered intentionally different.
-constexpr auto kMinimumTimeBetweenButtonClicks =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr auto kMinimumTimeBetweenButtonClicks = base::Milliseconds(100);
 
 }  // namespace views
 

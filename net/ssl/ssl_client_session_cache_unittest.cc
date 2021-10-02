@@ -272,7 +272,7 @@ TEST_F(SSLClientSessionCacheTest, MaxEntries) {
 TEST_F(SSLClientSessionCacheTest, Expiration) {
   const size_t kNumEntries = 20;
   const size_t kExpirationCheckCount = 10;
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+  const base::TimeDelta kTimeout = base::Seconds(1000);
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
@@ -321,7 +321,7 @@ TEST_F(SSLClientSessionCacheTest, LookupExpirationCheck) {
   // kExpirationCheckCount is set to a suitably large number so the automated
   // pruning never triggers.
   const size_t kExpirationCheckCount = 1000;
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+  const base::TimeDelta kTimeout = base::Seconds(1000);
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
@@ -359,7 +359,7 @@ TEST_F(SSLClientSessionCacheTest, LookupExpirationCheck) {
   EXPECT_EQ(1u, cache.size());
 
   // Sessions also are treated as expired if the clock rewinds.
-  clock->Advance(base::TimeDelta::FromSeconds(-2));
+  clock->Advance(base::Seconds(-2));
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key")).get());
   EXPECT_EQ(0u, cache.size());
 }
@@ -371,7 +371,7 @@ TEST_F(SSLClientSessionCacheTest, TestFlushOnMemoryNotifications) {
   // kExpirationCheckCount is set to a suitably large number so the automated
   // pruning never triggers.
   const size_t kExpirationCheckCount = 1000;
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+  const base::TimeDelta kTimeout = base::Seconds(1000);
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;

@@ -47,7 +47,7 @@ class BspTreePerfTest : public cc::LayerTreeTest {
  public:
   BspTreePerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void SetupTree() override {

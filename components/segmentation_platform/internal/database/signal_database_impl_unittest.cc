@@ -13,7 +13,7 @@
 namespace segmentation_platform {
 
 bool IsWithinOneSecond(base::Time t1, base::Time t2) {
-  return (t1 - t2).magnitude() < base::TimeDelta::FromSeconds(1);
+  return (t1 - t2).magnitude() < base::Seconds(1);
 }
 
 void CheckVectorsEqual(const std::vector<SignalDatabase::Sample>& expected_list,
@@ -55,8 +55,7 @@ class SignalDatabaseImplTest : public testing::Test {
     signal_db_->Initialize(base::DoNothing());
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-    test_clock_.SetNow(base::Time::Now().UTCMidnight() +
-                       base::TimeDelta::FromHours(8));
+    test_clock_.SetNow(base::Time::Now().UTCMidnight() + base::Hours(8));
   }
 
   void TearDown() override {
@@ -75,8 +74,7 @@ class SignalDatabaseImplTest : public testing::Test {
 
 TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   SetUpDB();
-  base::Time now =
-      base::Time::Now().UTCMidnight() + base::TimeDelta::FromHours(8);
+  base::Time now = base::Time::Now().UTCMidnight() + base::Hours(8);
 
   uint64_t name_hash = 1234;
   proto::SignalType signal_type = proto::SignalType::HISTOGRAM_VALUE;
@@ -90,7 +88,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
 
   // Write a sample.
   int32_t value = 10;
-  base::Time timestamp = now - base::TimeDelta::FromHours(1);
+  base::Time timestamp = now - base::Hours(1);
   test_clock_.SetNow(timestamp);
   signal_db_->WriteSample(signal_type, name_hash, value, base::DoNothing());
   db_->UpdateCallback(true);
@@ -120,8 +118,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
 
 TEST_F(SignalDatabaseImplTest, WriteSampleAndReadWithPrefixMismatch) {
   SetUpDB();
-  base::Time now =
-      base::Time::Now().UTCMidnight() + base::TimeDelta::FromHours(8);
+  base::Time now = base::Time::Now().UTCMidnight() + base::Hours(8);
 
   uint64_t name_hash_1 = 1234;
   uint64_t name_hash_2 = name_hash_1;
@@ -134,7 +131,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndReadWithPrefixMismatch) {
 
   // Write a sample for signal 1.
   int32_t value = 10;
-  base::Time timestamp = now - base::TimeDelta::FromHours(1);
+  base::Time timestamp = now - base::Hours(1);
   test_clock_.SetNow(timestamp);
   signal_db_->WriteSample(signal_type_1, name_hash_1, value, base::DoNothing());
   db_->UpdateCallback(true);
@@ -166,9 +163,9 @@ TEST_F(SignalDatabaseImplTest, DeleteSamples) {
 
   proto::SignalType signal_type = proto::SignalType::USER_ACTION;
   uint64_t name_hash = 1234;
-  base::Time timestamp1 = test_clock_.Now() - base::TimeDelta::FromHours(3);
-  base::Time timestamp2 = timestamp1 + base::TimeDelta::FromHours(1);
-  base::Time timestamp3 = timestamp2 + base::TimeDelta::FromHours(1);
+  base::Time timestamp1 = test_clock_.Now() - base::Hours(3);
+  base::Time timestamp2 = timestamp1 + base::Hours(1);
+  base::Time timestamp3 = timestamp2 + base::Hours(1);
 
   // Write two samples, at timestamp1 and timestamp3.
   test_clock_.SetNow(timestamp1);
@@ -207,11 +204,10 @@ TEST_F(SignalDatabaseImplTest, DeleteSamples) {
 
 TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   // Set up three consecutive date timestamps, each at 8:00AM.
-  base::Time day1 = base::Time::Now().UTCMidnight() +
-                    base::TimeDelta::FromHours(8) -
-                    base::TimeDelta::FromDays(2);
-  base::Time day2 = day1 + base::TimeDelta::FromDays(1);
-  base::Time day3 = day2 + base::TimeDelta::FromDays(1);
+  base::Time day1 =
+      base::Time::Now().UTCMidnight() + base::Hours(8) - base::Days(2);
+  base::Time day2 = day1 + base::Days(1);
+  base::Time day3 = day2 + base::Days(1);
 
   SetUpDB();
   EXPECT_EQ(0u, db_entries_.size());
@@ -220,9 +216,9 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   uint64_t name_hash = 1234;
 
   // Collect two samples on day1, and one on day2.
-  base::Time timestamp_day1_1 = day1 + base::TimeDelta::FromHours(1);
-  base::Time timestamp_day1_2 = day1 + base::TimeDelta::FromHours(2);
-  base::Time timestamp_day2_1 = day2 + base::TimeDelta::FromHours(2);
+  base::Time timestamp_day1_1 = day1 + base::Hours(1);
+  base::Time timestamp_day1_2 = day1 + base::Hours(2);
+  base::Time timestamp_day2_1 = day2 + base::Hours(2);
 
   test_clock_.SetNow(timestamp_day1_1);
   signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
@@ -289,7 +285,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   db_->LoadCallback(true);
 
   signal_db_->GetSamples(signal_type, name_hash, day3.UTCMidnight(),
-                         day3.UTCMidnight() + base::TimeDelta::FromDays(1),
+                         day3.UTCMidnight() + base::Days(1),
                          base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
@@ -299,8 +295,8 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   // Read a range of samples not aligned to midnight.
   signal_db_->GetSamples(signal_type, name_hash,
-                         timestamp_day1_1 + base::TimeDelta::FromHours(1),
-                         timestamp_day2_1 - base::TimeDelta::FromHours(1),
+                         timestamp_day1_1 + base::Hours(1),
+                         timestamp_day2_1 - base::Hours(1),
                          base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);

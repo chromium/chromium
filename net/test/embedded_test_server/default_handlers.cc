@@ -711,8 +711,8 @@ std::unique_ptr<HttpResponse> HandleSlowServer(const HttpRequest& request) {
   if (request_url.has_query())
     delay = std::atof(request_url.query().c_str());
 
-  auto http_response = std::make_unique<DelayedHttpResponse>(
-      base::TimeDelta::FromSecondsD(delay));
+  auto http_response =
+      std::make_unique<DelayedHttpResponse>(base::Seconds(delay));
   http_response->set_content_type("text/plain");
   http_response->set_content(base::StringPrintf("waited %.1f seconds", delay));
   return http_response;
@@ -913,9 +913,9 @@ std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
     CHECK(base::StringToInt(query.GetValue(), &value));
     CHECK_GE(value, 0);
     if (query.GetKey() == "waitBeforeHeaders") {
-      delay_before_headers = base::TimeDelta::FromMilliseconds(value);
+      delay_before_headers = base::Milliseconds(value);
     } else if (query.GetKey() == "waitBetweenChunks") {
-      delay_between_chunks = base::TimeDelta::FromMilliseconds(value);
+      delay_between_chunks = base::Milliseconds(value);
     } else if (query.GetKey() == "chunkSize") {
       // A 0-size chunk indicates completion.
       CHECK_LT(0, value);

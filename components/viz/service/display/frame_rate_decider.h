@@ -40,7 +40,7 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   // any preferred setting and should let the platform decide the display's
   // refresh rate.
   static constexpr base::TimeDelta UnspecifiedFrameInterval() {
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   }
 
   // This object should be created and held for the duration when surface

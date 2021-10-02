@@ -13,9 +13,8 @@ namespace viz {
 class VSyncParameterListenerTestRunner {
  public:
   VSyncParameterListenerTestRunner(int64_t interval_us, int64_t timebase_us)
-      : interval_(base::TimeDelta::FromMicroseconds(interval_us)),
-        timebase_(base::TimeTicks() +
-                  base::TimeDelta::FromMicroseconds(timebase_us)) {}
+      : interval_(base::Microseconds(interval_us)),
+        timebase_(base::TimeTicks() + base::Microseconds(timebase_us)) {}
 
   void RunTests() {
     const uint64_t interval_us = interval_.InMicroseconds();
@@ -59,8 +58,7 @@ class VSyncParameterListenerTestRunner {
     EXPECT_TRUE(listener.ShouldSendUpdate(timebase_, interval_));
 
     return listener.ShouldSendUpdate(
-        timebase_ + base::TimeDelta::FromMicroseconds(timebase_difference_us),
-        interval_);
+        timebase_ + base::Microseconds(timebase_difference_us), interval_);
   }
 
   base::TimeDelta interval_;

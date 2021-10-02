@@ -41,7 +41,7 @@ const float kSlopLengthDips = 10;
 const float kHalfSlopLengthDips = kSlopLengthDips / 2;
 
 base::TimeDelta DefaultTouchTimeoutDelay() {
-  return base::TimeDelta::FromMilliseconds(1);
+  return base::Milliseconds(1);
 }
 }  // namespace
 
@@ -255,7 +255,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   void AdvanceTouchTime(double seconds) {
     touch_event_.SetTimeStamp(touch_event_.TimeStamp() +
-                              base::TimeDelta::FromSecondsD(seconds));
+                              base::Seconds(seconds));
   }
 
   size_t GetAndResetAckedEventCount() {

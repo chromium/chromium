@@ -125,7 +125,7 @@ void AdSamplerTrigger::DidFinishLoad(
       FROM_HERE,
       base::BindOnce(&AdSamplerTrigger::CreateAdSampleReport,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(start_report_delay_ms_));
+      base::Milliseconds(start_report_delay_ms_));
 }
 
 void AdSamplerTrigger::CreateAdSampleReport() {
@@ -159,7 +159,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
           base::Unretained(trigger_manager_), TriggerType::AD_SAMPLE,
           base::Unretained(web_contents()), base::TimeDelta(),
           /*did_proceed=*/false, /*num_visits=*/0, error_options),
-      base::TimeDelta::FromMilliseconds(finish_report_delay_ms_));
+      base::Milliseconds(finish_report_delay_ms_));
 
   UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName, AD_SAMPLED,
                             MAX_ACTIONS);

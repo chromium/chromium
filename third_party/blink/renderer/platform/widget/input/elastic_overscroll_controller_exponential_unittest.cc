@@ -91,7 +91,7 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
   ElasticOverscrollControllerExponentialTest()
       : controller_(&helper_),
         current_time_(base::TimeTicks() +
-                      base::TimeDelta::FromMicroseconds(INT64_C(100000000))) {}
+                      base::Microseconds(INT64_C(100000000))) {}
   ~ElasticOverscrollControllerExponentialTest() override {}
 
   void SendGestureScrollBegin(InertialPhaseState inertialPhase) {
@@ -140,7 +140,7 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
   }
 
   const base::TimeTicks& TickCurrentTime() {
-    current_time_ += base::TimeDelta::FromSecondsD(1 / 60.f);
+    current_time_ += base::Seconds(1 / 60.f);
     return current_time_;
   }
   void TickCurrentTimeAndAnimate() {

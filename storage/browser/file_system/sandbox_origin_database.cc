@@ -194,7 +194,7 @@ void SandboxOriginDatabase::HandleError(const base::Location& from_here,
 void SandboxOriginDatabase::ReportInitStatus(const leveldb::Status& status) {
   base::Time now = base::Time::Now();
   base::TimeDelta minimum_interval =
-      base::TimeDelta::FromHours(kSandboxOriginMinimumReportIntervalHours);
+      base::Hours(kSandboxOriginMinimumReportIntervalHours);
   if (last_reported_time_ + minimum_interval >= now)
     return;
   last_reported_time_ = now;

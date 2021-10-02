@@ -274,7 +274,7 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
       []() {
         return base::Time() +
                EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays +
-               base::TimeDelta::FromDays(1000);
+               base::Days(1000);
       },
       nullptr, nullptr);
 
@@ -301,7 +301,7 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
           test_devices()[1].instance_id(),
           /*last_activity_time=*/base::Time::Now() -
               EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays -
-              base::TimeDelta::FromDays(1),
+              base::Days(1),
           cryptauthv2::ConnectivityStatus::ONLINE,
           /*last_update_time=*/base::Time::Now()));
 
@@ -313,7 +313,7 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
           cryptauthv2::ConnectivityStatus::ONLINE,
           /*last_update_time=*/base::Time::Now() -
               EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays -
-              base::TimeDelta::FromDays(1)));
+              base::Days(1)));
 
   // Do not filter out; times within threhhold
   device_activity_statuses.emplace_back(

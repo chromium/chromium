@@ -14,8 +14,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
  public:
   LowLatencyVideoRendererAlgorithmTest()
       : algorithm_(nullptr),
-        current_render_time_(base::TimeTicks() + base::TimeDelta::FromDays(1)) {
-  }
+        current_render_time_(base::TimeTicks() + base::Days(1)) {}
 
   LowLatencyVideoRendererAlgorithmTest(
       const LowLatencyVideoRendererAlgorithmTest&) = delete;
@@ -47,7 +46,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
 
   scoped_refptr<media::VideoFrame> RenderAndStep(size_t* frames_dropped) {
     constexpr base::TimeDelta kRenderInterval =
-        base::TimeDelta::FromMillisecondsD(1000.0 / 60.0);  // 60fps.
+        base::Milliseconds(1000.0 / 60.0);  // 60fps.
     return RenderAndStep(frames_dropped, kRenderInterval);
   }
 
@@ -81,7 +80,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
 
   base::TimeDelta FrameDuration() const {
     // Assume 60 Hz video content.
-    return base::TimeDelta::FromMillisecondsD(1000.0 / 60.0);
+    return base::Milliseconds(1000.0 / 60.0);
   }
 
  protected:
@@ -116,7 +115,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode60Hz) {
 // Half frame rate (30Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode30Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 30.0);  // 30Hz.
+      base::Milliseconds(1000.0 / 30.0);  // 30Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   constexpr size_t kNumberOfFrames = 120;
@@ -145,7 +144,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode30Hz) {
 // Fractional frame rate (90Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode90Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 90.0);  // 90Hz.
+      base::Milliseconds(1000.0 / 90.0);  // 90Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
@@ -176,7 +175,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode90Hz) {
 // Double frame rate (120Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode120Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 120.0);  // 120Hz.
+      base::Milliseconds(1000.0 / 120.0);  // 120Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   // Add one initial frame.
@@ -205,7 +204,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode120Hz) {
 // Super high display rate (600Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode600Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
+      base::Milliseconds(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   // Add one initial frame.
@@ -336,7 +335,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, ExitDrainMode60Hz) {
 // Double Rate Drain (120Hz playing back 60Hz video in DRAIN mode)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, EnterDrainMode120Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 120.0);  // 120Hz.
+      base::Milliseconds(1000.0 / 120.0);  // 120Hz.
   // Enter drain mode when more than 6 frames are in the queue.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
@@ -421,7 +420,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateQueueReduction60Hz) {
 // Fractional rate, steady state queue reduction.
 TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateReduction90Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 90.0);  // 90Hz.
+      base::Milliseconds(1000.0 / 90.0);  // 90Hz.
 
   // Create an initial queue of 5 frames.
   constexpr int kMaxCompositionDelayInFrames = 6;
@@ -479,7 +478,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateReduction90Hz) {
 TEST_F(LowLatencyVideoRendererAlgorithmTest,
        RenderFrameImmediatelyAfterOutage) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
+      base::Milliseconds(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   for (int outage_length = 0; outage_length < 100; ++outage_length) {

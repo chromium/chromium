@@ -70,7 +70,7 @@ constexpr bool kDefaultScroll = false;
 constexpr float kLineHeight = 5.33;
 
 // Default scrolling animation time period (s).
-constexpr base::TimeDelta kScrollTime = base::TimeDelta::FromMilliseconds(433);
+constexpr base::TimeDelta kScrollTime = base::Milliseconds(433);
 
 bool IsNonPercentage(double value,
                      const char* method,

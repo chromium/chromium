@@ -192,7 +192,7 @@ void ImageDataInstanceCache::ImageDataUsable(ImageData* image_data) {
 
 bool ImageDataInstanceCache::ExpireEntries() {
   base::TimeTicks threshold_time =
-      base::TimeTicks::Now() - base::TimeDelta::FromSeconds(kMaxAgeSeconds);
+      base::TimeTicks::Now() - base::Seconds(kMaxAgeSeconds);
 
   bool has_entry = false;
   for (size_t i = 0; i < kCacheSize; i++) {
@@ -289,7 +289,7 @@ void ImageDataCache::Add(ImageData* image_data) {
       RunWhileLocked(base::BindOnce(&ImageDataCache::OnTimer,
                                     weak_factory_.GetWeakPtr(),
                                     image_data->pp_instance())),
-      base::TimeDelta::FromSeconds(kMaxAgeSeconds));
+      base::Seconds(kMaxAgeSeconds));
 }
 
 void ImageDataCache::ImageDataUsable(ImageData* image_data) {

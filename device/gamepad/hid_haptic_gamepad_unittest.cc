@@ -50,7 +50,7 @@ constexpr double kWeakMagnitude = 0.5;    // 50% intensity
 constexpr double kZeroMagnitude = 0.0;
 
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 
 class FakeHidWriter : public HidWriter {
  public:

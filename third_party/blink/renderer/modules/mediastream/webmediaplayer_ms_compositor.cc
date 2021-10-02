@@ -162,7 +162,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
       player_(player),
       video_frame_provider_client_(nullptr),
       current_frame_rendered_(false),
-      last_render_length_(base::TimeDelta::FromSecondsD(1.0 / 60.0)),
+      last_render_length_(base::Seconds(1.0 / 60.0)),
       total_frame_count_(0),
       dropped_frame_count_(0),
       stopped_(true),

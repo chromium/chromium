@@ -21,7 +21,7 @@ EncodedAudioChunk* EncodedAudioChunk::Create(
 
   // Clamp within bounds of our internal TimeDelta-based duration. See
   // media/base/timestamp_constants.h
-  auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  auto timestamp = base::Microseconds(init->timestamp());
   if (timestamp == media::kNoTimestamp)
     timestamp = base::TimeDelta::FiniteMin();
   else if (timestamp == media::kInfiniteDuration)
@@ -35,7 +35,7 @@ EncodedAudioChunk* EncodedAudioChunk::Create(
   // handled differently.
   buffer->set_duration(
       init->hasDuration()
-          ? base::TimeDelta::FromMicroseconds(std::min(
+          ? base::Microseconds(std::min(
                 uint64_t{base::TimeDelta::FiniteMax().InMicroseconds()},
                 init->duration()))
           : media::kNoTimestamp);

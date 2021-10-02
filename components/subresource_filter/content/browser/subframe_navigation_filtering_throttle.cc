@@ -79,20 +79,17 @@ SubframeNavigationFilteringThrottle::~SubframeNavigationFilteringThrottle() {
     case LoadPolicy::ALLOW:
       UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
           "SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed",
-          total_defer_time_, base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromSeconds(10), 50);
+          total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);
       break;
     case LoadPolicy::WOULD_DISALLOW:
       UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
           "SubresourceFilter.DocumentLoad.SubframeFilteringDelay.WouldDisallow",
-          total_defer_time_, base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromSeconds(10), 50);
+          total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);
       break;
     case LoadPolicy::DISALLOW:
       UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
           "SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Disallowed2",
-          total_defer_time_, base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromSeconds(10), 50);
+          total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);
       break;
   }
 

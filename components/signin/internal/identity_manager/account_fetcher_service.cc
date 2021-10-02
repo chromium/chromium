@@ -42,8 +42,7 @@
 
 namespace {
 
-const base::TimeDelta kRefreshFromTokenServiceDelay =
-    base::TimeDelta::FromHours(24);
+const base::TimeDelta kRefreshFromTokenServiceDelay = base::Hours(24);
 
 }  // namespace
 

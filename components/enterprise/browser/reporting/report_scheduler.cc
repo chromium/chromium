@@ -29,7 +29,7 @@ namespace enterprise_reporting {
 namespace {
 
 constexpr base::TimeDelta kDefaultUploadInterval =
-    base::TimeDelta::FromHours(24);  // Default upload interval is 24 hours.
+    base::Hours(24);           // Default upload interval is 24 hours.
 const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
 
 bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {

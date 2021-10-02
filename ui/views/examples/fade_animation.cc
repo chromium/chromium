@@ -96,12 +96,12 @@ FadingView::FadingView() {
 
   AnimationBuilder()
       .Repeatedly()
-      .Offset(base::TimeDelta::FromSeconds(2))
-      .SetDuration(base::TimeDelta::FromSeconds(1))
+      .Offset(base::Seconds(2))
+      .SetDuration(base::Seconds(1))
       .SetOpacity(primary_view_, 0.0f)
       .SetOpacity(secondary_view_, 1.0f)
-      .Offset(base::TimeDelta::FromSeconds(2))
-      .SetDuration(base::TimeDelta::FromSeconds(1))
+      .Offset(base::Seconds(2))
+      .SetDuration(base::Seconds(1))
       .SetOpacity(primary_view_, 1.0f)
       .SetOpacity(secondary_view_, 0.0f);
 }

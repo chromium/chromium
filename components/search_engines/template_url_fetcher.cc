@@ -135,7 +135,7 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
       std::move(resource_request), kTrafficAnnotation);
   simple_url_loader_->SetAllowHttpErrorResults(true);
   simple_url_loader_->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kOpenSearchTimeoutSeconds));
+      base::Seconds(kOpenSearchTimeoutSeconds));
   simple_url_loader_->SetRetryOptions(
       kOpenSearchRetryCount, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   simple_url_loader_->SetRequestID(request_id);

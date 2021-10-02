@@ -31,8 +31,7 @@ bool WaitUntilConditionOrTimeout(NSTimeInterval timeout,
   NSDate* deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];
   bool success = condition();
   while (!success && [[NSDate date] compare:deadline] != NSOrderedDescending) {
-    base::test::ios::SpinRunLoopWithMaxDelay(
-        base::TimeDelta::FromSecondsD(kSpinDelaySeconds));
+    base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(kSpinDelaySeconds));
     success = condition();
   }
   return success;

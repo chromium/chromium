@@ -179,7 +179,7 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
       render_frame_host->GetLastCommittedURL());
   if (start_time_ms > 0) {
     base::TimeTicks start_time =
-        base::TimeDelta::FromMilliseconds(start_time_ms) + base::TimeTicks();
+        base::Milliseconds(start_time_ms) + base::TimeTicks();
     base::TimeDelta latency = base::TimeTicks::Now() - start_time;
 
     UMA_HISTOGRAM_TIMES("DomDistiller.Time.ViewerLoading", latency);

@@ -108,7 +108,7 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
   password_manager_util::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(context), store,
       ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
-      base::TimeDelta::FromSeconds(60), base::NullCallback());
+      base::Seconds(60), base::NullCallback());
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossAffiliatedWebsites)) {

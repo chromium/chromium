@@ -381,7 +381,7 @@ TEST_F(InstallAttributesTest, ConsistencyCheckNotTriggeredDBusError) {
   install_attributes_->Init(GetTempPath());
   // Fast-forward the timeline to virtually an infinite value in reality to make
   // sure retries get exhausted.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(99999));
+  task_environment_.FastForwardBy(base::Seconds(99999));
 
   // The expectation is "8" when TPM is not reachable.
   histogram_tester.ExpectUniqueSample("Enterprise.AttributesTPMConsistency", 8,

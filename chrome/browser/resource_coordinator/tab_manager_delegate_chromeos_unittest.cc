@@ -50,11 +50,11 @@ TEST_F(TabManagerDelegateTest, CandidatesSorted) {
 
   TestLifecycleUnit focused_lifecycle_unit(base::TimeTicks::Max());
   TestLifecycleUnit protected_lifecycle_unit(
-      base::TimeTicks() + base::TimeDelta::FromSeconds(5), 0, false);
+      base::TimeTicks() + base::Seconds(5), 0, false);
   TestLifecycleUnit non_focused_lifecycle_unit(base::TimeTicks() +
-                                               base::TimeDelta::FromSeconds(1));
-  TestLifecycleUnit other_non_focused_lifecycle_unit(
-      base::TimeTicks() + base::TimeDelta::FromSeconds(2));
+                                               base::Seconds(1));
+  TestLifecycleUnit other_non_focused_lifecycle_unit(base::TimeTicks() +
+                                                     base::Seconds(2));
   LifecycleUnitVector lifecycle_units{
       &focused_lifecycle_unit, &protected_lifecycle_unit,
       &non_focused_lifecycle_unit, &other_non_focused_lifecycle_unit};
@@ -216,20 +216,15 @@ TEST_F(TabManagerDelegateTest, SetOomScoreAdj) {
                              arc::mojom::ProcessState::PERSISTENT_UI,
                              kNotFocused, 700);
 
-  TestLifecycleUnit tab1(base::TimeTicks() + base::TimeDelta::FromSeconds(3),
-                         11);
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 11);
   tab_manager_delegate.AddLifecycleUnit(&tab1);
-  TestLifecycleUnit tab2(base::TimeTicks() + base::TimeDelta::FromSeconds(1),
-                         11);
+  TestLifecycleUnit tab2(base::TimeTicks() + base::Seconds(1), 11);
   tab_manager_delegate.AddLifecycleUnit(&tab2);
-  TestLifecycleUnit tab3(base::TimeTicks() + base::TimeDelta::FromSeconds(5),
-                         12);
+  TestLifecycleUnit tab3(base::TimeTicks() + base::Seconds(5), 12);
   tab_manager_delegate.AddLifecycleUnit(&tab3);
-  TestLifecycleUnit tab4(base::TimeTicks() + base::TimeDelta::FromSeconds(4),
-                         12);
+  TestLifecycleUnit tab4(base::TimeTicks() + base::Seconds(4), 12);
   tab_manager_delegate.AddLifecycleUnit(&tab4);
-  TestLifecycleUnit tab5(base::TimeTicks() + base::TimeDelta::FromSeconds(2),
-                         12);
+  TestLifecycleUnit tab5(base::TimeTicks() + base::Seconds(2), 12);
   tab_manager_delegate.AddLifecycleUnit(&tab5);
 
   // Sorted order (by GetSortedCandidates):
@@ -292,7 +287,7 @@ TEST_F(TabManagerDelegateTest, IsRecentlyKilledArcProcess) {
   EXPECT_FALSE(
       tab_manager_delegate.IsRecentlyKilledArcProcess(kProcessName2, now));
   tab_manager_delegate.recently_killed_arc_processes_[kProcessName1] =
-      now - base::TimeDelta::FromMicroseconds(1);
+      now - base::Microseconds(1);
   EXPECT_TRUE(
       tab_manager_delegate.IsRecentlyKilledArcProcess(kProcessName1, now));
   EXPECT_FALSE(
@@ -308,8 +303,7 @@ TEST_F(TabManagerDelegateTest, IsRecentlyKilledArcProcess) {
   // (GetArcRespawnKillDelay() + 1) seconds ago. In this case,
   // IsRecentlyKilledArcProcess(kProcessName1) should return false.
   tab_manager_delegate.recently_killed_arc_processes_[kProcessName1] =
-      now - TabManagerDelegate::GetArcRespawnKillDelay() -
-      base::TimeDelta::FromSeconds(1);
+      now - TabManagerDelegate::GetArcRespawnKillDelay() - base::Seconds(1);
   EXPECT_FALSE(
       tab_manager_delegate.IsRecentlyKilledArcProcess(kProcessName1, now));
   EXPECT_FALSE(
@@ -363,20 +357,15 @@ TEST_F(TabManagerDelegateTest, KillMultipleProcesses) {
                              arc::mojom::ProcessState::PERSISTENT, kNotFocused,
                              400);
 
-  TestLifecycleUnit tab1(base::TimeTicks() + base::TimeDelta::FromSeconds(3),
-                         11);
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 11);
   tab_manager_delegate.AddLifecycleUnit(&tab1);
-  TestLifecycleUnit tab2(base::TimeTicks() + base::TimeDelta::FromSeconds(1),
-                         11);
+  TestLifecycleUnit tab2(base::TimeTicks() + base::Seconds(1), 11);
   tab_manager_delegate.AddLifecycleUnit(&tab2);
-  TestLifecycleUnit tab3(base::TimeTicks() + base::TimeDelta::FromSeconds(5),
-                         12);
+  TestLifecycleUnit tab3(base::TimeTicks() + base::Seconds(5), 12);
   tab_manager_delegate.AddLifecycleUnit(&tab3);
-  TestLifecycleUnit tab4(base::TimeTicks() + base::TimeDelta::FromSeconds(4),
-                         12);
+  TestLifecycleUnit tab4(base::TimeTicks() + base::Seconds(4), 12);
   tab_manager_delegate.AddLifecycleUnit(&tab4);
-  TestLifecycleUnit tab5(base::TimeTicks() + base::TimeDelta::FromSeconds(2),
-                         12);
+  TestLifecycleUnit tab5(base::TimeTicks() + base::Seconds(2), 12);
   tab_manager_delegate.AddLifecycleUnit(&tab5);
 
   // Sorted order (by GetSortedCandidates):

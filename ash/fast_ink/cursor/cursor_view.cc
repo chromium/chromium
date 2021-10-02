@@ -68,7 +68,7 @@ CursorView::CursorView(const gfx::Point& initial_location,
       new_location_(initial_location),
       stationary_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kStationaryDelayMs),
+          base::Milliseconds(kStationaryDelayMs),
           base::BindRepeating(&CursorView::StationaryOnPaintThread,
                               base::Unretained(this))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
@@ -333,7 +333,7 @@ void CursorView::SetTimebaseAndIntervalOnPaintThread(base::TimeTicks timebase,
 
   DCHECK(time_source_);
   time_source_->SetTimebaseAndInterval(
-      timebase + base::TimeDelta::FromMilliseconds(kVSyncOffsetMs), interval);
+      timebase + base::Milliseconds(kVSyncOffsetMs), interval);
 }
 
 void CursorView::DidPresentCompositorFrame(

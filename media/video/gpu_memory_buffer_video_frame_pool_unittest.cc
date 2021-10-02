@@ -29,7 +29,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   void SetUp() override {
     // Seed test clock with some dummy non-zero value to avoid confusion with
     // empty base::TimeTicks values.
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1234));
+    test_clock_.Advance(base::Seconds(1234));
 
     sii_ = std::make_unique<viz::TestSharedImageInterface>();
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -491,7 +491,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   software_frame->metadata().end_of_stream = true;
   base::TimeTicks kTestReferenceTime =
-      base::TimeDelta::FromMilliseconds(12345) + base::TimeTicks();
+      base::Milliseconds(12345) + base::TimeTicks();
   software_frame->metadata().reference_time = kTestReferenceTime;
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -596,7 +596,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, StaleFramesAreExpired) {
 
   // Advance clock far enough to hit stale timer; ensure only frame_1 has its
   // resources released.
-  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::Minutes(1));
   frame_2 = nullptr;
   RunUntilIdle();
   EXPECT_EQ(3u, sii_->shared_image_count());

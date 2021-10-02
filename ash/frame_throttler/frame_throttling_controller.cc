@@ -189,7 +189,7 @@ FrameThrottlingController::GetFrameSinkIdsToThrottle() const {
 
 void FrameThrottlingController::UpdateThrottlingOnBrowserWindows() {
   context_factory_->GetHostFrameSinkManager()->Throttle(
-      GetFrameSinkIdsToThrottle(), base::TimeDelta::FromHz(throttled_fps_));
+      GetFrameSinkIdsToThrottle(), base::Hertz(throttled_fps_));
 }
 
 void FrameThrottlingController::AddArcObserver(

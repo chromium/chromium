@@ -144,7 +144,7 @@ TEST_F(DevToolsManagerTest, NoUnresponsiveDialogInInspectedContents) {
   // Start a timeout.
   inspected_rvh->GetWidget()->StartInputEventAckTimeout();
   task_environment()->FastForwardBy(kHungRendererDelay +
-                                    base::TimeDelta::FromMilliseconds(10));
+                                    base::Milliseconds(10));
   EXPECT_FALSE(delegate.renderer_unresponsive_received());
 
   // Now close devtools and check that the notification is delivered.
@@ -152,7 +152,7 @@ TEST_F(DevToolsManagerTest, NoUnresponsiveDialogInInspectedContents) {
   // Start a timeout.
   inspected_rvh->GetWidget()->StartInputEventAckTimeout();
   task_environment()->FastForwardBy(kHungRendererDelay +
-                                    base::TimeDelta::FromMilliseconds(10));
+                                    base::Milliseconds(10));
   EXPECT_TRUE(delegate.renderer_unresponsive_received());
 
   contents()->SetDelegate(nullptr);

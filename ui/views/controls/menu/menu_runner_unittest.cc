@@ -254,7 +254,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
   EXPECT_TRUE(IsItemSelected(3));
 
   // Wait out the PrefixSelector's timeout.
-  clock.Advance(base::TimeDelta::FromSeconds(10));
+  clock.Advance(base::Seconds(10));
 
   // Send Space to activate the selected menu item.
   generator.PressKey(ui::VKEY_SPACE, 0);

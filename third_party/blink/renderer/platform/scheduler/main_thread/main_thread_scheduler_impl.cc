@@ -312,7 +312,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     // The real uptime of the machine is irrelevant if we're using virtual time
     // we choose an arbitrary initial offset.
     main_thread_only().initial_virtual_time_ticks =
-        base::TimeTicks() + base::TimeDelta::FromSeconds(10);
+        base::TimeTicks() + base::Seconds(10);
     EnableVirtualTime();
     SetVirtualTimePolicy(VirtualTimePolicy::kPause);
   }
@@ -1001,7 +1001,7 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
     // Ensure that we stop running idle tasks after a few seconds of being
     // hidden.
     base::TimeDelta end_idle_when_hidden_delay =
-        base::TimeDelta::FromMilliseconds(kEndIdleWhenHiddenDelayMillis);
+        base::Milliseconds(kEndIdleWhenHiddenDelayMillis);
     control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
         FROM_HERE, end_renderer_hidden_idle_period_closure_.GetCallback(),
         end_idle_when_hidden_delay);
@@ -1209,8 +1209,7 @@ void MainThreadSchedulerImpl::DidAnimateForInputOnCompositorThread() {
                "MainThreadSchedulerImpl::DidAnimateForInputOnCompositorThread");
   base::AutoLock lock(any_thread_lock_);
   any_thread().fling_compositor_escalation_deadline =
-      helper_.NowTicks() +
-      base::TimeDelta::FromMilliseconds(kFlingEscalationLimitMillis);
+      helper_.NowTicks() + base::Milliseconds(kFlingEscalationLimitMillis);
 }
 
 void MainThreadSchedulerImpl::DidScheduleBeginMainFrame() {
@@ -1766,7 +1765,7 @@ base::TimeDelta MainThreadSchedulerImpl::EstimateLongestJankFreeTaskDuration()
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
     case UseCase::kNone:
-      return base::TimeDelta::FromMilliseconds(kRailsResponseTimeMillis);
+      return base::Milliseconds(kRailsResponseTimeMillis);
 
     case UseCase::kMainThreadCustomInputHandling:
     case UseCase::kMainThreadGesture:
@@ -1776,7 +1775,7 @@ base::TimeDelta MainThreadSchedulerImpl::EstimateLongestJankFreeTaskDuration()
 
     default:
       NOTREACHED();
-      return base::TimeDelta::FromMilliseconds(kRailsResponseTimeMillis);
+      return base::Milliseconds(kRailsResponseTimeMillis);
   }
 }
 
@@ -2674,7 +2673,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
     // Trade off for privacy: Round to seconds for times below 10 minutes and
     // minutes afterwards.
     int64_t seconds_since_backgrounded = 0;
-    if (time_since_backgrounded < base::TimeDelta::FromMinutes(10)) {
+    if (time_since_backgrounded < base::Minutes(10)) {
       seconds_since_backgrounded = time_since_backgrounded.InSeconds();
     } else {
       seconds_since_backgrounded =

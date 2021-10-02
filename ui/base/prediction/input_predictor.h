@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
   // concludes that a frame-dependent latency isn't better.
   virtual std::unique_ptr<InputData> GeneratePrediction(
       base::TimeTicks predict_time,
-      base::TimeDelta frame_interval = base::TimeDelta::FromSeconds(0)) = 0;
+      base::TimeDelta frame_interval = base::Seconds(0)) = 0;
 
   // Returns the maximum of prediction available for resampling
   // before having side effects (jitter, wrong orientation, etc..)
@@ -66,22 +66,17 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
   virtual base::TimeDelta TimeInterval() const = 0;
 
  protected:
-  static constexpr base::TimeDelta kMaxTimeDelta =
-      base::TimeDelta::FromMilliseconds(20);
+  static constexpr base::TimeDelta kMaxTimeDelta = base::Milliseconds(20);
 
   // Default time interval between events.
-  static constexpr base::TimeDelta kTimeInterval =
-      base::TimeDelta::FromMilliseconds(8);
+  static constexpr base::TimeDelta kTimeInterval = base::Milliseconds(8);
   // Minimum time interval between events.
-  static constexpr base::TimeDelta kMinTimeInterval =
-      base::TimeDelta::FromMillisecondsD(2.5);
+  static constexpr base::TimeDelta kMinTimeInterval = base::Milliseconds(2.5);
 
   // Maximum amount of prediction when resampling.
-  static constexpr base::TimeDelta kMaxResampleTime =
-      base::TimeDelta::FromMilliseconds(20);
+  static constexpr base::TimeDelta kMaxResampleTime = base::Milliseconds(20);
   // Maximum time delta for prediction.
-  static constexpr base::TimeDelta kMaxPredictionTime =
-      base::TimeDelta::FromMilliseconds(25);
+  static constexpr base::TimeDelta kMaxPredictionTime = base::Milliseconds(25);
 };
 
 }  // namespace ui

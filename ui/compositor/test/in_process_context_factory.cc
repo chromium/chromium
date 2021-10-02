@@ -359,8 +359,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
         compositor->task_runner().get());
     time_source->SetTimebaseAndInterval(
         base::TimeTicks(),
-        base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                          refresh_rate_));
+        base::Microseconds(base::Time::kMicrosecondsPerSecond / refresh_rate_));
     begin_frame_source = std::make_unique<viz::DelayBasedBeginFrameSource>(
         std::move(time_source), viz::BeginFrameSource::kNotRestartableId);
   }

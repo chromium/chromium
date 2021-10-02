@@ -55,7 +55,7 @@ class ServiceContext;
 // |AssistantManagerService|'s state won't update if it's currently in the
 // process of starting up. This is the delay before we will try to update
 // |AssistantManagerService| again.
-constexpr auto kUpdateAssistantManagerDelay = base::TimeDelta::FromSeconds(1);
+constexpr auto kUpdateAssistantManagerDelay = base::Seconds(1);
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
     : public AssistantService,

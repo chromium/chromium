@@ -43,8 +43,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
   // It is stated in cryptohome implementation that 5 minutes is enough time to
   // wait for any TPM operations. For more information, please refer to:
   // https://chromium.googlesource.com/chromiumos/platform2/+/main/cryptohome/cryptohome.cc
-  static constexpr base::TimeDelta kMaxCertDbRetrievalDelay =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kMaxCertDbRetrievalDelay = base::Minutes(5);
 
   // Called by `ChromeBrowserMainPartsAsh` to initialize a global
   // SystemTokenCertDbStorage instance.

@@ -174,7 +174,7 @@ class SyncerTest : public testing::Test,
         debug_info_getter_.get(), model_type_registry_.get(),
         "fake_invalidator_client_id", local_cache_guid(),
         mock_server_->store_birthday(), "fake_bag_of_chips",
-        /*poll_interval=*/base::TimeDelta::FromMinutes(30));
+        /*poll_interval=*/base::Minutes(30));
     auto syncer = std::make_unique<Syncer>(&cancelation_signal_);
     // The syncer is destroyed with the scheduler that owns it.
     syncer_ = syncer.get();
@@ -710,10 +710,9 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   mock_server_->SetGUClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(8), last_poll_interval_received_);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3141), last_sessions_commit_delay_);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(950),
-            last_bookmarks_commit_delay_);
+  EXPECT_EQ(base::Seconds(8), last_poll_interval_received_);
+  EXPECT_EQ(base::Seconds(3141), last_sessions_commit_delay_);
+  EXPECT_EQ(base::Milliseconds(950), last_bookmarks_commit_delay_);
   EXPECT_EQ(11, last_client_invalidation_hint_buffer_size_);
 
   command = std::make_unique<ClientCommand>();
@@ -730,10 +729,9 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   mock_server_->SetGUClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(180), last_poll_interval_received_);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2718), last_sessions_commit_delay_);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1050),
-            last_bookmarks_commit_delay_);
+  EXPECT_EQ(base::Seconds(180), last_poll_interval_received_);
+  EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
+  EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
   EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
 }
 
@@ -756,10 +754,9 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   mock_server_->SetCommitClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(8), last_poll_interval_received_);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3141), last_sessions_commit_delay_);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(950),
-            last_bookmarks_commit_delay_);
+  EXPECT_EQ(base::Seconds(8), last_poll_interval_received_);
+  EXPECT_EQ(base::Seconds(3141), last_sessions_commit_delay_);
+  EXPECT_EQ(base::Milliseconds(950), last_bookmarks_commit_delay_);
   EXPECT_EQ(11, last_client_invalidation_hint_buffer_size_);
 
   command = std::make_unique<ClientCommand>();
@@ -777,10 +774,9 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   mock_server_->SetCommitClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(180), last_poll_interval_received_);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2718), last_sessions_commit_delay_);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1050),
-            last_bookmarks_commit_delay_);
+  EXPECT_EQ(base::Seconds(180), last_poll_interval_received_);
+  EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
+  EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
   EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
 }
 

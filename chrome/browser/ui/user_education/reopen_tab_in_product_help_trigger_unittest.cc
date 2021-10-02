@@ -31,10 +31,8 @@ namespace {
 // Triggering timeouts that will be passed through Finch params. They are chosen
 // to be different than the fallback timeouts to test that
 // ReopenTabInProductHelpTrigger does use the params if they exist.
-constexpr base::TimeDelta kTabMinimumActiveDuration =
-    base::TimeDelta::FromSeconds(15);
-constexpr base::TimeDelta kNewTabOpenedTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTabMinimumActiveDuration = base::Seconds(15);
+constexpr base::TimeDelta kNewTabOpenedTimeout = base::Seconds(5);
 
 }  // namespace
 

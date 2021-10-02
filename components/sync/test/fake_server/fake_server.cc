@@ -157,7 +157,7 @@ HashAndTime UnpackProgressMarkerToken(const std::string& token) {
   }
 
   hash_and_time.time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(micros_since_windows_epoch));
+      base::Microseconds(micros_since_windows_epoch));
   return hash_and_time;
 }
 

@@ -315,8 +315,7 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
     if (frame.force_keyframe)
       flags = VPX_EFLAG_FORCE_KF;
 
-    const base::TimeDelta frame_duration =
-        base::TimeDelta::FromSecondsD(1.0 / framerate_);
+    const base::TimeDelta frame_duration = base::Seconds(1.0 / framerate_);
     if (vpx_codec_encode(&encoder_, &vpx_image, 0,
                          frame_duration.InMicroseconds(), flags,
                          VPX_DL_REALTIME) != VPX_CODEC_OK) {

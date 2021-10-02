@@ -266,7 +266,7 @@ TEST(BrowserControlsOffsetManagerTest, PartialShownHideAnimation) {
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->TopControlsShownRatio(), previous);
   }
@@ -303,7 +303,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous = manager->BottomControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->BottomControlsShownRatio(), previous);
   }
@@ -338,7 +338,7 @@ TEST(BrowserControlsOffsetManagerTest, PartialShownShowAnimation) {
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->TopControlsShownRatio(), previous);
   }
@@ -370,7 +370,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous = manager->BottomControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->BottomControlsShownRatio(), previous);
   }
@@ -402,7 +402,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->TopControlsShownRatio(), previous);
   }
@@ -434,7 +434,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->TopControlsShownRatio(), previous);
   }
@@ -470,7 +470,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->TopControlsShownRatio(), previous);
   }
@@ -506,7 +506,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->TopControlsShownRatio(), previous);
   }
@@ -574,7 +574,7 @@ TEST(BrowserControlsOffsetManagerTest, PinchBeginStartsAnimationIfNecessary) {
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->TopControlsShownRatio(), previous);
   }
@@ -600,7 +600,7 @@ TEST(BrowserControlsOffsetManagerTest, PinchBeginStartsAnimationIfNecessary) {
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->TopControlsShownRatio(), previous);
   }
@@ -630,7 +630,7 @@ TEST(BrowserControlsOffsetManagerTest, HeightIncreaseWhenFullyShownAnimation) {
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->TopControlsShownRatio(), previous);
   }
@@ -664,7 +664,7 @@ TEST(BrowserControlsOffsetManagerTest, HeightDecreaseWhenFullyShownAnimation) {
 
   while (manager->HasAnimation()) {
     previous = manager->TopControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->TopControlsShownRatio(), previous);
   }
@@ -705,7 +705,7 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightIncreaseWhenHiddenAnimation) {
   while (manager->HasAnimation()) {
     previous_ratio = manager->TopControlsShownRatio();
     previous_min_height_offset = manager->TopControlsMinHeightOffset();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->TopControlsShownRatio(), previous_ratio);
     // Min-height offset is also animated.
@@ -754,7 +754,7 @@ TEST(BrowserControlsOffsetManagerTest,
   while (manager->HasAnimation()) {
     previous_ratio = manager->TopControlsShownRatio();
     previous_min_height_offset = manager->TopControlsMinHeightOffset();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LT(manager->TopControlsShownRatio(), previous_ratio);
     // Min-height offset is also animated.
@@ -815,7 +815,7 @@ TEST(BrowserControlsOffsetManagerTest,
   float previous = manager->TopControlsShownRatio();
   manager->Animate(time);
   // Forward a little bit.
-  time = base::TimeDelta::FromMicroseconds(100) + time;
+  time = base::Microseconds(100) + time;
   manager->Animate(time);
 
   // Animation should be in progress.
@@ -1130,7 +1130,7 @@ TEST(BrowserControlsOffsetManagerTest, ChangingBottomHeightFromZeroAnimates) {
 
   while (manager->HasAnimation()) {
     previous_ratio = manager->BottomControlsShownRatio();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GT(manager->BottomControlsShownRatio(), previous_ratio);
   }
@@ -1227,7 +1227,7 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightChangeUpdatesAnimation) {
 
   // Make sure the animation finishes at the new min-height.
   while (manager->HasAnimation()) {
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
   }
   EXPECT_FALSE(manager->HasAnimation());
@@ -1255,7 +1255,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous_min_height_offset = manager->TopControlsMinHeightOffset();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_GE(manager->TopControlsMinHeightOffset(),
               previous_min_height_offset);
@@ -1288,7 +1288,7 @@ TEST(BrowserControlsOffsetManagerTest,
 
   while (manager->HasAnimation()) {
     previous_min_height_offset = manager->TopControlsMinHeightOffset();
-    time = base::TimeDelta::FromMicroseconds(100) + time;
+    time = base::Microseconds(100) + time;
     manager->Animate(time);
     EXPECT_LE(manager->TopControlsMinHeightOffset(),
               previous_min_height_offset);

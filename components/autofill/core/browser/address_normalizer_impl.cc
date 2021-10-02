@@ -102,7 +102,7 @@ class AddressNormalizerImpl::NormalizationRequest {
                        weak_ptr_factory_.GetWeakPtr(),
                        /*success=*/false,
                        /*address_validator=*/nullptr),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        base::Seconds(timeout_seconds));
   }
 
   NormalizationRequest(const NormalizationRequest&) = delete;

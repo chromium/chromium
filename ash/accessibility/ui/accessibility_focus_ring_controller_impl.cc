@@ -45,13 +45,13 @@ constexpr float kHighlightOpacity = 0.3f;
 
 AccessibilityFocusRingControllerImpl::AccessibilityFocusRingControllerImpl() {
   cursor_animation_info_.fade_in_time =
-      base::TimeDelta::FromMilliseconds(kCursorFadeInTimeMilliseconds);
+      base::Milliseconds(kCursorFadeInTimeMilliseconds);
   cursor_animation_info_.fade_out_time =
-      base::TimeDelta::FromMilliseconds(kCursorFadeOutTimeMilliseconds);
+      base::Milliseconds(kCursorFadeOutTimeMilliseconds);
   caret_animation_info_.fade_in_time =
-      base::TimeDelta::FromMilliseconds(kCaretFadeInTimeMilliseconds);
+      base::Milliseconds(kCaretFadeInTimeMilliseconds);
   caret_animation_info_.fade_out_time =
-      base::TimeDelta::FromMilliseconds(kCaretFadeOutTimeMilliseconds);
+      base::Milliseconds(kCaretFadeOutTimeMilliseconds);
 }
 
 AccessibilityFocusRingControllerImpl::~AccessibilityFocusRingControllerImpl() =
@@ -156,13 +156,12 @@ void AccessibilityFocusRingControllerImpl::SetNoFadeForTesting() {
        ++iter) {
     iter->second->set_no_fade_for_testing();
     iter->second->focus_animation_info()->fade_in_time = base::TimeDelta();
-    iter->second->focus_animation_info()->fade_out_time =
-        base::TimeDelta::FromHours(1);
+    iter->second->focus_animation_info()->fade_out_time = base::Hours(1);
   }
   cursor_animation_info_.fade_in_time = base::TimeDelta();
-  cursor_animation_info_.fade_out_time = base::TimeDelta::FromHours(1);
+  cursor_animation_info_.fade_out_time = base::Hours(1);
   caret_animation_info_.fade_in_time = base::TimeDelta();
-  caret_animation_info_.fade_out_time = base::TimeDelta::FromHours(1);
+  caret_animation_info_.fade_out_time = base::Hours(1);
 }
 
 const AccessibilityFocusRingGroup*

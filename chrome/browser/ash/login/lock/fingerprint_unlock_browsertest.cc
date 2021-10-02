@@ -218,14 +218,12 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintNotTimedOutTest) {
   base::TimeDelta expiration_time = GetExpirationTime();
-  ShowLockScreenAndAdvanceTime(expiration_time / 2,
-                               base::TimeDelta::FromSeconds(0));
+  ShowLockScreenAndAdvanceTime(expiration_time / 2, base::Seconds(0));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintTimedOutTest) {
   base::TimeDelta expiration_time = GetExpirationTime();
-  ShowLockScreenAndAdvanceTime(expiration_time,
-                               base::TimeDelta::FromSeconds(0));
+  ShowLockScreenAndAdvanceTime(expiration_time, base::Seconds(0));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, TimeoutIncludesSuspendedTime) {

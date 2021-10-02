@@ -43,7 +43,7 @@ class ShapeResultPerfTest {
 
   ShapeResultPerfTest()
       : timer(kWarmupRuns,
-              base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+              base::Milliseconds(kTimeLimitMillis),
               kTimeCheckInterval) {}
 
  protected:

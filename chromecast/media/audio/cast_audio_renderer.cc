@@ -508,7 +508,7 @@ void CastAudioRenderer::UpdateMediaTime(
   }
   reference_time_ =
       base::TimeTicks::FromInternalValue(reference_timestamp_microseconds);
-  media_pos_ = base::TimeDelta::FromMicroseconds(media_timestamp_microseconds);
+  media_pos_ = base::Microseconds(media_timestamp_microseconds);
   RUN_ON_MAIN_THREAD(ScheduleFetchNextBuffer);
 }
 

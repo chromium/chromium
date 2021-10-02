@@ -70,7 +70,7 @@ int MaxRequestsCountForInterval(const double interval_seconds) {
 
 int IntervalForNextRequest(const int requests) {
   const base::TimeDelta initial_interval =
-      base::TimeDelta::FromSecondsD(kInitialRefreshIntervalSec);
+      base::Seconds(kInitialRefreshIntervalSec);
   return static_cast<int>(initial_interval.InSecondsF() *
                           (2 << (static_cast<unsigned>(requests) *
                                  kRefreshIntervalRequestsCountMultiplier)));
@@ -193,7 +193,7 @@ TZRequest::~TZRequest() = default;
 void TZRequest::StartRequestOnNetworkAvailable() {
   resolver_->RecordAttempt();
   resolver_->geolocation_provider()->RequestGeolocation(
-      base::TimeDelta::FromSeconds(kRefreshTimeZoneTimeoutSeconds),
+      base::Seconds(kRefreshTimeZoneTimeoutSeconds),
       resolver_->ShouldSendWiFiGeolocationData(),
       resolver_->ShouldSendCellularGeolocationData(),
       base::BindOnce(&TZRequest::OnLocationResolved, AsWeakPtr()));
@@ -216,8 +216,7 @@ void TZRequest::OnLocationResolved(const Geoposition& position,
   if (!position.Valid())
     return;
 
-  const base::TimeDelta timeout =
-      base::TimeDelta::FromSeconds(kRefreshTimeZoneTimeoutSeconds);
+  const base::TimeDelta timeout = base::Seconds(kRefreshTimeZoneTimeoutSeconds);
 
   if (elapsed >= timeout) {
     VLOG(1) << "Refresh TimeZone: got location after timeout ("
@@ -280,8 +279,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
   const base::Time last_refresh_at =
       base::Time::FromInternalValue(last_refresh_at_raw);
   const base::Time next_refresh_not_before =
-      last_refresh_at +
-      base::TimeDelta::FromSecondsD(kRefreshTimeZoneMinimumDelayOnRestartSec);
+      last_refresh_at + base::Seconds(kRefreshTimeZoneMinimumDelayOnRestartSec);
   if (next_refresh_not_before > base::Time::Now()) {
     requests_count_ = kRefreshTimeZoneInitialRequestCountOnRateLimit;
     VLOG(1) << "TimeZoneResolverImpl(): initialize requests_count_="
@@ -308,13 +306,13 @@ base::TimeDelta
 TimeZoneResolver::TimeZoneResolverImpl::CalculateNextInterval() {
   // This is initial request, which should be served immediately.
   if (requests_count_ == 0) {
-    return base::TimeDelta::FromSecondsD(kInitialRefreshIntervalSec);
+    return base::Seconds(kInitialRefreshIntervalSec);
   }
 
   // See comment to kRefreshIntervalRequestsCountMultiplier.
   if (requests_count_ >=
       MaxRequestsCountForInterval(kMaximumRefreshIntervalSec)) {
-    return base::TimeDelta::FromSecondsD(kMaximumRefreshIntervalSec);
+    return base::Seconds(kMaximumRefreshIntervalSec);
   }
 
   const int base_interval = IntervalForNextRequest(requests_count_);
@@ -322,7 +320,7 @@ TimeZoneResolver::TimeZoneResolverImpl::CalculateNextInterval() {
 
   // Add jitter to level request rate.
   const base::TimeDelta interval(
-      base::TimeDelta::FromSecondsD(base::RandDouble() * 2 * base_interval));
+      base::Seconds(base::RandDouble() * 2 * base_interval));
   VLOG(1) << "TimeZoneResolverImpl::CalculateNextInterval(): interval="
           << interval.InSecondsF();
   return interval;

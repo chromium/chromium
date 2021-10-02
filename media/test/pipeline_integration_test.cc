@@ -145,7 +145,7 @@ static base::Time kLiveTimelineOffset() {
   base::Time timeline_offset;
   EXPECT_TRUE(base::Time::FromUTCExploded(exploded_time, &timeline_offset));
 
-  timeline_offset += base::TimeDelta::FromMicroseconds(123);
+  timeline_offset += base::Microseconds(123);
 
   return timeline_offset;
 }
@@ -732,7 +732,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed) {
 }
 
 base::TimeDelta TimestampMs(int milliseconds) {
-  return base::TimeDelta::FromMilliseconds(milliseconds);
+  return base::Milliseconds(milliseconds);
 }
 
 TEST_F(PipelineIntegrationTest, WaveLayoutChange) {
@@ -1003,14 +1003,14 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOggTrimmingHashed) {
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_1, GetAudioHash());
 
   // Seek within the pre-skip section, this should not cause a beep.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromSeconds(1)));
+  ASSERT_TRUE(Seek(base::Seconds(1)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_2, GetAudioHash());
 
   // Seek somewhere outside of the pre-skip / end-trim section, demuxer should
   // correctly preroll enough to accurately decode this segment.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromMilliseconds(6360)));
+  ASSERT_TRUE(Seek(base::Milliseconds(6360)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_3, GetAudioHash());
@@ -1025,14 +1025,14 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusWebmTrimmingHashed) {
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_1, GetAudioHash());
 
   // Seek within the pre-skip section, this should not cause a beep.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromSeconds(1)));
+  ASSERT_TRUE(Seek(base::Seconds(1)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_2, GetAudioHash());
 
   // Seek somewhere outside of the pre-skip / end-trim section, demuxer should
   // correctly preroll enough to accurately decode this segment.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromMilliseconds(6360)));
+  ASSERT_TRUE(Seek(base::Milliseconds(6360)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_3, GetAudioHash());
@@ -1051,14 +1051,14 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusMp4TrimmingHashed) {
   // EXPECT_HASH_EQ(kOpusEndTrimmingHash_1, GetAudioHash());
 
   // Seek within the pre-skip section, this should not cause a beep.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromSeconds(1)));
+  ASSERT_TRUE(Seek(base::Seconds(1)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   // EXPECT_HASH_EQ(kOpusEndTrimmingHash_2, GetAudioHash());
 
   // Seek somewhere outside of the pre-skip / end-trim section, demuxer should
   // correctly preroll enough to accurately decode this segment.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromMilliseconds(6360)));
+  ASSERT_TRUE(Seek(base::Milliseconds(6360)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   // EXPECT_HASH_EQ(kOpusEndTrimmingHash_3, GetAudioHash());
@@ -1076,7 +1076,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusWebmTrimmingHashed) {
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_1, GetAudioHash());
 
   // Seek within the pre-skip section, this should not cause a beep.
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta seek_time = base::Seconds(1);
   source.Seek(seek_time);
   ASSERT_TRUE(Seek(seek_time));
   Play();
@@ -1085,7 +1085,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusWebmTrimmingHashed) {
 
   // Seek somewhere outside of the pre-skip / end-trim section, demuxer should
   // correctly preroll enough to accurately decode this segment.
-  seek_time = base::TimeDelta::FromMilliseconds(6360);
+  seek_time = base::Milliseconds(6360);
   source.Seek(seek_time);
   ASSERT_TRUE(Seek(seek_time));
   Play();
@@ -1104,7 +1104,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
   // achieve correctness either. Delete this comment and remove the manual
   // SetAppendWindow() if/when https://crbug.com/876544 is fixed.
   source.SetAppendWindow(base::TimeDelta(), base::TimeDelta(),
-                         base::TimeDelta::FromMicroseconds(12720021));
+                         base::Microseconds(12720021));
 
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithMediaSource(&source, kHashed, nullptr));
@@ -1116,7 +1116,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
   EXPECT_HASH_EQ(kOpusEndTrimmingHash_1, GetAudioHash());
 
   // Seek within the pre-skip section, this should not cause a beep.
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta seek_time = base::Seconds(1);
   source.Seek(seek_time);
   ASSERT_TRUE(Seek(seek_time));
   Play();
@@ -1125,7 +1125,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
 
   // Seek somewhere outside of the pre-skip / end-trim section, demuxer should
   // correctly preroll enough to accurately decode this segment.
-  seek_time = base::TimeDelta::FromMilliseconds(6360);
+  seek_time = base::Milliseconds(6360);
   source.Seek(seek_time);
   ASSERT_TRUE(Seek(seek_time));
   Play();
@@ -1161,7 +1161,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusPrerollExceedsCodecDelay) {
 
   // Verify that this file's preroll is not eclipsed by the codec delay so we
   // can detect when preroll is not properly performed.
-  base::TimeDelta codec_delay = base::TimeDelta::FromSecondsD(
+  base::TimeDelta codec_delay = base::Seconds(
       static_cast<double>(config.codec_delay()) / config.samples_per_second());
   ASSERT_GT(config.seek_preroll(), codec_delay);
 
@@ -1170,7 +1170,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusPrerollExceedsCodecDelay) {
   EXPECT_HASH_EQ(kOpusSmallCodecDelayHash_1, GetAudioHash());
 
   // Seek halfway through the file to invoke seek preroll.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromSecondsD(1.414)));
+  ASSERT_TRUE(Seek(base::Seconds(1.414)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_HASH_EQ(kOpusSmallCodecDelayHash_2, GetAudioHash());
@@ -1184,7 +1184,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusMp4PrerollExceedsCodecDelay) {
 
   // Verify that this file's preroll is not eclipsed by the codec delay so we
   // can detect when preroll is not properly performed.
-  base::TimeDelta codec_delay = base::TimeDelta::FromSecondsD(
+  base::TimeDelta codec_delay = base::Seconds(
       static_cast<double>(config.codec_delay()) / config.samples_per_second());
   ASSERT_GT(config.seek_preroll(), codec_delay);
 
@@ -1197,7 +1197,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusMp4PrerollExceedsCodecDelay) {
   // EXPECT_HASH_EQ(kOpusSmallCodecDelayHash_1, GetAudioHash());
 
   // Seek halfway through the file to invoke seek preroll.
-  ASSERT_TRUE(Seek(base::TimeDelta::FromSecondsD(1.414)));
+  ASSERT_TRUE(Seek(base::Seconds(1.414)));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   // EXPECT_HASH_EQ(kOpusSmallCodecDelayHash_2, GetAudioHash());
@@ -1214,7 +1214,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusPrerollExceedsCodecDelay) {
 
   // Verify that this file's preroll is not eclipsed by the codec delay so we
   // can detect when preroll is not properly performed.
-  base::TimeDelta codec_delay = base::TimeDelta::FromSecondsD(
+  base::TimeDelta codec_delay = base::Seconds(
       static_cast<double>(config.codec_delay()) / config.samples_per_second());
   ASSERT_GT(config.seek_preroll(), codec_delay);
 
@@ -1223,7 +1223,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusPrerollExceedsCodecDelay) {
   EXPECT_HASH_EQ(kOpusSmallCodecDelayHash_1, GetAudioHash());
 
   // Seek halfway through the file to invoke seek preroll.
-  base::TimeDelta seek_time = base::TimeDelta::FromSecondsD(1.414);
+  base::TimeDelta seek_time = base::Seconds(1.414);
   source.Seek(seek_time);
   ASSERT_TRUE(Seek(seek_time));
   Play();
@@ -1243,7 +1243,7 @@ TEST_F(PipelineIntegrationTest,
   // achieve correctness either. Delete this comment and remove the manual
   // SetAppendWindow() if/when https://crbug.com/876544 is fixed.
   source.SetAppendWindow(base::TimeDelta(), base::TimeDelta(),
-                         base::TimeDelta::FromMicroseconds(2740834));
+                         base::Microseconds(2740834));
 
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithMediaSource(&source, kHashed, nullptr));
@@ -1254,7 +1254,7 @@ TEST_F(PipelineIntegrationTest,
 
   // Verify that this file's preroll is not eclipsed by the codec delay so we
   // can detect when preroll is not properly performed.
-  base::TimeDelta codec_delay = base::TimeDelta::FromSecondsD(
+  base::TimeDelta codec_delay = base::Seconds(
       static_cast<double>(config.codec_delay()) / config.samples_per_second());
   ASSERT_GT(config.seek_preroll(), codec_delay);
 
@@ -1263,7 +1263,7 @@ TEST_F(PipelineIntegrationTest,
   EXPECT_HASH_EQ(kOpusSmallCodecDelayHash_1, GetAudioHash());
 
   // Seek halfway through the file to invoke seek preroll.
-  base::TimeDelta seek_time = base::TimeDelta::FromSecondsD(1.414);
+  base::TimeDelta seek_time = base::Seconds(1.414);
   source.Seek(seek_time);
   ASSERT_TRUE(Seek(seek_time));
   Play();
@@ -1489,8 +1489,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_AV1_WebM) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-av1-640x480.webm");
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -1517,8 +1517,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_WebM) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360.webm");
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -1551,7 +1551,7 @@ TEST_F(PipelineIntegrationTest, MSE_AudioConfigChange_WebM) {
 
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-320x240-audio-only-48khz.webm");
-  ASSERT_TRUE(source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
+  ASSERT_TRUE(source.AppendAtTime(base::Seconds(kAppendTimeSec),
                                   second_file->data(),
                                   second_file->data_size()));
   source.EndOfStream();
@@ -1576,8 +1576,8 @@ TEST_F(PipelineIntegrationTest, MSE_RemoveUpdatesBufferedRanges) {
   EXPECT_EQ(0, buffered_ranges.start(0).InMilliseconds());
   EXPECT_EQ(k320WebMFileDurationMs, buffered_ranges.end(0).InMilliseconds());
 
-  source.RemoveRange(base::TimeDelta::FromMilliseconds(1000),
-                     base::TimeDelta::FromMilliseconds(k320WebMFileDurationMs));
+  source.RemoveRange(base::Milliseconds(1000),
+                     base::Milliseconds(k320WebMFileDurationMs));
   task_environment_.RunUntilIdle();
 
   buffered_ranges = pipeline_->GetBufferedTimeRanges();
@@ -1617,7 +1617,7 @@ TEST_F(PipelineIntegrationTest, MSE_FillUpBuffer) {
 
     buffered_ranges = pipeline_->GetBufferedTimeRanges();
   } while (buffered_ranges.size() == 1 &&
-           buffered_ranges.start(0) == base::TimeDelta::FromSeconds(0));
+           buffered_ranges.start(0) == base::Seconds(0));
 
   EXPECT_EQ(1u, buffered_ranges.size());
   source.Shutdown();
@@ -1642,7 +1642,7 @@ TEST_F(PipelineIntegrationTest, MSE_GCWithDisabledVideoStream) {
 
   // Wait until audio playback advances past 2 seconds and call MSE GC algorithm
   // to prepare for more data to be appended.
-  base::TimeDelta media_time = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta media_time = base::Seconds(2);
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(media_time));
   // At this point the video SourceBuffer is over the memory limit (see the
   // SetMemoryLimits comment above), but MSE GC should be able to remove some
@@ -1669,8 +1669,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_Encrypted_WebM) {
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360-av_enc-av.webm");
 
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -1699,8 +1699,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_ClearThenEncrypted_WebM) {
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360-av_enc-av.webm");
 
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -1732,8 +1732,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_WebM) {
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360.webm");
 
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -1967,8 +1967,7 @@ TEST_F(PipelineIntegrationTest, MSE_MP3_TimestampOffset) {
 
   // There are 576 silent frames at the start of this mp3.  The second append
   // should trim them off.
-  const base::TimeDelta mp3_preroll_duration =
-      base::TimeDelta::FromSecondsD(576.0 / 44100);
+  const base::TimeDelta mp3_preroll_duration = base::Seconds(576.0 / 44100);
   const base::TimeDelta append_time =
       source.last_timestamp_offset() - mp3_preroll_duration;
 
@@ -2026,7 +2025,7 @@ TEST_F(PipelineIntegrationTest, MSE_ADTS_TimestampOffset) {
   // Trim off multiple frames off the beginning of the segment which will cause
   // the first decoded frame to be incorrect if preroll isn't implemented.
   const base::TimeDelta adts_preroll_duration =
-      base::TimeDelta::FromSecondsD(2.5 * 1024 / 44100);
+      base::Seconds(2.5 * 1024 / 44100);
   const base::TimeDelta append_time =
       source.last_timestamp_offset() - adts_preroll_duration;
 
@@ -2116,8 +2115,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_MP4) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -2145,8 +2144,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_Encrypted_MP4_CENC_VideoOnly) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -2172,8 +2171,8 @@ TEST_F(PipelineIntegrationTest,
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(gfx::Size(1280, 720))).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-1280x720-v_frag-cenc-key_rotation.mp4");
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
   source.EndOfStream();
 
   Play();
@@ -2199,8 +2198,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_ClearThenEncrypted_MP4_CENC) {
       ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
   source.set_expected_append_result(
       TestMediaSource::ExpectedAppendResult::kFailure);
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
 
   source.EndOfStream();
 
@@ -2227,8 +2226,8 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_MP4_CENC) {
 
   source.set_expected_append_result(
       TestMediaSource::ExpectedAppendResult::kFailure);
-  source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
-                      second_file->data(), second_file->data_size());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->data(),
+                      second_file->data_size());
 
   source.EndOfStream();
 
@@ -2748,17 +2747,15 @@ TEST_F(PipelineIntegrationTest, Spherical) {
 // Verify audio decoder & renderer can handle aborted demuxer reads.
 TEST_F(PipelineIntegrationTest, MSE_ChunkDemuxerAbortRead_AudioOnly) {
   ASSERT_TRUE(TestSeekDuringRead("bear-320x240-audio-only.webm", 16384,
-                                 base::TimeDelta::FromMilliseconds(464),
-                                 base::TimeDelta::FromMilliseconds(617), 0x10CA,
-                                 19730));
+                                 base::Milliseconds(464),
+                                 base::Milliseconds(617), 0x10CA, 19730));
 }
 
 // Verify video decoder & renderer can handle aborted demuxer reads.
 TEST_F(PipelineIntegrationTest, MSE_ChunkDemuxerAbortRead_VideoOnly) {
   ASSERT_TRUE(TestSeekDuringRead("bear-320x240-video-only.webm", 32768,
-                                 base::TimeDelta::FromMilliseconds(167),
-                                 base::TimeDelta::FromMilliseconds(1668),
-                                 0x1C896, 65536));
+                                 base::Milliseconds(167),
+                                 base::Milliseconds(1668), 0x1C896, 65536));
 }
 
 TEST_F(PipelineIntegrationTest,
@@ -2956,8 +2953,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
   ASSERT_EQ(PIPELINE_OK, Start("nonzero-start-time.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(396000),
-            demuxer_->GetStartTime());
+  ASSERT_EQ(base::Microseconds(396000), demuxer_->GetStartTime());
 }
 
 }  // namespace media

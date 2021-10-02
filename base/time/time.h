@@ -638,7 +638,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   //
   //   // Deserialization:
   //   base::Time last_updated = base::Time::FromDeltaSinceWindowsEpoch(
-  //       base::TimeDelta::FromMicroseconds(LoadFromDatabase()));
+  //       base::Microseconds(LoadFromDatabase()));
   //
   // Do not use `FromInternalValue()` or `ToInternalValue()` for this purpose.
   static Time FromDeltaSinceWindowsEpoch(TimeDelta delta);

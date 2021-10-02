@@ -2095,7 +2095,7 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
   double time_offset_s =
       reversed ? EffectEnd().InSecondsF() - current_time.value().InSecondsF()
                : current_time.value().InSecondsF();
-  return base::TimeDelta::FromSecondsD(time_offset_s / fabs(playback_rate));
+  return base::Seconds(time_offset_s / fabs(playback_rate));
 }
 
 void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
@@ -2488,7 +2488,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
     DCHECK(current_time);
     To<KeyframeEffect>(content_.Get())
         ->PauseAnimationForTestingOnCompositor(
-            base::TimeDelta::FromSecondsD(current_time.value().InSecondsF()));
+            base::Seconds(current_time.value().InSecondsF()));
   }
 
   // Do not wait for animation ready to lock in the hold time. Otherwise,

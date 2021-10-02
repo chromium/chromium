@@ -464,7 +464,7 @@ base::TimeDelta GetConditionalFocusWindow() {
   if (!custom_window.empty()) {
     int64_t ms;
     if (base::StringToInt64(custom_window, &ms) && ms >= 0) {
-      return base::TimeDelta::FromMilliseconds(ms);
+      return base::Milliseconds(ms);
     } else {
       LOG(ERROR) << "Could not parse custom conditional focus window.";
     }
@@ -472,7 +472,7 @@ base::TimeDelta GetConditionalFocusWindow() {
 
   // If this value is changed, some of the histograms associated with
   // Conditional Focus should also change.
-  return base::TimeDelta::FromSeconds(1);
+  return base::Seconds(1);
 }
 #endif
 }  // namespace

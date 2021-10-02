@@ -171,7 +171,7 @@ TEST_F(WorkerSchedulerProxyTest, VisibilitySignalReceived) {
          SchedulingLifecycleState::kHidden);
 
   // Trigger full throttling.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
   throtting_state_changed.Wait();
   DCHECK(worker_thread->GetWorkerScheduler()->lifecycle_state() ==
          SchedulingLifecycleState::kThrottled);

@@ -63,7 +63,7 @@ bool IsRendererPasteAllowed(RenderFrameHost& render_frame_host) {
 //  - Scans that succeed will apply their verdicts without the risk that their
 //    associated IsPasteContentAllowedRequest is already too old.
 const base::TimeDelta ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 ClipboardHostImpl::IsPasteContentAllowedRequest::
     IsPasteContentAllowedRequest() = default;

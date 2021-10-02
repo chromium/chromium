@@ -149,8 +149,7 @@ void SecurityKeyAuthHandler::SetSecurityKeySocketName(
 SecurityKeyAuthHandlerPosix::SecurityKeyAuthHandlerPosix(
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner)
     : file_task_runner_(file_task_runner),
-      request_timeout_(
-          base::TimeDelta::FromSeconds(kDefaultRequestTimeoutSeconds)) {}
+      request_timeout_(base::Seconds(kDefaultRequestTimeoutSeconds)) {}
 
 SecurityKeyAuthHandlerPosix::~SecurityKeyAuthHandlerPosix() {
   DCHECK(thread_checker_.CalledOnValidThread());

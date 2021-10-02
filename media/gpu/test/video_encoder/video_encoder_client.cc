@@ -352,8 +352,7 @@ VideoEncoderClient::CreateBitstreamRef(
       0u /* offset */, metadata.payload_size_bytes);
   if (!decoder_buffer)
     return nullptr;
-  decoder_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(frame_index_));
+  decoder_buffer->set_timestamp(base::Microseconds(frame_index_));
 
   return BitstreamProcessor::BitstreamRef::Create(
       std::move(decoder_buffer), metadata, bitstream_buffer_id,

@@ -85,7 +85,7 @@ void NowPlayingInfoCenterDelegate::SetPosition(
 
 void NowPlayingInfoCenterDelegate::StartTimer() {
   timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+      FROM_HERE, base::Milliseconds(100),
       base::BindOnce(
           &NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition,
           base::Unretained(this)));

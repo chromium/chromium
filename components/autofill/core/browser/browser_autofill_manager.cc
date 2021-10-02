@@ -2039,8 +2039,7 @@ void BrowserAutofillManager::OnFormProcessed(
 
     // Start a new timer to trigger refill.
     filling_context->on_refill_timer.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kWaitTimeForDynamicFormsMs),
+        FROM_HERE, base::Milliseconds(kWaitTimeForDynamicFormsMs),
         base::BindRepeating(&BrowserAutofillManager::TriggerRefill,
                             weak_ptr_factory_.GetWeakPtr(), form));
   }

@@ -128,8 +128,7 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
   const base::span<const uint8_t> kValidStunData = util::GetStunHeader();
   const net::NetworkTrafficAnnotationTag kStunTag =
       util::GetStunNetworkAnnotationTag();
-  const base::TimeDelta kTimeoutAfterHostResolution =
-      base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTimeoutAfterHostResolution = base::Seconds(10);
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -147,9 +146,9 @@ TEST_F(UdpProberWithFakeNetworkContextTest, SuccessfulEndToEndResponse) {
                                  /*udp_send_complete_code=*/net::OK,
                                  /*udp_on_received_code=*/net::OK,
                                  udp_on_received_data);
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::TimeDelta::FromSeconds(1));
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
+               /*receive_delay=*/base::Seconds(1));
   RunProberExpectingResult(net::OK, ProbeExitEnum::kSuccess);
 }
 
@@ -189,7 +188,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpConnection) {
       /*udp_send_code=*/absl::nullopt,
       /*udp_on_received_code=*/absl::nullopt,
       /*udp_on_received_data=*/absl::nullopt);
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
                /*send_delay=*/absl::nullopt,
                /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_CONNECTION_FAILED,
@@ -205,7 +204,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpConnection) {
                                  /*udp_send_code=*/absl::nullopt,
                                  /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/absl::nullopt);
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
                /*send_delay=*/absl::nullopt,
                /*receive_delay=*/absl::nullopt);
   fake_network_context()->set_disconnect_during_udp_connection_attempt(true);
@@ -222,8 +221,8 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpSend) {
                                  /*udp_send_code=*/net::ERR_CONNECTION_FAILED,
                                  /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/absl::nullopt);
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
                /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_CONNECTION_FAILED,
                            ProbeExitEnum::kSendFailure);
@@ -238,8 +237,8 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpSend) {
                                  /*udp_send_code=*/absl::nullopt,
                                  /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/absl::nullopt);
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
                /*receive_delay=*/absl::nullopt);
   fake_network_context()->SetDisconnectDuringUdpSendAttempt(true);
   RunProberExpectingResult(net::ERR_FAILED,
@@ -256,9 +255,9 @@ TEST_F(UdpProberWithFakeNetworkContextTest, BadUdpNetworkCodeOnReceive) {
       /*udp_send_code=*/net::OK,
       /*udp_on_received_code=*/net::ERR_CONNECTION_FAILED,
       /*udp_on_received_data=*/absl::nullopt);
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::TimeDelta::FromSeconds(1));
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
+               /*receive_delay=*/base::Seconds(1));
   RunProberExpectingResult(net::ERR_CONNECTION_FAILED,
                            ProbeExitEnum::kNetworkErrorOnReceiveFailure);
 }
@@ -272,9 +271,9 @@ TEST_F(UdpProberWithFakeNetworkContextTest, NoDataReceivedOnReceiveFailure) {
                                  /*udp_send_code=*/net::OK,
                                  /*udp_on_received_code*/ net::OK,
                                  /*udp_on_received_data=*/{});
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::TimeDelta::FromSeconds(1));
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
+               /*receive_delay=*/base::Seconds(1));
   RunProberExpectingResult(net::ERR_FAILED,
                            ProbeExitEnum::kNoDataReceivedFailure);
 }
@@ -288,9 +287,9 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpReceive) {
                                  /*udp_send_code=*/net::OK,
                                  /*udp_on_received_code=*/net::OK,
                                  /*udp_on_received_data=*/{});
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::TimeDelta::FromSeconds(1));
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
+               /*receive_delay=*/base::Seconds(1));
   fake_network_context()->SetDisconnectDuringUdpReceiveAttempt(true);
   RunProberExpectingResult(net::ERR_FAILED,
                            ProbeExitEnum::kMojoDisconnectFailure);
@@ -305,7 +304,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpConnection) {
                                  /*udp_send_complete_code=*/absl::nullopt,
                                  /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/{});
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(15),
+  SetUdpDelays(/*connection_delay=*/base::Seconds(15),
                /*send_delay=*/absl::nullopt,
                /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout);
@@ -320,8 +319,8 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpSend) {
                                  /*udp_send_complete_code=*/net::OK,
                                  /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/{});
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(15),
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(15),
                /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout);
 }
@@ -335,9 +334,9 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpReceive) {
                                  /*udp_send_complete_code=*/net::OK,
                                  /*udp_on_received_code=*/net::OK,
                                  /*udp_on_received_data=*/{});
-  SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::TimeDelta::FromSeconds(15));
+  SetUdpDelays(/*connection_delay=*/base::Seconds(1),
+               /*send_delay=*/base::Seconds(1),
+               /*receive_delay=*/base::Seconds(15));
   RunProberExpectingResult(net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout);
 }
 

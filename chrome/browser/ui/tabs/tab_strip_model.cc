@@ -147,8 +147,7 @@ class RenderWidgetHostVisibilityTracker final
     if (became_visible) {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.SelectionToVisibilityRequestTime", timer_.Elapsed(),
-          base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(3),
-          50);
+          base::Microseconds(1), base::Seconds(3), 50);
       TRACE_EVENT_NESTABLE_ASYNC_END0("ui,latency",
                                       "TabSwitchVisibilityRequest", this);
       observation_.Reset();
@@ -317,7 +316,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate, Profile* profile)
   group_model_ = std::make_unique<TabGroupModel>(this);
 
   constexpr base::TimeDelta kTabScrubbingHistogramIntervalTime =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 
   last_tab_switch_timestamp_ = base::TimeTicks::Now();
   tab_scrubbing_interval_timer_.Start(
@@ -575,7 +574,7 @@ void TabStripModel::ActivateTabAt(int index, UserGestureDetails user_gesture) {
   if (user_gesture.type == GestureType::kMouse ||
       user_gesture.type == GestureType::kKeyboard) {
     constexpr base::TimeDelta kMaxTimeConsideredScrubbing =
-        base::TimeDelta::FromMilliseconds(1500);
+        base::Milliseconds(1500);
     base::TimeDelta elapsed_time_since_tab_switch =
         base::TimeTicks::Now() - last_tab_switch_timestamp_;
     if (elapsed_time_since_tab_switch <= kMaxTimeConsideredScrubbing) {

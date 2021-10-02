@@ -40,16 +40,14 @@ void SchedulePulsingAnimation(ui::Layer* layer) {
   views::AnimationBuilder builder;
   views::AnimationSequenceBlock block = builder.Repeatedly();
   for (size_t i = 0; i < base::size(kAnimationOpacity); ++i) {
-    block = block
-                .SetDuration(
-                    base::TimeDelta::FromMilliseconds(kAnimationDurationInMs))
+    block = block.SetDuration(base::Milliseconds(kAnimationDurationInMs))
                 .SetOpacity(layer, kAnimationOpacity[i])
                 .SetTransform(layer,
                               gfx::GetScaleTransform(local_bounds.CenterPoint(),
                                                      kAnimationScale[i]))
                 .Then();
   }
-  block.SetDuration(base::TimeDelta::FromMilliseconds(kAnimationDurationInMs));
+  block.SetDuration(base::Milliseconds(kAnimationDurationInMs));
 }
 
 }  // namespace
@@ -62,8 +60,8 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size, bool start_delay) {
 
   const int max_delay = kAnimationDurationInMs * base::size(kAnimationOpacity);
   const int delay = start_delay ? base::RandInt(0, max_delay) : 0;
-  start_delay_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay),
-                           this, &PulsingBlockView::OnStartDelayTimer);
+  start_delay_timer_.Start(FROM_HERE, base::Milliseconds(delay), this,
+                           &PulsingBlockView::OnStartDelayTimer);
 }
 
 PulsingBlockView::~PulsingBlockView() {}

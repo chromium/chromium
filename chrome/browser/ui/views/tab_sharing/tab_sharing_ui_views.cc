@@ -483,7 +483,7 @@ void TabSharingUIViews::FaviconPeriodicUpdate(size_t share_session_seq_num) {
       FROM_HERE,
       base::BindOnce(&TabSharingUIViews::FaviconPeriodicUpdate,
                      weak_factory_.GetWeakPtr(), share_session_seq_num),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void TabSharingUIViews::RefreshFavicons() {

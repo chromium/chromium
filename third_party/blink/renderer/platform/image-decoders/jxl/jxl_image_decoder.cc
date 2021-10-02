@@ -510,7 +510,7 @@ int JXLImageDecoder::RepetitionCount() const {
 
 base::TimeDelta JXLImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   if (index < frame_durations_.size())
-    return base::TimeDelta::FromSecondsD(frame_durations_[index]);
+    return base::Seconds(frame_durations_[index]);
 
   return base::TimeDelta();
 }

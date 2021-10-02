@@ -52,8 +52,8 @@ TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {
       std::make_unique<ScreenRotationAnimation>(
           layer, 45 /* start_degrees */, 0 /* end_degrees */,
           0.5f /* initial_opacity */, 1.0f /* target_opacity */,
-          gfx::Point(10, 10) /* pivot */,
-          base::TimeDelta::FromSeconds(10) /* duration */, gfx::Tween::LINEAR);
+          gfx::Point(10, 10) /* pivot */, base::Seconds(10) /* duration */,
+          gfx::Tween::LINEAR);
 
   ui::LayerAnimator* animator = layer->GetAnimator();
   animator->set_preemption_strategy(
@@ -85,9 +85,9 @@ TEST_F(ScreenRotationAnimationTest, DestroyLayerDuringAnimation) {
   root_layer->Add(layer.get());
 
   std::unique_ptr<ScreenRotationAnimation> screen_rotation =
-      std::make_unique<ScreenRotationAnimation>(
-          layer.get(), 45, 0, 1.0f, 1.0f, gfx::Point(),
-          base::TimeDelta::FromSeconds(1), gfx::Tween::LINEAR);
+      std::make_unique<ScreenRotationAnimation>(layer.get(), 45, 0, 1.0f, 1.0f,
+                                                gfx::Point(), base::Seconds(1),
+                                                gfx::Tween::LINEAR);
   ui::LayerAnimator* animator = layer->GetAnimator();
   std::unique_ptr<ui::LayerAnimationSequence> animation_sequence =
       std::make_unique<ui::LayerAnimationSequence>(std::move(screen_rotation));

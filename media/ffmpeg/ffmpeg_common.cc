@@ -73,7 +73,7 @@ static const AVRational kMicrosBase = { 1, base::Time::kMicrosecondsPerSecond };
 base::TimeDelta ConvertFromTimeBase(const AVRational& time_base,
                                     int64_t timestamp) {
   int64_t microseconds = av_rescale_q(timestamp, time_base, kMicrosBase);
-  return base::TimeDelta::FromMicroseconds(microseconds);
+  return base::Microseconds(microseconds);
 }
 
 int64_t ConvertToTimeBase(const AVRational& time_base,
@@ -374,8 +374,8 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
 
   base::TimeDelta seek_preroll;
   if (codec_context->seek_preroll > 0) {
-    seek_preroll = base::TimeDelta::FromMicroseconds(
-        codec_context->seek_preroll * 1000000.0 / codec_context->sample_rate);
+    seek_preroll = base::Microseconds(codec_context->seek_preroll * 1000000.0 /
+                                      codec_context->sample_rate);
   }
 
   // AVStream occasionally has invalid extra data. See http://crbug.com/517163

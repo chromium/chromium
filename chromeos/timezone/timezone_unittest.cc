@@ -100,7 +100,7 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
     TimeZoneRequest* timezone_request = provider_->requests_[0].get();
 
     const base::TimeDelta base_retry_interval =
-        base::TimeDelta::FromMilliseconds(kRequestRetryIntervalMilliSeconds);
+        base::Milliseconds(kRequestRetryIntervalMilliSeconds);
     timezone_request->set_retry_sleep_on_server_error_for_testing(
         base_retry_interval);
     timezone_request->set_retry_sleep_on_bad_response_for_testing(
@@ -178,8 +178,7 @@ TEST_F(TimeZoneTest, ResponseOK) {
 
   TimeZoneReceiver receiver;
 
-  provider.RequestTimezone(simple_request.position,
-                           base::TimeDelta::FromSeconds(1),
+  provider.RequestTimezone(simple_request.position, base::Seconds(1),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
                                           base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -203,8 +202,7 @@ TEST_F(TimeZoneTest, ResponseOKWithRetries) {
 
   TimeZoneReceiver receiver;
 
-  provider.RequestTimezone(simple_request.position,
-                           base::TimeDelta::FromSeconds(1),
+  provider.RequestTimezone(simple_request.position, base::Seconds(1),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
                                           base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -233,7 +231,7 @@ TEST_F(TimeZoneTest, InvalidResponse) {
   ASSERT_GE(expected_retries, 2U);
 
   provider.RequestTimezone(simple_request.position,
-                           base::TimeDelta::FromSeconds(timeout_seconds),
+                           base::Seconds(timeout_seconds),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
                                           base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();

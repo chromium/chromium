@@ -61,8 +61,7 @@ WorkerProcessLauncher::WorkerProcessLauncher(
       launcher_delegate_(std::move(launcher_delegate)),
       exit_code_(CONTROL_C_EXIT),
       ipc_enabled_(false),
-      kill_process_timeout_(
-          base::TimeDelta::FromSeconds(kKillProcessTimeoutSeconds)),
+      kill_process_timeout_(base::Seconds(kKillProcessTimeoutSeconds)),
       launch_backoff_(&kDefaultBackoffPolicy) {
   DCHECK(ipc_handler_ != nullptr);
 
@@ -203,9 +202,9 @@ void WorkerProcessLauncher::LaunchWorker() {
   exit_code_ = CONTROL_C_EXIT;
 
   // Make sure launching a process will not take forever.
-  launch_result_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kLaunchResultTimeoutSeconds),
-      this, &WorkerProcessLauncher::RecordLaunchResult);
+  launch_result_timer_.Start(FROM_HERE,
+                             base::Seconds(kLaunchResultTimeoutSeconds), this,
+                             &WorkerProcessLauncher::RecordLaunchResult);
 
   launcher_delegate_->LaunchProcess(this);
 }

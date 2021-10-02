@@ -22,8 +22,7 @@ class RelaunchRecommendedBubbleViewDialogTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    base::Time detection_time =
-        base::Time::Now() - base::TimeDelta::FromDays(3);
+    base::Time detection_time = base::Time::Now() - base::Days(3);
     RelaunchRecommendedBubbleView::ShowBubble(browser(), detection_time,
                                               base::DoNothing());
   }

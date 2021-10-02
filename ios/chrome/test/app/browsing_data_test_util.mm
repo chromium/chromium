@@ -124,8 +124,7 @@ int GetBrowsingHistoryEntryCount(NSError** error) {
   NSDate* deadline = [NSDate dateWithTimeIntervalSinceNow:4.0];
   while (!history_service_callback_called &&
          [[NSDate date] compare:deadline] != NSOrderedDescending) {
-    base::test::ios::SpinRunLoopWithMaxDelay(
-        base::TimeDelta::FromSecondsD(0.1));
+    base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(0.1));
   }
 
   NSString* error_message = nil;

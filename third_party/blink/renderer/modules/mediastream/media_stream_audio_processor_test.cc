@@ -105,11 +105,10 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       data_bus_playout_to_use = data_bus_playout.get();
     }
 
-    const base::TimeDelta input_capture_delay =
-        base::TimeDelta::FromMilliseconds(20);
-    const base::TimeDelta output_buffer_duration =
-        expected_output_buffer_size * base::TimeDelta::FromSeconds(1) /
-        expected_output_sample_rate;
+    const base::TimeDelta input_capture_delay = base::Milliseconds(20);
+    const base::TimeDelta output_buffer_duration = expected_output_buffer_size *
+                                                   base::Seconds(1) /
+                                                   expected_output_sample_rate;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
       data_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
           data_ptr, data_bus->frames());
@@ -129,7 +128,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
         }
         audio_processor->OnPlayoutData(data_bus_playout_to_use,
                                        params.sample_rate(),
-                                       base::TimeDelta::FromMilliseconds(10));
+                                       base::Milliseconds(10));
       }
 
       media::AudioBus* processed_data = nullptr;
@@ -379,8 +378,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
     // Run the test consecutively to make sure the stereo channels are not
     // flipped back and forth.
     static const int kNumberOfPacketsForTest = 100;
-    const base::TimeDelta pushed_capture_delay =
-        base::TimeDelta::FromMilliseconds(42);
+    const base::TimeDelta pushed_capture_delay = base::Milliseconds(42);
     media::AudioBus* processed_data = nullptr;
 
     for (int num_preferred_channels = 0; num_preferred_channels <= 5;

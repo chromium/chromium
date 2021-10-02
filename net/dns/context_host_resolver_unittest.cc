@@ -654,15 +654,15 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
   // registering into the HostResolverManager initializes and invalidates the
   // cache.
   base::SimpleTestTickClock clock;
-  clock.Advance(base::TimeDelta::FromDays(62));  // Arbitrary non-zero time.
+  clock.Advance(base::Days(62));  // Arbitrary non-zero time.
   AddressList expected(kEndpoint);
   host_cache->Set(
       HostCache::Key("example.com", DnsQueryType::UNSPECIFIED,
                      0 /* host_resolver_flags */, HostResolverSource::ANY,
                      NetworkIsolationKey()),
       HostCache::Entry(OK, expected, HostCache::Entry::SOURCE_DNS,
-                       base::TimeDelta::FromDays(1)),
-      clock.NowTicks(), base::TimeDelta::FromDays(1));
+                       base::Days(1)),
+      clock.NowTicks(), base::Days(1));
   resolver->SetTickClockForTesting(&clock);
 
   // Allow stale results and then confirm the result is not stale in order to

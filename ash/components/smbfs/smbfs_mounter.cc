@@ -17,7 +17,7 @@ namespace smbfs {
 
 namespace {
 constexpr char kMountUrlPrefix[] = "smbfs://";
-constexpr base::TimeDelta kMountTimeout = base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kMountTimeout = base::Seconds(20);
 }  // namespace
 
 SmbFsMounter::KerberosOptions::KerberosOptions(Source source,

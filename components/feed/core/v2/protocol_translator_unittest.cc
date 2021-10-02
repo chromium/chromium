@@ -25,8 +25,7 @@ namespace feed {
 namespace {
 
 const char kResponsePbPath[] = "components/test/data/feed/response.binarypb";
-const base::Time kCurrentTime =
-    base::Time::UnixEpoch() + base::TimeDelta::FromDays(123);
+const base::Time kCurrentTime = base::Time::UnixEpoch() + base::Days(123);
 
 feedwire::Response TestWireResponse() {
   // Read and parse response.binarypb.
@@ -316,9 +315,8 @@ TEST(ProtocolTranslatorTest, TranslateRealResponse) {
   ASSERT_TRUE(translated.request_schedule);
   EXPECT_EQ(kCurrentTime, translated.request_schedule->anchor_time);
   EXPECT_EQ(std::vector<base::TimeDelta>(
-                {base::TimeDelta::FromSeconds(86308) +
-                     base::TimeDelta::FromNanoseconds(822963644),
-                 base::TimeDelta::FromSeconds(120000)}),
+                {base::Seconds(86308) + base::Nanoseconds(822963644),
+                 base::Seconds(120000)}),
             translated.request_schedule->refresh_offsets);
 
   std::stringstream ss;

@@ -29,9 +29,9 @@ namespace {
 const char kURL0[] = "https://www.example.com/0000";
 const char kURL1[] = "https://www.example.com/1111";
 const char kURL2[] = "https://www.example.com/2222";
-const base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
-const base::TimeDelta kOneMinute = base::TimeDelta::FromSeconds(60);
-const base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+const base::TimeDelta kOneSecond = base::Seconds(1);
+const base::TimeDelta kOneMinute = base::Seconds(60);
+const base::TimeDelta kOneHour = base::Hours(1);
 
 // Test fixture for TabUrlProviderImpl.
 class TabUrlProviderImplTest : public PlatformTest {

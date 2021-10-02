@@ -751,8 +751,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "04", "2999", "1");
     credit_card1.set_guid("00000000-0000-0000-0000-000000000004");
     credit_card1.set_use_count(10);
-    credit_card1.set_use_date(AutofillClock::Now() -
-                              base::TimeDelta::FromDays(5));
+    credit_card1.set_use_date(AutofillClock::Now() - base::Days(5));
     personal_data_.AddCreditCard(credit_card1);
 
     CreditCard credit_card2;
@@ -761,8 +760,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "10", "2998", "1");
     credit_card2.set_guid("00000000-0000-0000-0000-000000000005");
     credit_card2.set_use_count(5);
-    credit_card2.set_use_date(AutofillClock::Now() -
-                              base::TimeDelta::FromDays(4));
+    credit_card2.set_use_date(AutofillClock::Now() - base::Days(4));
     personal_data_.AddCreditCard(credit_card2);
 
     CreditCard credit_card3;
@@ -2060,8 +2058,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "5231567890123456",  // Mastercard
                           "05", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  credit_card.set_use_date(AutofillClock::Now() -
-                           base::TimeDelta::FromDays(15));
+  credit_card.set_use_date(AutofillClock::Now() - base::Days(15));
   personal_data_.AddCreditCard(credit_card);
 
   // Set up our form data.
@@ -2152,16 +2149,14 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "2010", "1");
   credit_card1.set_guid("00000000-0000-0000-0000-000000000002");
   credit_card1.set_use_count(300);
-  credit_card1.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(10));
+  credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
   personal_data_.AddCreditCard(credit_card1);
 
   // Add an expired card with a lower frecency score.
   CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
   credit_card2.set_use_count(3);
-  credit_card2.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(1));
+  credit_card2.set_use_date(AutofillClock::Now() - base::Days(1));
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "4234567890123456" /* Visa */, "01", "2011", "1");
   credit_card2.set_guid("00000000-0000-0000-0000-000000000003");
@@ -2225,14 +2220,14 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   CreditCard credit_card1(CreditCard::FULL_SERVER_CARD, "c789");
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                           "4234567890123456" /* Visa */, "04", "2010", "1");
-  credit_card1.set_use_date(now - base::TimeDelta::FromDays(10));
+  credit_card1.set_use_date(now - base::Days(10));
   credit_card1.set_guid("00000000-0000-0000-0000-000000000001");
   personal_data_.AddServerCreditCard(credit_card1);
 
   // Add an expired masked card last used 180 days ago.
   CreditCard credit_card2(CreditCard::MASKED_SERVER_CARD, "c987");
   test::SetCreditCardInfo(&credit_card2, "Jane Doe", "6543", "01", "2010", "1");
-  credit_card2.set_use_date(now - base::TimeDelta::FromDays(181));
+  credit_card2.set_use_date(now - base::Days(181));
   credit_card2.SetNetworkForMaskedCard(kVisaCard);
   credit_card2.set_guid("00000000-0000-0000-0000-000000000002");
   personal_data_.AddServerCreditCard(credit_card2);
@@ -2240,7 +2235,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Add an expired local card last used 180 days ago.
   CreditCard credit_card3("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
-  credit_card3.set_use_date(now - base::TimeDelta::FromDays(182));
+  credit_card3.set_use_date(now - base::Days(182));
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "378282246310005" /* American Express */, "01",
                           "2010", "1");
@@ -2884,7 +2879,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
   }
 
   // Advance time and possibly submit the form.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(42);
+  base::TimeDelta time_delta = base::Seconds(42);
   clock.Advance(time_delta);
   if (params.submit_form)
     FormSubmitted(form);
@@ -9995,8 +9990,7 @@ class BrowserAutofillManagerTestForSharingNickname
                             "378282246310005" /* American Express */, "04",
                             "2999", "1");
     local_card.set_use_count(3);
-    local_card.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(1));
+    local_card.set_use_date(AutofillClock::Now() - base::Days(1));
     local_card.SetNickname(base::UTF8ToUTF16(local_nickname_));
     local_card.set_guid("00000000-0000-0000-0000-000000000001");
     return local_card;

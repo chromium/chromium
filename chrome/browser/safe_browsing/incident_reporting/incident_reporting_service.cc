@@ -317,10 +317,9 @@ bool IncidentReportingService::IsEnabledForProfile(Profile* profile) {
 
 IncidentReportingService::IncidentReportingService(
     SafeBrowsingService* safe_browsing_service)
-    : IncidentReportingService(
-          safe_browsing_service,
-          base::TimeDelta::FromMilliseconds(kDefaultCallbackIntervalMs),
-          GetBackgroundTaskRunner()) {
+    : IncidentReportingService(safe_browsing_service,
+                               base::Milliseconds(kDefaultCallbackIntervalMs),
+                               GetBackgroundTaskRunner()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DownloadProtectionService* download_protection_service =
       (safe_browsing_service
@@ -400,7 +399,7 @@ IncidentReportingService::IncidentReportingService(
       collect_environment_data_fn_(&CollectEnvironmentData),
       environment_collection_task_runner_(GetBackgroundTaskRunner()),
       collation_timer_(FROM_HERE,
-                       base::TimeDelta::FromMilliseconds(kDefaultUploadDelayMs),
+                       base::Milliseconds(kDefaultUploadDelayMs),
                        this,
                        &IncidentReportingService::OnCollationTimeout),
       delayed_analysis_callbacks_(delayed_task_interval, delayed_task_runner) {

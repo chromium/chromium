@@ -202,7 +202,7 @@ TEST_F(UploadProgressTrackerTest, TimePassed) {
   EXPECT_EQ(1, report_count_);
 
   upload_progress_tracker_.set_current_time(base::TimeTicks::Now() +
-                                            base::TimeDelta::FromSeconds(5));
+                                            base::Seconds(5));
 
   // The third timer task calls ReportUploadProgress since it's been long time
   // from the last report.
@@ -236,7 +236,7 @@ TEST_F(UploadProgressTrackerTest, Rewound) {
   EXPECT_EQ(1, report_count_);
 
   upload_progress_tracker_.set_current_time(base::TimeTicks::Now() +
-                                            base::TimeDelta::FromSeconds(5));
+                                            base::Seconds(5));
 
   // Even after a good amount of time passed, the rewound progress should not be
   // reported.

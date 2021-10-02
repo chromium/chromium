@@ -20,7 +20,7 @@ static void RunMediaFileChecker(const std::string& filename, bool expectation) {
   ASSERT_TRUE(file.IsValid());
 
   MediaFileChecker checker(std::move(file));
-  const base::TimeDelta check_time = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta check_time = base::Milliseconds(100);
   bool result = checker.Start(check_time);
   EXPECT_EQ(expectation, result);
 }

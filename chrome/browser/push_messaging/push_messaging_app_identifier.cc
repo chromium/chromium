@@ -43,7 +43,7 @@ bool FromStringToTime(const std::string& time_string,
   int64_t milliseconds;
   if (base::StringToInt64(time_string, &milliseconds) && milliseconds > 0) {
     *time = absl::make_optional(base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMilliseconds(milliseconds)));
+        base::Milliseconds(milliseconds)));
     return true;
   }
   return false;

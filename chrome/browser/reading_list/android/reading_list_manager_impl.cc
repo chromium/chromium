@@ -37,9 +37,8 @@ bool SyncToBookmark(const ReadingListEntry& entry, BookmarkNode* bookmark) {
   }
 
   bookmark->set_url(entry.URL());
-  bookmark->set_date_added(
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMicroseconds(entry.CreationTime()));
+  bookmark->set_date_added(base::Time::UnixEpoch() +
+                           base::Microseconds(entry.CreationTime()));
   bookmark->SetTitle(title);
   bookmark->SetMetaInfo(kReadStatusKey,
                         entry.IsRead() ? kReadStatusRead : kReadStatusUnread);

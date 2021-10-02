@@ -269,8 +269,7 @@ void PhoneHubTray::UpdateVisibility() {
 
 void PhoneHubTray::TemporarilyDisableAnimation() {
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, DisableShowAnimation().Release(),
-      base::TimeDelta::FromSeconds(5));
+      FROM_HERE, DisableShowAnimation().Release(), base::Seconds(5));
 }
 
 }  // namespace ash

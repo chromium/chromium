@@ -331,8 +331,7 @@ void MediaStringView::StartScrolling(bool is_initial) {
     const int end_x = -(text_width + shadow_width) / 2;
     const int transform_distance = start_x - end_x;
     const base::TimeDelta kScrollingDuration =
-        base::TimeDelta::FromSeconds(10) * transform_distance /
-        kMediaStringMaxWidthDip;
+        base::Seconds(10) * transform_distance / kMediaStringMaxWidthDip;
 
     ui::ScopedLayerAnimationSettings animation(text_layer->GetAnimator());
     animation.SetTransitionDuration(kScrollingDuration);

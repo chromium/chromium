@@ -21,8 +21,7 @@ namespace {
 
 NearbyProcessManagerImpl::Factory* g_test_factory = nullptr;
 
-constexpr base::TimeDelta kProcessCleanupTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kProcessCleanupTimeout = base::Seconds(5);
 
 void OnSharingShutDownComplete(
     mojo::Remote<sharing::mojom::Sharing> sharing,

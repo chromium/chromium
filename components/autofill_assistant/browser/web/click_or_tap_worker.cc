@@ -28,8 +28,7 @@ void ClickOrTapWorker::Start(const ElementFinder::Result& element,
   node_frame_id_ = element.node_frame_id();
   element_position_getter_ = std::make_unique<ElementPositionGetter>(
       devtools_client_, /* max_rounds= */ 1,
-      /* check_interval= */ base::TimeDelta::FromMilliseconds(0),
-      node_frame_id_);
+      /* check_interval= */ base::Milliseconds(0), node_frame_id_);
 
   element_position_getter_->Start(
       element.container_frame_host, element.object_id(),

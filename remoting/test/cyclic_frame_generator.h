@@ -84,10 +84,10 @@ class CyclicFrameGenerator : public protocol::InputEventTimestampsSource {
   webrtc::DesktopSize screen_size_;
 
   // By default switch between reference frames every 2 seconds.
-  base::TimeDelta frame_cycle_period_ = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta frame_cycle_period_ = base::Seconds(2);
 
   // By default blink the cursor 4 times per seconds.
-  base::TimeDelta cursor_blink_period_ = base::TimeDelta::FromMilliseconds(250);
+  base::TimeDelta cursor_blink_period_ = base::Milliseconds(250);
 
   // Index of the reference frame used to render the last generated frame.
   int last_reference_frame_ = -1;

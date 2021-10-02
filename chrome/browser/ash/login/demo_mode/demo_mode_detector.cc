@@ -21,11 +21,10 @@
 namespace ash {
 
 const base::TimeDelta DemoModeDetector::kDerelictDetectionTimeout =
-    base::TimeDelta::FromHours(8);
-const base::TimeDelta DemoModeDetector::kDerelictIdleTimeout =
-    base::TimeDelta::FromMinutes(5);
+    base::Hours(8);
+const base::TimeDelta DemoModeDetector::kDerelictIdleTimeout = base::Minutes(5);
 const base::TimeDelta DemoModeDetector::kOobeTimerUpdateInterval =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 // static
 void DemoModeDetector::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -115,16 +114,14 @@ void DemoModeDetector::SetupTimeouts() {
   DCHECK(cmdline);
 
   PrefService* prefs = g_browser_process->local_state();
-  time_on_oobe_ =
-      base::TimeDelta::FromSeconds(prefs->GetInt64(prefs::kTimeOnOobe));
+  time_on_oobe_ = base::Seconds(prefs->GetInt64(prefs::kTimeOnOobe));
 
   int derelict_detection_timeout;
   if (cmdline->HasSwitch(switches::kDerelictDetectionTimeout) &&
       base::StringToInt(
           cmdline->GetSwitchValueASCII(switches::kDerelictDetectionTimeout),
           &derelict_detection_timeout)) {
-    derelict_detection_timeout_ =
-        base::TimeDelta::FromSeconds(derelict_detection_timeout);
+    derelict_detection_timeout_ = base::Seconds(derelict_detection_timeout);
   } else {
     derelict_detection_timeout_ = kDerelictDetectionTimeout;
   }
@@ -134,8 +131,7 @@ void DemoModeDetector::SetupTimeouts() {
       base::StringToInt(
           cmdline->GetSwitchValueASCII(switches::kDerelictIdleTimeout),
           &derelict_idle_timeout)) {
-    derelict_idle_timeout_ =
-        base::TimeDelta::FromSeconds(derelict_idle_timeout);
+    derelict_idle_timeout_ = base::Seconds(derelict_idle_timeout);
   } else {
     derelict_idle_timeout_ = kDerelictIdleTimeout;
   }
@@ -145,8 +141,7 @@ void DemoModeDetector::SetupTimeouts() {
       base::StringToInt(
           cmdline->GetSwitchValueASCII(switches::kOobeTimerInterval),
           &oobe_timer_update_interval)) {
-    oobe_timer_update_interval_ =
-        base::TimeDelta::FromSeconds(oobe_timer_update_interval);
+    oobe_timer_update_interval_ = base::Seconds(oobe_timer_update_interval);
   } else {
     oobe_timer_update_interval_ = kOobeTimerUpdateInterval;
   }
@@ -154,7 +149,7 @@ void DemoModeDetector::SetupTimeouts() {
   // In case we'd be derelict before our timer is set to trigger, reduce
   // the interval so we check again when we're scheduled to go derelict.
   oobe_timer_update_interval_ =
-      base::clamp(oobe_timer_update_interval_, base::TimeDelta::FromSeconds(0),
+      base::clamp(oobe_timer_update_interval_, base::Seconds(0),
                   derelict_detection_timeout_ - time_on_oobe_);
 }
 

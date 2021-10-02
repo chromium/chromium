@@ -74,8 +74,8 @@ constexpr float kPulseMinOpacity = 0.f;
 constexpr float kPulseMaxOpacity = 0.3f;
 constexpr int kAnimationInitialWaitTimeInSec = 3;
 constexpr int kAnimationIntervalInSec = 10;
-constexpr auto kCycleDuration = base::TimeDelta::FromMilliseconds(1000);
-constexpr auto kCycleInterval = base::TimeDelta::FromMilliseconds(500);
+constexpr auto kCycleDuration = base::Milliseconds(1000);
+constexpr auto kCycleInterval = base::Milliseconds(500);
 
 constexpr int kFocusRingWidth = 2;
 
@@ -302,14 +302,10 @@ void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {
   }
 
   // Update pulse opacity.
-  constexpr auto kPulseOpacityShowBeginTime =
-      base::TimeDelta::FromMilliseconds(100);
-  constexpr auto kPulseOpacityShowEndTime =
-      base::TimeDelta::FromMilliseconds(200);
-  constexpr auto kPulseOpacityHideBeginTime =
-      base::TimeDelta::FromMilliseconds(800);
-  constexpr auto kPulseOpacityHideEndTime =
-      base::TimeDelta::FromMilliseconds(1000);
+  constexpr auto kPulseOpacityShowBeginTime = base::Milliseconds(100);
+  constexpr auto kPulseOpacityShowEndTime = base::Milliseconds(200);
+  constexpr auto kPulseOpacityHideBeginTime = base::Milliseconds(800);
+  constexpr auto kPulseOpacityHideEndTime = base::Milliseconds(1000);
   if (time > kPulseOpacityShowBeginTime && time <= kPulseOpacityShowEndTime) {
     pulse_opacity_ =
         kPulseMinOpacity +
@@ -332,11 +328,10 @@ void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {
                                                   time / kCycleDuration));
 
   // Update y position offset of the arrow.
-  constexpr auto kArrowMoveOutBeginTime =
-      base::TimeDelta::FromMilliseconds(100);
-  constexpr auto kArrowMoveOutEndTime = base::TimeDelta::FromMilliseconds(500);
-  constexpr auto kArrowMoveInBeginTime = base::TimeDelta::FromMilliseconds(500);
-  constexpr auto kArrowMoveInEndTime = base::TimeDelta::FromMilliseconds(900);
+  constexpr auto kArrowMoveOutBeginTime = base::Milliseconds(100);
+  constexpr auto kArrowMoveOutEndTime = base::Milliseconds(500);
+  constexpr auto kArrowMoveInBeginTime = base::Milliseconds(500);
+  constexpr auto kArrowMoveInEndTime = base::Milliseconds(900);
   if (time > kArrowMoveOutBeginTime && time <= kArrowMoveOutEndTime) {
     const double progress = (time - kArrowMoveOutBeginTime) /
                             (kArrowMoveOutEndTime - kArrowMoveOutBeginTime);
@@ -408,9 +403,8 @@ void ExpandArrowView::ScheduleHintingAnimation(bool is_first_time) {
   int delay_in_sec = kAnimationIntervalInSec;
   if (is_first_time)
     delay_in_sec = kAnimationInitialWaitTimeInSec;
-  hinting_animation_timer_.Start(FROM_HERE,
-                                 base::TimeDelta::FromSeconds(delay_in_sec),
-                                 this, &ExpandArrowView::StartHintingAnimation);
+  hinting_animation_timer_.Start(FROM_HERE, base::Seconds(delay_in_sec), this,
+                                 &ExpandArrowView::StartHintingAnimation);
 }
 
 void ExpandArrowView::StartHintingAnimation() {

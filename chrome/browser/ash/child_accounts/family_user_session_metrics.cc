@@ -19,9 +19,9 @@ namespace ash {
 namespace {
 
 constexpr int kEngagementHourBuckets = base::Time::kHoursPerDay;
-constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kMinSessionDuration = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kMaxSessionDuration = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kOneHour = base::Hours(1);
+constexpr base::TimeDelta kMinSessionDuration = base::Seconds(1);
+constexpr base::TimeDelta kMaxSessionDuration = base::Days(1);
 constexpr int kSessionDurationBuckets = 100;
 
 // Returns the hour (0-23) within the day for given local time.

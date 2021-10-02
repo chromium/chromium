@@ -29,10 +29,8 @@
 
 namespace {
 
-constexpr base::TimeDelta kCountdownUpdateInterval =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kLastUpdateTime =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kCountdownUpdateInterval = base::Milliseconds(1000);
+constexpr base::TimeDelta kLastUpdateTime = base::Milliseconds(1000);
 
 gfx::ImageSkia GetImage() {
   return gfx::CreateVectorIcon(chromeos::kEnterpriseIcon, 20, SK_ColorDKGRAY);

@@ -27,10 +27,10 @@ namespace blink {
 
 // Same as UMA_HISTOGRAM_TIMES but for a broader view of this metric we end
 // at 1 minute instead of 10 seconds.
-#define QUEUEING_TIME_HISTOGRAM(name, sample)                              \
-  UMA_HISTOGRAM_CUSTOM_TIMES(QUEUEING_TIME_PER_PRIORITY_METRIC_NAME name,  \
-                             sample, base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromMinutes(1), 50)
+#define QUEUEING_TIME_HISTOGRAM(name, sample)                                 \
+  UMA_HISTOGRAM_CUSTOM_TIMES(QUEUEING_TIME_PER_PRIORITY_METRIC_NAME name,     \
+                             sample, base::Milliseconds(1), base::Minutes(1), \
+                             50)
 
 namespace {
 void PostTaskCallbackTraceEventData(perfetto::TracedValue context,

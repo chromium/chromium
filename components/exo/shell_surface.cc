@@ -407,8 +407,8 @@ void ShellSurface::OnPreWindowStateTypeChange(
       ui::Compositor* compositor =
           widget_->GetNativeWindow()->layer()->GetCompositor();
       configure_compositor_lock_ = compositor->GetCompositorLock(
-          nullptr, base::TimeDelta::FromMilliseconds(
-                       kMaximizedOrFullscreenOrPinnedLockTimeoutMs));
+          nullptr,
+          base::Milliseconds(kMaximizedOrFullscreenOrPinnedLockTimeoutMs));
     } else {
       animations_disabler_ = std::make_unique<ash::ScopedAnimationDisabler>(
           widget_->GetNativeWindow());

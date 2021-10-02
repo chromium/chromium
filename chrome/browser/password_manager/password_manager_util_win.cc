@@ -192,7 +192,7 @@ int64_t GetPasswordLastChanged(const WCHAR* username) {
     return -1;
   }
 
-  base::Time changed = base::Time::Now() - base::TimeDelta::FromSeconds(age);
+  base::Time changed = base::Time::Now() - base::Seconds(age);
 
   return changed.ToInternalValue();
 }

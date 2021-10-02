@@ -21,7 +21,7 @@ class EligibleHostDevicesProviderImpl
       public device_sync::DeviceSyncClient::Observer {
  public:
   static constexpr base::TimeDelta kInactiveDeviceThresholdInDays =
-      base::TimeDelta::FromDays(30);
+      base::Days(30);
 
   class Factory {
    public:

@@ -26,13 +26,11 @@ namespace {
 const AppId app_id = "test_app";
 const AppId app_id_2 = "test_app_2";
 const base::Time time_before_app_mute =
-    base::Time::Now() -
-    base::TimeDelta::FromDays(kIphAppSpecificMuteTimeSpanDays) -
-    base::TimeDelta::FromHours(1);
+    base::Time::Now() - base::Days(kIphAppSpecificMuteTimeSpanDays) -
+    base::Hours(1);
 const base::Time time_before_global_mute =
-    base::Time::Now() -
-    base::TimeDelta::FromDays(kIphAppAgnosticMuteTimeSpanDays) -
-    base::TimeDelta::FromHours(1);
+    base::Time::Now() - base::Days(kIphAppAgnosticMuteTimeSpanDays) -
+    base::Hours(1);
 }  // namespace
 
 class WebAppPrefsUtilsTest : public testing::Test {

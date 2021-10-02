@@ -39,11 +39,11 @@ constexpr int kFirstWarningDaysInAdvance = 180;
 constexpr int kSecondWarningDaysInAdvance = 90;
 
 base::Time FirstWarningDate(base::Time eol_date) {
-  return eol_date - base::TimeDelta::FromDays(kFirstWarningDaysInAdvance);
+  return eol_date - base::Days(kFirstWarningDaysInAdvance);
 }
 
 base::Time SecondWarningDate(const base::Time& eol_date) {
-  return eol_date - base::TimeDelta::FromDays(kSecondWarningDaysInAdvance);
+  return eol_date - base::Days(kSecondWarningDaysInAdvance);
 }
 
 }  // namespace

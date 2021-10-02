@@ -208,8 +208,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, PasswordAuthWhenAuthDisabled) {
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       user_manager::StubAccountId(),
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(1),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(1), base::Hours(1),
                        true /*disable_lock_screen_media*/));
 
   // Try to authenticate with password.
@@ -246,8 +245,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, FingerprintAuthWhenAuthDisabled) {
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       user_manager::StubAccountId(),
       AuthDisabledData(AuthDisabledReason::kTimeUsageLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(1),
-                       base::TimeDelta::FromHours(3),
+                       base::Time::Now() + base::Hours(1), base::Hours(3),
                        true /*disable_lock_screen_media*/));
 
   // Try to authenticate with fingerprint.

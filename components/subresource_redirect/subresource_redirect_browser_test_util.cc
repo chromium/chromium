@@ -85,7 +85,7 @@ RobotsRulesTestServer::OnServerRequest(
       return response;
     case FailureMode::kTimeout:
       response = std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::TimeDelta::FromSeconds(4));
+          base::Seconds(4));
       break;
     case FailureMode::kNone:
       break;

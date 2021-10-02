@@ -1807,7 +1807,7 @@ void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
     // interval of activity.
     TimeDelta active_seconds = now - last_idle_check_;
     Time start;
-    if (active_seconds < base::TimeDelta::FromSeconds(0) ||
+    if (active_seconds < base::Seconds(0) ||
         active_seconds >= 2 * kIdlePollInterval || last_idle_check_.is_null()) {
       start = now - kIdlePollInterval;
     } else {

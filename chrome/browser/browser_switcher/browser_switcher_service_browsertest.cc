@@ -654,8 +654,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, CacheFileCorrectOnStartup) {
   SetUseIeSitelist(true);
   // Never refresh the sitelist. We want to check the state of cache.dat after
   // startup, not after the sitelist is downloaded.
-  BrowserSwitcherServiceWin::SetFetchDelayForTesting(
-      base::TimeDelta::FromHours(24));
+  BrowserSwitcherServiceWin::SetFetchDelayForTesting(base::Hours(24));
   BrowserSwitcherServiceWin::SetIeemSitelistUrlForTesting(kAValidUrl);
 
   content::URLLoaderInterceptor interceptor(

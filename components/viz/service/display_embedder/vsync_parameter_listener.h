@@ -35,8 +35,7 @@ class VIZ_SERVICE_EXPORT VSyncParameterListener {
  private:
   friend class VSyncParameterListenerTestRunner;
 
-  static constexpr base::TimeDelta kMaxTimebaseSkew =
-      base::TimeDelta::FromMicroseconds(25);
+  static constexpr base::TimeDelta kMaxTimebaseSkew = base::Microseconds(25);
 
   bool ShouldSendUpdate(base::TimeTicks timebase, base::TimeDelta interval);
 

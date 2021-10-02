@@ -123,8 +123,8 @@ void AudioPipeReader::TryOpenPipe() {
     }
 
     // Read from the pipe twice per buffer length, to avoid starving the stream.
-    capture_period_ = base::TimeDelta::FromSeconds(1) * pipe_buffer_size_ /
-                      kSampleBytesPerSecond / 2;
+    capture_period_ =
+        base::Seconds(1) * pipe_buffer_size_ / kSampleBytesPerSecond / 2;
 
     WaitForPipeReadable();
   }

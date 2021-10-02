@@ -54,8 +54,8 @@ bool IsNormalUserLoggedIn() {
 }  // namespace
 
 ProfileProvider::ProfileProvider()
-    : jankiness_collection_min_interval_(base::TimeDelta::FromSeconds(
-          kJankinessCollectionMinIntervalSec.Get())) {
+    : jankiness_collection_min_interval_(
+          base::Seconds(kJankinessCollectionMinIntervalSec.Get())) {
   // Initialize the WindowedIncognitoMonitor on the UI thread.
   WindowedIncognitoMonitor::Init();
   // Register a perf events collector.

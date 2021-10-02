@@ -15,16 +15,13 @@ namespace {
 
 // Delay to wait for a response to our geolocation request, if we get a response
 // after which, we will consider the request a failure.
-constexpr base::TimeDelta kGeolocationRequestTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kGeolocationRequestTimeout = base::Seconds(60);
 
 // Minimum delay to wait to fire a new request after a previous one failing.
-constexpr base::TimeDelta kMinimumDelayAfterFailure =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMinimumDelayAfterFailure = base::Seconds(60);
 
 // Delay to wait to fire a new request after a previous one succeeding.
-constexpr base::TimeDelta kNextRequestDelayAfterSuccess =
-    base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kNextRequestDelayAfterSuccess = base::Days(1);
 
 }  // namespace
 
@@ -73,7 +70,7 @@ void NightLightClient::OnScheduleTypeChanged(
   // Next request is either immediate or kNextRequestDelayAfterSuccess later
   // than the last success time, whichever is greater.
   ScheduleNextRequest(std::max(
-      base::TimeDelta::FromSeconds(0),
+      base::Seconds(0),
       last_successful_geo_request_time_ + kNextRequestDelayAfterSuccess - now));
 }
 
@@ -89,7 +86,7 @@ void NightLightClient::TimezoneChanged(const icu::TimeZone& timezone) {
     return;
 
   // On timezone changes, request an immediate geoposition.
-  ScheduleNextRequest(base::TimeDelta::FromSeconds(0));
+  ScheduleNextRequest(base::Seconds(0));
 }
 
 // static

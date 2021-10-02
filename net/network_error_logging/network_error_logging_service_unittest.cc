@@ -78,7 +78,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
     details.server_ip = server_ip.IsValid() ? server_ip : kServerIP_;
     details.method = std::move(method);
     details.status_code = status_code;
-    details.elapsed_time = base::TimeDelta::FromSeconds(1);
+    details.elapsed_time = base::Seconds(1);
     details.type = error_type;
     details.reporting_upload_depth = 0;
 
@@ -106,7 +106,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
     details.protocol = "http/1.1";
     details.method = "GET";
     details.status_code = 200;
-    details.elapsed_time = base::TimeDelta::FromMilliseconds(1234);
+    details.elapsed_time = base::Milliseconds(1234);
     details.user_agent = kUserAgent_;
     return details;
   }
@@ -1376,7 +1376,7 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictAllExpiredPoliciesFirst) {
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(100u, PolicyCount());
-  clock.Advance(base::TimeDelta::FromSeconds(86401));  // max_age is 86400 sec
+  clock.Advance(base::Seconds(86401));  // max_age is 86400 sec
   // Expired policies are allowed to linger before hitting the policy limit.
   EXPECT_EQ(100u, PolicyCount());
 
@@ -1400,7 +1400,7 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
   for (size_t i = 0; i < NetworkErrorLoggingService::kMaxPolicies; ++i) {
     service()->OnHeader(MakeNetworkIsolationKey(i), MakeOrigin(i), kServerIP_,
                         kHeader_);
-    clock.Advance(base::TimeDelta::FromSeconds(1));
+    clock.Advance(base::Seconds(1));
   }
   // Make the rest of the test run synchronously.
   FinishLoading(true /* load_success */);
@@ -1411,7 +1411,7 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
   // expired, so the least recently used (i.e. least recently added) policy
   // should be evicted.
   service()->OnHeader(kNik_, kOrigin_, kServerIP_, kHeader_);
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   EXPECT_EQ(PolicyCount(), NetworkErrorLoggingService::kMaxPolicies);
 
   EXPECT_FALSE(
@@ -1429,12 +1429,12 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
   // identified correctly.
   service()->OnRequest(
       MakeRequestDetails(kNik_, kOrigin_.GetURL(), ERR_CONNECTION_REFUSED));
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   for (size_t i = NetworkErrorLoggingService::kMaxPolicies - 1; i >= 1; --i) {
     service()->OnRequest(MakeRequestDetails(MakeNetworkIsolationKey(i),
                                             MakeOrigin(i).GetURL(),
                                             ERR_CONNECTION_REFUSED));
-    clock.Advance(base::TimeDelta::FromSeconds(1));
+    clock.Advance(base::Seconds(1));
   }
   service()->OnHeader(kNik_, kOriginSubdomain_, kServerIP_, kHeader_);
   EXPECT_EQ(PolicyCount(), NetworkErrorLoggingService::kMaxPolicies);

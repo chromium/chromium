@@ -338,7 +338,7 @@ Installer::Result Installer::RunApplicationInstaller(
   const auto time_begin = base::Time::NowFromSystemTime();
   do {
     bool wait_result = process.WaitForExitWithTimeout(
-        base::TimeDelta::FromSeconds(kWaitForInstallerProgressSec), &exit_code);
+        base::Seconds(kWaitForInstallerProgressSec), &exit_code);
     auto progress = GetInstallerProgress(updater_scope_, app_id());
     DVLOG(3) << "installer progress: " << progress;
     progress_callback.Run(progress);
@@ -347,7 +347,7 @@ Installer::Result Installer::RunApplicationInstaller(
       break;
     }
   } while (base::Time::NowFromSystemTime() - time_begin <=
-           base::TimeDelta::FromSeconds(kWaitForAppInstallerSec));
+           base::Seconds(kWaitForAppInstallerSec));
 
   return MakeInstallerResult(GetInstallerOutcome(updater_scope_, app_id()),
                              exit_code);

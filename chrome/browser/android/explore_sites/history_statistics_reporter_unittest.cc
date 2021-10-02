@@ -160,8 +160,8 @@ TEST_F(HistoryStatisticsReporterTest, HostAddedLongAgo) {
   ASSERT_TRUE(LoadHistory());
 
   base::Time time_now = offline_pages::OfflineTimeNow();
-  base::Time time_29_days_ago = time_now - base::TimeDelta::FromDays(29);
-  base::Time time_31_days_ago = time_now - base::TimeDelta::FromDays(31);
+  base::Time time_29_days_ago = time_now - base::Days(29);
+  base::Time time_31_days_ago = time_now - base::Days(31);
 
   history_service()->AddPage(GURL("http://www.google.com"), time_now,
                              history::VisitSource::SOURCE_BROWSED);
@@ -227,7 +227,7 @@ TEST_F(HistoryStatisticsReporterTest, OneRunPerWeekReadTimestampAfterWeek) {
   ASSERT_TRUE(LoadHistory());
 
   prefs()->SetTime(kWeeklyStatsReportingTimestamp,
-                   base::Time::Now() - base::TimeDelta::FromDays(8));
+                   base::Time::Now() - base::Days(8));
   ScheduleReportAndRunUntilIdle();
 
   // More than a week since last query, should have gone through.

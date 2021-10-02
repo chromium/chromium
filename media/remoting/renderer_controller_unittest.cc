@@ -52,8 +52,7 @@ mojom::RemotingSinkMetadata GetDefaultSinkMetadata(bool enable) {
   return metadata;
 }
 
-constexpr base::TimeDelta kDelayedStartDuration =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDelayedStartDuration = base::Seconds(5);
 
 }  // namespace
 
@@ -100,7 +99,7 @@ class RendererControllerTest : public ::testing::Test,
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_TRUE(sink_name_.empty());
     controller_->clock_ = &clock_;
-    clock_.Advance(base::TimeDelta::FromSeconds(1));
+    clock_.Advance(base::Seconds(1));
     controller_->SetClient(this);
     RunUntilIdle();
     EXPECT_FALSE(is_rendering_remotely_);

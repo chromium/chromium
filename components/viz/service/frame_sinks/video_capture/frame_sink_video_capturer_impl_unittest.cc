@@ -77,7 +77,7 @@ bool CompareVarsInCompositorFrameMetadata(
 constexpr FrameSinkId kFrameSinkId = FrameSinkId(1, 1);
 
 // The compositor frame interval.
-constexpr auto kVsyncInterval = base::TimeDelta::FromSeconds(1) / 60;
+constexpr auto kVsyncInterval = base::Seconds(1) / 60;
 
 const struct SizeSet {
   // The size of the compositor frame sink's Surface.
@@ -409,7 +409,7 @@ class FrameSinkVideoCapturerTest : public testing::Test {
     // Override the capturer's TickClock with a virtual clock managed by a
     // manually-driven task runner.
     task_runner_ = new base::TestMockTimeTaskRunner(
-        base::Time::Now(), base::TimeTicks() + base::TimeDelta::FromSeconds(1),
+        base::Time::Now(), base::TimeTicks() + base::Seconds(1),
         base::TestMockTimeTaskRunner::Type::kStandalone);
     start_time_ = task_runner_->NowTicks();
     capturer_->clock_ = task_runner_->GetMockTickClock();

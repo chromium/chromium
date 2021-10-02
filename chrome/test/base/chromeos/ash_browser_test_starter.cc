@@ -65,8 +65,7 @@ class LacrosStartedObserver : public crosapi::BrowserManagerObserver {
 void WaitForExoStarted(const base::FilePath& xdg_path) {
   base::RepeatingTimer timer;
   base::RunLoop run_loop;
-  timer.Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
-              base::BindLambdaForTesting([&]() {
+  timer.Start(FROM_HERE, base::Seconds(1), base::BindLambdaForTesting([&]() {
                 if (base::PathExists(xdg_path.Append("wayland-0")) &&
                     base::PathExists(xdg_path.Append("wayland-0.lock"))) {
                   run_loop.Quit();

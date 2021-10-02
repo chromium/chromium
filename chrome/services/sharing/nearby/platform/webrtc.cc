@@ -43,12 +43,11 @@ namespace {
 // ups.
 //
 // See: b/183505430 for more context.
-constexpr base::TimeDelta kIceConnectionReceivingTimeout =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kIceConnectionReceivingTimeout = base::Minutes(10);
 constexpr base::TimeDelta kIceCheckIntervalStrongConnectivity =
-    base::TimeDelta::FromSeconds(25);
+    base::Seconds(25);
 constexpr base::TimeDelta kStableWritableConnectionPingInterval =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 
 net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("nearby_webrtc_connection", R"(

@@ -134,7 +134,7 @@ class RtpPacketizerTest : public ::testing::Test {
   void RunTasks(int during_ms) {
     for (int i = 0; i < during_ms; ++i) {
       // Call process the timers every 1 ms.
-      testing_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+      testing_clock_.Advance(base::Milliseconds(1));
       task_runner_->RunTasks();
     }
   }
@@ -157,7 +157,7 @@ TEST_F(RtpPacketizerTest, SendStandardPackets) {
   transport_->set_expected_number_of_packets(expected_num_of_packets);
   transport_->set_rtp_timestamp(video_frame_.rtp_timestamp);
 
-  testing_clock_.Advance(base::TimeDelta::FromMilliseconds(kTimestampMs));
+  testing_clock_.Advance(base::Milliseconds(kTimestampMs));
   video_frame_.reference_time = testing_clock_.NowTicks();
   rtp_packetizer_->SendFrameAsPackets(video_frame_);
   RunTasks(33 + 1);
@@ -169,7 +169,7 @@ TEST_F(RtpPacketizerTest, SendPacketsWithAdaptivePlayoutExtension) {
   transport_->set_expected_number_of_packets(expected_num_of_packets);
   transport_->set_rtp_timestamp(video_frame_.rtp_timestamp);
 
-  testing_clock_.Advance(base::TimeDelta::FromMilliseconds(kTimestampMs));
+  testing_clock_.Advance(base::Milliseconds(kTimestampMs));
   video_frame_.reference_time = testing_clock_.NowTicks();
   video_frame_.new_playout_delay_ms = 500;
   rtp_packetizer_->SendFrameAsPackets(video_frame_);
@@ -185,7 +185,7 @@ TEST_F(RtpPacketizerTest, Stats) {
   transport_->set_expected_number_of_packets(expected_num_of_packets);
   transport_->set_rtp_timestamp(video_frame_.rtp_timestamp);
 
-  testing_clock_.Advance(base::TimeDelta::FromMilliseconds(kTimestampMs));
+  testing_clock_.Advance(base::Milliseconds(kTimestampMs));
   video_frame_.reference_time = testing_clock_.NowTicks();
   rtp_packetizer_->SendFrameAsPackets(video_frame_);
   RunTasks(33 + 1);

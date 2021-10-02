@@ -21,8 +21,7 @@ namespace {
 // is true.
 bool g_disable_wallpaper_change_for_tests = false;
 
-constexpr base::TimeDelta kBlurSlideDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kBlurSlideDuration = base::Milliseconds(250);
 
 bool IsWallpaperChangeAllowed() {
   return !g_disable_wallpaper_change_for_tests;

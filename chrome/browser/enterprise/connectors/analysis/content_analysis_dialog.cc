@@ -47,8 +47,7 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr base::TimeDelta kResizeAnimationDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kResizeAnimationDuration = base::Milliseconds(100);
 
 constexpr int kSideImageSize = 24;
 constexpr int kLineHeight = 20;
@@ -60,8 +59,8 @@ constexpr int kSideIconBetweenChildSpacing = 16;
 
 // These time values are non-const in order to be overridden in test so they
 // complete faster.
-base::TimeDelta minimum_pending_dialog_time_ = base::TimeDelta::FromSeconds(2);
-base::TimeDelta success_dialog_timeout_ = base::TimeDelta::FromSeconds(1);
+base::TimeDelta minimum_pending_dialog_time_ = base::Seconds(2);
+base::TimeDelta success_dialog_timeout_ = base::Seconds(1);
 
 // A simple background class to show a colored circle behind the side icon once
 // the scanning is done.

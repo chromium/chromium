@@ -59,21 +59,18 @@ namespace {
 KeyboardUIController* g_keyboard_controller = nullptr;
 
 // How long the keyboard stays in WILL_HIDE state before moving to HIDDEN.
-constexpr base::TimeDelta kHideKeyboardDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kHideKeyboardDelay = base::Milliseconds(100);
 
 // Reports an error histogram if the keyboard state is lingering in an
 // intermediate state for more than 5 seconds.
-constexpr base::TimeDelta kReportLingeringStateDelay =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kReportLingeringStateDelay = base::Milliseconds(5000);
 
 // Delay threshold after the keyboard enters the WILL_HIDE state. If text focus
 // is regained during this threshold, the keyboard will show again, even if it
 // is an asynchronous event. This is for the benefit of things like login flow
 // where the password field may get text focus after an animation that plays
 // after the user enters their username.
-constexpr base::TimeDelta kTransientBlurThreshold =
-    base::TimeDelta::FromMilliseconds(3500);
+constexpr base::TimeDelta kTransientBlurThreshold = base::Milliseconds(3500);
 
 // An enumeration of different keyboard control events that should be logged.
 // These values are persisted to logs. Entries should not be renumbered and

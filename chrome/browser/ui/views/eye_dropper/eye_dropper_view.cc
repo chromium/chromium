@@ -40,7 +40,7 @@ EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)
   // Use a value close to the refresh rate @60hz.
   // TODO(iopopesc): Use SetCapture instead of a timer when support for
   // activating the eye dropper without closing the color popup is added.
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
+  timer_.Start(FROM_HERE, base::Milliseconds(16), this,
                &EyeDropperView::ViewPositionHandler::UpdateViewPosition);
 }
 
@@ -184,8 +184,7 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   CaptureInputIfNeeded();
   // The ignore selection time should be long enough to allow the user to see
   // the UI.
-  ignore_selection_time_ =
-      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(500);
+  ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 }
 
 EyeDropperView::~EyeDropperView() {

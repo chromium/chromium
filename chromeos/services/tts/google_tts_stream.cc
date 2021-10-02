@@ -167,9 +167,8 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
        timepoint_index++) {
     tts_player_.AddExplicitTimepoint(
         libchrometts_.GoogleTtsGetTimepointsCharIndexAtIndex(timepoint_index),
-        base::TimeDelta::FromSecondsD(
-            libchrometts_.GoogleTtsGetTimepointsTimeInSecsAtIndex(
-                timepoint_index)));
+        base::Seconds(libchrometts_.GoogleTtsGetTimepointsTimeInSecsAtIndex(
+            timepoint_index)));
   }
 
   // Ensure we always clean up given status 0 (done) or -1 (error).

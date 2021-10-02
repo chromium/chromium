@@ -819,7 +819,7 @@ TEST_F(BackgroundSyncManagerTest, UnregistrationStopsPeriodicTasks) {
   EXPECT_EQ(0, periodic_sync_events_called_);
 
   // Advance clock.
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
@@ -828,7 +828,7 @@ TEST_F(BackgroundSyncManagerTest, UnregistrationStopsPeriodicTasks) {
   EXPECT_TRUE(Unregister(sync_options_2_));
 
   // Advance clock. Expect no increase in periodicSync events fired.
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, periodic_sync_events_called_);
@@ -1326,7 +1326,7 @@ TEST_F(BackgroundSyncManagerTest, FiresOnRegistration) {
 
 TEST_F(BackgroundSyncManagerTest, PeriodicSyncFiresWhenExpected) {
   InitPeriodicSyncEventTest();
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
 
   EXPECT_TRUE(Register(sync_options_2_));
@@ -1352,7 +1352,7 @@ TEST_F(BackgroundSyncManagerTest, PeriodicSyncFiresWhenExpected) {
 
 TEST_F(BackgroundSyncManagerTest, TestSupensionAndRevival) {
   InitPeriodicSyncEventTest();
-  auto thirteen_hours = base::TimeDelta::FromHours(13);
+  auto thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
 
@@ -1389,7 +1389,7 @@ TEST_F(BackgroundSyncManagerTest, TestSupensionAndRevival) {
 
 TEST_F(BackgroundSyncManagerTest, UnregisterForOrigin) {
   InitPeriodicSyncEventTest();
-  auto thirteen_hours = base::TimeDelta::FromHours(13);
+  auto thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
 
@@ -1690,10 +1690,10 @@ TEST_F(BackgroundSyncManagerTest, OverrideParameters) {
       GetController()->background_sync_parameters();
   parameters->disable = true;
   parameters->max_sync_attempts = 100;
-  parameters->initial_retry_delay = base::TimeDelta::FromMinutes(200);
+  parameters->initial_retry_delay = base::Minutes(200);
   parameters->retry_delay_factor = 300;
-  parameters->min_sync_recovery_time = base::TimeDelta::FromMinutes(400);
-  parameters->max_sync_event_duration = base::TimeDelta::FromMinutes(500);
+  parameters->min_sync_recovery_time = base::Minutes(400);
+  parameters->max_sync_event_duration = base::Minutes(500);
 
   // Restart the BackgroundSyncManager so that it updates its parameters.
   SetupBackgroundSyncManager();
@@ -1805,15 +1805,14 @@ TEST_F(BackgroundSyncManagerTest, WakeBrowserCalledForPeriodicSync) {
 
   // Register a periodic Background Sync but it can't fire due to lack of
   // network, wake up is required.
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
   Register(sync_options_1_);
   EXPECT_TRUE(IsBrowserWakeupForPeriodicSyncScheduled());
   EXPECT_TRUE(EqualsSoonestPeriodicSyncWakeupDelta(thirteen_hours));
 
   // Advance clock.
-  test_clock_.Advance(
-      base::TimeDelta::FromMilliseconds(thirteen_hours.InMilliseconds()));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours.InMilliseconds()));
 
   // Start the event but it will pause mid-sync due to
   // InitDelayedPeriodicSyncEventTest() above.
@@ -1850,7 +1849,7 @@ TEST_F(BackgroundSyncManagerTest, GetSoonestWakeupDeltaConsidersSyncType) {
   EXPECT_EQ(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
                 /* last_browser_wakeup_for_periodic_sync= */ base::Time()),
-            base::TimeDelta::FromMilliseconds(sync_options_2_.min_interval));
+            base::Milliseconds(sync_options_2_.min_interval));
 }
 
 TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaDecreasesWithTime) {
@@ -1864,17 +1863,17 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaDecreasesWithTime) {
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   base::TimeDelta soonest_wakeup_delta_2 = GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   base::TimeDelta soonest_wakeup_delta_3 = GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   base::TimeDelta soonest_wakeup_delta_4 = GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
@@ -1885,12 +1884,12 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaDecreasesWithTime) {
 }
 
 TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaAppliesBrowserWakeupLimit) {
-  base::TimeDelta twelve_hours = base::TimeDelta::FromHours(12);
+  base::TimeDelta twelve_hours = base::Hours(12);
   SetPeriodicSyncEventsMinIntervalAndRestartManager(twelve_hours);
 
   // Register a periodic sync.
   // Hour zero.
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));
@@ -1901,21 +1900,21 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaAppliesBrowserWakeupLimit) {
 
   // Advance the clock by an hour.
   // Hour 1. Expect soonest_wakeup_delta to now be 12.
-  base::TimeDelta one_hour = base::TimeDelta::FromHours(1);
+  base::TimeDelta one_hour = base::Hours(1);
   test_clock_.Advance(one_hour);
   EXPECT_EQ(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
                 /* last_browser_wakeup_for_periodic_sync= */ base::Time()),
             twelve_hours);
   // Advance the clock by 12 hours. Hour 13.
-  test_clock_.Advance(base::TimeDelta::FromHours(9));
+  test_clock_.Advance(base::Hours(9));
   base::Time browser_wakeup_time = test_clock_.Now();
-  test_clock_.Advance(base::TimeDelta::FromHours(3));
+  test_clock_.Advance(base::Hours(3));
   EXPECT_EQ(
       GetSoonestWakeupDelta(
           blink::mojom::BackgroundSyncType::PERIODIC,
           /* last_browser_wakeup_for_periodic_sync= */ browser_wakeup_time),
-      base::TimeDelta::FromHours(9));
+      base::Hours(9));
   EXPECT_EQ(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
                 /* last_browser_wakeup_for_periodic_sync= */ base::Time()),
@@ -1924,13 +1923,13 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaAppliesBrowserWakeupLimit) {
 }
 
 TEST_F(BackgroundSyncManagerTest, StaggeredPeriodicSyncRegistrations) {
-  base::TimeDelta twelve_hours = base::TimeDelta::FromHours(12);
+  base::TimeDelta twelve_hours = base::Hours(12);
   SetPeriodicSyncEventsMinIntervalAndRestartManager(twelve_hours);
   InitPeriodicSyncEventTest();
   SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
 
   // Register a periodic sync.
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));
@@ -1941,7 +1940,7 @@ TEST_F(BackgroundSyncManagerTest, StaggeredPeriodicSyncRegistrations) {
             thirteen_hours);
 
   // Advance the clock by an hour. Add another registration.
-  base::TimeDelta one_hour = base::TimeDelta::FromHours(1);
+  base::TimeDelta one_hour = base::Hours(1);
   test_clock_.Advance(one_hour);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   EXPECT_EQ(GetSoonestWakeupDelta(
@@ -1991,7 +1990,7 @@ TEST_F(BackgroundSyncManagerTest, TwoFailedAttemptsForPeriodicSync) {
   SetMaxSyncAttemptsAndRestartManager(2);
   InitFailedPeriodicSyncEventTest();
 
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
 
   EXPECT_TRUE(Register(sync_options_2_));
@@ -2008,9 +2007,8 @@ TEST_F(BackgroundSyncManagerTest, TwoFailedAttemptsForPeriodicSync) {
 
   // Since this one failed, a wakeup/delayed task will be scheduled for retries
   // after five minutes.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(5),
-            delayed_periodic_sync_task_delta());
-  test_clock_.Advance(base::TimeDelta::FromMinutes(5));
+  EXPECT_EQ(base::Minutes(5), delayed_periodic_sync_task_delta());
+  test_clock_.Advance(base::Minutes(5));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
@@ -2019,14 +2017,14 @@ TEST_F(BackgroundSyncManagerTest, TwoFailedAttemptsForPeriodicSync) {
 
   // Second attempt would also fail, resetting to next thirteen_hours.
   // Expect nothing after just another hour.
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  test_clock_.Advance(base::Hours(1));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(2, periodic_sync_events_called_);
 
   // Expect the next event after another twelve hours.
-  test_clock_.Advance(base::TimeDelta::FromHours(12));
+  test_clock_.Advance(base::Hours(12));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
@@ -2044,9 +2042,8 @@ TEST_F(BackgroundSyncManagerTest, TwoAttempts) {
   EXPECT_TRUE(IsDelayedTaskScheduledOneShotSync());
 
   // Make sure the delay is reasonable.
-  EXPECT_LT(base::TimeDelta::FromMinutes(1),
-            delayed_one_shot_sync_task_delta());
-  EXPECT_GT(base::TimeDelta::FromHours(1), delayed_one_shot_sync_task_delta());
+  EXPECT_LT(base::Minutes(1), delayed_one_shot_sync_task_delta());
+  EXPECT_GT(base::Hours(1), delayed_one_shot_sync_task_delta());
 
   // Fire again and this time it should permanently fail.
   test_clock_.Advance(delayed_one_shot_sync_task_delta());
@@ -2092,16 +2089,14 @@ TEST_F(BackgroundSyncManagerTest, WaitsFullDelayTime) {
 
   // Fire again one second before it's ready to retry. Expect it to reschedule
   // the delay timer for one more second.
-  test_clock_.Advance(delayed_one_shot_sync_task_delta() -
-                      base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(delayed_one_shot_sync_task_delta() - base::Seconds(1));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetRegistration(sync_options_1_));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            delayed_one_shot_sync_task_delta());
+  EXPECT_EQ(base::Seconds(1), delayed_one_shot_sync_task_delta());
 
   // Fire one second later and it should fail permanently.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   RunOneShotSyncDelayedTask();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetRegistration(sync_options_1_));
@@ -2137,12 +2132,11 @@ TEST_F(BackgroundSyncManagerTest, RescheduleOnBrowserRestart) {
   base::TimeDelta delta = delayed_one_shot_sync_task_delta();
   CreateBackgroundSyncManager();
   InitFailedSyncEventTest();
-  test_clock_.Advance(delta - base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(delta - base::Seconds(1));
   InitBackgroundSyncManager();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetRegistration(sync_options_1_));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            delayed_one_shot_sync_task_delta());
+  EXPECT_EQ(base::Seconds(1), delayed_one_shot_sync_task_delta());
 }
 
 TEST_F(BackgroundSyncManagerTest, RetryIfClosedMidSync) {

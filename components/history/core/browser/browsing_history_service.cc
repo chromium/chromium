@@ -271,7 +271,7 @@ void BrowsingHistoryService::QueryHistoryInternal(
       // Start a timer with timeout before we make the actual query, otherwise
       // tests get confused when completion callback is run synchronously.
       web_history_timer_->Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(kWebHistoryTimeoutSeconds),
+          FROM_HERE, base::Seconds(kWebHistoryTimeoutSeconds),
           base::BindOnce(&BrowsingHistoryService::WebHistoryTimeout,
                          weak_factory_.GetWeakPtr(), state));
 
@@ -357,9 +357,9 @@ void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete(
   }
 
   base::Time end_time =
-      result.last_visit < (query_start_time - base::TimeDelta::FromMinutes(1))
+      result.last_visit < (query_start_time - base::Minutes(1))
           ? result.last_visit
-          : query_start_time - base::TimeDelta::FromMinutes(1);
+          : query_start_time - base::Minutes(1);
   local_history_->GetLastVisitToHost(
       host_name, base::Time() /* before_time */, end_time /* end_time */,
       base::BindOnce(
@@ -740,8 +740,8 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
             continue;
           }
           // The timestamp on the server is a Unix time.
-          base::Time time = base::Time::UnixEpoch() +
-                            base::TimeDelta::FromMicroseconds(timestamp_usec);
+          base::Time time =
+              base::Time::UnixEpoch() + base::Microseconds(timestamp_usec);
 
           // Get the ID of the client that this visit came from.
           std::string client_id;

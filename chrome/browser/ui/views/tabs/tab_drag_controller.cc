@@ -74,12 +74,10 @@ namespace {
 
 // Initial delay before moving tabs when the dragged tab is close to the edge of
 // the stacked tabs.
-constexpr auto kMoveAttachedInitialDelay =
-    base::TimeDelta::FromMilliseconds(600);
+constexpr auto kMoveAttachedInitialDelay = base::Milliseconds(600);
 
 // Delay for moving tabs after the initial delay has passed.
-constexpr auto kMoveAttachedSubsequentDelay =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr auto kMoveAttachedSubsequentDelay = base::Milliseconds(300);
 
 // A dragged window is forced to be a bit smaller than maximized bounds during a
 // drag. This prevents the dragged browser widget from getting maximized at
@@ -860,7 +858,7 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   }
   if (current_state_ == DragState::kDraggingWindow) {
     bring_to_front_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(750),
+        FROM_HERE, base::Milliseconds(750),
         base::BindOnce(&TabDragController::BringWindowUnderPointToFront,
                        base::Unretained(this), point_in_screen));
   }

@@ -164,13 +164,13 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
   using OCSPProduced = EmbeddedTestServer::OCSPConfig::Produced;
   switch (config.produced) {
     case OCSPProduced::kValid:
-      produced_at = now - base::TimeDelta::FromDays(1);
+      produced_at = now - base::Days(1);
       break;
     case OCSPProduced::kBeforeCert:
-      produced_at = target_not_before - base::TimeDelta::FromDays(1);
+      produced_at = target_not_before - base::Days(1);
       break;
     case OCSPProduced::kAfterCert:
-      produced_at = target_not_after + base::TimeDelta::FromDays(1);
+      produced_at = target_not_after + base::Days(1);
       break;
   }
 
@@ -184,34 +184,29 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
     }
     response.cert_status = config_response.cert_status;
     // |revocation_time| is ignored if |cert_status| is not REVOKED.
-    response.revocation_time = now - base::TimeDelta::FromDays(1000);
+    response.revocation_time = now - base::Days(1000);
 
     using OCSPDate = EmbeddedTestServer::OCSPConfig::SingleResponse::Date;
     switch (config_response.ocsp_date) {
       case OCSPDate::kValid:
-        response.this_update = now - base::TimeDelta::FromDays(1);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(7);
+        response.this_update = now - base::Days(1);
+        response.next_update = response.this_update + base::Days(7);
         break;
       case OCSPDate::kOld:
-        response.this_update = now - base::TimeDelta::FromDays(8);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(7);
+        response.this_update = now - base::Days(8);
+        response.next_update = response.this_update + base::Days(7);
         break;
       case OCSPDate::kEarly:
-        response.this_update = now + base::TimeDelta::FromDays(1);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(7);
+        response.this_update = now + base::Days(1);
+        response.next_update = response.this_update + base::Days(7);
         break;
       case OCSPDate::kLong:
-        response.this_update = now - base::TimeDelta::FromDays(365);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(366);
+        response.this_update = now - base::Days(365);
+        response.next_update = response.this_update + base::Days(366);
         break;
       case OCSPDate::kLonger:
-        response.this_update = now - base::TimeDelta::FromDays(367);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(368);
+        response.this_update = now - base::Days(367);
+        response.next_update = response.this_update + base::Days(368);
         break;
     }
 

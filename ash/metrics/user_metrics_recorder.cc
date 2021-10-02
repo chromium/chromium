@@ -514,9 +514,8 @@ bool UserMetricsRecorder::IsUserInActiveDesktopEnvironment() const {
 }
 
 void UserMetricsRecorder::StartTimer() {
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromSeconds(kAshPeriodicMetricsTimeInSeconds),
-               this, &UserMetricsRecorder::RecordPeriodicMetrics);
+  timer_.Start(FROM_HERE, base::Seconds(kAshPeriodicMetricsTimeInSeconds), this,
+               &UserMetricsRecorder::RecordPeriodicMetrics);
 }
 
 }  // namespace ash

@@ -42,8 +42,7 @@ namespace ash {
 namespace {
 
 // Length of timeout to cancel recognition if there's no speech heard.
-static const base::TimeDelta kNoSpeechTimeout =
-    base::TimeDelta::FromSeconds(10);
+static const base::TimeDelta kNoSpeechTimeout = base::Seconds(10);
 
 const char kDefaultProfileLocale[] = "en-US";
 

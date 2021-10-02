@@ -185,7 +185,7 @@ void RestorePrimaryUserDesks() {
         desks_metrics_dict.FindIntPath(kCreationTimeKey);
     if (creation_time_entry.has_value()) {
       const auto creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMinutes(*creation_time_entry));
+          base::Minutes(*creation_time_entry));
       if (!creation_time.is_null() && creation_time < now)
         desks_controller->RestoreCreationTimeOfDeskAtIndex(creation_time,
                                                            index);
@@ -243,8 +243,7 @@ void RestorePrimaryUserDesks() {
     if (report_time != -1 && num_weekly_active_desks != -1) {
       desks_controller->RestoreWeeklyActiveDesksMetrics(
           num_weekly_active_desks,
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMinutes(report_time)));
+          base::Time::FromDeltaSinceWindowsEpoch(base::Minutes(report_time)));
     }
   }
 }

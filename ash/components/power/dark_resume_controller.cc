@@ -16,8 +16,7 @@ namespace {
 
 // The default value of |dark_resume_hard_timeout_| till
 // |PowerManagerInitialized| is called.
-constexpr base::TimeDelta kDefaultDarkResumeHardTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kDefaultDarkResumeHardTimeout = base::Seconds(20);
 
 }  // namespace
 

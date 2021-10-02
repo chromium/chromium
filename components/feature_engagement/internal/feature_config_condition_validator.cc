@@ -61,8 +61,7 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
   result.snooze_expiration_ok =
       !event_model.IsSnoozeDismissed(config.trigger.name) &&
       (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
-       base::Time::Now() -
-           base::TimeDelta::FromDays(config.snooze_params.snooze_interval));
+       base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
 
   result.should_show_snooze =
       result.snooze_expiration_ok &&

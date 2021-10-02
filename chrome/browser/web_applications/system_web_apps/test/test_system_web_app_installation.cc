@@ -472,8 +472,7 @@ TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
 
   SystemAppBackgroundTaskInfo background_task(
-      base::TimeDelta::FromDays(1), GURL("chrome://test-system-app/page2.html"),
-      true);
+      base::Days(1), GURL("chrome://test-system-app/page2.html"), true);
   delegate->SetTimerInfo(background_task);
 
   return base::WrapUnique(

@@ -15,8 +15,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kIgnoreCommitsDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kIgnoreCommitsDuration = base::Milliseconds(100);
 
 bool IsEventFromVK(const ui::KeyEvent& event) {
   if (event.HasNativeEvent())

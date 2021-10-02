@@ -322,7 +322,7 @@ void WebDatabaseHostImpl::DatabaseDeleteFile(
           base::BindOnce(&WebDatabaseHostImpl::DatabaseDeleteFile,
                          weak_ptr_factory_.GetWeakPtr(), vfs_file_name,
                          sync_dir, std::move(callback), reschedule_count - 1),
-          base::TimeDelta::FromMilliseconds(kDelayDeleteRetryMs));
+          base::Milliseconds(kDelayDeleteRetryMs));
       return;
     }
   }

@@ -25,10 +25,8 @@ constexpr int kBuiltinSequenceNum =
 constexpr int kMaximumJankHistogramIndex = 2 * kBuiltinSequenceNum;
 constexpr int kMaximumStaleHistogramIndex = kBuiltinSequenceNum;
 
-constexpr base::TimeDelta kStaleHistogramMin =
-    base::TimeDelta::FromMicroseconds(1);
-constexpr base::TimeDelta kStaleHistogramMax =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kStaleHistogramMin = base::Microseconds(1);
+constexpr base::TimeDelta kStaleHistogramMax = base::Milliseconds(1000);
 constexpr int kStaleHistogramBucketCount = 200;
 
 constexpr bool IsValidJankThreadType(FrameSequenceMetrics::ThreadType type) {
@@ -177,7 +175,7 @@ void JankMetrics::AddPresentedFrame(
 
   // Exclude the presentation delay introduced by no-update frames. If this
   // exclusion results in negative frame delta, treat the frame delta as 0.
-  const base::TimeDelta zero_delta = base::TimeDelta::FromMilliseconds(0);
+  const base::TimeDelta zero_delta = base::Milliseconds(0);
 
   // Setting the current_frame_delta to zero conveniently excludes the current
   // frame to be ignored from jank/stale calculation.

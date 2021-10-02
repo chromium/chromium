@@ -27,7 +27,7 @@ namespace mixer_service {
 
 namespace {
 
-constexpr base::TimeDelta kConnectTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kConnectTimeout = base::Seconds(1);
 
 }  // namespace
 

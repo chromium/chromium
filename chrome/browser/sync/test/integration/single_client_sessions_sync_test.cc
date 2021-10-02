@@ -651,8 +651,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   const SessionID kWindowId = SessionID::FromSerializedValue(5);
   const SessionID kTabId1 = SessionID::FromSerializedValue(1);
   const SessionID kTabId2 = SessionID::FromSerializedValue(2);
-  const base::Time kLastModifiedTime =
-      base::Time::Now() - base::TimeDelta::FromDays(100);
+  const base::Time kLastModifiedTime = base::Time::Now() - base::Days(100);
 
   SessionSyncTestHelper helper;
 
@@ -705,8 +704,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   const SessionID kWindowId = SessionID::FromSerializedValue(5);
   const SessionID kTabId1 = SessionID::FromSerializedValue(1);
   const SessionID kTabId2 = SessionID::FromSerializedValue(2);
-  const base::Time kLastModifiedTime =
-      base::Time::Now() - base::TimeDelta::FromDays(100);
+  const base::Time kLastModifiedTime = base::Time::Now() - base::Days(100);
 
   SessionSyncTestHelper helper;
 

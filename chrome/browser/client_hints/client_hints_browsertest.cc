@@ -1922,8 +1922,7 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   expiration_times_dictionary->SetList("client_hints",
                                        std::move(expiration_times_list));
   expiration_times_dictionary->SetDoubleKey(
-      "expiration_time",
-      (base::Time::Now() + base::TimeDelta::FromDays(1)).ToDoubleT());
+      "expiration_time", (base::Time::Now() + base::Days(1)).ToDoubleT());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       without_accept_ch_without_lifetime_url(), GURL(),
       ContentSettingsType::CLIENT_HINTS,

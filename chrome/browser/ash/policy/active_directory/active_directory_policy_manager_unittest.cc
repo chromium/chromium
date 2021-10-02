@@ -193,7 +193,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, DontWait_NoCachedPolicy) {
 // has been loaded.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
        WaitFinite_LoadSuccess_FetchSuccess_LoadSuccess) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to succeed.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
@@ -221,7 +221,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // we have cached policy.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
        WaitFinite_LoadSuccess_FetchSuccess_LoadFail) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to succeed.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
@@ -248,7 +248,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // still require the policy load to succeed so that there's *some* policy
 // present (though possibly outdated).
 TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadSuccess_FetchFail) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_UNKNOWN);
@@ -278,7 +278,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadSuccess_FetchFail) {
 // present (though possibly outdated). Here the sequence is inverted: Fetch
 // returns before load.
 TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchFail_LoadSuccess) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_UNKNOWN);
@@ -300,7 +300,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchFail_LoadSuccess) {
 // If the initial fetch timeout is not infinite, we're in best-effort mode but
 // if we can't load existing policy from disk we have to give up.
 TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadFail_FetchFail) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_UNKNOWN);
@@ -332,7 +332,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadFail_FetchFail) {
 // disk.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
        WaitFinite_LoadSuccess_FetchTimeout) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_UNKNOWN);
@@ -353,7 +353,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // If load fails and fetch times out, we wait until fetch response is called.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
        WaitFinite_LoadFail_FetchTimeout_FetchSuccess) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
@@ -382,7 +382,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // Failure should end the session.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
        WaitFinite_LoadFail_FetchTimeout_FetchFail) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_UNKNOWN);
@@ -406,7 +406,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 
 // Simulate long load by policy store.
 TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchSucces_LongLoad) {
-  CreatePolicyManager(base::TimeDelta::FromDays(365));
+  CreatePolicyManager(base::Days(365));
   // Trigger mock policy fetch from authpolicyd.
   InitPolicyManagerAndVerifyExpectations();
   // Process reply for mock policy fetch.

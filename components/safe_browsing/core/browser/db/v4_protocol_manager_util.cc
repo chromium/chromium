@@ -311,8 +311,8 @@ base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
     *multiplier *= 2;
   }
   base::TimeDelta next =
-      base::TimeDelta::FromMinutes(*multiplier * (1 + base::RandDouble()) * 15);
-  base::TimeDelta day = base::TimeDelta::FromHours(24);
+      base::Minutes(*multiplier * (1 + base::RandDouble()) * 15);
+  base::TimeDelta day = base::Hours(24);
   return next < day ? next : day;
 }
 

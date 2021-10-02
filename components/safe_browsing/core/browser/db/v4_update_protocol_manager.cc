@@ -149,9 +149,9 @@ V4UpdateProtocolManager::V4UpdateProtocolManager(
     ExtendedReportingLevelCallback extended_reporting_level_callback)
     : update_error_count_(0),
       update_back_off_mult_(1),
-      next_update_interval_(base::TimeDelta::FromSeconds(
-          base::RandInt(kV4TimerStartIntervalSecMin,
-                        kV4TimerStartIntervalSecMax))),
+      next_update_interval_(
+          base::Seconds(base::RandInt(kV4TimerStartIntervalSecMin,
+                                      kV4TimerStartIntervalSecMax))),
       config_(config),
       url_loader_factory_(url_loader_factory),
       update_callback_(update_callback),
@@ -285,8 +285,7 @@ bool V4UpdateProtocolManager::ParseUpdateResponse(
     if (minimum_wait_duration_seconds < kV4TimerStartIntervalSecMin) {
       minimum_wait_duration_seconds = kV4TimerStartIntervalSecMin;
     }
-    next_update_interval_ =
-        base::TimeDelta::FromSeconds(minimum_wait_duration_seconds);
+    next_update_interval_ = base::Seconds(minimum_wait_duration_seconds);
   }
 
   for (ListUpdateResponse& list_update_response :

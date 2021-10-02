@@ -24,7 +24,7 @@ const uint8_t kVerboseDisabledLevel = 0;
 const uint8_t kVerboseBasicLevel = 1;
 
 const int kDbusRetryCount = 10;
-constexpr base::TimeDelta kDbusRetryInterval = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDbusRetryInterval = base::Seconds(3);
 }  // namespace
 
 DebugLogsManager::DebugLogsManager(const std::string& primary_user_email,

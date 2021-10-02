@@ -183,25 +183,24 @@ TEST_F(AshNotificationViewTest, UpdatesTimestampOverTime) {
 
   EXPECT_TRUE(timestamp_in_collapsed_view()->GetVisible());
 
-  UpdateTimestamp(base::Time::Now() + base::TimeDelta::FromHours(3) +
-                  base::TimeDelta::FromMinutes(30));
+  UpdateTimestamp(base::Time::Now() + base::Hours(3) + base::Minutes(30));
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST_FUTURE, 3),
             timestamp_in_collapsed_view()->GetText());
 
-  AdvanceClock(base::TimeDelta::FromHours(3));
+  AdvanceClock(base::Hours(3));
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST_FUTURE, 30),
             timestamp_in_collapsed_view()->GetText());
 
-  AdvanceClock(base::TimeDelta::FromMinutes(30));
+  AdvanceClock(base::Minutes(30));
 
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST),
       timestamp_in_collapsed_view()->GetText());
 
-  AdvanceClock(base::TimeDelta::FromDays(2));
+  AdvanceClock(base::Days(2));
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_DAYS_SHORTEST, 2),

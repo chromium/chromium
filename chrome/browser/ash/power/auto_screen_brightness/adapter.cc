@@ -389,8 +389,7 @@ Adapter::Adapter(Profile* profile,
       lid_open_delay_time_.InSeconds());
 
   if (lid_open_delay_time_seconds > 0) {
-    lid_open_delay_time_ =
-        base::TimeDelta::FromSeconds(lid_open_delay_time_seconds);
+    lid_open_delay_time_ = base::Seconds(lid_open_delay_time_seconds);
   }
 }
 
@@ -414,8 +413,8 @@ void Adapter::InitParams(const ModelConfig& model_config) {
       features::kAutoScreenBrightness, "stabilization_threshold",
       params_.stabilization_threshold);
 
-  params_.auto_brightness_als_horizon = base::TimeDelta::FromSeconds(
-      model_config.auto_brightness_als_horizon_seconds);
+  params_.auto_brightness_als_horizon =
+      base::Seconds(model_config.auto_brightness_als_horizon_seconds);
 
   log_als_values_ = std::make_unique<AmbientLightSampleBuffer>(
       params_.auto_brightness_als_horizon);

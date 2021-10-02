@@ -224,7 +224,7 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
   // The request should time out after 30 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
@@ -440,7 +440,7 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
 TEST_F(ConversionNetworkSenderTest, TimeFromConversionToReportSendHistogram) {
   base::HistogramTester histograms;
   auto report = GetReport(/*conversion_id=*/1);
-  report.report_time = base::Time() + base::TimeDelta::FromHours(5);
+  report.report_time = base::Time() + base::Hours(5);
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));

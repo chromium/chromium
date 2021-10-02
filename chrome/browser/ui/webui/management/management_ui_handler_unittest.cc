@@ -556,7 +556,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         managed_user.get(), std::move(store), std::move(data_manager),
         base::FilePath() /* component_policy_cache_path */,
         policy::UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,
-        base::TimeDelta::FromMinutes(1) /* policy_refresh_timeout */,
+        base::Minutes(1) /* policy_refresh_timeout */,
         base::BindOnce(&ManagementUIHandlerTests::OnFatalError,
                        base::Unretained(this)),
         account_id, task_runner_);

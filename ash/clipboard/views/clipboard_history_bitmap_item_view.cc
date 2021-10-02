@@ -35,13 +35,11 @@ namespace {
 
 // The duration of the fade out animation for transitioning the placeholder
 // image to rendered HTML.
-constexpr base::TimeDelta kFadeOutDurationMs =
-    base::TimeDelta::FromMilliseconds(60);
+constexpr base::TimeDelta kFadeOutDurationMs = base::Milliseconds(60);
 
 // The duration of the fade in animation for transitioning the placeholder image
 // to rendered HTML.
-constexpr base::TimeDelta kFadeInDurationMs =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kFadeInDurationMs = base::Milliseconds(200);
 
 ////////////////////////////////////////////////////////////////////////////////
 // FadeImageView

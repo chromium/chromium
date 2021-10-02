@@ -70,7 +70,7 @@ void V8ForegroundTaskRunnerWithLocker::PostDelayedTask(
       FROM_HERE,
       base::BindOnce(RunWithLocker, base::Unretained(isolate_),
                      std::move(task)),
-      base::TimeDelta::FromSecondsD(delay_in_seconds));
+      base::Seconds(delay_in_seconds));
 }
 
 void V8ForegroundTaskRunnerWithLocker::PostIdleTask(

@@ -36,7 +36,7 @@ namespace ui {
 namespace {
 
 // The amount of time to wait for a request to complete before aborting it.
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(1);
 
 // Depending on the backend, the platform clipboard may or may not be
 // available.  Should it be absent, we provide a dummy one.  It always calls

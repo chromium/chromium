@@ -114,7 +114,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   // early, WebKit returns a non-nil data object that it won't restore properly.
   // This is OK, since it will fall back to  legacy session restore when
   // necessary.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 
   // File should not be saved yet.
   NSString* sessionID =

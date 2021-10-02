@@ -58,7 +58,7 @@ const int kSlowPreloadPercentage = 10;
 const int kUpdateBufferSizeFrequency = 32;
 
 // How long to we delay a seek after a read?
-constexpr base::TimeDelta kSeekDelay = base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kSeekDelay = base::Milliseconds(20);
 
 }  // namespace
 

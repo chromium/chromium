@@ -67,10 +67,9 @@ void ReportLongDuration(const char* histogram_name,
   double value =
       [measurement measurementByConvertingToUnit:NSUnitDuration.seconds]
           .doubleValue;
-  base::UmaHistogramCustomTimes(
-      histogram_name, base::TimeDelta::FromSecondsD(value),
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromSeconds(86400 /* secs per day */), 50);
+  base::UmaHistogramCustomTimes(histogram_name, base::Seconds(value),
+                                base::Seconds(1),
+                                base::Seconds(86400 /* secs per day */), 50);
 }
 
 void ReportMemory(const char* histogram_name, NSMeasurement* measurement) {
@@ -246,8 +245,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   // It should take less than 1 minute to startup.
   // Histogram is defined in millisecond granularity.
   base::HistogramBase* histogramUMA = base::Histogram::FactoryTimeGet(
-      histogramUMAName, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMinutes(1), 50,
+      histogramUMAName, base::Milliseconds(1), base::Minutes(1), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   MXHistogramBucket* bucket;
   NSEnumerator* enumerator = [histogram bucketEnumerator];

@@ -36,7 +36,7 @@
 namespace {
 
 const int kThumbRadius = 6;
-const base::TimeDelta kRenderTimelineInterval = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kRenderTimelineInterval = base::Seconds(1);
 
 // Only respond to main button of primary pointer(s).
 bool IsValidPointerEvent(const blink::Event& event) {

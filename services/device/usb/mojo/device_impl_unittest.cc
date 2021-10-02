@@ -292,7 +292,7 @@ class USBDeviceImplTest : public testing::Test {
     // Simulate the asynchronous device opening process.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), mock_handle_),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
 
   void CloseMockHandle() {

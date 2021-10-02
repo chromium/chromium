@@ -26,7 +26,7 @@ class ASH_EXPORT PowerButtonScreenshotController : public ui::EventHandler {
   // Time that volume down key and power button must be pressed within this
   // interval of each other to make a screenshot.
   static constexpr base::TimeDelta kScreenshotChordDelay =
-      base::TimeDelta::FromMilliseconds(150);
+      base::Milliseconds(150);
 
   explicit PowerButtonScreenshotController(const base::TickClock* tick_clock);
 

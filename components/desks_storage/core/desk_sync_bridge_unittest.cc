@@ -311,8 +311,7 @@ class DeskSyncBridgeTest : public testing::Test {
     return changes;
   }
 
-  base::Time AdvanceAndGetTime(
-      base::TimeDelta delta = base::TimeDelta::FromMilliseconds(10)) {
+  base::Time AdvanceAndGetTime(base::TimeDelta delta = base::Milliseconds(10)) {
     clock_.Advance(delta);
     return clock_.Now();
   }

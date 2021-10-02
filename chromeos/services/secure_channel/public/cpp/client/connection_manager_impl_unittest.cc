@@ -31,13 +31,10 @@ const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 
 using multidevice_setup::mojom::HostStatus;
 
-constexpr base::TimeDelta kFakeConnectionLatencyTime(
-    base::TimeDelta::FromSeconds(3u));
-constexpr base::TimeDelta kFakeConnectionDurationTime(
-    base::TimeDelta::FromSeconds(10u));
+constexpr base::TimeDelta kFakeConnectionLatencyTime(base::Seconds(3u));
+constexpr base::TimeDelta kFakeConnectionDurationTime(base::Seconds(10u));
 
-constexpr base::TimeDelta kExpectedTimeoutSeconds(
-    base::TimeDelta::FromSeconds(15u));
+constexpr base::TimeDelta kExpectedTimeoutSeconds(base::Seconds(15u));
 
 class FakeObserver : public secure_channel::ConnectionManager::Observer {
  public:

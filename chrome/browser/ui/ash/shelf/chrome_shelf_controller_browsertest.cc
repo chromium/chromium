@@ -205,8 +205,8 @@ void ExtendHotseat(Browser* browser) {
   views::WidgetAnimationWaiter waiter(shelf_view->GetWidget());
 
   ui::test::EventGenerator event_generator(controller->GetRootWindow());
-  event_generator.GestureScrollSequence(
-      start_point, end_point, base::TimeDelta::FromMilliseconds(500), 4);
+  event_generator.GestureScrollSequence(start_point, end_point,
+                                        base::Milliseconds(500), 4);
 
   // Wait until hotseat bounds animation completes.
   waiter.WaitForAnimation();
@@ -2663,7 +2663,7 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_ptr->Dispatch(&touch_press);
 
-    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+    clock_ptr->Advance(base::Seconds(1));
 
     ui::TouchEvent touch_move(
         ui::ET_TOUCH_MOVED, home_button_center, base::TimeTicks::Now(),

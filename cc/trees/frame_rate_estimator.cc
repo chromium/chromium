@@ -9,7 +9,7 @@
 namespace cc {
 namespace {
 
-constexpr auto kInputPriorityDelay = base::TimeDelta::FromMilliseconds(250);
+constexpr auto kInputPriorityDelay = base::Milliseconds(250);
 
 }  // namespace
 
@@ -47,7 +47,7 @@ void FrameRateEstimator::WillDraw(base::TimeTicks now) {
   // we assume that BeginFrames can not be throttled. But if the animation
   // frequency is lower than that, then using a lower frame rate is permitted.
   // The delta below is to account for minor offsets in frame times.
-  constexpr auto kFudgeDelta = base::TimeDelta::FromMilliseconds(1);
+  constexpr auto kFudgeDelta = base::Milliseconds(1);
   constexpr auto kMinDelta =
       (viz::BeginFrameArgs::DefaultInterval() * 2) - kFudgeDelta;
   if (draw_delta < kMinDelta)

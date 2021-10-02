@@ -33,20 +33,16 @@ namespace media {
 namespace {
 
 // Buffering parameters when load_type is kLoadTypeUrl.
-constexpr base::TimeDelta kLowBufferThresholdURL(
-    base::TimeDelta::FromMilliseconds(2000));
-constexpr base::TimeDelta kHighBufferThresholdURL(
-    base::TimeDelta::FromMilliseconds(6000));
+constexpr base::TimeDelta kLowBufferThresholdURL(base::Milliseconds(2000));
+constexpr base::TimeDelta kHighBufferThresholdURL(base::Milliseconds(6000));
 
 // Buffering parameters when load_type is kLoadTypeMediaSource.
-constexpr base::TimeDelta kLowBufferThresholdMediaSource(
-    base::TimeDelta::FromMilliseconds(0));
+constexpr base::TimeDelta kLowBufferThresholdMediaSource(base::Milliseconds(0));
 constexpr base::TimeDelta kHighBufferThresholdMediaSource(
-    base::TimeDelta::FromMilliseconds(1000));
+    base::Milliseconds(1000));
 
 // Interval between two updates of the media time.
-constexpr base::TimeDelta kTimeUpdateInterval(
-    base::TimeDelta::FromMilliseconds(250));
+constexpr base::TimeDelta kTimeUpdateInterval(base::Milliseconds(250));
 
 // Interval between two updates of the statistics is equal to:
 // kTimeUpdateInterval * kStatisticsUpdatePeriod.
@@ -337,8 +333,8 @@ void MediaPipelineImpl::SetVolume(float volume) {
 base::TimeDelta MediaPipelineImpl::GetMediaTime() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 #if BUILDFLAG(CMA_USE_ACCURATE_MEDIA_TIME)
-  base::TimeDelta time = base::TimeDelta::FromMicroseconds(
-      media_pipeline_backend_->GetCurrentPts());
+  base::TimeDelta time =
+      base::Microseconds(media_pipeline_backend_->GetCurrentPts());
 #else
   base::TimeDelta time = last_media_time_;
 #endif
@@ -514,8 +510,8 @@ void MediaPipelineImpl::UpdateMediaTime() {
   // Wait until the first available timestamp returned from backend, which means
   // the actual playback starts. Some of the rest of the logic, mainly media
   // time interpolating, expects a valid timestamp as baseline.
-  base::TimeDelta media_time = base::TimeDelta::FromMicroseconds(
-      media_pipeline_backend_->GetCurrentPts());
+  base::TimeDelta media_time =
+      base::Microseconds(media_pipeline_backend_->GetCurrentPts());
   if (media_time == ::media::kNoTimestamp &&
       (last_media_time_ == ::media::kNoTimestamp ||
        !media_time_interpolator_.interpolating())) {
@@ -585,7 +581,7 @@ void MediaPipelineImpl::OnError(::media::PipelineStatus error) {
 }
 
 void MediaPipelineImpl::ResetBitrateState() {
-  elapsed_time_delta_ = base::TimeDelta::FromSeconds(0);
+  elapsed_time_delta_ = base::Seconds(0);
   audio_bytes_for_bitrate_estimation_ = 0;
   video_bytes_for_bitrate_estimation_ = 0;
   last_sample_time_ = base::TimeTicks::Now();

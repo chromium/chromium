@@ -185,7 +185,7 @@ base::TimeDelta TileConfig::GetExpireDuration() {
   int time_in_seconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kQueryTiles, kExpireDurationKey,
       kDefaultExpireDurationInSeconds);
-  return base::TimeDelta::FromSeconds(time_in_seconds);
+  return base::Seconds(time_in_seconds);
 }
 
 // static

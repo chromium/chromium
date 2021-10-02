@@ -22,7 +22,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kFireInterval = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kFireInterval = base::Seconds(1);
 constexpr double kLargeAdSizeToViewportSizeThreshold = 0.3;
 
 // An sticky element should have a non-default position w.r.t. the viewport. The

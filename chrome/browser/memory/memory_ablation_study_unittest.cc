@@ -38,7 +38,7 @@ TEST_F(MemoryAblationStudyTest, MAYBE_Basic) {
 
   // 450s should be enough to both allocate the memory and trigger a read.
   MemoryAblationStudy study;
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(450));
+  task_environment_.FastForwardBy(base::Seconds(450));
   size_t total_size = 0;
   for (MemoryAblationStudy::Region& region : study.regions_) {
     total_size += region.size();

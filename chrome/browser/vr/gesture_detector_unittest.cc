@@ -108,7 +108,7 @@ TEST(GestureDetector, StartTouchWithoutMoving) {
   EXPECT_EQ(gestures.front()->type(), InputEvent::kFlingCancel);
 
   // A small move doesn't trigger scrolling yet.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.position_in_trackpad = {kDelta, kDelta};
   gestures = detector.DetectGestures(controller, timestamp);
@@ -123,7 +123,7 @@ TEST(GestureDetector, StartTouchMoveAndRelease) {
   detector.DetectGestures(controller, timestamp);
 
   // Move to the right.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.position_in_trackpad = {0.3f, 0.0f};
   auto gestures = detector.DetectGestures(controller, timestamp);
@@ -133,7 +133,7 @@ TEST(GestureDetector, StartTouchMoveAndRelease) {
   EXPECT_EQ(gesture->scroll_data.delta_y, 0.0f);
 
   // Move slightly up.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.position_in_trackpad = {0.3f, 0.01f};
   gestures = detector.DetectGestures(controller, timestamp);
@@ -144,16 +144,16 @@ TEST(GestureDetector, StartTouchMoveAndRelease) {
 
   // Release touch. Scroll is extrapolated for 2 frames.
   controller.is_touching_trackpad = false;
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollUpdate);
   gesture = static_cast<InputEvent*>(gestures.front().get());
   EXPECT_GT(gesture->scroll_data.delta_x, 0.0f);
   EXPECT_GT(gesture->scroll_data.delta_y, 0.0f);
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollUpdate);
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollEnd);
 }
@@ -166,14 +166,14 @@ TEST(GestureDetector, CancelDuringScrolling) {
   detector.DetectGestures(controller, timestamp);
 
   // Move to the right.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.position_in_trackpad = {0.3f, 0.0f};
   auto gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollBegin);
 
   // Button down.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.is_select_button_down = true;
   gestures = detector.DetectGestures(controller, timestamp);
@@ -188,20 +188,20 @@ TEST(GestureDetector, CancelDuringPostScrolling) {
   detector.DetectGestures(controller, timestamp);
 
   // Move to the right.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.position_in_trackpad = {0.3f, 0.0f};
   auto gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollBegin);
 
   // Release touch. We should see extrapolated scrolling.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.is_touching_trackpad = false;
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollUpdate);
 
   // Button down.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.is_select_button_down = true;
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollEnd);
@@ -215,20 +215,20 @@ TEST(GestureDetector, CancelAndTouchDuringPostScrolling) {
   detector.DetectGestures(controller, timestamp);
 
   // Move to the right.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.last_touch_timestamp = timestamp;
   controller.position_in_trackpad = {0.3f, 0.0f};
   auto gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollBegin);
 
   // Release touch. We should see extrapolated scrolling.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.is_touching_trackpad = false;
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kScrollUpdate);
 
   // Touch and button down.
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   controller.is_select_button_down = true;
   controller.is_touching_trackpad = true;
   gestures = detector.DetectGestures(controller, timestamp);
@@ -248,7 +248,7 @@ TEST(GestureDetector, ClickMenuButton) {
   // Release menu button.
   controller.Update();
   controller.is_menu_button_down = false;
-  timestamp += base::TimeDelta::FromMilliseconds(1);
+  timestamp += base::Milliseconds(1);
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.size(), 1u);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kMenuButtonClicked);
@@ -266,7 +266,7 @@ TEST(GestureDetector, LongPressMenuButton) {
 
   // Keep menu button down.
   controller.Update();
-  timestamp += base::TimeDelta::FromSeconds(1);
+  timestamp += base::Seconds(1);
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.size(), 1u);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kMenuButtonLongPressStart);
@@ -274,7 +274,7 @@ TEST(GestureDetector, LongPressMenuButton) {
   // Release menu button.
   controller.Update();
   controller.is_menu_button_down = false;
-  timestamp += base::TimeDelta::FromSeconds(1);
+  timestamp += base::Seconds(1);
   gestures = detector.DetectGestures(controller, timestamp);
   EXPECT_EQ(gestures.size(), 1u);
   EXPECT_EQ(gestures.front()->type(), InputEvent::kMenuButtonLongPressEnd);

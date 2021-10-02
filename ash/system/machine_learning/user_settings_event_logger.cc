@@ -276,7 +276,7 @@ void UserSettingsEventLogger::OnCastingSessionStartedOrStopped(
     --presenting_session_count_;
     DCHECK_GE(presenting_session_count_, 0);
     if (presenting_session_count_ == 0) {
-      presenting_timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(5), this,
+      presenting_timer_.Start(FROM_HERE, base::Minutes(5), this,
                               &UserSettingsEventLogger::OnPresentingTimerEnded);
     }
   }
@@ -295,7 +295,7 @@ void UserSettingsEventLogger::OnFullscreenStateChanged(
     is_recently_fullscreen_ = true;
     fullscreen_timer_.Stop();
   } else {
-    fullscreen_timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(5), this,
+    fullscreen_timer_.Start(FROM_HERE, base::Minutes(5), this,
                             &UserSettingsEventLogger::OnFullscreenTimerEnded);
   }
 }

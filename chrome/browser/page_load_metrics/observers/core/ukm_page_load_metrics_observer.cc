@@ -1094,8 +1094,7 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration",
-      timer.Elapsed(), base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(5), 100);
+      timer.Elapsed(), base::Microseconds(1), base::Milliseconds(5), 100);
   UMA_HISTOGRAM_BOOLEAN(
       "Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess", success);
 
@@ -1136,8 +1135,8 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       smoothness_data.worst_smoothness);
   base::UmaHistogramCustomTimes(
       "Graphics.Smoothness.PerSession.TimeMaxPercentDroppedFrames_1sWindow",
-      smoothness_data.time_max_delta, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(25), 50);
+      smoothness_data.time_max_delta, base::Milliseconds(1), base::Seconds(25),
+      50);
 }
 
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {

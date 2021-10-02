@@ -121,7 +121,7 @@ int RunChromeCleanerTestSuite(int argc,
   // IS_INTERNAL_CHROME_CLEANER_BUILD is only set on the Chrome Cleaner
   // builders, not the chromium builders, so this will not slow down the
   // general commit queue.
-  constexpr base::TimeDelta kInternalTimeout = base::TimeDelta::FromMinutes(10);
+  constexpr base::TimeDelta kInternalTimeout = base::Minutes(10);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTestLauncherTimeout,
       base::NumberToString(kInternalTimeout.InMilliseconds()));

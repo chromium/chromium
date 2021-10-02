@@ -114,15 +114,15 @@ TEST_F(OcclusionTrackerPauserTest, Timeout) {
   TestObserver observer1, observer2;
 
   Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
   EXPECT_TRUE(tracker->IsPaused());
   compositor1->AddAnimationObserver(&observer1);
   compositor2->AddAnimationObserver(&observer2);
   EXPECT_TRUE(tracker->IsPaused());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(tracker->IsPaused());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   EXPECT_FALSE(tracker->IsPaused());
   compositor1->RemoveAnimationObserver(&observer1);

@@ -130,8 +130,8 @@ void BatchingMediaLog::AddLogRecordLocked(
       return;
 
     ipc_send_pending_ = true;
-    delay_for_next_ipc_send = base::TimeDelta::FromSeconds(1) -
-                              (tick_clock_->NowTicks() - last_ipc_send_time_);
+    delay_for_next_ipc_send =
+        base::Seconds(1) - (tick_clock_->NowTicks() - last_ipc_send_time_);
   }
 
   if (delay_for_next_ipc_send > base::TimeDelta()) {

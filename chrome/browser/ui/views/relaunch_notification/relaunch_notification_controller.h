@@ -66,8 +66,7 @@ class RelaunchNotificationController : public UpgradeObserver {
   // The length of the final countdown given to the user before the browser is
   // summarily relaunched on Chrome desktop, or the device is rebooted on
   // Chrome OS.
-  static constexpr base::TimeDelta kRelaunchGracePeriod =
-      base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kRelaunchGracePeriod = base::Hours(1);
 
   RelaunchNotificationController(UpgradeDetector* upgrade_detector,
                                  const base::Clock* clock,

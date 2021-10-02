@@ -555,8 +555,7 @@ TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
   // unsynced.
   tracker_.GetTab(kTag, kTab1)->timestamp = base::Time::Now();
   tracker_.GetTab(kTag, kTab2)->timestamp = base::Time::Now();
-  tracker_.GetTab(kTag, kTab3)->timestamp =
-      base::Time::Now() - base::TimeDelta::FromDays(100);
+  tracker_.GetTab(kTag, kTab3)->timestamp = base::Time::Now() - base::Days(100);
   tracker_.GetTab(kTag, kTab4)->timestamp = base::Time::Now();
 
   // Among the unmapped (closed) ones, |kTab2| and |kTab3| are unsynced.

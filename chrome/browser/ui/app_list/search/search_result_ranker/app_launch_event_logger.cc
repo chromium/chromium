@@ -48,8 +48,8 @@ namespace {
 
 constexpr unsigned int kNumRandomAppsToLog = 25;
 
-constexpr base::TimeDelta kHourDuration = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kDayDuration = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kHourDuration = base::Hours(1);
+constexpr base::TimeDelta kDayDuration = base::Days(1);
 constexpr int kMinutesInAnHour = 60;
 constexpr int kQuarterHoursInADay = 24 * 4;
 

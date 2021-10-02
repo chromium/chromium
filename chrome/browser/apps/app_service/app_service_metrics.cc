@@ -298,7 +298,7 @@ void RecordAppBounce(const apps::AppUpdate& app) {
 
   base::TimeDelta amount_time_installed = uninstall_time - install_time;
 
-  const base::TimeDelta seven_days = base::TimeDelta::FromDays(7);
+  const base::TimeDelta seven_days = base::Days(7);
 
   if (amount_time_installed < seven_days) {
     base::UmaHistogramBoolean("Apps.Bounced", true);

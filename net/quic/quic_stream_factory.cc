@@ -1647,7 +1647,7 @@ base::TimeDelta QuicStreamFactory::GetTimeDelayForWaitingJob(
   const int kDefaultRTT = 300 * quic::kNumMicrosPerMilli;
   if (!srtt)
     srtt = kDefaultRTT;
-  return base::TimeDelta::FromMicroseconds(srtt);
+  return base::Microseconds(srtt);
 }
 
 const std::vector<std::string>& QuicStreamFactory::GetDnsAliasesForSessionKey(
@@ -1906,21 +1906,18 @@ void QuicStreamFactory::ConfigureInitialRttEstimate(
   NetworkChangeNotifier::ConnectionType type =
       network_connection_.connection_type();
   if (type == NetworkChangeNotifier::CONNECTION_2G) {
-    SetInitialRttEstimate(base::TimeDelta::FromMilliseconds(1200),
-                          INITIAL_RTT_CACHED, config);
+    SetInitialRttEstimate(base::Milliseconds(1200), INITIAL_RTT_CACHED, config);
     return;
   }
 
   if (type == NetworkChangeNotifier::CONNECTION_3G) {
-    SetInitialRttEstimate(base::TimeDelta::FromMilliseconds(400),
-                          INITIAL_RTT_CACHED, config);
+    SetInitialRttEstimate(base::Milliseconds(400), INITIAL_RTT_CACHED, config);
     return;
   }
 
   if (params_.initial_rtt_for_handshake > base::TimeDelta()) {
     SetInitialRttEstimate(
-        base::TimeDelta::FromMicroseconds(
-            params_.initial_rtt_for_handshake.InMicroseconds()),
+        base::Microseconds(params_.initial_rtt_for_handshake.InMicroseconds()),
         INITIAL_RTT_DEFAULT, config);
     return;
   }
@@ -2085,7 +2082,7 @@ void QuicStreamFactory::ProcessGoingAwaySession(
         alternative_service,
         session->quic_session_key().network_isolation_key());
     ServerNetworkStats network_stats;
-    network_stats.srtt = base::TimeDelta::FromMicroseconds(stats.srtt_us);
+    network_stats.srtt = base::Microseconds(stats.srtt_us);
     network_stats.bandwidth_estimate = stats.estimated_bandwidth;
     http_server_properties_->SetServerNetworkStats(
         server, session->quic_session_key().network_isolation_key(),

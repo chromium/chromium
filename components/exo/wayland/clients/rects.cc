@@ -221,8 +221,7 @@ void InputTimestamp(void* data,
   int64_t microseconds = seconds * base::Time::kMicrosecondsPerSecond +
                          tv_nsec / base::Time::kNanosecondsPerMicrosecond;
 
-  *timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(microseconds);
+  *timestamp = base::TimeTicks() + base::Microseconds(microseconds);
 }
 
 }  // namespace
@@ -575,6 +574,6 @@ int main(int argc, char* argv[]) {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   exo::wayland::clients::RectsClient client;
   return client.Run(params, max_frames_pending, num_rects, num_benchmark_runs,
-                    base::TimeDelta::FromMilliseconds(benchmark_interval_ms),
+                    base::Milliseconds(benchmark_interval_ms),
                     command_line->HasSwitch(switches::kShowFpsCounter));
 }

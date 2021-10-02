@@ -18,8 +18,7 @@
 namespace {
 
 // Minimum interval between consecutive storage pressure notifications.
-const base::TimeDelta kDiskPressureNotificationInterval =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta kDiskPressureNotificationInterval = base::Days(1);
 
 const base::TimeDelta GetThrottlingInterval() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -28,7 +27,7 @@ const base::TimeDelta GetThrottlingInterval() {
     const std::string string_value = command_line->GetSwitchValueASCII(
         switches::kStoragePressureNotificationInterval);
     if (base::StringToInt(string_value, &int_value) && int_value >= 0) {
-      return base::TimeDelta::FromMinutes(int_value);
+      return base::Minutes(int_value);
     }
   }
   return kDiskPressureNotificationInterval;

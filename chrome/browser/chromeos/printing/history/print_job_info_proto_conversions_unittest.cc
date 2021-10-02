@@ -58,10 +58,8 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
   // Override time so that base::Time::Now() always returns 1 second after the
   // epoch in Unix-like system (Jan 1, 1970).
   base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        return base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1);
-      },
-      nullptr, nullptr);
+      []() { return base::Time::UnixEpoch() + base::Seconds(1); }, nullptr,
+      nullptr);
 
   chromeos::Printer printer;
   printer.set_id(kPrinterId);
@@ -79,8 +77,7 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
                               kSourceId, settings);
   cups_print_job.set_state(CupsPrintJob::State::STATE_FAILED);
   cups_print_job.set_error_code(PrinterErrorCode::OUT_OF_PAPER);
-  base::Time completion_time =
-      base::Time::Now() + base::TimeDelta::FromSeconds(10);
+  base::Time completion_time = base::Time::Now() + base::Seconds(10);
 
   proto::PrintJobInfo print_job_info_proto =
       CupsPrintJobToProto(cups_print_job, kId, completion_time);

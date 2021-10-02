@@ -45,7 +45,7 @@ TEST_F(KeyEventResultReceiverTest, ExpireCallback) {
   receiver()->SetCallback(std::move(callback));
   EXPECT_FALSE(result.has_value());
 
-  ForwardBy(base::TimeDelta::FromSeconds(1));
+  ForwardBy(base::Seconds(1));
 
   EXPECT_TRUE(result.has_value());
   EXPECT_FALSE(result.value());
@@ -185,7 +185,7 @@ TEST_F(KeyEventResultReceiverTest, NormalCharacters) {
 TEST_F(KeyEventResultReceiverTest, Histrogram) {
   base::HistogramTester histogram_tester;
   constexpr char kHistogramName[] = "Arc.ChromeOsImeLatency";
-  auto delay = base::TimeDelta::FromMilliseconds(100);
+  auto delay = base::Milliseconds(100);
 
   receiver()->SetCallback(base::DoNothing());
 
@@ -199,7 +199,7 @@ TEST_F(KeyEventResultReceiverTest, Histrogram) {
 
   receiver()->SetCallback(base::DoNothing());
 
-  ForwardBy(base::TimeDelta::FromSeconds(1));
+  ForwardBy(base::Seconds(1));
 
   histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }

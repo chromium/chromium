@@ -217,8 +217,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
     cdm::AudioFrames* decoded_frames) {
   DVLOG(1) << "DecodeBuffer()";
   const bool is_end_of_stream = !compressed_buffer;
-  base::TimeDelta timestamp =
-      base::TimeDelta::FromMicroseconds(input_timestamp);
+  base::TimeDelta timestamp = base::Microseconds(input_timestamp);
 
   if (!is_end_of_stream && timestamp != kNoTimestamp) {
     if (last_input_timestamp_ != kNoTimestamp &&

@@ -22,7 +22,7 @@ namespace android_sms {
 const int FcmConnectionEstablisher::kMaxRetryCount = 7;
 
 constexpr base::TimeDelta FcmConnectionEstablisher::kRetryDelay =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // Start message is sent when establishing a connection for the first time on
 // log-in. This allows the service worker to freshly subscribe to push

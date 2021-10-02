@@ -18,8 +18,7 @@
 namespace autofill {
 
 // The delay between card being fetched and manual fallback bubble being shown.
-constexpr base::TimeDelta kManualFallbackBubbleDelay =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kManualFallbackBubbleDelay = base::Seconds(1);
 
 // static
 VirtualCardManualFallbackBubbleController*

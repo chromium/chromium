@@ -34,7 +34,7 @@ ImageAnnotationService::ImageAnnotationService(
       annotator_(GURL(kPixelsServerUrl.Get()),
                  GURL(kLangsServerUrl.Get()),
                  kApiKey.Get().empty() ? std::move(api_key) : kApiKey.Get(),
-                 base::TimeDelta::FromMilliseconds(kThrottleMs.Get()),
+                 base::Milliseconds(kThrottleMs.Get()),
                  kBatchSize.Get(),
                  kMinOcrConfidence.Get(),
                  shared_url_loader_factory,

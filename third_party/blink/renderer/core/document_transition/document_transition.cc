@@ -74,12 +74,11 @@ DocumentTransition::Request::TransitionConfig ParseTransitionConfig(
   DocumentTransition::Request::TransitionConfig transition_config;
 
   if (config.hasDuration()) {
-    transition_config.duration =
-        base::TimeDelta::FromMilliseconds(config.duration());
+    transition_config.duration = base::Milliseconds(config.duration());
   }
 
   if (config.hasDelay()) {
-    transition_config.delay = base::TimeDelta::FromMilliseconds(config.delay());
+    transition_config.delay = base::Milliseconds(config.delay());
   }
 
   return transition_config;
@@ -431,7 +430,7 @@ void DocumentTransition::StartDeferringCommits() {
   // Based on the viz side timeout to hold snapshots for 5 seconds.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "blink", "DocumentTransition::DeferringCommits", this);
-  constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(4);
+  constexpr base::TimeDelta kTimeout = base::Seconds(4);
   deferring_commits_ =
       document_->GetPage()->GetChromeClient().StartDeferringCommits(
           *document_->GetFrame(), kTimeout,

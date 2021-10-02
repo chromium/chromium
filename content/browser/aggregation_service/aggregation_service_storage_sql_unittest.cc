@@ -178,10 +178,10 @@ TEST_F(AggregationServiceStorageSqlTest, GetPublicKeysExpired_EmptyResult) {
   base::Time now = clock_.Now();
   url::Origin origin = GetExampleOrigin();
   PublicKeyset keyset(std::move(keys), /*fetch_time=*/now,
-                      /*expiry_time=*/now + base::TimeDelta::FromDays(7));
+                      /*expiry_time=*/now + base::Days(7));
 
   storage_->SetPublicKeys(origin, keyset);
-  clock_.Advance(base::TimeDelta::FromDays(8));
+  clock_.Advance(base::Days(8));
   EXPECT_TRUE(storage_->GetPublicKeys(origin).empty());
 
   CloseDatabase();
@@ -247,7 +247,7 @@ TEST_F(AggregationServiceStorageSqlTest,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
 
-  clock_.Advance(base::TimeDelta::FromDays(3));
+  clock_.Advance(base::Days(3));
 
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
   std::vector<PublicKey> keys_2{
@@ -263,8 +263,8 @@ TEST_F(AggregationServiceStorageSqlTest,
       keys_2, storage_->GetPublicKeys(origin_2)));
 
   base::Time now = clock_.Now();
-  storage_->ClearPublicKeysFetchedBetween(now - base::TimeDelta::FromDays(5),
-                                          now - base::TimeDelta::FromDays(1));
+  storage_->ClearPublicKeysFetchedBetween(now - base::Days(5),
+                                          now - base::Days(1));
 
   EXPECT_TRUE(storage_->GetPublicKeys(origin_1).empty());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
@@ -282,7 +282,7 @@ TEST_F(AggregationServiceStorageSqlTest, ClearAllPublicKeys_AllDeleted) {
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
 
-  clock_.Advance(base::TimeDelta::FromDays(1));
+  clock_.Advance(base::Days(1));
 
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
   std::vector<PublicKey> keys_2{
@@ -313,26 +313,24 @@ TEST_F(AggregationServiceStorageSqlTest,
   std::vector<PublicKey> keys_1{
       PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
       PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes)};
-  storage_->SetPublicKeys(
-      origin_1,
-      PublicKeyset(keys_1, /*fetch_time=*/now,
-                   /*expiry_time=*/now + base::TimeDelta::FromDays(1)));
+  storage_->SetPublicKeys(origin_1,
+                          PublicKeyset(keys_1, /*fetch_time=*/now,
+                                       /*expiry_time=*/now + base::Days(1)));
 
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
   std::vector<PublicKey> keys_2{
       PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
       PublicKey(/*id=*/"efgh", /*key=*/kEFGH5678AsBytes)};
-  storage_->SetPublicKeys(
-      origin_2,
-      PublicKeyset(keys_2, /*fetch_time=*/now,
-                   /*expiry_time=*/now + base::TimeDelta::FromDays(3)));
+  storage_->SetPublicKeys(origin_2,
+                          PublicKeyset(keys_2, /*fetch_time=*/now,
+                                       /*expiry_time=*/now + base::Days(3)));
 
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
       keys_1, storage_->GetPublicKeys(origin_1)));
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
       keys_2, storage_->GetPublicKeys(origin_2)));
 
-  storage_->ClearPublicKeysExpiredBy(now + base::TimeDelta::FromDays(1));
+  storage_->ClearPublicKeysExpiredBy(now + base::Days(1));
 
   EXPECT_TRUE(storage_->GetPublicKeys(origin_1).empty());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(

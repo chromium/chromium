@@ -47,7 +47,7 @@ int AutofillProfileUpdateStrikeDatabase::GetMaxStrikesLimit() const {
 absl::optional<base::TimeDelta>
 AutofillProfileUpdateStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 180 days by default.
-  return base::TimeDelta::FromDays(
+  return base::Days(
       features::kAutofillAutoBlockUpdateAddressProfilePromptExpirationDays
           .Get());
 }

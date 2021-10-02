@@ -155,7 +155,7 @@ void ReadCommonDataHeader(scoped_refptr<net::IOBufferWithSize> buffer,
   int64_t raw_response_time;
   memcpy(&raw_response_time, buffer->data(), kResponseTimeSizeInBytes);
   *response_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(raw_response_time));
+      base::Microseconds(raw_response_time));
   memcpy(data_size, buffer->data() + kResponseTimeSizeInBytes,
          kDataSizeInBytes);
 }

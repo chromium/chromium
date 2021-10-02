@@ -193,7 +193,7 @@ LuciTestResult LuciTestResult::CreateForGTest() {
     result.set_start_time(base::Time::FromTimeT(
         static_cast<time_t>(test_info->result()->start_timestamp() / 1000)));
     result.set_duration(
-        base::TimeDelta::FromMilliseconds(test_info->result()->elapsed_time()));
+        base::Milliseconds(test_info->result()->elapsed_time()));
   }
 
   return result;

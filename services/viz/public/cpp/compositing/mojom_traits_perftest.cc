@@ -28,7 +28,7 @@
 namespace viz {
 namespace {
 
-static const auto kTimeLimit = base::TimeDelta::FromSeconds(2);
+static const auto kTimeLimit = base::Seconds(2);
 static const int kNumWarmupRuns = 20;
 static const int kNumRunsPerTimeRecord = 10;
 

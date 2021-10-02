@@ -1318,7 +1318,7 @@ TEST(CreditCardTest, IsDeletable) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(1000000000);
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::TimeDelta::FromDays(1));
+                    base::Days(1));
 
   // Created a card that has not been used since over the deletion threshold.
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
@@ -1774,10 +1774,10 @@ struct ShouldUpdateExpirationTestCase {
   CreditCard::RecordType record_type;
   CreditCard::ServerStatus server_status;
 };
-  
-constexpr base::TimeDelta kCurrent = base::TimeDelta::FromDays(0);
-constexpr base::TimeDelta kOneYear = base::TimeDelta::FromDays(365);
-constexpr base::TimeDelta kOneMonth = base::TimeDelta::FromDays(31);
+
+constexpr base::TimeDelta kCurrent = base::Days(0);
+constexpr base::TimeDelta kOneYear = base::Days(365);
+constexpr base::TimeDelta kOneMonth = base::Days(31);
 
 void MonthAndYearFromDelta(const base::TimeDelta& time_delta,
                            int& month,

@@ -21,7 +21,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kActiveTimeThreshold = base::TimeDelta::FromDays(28);
+constexpr base::TimeDelta kActiveTimeThreshold = base::Days(28);
 
 ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
   int availability_on_startup = g_browser_process->local_state()->GetInteger(

@@ -273,7 +273,7 @@ void MetricsService::StartUpdatingLastLiveTimestamp() {
       FROM_HERE,
       base::BindOnce(&MetricsService::UpdateLastLiveTimestampTask,
                      self_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kUpdateAliveTimestampSeconds));
+      base::Seconds(kUpdateAliveTimestampSeconds));
 }
 
 void MetricsService::Stop() {
@@ -632,7 +632,7 @@ void MetricsService::OpenNewLog() {
     // We only need to schedule that run once.
     state_ = INIT_TASK_SCHEDULED;
 
-    base::TimeDelta initialization_delay = base::TimeDelta::FromSeconds(
+    base::TimeDelta initialization_delay = base::Seconds(
         client_->ShouldStartUpFastForTesting() ? 0
                                                : kInitializationDelaySeconds);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -970,8 +970,7 @@ bool MetricsService::PrepareProviderMetricsLog() {
 void MetricsService::PrepareProviderMetricsTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool found = PrepareProviderMetricsLog();
-  base::TimeDelta next_check = found ? base::TimeDelta::FromSeconds(5)
-                                     : base::TimeDelta::FromMinutes(15);
+  base::TimeDelta next_check = found ? base::Seconds(5) : base::Minutes(15);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsService::PrepareProviderMetricsTask,

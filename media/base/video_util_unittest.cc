@@ -563,9 +563,8 @@ TEST_F(VideoUtilTest, I420CopyWithPadding) {
 
 TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   gfx::Size size(640, 480);
-  scoped_refptr<VideoFrame> src_frame =
-      VideoFrame::CreateFrame(PIXEL_FORMAT_I420A, size, gfx::Rect(size), size,
-                              base::TimeDelta::FromDays(1));
+  scoped_refptr<VideoFrame> src_frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_I420A, size, gfx::Rect(size), size, base::Days(1));
 
   scoped_refptr<VideoFrame> dst_frame = WrapAsI420VideoFrame(src_frame);
   EXPECT_EQ(dst_frame->format(), PIXEL_FORMAT_I420);

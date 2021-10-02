@@ -26,8 +26,7 @@ const char kCacheGuidKey[] = "cache_guid";
 const char kTimestampKey[] = "timestamp";
 
 // The max time a local device's cached GUIDs will be stored.
-constexpr base::TimeDelta kMaxTimeDeltaLocalCacheGuidsStored =
-    base::TimeDelta::FromDays(10);
+constexpr base::TimeDelta kMaxTimeDeltaLocalCacheGuidsStored = base::Days(10);
 
 // The max number of local device most recent cached GUIDs that will be stored
 // in preferences.
@@ -120,8 +119,8 @@ void DeviceInfoPrefs::GarbageCollectExpiredCacheGuids() {
       return true;
     }
 
-    const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromDays(*days_since_epoch));
+    const base::Time creation_time =
+        base::Time::FromDeltaSinceWindowsEpoch(base::Days(*days_since_epoch));
     return creation_time < clock_->Now() - kMaxTimeDeltaLocalCacheGuidsStored;
   });
 }

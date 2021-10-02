@@ -15,7 +15,7 @@ namespace {
 // This is used as a timeout for both sending cast::web::Message requests and
 // awaiting responses.  Reaching this timeout without a response from the peer
 // will close the connection and Blink message port.
-constexpr base::TimeDelta kMessageTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMessageTimeout = base::Seconds(10);
 
 }  // namespace
 

@@ -859,8 +859,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   if (is_waiting_for_show_promise_to_resolve_) {
     // If the website does not calculate the final shopping cart contents within
     // 10 seconds, abort payment.
-    update_payment_details_timer_.StartOneShot(base::TimeDelta::FromSeconds(10),
-                                               FROM_HERE);
+    update_payment_details_timer_.StartOneShot(base::Seconds(10), FROM_HERE);
     details_promise.Then(
         UpdatePaymentDetailsFunction::CreateFunction(
             script_state, this,
@@ -1467,7 +1466,7 @@ void PaymentRequest::OnPaymentResponse(PaymentResponsePtr response) {
 
   // If the website does not call complete() 60 seconds after show() has been
   // resolved, then behave as if the website called complete("fail").
-  complete_timer_.StartOneShot(base::TimeDelta::FromSeconds(60), FROM_HERE);
+  complete_timer_.StartOneShot(base::Seconds(60), FROM_HERE);
 
   if (retry_resolver_) {
     DCHECK(payment_response_);
@@ -1689,8 +1688,7 @@ void PaymentRequest::DispatchPaymentRequestUpdateEvent(
 
   // If the website does not calculate the updated shopping cart contents
   // within 60 seconds, abort payment.
-  update_payment_details_timer_.StartOneShot(base::TimeDelta::FromSeconds(60),
-                                             FROM_HERE);
+  update_payment_details_timer_.StartOneShot(base::Seconds(60), FROM_HERE);
 
   event_target->DispatchEvent(*event);
   // Check whether the execution context still exists, because DispatchEvent()

@@ -236,7 +236,7 @@ void ServiceWorkerEventQueue::SetIdleDelay(base::TimeDelta idle_delay) {
   base::TimeDelta delta_until_idle =
       new_idle_callback_time - tick_clock_->NowTicks();
 
-  if (delta_until_idle <= base::TimeDelta::FromSeconds(0)) {
+  if (delta_until_idle <= base::Seconds(0)) {
     // The new idle delay is shorter than the previous idle delay, and the idle
     // time has been already passed. Let's run the idle callback immediately.
     TriggerIdleCallback();
@@ -288,7 +288,7 @@ void ServiceWorkerEventQueue::UpdateStatus() {
     }
     // Shut down the worker as soon as possible since the worker may have gone
     // into bad state.
-    SetIdleDelay(base::TimeDelta::FromSeconds(0));
+    SetIdleDelay(base::Seconds(0));
   }
 }
 

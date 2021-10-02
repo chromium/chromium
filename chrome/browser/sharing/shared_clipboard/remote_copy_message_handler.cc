@@ -52,8 +52,7 @@ constexpr size_t kMaxImageDownloadSize = 5 * 1024 * 1024;
 
 // The initial delay for the timer that detects clipboard writes. An exponential
 // backoff will double this value whenever the OneShotTimer reschedules.
-constexpr base::TimeDelta kInitialDetectionTimerDelay =
-    base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kInitialDetectionTimerDelay = base::Milliseconds(1);
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("remote_copy_message_handler",
@@ -315,7 +314,7 @@ void RemoteCopyMessageHandler::DetectWrite(
     return;
   }
 
-  if (elapsed > base::TimeDelta::FromSeconds(10))
+  if (elapsed > base::Seconds(10))
     return;
 
   // Unretained(this) is safe here because |this| owns |write_detection_timer_|.

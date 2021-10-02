@@ -4583,8 +4583,8 @@ TEST_F(DiskCacheBackendTest, SimpleLastModified) {
   // Don't want AddDelay since it sleep 1s(!) for SimpleCache, and we don't
   // care about reduced precision in index here.
   while (base::Time::NowFromSystemTime() <=
-         (entry1_timestamp + base::TimeDelta::FromMilliseconds(10))) {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+         (entry1_timestamp + base::Milliseconds(10))) {
+    base::PlatformThread::Sleep(base::Milliseconds(1));
   }
 
   disk_cache::Entry* entry2;
@@ -5372,7 +5372,7 @@ TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
   EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));
   entry->Close();
 
-  clock.Advance(-base::TimeDelta::FromHours(1));
+  clock.Advance(-base::Hours(1));
 
   ASSERT_THAT(CreateEntry("key2", &entry), IsOk());
   EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));

@@ -233,7 +233,7 @@ TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
 
 // Tests that positive time-to-full and time-to-empty estimates are honored.
 TEST_F(PowerStatusTest, PositiveBatteryTimeEstimates) {
-  constexpr auto kTime = base::TimeDelta::FromSeconds(120);
+  constexpr auto kTime = base::Seconds(120);
 
   PowerSupplyProperties prop;
   prop.set_external_power(PowerSupplyProperties::AC);

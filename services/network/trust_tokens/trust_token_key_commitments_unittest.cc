@@ -189,21 +189,19 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
       *SuitableTrustTokenOrigin::Create(GURL("https://an-origin.example"));
   auto commitment_result = mojom::TrustTokenKeyCommitmentResult::New();
   auto expired_key = mojom::TrustTokenVerificationKey::New();
-  expired_key->expiry = base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  expired_key->expiry = base::Time::Now() - base::Minutes(1);
   commitment_result->keys.push_back(std::move(expired_key));
 
   size_t max_keys = TrustTokenMaxKeysForVersion(
       mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
   for (size_t i = 0; i < max_keys; ++i) {
     auto not_expired_key = mojom::TrustTokenVerificationKey::New();
-    not_expired_key->expiry =
-        base::Time::Now() + base::TimeDelta::FromMinutes(1);
+    not_expired_key->expiry = base::Time::Now() + base::Minutes(1);
     commitment_result->keys.push_back(std::move(not_expired_key));
   }
 
   auto late_to_expire_key = mojom::TrustTokenVerificationKey::New();
-  late_to_expire_key->expiry =
-      base::Time::Now() + base::TimeDelta::FromMinutes(2);
+  late_to_expire_key->expiry = base::Time::Now() + base::Minutes(2);
 
   // We expect to get rid of the expired key and the farthest-in-the-future key
   // (since there are more than |max_keys| many keys yet to expire).
@@ -216,8 +214,7 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
   EXPECT_TRUE(std::all_of(result->keys.begin(), result->keys.end(),
                           [](const mojom::TrustTokenVerificationKeyPtr& key) {
                             return key->expiry ==
-                                   base::Time::Now() +
-                                       base::TimeDelta::FromMinutes(1);
+                                   base::Time::Now() + base::Minutes(1);
                           }));
 }
 

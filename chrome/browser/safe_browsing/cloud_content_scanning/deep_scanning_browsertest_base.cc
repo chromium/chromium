@@ -23,10 +23,8 @@ namespace {
 
 constexpr char kDmToken[] = "dm_token";
 
-constexpr base::TimeDelta kMinimumPendingDelay =
-    base::TimeDelta::FromMilliseconds(400);
-constexpr base::TimeDelta kSuccessTimeout =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kMinimumPendingDelay = base::Milliseconds(400);
+constexpr base::TimeDelta kSuccessTimeout = base::Milliseconds(100);
 
 class UnresponsiveContentAnalysisDelegate
     : public enterprise_connectors::FakeContentAnalysisDelegate {

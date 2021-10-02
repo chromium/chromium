@@ -448,7 +448,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
         media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
   }
   pending_buffer->buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(input_image.Timestamp()));
+      base::Microseconds(input_image.Timestamp()));
   pending_buffer->buffer->set_is_key_frame(
       input_image._frameType == webrtc::VideoFrameType::kVideoFrameKey);
 

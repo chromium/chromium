@@ -825,7 +825,7 @@ class ForegroundedOrClosedTest : public TabActivityWatcherTest {
  protected:
   const char* kEntryName = ForegroundedOrClosed::kEntryName;
 
-  void AdvanceClock() { test_clock_.Advance(base::TimeDelta::FromSeconds(1)); }
+  void AdvanceClock() { test_clock_.Advance(base::Seconds(1)); }
 
  private:
   base::SimpleTestTickClock test_clock_;

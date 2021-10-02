@@ -778,8 +778,8 @@ TEST_F(TabRestoreServiceImplTest, ManyWindowsInSessionService) {
 
 // Makes sure we restore timestamps correctly.
 TEST_F(TabRestoreServiceImplTest, TimestampSurvivesRestore) {
-  base::Time tab_timestamp(base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(123456789)));
+  base::Time tab_timestamp(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(123456789)));
 
   AddThreeNavigations();
 

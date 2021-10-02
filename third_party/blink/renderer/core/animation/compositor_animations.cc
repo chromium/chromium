@@ -729,8 +729,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
                      ? normalized_timing.start_delay.InSecondsF()
                      : 0;
 
-  base::TimeDelta scaled_delay =
-      base::TimeDelta::FromSecondsD(delay / animation_playback_rate);
+  base::TimeDelta scaled_delay = base::Seconds(delay / animation_playback_rate);
 
   // Arithmetic operations involving a value that is effectively +/-infinity
   // result in a value that is +/-infinity or undefined. Check before computing

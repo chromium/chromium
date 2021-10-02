@@ -36,8 +36,8 @@ bool FakeSingleThreadTaskRunner::PostDelayedTask(
   // scheduling delayed tasks to be run via base::MessageLoop in a
   // multi-threaded application.
   if (!tasks_.empty()) {
-    const auto after_it = tasks_.lower_bound(
-        TaskKey(run_time + base::TimeDelta::FromMicroseconds(1), 0));
+    const auto after_it =
+        tasks_.lower_bound(TaskKey(run_time + base::Microseconds(1), 0));
     if (after_it != tasks_.begin()) {
       auto it = after_it;
       --it;

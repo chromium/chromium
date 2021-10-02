@@ -65,11 +65,10 @@ NetworkChangeNotifierMac::NetworkChangeCalculatorParamsMac() {
   NetworkChangeCalculatorParams params;
   // Delay values arrived at by simple experimentation and adjusted so as to
   // produce a single signal when switching between network connections.
-  params.ip_address_offline_delay_ = base::TimeDelta::FromMilliseconds(500);
-  params.ip_address_online_delay_ = base::TimeDelta::FromMilliseconds(500);
-  params.connection_type_offline_delay_ =
-      base::TimeDelta::FromMilliseconds(1000);
-  params.connection_type_online_delay_ = base::TimeDelta::FromMilliseconds(500);
+  params.ip_address_offline_delay_ = base::Milliseconds(500);
+  params.ip_address_online_delay_ = base::Milliseconds(500);
+  params.connection_type_offline_delay_ = base::Milliseconds(1000);
+  params.connection_type_online_delay_ = base::Milliseconds(500);
   return params;
 }
 
@@ -93,7 +92,7 @@ NetworkChangeNotifierMac::GetCurrentConnectionType() const {
   // called repeatedly until either the timeout is reached or the connection
   // type has been determined.
   base::TimeDelta remaining_time =
-      base::TimeDelta::FromSecondsD(kMaxWaitForConnectionTypeInSeconds);
+      base::Seconds(kMaxWaitForConnectionTypeInSeconds);
   base::TimeTicks end_time = base::TimeTicks::Now() + remaining_time;
   while (remaining_time > base::TimeDelta()) {
     initial_connection_type_cv_.TimedWait(remaining_time);

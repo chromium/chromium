@@ -161,7 +161,7 @@ ChangePasswordNavigationThrottleBrowserTestBase::HandleRequest(
     return nullptr;
   const ServerResponse& config = it->second;
   auto http_response = std::make_unique<DelayedHttpResponse>(
-      base::TimeDelta::FromMilliseconds(config.resolve_time_in_milliseconds));
+      base::Milliseconds(config.resolve_time_in_milliseconds));
   http_response->set_code(config.status_code);
   http_response->set_content_type("text/plain");
   for (auto header_pair : config.headers) {

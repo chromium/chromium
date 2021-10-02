@@ -58,7 +58,7 @@ URLRow GeneratePopularURLRow() {
   row.set_title(base::UTF8ToUTF16("Page " + fake_hash));
   row.set_visit_count(1);
   row.set_typed_count(1);
-  row.set_last_visit(base::Time::Now() - base::TimeDelta::FromDays(1));
+  row.set_last_visit(base::Time::Now() - base::Days(1));
   return row;
 }
 

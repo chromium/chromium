@@ -144,7 +144,7 @@ void CmaBackendShim::AddData(char* data, int size, int64_t timestamp) {
   }
   auto buffer = base::MakeRefCounted<CastDecoderBufferImpl>(size);
   memcpy(buffer->writable_data(), reinterpret_cast<const uint8_t*>(data), size);
-  buffer->set_timestamp(base::TimeDelta::FromMicroseconds(timestamp));
+  buffer->set_timestamp(base::Microseconds(timestamp));
   POST_MEDIA_TASK(&CmaBackendShim::AddDataOnMediaThread, std::move(buffer));
 }
 

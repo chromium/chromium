@@ -20,14 +20,12 @@ namespace {
 // Time delta to create test data.
 base::TimeDelta DeletableUseDateDelta(
     const base::TimeDelta& cc_deletion_delta) {
-  static base::TimeDelta delta =
-      cc_deletion_delta + base::TimeDelta::FromDays(5);
+  static base::TimeDelta delta = cc_deletion_delta + base::Days(5);
   return delta;
 }
 base::TimeDelta DeletableExpiryDateDelta(
     const base::TimeDelta& cc_deletion_delta) {
-  static base::TimeDelta delta =
-      cc_deletion_delta + base::TimeDelta::FromDays(45);
+  static base::TimeDelta delta = cc_deletion_delta + base::Days(45);
   return delta;
 }
 }  // namespace
@@ -78,8 +76,7 @@ std::vector<CreditCard> TestDataCreator::GetTestCreditCards() {
 }
 
 AutofillProfile TestDataCreator::CreateBasicTestAddress() {
-  const base::Time use_date =
-      AutofillClock::Now() - base::TimeDelta::FromDays(20);
+  const base::Time use_date = AutofillClock::Now() - base::Days(20);
   AutofillProfile profile;
   profile.SetInfo(NAME_FULL, u"John McTester", app_locale_);
   profile.SetInfo(COMPANY_NAME, u"Test Inc.", app_locale_);
@@ -96,8 +93,7 @@ AutofillProfile TestDataCreator::CreateBasicTestAddress() {
 }
 
 AutofillProfile TestDataCreator::CreateDisusedTestAddress() {
-  const base::Time use_date =
-      AutofillClock::Now() - base::TimeDelta::FromDays(185);
+  const base::Time use_date = AutofillClock::Now() - base::Days(185);
   AutofillProfile profile;
   profile.SetInfo(NAME_FULL, u"Polly Disused", app_locale_);
   profile.SetInfo(COMPANY_NAME,
@@ -119,8 +115,7 @@ AutofillProfile TestDataCreator::CreateDisusedTestAddress() {
 }
 
 AutofillProfile TestDataCreator::CreateDisusedDeletableTestAddress() {
-  const base::Time use_date =
-      AutofillClock::Now() - base::TimeDelta::FromDays(400);
+  const base::Time use_date = AutofillClock::Now() - base::Days(400);
   AutofillProfile profile;
   profile.SetInfo(NAME_FULL, u"Polly Deletable", app_locale_);
   profile.SetInfo(COMPANY_NAME,
@@ -144,9 +139,9 @@ AutofillProfile TestDataCreator::CreateDisusedDeletableTestAddress() {
 // Create a card expiring 500 days from now which was last used 10 days ago.
 CreditCard TestDataCreator::CreateBasicTestCreditCard() {
   const base::Time now = AutofillClock::Now();
-  const base::Time use_date = now - base::TimeDelta::FromDays(10);
+  const base::Time use_date = now - base::Days(10);
   base::Time::Exploded expiry_date;
-  (now + base::TimeDelta::FromDays(500)).LocalExplode(&expiry_date);
+  (now + base::Days(500)).LocalExplode(&expiry_date);
 
   CreditCard credit_card;
   credit_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Alice Testerson", app_locale_);
@@ -159,9 +154,9 @@ CreditCard TestDataCreator::CreateBasicTestCreditCard() {
 
 CreditCard TestDataCreator::CreateDisusedTestCreditCard() {
   const base::Time now = AutofillClock::Now();
-  const base::Time use_date = now - base::TimeDelta::FromDays(185);
+  const base::Time use_date = now - base::Days(185);
   base::Time::Exploded expiry_date;
-  (now - base::TimeDelta::FromDays(200)).LocalExplode(&expiry_date);
+  (now - base::Days(200)).LocalExplode(&expiry_date);
 
   CreditCard credit_card;
   credit_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Bob Disused", app_locale_);

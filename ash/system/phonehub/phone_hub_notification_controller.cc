@@ -52,8 +52,7 @@ const int kNotificationAppNameMaxWidth = 140;
 // reply. This is used to make sure that all the replies are received by the
 // phone in a correct order (a reply sent right after another could cause it to
 // be received before the former one).
-constexpr base::TimeDelta kInlineReplyDisableTime =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kInlineReplyDisableTime = base::Seconds(1);
 
 class PhoneHubNotificationView : public message_center::NotificationView {
  public:

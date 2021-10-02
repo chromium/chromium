@@ -30,8 +30,7 @@ constexpr char kExpectedDataDir[] = "/path/to/profile/GCache/v2/salt-g-ID";
 constexpr char kExpectedMyFilesDir[] = "/path/to/profile/MyFiles";
 
 static const absl::optional<base::TimeDelta> kEmptyDelay;
-static const absl::optional<base::TimeDelta> kDefaultDelay =
-    base::TimeDelta::FromSeconds(5);
+static const absl::optional<base::TimeDelta> kDefaultDelay = base::Seconds(5);
 
 using testing::_;
 using testing::Invoke;

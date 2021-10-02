@@ -247,8 +247,7 @@ void AudioOutputResource::Run() {
       break;
 
     {
-      base::TimeDelta delay =
-          base::TimeDelta::FromMicroseconds(buffer->params.delay_us);
+      base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
       audio_output_callback_(client_buffer_.get(), client_buffer_size_bytes_,
                              delay.InSecondsF(), user_data_);

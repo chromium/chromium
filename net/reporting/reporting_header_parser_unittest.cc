@@ -114,7 +114,7 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
       const std::string& name,
       const std::vector<ReportingEndpoint::EndpointInfo>& endpoints,
       OriginSubdomains include_subdomains = OriginSubdomains::DEFAULT,
-      base::TimeDelta ttl = base::TimeDelta::FromDays(1),
+      base::TimeDelta ttl = base::Days(1),
       url::Origin origin = url::Origin()) {
     ReportingEndpointGroupKey group_key(kNik_ /* unused */,
                                         url::Origin() /* unused */, name);
@@ -565,7 +565,7 @@ TEST_P(ReportingHeaderParserTest, NonDefaultWeight) {
 
 TEST_P(ReportingHeaderParserTest, MaxAge) {
   const int kMaxAgeSecs = 100;
-  base::TimeDelta ttl = base::TimeDelta::FromSeconds(kMaxAgeSecs);
+  base::TimeDelta ttl = base::Seconds(kMaxAgeSecs);
   base::Time expires = clock()->Now() + ttl;
 
   std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
@@ -1408,12 +1408,12 @@ TEST_P(ReportingHeaderParserTest, ZeroMaxAgeRemovesEndpointGroup) {
   }
 
   // Set another header with max_age: 0 to delete one of the groups.
-  std::string header2 = ConstructHeaderGroupString(MakeEndpointGroup(
-                            kGroup1_, endpoints1, OriginSubdomains::DEFAULT,
-                            base::TimeDelta::FromSeconds(0))) +
-                        ", " +
-                        ConstructHeaderGroupString(MakeEndpointGroup(
-                            kGroup2_, endpoints2));  // Other group stays.
+  std::string header2 =
+      ConstructHeaderGroupString(MakeEndpointGroup(
+          kGroup1_, endpoints1, OriginSubdomains::DEFAULT, base::Seconds(0))) +
+      ", " +
+      ConstructHeaderGroupString(
+          MakeEndpointGroup(kGroup2_, endpoints2));  // Other group stays.
   ParseHeader(kNik_, kUrl1_, header2);
 
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
@@ -1449,7 +1449,7 @@ TEST_P(ReportingHeaderParserTest, ZeroMaxAgeRemovesEndpointGroup) {
   // even if the endpoints field is an empty list.)
   std::string header3 = ConstructHeaderGroupString(MakeEndpointGroup(
       kGroup2_, std::vector<ReportingEndpoint::EndpointInfo>(),
-      OriginSubdomains::DEFAULT, base::TimeDelta::FromSeconds(0)));
+      OriginSubdomains::DEFAULT, base::Seconds(0)));
   ParseHeader(kNik_, kUrl1_, header3);
 
   // Deletion of the last remaining group also deletes the client for this
@@ -1543,12 +1543,12 @@ TEST_P(ReportingHeaderParserTest, InvalidAdvertisementRemovesEndpointGroup) {
   }
 
   // Set another header with max_age: 0 to delete one of the groups.
-  std::string header2 = ConstructHeaderGroupString(MakeEndpointGroup(
-                            kGroup1_, endpoints1, OriginSubdomains::DEFAULT,
-                            base::TimeDelta::FromSeconds(0))) +
-                        ", " +
-                        ConstructHeaderGroupString(MakeEndpointGroup(
-                            kGroup2_, endpoints2));  // Other group stays.
+  std::string header2 =
+      ConstructHeaderGroupString(MakeEndpointGroup(
+          kGroup1_, endpoints1, OriginSubdomains::DEFAULT, base::Seconds(0))) +
+      ", " +
+      ConstructHeaderGroupString(
+          MakeEndpointGroup(kGroup2_, endpoints2));  // Other group stays.
   ParseHeader(kNik_, kUrl1_, header2);
 
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
@@ -1752,7 +1752,7 @@ class ReportingHeaderParserStructuredHeaderTest
     ReportingEndpointGroup group;
     group.group_key = group_key;
     group.include_subdomains = OriginSubdomains::EXCLUDE;
-    group.ttl = base::TimeDelta::FromDays(30);
+    group.ttl = base::Days(30);
     group.endpoints = std::move(endpoints);
     return group;
   }

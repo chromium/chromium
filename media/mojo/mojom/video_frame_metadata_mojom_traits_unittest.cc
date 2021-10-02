@@ -136,17 +136,17 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   // base::TimeTicks
   base::TimeTicks now = base::TimeTicks::Now();
-  metadata_in.receive_time = now + base::TimeDelta::FromMilliseconds(10);
-  metadata_in.capture_begin_time = now + base::TimeDelta::FromMilliseconds(20);
-  metadata_in.capture_end_time = now + base::TimeDelta::FromMilliseconds(30);
-  metadata_in.decode_begin_time = now + base::TimeDelta::FromMilliseconds(40);
-  metadata_in.decode_end_time = now + base::TimeDelta::FromMilliseconds(50);
-  metadata_in.reference_time = now + base::TimeDelta::FromMilliseconds(60);
+  metadata_in.receive_time = now + base::Milliseconds(10);
+  metadata_in.capture_begin_time = now + base::Milliseconds(20);
+  metadata_in.capture_end_time = now + base::Milliseconds(30);
+  metadata_in.decode_begin_time = now + base::Milliseconds(40);
+  metadata_in.decode_end_time = now + base::Milliseconds(50);
+  metadata_in.reference_time = now + base::Milliseconds(60);
 
   // base::TimeDeltas
-  metadata_in.processing_time = base::TimeDelta::FromMilliseconds(500);
-  metadata_in.frame_duration = base::TimeDelta::FromMilliseconds(16);
-  metadata_in.wallclock_frame_duration = base::TimeDelta::FromMilliseconds(17);
+  metadata_in.processing_time = base::Milliseconds(500);
+  metadata_in.frame_duration = base::Milliseconds(16);
+  metadata_in.wallclock_frame_duration = base::Milliseconds(17);
 
   VideoFrameMetadata metadata_out;
 

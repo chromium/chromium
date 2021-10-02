@@ -28,11 +28,10 @@ namespace media {
 namespace {
 
 constexpr int kDefaultSampleRate = 48000;
-constexpr base::TimeDelta kPacketDuration =
-    base::TimeDelta::FromMilliseconds(20);
-constexpr base::TimeDelta kMinLeadTime = base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kMaxLeadTime = base::TimeDelta::FromMilliseconds(500);
-const base::TimeDelta kTimeStep = base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kPacketDuration = base::Milliseconds(20);
+constexpr base::TimeDelta kMinLeadTime = base::Milliseconds(100);
+constexpr base::TimeDelta kMaxLeadTime = base::Milliseconds(500);
+const base::TimeDelta kTimeStep = base::Milliseconds(2);
 
 class TestDemuxerStream : public DemuxerStream {
  public:
@@ -660,7 +659,7 @@ void FuchsiaAudioRendererTest::StartPlaybackAndVerifyClock(
                          base::TimeTicks::Now() + kTimeStep, false);
 
   // MediaTime will start moving once AudioConsumer updates timeline.
-  const base::TimeDelta kStartDelay = base::TimeDelta::FromMilliseconds(3);
+  const base::TimeDelta kStartDelay = base::Milliseconds(3);
   base::TimeTicks start_wall_clock = base::TimeTicks::Now() + kStartDelay;
   audio_consumer_->UpdateStatus(start_wall_clock, start_time);
   task_environment_.RunUntilIdle();
@@ -697,7 +696,7 @@ TEST_P(FuchsiaAudioRendererTest, InitializeAndBuffer) {
 
   // Extra packets should be sent to AudioConsumer immediately.
   stream_sink_->received_packets()->clear();
-  ProduceDemuxerPacket(base::TimeDelta::FromMilliseconds(10));
+  ProduceDemuxerPacket(base::Milliseconds(10));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(stream_sink_->received_packets()->size(), 1U);
 }
@@ -708,7 +707,7 @@ TEST_P(FuchsiaAudioRendererTest, StartPlaybackBeforeStreamSinkConnected) {
   // Start playing immediately after initialization. The renderer should wait
   // for buffers to be allocated before it starts reading from the demuxer.
   audio_renderer_->StartPlaying();
-  ProduceDemuxerPacket(base::TimeDelta::FromMilliseconds(10));
+  ProduceDemuxerPacket(base::Milliseconds(10));
   task_environment_.RunUntilIdle();
 
   stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
@@ -719,21 +718,21 @@ TEST_P(FuchsiaAudioRendererTest, StartPlaybackBeforeStreamSinkConnected) {
 TEST_P(FuchsiaAudioRendererTest, StartTicking) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
-      /*start_pos=*/base::TimeDelta::FromMilliseconds(123),
+      /*start_pos=*/base::Milliseconds(123),
       /*playback_rate=*/1.0));
 }
 
 TEST_P(FuchsiaAudioRendererTest, StartTickingRate1_5) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
-      /*start_pos=*/base::TimeDelta::FromMilliseconds(123),
+      /*start_pos=*/base::Milliseconds(123),
       /*playback_rate=*/1.5));
 }
 
 TEST_P(FuchsiaAudioRendererTest, StartTickingRate0_5) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
-      /*start_pos=*/base::TimeDelta::FromMilliseconds(123),
+      /*start_pos=*/base::Milliseconds(123),
       /*playback_rate=*/0.5));
 }
 
@@ -774,7 +773,7 @@ TEST_P(FuchsiaAudioRendererTest, Seek) {
   run_loop.Run();
 
   // Restart playback from a new position.
-  const base::TimeDelta kSeekPos = base::TimeDelta::FromMilliseconds(123);
+  const base::TimeDelta kSeekPos = base::Milliseconds(123);
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(kSeekPos,
                                                       /*playback_rate=*/1.0));
 
@@ -791,7 +790,7 @@ TEST_P(FuchsiaAudioRendererTest, ChangeConfig) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
-  const auto kConfigChangePos = base::TimeDelta::FromSeconds(1);
+  const auto kConfigChangePos = base::Seconds(1);
 
   // Queue packets up to kConfigChangePos.
   FillDemuxerStream(kConfigChangePos);
@@ -838,13 +837,13 @@ TEST_P(FuchsiaAudioRendererTest, UpdateTimeline) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
-  FillDemuxerStream(base::TimeDelta::FromSeconds(2));
+  FillDemuxerStream(base::Seconds(2));
 
-  const auto kTimelineChangePos = base::TimeDelta::FromSeconds(1);
+  const auto kTimelineChangePos = base::Seconds(1);
   task_environment_.FastForwardBy(kTimelineChangePos);
 
   // Shift the timeline by 2ms.
-  const auto kMediaDelta = base::TimeDelta::FromMilliseconds(2);
+  const auto kMediaDelta = base::Milliseconds(2);
   audio_consumer_->UpdateStatus(base::TimeTicks::Now(),
                                 kTimelineChangePos + kMediaDelta);
   task_environment_.RunUntilIdle();
@@ -859,8 +858,8 @@ TEST_P(FuchsiaAudioRendererTest, PauseAndResume) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
-  const auto kPauseTimestamp = base::TimeDelta::FromSeconds(1);
-  const auto kStreamLength = base::TimeDelta::FromSeconds(2);
+  const auto kPauseTimestamp = base::Seconds(1);
+  const auto kStreamLength = base::Seconds(2);
 
   FillDemuxerStream(kStreamLength);
 
@@ -882,7 +881,7 @@ TEST_P(FuchsiaAudioRendererTest, PauseAndResume) {
 
   // Keep the stream paused for 10 seconds. The Renderer should not be sending
   // new packets
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(stream_sink_->received_packets()->size(), kExpectedQueuedPackets);
   EXPECT_EQ(time_source_->CurrentMediaTime(), kPauseTimestamp);
 
@@ -909,7 +908,7 @@ TEST_P(FuchsiaAudioRendererTest, EndOfStreamBuffered) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
-  const auto kStreamLength = base::TimeDelta::FromSeconds(1);
+  const auto kStreamLength = base::Seconds(1);
   FillDemuxerStream(kStreamLength);
   demuxer_stream_->QueueReadResult(
       TestDemuxerStream::ReadResult(DecoderBuffer::CreateEOSBuffer()));
@@ -993,7 +992,7 @@ TEST_P(FuchsiaAudioRendererTest, SetVolumeBeforeInitialize) {
 // only after CreateStreamSink(). See crbug.com/1219147 .
 TEST_P(FuchsiaAudioRendererTest, PlaybackBeforeSinkCreation) {
   CreateTestDemuxerStream();
-  const auto kStreamLength = base::TimeDelta::FromMilliseconds(100);
+  const auto kStreamLength = base::Milliseconds(100);
   FillDemuxerStream(kStreamLength);
   demuxer_stream_->QueueReadResult(
       TestDemuxerStream::ReadResult(DecoderBuffer::CreateEOSBuffer()));

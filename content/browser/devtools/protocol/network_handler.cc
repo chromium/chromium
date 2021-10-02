@@ -1625,7 +1625,7 @@ Response NetworkHandler::EmulateNetworkConditions(
   if (throttling_enabled) {
     network_conditions = network::mojom::NetworkConditions::New();
     network_conditions->offline = offline;
-    network_conditions->latency = base::TimeDelta::FromMilliseconds(latency);
+    network_conditions->latency = base::Milliseconds(latency);
     network_conditions->download_throughput = download_throughput;
     network_conditions->upload_throughput = upload_throughput;
   }

@@ -105,8 +105,7 @@ TEST(StoreUpdateDataTest,
     proto::StoreEntry store_entry = entry.second;
     if (store_entry.entry_type() == proto::FETCHED_HINT) {
       base::Time expected_expiry_time =
-          base::Time::Now() +
-          base::TimeDelta::FromSeconds(max_cache_duration_secs);
+          base::Time::Now() + base::Seconds(max_cache_duration_secs);
       EXPECT_EQ(expected_expiry_time.ToDeltaSinceWindowsEpoch().InSeconds(),
                 store_entry.expiry_time_secs());
       break;

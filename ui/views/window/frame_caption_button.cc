@@ -148,8 +148,7 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
 
   if (animate == Animate::kYes) {
     swap_images_animation_->Reset(0);
-    swap_images_animation_->SetSlideDuration(
-        base::TimeDelta::FromMilliseconds(200));
+    swap_images_animation_->SetSlideDuration(base::Milliseconds(200));
     swap_images_animation_->Show();
   } else {
     swap_images_animation_->Reset(1);

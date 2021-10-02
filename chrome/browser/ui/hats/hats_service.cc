@@ -64,16 +64,13 @@ constexpr double kHatsSurveyProbabilityDefault = 0;
 // TODO(crbug.com/1160661): When the minimum time between any survey, and the
 // minimum time between a specific survey, are the same, the logic supporting
 // the latter check is superfluous.
-constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts =
-    base::TimeDelta::FromDays(180);
+constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts = base::Days(180);
 
-constexpr base::TimeDelta kMinimumTimeBetweenAnySurveyStarts =
-    base::TimeDelta::FromDays(180);
+constexpr base::TimeDelta kMinimumTimeBetweenAnySurveyStarts = base::Days(180);
 
-constexpr base::TimeDelta kMinimumTimeBetweenSurveyChecks =
-    base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinimumTimeBetweenSurveyChecks = base::Days(1);
 
-constexpr base::TimeDelta kMinimumProfileAge = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMinimumProfileAge = base::Days(30);
 
 // Preferences Data Model
 // The kHatsSurveyMetadata pref points to a dictionary.
@@ -341,7 +338,7 @@ bool HatsService::LaunchDelayedSurvey(
       base::BindOnce(&HatsService::LaunchSurvey, weak_ptr_factory_.GetWeakPtr(),
                      trigger, base::DoNothing(), base::DoNothing(),
                      product_specific_bits_data, product_specific_string_data),
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+      base::Milliseconds(timeout_ms));
 }
 
 bool HatsService::LaunchDelayedSurveyForWebContents(
@@ -365,7 +362,7 @@ bool HatsService::LaunchDelayedSurveyForWebContents(
           &HatsService::DelayedSurveyTask::Launch,
           const_cast<HatsService::DelayedSurveyTask&>(*(result.first))
               .GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+      base::Milliseconds(timeout_ms));
   if (!success) {
     pending_tasks_.erase(result.first);
   }

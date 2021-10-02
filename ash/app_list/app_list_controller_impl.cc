@@ -96,7 +96,7 @@ constexpr float kOverviewFadeAnimationScale = 0.92f;
 // The home launcher animation duration for transitions that accompany overview
 // fading transitions.
 constexpr base::TimeDelta kOverviewFadeAnimationDuration =
-    base::TimeDelta::FromMilliseconds(350);
+    base::Milliseconds(350);
 
 // Update layer animation settings for launcher scale and opacity animation that
 // runs on overview mode change.

@@ -46,7 +46,7 @@ TEST_F(RemoteUrlIndexTest, GetApps) {
 TEST_F(RemoteUrlIndexTest, WaitForUpdate) {
   auto client = std::make_unique<RemoteUrlClient>(GURL("test.url"));
   RemoteUrlIndex index(std::move(client), GetPath());
-  task_environment_.AdvanceClock(base::TimeDelta::FromDays(2));
+  task_environment_.AdvanceClock(base::Days(2));
   Wait();
   SUCCEED();
 }

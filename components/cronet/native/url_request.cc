@@ -564,7 +564,7 @@ void Cronet_UrlRequestImpl::InvokeCallbackOnResponseStarted() {
     return;
 #if DCHECK_IS_ON()
   // Verify that Executor calls Cronet_Runnable_Destroy().
-  if (!runnable_destroyed_.TimedWait(base::TimeDelta::FromSeconds(5))) {
+  if (!runnable_destroyed_.TimedWait(base::Seconds(5))) {
     LOG(ERROR) << "Cronet Executor didn't call Cronet_Runnable_Destroy() in "
                   "5s; still waiting.";
     runnable_destroyed_.Wait();

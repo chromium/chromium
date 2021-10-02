@@ -104,7 +104,7 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
       FROM_HERE,
       base::BindOnce(&DelayedCookieMonster::InvokeSetCookiesCallback,
                      base::Unretained(this), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kDelayedTime));
+      base::Milliseconds(kDelayedTime));
 }
 
 void DelayedCookieMonster::GetCookieListWithOptionsAsync(
@@ -123,7 +123,7 @@ void DelayedCookieMonster::GetCookieListWithOptionsAsync(
       FROM_HERE,
       base::BindOnce(&DelayedCookieMonster::InvokeGetCookieListCallback,
                      base::Unretained(this), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kDelayedTime));
+      base::Milliseconds(kDelayedTime));
 }
 
 void DelayedCookieMonster::GetAllCookiesAsync(GetAllCookiesCallback callback) {

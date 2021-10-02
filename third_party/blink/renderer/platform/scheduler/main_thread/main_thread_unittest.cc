@@ -51,7 +51,7 @@ class MainThreadTest : public testing::Test {
   MainThreadTest& operator=(const MainThreadTest&) = delete;
 
   void SetUp() override {
-    clock_.Advance(base::TimeDelta::FromMicroseconds(5000));
+    clock_.Advance(base::Microseconds(5000));
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),

@@ -40,7 +40,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     GetDocument().View()->SetParentVisible(true);
     GetDocument().View()->SetSelfVisible(true);
     // Advance clock so it isn't 0 as rendering code asserts in that case.
-    AdvanceClock(base::TimeDelta::FromMicroseconds(1));
+    AdvanceClock(base::Microseconds(1));
   }
 
  protected:
@@ -175,8 +175,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
-  static constexpr base::TimeDelta kQuantumOfTime =
-      base::TimeDelta::FromMilliseconds(10);
+  static constexpr base::TimeDelta kQuantumOfTime = base::Milliseconds(10);
 
   // This only triggers ReportPresentationTime in main frame.
   void UpdateAllLifecyclePhasesAndSimulatePresentationTime() {
@@ -585,20 +584,19 @@ TEST_F(TextPaintTimingDetectorTest, VisitSameNodeTwiceBeforePaintTimeIsSet) {
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportFirstPaintTime) {
   base::TimeTicks start_time = NowTicks();
-  AdvanceClock(base::TimeDelta::FromSecondsD(1));
+  AdvanceClock(base::Seconds(1));
   SetBodyInnerHTML(R"HTML(
   )HTML");
   Element* text = AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  AdvanceClock(base::TimeDelta::FromSecondsD(1));
+  AdvanceClock(base::Seconds(1));
   text->setAttribute(html_names::kStyleAttr,
                      AtomicString("position:fixed;left:30px"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  AdvanceClock(base::TimeDelta::FromSecondsD(1));
+  AdvanceClock(base::Seconds(1));
   TextRecord* record = TextRecordOfLargestTextPaint();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->paint_time,
-            start_time + base::TimeDelta::FromSecondsD(1) + kQuantumOfTime);
+  EXPECT_EQ(record->paint_time, start_time + base::Seconds(1) + kQuantumOfTime);
   EXPECT_EQ(LargestPaintSize(), ExperimentalLargestPaintSize());
   EXPECT_EQ(LargestPaintTime(), ExperimentalLargestPaintTime());
 }

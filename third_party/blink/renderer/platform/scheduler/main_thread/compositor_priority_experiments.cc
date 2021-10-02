@@ -19,7 +19,7 @@ CompositorPriorityExperiments::CompositorPriorityExperiments(
       experiment_(GetExperimentFromFeatureList()),
       last_compositor_task_time_(scheduler_->GetTickClock()->NowTicks()),
       prioritize_compositing_after_delay_length_(
-          base::TimeDelta::FromMilliseconds(kCompositingDelayLength.Get())),
+          base::Milliseconds(kCompositingDelayLength.Get())),
       stop_signal_(base::FeatureList::IsEnabled(
                        kPrioritizeCompositingUntilBeginMainFrame)
                        ? StopSignalType::kBeginMainFrameTask

@@ -21,8 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const base::TimeDelta kDefaultFrameInterval =
-    base::TimeDelta::FromMillisecondsD(16.67);
+const base::TimeDelta kDefaultFrameInterval = base::Milliseconds(16.67);
 
 // All sequence numbers for simulated frame events will start at this number.
 // This makes it easier to numerically distinguish sequence numbers versus
@@ -127,7 +126,7 @@ class JankMetricsTest : public testing::Test {
             /*presented_frame_token=*/submit_to_token[presnts[i]],
             /*current_presentation_timestamp=*/start_time +
                 i * kDefaultFrameInterval +
-                base::TimeDelta::FromMillisecondsD(presentation_offset),
+                base::Milliseconds(presentation_offset),
             /*frame_interval=*/kDefaultFrameInterval);
         submit_to_token.erase(presnts[i]);
       }
@@ -482,15 +481,13 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
 
   jank_reporter.Merge(std::move(other_reporter));
   EXPECT_EQ(jank_reporter.jank_count(), 6);
-  EXPECT_TRUE(
-      jank_reporter.max_staleness() > base::TimeDelta::FromMilliseconds(33) &&
-      jank_reporter.max_staleness() < base::TimeDelta::FromMilliseconds(34));
+  EXPECT_TRUE(jank_reporter.max_staleness() > base::Milliseconds(33) &&
+              jank_reporter.max_staleness() < base::Milliseconds(34));
   jank_reporter.ReportJankMetrics(100u);
 
   // Jank / staleness values should be reset after reporting
   EXPECT_EQ(jank_reporter.jank_count(), 0);
-  EXPECT_EQ(jank_reporter.max_staleness(),
-            base::TimeDelta::FromMilliseconds(0));
+  EXPECT_EQ(jank_reporter.max_staleness(), base::Milliseconds(0));
 
   // Expect 6 janks for "Main" (3 from each reporter)
   const char* metric = "Graphics.Smoothness.Jank.Main.RAF";

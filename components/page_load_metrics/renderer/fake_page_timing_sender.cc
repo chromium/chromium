@@ -71,9 +71,8 @@ void FakePageTimingSender::PageTimingValidator::UpdateExpectedInputTiming(
     const base::TimeDelta input_delay) {
   expected_input_timing->num_input_events++;
   expected_input_timing->total_input_delay += input_delay;
-  expected_input_timing->total_adjusted_input_delay +=
-      base::TimeDelta::FromMilliseconds(
-          std::max(int64_t(0), input_delay.InMilliseconds() - int64_t(50)));
+  expected_input_timing->total_adjusted_input_delay += base::Milliseconds(
+      std::max(int64_t(0), input_delay.InMilliseconds() - int64_t(50)));
 }
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedInputTiming()
     const {

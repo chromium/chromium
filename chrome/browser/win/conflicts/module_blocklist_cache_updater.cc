@@ -49,7 +49,7 @@ static constexpr size_t kMaxModuleCount = 5000u;
 
 // The maximum amount of time a stale entry is kept in the cache before it is
 // deleted.
-static constexpr base::TimeDelta kMaxEntryAge = base::TimeDelta::FromDays(180);
+static constexpr base::TimeDelta kMaxEntryAge = base::Days(180);
 
 // This enum is used for UMA. Therefore, the values should never change.
 enum class BlocklistStatus {

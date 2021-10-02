@@ -30,7 +30,7 @@ namespace arc {
 namespace {
 
 // Directory cache will be cleared this duration after it is built.
-constexpr base::TimeDelta kCacheExpiration = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kCacheExpiration = base::Seconds(60);
 
 void OnGetFileSizeFromOpenFile(
     ArcDocumentsProviderRoot::GetFileInfoCallback callback,

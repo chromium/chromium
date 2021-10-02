@@ -15,25 +15,22 @@ void SetDurationFromTimeDelta(optimization_guide::proto::Duration* duration,
   if (!duration)
     return;
   duration->set_seconds(delta.InSeconds());
-  duration->set_nanos(delta.InNanoseconds() %
-                      base::TimeDelta::FromSeconds(1).InNanoseconds());
+  duration->set_nanos(delta.InNanoseconds() % base::Seconds(1).InNanoseconds());
 }
 
 TEST(LiteVideoHintTest, OptGuideMetadataHint) {
   optimization_guide::proto::LiteVideoHint hint_proto;
-  base::TimeDelta throttle_delay =
-      base::TimeDelta::FromSeconds(5) + base::TimeDelta::FromNanoseconds(5);
+  base::TimeDelta throttle_delay = base::Seconds(5) + base::Nanoseconds(5);
   hint_proto.set_target_downlink_bandwidth_kbps(100);
   hint_proto.set_kilobytes_to_buffer_before_throttle(10);
   SetDurationFromTimeDelta(hint_proto.mutable_target_downlink_rtt_latency(),
-                           base::TimeDelta::FromSeconds(5));
+                           base::Seconds(5));
   SetDurationFromTimeDelta(hint_proto.mutable_max_throttling_delay(),
                            throttle_delay);
   lite_video::LiteVideoHint hint(hint_proto);
   EXPECT_EQ(hint.target_downlink_bandwidth_kbps(), 100);
   EXPECT_EQ(hint.kilobytes_to_buffer_before_throttle(), 10);
-  EXPECT_EQ(hint.target_downlink_rtt_latency(),
-            base::TimeDelta::FromSeconds(5));
+  EXPECT_EQ(hint.target_downlink_rtt_latency(), base::Seconds(5));
   EXPECT_EQ(hint.max_throttling_delay(), throttle_delay);
 }
 

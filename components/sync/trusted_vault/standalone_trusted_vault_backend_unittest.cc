@@ -761,7 +761,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       .Run(TrustedVaultRegistrationStatus::kOtherError);
 
   // Mimic system set to the past.
-  clock()->Advance(base::TimeDelta::FromSeconds(-1));
+  clock()->Advance(base::Seconds(-1));
 
   device_registration_callback =
       TrustedVaultConnection::RegisterAuthenticationFactorCallback();

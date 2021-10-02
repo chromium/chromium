@@ -351,8 +351,7 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
 TEST_F(DaemonProcessTest, StartProcessStatsReport) {
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)));
   daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromMilliseconds(1)));
+      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Milliseconds(1)));
   base::RunLoop run_loop;
   ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
       .WillByDefault(testing::Invoke(
@@ -367,11 +366,9 @@ TEST_F(DaemonProcessTest, StartProcessStatsReportWithDifferentDelta) {
       .Times(AnyNumber());
   int received = 0;
   daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromHours(1)));
+      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Hours(1)));
   daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromMilliseconds(1)));
+      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Milliseconds(1)));
   base::RunLoop run_loop;
   ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
       .WillByDefault(testing::Invoke(
@@ -386,8 +383,7 @@ TEST_F(DaemonProcessTest, StartProcessStatsReportWithDifferentDelta) {
 
 TEST_F(DaemonProcessTest, StopProcessStatsReportWhenTheWorkerProcessDied) {
   daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromMilliseconds(1)));
+      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Milliseconds(1)));
   base::RunLoop run_loop;
   ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
       .WillByDefault(testing::Invoke(
@@ -397,7 +393,7 @@ TEST_F(DaemonProcessTest, StopProcessStatsReportWhenTheWorkerProcessDied) {
   static_cast<WorkerProcessIpcDelegate*>(daemon_process_.get())
       ->OnWorkerProcessStopped();
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(10));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
   run_loop.Run();
 }
 

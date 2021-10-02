@@ -11,10 +11,8 @@ namespace {
 
 constexpr int kFinalizingTimeInSeconds = 5 * 60;
 
-constexpr base::TimeDelta kTimeAdvanceSeconds10 =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kTimeAdvanceSeconds60 =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kTimeAdvanceSeconds10 = base::Seconds(10);
+constexpr base::TimeDelta kTimeAdvanceSeconds60 = base::Seconds(60);
 constexpr base::TimeDelta kZeroTime = base::TimeDelta();
 
 }  // anonymous namespace
@@ -71,10 +69,9 @@ TEST_F(UpdateTimeEstimatorUnitTest, TotalTimeLeft) {
 
   tick_clock_.Advance(kTimeAdvanceSeconds10);
   EXPECT_EQ(time_estimator_.GetUpdateStatus().time_left,
-            base::TimeDelta::FromSeconds(kFinalizingTimeInSeconds) -
-                kTimeAdvanceSeconds10);
+            base::Seconds(kFinalizingTimeInSeconds) - kTimeAdvanceSeconds10);
 
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(kFinalizingTimeInSeconds));
+  tick_clock_.Advance(base::Seconds(kFinalizingTimeInSeconds));
   EXPECT_EQ(time_estimator_.GetUpdateStatus().time_left, kZeroTime);
 }
 

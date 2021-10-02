@@ -611,7 +611,7 @@ void AmbientController::OnLockScreenInactivityTimeoutPrefChanged() {
     return;
 
   ambient_ui_model_.SetLockScreenInactivityTimeout(
-      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds)));
 }
 
@@ -621,7 +621,7 @@ void AmbientController::OnLockScreenBackgroundTimeoutPrefChanged() {
     return;
 
   ambient_ui_model_.SetBackgroundLockScreenTimeout(
-      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds)));
 }
 
@@ -631,7 +631,7 @@ void AmbientController::OnPhotoRefreshIntervalPrefChanged() {
     return;
 
   ambient_ui_model_.SetPhotoRefreshInterval(
-      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds)));
 }
 

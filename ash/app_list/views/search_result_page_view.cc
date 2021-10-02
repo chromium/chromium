@@ -75,8 +75,7 @@ constexpr int kSearchBoxSearchResultShadowElevation = 12;
 
 // The amount of time by which notifications to accessibility framework about
 // result page changes are delayed.
-constexpr base::TimeDelta kNotifyA11yDelay =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
 // A container view that ensures the card background and the shadow are painted
 // in the correct order.

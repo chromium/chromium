@@ -126,7 +126,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromHours(2);
+  constexpr auto kTtl = base::Hours(2);
 
   DnsResponse response = BuildTestDnsResponse(
       "address.test", dns_protocol::kTypeA, /*answers=*/{},
@@ -151,7 +151,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromMinutes(15);
+  constexpr auto kTtl = base::Minutes(15);
 
   DnsResponse response = BuildTestDnsResponse(
       "address.test", dns_protocol::kTypeA, /*answers=*/{},
@@ -223,13 +223,12 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsInAResponse) {
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
   constexpr char kName[] = "address.test";
   const IPAddress kExpected(8, 8, 8, 8);
-  constexpr auto kTtl = base::TimeDelta::FromDays(3);
+  constexpr auto kTtl = base::Days(3);
 
-  DnsResponse response =
-      BuildTestDnsResponse(kName, dns_protocol::kTypeA,
-                           {BuildTestTextRecord(kName, /*text_strings=*/{"foo"},
-                                                base::TimeDelta::FromHours(2)),
-                            BuildTestAddressRecord(kName, kExpected, kTtl)});
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeA,
+      {BuildTestTextRecord(kName, /*text_strings=*/{"foo"}, base::Hours(2)),
+       BuildTestAddressRecord(kName, kExpected, kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -251,15 +250,14 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
 
 TEST(DnsResponseResultExtractorTest, ExtractsMinATtl) {
   constexpr char kName[] = "name.test";
-  constexpr base::TimeDelta kMinTtl = base::TimeDelta::FromMinutes(4);
+  constexpr base::TimeDelta kMinTtl = base::Minutes(4);
 
   DnsResponse response = BuildTestDnsResponse(
       kName, dns_protocol::kTypeA,
-      {BuildTestAddressRecord(kName, IPAddress(1, 2, 3, 4),
-                              base::TimeDelta::FromHours(3)),
+      {BuildTestAddressRecord(kName, IPAddress(1, 2, 3, 4), base::Hours(3)),
        BuildTestAddressRecord(kName, IPAddress(2, 3, 4, 5), kMinTtl),
        BuildTestAddressRecord(kName, IPAddress(3, 4, 5, 6),
-                              base::TimeDelta::FromMinutes(15))});
+                              base::Minutes(15))});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -302,7 +300,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsTxtResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainTxtResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromDays(4);
+  constexpr auto kTtl = base::Days(4);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypeTXT, /*answers=*/{},
@@ -324,7 +322,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainTxtResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataTxtResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromMinutes(42);
+  constexpr auto kTtl = base::Minutes(42);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypeTXT,
@@ -389,13 +387,13 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeTxtResponses) {
 
 TEST(DnsResponseResultExtractorTest, ExtractsMinTxtTtl) {
   constexpr char kName[] = "name.test";
-  constexpr base::TimeDelta kMinTtl = base::TimeDelta::FromMinutes(4);
+  constexpr base::TimeDelta kMinTtl = base::Minutes(4);
 
   DnsResponse response = BuildTestDnsResponse(
       kName, dns_protocol::kTypeTXT,
-      {BuildTestTextRecord(kName, {"foo"}, base::TimeDelta::FromHours(3)),
+      {BuildTestTextRecord(kName, {"foo"}, base::Hours(3)),
        BuildTestTextRecord(kName, {"bar"}, kMinTtl),
-       BuildTestTextRecord(kName, {"baz"}, base::TimeDelta::FromMinutes(15))});
+       BuildTestTextRecord(kName, {"baz"}, base::Minutes(15))});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -424,7 +422,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsPtrResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainPtrResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromHours(5);
+  constexpr auto kTtl = base::Hours(5);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypePTR, /*answers=*/{},
@@ -446,7 +444,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainPtrResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataPtrResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromMinutes(50);
+  constexpr auto kTtl = base::Minutes(50);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypePTR, /*answers=*/{},
@@ -567,7 +565,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsZeroWeightSrvResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainSrvResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromDays(7);
+  constexpr auto kTtl = base::Days(7);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypeSRV, /*answers=*/{},
@@ -589,7 +587,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainSrvResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataSrvResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromHours(12);
+  constexpr auto kTtl = base::Hours(12);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypeSRV, /*answers=*/{},
@@ -654,7 +652,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeSrvResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsExperimentalHttpsResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromMinutes(31);
+  constexpr auto kTtl = base::Minutes(31);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
@@ -676,7 +674,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsExperimentalHttpsResponses) {
 
 TEST(DnsResponseResultExtractorTest,
      ExtractsNxdomainExperimentalHttpsResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromHours(8);
+  constexpr auto kTtl = base::Hours(8);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
@@ -700,7 +698,7 @@ TEST(DnsResponseResultExtractorTest,
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataExperimentalHttpsResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromDays(3);
+  constexpr auto kTtl = base::Days(3);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
@@ -777,7 +775,7 @@ TEST(DnsResponseResultExtractorTest,
 
 TEST(DnsResponseResultExtractorTest,
      IgnoresAdditionalExperimentalHttpsRecords) {
-  constexpr auto kTtl = base::TimeDelta::FromDays(3);
+  constexpr auto kTtl = base::Days(3);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
@@ -785,9 +783,9 @@ TEST(DnsResponseResultExtractorTest,
       /*authority=*/{},
       /*additional=*/
       {BuildTestHttpsServiceRecord("https.test", 3u, "service1.test", {},
-                                   base::TimeDelta::FromMinutes(44)),
+                                   base::Minutes(44)),
        BuildTestHttpsServiceRecord("https.test", 2u, "service2.test", {},
-                                   base::TimeDelta::FromMinutes(30))});
+                                   base::Minutes(30))});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -804,7 +802,7 @@ TEST(DnsResponseResultExtractorTest,
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromHours(12);
+  constexpr auto kTtl = base::Hours(12);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
@@ -825,7 +823,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromMinutes(45);
+  constexpr auto kTtl = base::Minutes(45);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
@@ -848,7 +846,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
-  constexpr auto kTtl = base::TimeDelta::FromHours(36);
+  constexpr auto kTtl = base::Hours(36);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
@@ -914,7 +912,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
-  constexpr auto kTtl = base::TimeDelta::FromDays(5);
+  constexpr auto kTtl = base::Days(5);
 
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
@@ -922,9 +920,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
       /*authority=*/{},
       /*additional=*/
       {BuildTestHttpsServiceRecord("https.test", 3u, "service1.test", {},
-                                   base::TimeDelta::FromMinutes(30)),
+                                   base::Minutes(30)),
        BuildTestHttpsServiceRecord("https.test", 2u, "service2.test", {},
-                                   base::TimeDelta::FromMinutes(45))});
+                                   base::Minutes(45))});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -1310,15 +1308,14 @@ TEST(DnsResponseResultExtractorTest, RejectsDoubledCnames) {
 
 TEST(DnsResponseResultExtractorTest, IgnoresTtlFromNonResultType) {
   constexpr char kName[] = "name.test";
-  constexpr base::TimeDelta kMinTtl = base::TimeDelta::FromMinutes(4);
+  constexpr base::TimeDelta kMinTtl = base::Minutes(4);
 
   DnsResponse response = BuildTestDnsResponse(
       kName, dns_protocol::kTypeTXT,
-      {BuildTestTextRecord(kName, {"foo"}, base::TimeDelta::FromHours(3)),
+      {BuildTestTextRecord(kName, {"foo"}, base::Hours(3)),
        BuildTestTextRecord(kName, {"bar"}, kMinTtl),
-       BuildTestAddressRecord(kName, IPAddress(1, 2, 3, 4),
-                              base::TimeDelta::FromSeconds(2)),
-       BuildTestTextRecord(kName, {"baz"}, base::TimeDelta::FromMinutes(15))});
+       BuildTestAddressRecord(kName, IPAddress(1, 2, 3, 4), base::Seconds(2)),
+       BuildTestTextRecord(kName, {"baz"}, base::Minutes(15))});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -1331,13 +1328,13 @@ TEST(DnsResponseResultExtractorTest, IgnoresTtlFromNonResultType) {
 
 TEST(DnsResponseResultExtractorTest, ExtractsTtlFromCname) {
   constexpr char kAlias[] = "alias.test";
-  constexpr base::TimeDelta kMinTtl = base::TimeDelta::FromMinutes(4);
+  constexpr base::TimeDelta kMinTtl = base::Minutes(4);
 
   DnsResponse response = BuildTestDnsResponse(
       "name.test", dns_protocol::kTypeTXT,
-      {BuildTestTextRecord(kAlias, {"foo"}, base::TimeDelta::FromHours(3)),
-       BuildTestTextRecord(kAlias, {"bar"}, base::TimeDelta::FromHours(2)),
-       BuildTestTextRecord(kAlias, {"baz"}, base::TimeDelta::FromMinutes(15)),
+      {BuildTestTextRecord(kAlias, {"foo"}, base::Hours(3)),
+       BuildTestTextRecord(kAlias, {"bar"}, base::Hours(2)),
+       BuildTestTextRecord(kAlias, {"baz"}, base::Minutes(15)),
        BuildTestCnameRecord("name.test", kAlias, kMinTtl)});
   DnsResponseResultExtractor extractor(&response);
 

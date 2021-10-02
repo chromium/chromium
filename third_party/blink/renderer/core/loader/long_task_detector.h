@@ -40,8 +40,7 @@ class CORE_EXPORT LongTaskDetector final
 
   void Trace(Visitor*) const;
 
-  static constexpr base::TimeDelta kLongTaskThreshold =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kLongTaskThreshold = base::Milliseconds(50);
 
  private:
   // scheduler::TaskTimeObserver implementation

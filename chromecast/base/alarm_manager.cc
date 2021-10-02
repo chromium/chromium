@@ -58,8 +58,7 @@ AlarmManager::AlarmManager(
   DCHECK(clock_);
   DCHECK(task_runner_);
   clock_tick_timer_.SetTaskRunner(task_runner_);
-  base::TimeDelta polling_frequency =
-      base::TimeDelta::FromSeconds(kClockPollInterval);
+  base::TimeDelta polling_frequency = base::Seconds(kClockPollInterval);
   clock_tick_timer_.Start(FROM_HERE, polling_frequency,
                           base::BindRepeating(&AlarmManager::CheckAlarm,
                                               weak_factory_.GetWeakPtr()));

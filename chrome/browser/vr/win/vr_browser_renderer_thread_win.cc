@@ -27,10 +27,8 @@
 #undef DrawState
 
 namespace {
-constexpr base::TimeDelta kWebVrInitialFrameTimeout =
-    base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kWebVrSpinnerTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kWebVrInitialFrameTimeout = base::Seconds(5);
+constexpr base::TimeDelta kWebVrSpinnerTimeout = base::Seconds(2);
 
 constexpr float kEpsilon = 0.1f;
 constexpr float kMaxPosition = 1000000;

@@ -182,7 +182,7 @@ TEST(TranslateMetricsTest, ReportUserActionDuration) {
   MetricsRecorder recorder(metrics_internal::kTranslateUserActionDuration);
   recorder.CheckTotalCount(0);
   TimeTicks begin = TimeTicks::Now();
-  TimeTicks end = begin + base::TimeDelta::FromSeconds(3776);
+  TimeTicks end = begin + base::Seconds(3776);
   ReportUserActionDuration(begin, end);
   recorder.CheckValueInLogs(3776000.0);
   recorder.CheckTotalCount(1);

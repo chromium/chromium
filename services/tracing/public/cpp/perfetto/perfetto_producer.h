@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // flags, but the tracing session got disabled in the service while it was
   // initializing (in which case, the tracing service will not tell the
   // subprocess to start tracing after it connects).
-  base::TimeDelta startup_tracing_timeout_ = base::TimeDelta::FromSeconds(60);
+  base::TimeDelta startup_tracing_timeout_ = base::Seconds(60);
 
   base::tracing::PerfettoTaskRunner* const task_runner_;
 

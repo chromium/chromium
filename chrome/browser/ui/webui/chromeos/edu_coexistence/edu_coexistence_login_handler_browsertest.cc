@@ -91,9 +91,8 @@ class EduCoexistenceLoginHandlerBrowserTest
 
     handler->OnOAuthAccessTokensFetched(
         GoogleServiceAuthError(state),
-        signin::AccessTokenInfo(
-            "access_token", base::Time::Now() + base::TimeDelta::FromMinutes(1),
-            ""));
+        signin::AccessTokenInfo("access_token",
+                                base::Time::Now() + base::Minutes(1), ""));
   }
 
   void ExpectEduCoexistenceState(

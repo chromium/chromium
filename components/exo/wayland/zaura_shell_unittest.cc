@@ -36,7 +36,7 @@ namespace wayland {
 
 namespace {
 
-constexpr auto kTransitionDuration = base::TimeDelta::FromSeconds(3);
+constexpr auto kTransitionDuration = base::Seconds(3);
 
 class TestAuraSurface : public AuraSurface {
  public:

@@ -138,8 +138,7 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   std::string auth_password() const { return auth_password_; }
 
   void DisableOperationDelayForTesting() {
-    dbus_operation_delay_ = disk_operation_delay_ =
-        base::TimeDelta::FromSeconds(0);
+    dbus_operation_delay_ = disk_operation_delay_ = base::Seconds(0);
   }
 
  protected:
@@ -177,9 +176,8 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
       authpolicy::ActiveDirectoryUserStatus::TGT_VALID;
 
   // Delay operations to be more realistic.
-  base::TimeDelta dbus_operation_delay_ = base::TimeDelta::FromSeconds(3);
-  base::TimeDelta disk_operation_delay_ =
-      base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta dbus_operation_delay_ = base::Seconds(3);
+  base::TimeDelta disk_operation_delay_ = base::Milliseconds(100);
 
   enterprise_management::ChromeDeviceSettingsProto device_policy_;
 

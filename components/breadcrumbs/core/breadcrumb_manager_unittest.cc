@@ -53,17 +53,17 @@ TEST_F(BreadcrumbManagerTest, EventCountLimited) {
 TEST_F(BreadcrumbManagerTest, OldEventsDropped) {
   // Log an event from one and two hours ago.
   breadcrumb_manager_.AddEvent("event1");
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_env_.FastForwardBy(base::Hours(1));
   breadcrumb_manager_.AddEvent("event2");
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_env_.FastForwardBy(base::Hours(1));
 
   // Log three events separated by three minutes to ensure they receive their
   // own event bucket. Otherwise, some old events may be returned to ensure a
   // minimum number of available events. See |MinimumEventsReturned| test below.
   breadcrumb_manager_.AddEvent("event3");
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_env_.FastForwardBy(base::Minutes(3));
   breadcrumb_manager_.AddEvent("event4");
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  task_env_.FastForwardBy(base::Minutes(3));
   breadcrumb_manager_.AddEvent("event5");
 
   std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
@@ -80,9 +80,9 @@ TEST_F(BreadcrumbManagerTest, OldEventsDropped) {
 TEST_F(BreadcrumbManagerTest, MinimumEventsReturned) {
   // Log an event from one and two hours ago.
   breadcrumb_manager_.AddEvent("event1");
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_env_.FastForwardBy(base::Hours(1));
   breadcrumb_manager_.AddEvent("event2");
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_env_.FastForwardBy(base::Hours(1));
   breadcrumb_manager_.AddEvent("event3");
 
   const std::list<std::string>& events = breadcrumb_manager_.GetEvents(0);

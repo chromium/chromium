@@ -196,7 +196,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
 
-  clock_.Advance(base::TimeDelta::FromDays(71));
+  clock_.Advance(base::Days(71));
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -511,9 +511,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
   // Clear the log list and set the last updated time to more than 10 weeks ago.
   std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
-  chrome_policy_enforcer->UpdateCTLogList(
-      base::Time::Now() - base::TimeDelta::FromDays(71), disqualified_logs,
-      operated_by_google_logs);
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now() - base::Days(71),
+                                          disqualified_logs,
+                                          operated_by_google_logs);
 
   // The check should return build not timely even though the Google Aviator log
   // is no longer in the list, since the last update time is greater than 10

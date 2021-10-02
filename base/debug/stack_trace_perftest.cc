@@ -16,7 +16,7 @@ namespace debug {
 
 // Change kTimeLimit to something higher if you need more time to capture a
 // trace.
-constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTimeLimit = base::Seconds(3);
 constexpr int kWarmupRuns = 100;
 constexpr int kTimeCheckInterval = 1000;
 constexpr char kMetricStackTraceDuration[] = ".duration_per_run";

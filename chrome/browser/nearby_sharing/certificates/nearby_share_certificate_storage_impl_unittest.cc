@@ -119,9 +119,8 @@ std::vector<NearbySharePrivateCertificate> CreatePrivateCertificates(
 }
 
 base::Time TimestampToTime(nearbyshare::proto::Timestamp timestamp) {
-  return base::Time::UnixEpoch() +
-         base::TimeDelta::FromSeconds(timestamp.seconds()) +
-         base::TimeDelta::FromNanoseconds(timestamp.nanos());
+  return base::Time::UnixEpoch() + base::Seconds(timestamp.seconds()) +
+         base::Nanoseconds(timestamp.nanos());
 }
 
 }  // namespace

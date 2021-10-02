@@ -46,7 +46,7 @@ void DoWifiScanTaskOnNetworkHandlerThread(
     ap_data->ssid = base::UTF8ToUTF16(access_point.ssid);
     ap_data_vector.push_back(std::move(ap_data));
   }
-  std::move(callback).Run(true, true, base::TimeDelta::FromMilliseconds(age_ms),
+  std::move(callback).Run(true, true, base::Milliseconds(age_ms),
                           std::move(ap_data_vector));
 }
 

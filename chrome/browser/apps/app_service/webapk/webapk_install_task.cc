@@ -58,8 +58,7 @@ const char kMinimumIconSize = 64;
 const uint64_t kMurmur2HashSeed = 0;
 
 // Time to wait for a response from the Web APK minter.
-constexpr base::TimeDelta kMinterResponseTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMinterResponseTimeout = base::Seconds(60);
 
 constexpr char kWebApkServerUrl[] =
     "https://webapk.googleapis.com/v1/webApks?key=";

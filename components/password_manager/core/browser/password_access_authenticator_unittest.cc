@@ -60,14 +60,13 @@ TEST_P(PasswordAccessAuthenticatorTest, Expiration) {
                                        1);
 
   task_environment().AdvanceClock(
-      PasswordAccessAuthenticator::kAuthValidityPeriod -
-      base::TimeDelta::FromSeconds(1));
+      PasswordAccessAuthenticator::kAuthValidityPeriod - base::Seconds(1));
   EXPECT_CALL(callback(), Run).Times(0);
   EXPECT_TRUE(authenticator().EnsureUserIsAuthenticated(purpose()));
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSkipped,
                                        1);
 
-  task_environment().AdvanceClock(base::TimeDelta::FromSeconds(2));
+  task_environment().AdvanceClock(base::Seconds(2));
   EXPECT_CALL(callback(), Run(purpose()));
   EXPECT_TRUE(authenticator().EnsureUserIsAuthenticated(purpose()));
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
@@ -97,7 +96,7 @@ TEST_P(PasswordAccessAuthenticatorTest, Failed) {
 
   // Advance just a little bit, so that if |authenticator| starts the grace
   // period, this is still within it.
-  task_environment().AdvanceClock(base::TimeDelta::FromSeconds(1));
+  task_environment().AdvanceClock(base::Seconds(1));
   EXPECT_CALL(callback(), Run(purpose())).WillOnce(Return(false));
   EXPECT_FALSE(authenticator().EnsureUserIsAuthenticated(purpose()));
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kFailure,

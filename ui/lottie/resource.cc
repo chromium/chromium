@@ -73,9 +73,8 @@ std::unique_ptr<Animation> GetVectorAnimationNamed(int resource_id) {
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "UncompressAndParseSkiaVectorAsset",
-      base::TimeTicks::Now() - start_timestamp,
-      base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(50), 100);
+      base::TimeTicks::Now() - start_timestamp, base::Microseconds(1),
+      base::Milliseconds(50), 100);
   auto inserted = GetVectorAssetCache().emplace(resource_id, skottie);
   DCHECK(inserted.second);
   return std::make_unique<Animation>(inserted.first->second);

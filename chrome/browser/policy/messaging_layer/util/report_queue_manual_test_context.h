@@ -23,7 +23,7 @@ namespace reporting {
 // messages will be sent as FAST_BATCH.
 //
 // This context can be used in the following way:
-//   Start<ReportQueueManualTestContext>(base::TimeDelta::FromSeconds(1),
+//   Start<ReportQueueManualTestContext>(base::Seconds(1),
 //                             /*number_of_messages_to_enqueue=*/10,
 //                             UPLOAD_EVENTS,
 //                             FAST_BATCH,

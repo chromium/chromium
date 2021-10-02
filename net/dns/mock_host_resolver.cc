@@ -738,7 +738,7 @@ int MockHostResolverBase::ResolveProc(
     // Storing a failure with TTL 0 so that it overwrites previous value.
     base::TimeDelta ttl;
     if (rv == OK) {
-      ttl = base::TimeDelta::FromSeconds(kCacheEntryTTLSeconds);
+      ttl = base::Seconds(kCacheEntryTTLSeconds);
       if (initial_cache_invalidation_num_ > 0)
         cache_invalidation_nums_[key] = initial_cache_invalidation_num_;
     }
@@ -974,8 +974,7 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
     if (matches_flags && matches_address_family &&
         base::MatchPattern(host, r->host_pattern)) {
       if (r->latency_ms != 0) {
-        base::PlatformThread::Sleep(
-            base::TimeDelta::FromMilliseconds(r->latency_ms));
+        base::PlatformThread::Sleep(base::Milliseconds(r->latency_ms));
       }
 
       // Remap to a new host.

@@ -204,7 +204,7 @@ class HistoryQueryTest : public testing::Test {
   }
 
   base::Time GetTimeFromDaysAgo(int days_ago) {
-    return base_ - (days_ago * base::TimeDelta::FromDays(1));
+    return base_ - (days_ago * base::Days(1));
   }
 
   void TearDown() override {
@@ -295,8 +295,7 @@ TEST_F(HistoryQueryTest, ReachedBeginning) {
   EXPECT_FALSE(results.reached_beginning());
 
   // Try `begin_time` just later than the oldest visit.
-  options.begin_time =
-      test_entries[0].time + base::TimeDelta::FromMicroseconds(1);
+  options.begin_time = test_entries[0].time + base::Microseconds(1);
   QueryHistory(std::string(), options, &results);
   EXPECT_FALSE(results.reached_beginning());
   QueryHistory("some", options, &results);
@@ -310,8 +309,7 @@ TEST_F(HistoryQueryTest, ReachedBeginning) {
   EXPECT_TRUE(results.reached_beginning());
 
   // Try `begin_time` just earlier than the oldest visit.
-  options.begin_time =
-      test_entries[0].time - base::TimeDelta::FromMicroseconds(1);
+  options.begin_time = test_entries[0].time - base::Microseconds(1);
   QueryHistory(std::string(), options, &results);
   EXPECT_TRUE(results.reached_beginning());
   QueryHistory("some", options, &results);

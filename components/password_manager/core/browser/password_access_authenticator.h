@@ -26,8 +26,7 @@ class PasswordAccessAuthenticator {
 
   // For how long after the last successful authentication a user is considered
   // authenticated without repeating the challenge.
-  constexpr static base::TimeDelta kAuthValidityPeriod =
-      base::TimeDelta::FromSeconds(60);
+  constexpr static base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 
   // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
   // explanation.

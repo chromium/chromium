@@ -40,8 +40,7 @@ class TickGenerator {
         base_time_(base_timestamp) {}
 
   base::TimeDelta interval(int tick_count) const {
-    return base::TimeDelta::FromMicroseconds(tick_count *
-                                             microseconds_per_tick_);
+    return base::Microseconds(tick_count * microseconds_per_tick_);
   }
 
   base::TimeTicks current() const { return base_time_ + interval(tick_count_); }
@@ -78,7 +77,7 @@ class VideoRendererAlgorithmTest : public testing::Test {
                    &media_log_) {
     // Always start the TickClock at a non-zero value since null values have
     // special connotations.
-    tick_clock_->Advance(base::TimeDelta::FromMicroseconds(10000));
+    tick_clock_->Advance(base::Microseconds(10000));
     time_source_.SetTickClockForTesting(tick_clock_.get());
   }
 
@@ -96,7 +95,7 @@ class VideoRendererAlgorithmTest : public testing::Test {
   }
 
   base::TimeDelta minimum_glitch_time() const {
-    return base::TimeDelta::FromSeconds(
+    return base::Seconds(
         VideoRendererAlgorithm::kMinimumAcceptableTimeBetweenGlitchesSecs);
   }
 
@@ -1009,16 +1008,14 @@ TEST_F(VideoRendererAlgorithmTest, BestFrameByCoverage) {
 
   // 49/51 coverage for frame 0 and frame 1 should be within tolerance such that
   // the earlier frame should still be chosen.
-  deadline_min = tg.current() + tg.interval(1) / 2 +
-                 base::TimeDelta::FromMicroseconds(250);
+  deadline_min = tg.current() + tg.interval(1) / 2 + base::Microseconds(250);
   deadline_max = deadline_min + tg.interval(1);
   EXPECT_EQ(0,
             FindBestFrameByCoverage(deadline_min, deadline_max, &second_best));
   EXPECT_EQ(1, second_best);
 
   // 48/52 coverage should result in the second frame being chosen.
-  deadline_min = tg.current() + tg.interval(1) / 2 +
-                 base::TimeDelta::FromMicroseconds(500);
+  deadline_min = tg.current() + tg.interval(1) / 2 + base::Microseconds(500);
   deadline_max = deadline_min + tg.interval(1);
   EXPECT_EQ(1,
             FindBestFrameByCoverage(deadline_min, deadline_max, &second_best));
@@ -1454,7 +1451,7 @@ TEST_F(VideoRendererAlgorithmTest, UglyTimestampsHaveCadence) {
   for (size_t i = 0; i < base::size(kBadTimestampsMs) * 2; ++i) {
     while (EffectiveFramesQueued() < 3) {
       algorithm_.EnqueueFrame(CreateFrame(timestamp));
-      timestamp += base::TimeDelta::FromMilliseconds(
+      timestamp += base::Milliseconds(
           kBadTimestampsMs[i % base::size(kBadTimestampsMs)]);
     }
 
@@ -1489,7 +1486,7 @@ TEST_F(VideoRendererAlgorithmTest, VariableFrameRateNoCadence) {
   for (size_t i = 0; i < base::size(kBadTimestampsMs);) {
     while (EffectiveFramesQueued() < 3) {
       algorithm_.EnqueueFrame(CreateFrame(timestamp));
-      timestamp += base::TimeDelta::FromMilliseconds(
+      timestamp += base::Milliseconds(
           kBadTimestampsMs[i % base::size(kBadTimestampsMs)]);
       ++i;
     }
@@ -1553,7 +1550,7 @@ TEST_F(VideoRendererAlgorithmTest, EnqueueFrames) {
   EXPECT_EQ(2, GetCurrentFrameDisplayCount());
 
   // Trying to add a frame < 1 ms after the last frame should drop the frame.
-  algorithm_.EnqueueFrame(CreateFrame(base::TimeDelta::FromMicroseconds(999)));
+  algorithm_.EnqueueFrame(CreateFrame(base::Microseconds(999)));
   rendered_frame = RenderAndStep(&tg, &frames_dropped);
   EXPECT_EQ(1u, frames_queued());
   EXPECT_EQ(frame_1, rendered_frame);
@@ -1566,7 +1563,7 @@ TEST_F(VideoRendererAlgorithmTest, EnqueueFrames) {
 
   // Trying to add a frame < 1 ms before the last frame should drop the frame.
   algorithm_.EnqueueFrame(
-      CreateFrame(tg.interval(1) - base::TimeDelta::FromMicroseconds(999)));
+      CreateFrame(tg.interval(1) - base::Microseconds(999)));
   rendered_frame = RenderAndStep(&tg, &frames_dropped);
   EXPECT_EQ(1u, frames_queued());
   EXPECT_EQ(frame_3, rendered_frame);
@@ -1597,7 +1594,7 @@ TEST_F(VideoRendererAlgorithmTest, CadenceForFutureFrames) {
 
   // Add some noise to the tick generator so it our first frame
   // doesn't line up evenly on a deadline.
-  tg.Reset(tg.current() + base::TimeDelta::FromMilliseconds(5));
+  tg.Reset(tg.current() + base::Milliseconds(5));
 
   // We're now at the first frame, cadence should be one, so
   // it should only be displayed once.
@@ -1647,7 +1644,7 @@ TEST_F(VideoRendererAlgorithmTest, UsesFrameDuration) {
   EXPECT_EQ(tg.interval(1), algorithm_.average_frame_duration());
 
   // Add a bunch of normal frames and then one with a 3s duration.
-  constexpr base::TimeDelta kLongDuration = base::TimeDelta::FromSeconds(3);
+  constexpr base::TimeDelta kLongDuration = base::Seconds(3);
   for (int i = 1; i < 4; ++i) {
     frame = CreateFrame(tg.interval(i));
     frame->metadata().frame_duration = i == 3 ? kLongDuration : tg.interval(1);

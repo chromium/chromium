@@ -536,7 +536,7 @@ void AVIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
   avifImageTiming timing;
   auto ret = avifDecoderNthImageTiming(decoder_.get(), index, &timing);
   DCHECK_EQ(ret, AVIF_RESULT_OK);
-  buffer.SetDuration(base::TimeDelta::FromSecondsD(timing.duration));
+  buffer.SetDuration(base::Seconds(timing.duration));
 }
 
 void AVIFImageDecoder::Decode(wtf_size_t index) {

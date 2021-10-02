@@ -19,8 +19,7 @@
 namespace autofill_assistant {
 namespace {
 
-static constexpr base::TimeDelta kDefaultCheckDuration =
-    base::TimeDelta::FromSeconds(15);
+static constexpr base::TimeDelta kDefaultCheckDuration = base::Seconds(15);
 
 void CollectExpectedElements(const ElementConditionProto& condition,
                              std::vector<std::string>* expected_client_ids) {
@@ -62,7 +61,7 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
   base::TimeDelta max_wait_time = kDefaultCheckDuration;
   int timeout_ms = proto_.wait_for_dom().timeout_ms();
   if (timeout_ms > 0)
-    max_wait_time = base::TimeDelta::FromMilliseconds(timeout_ms);
+    max_wait_time = base::Milliseconds(timeout_ms);
 
   if (!proto_.wait_for_dom().has_wait_condition()) {
     VLOG(2) << "WaitForDomAction: no condition specified";

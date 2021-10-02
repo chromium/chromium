@@ -127,7 +127,7 @@ TEST_F(SiteDataReaderTest, TestAccessors) {
 
   // Advance the clock by a large amount of time, enough for the unused features
   // observation windows to expire.
-  AdvanceClock(base::TimeDelta::FromDays(31));
+  AdvanceClock(base::Days(31));
 
   EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse,
             reader_->UpdatesFaviconInBackground());

@@ -205,7 +205,7 @@ bool GetTimeoutOverride(const base::CommandLine& command_line,
     return false;
 
   DCHECK(timeout);
-  *timeout = base::TimeDelta::FromMinutes(timeout_minutes);
+  *timeout = base::Minutes(timeout_minutes);
   return true;
 }
 

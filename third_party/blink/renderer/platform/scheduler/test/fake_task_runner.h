@@ -23,7 +23,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
   void SetTime(base::TimeTicks new_time);
   void SetTime(double new_time) {
-    SetTime(base::TimeTicks() + base::TimeDelta::FromSecondsD(new_time));
+    SetTime(base::TimeTicks() + base::Seconds(new_time));
   }
 
   // base::SingleThreadTaskRunner implementation:
@@ -32,7 +32,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
   void RunUntilIdle();
   void AdvanceTimeAndRun(base::TimeDelta delta);
   void AdvanceTimeAndRun(double delta_seconds) {
-    AdvanceTimeAndRun(base::TimeDelta::FromSecondsD(delta_seconds));
+    AdvanceTimeAndRun(base::Seconds(delta_seconds));
   }
 
   using PendingTask = std::pair<base::OnceClosure, base::TimeTicks>;

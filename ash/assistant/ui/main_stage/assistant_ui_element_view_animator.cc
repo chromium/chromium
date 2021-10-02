@@ -22,10 +22,8 @@ using assistant::util::CreateOpacityElement;
 using assistant::util::StartLayerAnimationSequence;
 
 // Animation.
-constexpr base::TimeDelta kAnimateInDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kAnimateOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAnimateInDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kAnimateOutDuration = base::Milliseconds(200);
 
 }  // namespace
 

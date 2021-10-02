@@ -96,7 +96,7 @@ void DemuxerStreamAdapterTest::Start() {
       FROM_HERE,
       base::BindOnce(&DemuxerStreamAdapterTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
 
   coded_frame_provider_->Read(base::BindOnce(
       &DemuxerStreamAdapterTest::OnNewFrame, base::Unretained(this)));
@@ -119,8 +119,8 @@ void DemuxerStreamAdapterTest::OnNewFrame(
   }
 
   ASSERT_TRUE(buffer.get() != NULL);
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(buffer->timestamp()),
-            base::TimeDelta::FromMilliseconds(40 * frame_received_count_));
+  ASSERT_EQ(base::Microseconds(buffer->timestamp()),
+            base::Milliseconds(40 * frame_received_count_));
   frame_received_count_++;
 
   if (frame_received_count_ >= total_frames_) {

@@ -40,7 +40,7 @@ absl::optional<base::TimeDelta> GetCodecSupportWaitTimeoutMs() {
       features::kRTCGpuCodecSupportWaiter,
       features::kRTCGpuCodecSupportWaiterTimeoutParam.name,
       features::kRTCGpuCodecSupportWaiterTimeoutParam.default_value);
-  return base::TimeDelta::FromMilliseconds(timeout_ms);
+  return base::Milliseconds(timeout_ms);
 }
 
 void OnCodecSupportKnown(

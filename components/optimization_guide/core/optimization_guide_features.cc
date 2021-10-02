@@ -97,7 +97,7 @@ const base::Feature kOptimizationGuideMetadataValidation{
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
-  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageTextExtraction, "outstanding_requests_grace_period_ms", 1000));
 }
 
@@ -129,7 +129,7 @@ size_t MaxHostsForRecordingSuccessfullyCovered() {
 }
 
 base::TimeDelta StoredFetchedHintsFreshnessDuration() {
-  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+  return base::Days(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
       "max_store_duration_for_featured_hints_in_days", 7));
 }
@@ -210,20 +210,20 @@ int MaxServerBloomFilterByteSize() {
 }
 
 base::TimeDelta GetHostHintsFetchRefreshDuration() {
-  return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
+  return base::Hours(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching, "hints_fetch_refresh_duration_in_hours",
       72));
 }
 
 base::TimeDelta GetActiveTabsFetchRefreshDuration() {
-  return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
+  return base::Hours(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
       "active_tabs_fetch_refresh_duration_in_hours", 1));
 }
 
 base::TimeDelta GetActiveTabsStalenessTolerance() {
   // 90 days initially chosen since that's how long local history lasts for.
-  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+  return base::Days(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
       "active_tabs_staleness_tolerance_in_days", 90));
 }
@@ -248,7 +248,7 @@ int ActiveTabsHintsFetchRandomMaxDelaySecs() {
 }
 
 base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
-  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+  return base::Days(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
       "max_store_duration_for_host_model_features_in_days", 7));
 }
@@ -258,13 +258,13 @@ base::TimeDelta StoredModelsInactiveDuration() {
   // careful consideration. Any model that is on device and expires will be
   // removed and triggered to refetch so any feature relying on the model could
   // have a period of time without a valid model.
-  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+  return base::Days(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction, "inactive_duration_for_models_in_days",
       30));
 }
 
 base::TimeDelta URLKeyedHintValidCacheDuration() {
-  return base::TimeDelta::FromSeconds(GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
       kOptimizationHints, "max_url_keyed_hint_valid_cache_duration_in_seconds",
       60 * 60 /* 1 hour */));
 }
@@ -319,12 +319,12 @@ int PredictionModelFetchRandomMaxDelaySecs() {
 }
 
 base::TimeDelta PredictionModelFetchRetryDelay() {
-  return base::TimeDelta::FromMinutes(GetFieldTrialParamByFeatureAsInt(
+  return base::Minutes(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction, "fetch_retry_minutes", 2));
 }
 
 base::TimeDelta PredictionModelFetchInterval() {
-  return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
+  return base::Hours(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
 }
 
@@ -413,7 +413,7 @@ bool LoadModelFileForEachExecution() {
 }
 
 base::TimeDelta GetOnloadDelayForHintsFetching() {
-  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching, "onload_delay_for_hints_fetching_ms",
       0));
 }

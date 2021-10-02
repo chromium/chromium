@@ -75,7 +75,7 @@ constexpr base::FeatureParam<std::string> kPurchaseButtonPatternMapping{
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionGapTime{
     &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
     // Gap time is 0.5s by default.
-    base::TimeDelta::FromSecondsD(0.5)};
+    base::Seconds(0.5)};
 
 constexpr base::FeatureParam<std::string> kProductIdPatternMapping{
     &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",

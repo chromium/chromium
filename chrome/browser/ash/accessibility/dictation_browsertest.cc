@@ -280,8 +280,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   EXPECT_FALSE(IsDictationOff());
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(),
-            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
+  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
@@ -312,8 +311,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
   EXPECT_FALSE(IsDictationOff());
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(),
-            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
+  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
@@ -321,8 +319,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
   EXPECT_FALSE(IsDictationOff());
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(),
-            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
+  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
   // Firing the timer, which simluates waiting for some time with no events,
   // should end dictation.
   timer->FireNow();
@@ -335,8 +332,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
   SendSpeechResult(kFirstSpeechResult, false /* is_final */);
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(),
-            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
+  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
   // Firing the timer, which simluates waiting for some time without new speech,
   // should end dictation.
   timer->FireNow();
@@ -523,7 +519,7 @@ class TextMatchesWaiter {
 
   void Wait() {
     base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
                       &TextMatchesWaiter::OnTimer);
     run_loop_.Run();
   }

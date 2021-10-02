@@ -237,9 +237,9 @@ void PepperMediaStreamAudioTrackHost::AudioSink::OnData(
       // The active buffer is new, so initialise the header and metadata fields.
       buffer->header.size = host_->buffer_manager()->buffer_size();
       buffer->header.type = ppapi::MediaStreamBuffer::TYPE_AUDIO;
-      const base::TimeTicks time_at_offset = estimated_capture_time +
-          frame_offset * base::TimeDelta::FromSeconds(1) /
-              audio_params_.sample_rate();
+      const base::TimeTicks time_at_offset =
+          estimated_capture_time +
+          frame_offset * base::Seconds(1) / audio_params_.sample_rate();
       buffer->timestamp =
           (time_at_offset - first_frame_capture_time_).InSecondsF();
       buffer->sample_rate =

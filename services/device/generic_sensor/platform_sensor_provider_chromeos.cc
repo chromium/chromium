@@ -24,8 +24,7 @@ using chromeos::sensors::mojom::SensorDeviceDisconnectReason;
 namespace device {
 namespace {
 
-constexpr base::TimeDelta kReconnectDelay =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kReconnectDelay = base::Milliseconds(1000);
 
 absl::optional<mojom::SensorType> ConvertSensorType(
     chromeos::sensors::mojom::DeviceType device_type) {

@@ -151,7 +151,7 @@ void SyntheticTouchpadPinchGesture::CalculateEndTime(
   float scale_factor_delta =
       (scale_factor - 1.0f) * kPixelsNeededToDoubleOrHalve;
 
-  const base::TimeDelta total_duration = base::TimeDelta::FromSecondsD(
+  const base::TimeDelta total_duration = base::Seconds(
       scale_factor_delta / params_.relative_pointer_speed_in_pixels_s);
   DCHECK_GT(total_duration, base::TimeDelta());
   stop_time_ = start_time_ + total_duration;

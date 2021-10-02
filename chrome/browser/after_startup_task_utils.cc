@@ -226,7 +226,7 @@ void AfterStartupTaskUtils::StartMonitoringStartup() {
   // Add failsafe timeout
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete),
-      base::TimeDelta::FromMinutes(3));
+      base::Minutes(3));
 }
 
 void AfterStartupTaskUtils::PostTask(

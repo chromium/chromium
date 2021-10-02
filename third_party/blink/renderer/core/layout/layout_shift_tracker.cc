@@ -38,7 +38,7 @@ ContainingBlockScope* ContainingBlockScope::top_ = nullptr;
 
 namespace {
 
-constexpr base::TimeDelta kTimerDelay = base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kTimerDelay = base::Milliseconds(500);
 const float kMovementThreshold = 3.0;  // CSS pixels.
 
 // Calculates the physical coordinates of the starting point in the current

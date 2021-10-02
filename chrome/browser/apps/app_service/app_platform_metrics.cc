@@ -72,9 +72,9 @@ constexpr char kInstallReasonPreloadHistogram[] = "Preload";
 constexpr char kInstallReasonSyncHistogram[] = "Sync";
 constexpr char kInstallReasonUserHistogram[] = "User";
 
-constexpr base::TimeDelta kMinDuration = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kMaxDuration = base::TimeDelta::FromDays(1);
-constexpr base::TimeDelta kMaxUsageDuration = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMinDuration = base::Seconds(1);
+constexpr base::TimeDelta kMaxDuration = base::Days(1);
+constexpr base::TimeDelta kMaxUsageDuration = base::Minutes(5);
 constexpr int kDurationBuckets = 100;
 constexpr int kUsageTimeBuckets = 50;
 

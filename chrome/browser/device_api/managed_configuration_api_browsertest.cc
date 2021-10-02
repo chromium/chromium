@@ -64,7 +64,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response;
   if (response_template.should_post_task) {
     http_response = std::make_unique<net::test_server::DelayedHttpResponse>(
-        base::TimeDelta::FromSeconds(0));
+        base::Seconds(0));
   } else {
     http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   }

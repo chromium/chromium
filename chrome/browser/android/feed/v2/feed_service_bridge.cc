@@ -70,7 +70,7 @@ static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
   FeedApi* api = GetFeedApi();
   if (!api)
     return;
-  api->ReportOpenVisitComplete(base::TimeDelta::FromMilliseconds(visitTimeMs));
+  api->ReportOpenVisitComplete(base::Milliseconds(visitTimeMs));
 }
 
 static base::android::ScopedJavaLocalRef<jstring>

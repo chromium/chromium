@@ -368,13 +368,13 @@ CHROMEOS_EXPORT const UserspaceSwapConfig& UserspaceSwapConfig::Get() {
         kUserspaceSwapRendererRegionLimitPerSwap.Get();
 
     config.blocked_refault_time =
-        base::TimeDelta::FromSeconds(kUserspaceSwapBlockedRefaultTimeSec.Get());
-    config.graph_walk_frequency = base::TimeDelta::FromSeconds(
+        base::Seconds(kUserspaceSwapBlockedRefaultTimeSec.Get());
+    config.graph_walk_frequency = base::Seconds(
         kUserspaceSwapModeratePressureGraphWalkFrequencySec.Get());
-    config.process_swap_frequency = base::TimeDelta::FromSeconds(
-        kUserspaceSwapProcessSwapFrequencySec.Get());
-    config.invisible_time_before_swap = base::TimeDelta::FromSeconds(
-        kUserspaceSwapInvisibleTimeBeforeSwapSec.Get());
+    config.process_swap_frequency =
+        base::Seconds(kUserspaceSwapProcessSwapFrequencySec.Get());
+    config.invisible_time_before_swap =
+        base::Seconds(kUserspaceSwapInvisibleTimeBeforeSwapSec.Get());
 
     config.swap_on_moderate_pressure = kUserspaceDoSwapModeratePressure.Get();
     config.swap_on_freeze = kUserspaceDoSwapOnFreeze.Get();

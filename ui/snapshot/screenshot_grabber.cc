@@ -99,7 +99,7 @@ void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
 bool ScreenshotGrabber::CanTakeScreenshot() {
   return last_screenshot_timestamp_.is_null() ||
          base::TimeTicks::Now() - last_screenshot_timestamp_ >
-             base::TimeDelta::FromMilliseconds(kScreenshotMinimumIntervalInMS);
+             base::Milliseconds(kScreenshotMinimumIntervalInMS);
 }
 
 void ScreenshotGrabber::GrabWindowSnapshotAsyncCallback(

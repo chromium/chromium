@@ -451,14 +451,14 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
 
   // Move the clock backwards and test that the recurrent error state is reset.
-  clock->Advance(-base::TimeDelta::FromSeconds(10));
+  clock->Advance(-base::Seconds(10));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
 
   // If the clock continues to move forwards, a subsequent error page should
   // trigger the recurrent error message.
-  clock->Advance(base::TimeDelta::FromSeconds(10));
+  clock->Advance(base::Seconds(10));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
@@ -490,17 +490,17 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
 
   // Subsequent errors more than 10 seconds later shouldn't trigger the
   // recurrent error message.
-  clock->Advance(base::TimeDelta::FromSeconds(12));
+  clock->Advance(base::Seconds(12));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  clock->Advance(base::TimeDelta::FromSeconds(3));
+  clock->Advance(base::Seconds(3));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
 
   // But a third subsequent error within 10 seconds should.
-  clock->Advance(base::TimeDelta::FromSeconds(3));
+  clock->Advance(base::Seconds(3));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest, AfterRestart) {
 
   // Simulate the clock advancing by one day, which is less than the expiration
   // length.
-  clock->Advance(base::TimeDelta::FromSeconds(kDeltaOneDayInSeconds + 1));
+  clock->Advance(base::Seconds(kDeltaOneDayInSeconds + 1));
 
   // The cert should still be |ALLOWED| because the default expiration length
   // has not passed yet.
@@ -685,8 +685,8 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest, AfterRestart) {
 
   // Now simulate the clock advancing by one week, which is past the expiration
   // point.
-  clock->Advance(base::TimeDelta::FromSeconds(kDeltaOneWeekInSeconds -
-                                              kDeltaOneDayInSeconds + 1));
+  clock->Advance(
+      base::Seconds(kDeltaOneWeekInSeconds - kDeltaOneDayInSeconds + 1));
 
   // The cert should now be |DENIED| because the specified delta has passed.
   EXPECT_EQ(content::SSLHostStateDelegate::DENIED,
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
 
   // Simulate the clock advancing by one day, which is less than the expiration
   // length.
-  clock_ptr->Advance(base::TimeDelta::FromSeconds(kDeltaOneDayInSeconds + 1));
+  clock_ptr->Advance(base::Seconds(kDeltaOneDayInSeconds + 1));
 
   // HTTP should still be allowed because the default expiration length
   // has not passed yet.
@@ -733,8 +733,8 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
 
   // Now simulate the clock advancing by one week, which is past the expiration
   // point.
-  clock_ptr->Advance(base::TimeDelta::FromSeconds(kDeltaOneWeekInSeconds -
-                                                  kDeltaOneDayInSeconds + 1));
+  clock_ptr->Advance(
+      base::Seconds(kDeltaOneWeekInSeconds - kDeltaOneDayInSeconds + 1));
 
   // HTTP should no longer be allowed because the specified delta has passed.
   EXPECT_FALSE(state->IsHttpAllowedForHost(kWWWGoogleHost, tab));
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
                                net::ERR_CERT_DATE_INVALID, tab));
 
   // Simulate the clock advancing by one week, the default expiration time.
-  clock->Advance(base::TimeDelta::FromSeconds(kDeltaOneWeekInSeconds + 1));
+  clock->Advance(base::Seconds(kDeltaOneWeekInSeconds + 1));
 
   // The decision expiration time has come, so it should indicate that the
   // certificate and error are DENIED.
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
   EXPECT_TRUE(state->IsHttpAllowedForHost(kWWWGoogleHost, tab));
 
   // Simulate the clock advancing by one week, the default expiration time.
-  clock_ptr->Advance(base::TimeDelta::FromSeconds(kDeltaOneWeekInSeconds + 1));
+  clock_ptr->Advance(base::Seconds(kDeltaOneWeekInSeconds + 1));
 
   // The decision expiration time has come, so this should now return false.
   EXPECT_FALSE(state->IsHttpAllowedForHost(kWWWGoogleHost, tab));

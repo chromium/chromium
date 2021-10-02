@@ -64,14 +64,14 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
   TestCase test_cases[] = {
       // Non-overflowing subtraction works as expected.
       {
-          .release_time = kZeroTicks + base::TimeDelta::FromMicroseconds(100),
-          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(75),
-          .expected_backoff_duration = base::TimeDelta::FromMicroseconds(25),
+          .release_time = kZeroTicks + base::Microseconds(100),
+          .timeticks_now = kZeroTicks + base::Microseconds(75),
+          .expected_backoff_duration = base::Microseconds(25),
       },
       {
-          .release_time = kZeroTicks + base::TimeDelta::FromMicroseconds(25),
-          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(100),
-          .expected_backoff_duration = base::TimeDelta::FromMicroseconds(-75),
+          .release_time = kZeroTicks + base::Microseconds(25),
+          .timeticks_now = kZeroTicks + base::Microseconds(100),
+          .expected_backoff_duration = base::Microseconds(-75),
       },
       // Defaults to zero when one of the operands is +/- infinity.
       {
@@ -118,9 +118,8 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
       // Defaults to zero when the subtraction overflows, even when neither
       // operand is infinity.
       {
-          .release_time =
-              base::TimeTicks::Max() - base::TimeDelta::FromMicroseconds(1),
-          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(-1),
+          .release_time = base::TimeTicks::Max() - base::Microseconds(1),
+          .timeticks_now = kZeroTicks + base::Microseconds(-1),
           .expected_backoff_duration = base::TimeDelta(),
       },
   };
@@ -147,7 +146,7 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
                                     &serialized_backoff_duration_us));
 
     base::TimeDelta serialized_backoff_duration =
-        base::TimeDelta::FromMicroseconds(serialized_backoff_duration_us);
+        base::Microseconds(serialized_backoff_duration_us);
     EXPECT_EQ(serialized_backoff_duration, test_case.expected_backoff_duration);
   }
 }

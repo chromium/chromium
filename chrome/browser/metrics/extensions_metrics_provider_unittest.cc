@@ -154,7 +154,7 @@ class ExtensionMetricsProviderInstallsTest
     InitializeEmptyExtensionService();
     prefs_ = extensions::ExtensionPrefs::Get(profile());
 
-    last_sample_time_ = base::Time::Now() - base::TimeDelta::FromMinutes(30);
+    last_sample_time_ = base::Time::Now() - base::Minutes(30);
   }
 
   ExtensionInstallProto ConstructProto(const Extension& extension) {
@@ -404,7 +404,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
             .SetLocation(ManifestLocation::kInternal)
             .Build();
     add_extension(extension.get());
-    set_last_sample_time(base::Time::Now() + base::TimeDelta::FromMinutes(60));
+    set_last_sample_time(base::Time::Now() + base::Minutes(60));
     ExtensionInstallProto install = ConstructProto(*extension);
     EXPECT_FALSE(install.installed_in_this_sample_period());
   }

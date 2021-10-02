@@ -21,8 +21,7 @@ namespace {
 
 // The amount of time we'll wait to initialize sync if no data type requests
 // immediately initialization.
-constexpr base::TimeDelta kDefaultDeferredInitDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultDeferredInitDelay = base::Seconds(10);
 
 base::TimeDelta GetDeferredInitDelay() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
@@ -34,7 +33,7 @@ base::TimeDelta GetDeferredInitDelay() {
       DCHECK_GE(timeout, 0);
       DVLOG(2) << "Sync StartupController overriding startup timeout to "
                << timeout << " seconds.";
-      return base::TimeDelta::FromSeconds(timeout);
+      return base::Seconds(timeout);
     }
   }
   return kDefaultDeferredInitDelay;
@@ -151,8 +150,7 @@ void StartupController::RecordTimeDeferred(DeferredInitTrigger trigger) {
   DCHECK(!start_up_time_.is_null());
   base::TimeDelta time_deferred = base::Time::Now() - start_up_time_;
   base::UmaHistogramCustomTimes("Sync.Startup.TimeDeferred2", time_deferred,
-                                base::TimeDelta::FromSeconds(0),
-                                base::TimeDelta::FromMinutes(2), 60);
+                                base::Seconds(0), base::Minutes(2), 60);
   base::UmaHistogramEnumeration("Sync.Startup.DeferredInitTrigger", trigger);
 }
 

@@ -64,9 +64,8 @@ constexpr uint64_t kIterationsBeforeSkipping = 50;
 constexpr uint64_t kIterationsBetweenUpdates = 100;
 constexpr int kProfilerSignal = SIGWINCH;
 
-constexpr base::TimeDelta kSamplingInterval =
-    base::TimeDelta::FromMilliseconds(10);
-constexpr base::TimeDelta kDumpInterval = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kSamplingInterval = base::Milliseconds(10);
+constexpr base::TimeDelta kDumpInterval = base::Seconds(30);
 
 void HandleSignal(int signal, siginfo_t* info, void* context) {
   if (signal != kProfilerSignal)
@@ -283,7 +282,7 @@ void InitReachedCodeProfilerAtStartup(LibraryProcessType library_process_type) {
               switches::kReachedCodeSamplingIntervalUs),
           &interval_us) &&
       interval_us > 0) {
-    sampling_interval = base::TimeDelta::FromMicroseconds(interval_us);
+    sampling_interval = base::Microseconds(interval_us);
   }
   ReachedCodeProfiler::GetInstance()->Start(library_process_type,
                                             sampling_interval);

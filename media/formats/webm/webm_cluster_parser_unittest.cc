@@ -293,9 +293,9 @@ class WebMClusterParserTest : public testing::Test {
  protected:
   void ResetParserToHaveDefaultDurations() {
     base::TimeDelta default_audio_duration =
-        base::TimeDelta::FromMillisecondsD(kTestAudioFrameDefaultDurationInMs);
+        base::Milliseconds(kTestAudioFrameDefaultDurationInMs);
     base::TimeDelta default_video_duration =
-        base::TimeDelta::FromMillisecondsD(kTestVideoFrameDefaultDurationInMs);
+        base::Milliseconds(kTestVideoFrameDefaultDurationInMs);
     ASSERT_GE(default_audio_duration, base::TimeDelta());
     ASSERT_GE(default_video_duration, base::TimeDelta());
     ASSERT_NE(kNoTimestamp, default_audio_duration);
@@ -378,7 +378,7 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
                                     TextTrackConfig(kTextSubtitles, "", "",
                                                     "")));
   base::TimeDelta default_audio_duration =
-      base::TimeDelta::FromMillisecondsD(kTestAudioFrameDefaultDurationInMs);
+      base::Milliseconds(kTestAudioFrameDefaultDurationInMs);
   ASSERT_GE(default_audio_duration, base::TimeDelta());
   ASSERT_NE(kNoTimestamp, default_audio_duration);
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(

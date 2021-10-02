@@ -178,7 +178,7 @@ void ReplayProcess::SendNextMessage() {
 
 void ReplayProcess::Run() {
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+  timer.Start(FROM_HERE, base::Milliseconds(1),
               base::BindRepeating(&ReplayProcess::SendNextMessage,
                                   base::Unretained(this)));
   base::RunLoop().Run();

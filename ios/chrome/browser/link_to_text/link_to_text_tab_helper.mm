@@ -153,8 +153,7 @@ void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
           weak_ptr->OnJavaScriptResponseReceived(callback, response);
         }
       }),
-      base::TimeDelta::FromMilliseconds(
-          link_to_text::kLinkGenerationTimeoutInMs));
+      base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs));
 }
 
 void LinkToTextTabHelper::OnJavaScriptResponseReceived(

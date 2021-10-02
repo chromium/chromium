@@ -179,7 +179,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   testing::InSequence sequence;
 
@@ -198,7 +198,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
       /*serial_number=*/"", kBatteryPolledUpdate);
 
   // Level 5 at time 110, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(10));
+  ClockAdvance(base::Seconds(10));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -212,7 +212,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
       /*serial_number=*/"", kBatteryPolledUpdate);
 
   // Level -1 at time 115, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(5));
+  ClockAdvance(base::Seconds(5));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -226,7 +226,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
       /*serial_number=*/"", kBatteryPolledUpdate);
 
   // Level 50 at time 120, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(5));
+  ClockAdvance(base::Seconds(5));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -248,7 +248,7 @@ TEST_F(PeripheralBatteryListenerTest, ActiveUpdates) {
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   testing::InSequence sequence;
 
@@ -267,7 +267,7 @@ TEST_F(PeripheralBatteryListenerTest, ActiveUpdates) {
       /*serial_number=*/"", kBatteryPolledUpdate);
 
   // Level 5 at time 110, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(10));
+  ClockAdvance(base::Seconds(10));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -281,7 +281,7 @@ TEST_F(PeripheralBatteryListenerTest, ActiveUpdates) {
       /*serial_number=*/"", kBatteryEventUpdate);
 
   // Level -1 at time 115, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(5));
+  ClockAdvance(base::Seconds(5));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -297,7 +297,7 @@ TEST_F(PeripheralBatteryListenerTest, ActiveUpdates) {
   auto prior_active_update_time = GetTestingClock();
 
   // Level 50 at time 120, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(5));
+  ClockAdvance(base::Seconds(5));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -319,7 +319,7 @@ TEST_F(PeripheralBatteryListenerTest, FirstActiveUpdates) {
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   testing::InSequence sequence;
 
@@ -713,7 +713,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
       scoped_listener_obs{&listener_observer_mock};
   scoped_listener_obs.Observe(battery_listener_.get());
 
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   testing::InSequence sequence;
 
@@ -728,7 +728,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
   battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
                                           mock_device_1_.get(),
                                           /*new_battery_percentage=*/1);
-  ClockAdvance(base::TimeDelta::FromSeconds(1));
+  ClockAdvance(base::Seconds(1));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
@@ -739,7 +739,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
       mock_adapter_.get(), mock_device_1_.get(),
       /*new_battery_percentage=*/absl::nullopt);
 
-  ClockAdvance(base::TimeDelta::FromSeconds(1));
+  ClockAdvance(base::Seconds(1));
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
@@ -761,7 +761,7 @@ TEST_F(PeripheralBatteryListenerTest,
       scoped_listener_obs{&listener_observer_mock};
   scoped_listener_obs.Observe(battery_listener_.get());
 
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   testing::InSequence sequence;
 
@@ -776,7 +776,7 @@ TEST_F(PeripheralBatteryListenerTest,
                                           mock_device_1_.get(),
                                           /*new_battery_percentage=*/1);
 
-  ClockAdvance(base::TimeDelta::FromSeconds(1));
+  ClockAdvance(base::Seconds(1));
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
@@ -786,7 +786,7 @@ TEST_F(PeripheralBatteryListenerTest,
       mock_adapter_.get(), mock_device_1_.get(),
       /*new_battery_percentage=*/absl::nullopt);
 
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
@@ -808,7 +808,7 @@ TEST_F(PeripheralBatteryListenerTest, UpdateNotificationIfVisible) {
 
   testing::InSequence sequence;
 
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   EXPECT_CALL(listener_observer_mock,
               OnAddingBattery(AFIELD(&BI::key, Eq(kBluetoothDeviceId1))));
@@ -822,7 +822,7 @@ TEST_F(PeripheralBatteryListenerTest, UpdateNotificationIfVisible) {
                                           /*new_battery_percentage=*/5);
 
   // The battery level remains low, should update the notification.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
@@ -1240,7 +1240,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   EXPECT_CALL(listener_observer_mock,
               OnAddingBattery(AFIELD(&BI::key, Eq(kTestStylusBatteryPath))));
@@ -1276,7 +1276,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   Expectation a = EXPECT_CALL(
       listener_observer_mock,
@@ -1327,7 +1327,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageCharging) {
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   Sequence a, b;
 
@@ -1387,7 +1387,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargesFully) {
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   Sequence a, b;
 
@@ -1449,8 +1449,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargesFully) {
       .InSequence(a, b);
 
   // Move time forward more than enough to fully charge, ensuring timers fire.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromSeconds(kFullGarageChargeTime));
+  task_environment()->FastForwardBy(base::Seconds(kFullGarageChargeTime));
 }
 
 TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
@@ -1466,7 +1465,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   scoped_listener_obs.Observe(battery_listener_.get());
 
   // Level 50 at time 100, listener should be notified.
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   Sequence a, b;
 
@@ -1530,8 +1529,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kFull)))));
 
   // Move time forward more than enough to fully charge, ensuring timers fire.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromSeconds(kFullGarageChargeTime));
+  task_environment()->FastForwardBy(base::Seconds(kFullGarageChargeTime));
 }
 
 TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
@@ -1585,7 +1583,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
       kTestStylusBatteryStatusDischargingIn, /*serial_number=*/"",
       kBatteryEventUpdate);
 
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   // The rest of these are strictly sequential
   testing::InSequence sequence;
@@ -1602,7 +1600,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   battery_listener_->OnStylusStateChanged(ui::StylusState::INSERTED);
 
   // Move time forward more than enough to start charging.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(3));
 
   // Remove stylus from garage
 
@@ -1617,8 +1615,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   battery_listener_->OnStylusStateChanged(ui::StylusState::REMOVED);
 
   // Move time forward enough for anything to go wrong with the timers.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromSeconds(kPartialGarageChargeTime));
+  task_environment()->FastForwardBy(base::Seconds(kPartialGarageChargeTime));
 }
 
 TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargingResumed) {
@@ -1672,7 +1669,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargingResumed) {
       kTestStylusBatteryStatusDischargingIn, /*serial_number=*/"",
       kBatteryEventUpdate);
 
-  ClockAdvance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::Seconds(100));
 
   // The rest of these are strictly sequential
   testing::InSequence sequence;
@@ -1689,8 +1686,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargingResumed) {
   battery_listener_->OnStylusStateChanged(ui::StylusState::INSERTED);
 
   // Move time forward more than enough to start charging.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromSeconds(kPartialGarageChargeTime));
+  task_environment()->FastForwardBy(base::Seconds(kPartialGarageChargeTime));
 
   // Remove stylus from garage
 
@@ -1705,8 +1701,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargingResumed) {
   battery_listener_->OnStylusStateChanged(ui::StylusState::REMOVED);
 
   // Move time forward enough for anything to go wrong with the timers.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromSeconds(kPartialGarageChargeTime));
+  task_environment()->FastForwardBy(base::Seconds(kPartialGarageChargeTime));
 
   // Replace stylus, let run to full charge.
 
@@ -1731,8 +1726,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargingResumed) {
   battery_listener_->OnStylusStateChanged(ui::StylusState::INSERTED);
 
   // Move time forward more than enough to fully charge.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromSeconds(kFullGarageChargeTime));
+  task_environment()->FastForwardBy(base::Seconds(kFullGarageChargeTime));
 }
 
 // NOTE: Cannot yet mock OzonePlatform::GetInstance()->GetInputController(),

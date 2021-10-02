@@ -130,8 +130,7 @@ void PlatformSensorChromeOS::OnSampleUpdated(
   }
 
   reading.raw.timestamp =
-      base::TimeDelta::FromNanoseconds(sample.at(channel_indices_.back()))
-          .InSecondsF();
+      base::Nanoseconds(sample.at(channel_indices_.back())).InSecondsF();
 
   UpdateSharedBufferAndNotifyClients(reading);
 }

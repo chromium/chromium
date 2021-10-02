@@ -27,7 +27,7 @@ Animation::TimerControl::TimerControl(const base::TimeDelta& offset,
       cycle_duration_(end_offset_ - start_offset_),
       total_duration_(total_duration),
       previous_tick_(start_timestamp),
-      progress_(base::TimeDelta::FromMilliseconds(0)),
+      progress_(base::Milliseconds(0)),
       current_cycle_progress_(start_offset_),
       should_reverse_(should_reverse) {}
 
@@ -77,7 +77,7 @@ void Animation::SetAnimationObserver(AnimationObserver* observer) {
 }
 
 base::TimeDelta Animation::GetAnimationDuration() const {
-  return base::TimeDelta::FromSecondsD(skottie_->duration());
+  return base::Seconds(skottie_->duration());
 }
 
 gfx::Size Animation::GetOriginalSize() const {

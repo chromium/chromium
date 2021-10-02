@@ -183,7 +183,7 @@ void ClearStorageTaskTest::RunClearStorageTask(const base::Time& start_time) {
 TEST_F(ClearStorageTaskTest, ClearPagesLessThanLimit) {
   Initialize({{kBookmarkNamespace, 1, 1}, {kLastNNamespace, 1, 1}});
 
-  clock()->Advance(base::TimeDelta::FromMinutes(5));
+  clock()->Advance(base::Minutes(5));
   RunClearStorageTask(clock()->Now());
 
   // In total there're 2 expired pages so they'll be cleared successfully.
@@ -201,7 +201,7 @@ TEST_F(ClearStorageTaskTest, ClearPagesLessThanLimit) {
 TEST_F(ClearStorageTaskTest, ClearPagesMoreFreshPages) {
   Initialize({{kBookmarkNamespace, 30, 0}, {kLastNNamespace, 100, 1}});
 
-  clock()->Advance(base::TimeDelta::FromMinutes(5));
+  clock()->Advance(base::Minutes(5));
   RunClearStorageTask(clock()->Now());
 
   // In total there's 1 expired page so it'll be cleared successfully.
@@ -219,7 +219,7 @@ TEST_F(ClearStorageTaskTest, ClearPagesMoreFreshPages) {
 TEST_F(ClearStorageTaskTest, TryClearPersistentPages) {
   Initialize({{kDownloadNamespace, 20, 0}});
 
-  clock()->Advance(base::TimeDelta::FromDays(367));
+  clock()->Advance(base::Days(367));
   RunClearStorageTask(clock()->Now());
 
   // There's 20 pages and the clock advances for more than a year.
@@ -239,7 +239,7 @@ TEST_F(ClearStorageTaskTest, TryClearPersistentPagesWithStoragePressure) {
   Initialize({{kDownloadNamespace, 20, 0}});
   SetFreeSpace(1024);
 
-  clock()->Advance(base::TimeDelta::FromDays(367));
+  clock()->Advance(base::Days(367));
   RunClearStorageTask(clock()->Now());
 
   // There're 20 pages and the clock advances for more than a year.
@@ -273,7 +273,7 @@ TEST_F(ClearStorageTaskTest, ClearMultipleTimes) {
   ASSERT_GT(last_n_policy.expiration_period, bookmark_policy.expiration_period);
 
   // Advance 30 minutes from initial pages creation time.
-  clock()->Advance(base::TimeDelta::FromMinutes(30));
+  clock()->Advance(base::Minutes(30));
   RunClearStorageTask(clock()->Now());
 
   // There's only 1 expired pages, so it will be cleared. There will be (30 +
@@ -306,7 +306,7 @@ TEST_F(ClearStorageTaskTest, ClearMultipleTimes) {
 
   // Advance the clock by 1 ms, there's no change in pages so the attempt to
   // clear storage should be unnecessary.
-  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  clock()->Advance(base::Milliseconds(1));
   RunClearStorageTask(clock()->Now());
 
   // The clearing attempt is unnecessary.
@@ -328,7 +328,7 @@ TEST_F(ClearStorageTaskTest, ClearMultipleTimes) {
   // to be cleared.
   AddPages({kLastNNamespace, 240, 0});
   SetFreeSpace(200 * (1 << 20));
-  clock()->Advance(base::TimeDelta::FromMinutes(5));
+  clock()->Advance(base::Minutes(5));
   RunClearStorageTask(clock()->Now());
 
   // There should be 107 pages remaining after the clearing (including 40
@@ -351,7 +351,7 @@ TEST_F(ClearStorageTaskTest, ClearMultipleTimes) {
 
   // Advance the clock by 300 days, in order to expire all temporary pages. Only
   // 67 temporary pages are left from the last clearing.
-  clock()->Advance(base::TimeDelta::FromDays(300));
+  clock()->Advance(base::Days(300));
   RunClearStorageTask(clock()->Now());
 
   // All temporary pages should be cleared by now.
@@ -364,7 +364,7 @@ TEST_F(ClearStorageTaskTest, ClearMultipleTimes) {
       "OfflinePages.ClearTemporaryPages.TimeSinceCreation", 291);
   histogram_tester()->ExpectBucketCount(
       "OfflinePages.ClearTemporaryPages.TimeSinceCreation",
-      base::TimeDelta::FromDays(300).InMinutes() + 5, 67);
+      base::Days(300).InMinutes() + 5, 67);
 }
 
 }  // namespace offline_pages

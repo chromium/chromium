@@ -16,9 +16,9 @@ namespace {
 
 constexpr int64_t kDurationMillis = 0x8000;
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 constexpr base::TimeDelta kPendingMaxTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kMaxDurationMillis);
+    base::Milliseconds(kMaxDurationMillis);
 constexpr uint8_t kAmplitude = 128;
 
 class TestGamepad : public Gamepad {
@@ -100,8 +100,7 @@ TEST_F(GamepadTest, OneShotVibrationTest) {
   EXPECT_EQ(0, gamepad_->send_cancel_vibration_count_);
 
   gamepad_->Vibrate({kDurationMillis}, {kAmplitude}, -1);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromMillisecondsD(kDurationMillis / 2));
+  task_environment_.FastForwardBy(base::Milliseconds(kDurationMillis / 2));
   EXPECT_EQ(1, gamepad_->send_vibrate_count_);
   EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
   EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);

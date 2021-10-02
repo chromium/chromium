@@ -231,7 +231,7 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceData) {
   base::FilePath cdm_data_file_path = CreateDummyCdmDataFile(
       cdm_data->cdm_store_path_root, cdm_data->origin_id);
 
-  base::Time start = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time start = base::Time::Now() - base::Hours(1);
   base::Time end;  // null time
 
   base::RunLoop loop1;
@@ -273,8 +273,8 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataWrongTime) {
   base::FilePath cdm_data_file_path =
       CreateDummyCdmDataFile(cdm_data->cdm_store_path_root, origin_id);
 
-  base::Time start = base::Time::Now() - base::TimeDelta::FromHours(4);
-  base::Time end = start - base::TimeDelta::FromHours(2);
+  base::Time start = base::Time::Now() - base::Hours(4);
+  base::Time end = start - base::Hours(2);
 
   auto null_filter = base::RepeatingCallback<bool(const GURL&)>();
 
@@ -299,7 +299,7 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataNullFilter) {
   NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin2));
   base::UnguessableToken origin_id_2 = GetMediaFoundationCdmData()->origin_id;
 
-  base::Time start = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time start = base::Time::Now() - base::Hours(1);
   base::Time end;  // null time
 
   auto null_filter = base::RepeatingCallback<bool(const GURL&)>();

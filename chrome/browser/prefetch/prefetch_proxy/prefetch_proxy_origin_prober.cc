@@ -314,7 +314,7 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&StartCanaryCheck, tls_canary_check_->AsWeakPtr()),
-          base::TimeDelta::FromSeconds(1));
+          base::Seconds(1));
 }
 
 PrefetchProxyOriginProber::~PrefetchProxyOriginProber() = default;
@@ -438,7 +438,7 @@ void PrefetchProxyOriginProber::HTTPProbe(const GURL& url,
           AvailabilityProber::HttpMethod::kHead, net::HttpRequestHeaders(),
           retry_policy, timeout_policy, GetProbingTrafficAnnotation(),
           0 /* max_cache_entries */,
-          base::TimeDelta::FromSeconds(0) /* revalidate_cache_after */);
+          base::Seconds(0) /* revalidate_cache_after */);
   AvailabilityProber* prober_ptr = prober.get();
 
   // Transfer ownership of the prober to the callback so that the class instance

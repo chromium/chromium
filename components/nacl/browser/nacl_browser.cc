@@ -545,7 +545,7 @@ void NaClBrowser::MarkValidationCacheAsModified() {
         FROM_HERE,
         base::BindOnce(&NaClBrowser::PersistValidationCache,
                        base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(kValidationCacheCoalescingTimeMS));
+        base::Milliseconds(kValidationCacheCoalescingTimeMS));
     validation_cache_is_modified_ = true;
   }
 }

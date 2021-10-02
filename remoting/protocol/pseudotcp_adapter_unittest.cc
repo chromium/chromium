@@ -141,7 +141,7 @@ class FakeSocket : public P2PDatagramSocket {
           base::BindOnce(&FakeSocket::AppendInputPacket,
                          base::Unretained(peer_socket_),
                          std::vector<char>(buf->data(), buf->data() + buf_len)),
-          base::TimeDelta::FromMilliseconds(latency_ms_));
+          base::Milliseconds(latency_ms_));
     }
 
     return buf_len;

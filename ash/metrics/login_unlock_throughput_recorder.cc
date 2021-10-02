@@ -47,9 +47,8 @@ void RecordMetrics(const base::TimeTicks& start,
   // TODO(crbug.com/1143898): Deprecate this metrics once the login/unlock
   // performance issue is resolved.
   base::UmaHistogramCustomTimes(duration_name + suffix,
-                                base::TimeDelta::FromMilliseconds(duration_ms),
-                                base::TimeDelta::FromMilliseconds(100),
-                                base::TimeDelta::FromSeconds(5), 50);
+                                base::Milliseconds(duration_ms),
+                                base::Milliseconds(100), base::Seconds(5), 50);
 }
 
 void ReportLogin(base::TimeTicks start,

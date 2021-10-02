@@ -766,7 +766,7 @@ void OptimizationGuideStore::OnLoadMetadata(
   if (fetched_entry != metadata_entries->end()) {
     DCHECK(fetched_entry->second.has_update_time_secs());
     fetched_update_time_ = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(fetched_entry->second.update_time_secs()));
+        base::Seconds(fetched_entry->second.update_time_secs()));
   } else {
     if (component_metadata_missing) {
       result_recorder.set_result(
@@ -786,9 +786,8 @@ void OptimizationGuideStore::OnLoadMetadata(
   host_model_features_update_time_ = base::Time();
   if (host_model_features_entry != metadata_entries->end()) {
     DCHECK(host_model_features_entry->second.has_update_time_secs());
-    host_model_features_update_time_ =
-        base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
-            host_model_features_entry->second.update_time_secs()));
+    host_model_features_update_time_ = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Seconds(host_model_features_entry->second.update_time_secs()));
     host_model_features_metadata_loaded = true;
   }
   // TODO(crbug/1001194): Metrics should be separated so that stores maintaining
@@ -894,11 +893,10 @@ void OptimizationGuideStore::OnLoadHint(
   absl::optional<base::Time> expiry_time;
   if (entry->has_expiry_time_secs()) {
     expiry_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(entry->expiry_time_secs()));
+        base::Seconds(entry->expiry_time_secs()));
     LOCAL_HISTOGRAM_CUSTOM_TIMES(
         "OptimizationGuide.HintCache.FetchedHint.TimeToExpiration",
-        *expiry_time - base::Time::Now(), base::TimeDelta::FromHours(1),
-        base::TimeDelta::FromDays(15), 50);
+        *expiry_time - base::Time::Now(), base::Hours(1), base::Days(15), 50);
   }
   std::move(callback).Run(
       entry_key,

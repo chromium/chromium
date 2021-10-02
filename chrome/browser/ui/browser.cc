@@ -1693,7 +1693,7 @@ void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
 
   std::vector<blink::mojom::WebFeature> features = {
       blink::mojom::WebFeature::kMovedOrResizedPopup};
-  if (creation_timer_.Elapsed() > base::TimeDelta::FromSeconds(2)) {
+  if (creation_timer_.Elapsed() > base::Seconds(2)) {
     // Additionally measure whether a popup was moved after creation, to
     // distinguish between popups that reposition themselves after load and
     // those which move popups continuously.

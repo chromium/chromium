@@ -325,7 +325,7 @@ void ChromeRestartRequest::Start() {
   // just kills us so settings may be lost. See http://crosbug.com/13102
   g_browser_process->FlushLocalStateAndReply(
       base::BindOnce(&ChromeRestartRequest::RestartJob, AsWeakPtr()));
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(3), this,
+  timer_.Start(FROM_HERE, base::Seconds(3), this,
                &ChromeRestartRequest::RestartJob);
 }
 

@@ -20,9 +20,9 @@
 
 namespace {
 
-constexpr base::TimeDelta kZeroTimeDelta = base::TimeDelta::FromSeconds(0);
-constexpr base::TimeDelta kBaseRetryDelay = base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kMaxRetryDelay = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kZeroTimeDelta = base::Seconds(0);
+constexpr base::TimeDelta kBaseRetryDelay = base::Seconds(5);
+constexpr base::TimeDelta kMaxRetryDelay = base::Hours(1);
 
 const char kLastAttemptTimeKeyName[] = "a";
 const char kLastSuccessTimeKeyName[] = "s";

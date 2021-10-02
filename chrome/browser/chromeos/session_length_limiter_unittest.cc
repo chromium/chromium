@@ -265,7 +265,7 @@ TEST_F(SessionLengthLimiterTest, StartDoNotWaitForInitialUserActivity) {
 
   // Pref indicating user activity not set. Session start time in the future.
   ClearSessionUserActivitySeenPref();
-  SetSessionStartTimePref(session_start_time_ + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(session_start_time_ + base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
@@ -273,7 +273,7 @@ TEST_F(SessionLengthLimiterTest, StartDoNotWaitForInitialUserActivity) {
 
   // Pref indicating user activity set. Session start time in the future.
   SetSessionUserActivitySeenPref(true);
-  SetSessionStartTimePref(session_start_time_ + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(session_start_time_ + base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
@@ -281,7 +281,7 @@ TEST_F(SessionLengthLimiterTest, StartDoNotWaitForInitialUserActivity) {
 
   // Pref indicating user activity not set. Session start time valid.
   ClearSessionUserActivitySeenPref();
-  SetSessionStartTimePref(session_start_time_ - base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(session_start_time_ - base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
@@ -289,7 +289,7 @@ TEST_F(SessionLengthLimiterTest, StartDoNotWaitForInitialUserActivity) {
 
   // Pref indicating user activity set. Session start time valid.
   SetSessionUserActivitySeenPref(true);
-  SetSessionStartTimePref(session_start_time_ - base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(session_start_time_ - base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
@@ -320,7 +320,7 @@ TEST_F(SessionLengthLimiterTest, StartWaitForInitialUserActivity) {
 
   // Pref indicating user activity not set. Session start time in the future.
   ClearSessionUserActivitySeenPref();
-  SetSessionStartTimePref(runner_->Now() + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() + base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_FALSE(IsSessionStartTimePrefSet());
@@ -328,7 +328,7 @@ TEST_F(SessionLengthLimiterTest, StartWaitForInitialUserActivity) {
 
   // Pref indicating user activity set. Session start time in the future.
   SetSessionUserActivitySeenPref(true);
-  SetSessionStartTimePref(runner_->Now() + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() + base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_FALSE(IsSessionStartTimePrefSet());
@@ -336,7 +336,7 @@ TEST_F(SessionLengthLimiterTest, StartWaitForInitialUserActivity) {
 
   // Pref indicating user activity not set. Session start time valid.
   ClearSessionUserActivitySeenPref();
-  SetSessionStartTimePref(runner_->Now() - base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() - base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_FALSE(IsSessionStartTimePrefSet());
@@ -344,7 +344,7 @@ TEST_F(SessionLengthLimiterTest, StartWaitForInitialUserActivity) {
 
   // Pref indicating user activity set. Session start time valid.
   SetSessionUserActivitySeenPref(true);
-  SetSessionStartTimePref(runner_->Now() - base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() - base::Hours(2));
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_FALSE(IsSessionStartTimePrefSet());
@@ -376,7 +376,7 @@ TEST_F(SessionLengthLimiterTest, RestartDoNotWaitForInitialUserActivity) {
 
   // Pref indicating user activity not set. Session start time in the future.
   ClearSessionUserActivitySeenPref();
-  SetSessionStartTimePref(runner_->Now() + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() + base::Hours(2));
   CreateSessionLengthLimiter(true);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
@@ -384,14 +384,13 @@ TEST_F(SessionLengthLimiterTest, RestartDoNotWaitForInitialUserActivity) {
 
   // Pref indicating user activity set. Session start time in the future.
   SetSessionUserActivitySeenPref(true);
-  SetSessionStartTimePref(runner_->Now() + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() + base::Hours(2));
   CreateSessionLengthLimiter(true);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
   DestroySessionLengthLimiter();
 
-  const base::Time stored_session_start_time =
-      runner_->Now() - base::TimeDelta::FromHours(2);
+  const base::Time stored_session_start_time = runner_->Now() - base::Hours(2);
 
   // Pref indicating user activity not set. Session start time valid.
   ClearSessionUserActivitySeenPref();
@@ -438,7 +437,7 @@ TEST_F(SessionLengthLimiterTest, RestartWaitForInitialUserActivity) {
 
   // Pref indicating user activity not set. Session start time in the future.
   ClearSessionUserActivitySeenPref();
-  SetSessionStartTimePref(runner_->Now() + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() + base::Hours(2));
   CreateSessionLengthLimiter(true);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_FALSE(IsSessionStartTimePrefSet());
@@ -446,14 +445,13 @@ TEST_F(SessionLengthLimiterTest, RestartWaitForInitialUserActivity) {
 
   // Pref indicating user activity set. Session start time in the future.
   SetSessionUserActivitySeenPref(true);
-  SetSessionStartTimePref(runner_->Now() + base::TimeDelta::FromHours(2));
+  SetSessionStartTimePref(runner_->Now() + base::Hours(2));
   CreateSessionLengthLimiter(true);
   EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
   EXPECT_FALSE(IsSessionStartTimePrefSet());
   DestroySessionLengthLimiter();
 
-  const base::Time stored_session_start_time =
-      runner_->Now() - base::TimeDelta::FromHours(2);
+  const base::Time stored_session_start_time = runner_->Now() - base::Hours(2);
 
   // Pref indicating user activity not set. Session start time valid.
   ClearSessionUserActivitySeenPref();
@@ -484,7 +482,7 @@ TEST_F(SessionLengthLimiterTest, ToggleWaitForInitialUserActivity) {
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Enable waiting for initial user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SetWaitForInitialUserActivityPref(true);
 
   // Verify that the session start time was cleared and the pref indicating user
@@ -493,7 +491,7 @@ TEST_F(SessionLengthLimiterTest, ToggleWaitForInitialUserActivity) {
   EXPECT_FALSE(IsSessionStartTimePrefSet());
 
   // Disable waiting for initial user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SetWaitForInitialUserActivityPref(false);
 
   // Verify that the pref indicating user activity was not set and the session
@@ -515,7 +513,7 @@ TEST_F(SessionLengthLimiterTest, UserActivityWhileNotWaiting) {
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Simulate user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SimulateUserActivity();
 
   // Verify that the pref indicating user activity and the session start time
@@ -525,7 +523,7 @@ TEST_F(SessionLengthLimiterTest, UserActivityWhileNotWaiting) {
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Simulate user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SimulateUserActivity();
 
   // Verify that the pref indicating user activity and the session start time
@@ -535,7 +533,7 @@ TEST_F(SessionLengthLimiterTest, UserActivityWhileNotWaiting) {
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Enable waiting for initial user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SetWaitForInitialUserActivityPref(true);
 
   // Verify that the pref indicating user activity and the session start time
@@ -560,7 +558,7 @@ TEST_F(SessionLengthLimiterTest, UserActivityWhileWaiting) {
   EXPECT_FALSE(IsSessionStartTimePrefSet());
 
   // Simulate user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SimulateUserActivity();
 
   // Verify that the pref indicating user activity and the session start time
@@ -570,7 +568,7 @@ TEST_F(SessionLengthLimiterTest, UserActivityWhileWaiting) {
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Simulate user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SimulateUserActivity();
 
   // Verify that the pref indicating user activity and the session start time
@@ -580,7 +578,7 @@ TEST_F(SessionLengthLimiterTest, UserActivityWhileWaiting) {
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Disable waiting for initial user activity.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  runner_->FastForwardBy(base::Seconds(1));
   SetWaitForInitialUserActivityPref(false);
 
   // Verify that the pref indicating user activity and the session start time
@@ -609,7 +607,7 @@ TEST_F(SessionLengthLimiterTest, RunWithoutUserActivityWhileNotWaiting) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
@@ -618,8 +616,7 @@ TEST_F(SessionLengthLimiterTest, RunWithoutUserActivityWhileNotWaiting) {
   // length limit is reached.
   ExpectStopSession();
   runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(60),
-            session_stop_time_);
+  EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
 // Creates a SessionLengthLimiter after setting a limit and instructs it to wait
@@ -630,7 +627,7 @@ TEST_F(SessionLengthLimiterTest, RunWithoutUserActivityWhileWaiting) {
   SetWaitForInitialUserActivityPref(true);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionStartTimePrefSet());
@@ -647,13 +644,13 @@ TEST_F(SessionLengthLimiterTest, RunWithUserActivityWhileNotWaiting) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Simulate user activity after 20 seconds.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  runner_->FastForwardBy(base::Seconds(20));
   SimulateUserActivity();
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
@@ -661,8 +658,7 @@ TEST_F(SessionLengthLimiterTest, RunWithUserActivityWhileNotWaiting) {
   // length limit is reached.
   ExpectStopSession();
   runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(60),
-            session_stop_time_);
+  EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
 // Creates a SessionLengthLimiter after setting a limit and instructs it to wait
@@ -675,18 +671,18 @@ TEST_F(SessionLengthLimiterTest, RunWithUserActivityWhileWaiting) {
   SetWaitForInitialUserActivityPref(true);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
   EXPECT_FALSE(IsSessionStartTimePrefSet());
 
   // Simulate user activity after 20 seconds.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  runner_->FastForwardBy(base::Seconds(20));
   SimulateUserActivity();
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
   // Simulate user activity after 20 seconds.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  runner_->FastForwardBy(base::Seconds(20));
   SimulateUserActivity();
   EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 
@@ -694,8 +690,7 @@ TEST_F(SessionLengthLimiterTest, RunWithUserActivityWhileWaiting) {
   // length limit is reached.
   ExpectStopSession();
   runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(60),
-            session_stop_time_);
+  EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
 // Creates a SessionLengthLimiter after setting a 60 second limit, allows 50
@@ -706,23 +701,22 @@ TEST_F(SessionLengthLimiterTest, RunAndIncreaseSessionLengthLimit) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
 
   // Fast forward the time by 50 seconds, verifying that no timer fires to
   // terminate the session.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(50));
+  runner_->FastForwardBy(base::Seconds(50));
 
   // Increase the session length limit to 90 seconds.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(90));
+  SetSessionLengthLimitPref(base::Seconds(90));
 
   // Verify that the the timer fires and the session is terminated when the
   // session length limit is reached.
   ExpectStopSession();
   runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(90),
-            session_stop_time_);
+  EXPECT_EQ(session_start_time_ + base::Seconds(90), session_stop_time_);
 }
 
 // Creates a SessionLengthLimiter after setting a 60 second limit, allows 50
@@ -734,20 +728,19 @@ TEST_F(SessionLengthLimiterTest, RunAndDecreaseSessionLengthLimit) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
 
   // Fast forward the time by 50 seconds, verifying that no timer fires to
   // terminate the session.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(50));
+  runner_->FastForwardBy(base::Seconds(50));
 
   // Verify that reducing the session length limit below the 50 seconds that
   // have already elapsed causes the session to be terminated immediately.
   ExpectStopSession();
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(40));
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(50),
-            session_stop_time_);
+  SetSessionLengthLimitPref(base::Seconds(40));
+  EXPECT_EQ(session_start_time_ + base::Seconds(50), session_stop_time_);
 }
 
 // Creates a SessionLengthLimiter after setting a 60 second limit, allows 50
@@ -758,13 +751,13 @@ TEST_F(SessionLengthLimiterTest, RunAndRemoveSessionLengthLimit) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
 
   // Fast forward the time by 50 seconds, verifying that no timer fires to
   // terminate the session.
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(50));
+  runner_->FastForwardBy(base::Seconds(50));
 
   // Remove the session length limit.
   ClearSessionLengthLimitPref();
@@ -779,7 +772,7 @@ TEST_F(SessionLengthLimiterTest, SuspendAndStop) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
 
@@ -791,11 +784,9 @@ TEST_F(SessionLengthLimiterTest, SuspendAndStop) {
   // (suspended device). Given that session length limit is 60 seconds, it will
   // hit exactly if the middle of sleen (and processed when device is resumed,
   // so real session length will be 90 seconds).
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
-  wall_clock_forwarder_->ForwardWhileSuspended(
-      base::TimeDelta::FromSeconds(60));
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(90),
-            session_stop_time_);
+  runner_->FastForwardBy(base::Seconds(30));
+  wall_clock_forwarder_->ForwardWhileSuspended(base::Seconds(60));
+  EXPECT_EQ(session_start_time_ + base::Seconds(90), session_stop_time_);
 }
 
 // Tests that session is stopped withing timeout, even when part of session time
@@ -804,7 +795,7 @@ TEST_F(SessionLengthLimiterTest, SuspendAndRun) {
   base::ThreadTaskRunnerHandle runner_handler(runner_);
 
   // Set a 60 second session time limit.
-  SetSessionLengthLimitPref(base::TimeDelta::FromSeconds(60));
+  SetSessionLengthLimitPref(base::Seconds(60));
 
   CreateSessionLengthLimiter(false);
 
@@ -812,17 +803,15 @@ TEST_F(SessionLengthLimiterTest, SuspendAndRun) {
   // (suspended device). Given that session length limit is 60 seconds, and
   // total 50 seconds passed, there will be 10 seconds of the session left (and
   // the second FastForwardBy will hit the limit).
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(20));
-  wall_clock_forwarder_->ForwardWhileSuspended(
-      base::TimeDelta::FromSeconds(30));
+  runner_->FastForwardBy(base::Seconds(20));
+  wall_clock_forwarder_->ForwardWhileSuspended(base::Seconds(30));
 
   // Verify that the timer fires and the session is terminated when the session
   // length limit is reached.
   ExpectStopSession();
 
-  runner_->FastForwardBy(base::TimeDelta::FromSeconds(20));
-  EXPECT_EQ(session_start_time_ + base::TimeDelta::FromSeconds(60),
-            session_stop_time_);
+  runner_->FastForwardBy(base::Seconds(20));
+  EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
 }  // namespace chromeos

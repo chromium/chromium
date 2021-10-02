@@ -337,40 +337,35 @@ PageInfo::~PageInfo() {
   base::UmaHistogramCustomTimes(security_state::GetSecurityLevelHistogramName(
                                     kPageInfoTimePrefix, security_level_),
                                 base::TimeTicks::Now() - start_time_,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromHours(1), 100);
+                                base::Milliseconds(1), base::Hours(1), 100);
   base::UmaHistogramCustomTimes(
       security_state::GetSafetyTipHistogramName(kPageInfoTimePrefix,
                                                 safety_tip_info_.status),
-      base::TimeTicks::Now() - start_time_,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
+      base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
+      base::Hours(1), 100);
 
   if (did_perform_action_) {
     base::UmaHistogramCustomTimes(
         security_state::GetSecurityLevelHistogramName(kPageInfoTimeActionPrefix,
                                                       security_level_),
-        base::TimeTicks::Now() - start_time_,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
-        100);
+        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
+        base::Hours(1), 100);
     base::UmaHistogramCustomTimes(
         security_state::GetSafetyTipHistogramName(kPageInfoTimeActionPrefix,
                                                   safety_tip_info_.status),
-        base::TimeTicks::Now() - start_time_,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
-        100);
+        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
+        base::Hours(1), 100);
   } else {
     base::UmaHistogramCustomTimes(
         security_state::GetSecurityLevelHistogramName(
             kPageInfoTimeNoActionPrefix, security_level_),
-        base::TimeTicks::Now() - start_time_,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
-        100);
+        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
+        base::Hours(1), 100);
     base::UmaHistogramCustomTimes(
         security_state::GetSafetyTipHistogramName(kPageInfoTimeNoActionPrefix,
                                                   safety_tip_info_.status),
-        base::TimeTicks::Now() - start_time_,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
-        100);
+        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
+        base::Hours(1), 100);
   }
 }
 

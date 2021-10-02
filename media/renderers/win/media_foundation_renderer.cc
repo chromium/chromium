@@ -541,8 +541,7 @@ void MediaFoundationRenderer::SendStatistics() {
 
 void MediaFoundationRenderer::StartSendingStatistics() {
   DVLOG_FUNC(2);
-  const auto kPipelineStatsPollingPeriod =
-      base::TimeDelta::FromMilliseconds(500);
+  const auto kPipelineStatsPollingPeriod = base::Milliseconds(500);
   statistics_timer_.Start(FROM_HERE, kPipelineStatsPollingPeriod, this,
                           &MediaFoundationRenderer::SendStatistics);
 }
@@ -568,7 +567,7 @@ base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
   double current_time = mf_media_engine_->GetCurrentTime();
 // Restore macro definition.
 #define GetCurrentTime() GetTickCount()
-  auto media_time = base::TimeDelta::FromSecondsD(current_time);
+  auto media_time = base::Seconds(current_time);
   DVLOG_FUNC(3) << "media_time=" << media_time;
   return media_time;
 }

@@ -36,8 +36,7 @@ const base::Feature kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation{
 const base::Feature kFederatedLearningOfCohorts{
     "FederatedLearningOfCohorts", base::FEATURE_DISABLED_BY_DEFAULT};
 constexpr base::FeatureParam<base::TimeDelta> kFlocIdScheduledUpdateInterval{
-    &kFederatedLearningOfCohorts, "update_interval",
-    base::TimeDelta::FromDays(7)};
+    &kFederatedLearningOfCohorts, "update_interval", base::Days(7)};
 constexpr base::FeatureParam<int> kFlocIdMinimumHistoryDomainSizeRequired{
     &kFederatedLearningOfCohorts, "minimum_history_domain_size_required", 3};
 constexpr base::FeatureParam<int> kFlocIdFinchConfigVersion{

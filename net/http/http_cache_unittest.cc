@@ -10446,8 +10446,8 @@ TEST_F(HttpCacheTest, UpdatesRequestResponseTimeOn304) {
 
   kNetResponse2.AssignTo(&mock_network_response);
 
-  base::Time request_time = base::Time() + base::TimeDelta::FromHours(1234);
-  base::Time response_time = base::Time() + base::TimeDelta::FromHours(1235);
+  base::Time request_time = base::Time() + base::Hours(1234);
+  base::Time response_time = base::Time() + base::Hours(1235);
 
   mock_network_response.request_time = request_time;
   mock_network_response.response_time = response_time;
@@ -10966,7 +10966,7 @@ TEST_F(HttpCacheTest, ValidLoadOnlyFromCache) {
   RunTransactionTest(cache.http_cache(), transaction);
 
   // Move forward in time such that the cached response is no longer valid.
-  clock.Advance(base::TimeDelta::FromSeconds(101));
+  clock.Advance(base::Seconds(101));
 
   // Skipping cache validation should still return a response.
   transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
@@ -11797,9 +11797,7 @@ class HttpCachePrefetchValidationTest : public TestWithTaskEnvironment {
     return pre_transaction_count != transaction_count();
   }
 
-  void AdvanceTime(int seconds) {
-    clock_.Advance(base::TimeDelta::FromSeconds(seconds));
-  }
+  void AdvanceTime(int seconds) { clock_.Advance(base::Seconds(seconds)); }
 
   int prefetch_reuse_mins() { return HttpCache::kPrefetchReuseMins; }
 
@@ -11915,7 +11913,7 @@ TEST_F(HttpCacheTest, StaleContentUsedWhenLoadFlagSetAndUsableThenTimesout) {
   base::SimpleTestClock clock;
   cache.http_cache()->SetClockForTesting(&clock);
   cache.network_layer()->SetClock(&clock);
-  clock.Advance(base::TimeDelta::FromSeconds(10));
+  clock.Advance(base::Seconds(10));
 
   ScopedMockTransaction stale_while_revalidate_transaction(
       kSimpleGET_Transaction);
@@ -11942,7 +11940,7 @@ TEST_F(HttpCacheTest, StaleContentUsedWhenLoadFlagSetAndUsableThenTimesout) {
 
   // Move forward in time such that the stale response is no longer valid.
   clock.SetNow(response_info.stale_revalidate_timeout);
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
 
   RunTransactionTestWithResponseInfo(
       cache.http_cache(), stale_while_revalidate_transaction, &response_info);
@@ -11956,7 +11954,7 @@ TEST_F(HttpCacheTest, StaleContentUsedWhenLoadFlagSetAndUsable) {
   base::SimpleTestClock clock;
   cache.http_cache()->SetClockForTesting(&clock);
   cache.network_layer()->SetClock(&clock);
-  clock.Advance(base::TimeDelta::FromSeconds(10));
+  clock.Advance(base::Seconds(10));
 
   ScopedMockTransaction stale_while_revalidate_transaction(
       kSimpleGET_Transaction);
@@ -11981,7 +11979,7 @@ TEST_F(HttpCacheTest, StaleContentUsedWhenLoadFlagSetAndUsable) {
   EXPECT_TRUE(response_info.async_revalidation_requested);
   EXPECT_FALSE(response_info.stale_revalidate_timeout.is_null());
   base::Time revalidation_timeout = response_info.stale_revalidate_timeout;
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   EXPECT_TRUE(clock.Now() < revalidation_timeout);
 
   // Fetch the resource again inside the revalidation timeout window.
@@ -12038,7 +12036,7 @@ TEST_F(HttpCacheTest, StaleContentWriteError) {
   base::SimpleTestClock clock;
   cache.http_cache()->SetClockForTesting(&clock);
   cache.network_layer()->SetClock(&clock);
-  clock.Advance(base::TimeDelta::FromSeconds(10));
+  clock.Advance(base::Seconds(10));
 
   ScopedMockTransaction stale_while_revalidate_transaction(
       kSimpleGET_Transaction);

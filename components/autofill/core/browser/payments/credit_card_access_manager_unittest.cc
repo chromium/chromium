@@ -1036,7 +1036,7 @@ TEST_F(CreditCardAccessManagerTest,
 
       ResetFetchCreditCard();
       credit_card_access_manager_->PrepareToFetchCreditCard();
-      task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
+      task_environment_.FastForwardBy(base::Seconds(4));
       WaitForCallbacks();
 
       credit_card_access_manager_->FetchCreditCard(local_card,
@@ -1057,7 +1057,7 @@ TEST_F(CreditCardAccessManagerTest,
       credit_card_access_manager_->PrepareToFetchCreditCard();
       credit_card_access_manager_->FetchCreditCard(server_card,
                                                    accessor_->GetWeakPtr());
-      task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
+      task_environment_.FastForwardBy(base::Seconds(4));
       WaitForCallbacks();
 
       histogram_tester.ExpectUniqueSample(
@@ -1132,7 +1132,7 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
     // Mock a delayed response.
     InvokeDelayedGetUnmaskDetailsResponse();
 
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
+    task_environment_.FastForwardBy(base::Seconds(4));
     WaitForCallbacks();
 
     histogram_tester.ExpectUniqueSample(
@@ -1154,7 +1154,7 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
     credit_card_access_manager_->PrepareToFetchCreditCard();
     credit_card_access_manager_->FetchCreditCard(server_card,
                                                  accessor_->GetWeakPtr());
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
+    task_environment_.FastForwardBy(base::Seconds(4));
     WaitForCallbacks();
 
     histogram_tester.ExpectUniqueSample(

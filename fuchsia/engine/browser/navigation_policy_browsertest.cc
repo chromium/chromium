@@ -90,8 +90,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Deferred) {
       page_url.spec()));
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(200));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
   run_loop.Run();
 
   // Make sure an up to date NavigationState is used.

@@ -137,8 +137,7 @@ void WaitForFullscreenAnimation() {
   // Wait for Mac OS fullscreen animation.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(delay_in_ms));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(delay_in_ms));
   run_loop.Run();
 }
 

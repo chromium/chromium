@@ -161,7 +161,7 @@ constexpr uint16_t kServiceClassIDListAttributeID = 0x0001;
 // 120 seconds is used here as the upper bound of the time need to do device
 // discovery once, 20 seconds for inquiry scan and 100 seconds for page scan
 // for 100 new devices.
-constexpr base::TimeDelta kDiscoveryTimeout = base::TimeDelta::FromSeconds(120);
+constexpr base::TimeDelta kDiscoveryTimeout = base::Seconds(120);
 // From https://www.bluetooth.com/specifications/assigned-numbers/baseband
 // The Class of Device for generic computer.
 constexpr uint32_t kBluetoothComputerClass = 0x100;
@@ -180,7 +180,7 @@ constexpr uint32_t kBluetoothComputerClass = 0x100;
 // Chrome, Chrome will take EnableAdapter/DisableAdapter calls as a request from
 // Android to toggle the power state. The power state will be synced on both
 // Chrome and Android, but as a result, Bluetooth will be off.
-constexpr base::TimeDelta kPowerIntentTimeout = base::TimeDelta::FromSeconds(8);
+constexpr base::TimeDelta kPowerIntentTimeout = base::Seconds(8);
 
 // Client name for logging in BLE scanning.
 constexpr char kScanClientName[] = "ARC";
@@ -1090,7 +1090,7 @@ void ArcBluetoothBridge::OnSetDiscoverable(bool discoverable,
 
   if (success && discoverable && timeout > 0) {
     discoverable_off_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(timeout),
+        FROM_HERE, base::Seconds(timeout),
         base::BindOnce(&ArcBluetoothBridge::SetDiscoverable,
                        weak_factory_.GetWeakPtr(), false, 0));
   }
@@ -1113,8 +1113,7 @@ void ArcBluetoothBridge::SetDiscoverable(bool discoverable, uint32_t timeout) {
     return;
 
   if (discoverable && currently_discoverable) {
-    if (base::TimeDelta::FromSeconds(timeout) >
-        discoverable_off_timer_.GetCurrentDelay()) {
+    if (base::Seconds(timeout) > discoverable_off_timer_.GetCurrentDelay()) {
       // Restart discoverable_off_timer_ if new timeout is greater
       OnSetDiscoverable(true, true, timeout);
     } else {

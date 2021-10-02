@@ -81,12 +81,9 @@ const int kLastDayWarningInDays = 1;
 const int kShortWarningInDays = 2;
 const int kLongWarningInDays = 10;
 const int kVeryLongWarningInDays = 100;
-constexpr base::TimeDelta kShortWarning =
-    base::TimeDelta::FromDays(kShortWarningInDays);
-constexpr base::TimeDelta kLongWarning =
-    base::TimeDelta::FromDays(kLongWarningInDays);
-constexpr base::TimeDelta kVeryLongWarning =
-    base::TimeDelta::FromDays(kVeryLongWarningInDays);
+constexpr base::TimeDelta kShortWarning = base::Days(kShortWarningInDays);
+constexpr base::TimeDelta kLongWarning = base::Days(kLongWarningInDays);
+constexpr base::TimeDelta kVeryLongWarning = base::Days(kVeryLongWarningInDays);
 const char kPublicSessionId[] = "demo@example.com";
 const char kManagedUserId[] = "user@example.com";
 const char kManagedUserGaiaId[] = "11111";
@@ -545,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
                        NotificationOnUnmanagedUserEnabled) {
   fake_update_engine_client_->set_eol_date(
-      base::DefaultClock::GetInstance()->Now() - base::TimeDelta::FromDays(1));
+      base::DefaultClock::GetInstance()->Now() - base::Days(1));
   LoginUnmanagedUser();
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
@@ -627,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
   // Mark device end of life and login as managed user.
   fake_update_engine_client_->set_eol_date(
-      base::DefaultClock::GetInstance()->Now() - base::TimeDelta::FromDays(1));
+      base::DefaultClock::GetInstance()->Now() - base::Days(1));
   LoginManagedUser();
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
@@ -870,7 +867,7 @@ class MinimumVersionTimerExpiredOnLogin
   void SetUpLocalState() override {
     // Set up local state to reflect that update required deadline has passed
     // when device is rebooted.
-    const base::TimeDelta delta = base::TimeDelta::FromDays(5);
+    const base::TimeDelta delta = base::Days(5);
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetTime(prefs::kUpdateRequiredTimerStartTime,
                    base::Time::Now() - delta);

@@ -258,8 +258,7 @@ class SessionRestorePolicy {
 
   // The maximum time since last use of a tab in order for it to be restored.
   // Setting to zero means this logic does not apply.
-  base::TimeDelta max_time_since_last_use_to_restore_ =
-      base::TimeDelta::FromDays(30);
+  base::TimeDelta max_time_since_last_use_to_restore_ = base::Days(30);
 
   // The minimum site engagement score in order for a tab to be restored.
   // Setting this to zero means all tabs will be restored regardless of the

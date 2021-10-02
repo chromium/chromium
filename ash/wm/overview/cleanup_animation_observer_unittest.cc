@@ -120,8 +120,7 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateComplete) {
   {
     ui::ScopedLayerAnimationSettings animation_settings(
         widget_window->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(1000));
+    animation_settings.SetTransitionDuration(base::Milliseconds(1000));
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
@@ -154,8 +153,7 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateShutdown) {
         ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     ui::ScopedLayerAnimationSettings animation_settings(
         widget_window->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(1000));
+    animation_settings.SetTransitionDuration(base::Milliseconds(1000));
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 

@@ -22,12 +22,10 @@ namespace {
 
 const int kFakePortNumber = 1234;
 const char kFakeTestProfile[] = "test";
-const base::TimeDelta kSuccessfulDnsResolutionDelayMs =
-    base::TimeDelta::FromMilliseconds(100);
-const base::TimeDelta kSlightlyAboveThresholdDelayMs =
-    base::TimeDelta::FromMilliseconds(450);
+const base::TimeDelta kSuccessfulDnsResolutionDelayMs = base::Milliseconds(100);
+const base::TimeDelta kSlightlyAboveThresholdDelayMs = base::Milliseconds(450);
 const base::TimeDelta kSignificantlyAboveThresholdDelayMs =
-    base::TimeDelta::FromMilliseconds(550);
+    base::Milliseconds(550);
 
 class FakeTickClock : public base::TickClock {
  public:

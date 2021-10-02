@@ -44,8 +44,7 @@ class CaptureServiceReceiver {
   };
 
   // The timeout for a connecting socket to stop waiting and report error.
-  static constexpr base::TimeDelta kConnectTimeout =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kConnectTimeout = base::Seconds(1);
 
   CaptureServiceReceiver(capture_service::StreamInfo request_stream_info,
                          Delegate* delegate);

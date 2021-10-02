@@ -91,16 +91,15 @@ class ClipboardProviderTest : public testing::Test,
   void ClearClipboard() { clipboard_content_.SuppressClipboardContent(); }
 
   void SetClipboardUrl(const GURL& url) {
-    clipboard_content_.SetClipboardURL(url, base::TimeDelta::FromMinutes(9));
+    clipboard_content_.SetClipboardURL(url, base::Minutes(9));
   }
 
   void SetClipboardText(const std::u16string& text) {
-    clipboard_content_.SetClipboardText(text, base::TimeDelta::FromMinutes(9));
+    clipboard_content_.SetClipboardText(text, base::Minutes(9));
   }
 
   void SetClipboardImage(const gfx::Image& image) {
-    clipboard_content_.SetClipboardImage(image,
-                                         base::TimeDelta::FromMinutes(9));
+    clipboard_content_.SetClipboardImage(image, base::Minutes(9));
   }
 
   bool IsClipboardEmpty() {

@@ -163,8 +163,7 @@ void BrowserProcessIOThread::ProcessHostCleanUp() {
       base::ScopedAllowBaseSyncPrimitives scoped_allow_base_sync_primitives;
       const base::TimeTicks start_time = base::TimeTicks::Now();
       process.WaitForExitWithTimeout(
-          base::TimeDelta::FromSeconds(kMaxSecondsToWaitForNetworkProcess),
-          nullptr);
+          base::Seconds(kMaxSecondsToWaitForNetworkProcess), nullptr);
       // Record time spent for the method call.
       base::TimeDelta network_wait_time = base::TimeTicks::Now() - start_time;
       UMA_HISTOGRAM_TIMES("NetworkService.ShutdownTime", network_wait_time);

@@ -292,8 +292,8 @@ TEST_F(ServiceWorkerObjectHostTest,
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StartServiceWorker(version_.get()));
 
-  const base::TimeDelta kRequestTimeout = base::TimeDelta::FromMinutes(5);
-  const base::TimeDelta kFourSeconds = base::TimeDelta::FromSeconds(4);
+  const base::TimeDelta kRequestTimeout = base::Minutes(5);
+  const base::TimeDelta kFourSeconds = base::Seconds(4);
 
   // After startup, the remaining timeout is expected to be kRequestTimeout.
   EXPECT_EQ(kRequestTimeout, version_->remaining_timeout());

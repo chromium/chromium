@@ -114,7 +114,7 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
             signin::ConsentLevel::kSignin),
-        "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+        "access_token", base::Time::Now() + base::Hours(1));
   }
 
   base::DictionaryValue CreateRequestBody() {

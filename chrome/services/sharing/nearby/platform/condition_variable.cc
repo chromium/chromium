@@ -23,7 +23,7 @@ Exception ConditionVariable::Wait() {
 
 Exception ConditionVariable::Wait(absl::Duration timeout) {
   condition_variable_.TimedWait(
-      base::TimeDelta::FromMicroseconds(absl::ToInt64Microseconds(timeout)));
+      base::Microseconds(absl::ToInt64Microseconds(timeout)));
   return {Exception::kSuccess};
 }
 

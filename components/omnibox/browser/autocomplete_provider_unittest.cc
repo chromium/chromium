@@ -932,30 +932,30 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   // and the field trial triggered bit, many conditions need to be satisfied.
   AutocompleteMatch match(nullptr, 1100, false,
                           AutocompleteMatchType::SEARCH_SUGGEST);
-  GURL url(GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456)));
+  GURL url(GetDestinationURL(match, base::Milliseconds(2456)));
   EXPECT_TRUE(url.path().empty());
 
   // The protocol needs to be https.
   RegisterTemplateURL(kTestTemplateURLKeyword,
                       "https://aqs/{searchTerms}/{google:assistedQueryStats}");
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
   // There needs to be a keyword provider.
   match.keyword = kTestTemplateURLKeyword;
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
   // search_terms_args needs to be set.
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
   // assisted_query_stats needs to have been previously set.
   match.search_terms_args->assisted_query_stats =
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j0j0&", url.path());
 
   // Test field trial triggered bit set.
@@ -963,7 +963,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
   set_search_provider_field_trial_triggered_in_session(true);
   EXPECT_TRUE(search_provider_field_trial_triggered_in_session());
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j0&", url.path());
 
   // Test page classification set.
@@ -972,7 +972,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   set_current_page_classification(metrics::OmniboxEventProto::OTHER);
   set_search_provider_field_trial_triggered_in_session(false);
   EXPECT_FALSE(search_provider_field_trial_triggered_in_session());
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j0j4&", url.path());
 
   // Test page classification and field trial triggered set.
@@ -980,7 +980,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
   set_search_provider_field_trial_triggered_in_session(true);
   EXPECT_TRUE(search_provider_field_trial_triggered_in_session());
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4&", url.path());
 
   // Test experiment stats set.
@@ -988,7 +988,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
   add_zero_suggest_provider_experiment_stat(
       base::test::ParseJson(R"json({"2":"0:67","4":10001})json"));
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4.10001i0,67&",
             url.path());
 
@@ -996,7 +996,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
   add_zero_suggest_provider_experiment_stat(
       base::test::ParseJson(R"json({"2":"54:67","4":10001})json"));
-  url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
+  url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ(
       "//"
       "aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4.10001i0,67j10001i54,67&",

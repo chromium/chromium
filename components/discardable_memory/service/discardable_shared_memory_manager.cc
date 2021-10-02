@@ -637,7 +637,7 @@ void DiscardableSharedMemoryManager::ScheduleEnforceMemoryPolicy() {
   DCHECK(enforce_memory_policy_task_runner_);
   enforce_memory_policy_task_runner_->PostDelayedTask(
       FROM_HERE, enforce_memory_policy_callback_,
-      base::TimeDelta::FromMilliseconds(kEnforceMemoryPolicyDelayMs));
+      base::Milliseconds(kEnforceMemoryPolicyDelayMs));
 }
 
 void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(

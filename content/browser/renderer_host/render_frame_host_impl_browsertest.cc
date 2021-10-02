@@ -1217,8 +1217,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   // PrepContentsForBeforeUnloadTest(), as that clears the timer altogether,
   // and this test needs the timer to be valid, to see whether it gets paused
   // and not restarted correctly.
-  main_frame->SetBeforeUnloadTimeoutDelayForTesting(
-      base::TimeDelta::FromSeconds(30));
+  main_frame->SetBeforeUnloadTimeoutDelayForTesting(base::Seconds(30));
 
   // Start a navigation in the main frame.
   GURL new_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
@@ -3508,8 +3507,8 @@ IN_PROC_BROWSER_TEST_F(
   static_assert(net::IsolationInfo::kPartyContextMaxSize == 20,
                 "kPartyContextMaxSize should have value 20.");
 
-  base::test::ScopedRunLoopTimeout increased_timeout(
-      FROM_HERE, base::TimeDelta::FromSeconds(60));
+  base::test::ScopedRunLoopTimeout increased_timeout(FROM_HERE,
+                                                     base::Seconds(60));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   GURL b_url = embedded_test_server()->GetURL("b.com", "/");
@@ -4250,7 +4249,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   main_frame->DisableUnloadTimerForTesting();
   child_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kUnloadHandler);
-  child_rfh->SetSubframeUnloadTimeoutForTesting(base::TimeDelta::FromDays(7));
+  child_rfh->SetSubframeUnloadTimeoutForTesting(base::Days(7));
   child_rfh->DoNotDeleteForTesting();
 
   // Open a popup on a.com to keep the process alive.
@@ -5470,7 +5469,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
 
   // Delay process shutdown twice from the same site info.
   const SiteInfo site_info = rfh->GetSiteInstance()->GetSiteInfo();
-  const base::TimeDelta delay = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta delay = base::Seconds(5);
   process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
   EXPECT_TRUE(process->IsProcessShutdownDelayedForTesting());
   process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);

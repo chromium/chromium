@@ -122,8 +122,7 @@ const char* NetworkStateToString(WebMediaPlayer::NetworkState state) {
   }
 }
 
-constexpr base::TimeDelta kForceBeginFramesTimeout =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kForceBeginFramesTimeout = base::Seconds(1);
 }  // namespace
 
 #if defined(OS_WIN)
@@ -1034,7 +1033,7 @@ bool WebMediaPlayerMS::WouldTaintOrigin() const {
 }
 
 double WebMediaPlayerMS::MediaTimeForTimeValue(double timeValue) const {
-  return base::TimeDelta::FromSecondsD(timeValue).InSecondsF();
+  return base::Seconds(timeValue).InSecondsF();
 }
 
 unsigned WebMediaPlayerMS::DecodedFrameCount() const {

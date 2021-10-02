@@ -121,8 +121,7 @@ class VIZ_SERVICE_EXPORT InterprocessFramePool {
 
   // The amount of time that should elapsed between log warnings about shared
   // memory allocation/mapping failures.
-  static constexpr base::TimeDelta kMinLoggingPeriod =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kMinLoggingPeriod = base::Seconds(10);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

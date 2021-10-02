@@ -1639,7 +1639,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   (*out)->is_active = data.is_active();
   (*out)->has_fetch_handler = data.has_fetch_handler();
   (*out)->last_update_check = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(data.last_update_check_time()));
+      base::Microseconds(data.last_update_check_time()));
   (*out)->resources_total_size_bytes = data.resources_total_size_bytes();
   if (data.has_origin_trial_tokens()) {
     const ServiceWorkerOriginTrialInfo& info = data.origin_trial_tokens();
@@ -1683,7 +1683,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
 
   if (data.has_script_response_time()) {
     (*out)->script_response_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(data.script_response_time()));
+        base::Microseconds(data.script_response_time()));
   }
 
   if (data.has_update_via_cache()) {

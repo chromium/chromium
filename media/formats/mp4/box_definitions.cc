@@ -1386,8 +1386,7 @@ bool FlacSpecificBox::Parse(BoxReader* reader) {
 }
 
 OpusSpecificBox::OpusSpecificBox()
-    : seek_preroll(base::TimeDelta::FromMilliseconds(80)),
-      codec_delay_in_frames(0) {}
+    : seek_preroll(base::Milliseconds(80)), codec_delay_in_frames(0) {}
 
 OpusSpecificBox::OpusSpecificBox(const OpusSpecificBox& other) = default;
 

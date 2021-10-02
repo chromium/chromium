@@ -11,10 +11,8 @@
 namespace viz {
 namespace {
 
-constexpr base::TimeDelta kDefaultTransitionDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kDefaultTransitionDelay =
-    base::TimeDelta::FromMilliseconds(0);
+constexpr base::TimeDelta kDefaultTransitionDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kDefaultTransitionDelay = base::Milliseconds(0);
 
 }  // namespace
 
@@ -48,8 +46,8 @@ CompositorFrameTransitionDirective::TransitionConfig::TransitionConfig()
 
 bool CompositorFrameTransitionDirective::TransitionConfig::IsValid(
     std::string* error) const {
-  constexpr base::TimeDelta kMinValue = base::TimeDelta::FromSeconds(0);
-  constexpr base::TimeDelta kMaxValue = base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kMinValue = base::Seconds(0);
+  constexpr base::TimeDelta kMaxValue = base::Seconds(5);
 
   if (duration < kMinValue || duration > kMaxValue) {
     if (error)

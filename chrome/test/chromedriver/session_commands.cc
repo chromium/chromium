@@ -879,7 +879,7 @@ Status ExecuteSetTimeoutLegacy(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
 
   base::TimeDelta timeout =
-      base::TimeDelta::FromMilliseconds(static_cast<int>(maybe_ms.value()));
+      base::Milliseconds(static_cast<int>(maybe_ms.value()));
   if (*type == "implicit") {
     session->implicit_wait = timeout;
   } else if (*type == "script") {
@@ -912,7 +912,7 @@ Status ExecuteSetTimeoutsW3C(Session* session,
             return Status(kInvalidArgument,
                           "value must be a non-negative integer");
         else
-            timeout = base::TimeDelta::FromMilliseconds(timeout_ms_int64);
+          timeout = base::Milliseconds(timeout_ms_int64);
     }
     if (type == "script") {
       session->script_timeout = timeout;
@@ -962,7 +962,7 @@ Status ExecuteSetScriptTimeout(Session* session,
   if (!maybe_ms.has_value() || maybe_ms.value() < 0)
     return Status(kInvalidArgument, "'ms' must be a non-negative number");
   session->script_timeout =
-      base::TimeDelta::FromMilliseconds(static_cast<int>(maybe_ms.value()));
+      base::Milliseconds(static_cast<int>(maybe_ms.value()));
   return Status(kOk);
 }
 
@@ -973,7 +973,7 @@ Status ExecuteImplicitlyWait(Session* session,
   if (!maybe_ms.has_value() || maybe_ms.value() < 0)
     return Status(kInvalidArgument, "'ms' must be a non-negative number");
   session->implicit_wait =
-      base::TimeDelta::FromMilliseconds(static_cast<int>(maybe_ms.value()));
+      base::Milliseconds(static_cast<int>(maybe_ms.value()));
   return Status(kOk);
 }
 

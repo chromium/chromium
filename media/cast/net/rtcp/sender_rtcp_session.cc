@@ -39,7 +39,7 @@ base::TimeDelta ConvertFromNtpDiff(uint32_t ntp_delay) {
   delay_us >>= 16;
   delay_us +=
       ((ntp_delay & 0xffff0000) >> 16) * base::Time::kMicrosecondsPerSecond;
-  return base::TimeDelta::FromMicroseconds(delay_us);
+  return base::Microseconds(delay_us);
 }
 
 // A receiver frame event is identified by frame RTP timestamp, event timestamp
@@ -159,7 +159,7 @@ void SenderRtcpSession::OnReceivedDelaySinceLastReport(
   // such a level of precision cannot be measured with our approach; and 1 ms is
   // good enough to represent "under 1 ms" for our use cases.
   current_round_trip_time_ =
-      std::max(current_round_trip_time_, base::TimeDelta::FromMilliseconds(1));
+      std::max(current_round_trip_time_, base::Milliseconds(1));
 
   rtcp_observer_->OnReceivedRtt(current_round_trip_time_);
 }
@@ -178,7 +178,7 @@ void SenderRtcpSession::SaveLastSentNtpTime(const base::TimeTicks& now,
   last_reports_sent_queue_.push(std::make_pair(last_report, now));
 
   const base::TimeTicks timeout =
-      now - base::TimeDelta::FromMilliseconds(kStatsHistoryWindowMs);
+      now - base::Milliseconds(kStatsHistoryWindowMs);
 
   // Cleanup old statistics older than |timeout|.
   while (!last_reports_sent_queue_.empty()) {

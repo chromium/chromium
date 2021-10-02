@@ -78,11 +78,9 @@ namespace remoting {
 namespace protocol {
 
 PerformanceTracker::PerformanceTracker()
-    : video_bandwidth_(base::TimeDelta::FromSeconds(kStatsUpdatePeriodSeconds)),
-      video_frame_rate_(
-          base::TimeDelta::FromSeconds(kStatsUpdatePeriodSeconds)),
-      video_packet_rate_(
-          base::TimeDelta::FromSeconds(kStatsUpdatePeriodSeconds)),
+    : video_bandwidth_(base::Seconds(kStatsUpdatePeriodSeconds)),
+      video_frame_rate_(base::Seconds(kStatsUpdatePeriodSeconds)),
+      video_packet_rate_(base::Seconds(kStatsUpdatePeriodSeconds)),
       video_capture_ms_(kLatencySampleSize),
       video_encode_ms_(kLatencySampleSize),
       video_decode_ms_(kLatencySampleSize),
@@ -114,7 +112,7 @@ void PerformanceTracker::SetUpdateUmaCallbacks(
 void PerformanceTracker::OnVideoFrameStats(const FrameStats& stats) {
   if (!is_paused_ && !upload_uma_stats_timer_.IsRunning()) {
     upload_uma_stats_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kStatsUpdatePeriodSeconds),
+        FROM_HERE, base::Seconds(kStatsUpdatePeriodSeconds),
         base::BindRepeating(&PerformanceTracker::UploadRateStatsToUma,
                             base::Unretained(this)));
   }

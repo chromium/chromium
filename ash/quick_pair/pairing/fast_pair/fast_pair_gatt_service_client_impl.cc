@@ -36,8 +36,7 @@ constexpr uint8_t kSeekerAddressStartIndex = 8;
 constexpr uint8_t kSeekerPasskey = 0x02;
 constexpr uint8_t kAccountKeyStartByte = 0x04;
 
-constexpr base::TimeDelta kGattOperationTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kGattOperationTimeout = base::Seconds(5);
 
 constexpr const char* ToString(
     device::BluetoothGattService::GattErrorCode error_code) {

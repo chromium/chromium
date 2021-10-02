@@ -122,8 +122,7 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   bool has_user_gesture_carryover =
       !navigation_params_to_use.has_user_gesture() &&
       base::TimeTicks::Now() - last_user_gesture_carryover_timestamp_ <=
-          base::TimeDelta::FromSeconds(
-              kMaxValidityOfUserGestureCarryoverInSeconds);
+          base::Seconds(kMaxValidityOfUserGestureCarryoverInSeconds);
 
   ScopedJavaLocalRef<jobject> jobject_params = CreateJavaNavigationParams(
       env, navigation_params_to_use, has_user_gesture_carryover);

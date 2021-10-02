@@ -48,8 +48,7 @@ class ScopedGetBeforeRequestActionTimer {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime."
         "SingleExtension2",
-        timer_.Elapsed(), base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(50), 50);
+        timer_.Elapsed(), base::Microseconds(1), base::Milliseconds(50), 50);
   }
 
  private:

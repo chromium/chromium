@@ -164,7 +164,7 @@ void SnapshotTabHelper::PageLoaded(
                 UMA_HISTOGRAM_ENUMERATION("IOS.PageLoadedSnapshotResult",
                                           snapshotResult);
               }),
-          base::TimeDelta::FromSeconds(1));
+          base::Seconds(1));
       break;
   }
   ignore_next_load_ = false;

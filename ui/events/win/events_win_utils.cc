@@ -162,8 +162,7 @@ class GetTickCountClock : public base::TickClock {
   ~GetTickCountClock() override = default;
 
   base::TimeTicks NowTicks() const override {
-    return base::TimeTicks() +
-           base::TimeDelta::FromMilliseconds(::GetTickCount());
+    return base::TimeTicks() + base::Milliseconds(::GetTickCount());
   }
 };
 
@@ -265,15 +264,14 @@ base::TimeTicks EventLatencyTimeFromTickClock(DWORD event_time,
     g_tick_count_clock = default_tick_count_clock.get();
 
   base::TimeTicks time_stamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event_time);
+      base::TimeTicks() + base::Milliseconds(event_time);
 
   base::TimeTicks current_tick_count = g_tick_count_clock->NowTicks();
   // Check if the 32-bit tick count wrapped around after the event.
   if (current_tick_count < time_stamp) {
     // ::GetTickCount returns an unsigned 32-bit value, which will fit into the
     // signed 64-bit base::TimeTicks.
-    current_tick_count +=
-        base::TimeDelta::FromMilliseconds(std::numeric_limits<DWORD>::max());
+    current_tick_count += base::Milliseconds(std::numeric_limits<DWORD>::max());
   }
 
   // |time_stamp| is from the GetTickCount clock, which has a different 0-point

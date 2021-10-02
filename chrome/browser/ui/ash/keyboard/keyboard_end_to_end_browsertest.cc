@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(
   // Wait until the transient blur threshold (3500ms) passes.
   // TODO(https://crbug.com/849995): Find a way to accelerate the clock without
   // actually waiting in real time.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(3501));
+  base::PlatformThread::Sleep(base::Milliseconds(3501));
 
   ClickElementWithId(web_contents_, "async");
   base::RunLoop().RunUntilIdle();  // Allow async operations to complete.

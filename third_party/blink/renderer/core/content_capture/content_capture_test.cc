@@ -80,7 +80,7 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
   ~WebContentCaptureClientTestHelper() override = default;
 
   base::TimeDelta GetTaskInitialDelay() const override {
-    return base::TimeDelta::FromMilliseconds(500);
+    return base::Milliseconds(500);
   }
 
   void DidCaptureContent(const WebVector<WebContentHolder>& data,
@@ -1096,11 +1096,9 @@ TEST_F(ContentCaptureSimTest, DeleteNodeContent) {
 
 TEST_F(ContentCaptureSimTest, UserActivatedDelay) {
   base::TimeDelta expected_delays[] = {
-      base::TimeDelta::FromMilliseconds(500), base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromSeconds(2),        base::TimeDelta::FromSeconds(4),
-      base::TimeDelta::FromSeconds(8),        base::TimeDelta::FromSeconds(16),
-      base::TimeDelta::FromSeconds(32),       base::TimeDelta::FromSeconds(64),
-      base::TimeDelta::FromSeconds(128)};
+      base::Milliseconds(500), base::Seconds(1),  base::Seconds(2),
+      base::Seconds(4),        base::Seconds(8),  base::Seconds(16),
+      base::Seconds(32),       base::Seconds(64), base::Seconds(128)};
   size_t expected_delays_size = base::size(expected_delays);
   // The first task has been scheduled but not run yet, the delay will be
   // increased until current task starts to run. Verifies the value is

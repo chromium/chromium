@@ -12,8 +12,7 @@
 
 namespace ui {
 
-constexpr base::TimeDelta kExpectedDefaultTimeInterval =
-    base::TimeDelta::FromMilliseconds(8);
+constexpr base::TimeDelta kExpectedDefaultTimeInterval = base::Milliseconds(8);
 
 // Base class for predictor unit tests
 class InputPredictorTest : public testing::Test {
@@ -27,7 +26,7 @@ class InputPredictorTest : public testing::Test {
 
   static base::TimeTicks FromMilliseconds(double ms) {
     return test::PredictionUnittestHelpers::GetStaticTimeStampForTests() +
-           base::TimeDelta::FromMillisecondsD(ms);
+           base::Milliseconds(ms);
   }
 
   void ValidatePredictor(const std::vector<double>& x,

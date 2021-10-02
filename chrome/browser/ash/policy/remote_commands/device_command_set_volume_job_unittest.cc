@@ -124,7 +124,7 @@ TEST_F(DeviceCommandSetVolumeTest, VolumeOutOfRange) {
 }
 
 TEST_F(DeviceCommandSetVolumeTest, CommandTimeout) {
-  auto delta = base::TimeDelta::FromMinutes(10);
+  auto delta = base::Minutes(10);
   auto job = CreateSetVolumeJob(test_start_time_ - delta, 50);
   EXPECT_FALSE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                         RemoteCommandJob::FinishedCallback()));

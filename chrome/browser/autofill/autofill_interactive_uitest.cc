@@ -2156,7 +2156,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
 
   // Now click it.
   test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
-                                   base::TimeDelta::FromSeconds(3));
+                                   base::Seconds(3));
   ASSERT_NO_FATAL_FAILURE(ClickElementWithId("company"));
 
   test_delegate()->Wait();

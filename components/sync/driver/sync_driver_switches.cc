@@ -73,8 +73,7 @@ const base::Feature kSyncRequiresPoliciesLoaded{
 
 // Max time to delay the sync startup while waiting for policies to load.
 const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
-    &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout",
-    base::TimeDelta::FromSeconds(10)};
+    &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout", base::Seconds(10)};
 
 #if defined(OS_IOS)
 // Whether RPC is enabled.

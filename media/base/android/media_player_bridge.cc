@@ -384,7 +384,7 @@ base::TimeDelta MediaPlayerBridge::GetCurrentTime() {
   if (!prepared_)
     return pending_seek_;
   JNIEnv* env = base::android::AttachCurrentThread();
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       Java_MediaPlayerBridge_getCurrentPosition(env, j_media_player_bridge_));
 }
 
@@ -395,7 +395,7 @@ base::TimeDelta MediaPlayerBridge::GetDuration() {
   const int duration_ms =
       Java_MediaPlayerBridge_getDuration(env, j_media_player_bridge_);
   return duration_ms < 0 ? media::kInfiniteDuration
-                         : base::TimeDelta::FromMilliseconds(duration_ms);
+                         : base::Milliseconds(duration_ms);
 }
 
 void MediaPlayerBridge::Release() {
@@ -477,7 +477,7 @@ void MediaPlayerBridge::OnMediaPrepared() {
   // events.
   if (should_seek_on_prepare_) {
     SeekInternal(pending_seek_);
-    pending_seek_ = base::TimeDelta::FromMilliseconds(0);
+    pending_seek_ = base::Milliseconds(0);
     should_seek_on_prepare_ = false;
   }
 

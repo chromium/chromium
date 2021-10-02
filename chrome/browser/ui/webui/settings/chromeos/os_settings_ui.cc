@@ -81,8 +81,8 @@ OSSettingsUI::~OSSettingsUI() {
   // Note: OSSettingsUI lifetime is tied to the lifetime of the browser window.
   base::UmaHistogramCustomTimes("ChromeOS.Settings.WindowOpenDuration",
                                 base::TimeTicks::Now() - time_when_opened_,
-                                /*min=*/base::TimeDelta::FromMicroseconds(500),
-                                /*max=*/base::TimeDelta::FromHours(1),
+                                /*min=*/base::Microseconds(500),
+                                /*max=*/base::Hours(1),
                                 /*buckets=*/50);
 }
 

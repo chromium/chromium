@@ -356,8 +356,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
   // (2) "www.example1.com" valid
   cache_manager_->SetPageLoadTokenForTesting(
       GURL("https://www.example.com"),
-      CreatePageLoadToken((now - base::TimeDelta::FromHours(1)).ToJavaTime(),
-                          "token1"));
+      CreatePageLoadToken((now - base::Hours(1)).ToJavaTime(), "token1"));
   cache_manager_->SetPageLoadTokenForTesting(
       GURL("https://www.example1.com"),
       CreatePageLoadToken(now.ToJavaTime(), "token2"));
@@ -710,28 +709,28 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictInBackground) {
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(119));
+  task_environment_.FastForwardBy(base::Seconds(119));
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // The first cleanup task should happen at 120 seconds after construction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::Seconds(1798));
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // The second cleanup task should happen at 120 + 1800 seconds after
   // construction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::Seconds(1798));
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // The third cleanup task should happen at 120 + 1800 + 1800 seconds after
   // construction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 }
 
@@ -748,8 +747,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpVerdictOlderThanUpperBound) {
                                           response, base::Time::Now());
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // Fast forward by 8 days.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(8 * 24 * 60 * 60));
+  task_environment_.FastForwardBy(base::Seconds(8 * 24 * 60 * 60));
   // Although the cache duration is set to 20 days, it is stored longer than the
   // upper bound(7 days). The cache should be cleaned up.
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());

@@ -883,15 +883,12 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
     return kZeroDelay;
   }
 
-  static constexpr base::TimeDelta kShortDelay =
-      base::TimeDelta::FromSeconds(2);
+  static constexpr base::TimeDelta kShortDelay = base::Seconds(2);
   static constexpr base::TimeDelta kLongDelay =
-      base::TimeDelta::FromMilliseconds(
-          kSubframeProcessShutdownLongDelayInMSec);
+      base::Milliseconds(kSubframeProcessShutdownLongDelayInMSec);
   // Added to delay if based on recent performance (i.e., |kHistoryBased| and
   // |kHistoryBasedLong|) to account for small variations in timing.
-  static constexpr base::TimeDelta kDelayBuffer =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kDelayBuffer = base::Seconds(1);
 
   switch (features::kSubframeShutdownDelayTypeParam.Get()) {
     case features::SubframeShutdownDelayType::kConstant: {
@@ -5831,8 +5828,7 @@ void RenderFrameHostImpl::UseDummyStickySchedulerTrackedFeatureForTesting() {
 }
 
 bool RenderFrameHostImpl::HasSeenRecentXrOverlaySetup() {
-  static constexpr base::TimeDelta kMaxInterval =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kMaxInterval = base::Seconds(1);
   base::TimeDelta delta = base::TimeTicks::Now() - last_xr_overlay_setup_time_;
   DVLOG(2) << __func__ << ": return " << (delta <= kMaxInterval);
   return delta <= kMaxInterval;

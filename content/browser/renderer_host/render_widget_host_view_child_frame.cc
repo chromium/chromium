@@ -687,8 +687,8 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
 
 bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(
     const blink::WebInputEvent& event) {
-  if (event.TimeStamp() - base::TimeDelta::FromMilliseconds(
-                              blink::mojom::kMinScreenRectStableTimeMs) <
+  if (event.TimeStamp() -
+          base::Milliseconds(blink::mojom::kMinScreenRectStableTimeMs) <
       screen_rect_stable_since_) {
     return true;
   }

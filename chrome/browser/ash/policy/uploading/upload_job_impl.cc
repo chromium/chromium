@@ -391,16 +391,15 @@ void UploadJobImpl::HandleError(ErrorCode error_code) {
           FROM_HERE,
           base::BindOnce(&UploadJobImpl::RequestAccessToken,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(g_retry_delay_ms));
+          base::Milliseconds(g_retry_delay_ms));
     } else {
       // Retry without a new token.
       state_ = ACQUIRING_TOKEN;
       SYSLOG(WARNING) << "Retrying upload with the same token.";
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&UploadJobImpl::StartUpload,
-                         weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(g_retry_delay_ms));
+      task_runner_->PostDelayedTask(FROM_HERE,
+                                    base::BindOnce(&UploadJobImpl::StartUpload,
+                                                   weak_factory_.GetWeakPtr()),
+                                    base::Milliseconds(g_retry_delay_ms));
     }
   }
 }

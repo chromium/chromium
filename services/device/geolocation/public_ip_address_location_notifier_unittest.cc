@@ -164,7 +164,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, OlderQueryReturnsCached) {
 
   // Second query for an earlier time.
   TestPositionQuery query_2;
-  notifier_.QueryNextPosition(time - base::TimeDelta::FromMinutes(5),
+  notifier_.QueryNextPosition(time - base::Minutes(5),
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_2.MakeCallback());
   // Expect a cached result, so no new network request.
@@ -230,7 +230,7 @@ TEST_F(PublicIpAddressLocationNotifierTest,
   for (int i = 0; i < 10; ++i) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_UNKNOWN);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+    task_environment_.FastForwardBy(base::Seconds(5));
   }
   // Expect still no network request or callback.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());

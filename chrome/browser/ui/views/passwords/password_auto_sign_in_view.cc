@@ -91,6 +91,5 @@ void PasswordAutoSignInView::OnTimer() {
 }
 
 base::TimeDelta PasswordAutoSignInView::GetTimeout() {
-  return base::TimeDelta::FromSeconds(
-      PasswordAutoSignInView::auto_signin_toast_timeout_);
+  return base::Seconds(PasswordAutoSignInView::auto_signin_toast_timeout_);
 }

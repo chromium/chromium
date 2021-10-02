@@ -66,12 +66,10 @@ constexpr char kPageDragScrollInTabletMaxLatencyHistogram[] =
     "TabletMode";
 
 // Delay in milliseconds to do the page flip in fullscreen app list.
-constexpr base::TimeDelta kPageFlipDelay =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kPageFlipDelay = base::Milliseconds(500);
 
 // Duration for page transition.
-constexpr base::TimeDelta kPageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kPageTransitionDuration = base::Milliseconds(250);
 
 // The size of the zone within which app list item drag events will trigger a
 // page flip.
@@ -82,7 +80,7 @@ constexpr int kDefaultFadeoutMaskHeight = 16;
 
 // Duration for overscroll page transition.
 constexpr base::TimeDelta kOverscrollPageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Vertical padding between the apps grid pages.
 constexpr int kPaddingBetweenPages = 48;
@@ -1170,7 +1168,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
     animator.SetTweenType(kCardifiedStateTweenType);
     if (!cardified_state_) {
       animator.SetTransitionDuration(
-          base::TimeDelta::FromMilliseconds(kDefaultAnimationDuration));
+          base::Milliseconds(kDefaultAnimationDuration));
     }
     // When the animations are done, discard the layer and reset view to
     // proper scale.
@@ -1191,7 +1189,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
     if (!cardified_state_) {
       animator.SetTransitionDuration(
-          base::TimeDelta::FromMilliseconds(kDefaultAnimationDuration));
+          base::Milliseconds(kDefaultAnimationDuration));
     }
     animator.AddObserver(this);
     ui::AnimationThroughputReporter reporter(

@@ -20,7 +20,7 @@ using MountFailure = DriveFsSession::MountObserver::MountFailure;
 constexpr char kDataDirOption[] = "datadir=";
 constexpr char kMyFilesOption[] = "myfiles=";
 constexpr char kMountScheme[] = "drivefs://";
-constexpr base::TimeDelta kMountTimeout = base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kMountTimeout = base::Seconds(20);
 
 class DiskMounterImpl : public DiskMounter {
  public:

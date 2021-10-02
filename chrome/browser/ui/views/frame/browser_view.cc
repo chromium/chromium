@@ -1846,7 +1846,7 @@ void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
       FROM_HERE,
       base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
                      GetAsWeakPtr()),
-      base::TimeDelta::FromMinutes(5));
+      base::Minutes(5));
 }
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
@@ -2948,8 +2948,8 @@ void BrowserView::RevealTabStripIfNeeded() {
           ImmersiveModeController::ANIMATE_REVEAL_YES));
   auto delete_revealer = base::BindOnce(
       [](std::unique_ptr<ImmersiveRevealedLock>) {}, std::move(revealer));
-  constexpr auto kDefaultDelay = base::TimeDelta::FromSeconds(1);
-  constexpr auto kZeroDelay = base::TimeDelta::FromSeconds(0);
+  constexpr auto kDefaultDelay = base::Seconds(1);
+  constexpr auto kZeroDelay = base::Seconds(0);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, std::move(delete_revealer),
       g_disable_revealer_delay_for_testing ? kZeroDelay : kDefaultDelay);
@@ -3547,9 +3547,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   // moving the window to the target display; see http://crbug.com/1210548
   base::TimeDelta delay;
   if (swapping_screens_during_fullscreen)
-    delay = base::TimeDelta::FromMilliseconds(1000);
+    delay = base::Milliseconds(1000);
   else if (entering_cross_screen_fullscreen)
-    delay = base::TimeDelta::FromMilliseconds(1);
+    delay = base::Milliseconds(1);
   frame_->SetFullscreen(fullscreen, delay);
 #else   // OS_MAC
   frame_->SetFullscreen(fullscreen);

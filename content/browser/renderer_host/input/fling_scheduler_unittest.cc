@@ -149,7 +149,7 @@ TEST_F(FlingSchedulerTest, ScheduleNextFlingProgress) {
   EXPECT_EQ(fling_scheduler_->compositor(),
             fling_scheduler_->observed_compositor());
 
-  progress_time += base::TimeDelta::FromMilliseconds(17);
+  progress_time += base::Milliseconds(17);
   fling_controller_->ProgressFling(progress_time);
   EXPECT_TRUE(fling_scheduler_->fling_in_progress());
 }

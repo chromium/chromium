@@ -115,10 +115,10 @@ base::TimeDelta TestTimeLimit() {
     int delay_millis;
     if (base::StringToInt(delay_millis_string, &delay_millis) &&
         delay_millis > 0) {
-      return base::TimeDelta::FromMilliseconds(delay_millis);
+      return base::Milliseconds(delay_millis);
     }
   }
-  return base::TimeDelta::FromSeconds(3);
+  return base::Seconds(3);
 }
 
 }  // namespace

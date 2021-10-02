@@ -476,8 +476,7 @@ TEST_F(FtlMessageReceptionChannelTest, TimeoutIncreasesToMaximum) {
                 time_until_retry - FtlServicesContext::kBackoffMaxDelay;
 
             // Adjust for fuzziness.
-            if (max_delay_diff.magnitude() <
-                base::TimeDelta::FromMilliseconds(500)) {
+            if (max_delay_diff.magnitude() < base::Milliseconds(500)) {
               hitting_max_delay_count++;
             }
 

@@ -23,7 +23,7 @@ const int kFrameLengthMs = 10;
 const int kSamplesPerFrame = kSamplingRate * kFrameLengthMs / 1000;
 
 constexpr base::TimeDelta kPollInterval =
-    base::TimeDelta::FromMilliseconds(5 * kFrameLengthMs);
+    base::Milliseconds(5 * kFrameLengthMs);
 const int kChannels = 2;
 const int kBytesPerSample = 2;
 

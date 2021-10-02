@@ -24,7 +24,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kWaitTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kWaitTimeout = base::Seconds(5);
 
 // Returns whether all information needed (locale and account capabilities)
 // has been fetched.

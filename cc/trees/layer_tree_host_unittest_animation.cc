@@ -2318,7 +2318,7 @@ class LayerTreeHostAnimationTestChangeAnimation
       KeyframeModel* keyframe_model =
           animation_child_->GetKeyframeModel(TargetProperty::TRANSFORM);
       keyframe_model->set_start_time(base::TimeTicks::Now() +
-                                     base::TimeDelta::FromSecondsD(1000));
+                                     base::Seconds(1000));
       keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
     }
   }

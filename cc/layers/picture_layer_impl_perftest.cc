@@ -39,7 +39,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
  public:
   PictureLayerImplPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   PictureLayerImplPerfTest(const PictureLayerImplPerfTest&) = delete;

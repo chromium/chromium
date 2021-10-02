@@ -27,7 +27,7 @@ class RTreePerfTest : public testing::Test {
  public:
   RTreePerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void RunConstructTest(const std::string& test_name, int rect_count) {

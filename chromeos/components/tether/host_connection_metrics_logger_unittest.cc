@@ -18,7 +18,7 @@ namespace chromeos {
 namespace tether {
 
 namespace {
-constexpr base::TimeDelta kConnectToHostTime = base::TimeDelta::FromSeconds(13);
+constexpr base::TimeDelta kConnectToHostTime = base::Seconds(13);
 const char kTetherNetworkGuid[] = "tetherNetworkGuid";
 const char kWifiNetworkGuid[] = "wifiNetworkGuid";
 }  // namespace

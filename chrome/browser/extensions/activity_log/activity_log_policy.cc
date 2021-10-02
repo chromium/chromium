@@ -131,8 +131,7 @@ base::Time ActivityLogPolicy::Util::AddDays(const base::Time& base_date,
                                             int days) {
   // To allow for time zone changes, add an additional partial day then round
   // down to midnight.
-  return (base_date + base::TimeDelta::FromDays(days) +
-          base::TimeDelta::FromHours(4)).LocalMidnight();
+  return (base_date + base::Days(days) + base::Hours(4)).LocalMidnight();
 }
 
 // static

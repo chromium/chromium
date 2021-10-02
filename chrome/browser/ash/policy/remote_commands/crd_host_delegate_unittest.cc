@@ -338,8 +338,7 @@ TEST_F(CrdHostDelegateTest, ShouldReportErrorIfStartSessionReturnsError) {
 TEST_F(CrdHostDelegateTest, ShouldReturnAccessCode) {
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-  observer.OnHostStateReceivedAccessCode("the-access-code",
-                                         base::TimeDelta::FromDays(1));
+  observer.OnHostStateReceivedAccessCode("the-access-code", base::Days(1));
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasAccessCode());
@@ -422,8 +421,7 @@ TEST_F(CrdHostDelegateTest, TerminateSessionShouldTerminateTheActiveSession) {
 TEST_F(CrdHostDelegateTest, ShouldNotCrashIfCrdHostSendsMultipleResponses) {
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-  observer.OnHostStateReceivedAccessCode("access-code",
-                                         base::TimeDelta::FromDays(1));
+  observer.OnHostStateReceivedAccessCode("access-code", base::Days(1));
   observer.OnHostStateStarting();
   observer.OnHostStateDisconnected(absl::nullopt);
   observer.OnHostStateError(1);

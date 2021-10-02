@@ -688,7 +688,7 @@ TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EXPECT_EQ(num_pending_tasks + 1, task_runner_->NumPendingTasks());
 
   // To avoid flakiness, yield until we're over a microsecond threshold.
-  YieldUntil(initial_last_live_time + base::TimeDelta::FromMicroseconds(2));
+  YieldUntil(initial_last_live_time + base::Microseconds(2));
 
   task_runner_->RunPendingTasks();
 
@@ -698,7 +698,7 @@ TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EXPECT_LT(initial_last_live_time, updated_last_live_time);
 
   // Double check that an update schedules again...
-  YieldUntil(updated_last_live_time + base::TimeDelta::FromMicroseconds(2));
+  YieldUntil(updated_last_live_time + base::Microseconds(2));
 
   task_runner_->RunPendingTasks();
   EXPECT_LT(

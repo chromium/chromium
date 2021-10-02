@@ -33,7 +33,7 @@ namespace {
 
 constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
 constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 }  // namespace
 
@@ -290,7 +290,7 @@ MojoURLLoaderClient::MojoURLLoaderClient(
     const GURL& request_url,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : back_forward_cache_timeout_(
-          base::TimeDelta::FromSeconds(GetLoadingTasksUnfreezableParamAsInt(
+          base::Seconds(GetLoadingTasksUnfreezableParamAsInt(
               "grace_period_to_finish_loading_in_seconds",
               static_cast<int>(
                   kGracePeriodToFinishLoadingWhileInBackForwardCache

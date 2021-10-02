@@ -50,23 +50,21 @@ class GoogleSearchDomainMixingMetricsEmitterTest : public testing::Test {
   void SetUpTestHistory(base::Time last_metrics_time) {
     // Out of range for the 30 day domain mixing metric.
     history_service_->AddPage(GURL("https://www.google.de/search?q=foo"),
-                              last_metrics_time - base::TimeDelta::FromDays(30),
+                              last_metrics_time - base::Days(30),
                               history::SOURCE_BROWSED);
     // First event in range for the 30 day domain mixing metric.
     history_service_->AddPage(GURL("https://www.google.fr/search?q=foo"),
-                              last_metrics_time - base::TimeDelta::FromDays(29),
+                              last_metrics_time - base::Days(29),
                               history::SOURCE_BROWSED);
     history_service_->AddPage(GURL("https://www.google.com/search?q=foo"),
                               last_metrics_time, history::SOURCE_BROWSED);
-    history_service_->AddPage(
-        GURL("https://www.google.com/search?q=foo"),
-        last_metrics_time + base::TimeDelta::FromHours(23),
-        history::SOURCE_BROWSED);
+    history_service_->AddPage(GURL("https://www.google.com/search?q=foo"),
+                              last_metrics_time + base::Hours(23),
+                              history::SOURCE_BROWSED);
     // Out of range for the day of metrics to compute.
-    history_service_->AddPage(
-        GURL("https://www.google.ch/search?q=foo"),
-        last_metrics_time + base::TimeDelta::FromHours(24),
-        history::SOURCE_BROWSED);
+    history_service_->AddPage(GURL("https://www.google.ch/search?q=foo"),
+                              last_metrics_time + base::Hours(24),
+                              history::SOURCE_BROWSED);
   }
 
   void VerifyHistograms(const base::HistogramTester& tester) {
@@ -103,7 +101,7 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterTest, FirstStart) {
       prefs_.GetTime(GoogleSearchDomainMixingMetricsEmitter::kLastMetricsTime));
   // The next metric calculation should be scheduled at 4am on the next day,
   // i.e. 16 hours from |now|.
-  EXPECT_EQ(base::TimeDelta::FromHours(16),
+  EXPECT_EQ(base::Hours(16),
             task_environment_.NextMainThreadPendingTaskDelay());
 }
 
@@ -113,11 +111,11 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterTest, Waits10SecondsAfterStart) {
   clock_->SetNow(now);
   // Metrics were last computed a day ago and need to be recomputed immediately.
   prefs_.SetTime(GoogleSearchDomainMixingMetricsEmitter::kLastMetricsTime,
-                 now - base::TimeDelta::FromDays(1));
+                 now - base::Days(1));
 
   emitter_->Start();
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10),
+  EXPECT_EQ(base::Seconds(10),
             task_environment_.NextMainThreadPendingTaskDelay());
 }
 
@@ -128,11 +126,11 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterTest, WaitsUntilNeeded) {
   // Metrics were last computed an hour ago and the emitter should wait 23 hours
   // before emitting new metrics.
   prefs_.SetTime(GoogleSearchDomainMixingMetricsEmitter::kLastMetricsTime,
-                 now - base::TimeDelta::FromHours(1));
+                 now - base::Hours(1));
 
   emitter_->Start();
 
-  EXPECT_EQ(base::TimeDelta::FromHours(23),
+  EXPECT_EQ(base::Hours(23),
             task_environment_.NextMainThreadPendingTaskDelay());
 }
 
@@ -160,8 +158,7 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterTest,
 
   // Fast forward far enough that histograms have been written to for all
   // intervals.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromDays(history::kOneMonth));
+  task_environment_.FastForwardBy(base::Days(history::kOneMonth));
   BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   VerifyHistograms(tester);
 }
@@ -185,18 +182,17 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterTest,
 
   // Fast forward far enough that histograms have been written to for all
   // intervals.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromDays(history::kOneMonth));
+  task_environment_.FastForwardBy(base::Days(history::kOneMonth));
   BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
   // last_metrics_time is expected to have been incremented.
-  last_metrics_time += base::TimeDelta::FromDays(1);
+  last_metrics_time += base::Days(1);
   EXPECT_EQ(
       last_metrics_time,
       prefs_.GetTime(GoogleSearchDomainMixingMetricsEmitter::kLastMetricsTime));
 
   // The timer is expected to trigger a day later.
-  EXPECT_EQ(base::TimeDelta::FromDays(1), timer_->GetCurrentDelay());
+  EXPECT_EQ(base::Days(1), timer_->GetCurrentDelay());
 
   // A day later, metrics should be recomputed without a call to Start() when
   // the timer triggers.
@@ -209,13 +205,12 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterTest,
   base::HistogramTester tester;
   // Fast forward far enough that histograms have been written to for all
   // intervals.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromDays(history::kOneMonth));
+  task_environment_.FastForwardBy(base::Days(history::kOneMonth));
   BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   VerifyHistograms(tester);
 
   // last_metrics_time is expected to have been incremented.
-  last_metrics_time += base::TimeDelta::FromDays(1);
+  last_metrics_time += base::Days(1);
   EXPECT_EQ(
       last_metrics_time,
       prefs_.GetTime(GoogleSearchDomainMixingMetricsEmitter::kLastMetricsTime));

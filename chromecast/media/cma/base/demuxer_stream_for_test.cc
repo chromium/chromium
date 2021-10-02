@@ -38,7 +38,7 @@ void DemuxerStreamForTest::Read(ReadCB read_cb) {
         FROM_HERE,
         base::BindOnce(&DemuxerStreamForTest::DoRead, base::Unretained(this),
                        std::move(read_cb)),
-        base::TimeDelta::FromMilliseconds(20));
+        base::Milliseconds(20));
     return;
   }
   DoRead(std::move(read_cb));
@@ -77,8 +77,8 @@ void DemuxerStreamForTest::DoRead(ReadCB read_cb) {
   }
 
   scoped_refptr<::media::DecoderBuffer> buffer(new ::media::DecoderBuffer(16));
-  buffer->set_timestamp(frame_count_ * base::TimeDelta::FromMilliseconds(
-                                           kDemuxerStreamForTestFrameDuration));
+  buffer->set_timestamp(frame_count_ *
+                        base::Milliseconds(kDemuxerStreamForTestFrameDuration));
   frame_count_++;
   std::move(read_cb).Run(kOk, buffer);
 }

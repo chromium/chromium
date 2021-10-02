@@ -947,7 +947,7 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
         FROM_HERE,
         base::BindOnce(&WiFiServiceImpl::WaitForNetworkConnect,
                        base::Unretained(this), network_guid, ++attempt),
-        base::TimeDelta::FromMilliseconds(kAttemptDelayMs));
+        base::Milliseconds(kAttemptDelayMs));
   }
 }
 

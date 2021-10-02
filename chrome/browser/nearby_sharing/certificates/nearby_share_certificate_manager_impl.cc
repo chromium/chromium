@@ -36,8 +36,7 @@ namespace {
 
 const char kDeviceIdPrefix[] = "users/me/devices/";
 
-constexpr base::TimeDelta kListPublicCertificatesTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kListPublicCertificatesTimeout = base::Seconds(30);
 
 constexpr std::array<nearby_share::mojom::Visibility, 2> kVisibilities = {
     nearby_share::mojom::Visibility::kAllContacts,

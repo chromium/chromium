@@ -212,7 +212,7 @@ TEST_F(PersistentKeyValueStoreTest, PutAndGetAreQueuedWhileEvicting) {
 
 TEST_F(PersistentKeyValueStoreTest, EvictOldEntriesDeletesOldEntriesFirst) {
   Put("1", "x");
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   Put("2", "x");
 
   SetMaxSizeBeforeEviction(1);
@@ -224,7 +224,7 @@ TEST_F(PersistentKeyValueStoreTest, EvictOldEntriesDeletesOldEntriesFirst) {
 TEST_F(PersistentKeyValueStoreTest,
        EvictOldEntriesDeletesOldEntriesFirstReverseKeys) {
   Put("2", "x");
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   Put("1", "x");
 
   SetMaxSizeBeforeEviction(1);
@@ -253,8 +253,7 @@ TEST_F(PersistentKeyValueStoreTest, EvictOldEntriesDeleteFutureEntriesFirst) {
       feedkvstore::Entry new_entry;
       new_entry.set_value("2");
       new_entry.set_modification_time(
-          (base::Time::Now().ToDeltaSinceWindowsEpoch() +
-           base::TimeDelta::FromMinutes(1))
+          (base::Time::Now().ToDeltaSinceWindowsEpoch() + base::Minutes(1))
               .InMilliseconds());
       entries_to_save->emplace_back("key2", std::move(new_entry));
     }
@@ -282,7 +281,7 @@ TEST_F(PersistentKeyValueStoreTest, EvictOldEntriesManyEntries) {
     // Make key order different than insertion order.
     int key = hash_int(i);
     Put(base::NumberToString(key), "x");
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   SetMaxSizeBeforeEviction(kFinalEntryCount);
@@ -301,7 +300,7 @@ TEST_F(PersistentKeyValueStoreTest, EvictOldEntriesExactlyMaxEntriesInMemory) {
     // Make key order different than insertion order.
     int key = hash_int(i);
     Put(base::NumberToString(key), "x");
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   SetMaxSizeBeforeEviction(kMaxEntriesInMemory - 1);
@@ -319,7 +318,7 @@ TEST_F(PersistentKeyValueStoreTest, EvictOldEntriesMaxEntriesInMemoryPlusOne) {
     // Make key order different than insertion order.
     int key = hash_int(i);
     Put(base::NumberToString(key), "x");
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   SetMaxSizeBeforeEviction(kMaxEntriesInMemory + 1 - 1);
@@ -354,7 +353,7 @@ TEST_F(PersistentKeyValueStoreTest, DeleteStoreWhileEvictOldEntriesIsRunning) {
     MakeStore();
     for (int i = 0; i < kMaxEntriesInMemory + 1; ++i) {
       Put(base::NumberToString(i), "x");
-      task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+      task_environment_.FastForwardBy(base::Seconds(1));
     }
     // Call EvictOldEntries(), and then eventually delete the store while
     // EvictOldEntries() is running. If EvictOldEntries() completes first,
@@ -402,7 +401,7 @@ TEST_F(PersistentKeyValueStoreTest, DataStoreCleansOldDataAutomatically) {
   for (int i = 0;; ++i) {
     ASSERT_LT(i, 1000);
     Put(base::NumberToString(i), "1234567890");
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
     if (Get("0") == "<not-found>")
       break;
   }

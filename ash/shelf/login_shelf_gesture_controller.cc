@@ -30,21 +30,20 @@ constexpr float kVelocityToHomeScreenThreshold = 1000.f;
 // The delay between the time the login shelf gesture nudge is shown, and the
 // time it starts animating.
 constexpr base::TimeDelta kNudgeAnimationEntranceDelay =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // The duration of different parts of the nudge animation.
 constexpr base::TimeDelta kNudgeAnimationStageDuration =
-    base::TimeDelta::FromMilliseconds(600);
+    base::Milliseconds(600);
 
 // The duration of the animation that moves the drag handle and the contextual
 // nudge to their initial position when the user cancels the nudge animation by
 // tapping the contextual nudge.
-constexpr base::TimeDelta kNudgeStopAnimationDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kNudgeStopAnimationDuration = base::Milliseconds(150);
 
 // The interval between the end of one nudge animation sequence, and the start
 // of the next nudge animation sequence.
-constexpr base::TimeDelta kAnimationInterval = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kAnimationInterval = base::Seconds(5);
 
 // The offset drag handle and nudge widget have from the default position during
 // the nudge animation sequence.

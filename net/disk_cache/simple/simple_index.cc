@@ -86,7 +86,7 @@ base::Time EntryMetadata::GetLastUsedTime() const {
     return base::Time();
 
   return base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(last_used_time_seconds_since_epoch_);
+         base::Seconds(last_used_time_seconds_since_epoch_);
 }
 
 void EntryMetadata::SetLastUsedTime(const base::Time& last_used_time) {
@@ -519,8 +519,8 @@ void SimpleIndex::PostponeWritingToDisk() {
   const int delay = app_on_background_ ? kWriteToDiskOnBackgroundDelayMSecs
                                        : kWriteToDiskDelayMSecs;
   // If the timer is already active, Start() will just Reset it, postponing it.
-  write_to_disk_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(delay), write_to_disk_cb_);
+  write_to_disk_timer_.Start(FROM_HERE, base::Milliseconds(delay),
+                             write_to_disk_cb_);
 }
 
 bool SimpleIndex::UpdateEntryIteratorSize(

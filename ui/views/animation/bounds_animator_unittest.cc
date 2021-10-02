@@ -157,7 +157,7 @@ class BoundsAnimatorTest : public testing::Test {
  protected:
   void RecreateAnimator(bool use_transforms) {
     animator_ = std::make_unique<BoundsAnimator>(&parent_, use_transforms);
-    animator_->SetAnimationDuration(base::TimeDelta::FromMilliseconds(10));
+    animator_->SetAnimationDuration(base::Milliseconds(10));
   }
 
   // Animates |child_| to |target_bounds|. Returns the repaint time.
@@ -168,7 +168,7 @@ class BoundsAnimatorTest : public testing::Test {
     child()->set_repaint_count(0);
 
     const base::TimeDelta animation_duration =
-        base::TimeDelta::FromMilliseconds(use_long_duration ? 2000 : 10);
+        base::Milliseconds(use_long_duration ? 2000 : 10);
     animator()->SetAnimationDuration(animation_duration);
 
     animator()->AnimateViewTo(child(), target_bounds);
@@ -402,7 +402,7 @@ TEST_F(BoundsAnimatorTest, UseTransformsCancelAnimation) {
 
   child()->SetBoundsRect(initial_bounds);
 
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta duration = base::Milliseconds(200);
   animator()->SetAnimationDuration(duration);
   // Use a linear tween so we can estimate the expected bounds.
   animator()->set_tween_type(gfx::Tween::LINEAR);
@@ -415,7 +415,7 @@ TEST_F(BoundsAnimatorTest, UseTransformsCancelAnimation) {
   // Stop halfway and cancel. The child should have its bounds updated to
   // exactly halfway between |initial_bounds| and |target_bounds|.
   const gfx::Rect expected_bounds(5, 5, 10, 10);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(initial_bounds, child()->bounds());
   animator()->Cancel();
   EXPECT_EQ(expected_bounds, child()->bounds());
@@ -434,8 +434,7 @@ TEST_F(BoundsAnimatorTest, VerifyBoundsAnimatorUnderRTL) {
   child()->SetBoundsRect(initial_bounds);
   const gfx::Rect target_bounds(10, 10, 10, 10);
 
-  const base::TimeDelta animation_duration =
-      base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta animation_duration = base::Milliseconds(10);
   animator()->SetAnimationDuration(animation_duration);
   child()->set_repaint_count(0);
   animator()->AnimateViewTo(child(), target_bounds);

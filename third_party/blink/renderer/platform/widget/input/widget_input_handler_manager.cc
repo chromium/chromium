@@ -48,8 +48,7 @@ namespace {
 // To avoid blocking the main thread, we need a timer to send the data
 // intermittently. The time delay of the timer is 10X of the threshold of
 // long tasks which block the main thread 50 ms or longer.
-const base::TimeDelta kEventCountsTimerDelay =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta kEventCountsTimerDelay = base::Milliseconds(500);
 
 mojom::blink::DidOverscrollParamsPtr ToDidOverscrollParams(
     const InputHandlerProxy::DidOverscrollParams* overscroll_params) {

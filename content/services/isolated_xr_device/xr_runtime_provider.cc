@@ -26,8 +26,7 @@ enum class IsolatedXRRuntimeProvider::RuntimeStatus {
 
 namespace {
 // Poll for device add/remove every 5 seconds.
-constexpr base::TimeDelta kTimeBetweenPollingEvents =
-    base::TimeDelta::FromSecondsD(5);
+constexpr base::TimeDelta kTimeBetweenPollingEvents = base::Seconds(5);
 
 template <typename VrDeviceT>
 std::unique_ptr<VrDeviceT> CreateDevice() {

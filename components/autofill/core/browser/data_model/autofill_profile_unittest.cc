@@ -2334,7 +2334,7 @@ TEST_P(AutofillProfileTest, IsDeletable) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(25000000000);
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::TimeDelta::FromDays(1));
+                    base::Days(1));
 
   // Created a profile that has not been used since over the deletion threshold.
   AutofillProfile profile = test::GetFullProfile();
@@ -2502,7 +2502,7 @@ TEST_P(HasGreaterFrescocencyTest, PriorityCheck) {
   profile_valid.set_use_count(10);
 
   const base::Time now = AutofillClock::Now();
-  const base::Time past = now - base::TimeDelta::FromDays(1);
+  const base::Time past = now - base::Days(1);
 
   profile_invalid.set_use_date(now);
   profile_valid.set_use_date(past);

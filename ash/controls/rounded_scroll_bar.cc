@@ -25,11 +25,9 @@ constexpr int kScrollThumbThicknessDp = 8;
 // Radius of the scroll bar thumb.
 constexpr int kScrollThumbRadiusDp = 4;
 // How long for the scrollbar to hide after no scroll events have been received?
-constexpr base::TimeDelta kScrollThumbHideTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kScrollThumbHideTimeout = base::Milliseconds(500);
 // How long for the scrollbar to fade away?
-constexpr base::TimeDelta kScrollThumbFadeDuration =
-    base::TimeDelta::FromMilliseconds(240);
+constexpr base::TimeDelta kScrollThumbFadeDuration = base::Milliseconds(240);
 // Opacity values from go/semantic-color-system for "Scrollbar".
 constexpr float kDefaultOpacity = 0.38f;
 constexpr float kActiveOpacity = 1.0f;

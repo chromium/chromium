@@ -176,13 +176,13 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   };
 
   for (wtf_size_t i = 0; i < buffer_size; ++i) {
-    base::TimeDelta timestamp = base::TimeDelta::FromSeconds(i);
+    base::TimeDelta timestamp = base::Seconds(i);
     push_frame_sync(timestamp);
   }
 
   // Push another frame while the queue is full.
   // EXPECT_EQ(queue.size(), buffer_size);
-  push_frame_sync(base::TimeDelta::FromSeconds(buffer_size));
+  push_frame_sync(base::Seconds(buffer_size));
 
   // Since the queue was full, the oldest frame from the queue (timestamp 0)
   // should have been dropped.
@@ -192,8 +192,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   for (wtf_size_t i = 1; i <= buffer_size; ++i) {
     VideoFrame* video_frame =
         ReadObjectFromStream<VideoFrame>(v8_scope, reader);
-    EXPECT_EQ(base::TimeDelta::FromMicroseconds(*video_frame->timestamp()),
-              base::TimeDelta::FromSeconds(i));
+    EXPECT_EQ(base::Microseconds(*video_frame->timestamp()), base::Seconds(i));
   }
 
   // Pulling causes a pending pull since there are no frames available for

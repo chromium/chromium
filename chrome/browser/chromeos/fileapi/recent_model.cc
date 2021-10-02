@@ -30,12 +30,12 @@ namespace chromeos {
 namespace {
 
 // Cut-off time. Files older than this are filtered out.
-constexpr base::TimeDelta kCutoffTimeDelta = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kCutoffTimeDelta = base::Days(30);
 
 // Recent file cache will be cleared this duration after it is built.
 // Note: Do not make this value large. When cache is used, cut-off criteria is
 // not strictly honored.
-constexpr base::TimeDelta kCacheExpiration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kCacheExpiration = base::Seconds(10);
 
 std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
     Profile* profile) {

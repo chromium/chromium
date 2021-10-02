@@ -2194,7 +2194,7 @@ TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
       "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
 
   // Drag down the launcher.
-  timestamp += base::TimeDelta::FromMilliseconds(25);
+  timestamp += base::Milliseconds(25);
   delta_y += 10;
   start.Offset(0, 1);
   ui::GestureEvent update_event = ui::GestureEvent(
@@ -2221,7 +2221,7 @@ TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
 
   // Ends to drag the launcher.
   EXPECT_TRUE(SetAppListState(ash::AppListState::kStateApps));
-  timestamp += base::TimeDelta::FromMilliseconds(25);
+  timestamp += base::Milliseconds(25);
   start.Offset(0, 1);
   ui::GestureEvent end_event =
       ui::GestureEvent(start.x(), start.y() + delta_y, ui::EF_NONE, timestamp,

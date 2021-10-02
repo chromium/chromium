@@ -253,8 +253,7 @@ void HistoryClustersHandler::RemoveVisits(
         std::set<GURL>(visit_ptr->raw_urls.begin(), visit_ptr->raw_urls.end());
     // ExpireHistoryArgs::end_time is not inclusive. Make sure all visits in the
     // given timespan are removed by adding 1 second to it.
-    expire_args.end_time =
-        visit_ptr->last_visit_time + base::TimeDelta::FromSeconds(1);
+    expire_args.end_time = visit_ptr->last_visit_time + base::Seconds(1);
     expire_args.begin_time = visit_ptr->first_visit_time;
   }
   auto* history_clusters_service =

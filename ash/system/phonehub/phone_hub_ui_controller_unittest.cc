@@ -22,8 +22,7 @@ namespace ash {
 
 constexpr char kUser1Email[] = "user1@test.com";
 constexpr char kUser2Email[] = "user2@test.com";
-constexpr base::TimeDelta kConnectingViewGracePeriod =
-    base::TimeDelta::FromSeconds(40);
+constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
 class PhoneHubUiControllerTest : public AshTestBase,
                                  public PhoneHubUiController::Observer {

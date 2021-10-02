@@ -191,11 +191,11 @@ void MediaRouterMojoTest::TestCreateRoute() {
   RouteResponseCallbackHandler handler;
   EXPECT_CALL(handler, DoInvoke(Pointee(expected_route), Not(""), "",
                                 RouteRequestResult::OK, _));
-  router()->CreateRoute(
-      kSource, kSinkId, url::Origin::Create(GURL(kOrigin)), nullptr,
-      base::BindOnce(&RouteResponseCallbackHandler::Invoke,
-                     base::Unretained(&handler)),
-      base::TimeDelta::FromMilliseconds(kTimeoutMillis), false);
+  router()->CreateRoute(kSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
+                        nullptr,
+                        base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                                       base::Unretained(&handler)),
+                        base::Milliseconds(kTimeoutMillis), false);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -221,8 +221,7 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
   EXPECT_CALL(mock_cast_provider_,
               JoinRouteInternal(
                   kSource, presentation_id, url::Origin::Create(GURL(kOrigin)),
-                  kInvalidTabId,
-                  base::TimeDelta::FromMilliseconds(kTimeoutMillis), _, _))
+                  kInvalidTabId, base::Milliseconds(kTimeoutMillis), _, _))
       .WillOnce(
           Invoke([&route](const std::string& source,
                           const std::string& presentation_id,
@@ -240,7 +239,7 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
                       url::Origin::Create(GURL(kOrigin)), nullptr,
                       base::BindOnce(&RouteResponseCallbackHandler::Invoke,
                                      base::Unretained(&handler)),
-                      base::TimeDelta::FromMilliseconds(kTimeoutMillis), false);
+                      base::Milliseconds(kTimeoutMillis), false);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -259,8 +258,7 @@ void MediaRouterMojoTest::TestConnectRouteByRouteId() {
   EXPECT_CALL(mock_cast_provider_,
               ConnectRouteByRouteIdInternal(
                   kSource, kRouteId, _, url::Origin::Create(GURL(kOrigin)),
-                  kInvalidTabId,
-                  base::TimeDelta::FromMilliseconds(kTimeoutMillis), false, _))
+                  kInvalidTabId, base::Milliseconds(kTimeoutMillis), false, _))
       .WillOnce(Invoke(
           [&route](const std::string& source, const std::string& route_id,
                    const std::string& presentation_id,
@@ -278,7 +276,7 @@ void MediaRouterMojoTest::TestConnectRouteByRouteId() {
       kSource, kRouteId, url::Origin::Create(GURL(kOrigin)), nullptr,
       base::BindOnce(&RouteResponseCallbackHandler::Invoke,
                      base::Unretained(&handler)),
-      base::TimeDelta::FromMilliseconds(kTimeoutMillis), false);
+      base::Milliseconds(kTimeoutMillis), false);
   base::RunLoop().RunUntilIdle();
 }
 

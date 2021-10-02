@@ -138,7 +138,7 @@ void ContentPageAnnotatorDriver::DidDispatchDOMContentLoadedEvent() {
       FROM_HERE,
       base::BindOnce(&ContentPageAnnotatorDriver::FindAndTrackImages,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kDomCrawlDelayMs));
+      base::Milliseconds(kDomCrawlDelayMs));
 }
 
 void ContentPageAnnotatorDriver::OnDestruct() {

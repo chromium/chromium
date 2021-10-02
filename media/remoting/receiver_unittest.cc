@@ -395,7 +395,7 @@ TEST_F(ReceiverTest, RpcRendererMessages) {
   EXPECT_EQ(flush_video_count, mock_remotee_->flush_video_count());
 
   // StartPlayingFrom
-  const base::TimeDelta time = base::TimeDelta::FromSeconds(100);
+  const base::TimeDelta time = base::Seconds(100);
   EXPECT_CALL(*mock_renderer_, StartPlayingFrom(time)).Times(1);
   mock_sender_->SendRpcStartPlayingFrom(time);
   task_environment_.RunUntilIdle();

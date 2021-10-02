@@ -30,7 +30,7 @@ class PortalRecentlyAudibleBrowserTest : public InProcessBrowserTest {
   PortalRecentlyAudibleBrowserTest() = default;
 
   void SetUp() override {
-    EXPECT_GT(TestTimeouts::action_timeout(), base::TimeDelta::FromSeconds(2))
+    EXPECT_GT(TestTimeouts::action_timeout(), base::Seconds(2))
         << "action timeout must be long enough for recently audible indicator "
            "to update";
 

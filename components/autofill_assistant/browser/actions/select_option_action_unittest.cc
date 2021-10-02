@@ -118,8 +118,7 @@ TEST_F(SelectOptionActionTest, CheckExpectedCallChain) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_web_controller_,
@@ -195,8 +194,7 @@ TEST_F(SelectOptionActionTest, SelectOptionFromProfileValue) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(mock_web_controller_,
               SelectOption("John", false, SelectOptionProto::VALUE, false,
                            EqualsElement(test_util::MockFindElement(
@@ -221,8 +219,7 @@ TEST_F(SelectOptionActionTest, SelectRegularExpressionValue) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_web_controller_,
@@ -262,8 +259,7 @@ TEST_F(SelectOptionActionTest, EscapeRegularExpressionAutofillValue) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(
       mock_web_controller_,
       SelectOption("^\\+41791234567$", true, SelectOptionProto::VALUE, false,

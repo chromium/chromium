@@ -277,7 +277,7 @@ void TestUploadDataProvider::Close() {
 }
 
 void TestUploadDataProvider::AssertClosed() {
-  awaiting_close_.TimedWait(base::TimeDelta::FromMilliseconds(5000));
+  awaiting_close_.TimedWait(base::Milliseconds(5000));
   EXPECT_TRUE(closed_.IsSet()) << "Was not closed";
 }
 

@@ -1200,8 +1200,8 @@ TEST_F(DownloadTargetDeterminerTest, VisitedReferrer) {
   GURL url("http://visited.example.com/visited-link.html");
   // The time of visit is picked to be several seconds prior to the most recent
   // midnight.
-  base::Time time_of_visit(
-      base::Time::Now().LocalMidnight() - base::TimeDelta::FromSeconds(10));
+  base::Time time_of_visit(base::Time::Now().LocalMidnight() -
+                           base::Seconds(10));
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);

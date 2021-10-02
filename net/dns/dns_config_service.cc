@@ -25,7 +25,7 @@ namespace net {
 
 // static
 const base::TimeDelta DnsConfigService::kInvalidationTimeout =
-    base::TimeDelta::FromMilliseconds(150);
+    base::Milliseconds(150);
 
 DnsConfigService::DnsConfigService(
     base::FilePath::StringPieceType hosts_file_path,

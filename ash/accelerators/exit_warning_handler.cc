@@ -127,8 +127,7 @@ void ExitWarningHandler::TimerAction() {
 void ExitWarningHandler::StartTimer() {
   if (stub_timer_for_test_)
     return;
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromMilliseconds(kTimeOutMilliseconds), this,
+  timer_.Start(FROM_HERE, base::Milliseconds(kTimeOutMilliseconds), this,
                &ExitWarningHandler::TimerAction);
 }
 

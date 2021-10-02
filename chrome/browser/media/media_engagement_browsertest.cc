@@ -78,7 +78,7 @@ class WasRecentlyAudibleWatcher {
   // Waits until WasRecentlyAudible is true.
   void WaitForWasRecentlyAudible() {
     if (!audible_helper_->WasRecentlyAudible()) {
-      timer_.Start(FROM_HERE, base::TimeDelta::FromMicroseconds(100),
+      timer_.Start(FROM_HERE, base::Microseconds(100),
                    base::BindRepeating(
                        &WasRecentlyAudibleWatcher::TestWasRecentlyAudible,
                        base::Unretained(this)));
@@ -311,7 +311,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
 
   const base::TimeDelta kMaxWaitingTime =
       MediaEngagementContentsObserver::kSignificantMediaPlaybackTime +
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 };
 
 // Class used to test the MEI preload component.
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        DoNotRecordEngagement_NotTime) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   CloseTab();
   ExpectScores(1, 0);
 }
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        MAYBE_DoNotRecordEngagement_NotTime_AudioOnly) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test_audio.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   CloseTab();
   ExpectScores(1, 0);
 }
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        DISABLED_DoNotRecordEngagement_PlaybackStopped) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   ExecuteScript("document.getElementById(\"media\").pause();");
   AdvanceMeaningfulPlaybackTime();
   CloseTab();
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        MAYBE_DoNotRecordEngagement_PlaybackStopped_AudioOnly) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test_audio.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   ExecuteScript("document.getElementById(\"media\").pause();");
   AdvanceMeaningfulPlaybackTime();
   CloseTab();
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_MultipleElements) {
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        RecordAudibleBasedOnShortTime) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
-  Advance(base::TimeDelta::FromSeconds(4));
+  Advance(base::Seconds(4));
   CloseTab();
   ExpectScores(1, 0);
 }

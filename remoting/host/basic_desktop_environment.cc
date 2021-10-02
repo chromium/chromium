@@ -43,8 +43,7 @@ namespace {
 
 // The maximum amount of time we will wait for the IgnoreXServerGrabs() to
 // return before we crash the host.
-constexpr base::TimeDelta kWaitForIgnoreXServerGrabsTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kWaitForIgnoreXServerGrabsTimeout = base::Seconds(30);
 
 // Helper class to monitor the call to
 // webrtc::SharedXDisplay::IgnoreXServerGrabs() (on a temporary thread), which

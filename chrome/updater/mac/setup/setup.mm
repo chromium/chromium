@@ -416,7 +416,7 @@ int PromoteCandidate(UpdaterScope scope) {
     return setup_exit_codes::kFailedToStartLaunchdActiveServiceJob;
 
   // Wait for launchd to finish the load operation for the update service.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+  base::PlatformThread::Sleep(base::Seconds(2));
 
   return setup_exit_codes::kSuccess;
 }

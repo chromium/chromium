@@ -361,7 +361,7 @@ TEST_F(BlobDataHandleTest, CreateFromMergedSmallAndLargeBytes) {
 
 TEST_F(BlobDataHandleTest, CreateFromFileAndFileSystemURL) {
   base::Time timestamp1 = base::Time::Now();
-  base::Time timestamp2 = timestamp1 + base::TimeDelta::FromSeconds(1);
+  base::Time timestamp2 = timestamp1 + base::Seconds(1);
   KURL url(NullURL(), "http://example.com/");
   auto data = std::make_unique<BlobData>();
   data->AppendFile("path", 4, 32, timestamp1);

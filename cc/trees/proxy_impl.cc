@@ -44,7 +44,7 @@ namespace {
 
 // Measured in seconds.
 constexpr auto kSmoothnessTakesPriorityExpirationDelay =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 }  // namespace
 

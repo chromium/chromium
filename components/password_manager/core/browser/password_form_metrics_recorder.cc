@@ -349,18 +349,18 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
           pref_service_->GetTime(prefs::kAccountStoreDateLastUsedForFilling);
 
       bool was_profile_store_used_in_last_7_days =
-          (now - profile_store_last_use) < base::TimeDelta::FromDays(7);
+          (now - profile_store_last_use) < base::Days(7);
       bool was_account_store_used_in_last_7_days =
-          (now - account_store_last_use) < base::TimeDelta::FromDays(7);
+          (now - account_store_last_use) < base::Days(7);
       base::UmaHistogramEnumeration(
           "PasswordManager.StoresUsedForFillingInLast7Days",
           ComputeFillingSource(was_profile_store_used_in_last_7_days,
                                was_account_store_used_in_last_7_days));
 
       bool was_profile_store_used_in_last_28_days =
-          (now - profile_store_last_use) < base::TimeDelta::FromDays(28);
+          (now - profile_store_last_use) < base::Days(28);
       bool was_account_store_used_in_last_28_days =
-          (now - account_store_last_use) < base::TimeDelta::FromDays(28);
+          (now - account_store_last_use) < base::Days(28);
       base::UmaHistogramEnumeration(
           "PasswordManager.StoresUsedForFillingInLast28Days",
           ComputeFillingSource(was_profile_store_used_in_last_28_days,

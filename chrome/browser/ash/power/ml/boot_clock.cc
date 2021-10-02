@@ -15,8 +15,7 @@ namespace ml {
 
 BootClock::BootClock()
     : mock_boot_time_(base::subtle::ScopedTimeClockOverrides::overrides_active()
-                          ? base::TimeTicks::Now() -
-                                base::TimeDelta::FromMinutes(5)
+                          ? base::TimeTicks::Now() - base::Minutes(5)
                           : base::TimeTicks()) {}
 
 BootClock::~BootClock() = default;

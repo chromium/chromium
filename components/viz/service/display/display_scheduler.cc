@@ -226,8 +226,7 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
 
 int DisplayScheduler::MaxPendingSwaps() const {
   // Interval for 120hz with some delta for margin of error.
-  constexpr base::TimeDelta k120HzInterval =
-      base::TimeDelta::FromMicroseconds(8500);
+  constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
   if (current_begin_frame_args_.interval > k120HzInterval ||
       !max_pending_swaps_120hz_) {
     return max_pending_swaps_;

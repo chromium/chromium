@@ -50,8 +50,7 @@ TEST_F(AudioStreamHandlerTest, Play) {
       std::make_unique<AudioStreamHandler>(base::DoNothing(), data);
 
   ASSERT_TRUE(audio_stream_handler->IsInitialized());
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(20u),
-            audio_stream_handler->duration());
+  EXPECT_EQ(base::Microseconds(20u), audio_stream_handler->duration());
 
   ASSERT_TRUE(audio_stream_handler->Play());
 
@@ -75,20 +74,19 @@ TEST_F(AudioStreamHandlerTest, ConsecutivePlayRequests) {
       std::make_unique<AudioStreamHandler>(base::DoNothing(), data);
 
   ASSERT_TRUE(audio_stream_handler->IsInitialized());
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(20u),
-            audio_stream_handler->duration());
+  EXPECT_EQ(base::Microseconds(20u), audio_stream_handler->duration());
 
   ASSERT_TRUE(audio_stream_handler->Play());
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&AudioStreamHandler::Play),
                      base::Unretained(audio_stream_handler.get())),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AudioStreamHandler::Stop,
                      base::Unretained(audio_stream_handler.get())),
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
 
   run_loop.Run();
 

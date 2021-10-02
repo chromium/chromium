@@ -236,7 +236,7 @@ void ExternalAudioDecoderWrapper::DecodeDeferred(
     ConvertToS16(decoded.get());
   }
 
-  decoded->set_timestamp(base::TimeDelta::FromMicroseconds(data->timestamp()));
+  decoded->set_timestamp(base::Microseconds(data->timestamp()));
   std::move(decode_callback).Run(kDecodeOk, output_config_, std::move(decoded));
 }
 

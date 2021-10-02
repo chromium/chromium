@@ -22,12 +22,10 @@ constexpr int kMinimumArtworkSize = 30;
 constexpr int kDisiredArtworkSize = 48;
 
 // Time to wait for new media session.
-constexpr base::TimeDelta kFreezeControlsTime =
-    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kFreezeControlsTime = base::Milliseconds(2000);
 
 // Time to wait for new artwork.
-constexpr base::TimeDelta kHideArtworkDelay =
-    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kHideArtworkDelay = base::Milliseconds(2000);
 
 }  // namespace
 

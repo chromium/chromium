@@ -309,11 +309,9 @@ TEST_P(SystemLogUploaderTest, LogThrottleTest) {
     EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
     if (upload_num < SystemLogUploader::kLogThrottleCount) {
-      EXPECT_EQ(task_runner_->NextPendingTaskDelay(),
-                base::TimeDelta::FromMilliseconds(0));
+      EXPECT_EQ(task_runner_->NextPendingTaskDelay(), base::Milliseconds(0));
     } else {
-      EXPECT_GT(task_runner_->NextPendingTaskDelay(),
-                base::TimeDelta::FromMilliseconds(0));
+      EXPECT_GT(task_runner_->NextPendingTaskDelay(), base::Milliseconds(0));
     }
 
     task_runner_->RunPendingTasks();
@@ -334,8 +332,7 @@ TEST_P(SystemLogUploaderTest, ImmediateLogUpload) {
   for (int upload_num = 0;
        upload_num < SystemLogUploader::kLogThrottleCount + 3; upload_num++) {
     uploader.ScheduleNextSystemLogUploadImmediately();
-    EXPECT_EQ(task_runner_->NextPendingTaskDelay(),
-              base::TimeDelta::FromMilliseconds(0));
+    EXPECT_EQ(task_runner_->NextPendingTaskDelay(), base::Milliseconds(0));
     task_runner_->RunPendingTasks();
     task_runner_->ClearPendingTasks();
   }
@@ -372,8 +369,7 @@ TEST_P(SystemLogUploaderTest, SuccessTest) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   RunPendingUploadTaskAndCheckNext(
-      uploader, base::TimeDelta::FromMilliseconds(
-                    SystemLogUploader::kDefaultUploadDelayMs));
+      uploader, base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   ExpectSuccessHistogram(/*amount=*/1);
 }
 
@@ -392,17 +388,14 @@ TEST_P(SystemLogUploaderTest, ThreeFailureTest) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   // Do not retry two times consequentially.
-  RunPendingUploadTaskAndCheckNext(uploader,
-                                   base::TimeDelta::FromMilliseconds(
-                                       SystemLogUploader::kErrorUploadDelayMs));
+  RunPendingUploadTaskAndCheckNext(
+      uploader, base::Milliseconds(SystemLogUploader::kErrorUploadDelayMs));
   // We are using the kDefaultUploadDelayMs and not the kErrorUploadDelayMs here
   // because there's just one retry.
   RunPendingUploadTaskAndCheckNext(
-      uploader, base::TimeDelta::FromMilliseconds(
-                    SystemLogUploader::kDefaultUploadDelayMs));
-  RunPendingUploadTaskAndCheckNext(uploader,
-                                   base::TimeDelta::FromMilliseconds(
-                                       SystemLogUploader::kErrorUploadDelayMs));
+      uploader, base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
+  RunPendingUploadTaskAndCheckNext(
+      uploader, base::Milliseconds(SystemLogUploader::kErrorUploadDelayMs));
   ExpectFailureHistogram(/*amount=*/3);
 }
 
@@ -421,8 +414,7 @@ TEST_P(SystemLogUploaderTest, CheckHeaders) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   RunPendingUploadTaskAndCheckNext(
-      uploader, base::TimeDelta::FromMilliseconds(
-                    SystemLogUploader::kDefaultUploadDelayMs));
+      uploader, base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   ExpectSuccessHistogram(/*amount=*/1);
 }
 
@@ -440,9 +432,8 @@ TEST_P(SystemLogUploaderTest, DisableLogUpload) {
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
-  RunPendingUploadTaskAndCheckNext(uploader,
-                                   base::TimeDelta::FromMilliseconds(
-                                       SystemLogUploader::kErrorUploadDelayMs));
+  RunPendingUploadTaskAndCheckNext(
+      uploader, base::Milliseconds(SystemLogUploader::kErrorUploadDelayMs));
   ExpectFailureHistogram(/*amount=*/1);
 
   // Disable log upload and check that frequency is usual, because there is no
@@ -452,11 +443,9 @@ TEST_P(SystemLogUploaderTest, DisableLogUpload) {
   task_runner_->RunPendingTasks();
 
   RunPendingUploadTaskAndCheckNext(
-      uploader, base::TimeDelta::FromMilliseconds(
-                    SystemLogUploader::kDefaultUploadDelayMs));
+      uploader, base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   RunPendingUploadTaskAndCheckNext(
-      uploader, base::TimeDelta::FromMilliseconds(
-                    SystemLogUploader::kDefaultUploadDelayMs));
+      uploader, base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   ExpectFailureHistogram(/*amount=*/1);
 }
 

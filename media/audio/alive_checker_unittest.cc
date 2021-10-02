@@ -182,8 +182,7 @@ class AliveCheckerTest : public testing::Test {
       alive_checker_ = std::make_unique<AliveChecker>(
           base::BindRepeating(&AliveCheckerTest::OnDetectedDead,
                               base::Unretained(this)),
-          base::TimeDelta::FromMilliseconds(kCheckIntervalMs),
-          base::TimeDelta::FromMilliseconds(kTimeoutMs),
+          base::Milliseconds(kCheckIntervalMs), base::Milliseconds(kTimeoutMs),
           stop_at_first_alive_notification,
           base::BindOnce(&AliveCheckerTest::CreatePowerObserverHelper,
                          base::Unretained(this)));
@@ -191,8 +190,7 @@ class AliveCheckerTest : public testing::Test {
       alive_checker_ = std::make_unique<AliveChecker>(
           base::BindRepeating(&AliveCheckerTest::OnDetectedDead,
                               base::Unretained(this)),
-          base::TimeDelta::FromMilliseconds(kCheckIntervalMs),
-          base::TimeDelta::FromMilliseconds(kTimeoutMs),
+          base::Milliseconds(kCheckIntervalMs), base::Milliseconds(kTimeoutMs),
           stop_at_first_alive_notification, false);
     }
 
@@ -233,7 +231,7 @@ TEST_F(AliveCheckerTest, DISABLED_StartStop) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 }
 
@@ -253,7 +251,7 @@ TEST_F(AliveCheckerTest, NoAliveNotificationsDetectTwice) {
   // margin to this. The detect state should still be that we have detected
   // dead.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_TRUE(GetDetectedDead());
 
   // Start again, the detect state should be reset.
@@ -274,8 +272,7 @@ TEST_F(AliveCheckerTest, DISABLED_NotifyThenStop) {
   StartAliveChecker();
   EXPECT_FALSE(GetDetectedDead());
 
-  NotifyAliveMultipleTimes(
-      10, base::TimeDelta::FromMilliseconds(kNotifyIntervalMs));
+  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
   EXPECT_FALSE(GetDetectedDead());
 
   StopAliveChecker();
@@ -284,7 +281,7 @@ TEST_F(AliveCheckerTest, DISABLED_NotifyThenStop) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 }
 
@@ -296,15 +293,13 @@ TEST_F(AliveCheckerTest, DISABLED_NotifyThenDetectDead) {
   CreateAliveChecker(false, false);
 
   StartAliveChecker();
-  NotifyAliveMultipleTimes(
-      10, base::TimeDelta::FromMilliseconds(kNotifyIntervalMs));
+  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
 
   StartAliveChecker();
   EXPECT_FALSE(GetDetectedDead());
-  NotifyAliveMultipleTimes(
-      10, base::TimeDelta::FromMilliseconds(kNotifyIntervalMs));
+  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
   EXPECT_FALSE(GetDetectedDead());
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
@@ -321,7 +316,7 @@ TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DoNotify) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 }
 
@@ -351,8 +346,7 @@ TEST_F(AliveCheckerTest, DISABLED_SuspendResume_StartBeforeSuspend) {
   StartAliveChecker();
   EXPECT_FALSE(GetDetectedDead());
 
-  NotifyAliveMultipleTimes(
-      10, base::TimeDelta::FromMilliseconds(kNotifyIntervalMs));
+  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
 
   alive_checker_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
@@ -361,7 +355,7 @@ TEST_F(AliveCheckerTest, DISABLED_SuspendResume_StartBeforeSuspend) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -389,7 +383,7 @@ TEST_F(AliveCheckerTest, SuspendResume_StartBetweenSuspendAndResume) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -414,7 +408,7 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -422,7 +416,7 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
                                 base::Unretained(mock_power_observer_helper_)));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -430,7 +424,7 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
                                 base::Unretained(mock_power_observer_helper_)));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 }
 
@@ -449,7 +443,7 @@ TEST_F(AliveCheckerTest,
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   StartAliveChecker();
@@ -460,7 +454,7 @@ TEST_F(AliveCheckerTest,
                                 base::Unretained(mock_power_observer_helper_)));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -490,7 +484,7 @@ TEST_F(AliveCheckerTest,
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -498,7 +492,7 @@ TEST_F(AliveCheckerTest,
                                 base::Unretained(mock_power_observer_helper_)));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 }
 
@@ -524,7 +518,7 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyAfterResume) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 }
 
@@ -544,7 +538,7 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::TimeDelta::FromMilliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
+      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(

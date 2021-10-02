@@ -495,8 +495,8 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     DVLOG(1) << "OnResume";
     ++num_resume_notifications_;
     is_suspending_ = false;
-    earliest_start_time_ = base::TimeTicks::Now() +
-        base::TimeDelta::FromSeconds(kStartDelayInSecsForPowerEvents);
+    earliest_start_time_ =
+        base::TimeTicks::Now() + base::Seconds(kStartDelayInSecsForPowerEvents);
   }
 
   bool is_suspending_;
@@ -1126,7 +1126,7 @@ base::TimeDelta AudioManagerMac::GetHardwareLatency(
         << "Could not get audio device stream ids size.";
   }
 
-  return base::TimeDelta::FromSecondsD(audio_unit_latency_sec) +
+  return base::Seconds(audio_unit_latency_sec) +
          AudioTimestampHelper::FramesToTime(
              device_latency_frames + stream_latency_frames, sample_rate);
 }

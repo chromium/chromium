@@ -56,7 +56,7 @@ class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
               base::BindOnce(&StorageServiceSandboxBrowserTest::
                                  WaitForAnyLocalStorageDataAsync,
                              base::Unretained(test), std::move(callback)),
-              base::TimeDelta::FromMilliseconds(50));
+              base::Milliseconds(50));
         },
         this, std::move(callback)));
   }

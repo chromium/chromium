@@ -46,8 +46,7 @@ class ScopedClipboard {
 
   bool Init(HWND owner) {
     const int kMaxAttemptsToOpenClipboard = 5;
-    const base::TimeDelta kSleepTimeBetweenAttempts =
-        base::TimeDelta::FromMilliseconds(5);
+    const base::TimeDelta kSleepTimeBetweenAttempts = base::Milliseconds(5);
 
     if (opened_) {
       NOTREACHED();

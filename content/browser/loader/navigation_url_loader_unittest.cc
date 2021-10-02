@@ -162,7 +162,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
   GURL url = https_server.GetURL("/");
 
   // Set HSTS for the test domain in order to make SSL errors fatal.
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   auto* storage_partition = browser_context_->GetDefaultStoragePartition();
   base::RunLoop run_loop;

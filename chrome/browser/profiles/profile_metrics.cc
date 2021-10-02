@@ -36,7 +36,7 @@ namespace {
 
 #if !defined(OS_ANDROID)
 constexpr base::TimeDelta kProfileActivityThreshold =
-    base::TimeDelta::FromDays(28);  // Should be integral number of weeks.
+    base::Days(28);  // Should be integral number of weeks.
 #endif
 
 enum class ProfileType {

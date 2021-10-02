@@ -117,7 +117,7 @@ void WellKnownChangePasswordStateTest::RespondeToNonExistingRequest(
                 network::CreateURLResponseHead(status), "");
           },
           status, &test_url_loader_factory_),
-      base::TimeDelta::FromMilliseconds(delay));
+      base::Milliseconds(delay));
 }
 
 void WellKnownChangePasswordStateTest::RespondeToChangePasswordRequest(
@@ -128,7 +128,7 @@ void WellKnownChangePasswordStateTest::RespondeToChangePasswordRequest(
       base::BindOnce(
           &WellKnownChangePasswordState::SetChangePasswordResponseCode,
           base::Unretained(&state_), status),
-      base::TimeDelta::FromMilliseconds(delay));
+      base::Milliseconds(delay));
 }
 
 TEST_P(WellKnownChangePasswordStateTest, Support_Ok) {
@@ -200,7 +200,7 @@ TEST_P(WellKnownChangePasswordStateTest,
   // FastForwardBy makes sure the prefech timeout is not reached.
   const int64_t ms_to_forward =
       std::max(params.change_password_delay, params.not_exist_delay) + 1;
-  FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
+  FastForwardBy(base::Milliseconds(ms_to_forward));
 }
 
 TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
@@ -214,7 +214,7 @@ TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
   RespondeToNonExistingRequest(net::HTTP_NOT_FOUND, params.not_exist_delay);
   const int64_t ms_to_forward =
       std::max(params.change_password_delay, params.not_exist_delay) + 1;
-  FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
+  FastForwardBy(base::Milliseconds(ms_to_forward));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(false));
   FastForwardBy(WellKnownChangePasswordState::kPrefetchTimeout);
@@ -249,7 +249,7 @@ TEST_P(WellKnownChangePasswordStateTest,
   RespondeToNonExistingRequest(net::HTTP_NOT_FOUND, params.not_exist_delay);
   const int64_t ms_to_forward =
       std::max(params.change_password_delay, params.not_exist_delay) + 1;
-  FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
+  FastForwardBy(base::Milliseconds(ms_to_forward));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(false));
   static_cast<AffiliationFetcherDelegate*>(affiliation_service.get())

@@ -39,9 +39,9 @@ constexpr char kPrintBackendRequiresElevatedPrivilegeHistogramName[] =
 
 // Amount of idle time to wait before resetting the connection to the service.
 constexpr base::TimeDelta kNoClientsRegisteredResetOnIdleTimeout =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 constexpr base::TimeDelta kClientsRegisteredResetOnIdleTimeout =
-    base::TimeDelta::FromSeconds(120);
+    base::Seconds(120);
 
 PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
 

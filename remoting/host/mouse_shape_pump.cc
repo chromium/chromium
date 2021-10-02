@@ -29,7 +29,7 @@ MouseShapePump::MouseShapePump(
   mouse_cursor_monitor_->Init(this,
                               webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
   capture_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kCursorCaptureIntervalMs),
+      FROM_HERE, base::Milliseconds(kCursorCaptureIntervalMs),
       base::BindRepeating(&MouseShapePump::Capture, base::Unretained(this)));
 }
 

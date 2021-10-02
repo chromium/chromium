@@ -18,44 +18,44 @@ TEST_F(ScopedVisibilityTrackerTest, NeverVisible) {
   auto tick_clock = std::make_unique<base::SimpleTestTickClock>();
   ScopedVisibilityTracker tracker(tick_clock.get(), false /* is_shown */);
 
-  tick_clock->Advance(base::TimeDelta::FromMinutes(10));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(0), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(10));
+  EXPECT_EQ(base::Minutes(0), tracker.GetForegroundDuration());
 }
 
 TEST_F(ScopedVisibilityTrackerTest, SimpleVisibility) {
   auto tick_clock = std::make_unique<base::SimpleTestTickClock>();
   ScopedVisibilityTracker tracker(tick_clock.get(), true /* is_shown */);
 
-  tick_clock->Advance(base::TimeDelta::FromMinutes(10));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(10), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(10));
+  EXPECT_EQ(base::Minutes(10), tracker.GetForegroundDuration());
 }
 
 TEST_F(ScopedVisibilityTrackerTest, HiddenThenShown) {
   auto tick_clock = std::make_unique<base::SimpleTestTickClock>();
   ScopedVisibilityTracker tracker(tick_clock.get(), true /* is_shown */);
 
-  tick_clock->Advance(base::TimeDelta::FromMinutes(1));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(1));
+  EXPECT_EQ(base::Minutes(1), tracker.GetForegroundDuration());
 
   tracker.OnHidden();
-  tick_clock->Advance(base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(2));
+  EXPECT_EQ(base::Minutes(1), tracker.GetForegroundDuration());
 
   tracker.OnShown();
-  tick_clock->Advance(base::TimeDelta::FromMinutes(3));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(4), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(3));
+  EXPECT_EQ(base::Minutes(4), tracker.GetForegroundDuration());
 }
 
 TEST_F(ScopedVisibilityTrackerTest, InitiallyHidden) {
   auto tick_clock = std::make_unique<base::SimpleTestTickClock>();
   ScopedVisibilityTracker tracker(tick_clock.get(), false /* is_shown */);
 
-  tick_clock->Advance(base::TimeDelta::FromMinutes(1));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(0), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(1));
+  EXPECT_EQ(base::Minutes(0), tracker.GetForegroundDuration());
 
   tracker.OnShown();
-  tick_clock->Advance(base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(2), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(2));
+  EXPECT_EQ(base::Minutes(2), tracker.GetForegroundDuration());
 }
 
 // The object should be robust to double hidden and shown notification
@@ -63,20 +63,20 @@ TEST_F(ScopedVisibilityTrackerTest, DoubleNotifications) {
   auto tick_clock = std::make_unique<base::SimpleTestTickClock>();
   ScopedVisibilityTracker tracker(tick_clock.get(), false /* is_shown */);
 
-  tick_clock->Advance(base::TimeDelta::FromMinutes(1));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(0), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(1));
+  EXPECT_EQ(base::Minutes(0), tracker.GetForegroundDuration());
 
   tracker.OnHidden();
-  tick_clock->Advance(base::TimeDelta::FromMinutes(1));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(0), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(1));
+  EXPECT_EQ(base::Minutes(0), tracker.GetForegroundDuration());
 
   tracker.OnShown();
-  tick_clock->Advance(base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(2), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(2));
+  EXPECT_EQ(base::Minutes(2), tracker.GetForegroundDuration());
 
   tracker.OnShown();
-  tick_clock->Advance(base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ(base::TimeDelta::FromMinutes(4), tracker.GetForegroundDuration());
+  tick_clock->Advance(base::Minutes(2));
+  EXPECT_EQ(base::Minutes(4), tracker.GetForegroundDuration());
 }
 
 }  // namespace ui

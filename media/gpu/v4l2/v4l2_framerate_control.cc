@@ -64,9 +64,9 @@ namespace media {
 
 static constexpr int kMovingAverageWindowSize = 32;
 static constexpr base::TimeDelta kFrameIntervalFor120fps =
-    base::TimeDelta::FromMilliseconds(8);
+    base::Milliseconds(8);
 static constexpr base::TimeDelta kFrameIntervalFor24fps =
-    base::TimeDelta::FromMilliseconds(41);
+    base::Milliseconds(41);
 
 V4L2FrameRateControl::V4L2FrameRateControl(
     scoped_refptr<V4L2Device> device,
@@ -128,8 +128,7 @@ void V4L2FrameRateControl::RecordFrameDurationThunk(
 
 void V4L2FrameRateControl::RecordFrameDuration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  constexpr base::TimeDelta kMaxFrameInterval =
-      base::TimeDelta::FromMilliseconds(500);
+  constexpr base::TimeDelta kMaxFrameInterval = base::Milliseconds(500);
   const base::TimeTicks frame_display_time = base::TimeTicks::Now();
   const base::TimeDelta duration =
       frame_display_time - last_frame_display_time_;

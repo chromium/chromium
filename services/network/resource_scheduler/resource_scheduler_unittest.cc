@@ -1925,7 +1925,7 @@ TEST_F(ResourceSchedulerTest,
 // duration are dispatched to the network.
 TEST_F(ResourceSchedulerTest, MaxQueuingDelaySet) {
   base::HistogramTester histogram_tester;
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   InitializeMaxQueuingDelayExperiment(max_queuing_time);
   network_quality_estimator_.SetAndNotifyObserversOfEffectiveConnectionType(
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
@@ -1957,7 +1957,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelaySet) {
 
   // Advance the clock by more than |max_queuing_time|.
   tick_clock_.SetNowTicks(base::DefaultTickClock::GetInstance()->NowTicks() +
-                          max_queuing_time + base::TimeDelta::FromSeconds(1));
+                          max_queuing_time + base::Seconds(1));
 
   // Since the requests have been queued for too long, they should now be
   // dispatched. Trigger the calculation of queuing time by Triggering the
@@ -1990,7 +1990,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelaySet) {
 // Verify that when |max_queuing_time| is not set, requests queued for too long
 // duration are not dispatched to the network.
 TEST_F(ResourceSchedulerTest, MaxQueuingDelayNotSet) {
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   network_quality_estimator_.SetAndNotifyObserversOfEffectiveConnectionType(
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
 
@@ -2021,7 +2021,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayNotSet) {
 
   // Advance the clock by more than |max_queuing_time|.
   tick_clock_.SetNowTicks(base::DefaultTickClock::GetInstance()->NowTicks() +
-                          max_queuing_time + base::TimeDelta::FromSeconds(1));
+                          max_queuing_time + base::Seconds(1));
 
   // Triggering the finish of a single request should not trigger dispatch of
   // requests that have been queued for too long.
@@ -2038,7 +2038,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayNotSet) {
 // Verify that when the timer for dispatching long queued requests is fired,
 // then the long queued requests are dispatched to the network.
 TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerFires) {
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   InitializeMaxQueuingDelayExperiment(max_queuing_time);
   network_quality_estimator_.SetAndNotifyObserversOfEffectiveConnectionType(
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
@@ -2070,7 +2070,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerFires) {
 
   // Advance the clock by more than |max_queuing_time|.
   tick_clock_.SetNowTicks(base::DefaultTickClock::GetInstance()->NowTicks() +
-                          max_queuing_time + base::TimeDelta::FromSeconds(1));
+                          max_queuing_time + base::Seconds(1));
 
   // Since the requests have been queued for too long, they should now be
   // dispatched. Trigger the calculation of queuing time by calling
@@ -2086,7 +2086,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerFires) {
 // Verify that when the timer for dispatching long queued requests is not fired,
 // then the long queued requests are not dispatched to the network.
 TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerNotFired) {
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   InitializeMaxQueuingDelayExperiment(max_queuing_time);
   network_quality_estimator_.SetAndNotifyObserversOfEffectiveConnectionType(
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
@@ -2118,7 +2118,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerNotFired) {
 
   // Advance the clock by more than |max_queuing_time|.
   tick_clock_.SetNowTicks(base::DefaultTickClock::GetInstance()->NowTicks() +
-                          max_queuing_time + base::TimeDelta::FromSeconds(1));
+                          max_queuing_time + base::Seconds(1));
 
   // Since the requests have been queued for too long, they are now eligible for
   // disptaching. However, since the timer is not fired, the requests would not
@@ -2135,7 +2135,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerNotFired) {
 // Verify that the timer to dispatch long queued requests starts only when there
 // are requests in-flight.
 TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerRunsOnRequestSchedule) {
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   InitializeMaxQueuingDelayExperiment(max_queuing_time);
   network_quality_estimator_.SetAndNotifyObserversOfEffectiveConnectionType(
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
@@ -2203,7 +2203,7 @@ TEST_F(ResourceSchedulerTest, MaxQueuingDelayTimerRunsOnRequestSchedule) {
 TEST_F(ResourceSchedulerTest, NonDelayableRequestArrivesAfterDelayableStarts) {
   base::HistogramTester histogram_tester;
 
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   InitializeMaxQueuingDelayExperiment(max_queuing_time);
 
   InitializeScheduler();
@@ -2213,7 +2213,7 @@ TEST_F(ResourceSchedulerTest, NonDelayableRequestArrivesAfterDelayableStarts) {
   std::unique_ptr<TestRequest> low(NewRequest("http://host/low", net::LOWEST));
   EXPECT_TRUE(low->started());
 
-  const base::TimeDelta delay = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta delay = base::Seconds(5);
   tick_clock_.SetNowTicks(base::TimeTicks::Now() + delay);
 
   // Start a high priority request before |low| finishes.
@@ -2241,7 +2241,7 @@ TEST_F(ResourceSchedulerTest, NonDelayableRequestArrivesAfterDelayableStarts) {
 TEST_F(ResourceSchedulerTest, NonDelayableToNonDelayableMetrics) {
   base::HistogramTester histogram_tester_1;
 
-  base::TimeDelta max_queuing_time = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta max_queuing_time = base::Seconds(15);
   InitializeMaxQueuingDelayExperiment(max_queuing_time);
 
   InitializeScheduler();
@@ -2252,8 +2252,7 @@ TEST_F(ResourceSchedulerTest, NonDelayableToNonDelayableMetrics) {
       NewRequest("http://host/high_1", net::HIGHEST));
   EXPECT_TRUE(high_1->started());
 
-  const base::TimeDelta high1_start_to_high2_start =
-      base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta high1_start_to_high2_start = base::Seconds(5);
   tick_clock_.SetNowTicks(base::TimeTicks::Now() + high1_start_to_high2_start);
 
   // Start a high priority request before |high_1| finishes.
@@ -2281,8 +2280,7 @@ TEST_F(ResourceSchedulerTest, NonDelayableToNonDelayableMetrics) {
   histogram_tester_1.ExpectTotalCount(
       "ResourceScheduler.NonDelayableLastEndToNonDelayableStart", 0);
 
-  const base::TimeDelta high2_start_to_high2_end =
-      base::TimeDelta::FromSeconds(7);
+  const base::TimeDelta high2_start_to_high2_end = base::Seconds(7);
   tick_clock_.Advance(high2_start_to_high2_end);
 
   high_1.reset();
@@ -2290,8 +2288,7 @@ TEST_F(ResourceSchedulerTest, NonDelayableToNonDelayableMetrics) {
 
   base::HistogramTester histogram_tester_2;
 
-  const base::TimeDelta high2_end_to_high3_start =
-      base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta high2_end_to_high3_start = base::Seconds(2);
   tick_clock_.Advance(high2_end_to_high3_start);
   // Start a high priority request after |high_1| and |high_2| finishes.
   std::unique_ptr<TestRequest> high_3(
@@ -2338,7 +2335,7 @@ TEST_F(ResourceSchedulerTest, ProactiveThrottlingExperiment) {
 
   for (const auto& test : tests) {
     double http_rtt_multiplier_for_proactive_throttling = 5;
-    base::TimeDelta http_rtt = base::TimeDelta::FromSeconds(1);
+    base::TimeDelta http_rtt = base::Seconds(1);
 
     if (test.enable_http_rtt_multiplier_for_proactive_throttling) {
       ConfigureProactiveThrottlingExperimentFor2G(
@@ -2368,7 +2365,7 @@ TEST_F(ResourceSchedulerTest, ProactiveThrottlingExperiment) {
     // |threshold_requests_anticipation| should not cause low priority requests
     // to start.
     tick_clock_.Advance(threshold_requests_anticipation -
-                        base::TimeDelta::FromMilliseconds(1));
+                        base::Milliseconds(1));
     std::unique_ptr<TestRequest> low_2(
         NewRequest("http://host/low_2", net::LOWEST));
     EXPECT_NE(test.enable_http_rtt_multiplier_for_proactive_throttling,
@@ -2376,7 +2373,7 @@ TEST_F(ResourceSchedulerTest, ProactiveThrottlingExperiment) {
 
     // Advancing the clock by |threshold_requests_anticipation| should cause low
     // priority requests to start.
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    tick_clock_.Advance(base::Milliseconds(100));
     std::unique_ptr<TestRequest> low_3(
         NewRequest("http://host/low_3", net::LOWEST));
     EXPECT_TRUE(low_3->started());
@@ -2396,7 +2393,7 @@ TEST_F(ResourceSchedulerTest,
   ConfigureProactiveThrottlingExperimentFor2G(
       http_rtt_multiplier_for_proactive_throttling);
 
-  base::TimeDelta http_rtt = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta http_rtt = base::Seconds(1);
 
   network_quality_estimator_.SetStartTimeNullHttpRtt(http_rtt);
   base::RunLoop().RunUntilIdle();
@@ -2416,8 +2413,7 @@ TEST_F(ResourceSchedulerTest,
   // Advancing the clock by a duration less than
   // |threshold_requests_anticipation| should not cause low priority requests
   // to start.
-  tick_clock_.Advance(threshold_requests_anticipation -
-                      base::TimeDelta::FromMilliseconds(1));
+  tick_clock_.Advance(threshold_requests_anticipation - base::Milliseconds(1));
   std::unique_ptr<TestRequest> low_2(
       NewRequest("http://host/low_2", net::LOWEST));
   EXPECT_FALSE(low_2->started());
@@ -2465,7 +2461,7 @@ TEST_F(ResourceSchedulerTest, ProactiveThrottling_UnthrottledOnTimerFired) {
   ConfigureProactiveThrottlingExperimentFor2G(
       http_rtt_multiplier_for_proactive_throttling);
 
-  base::TimeDelta http_rtt = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta http_rtt = base::Seconds(1);
 
   network_quality_estimator_.SetStartTimeNullHttpRtt(http_rtt);
   base::RunLoop().RunUntilIdle();
@@ -2485,8 +2481,7 @@ TEST_F(ResourceSchedulerTest, ProactiveThrottling_UnthrottledOnTimerFired) {
   // Advancing the clock by a duration less than
   // |threshold_requests_anticipation| should not cause low priority requests
   // to start.
-  tick_clock_.Advance(threshold_requests_anticipation +
-                      base::TimeDelta::FromMilliseconds(1));
+  tick_clock_.Advance(threshold_requests_anticipation + base::Milliseconds(1));
 
   // Since the requests have been queued for too long, they should now be
   // dispatched. Trigger the scheduling of the queued requests by calling

@@ -80,7 +80,7 @@ class PlatformVideoFramePoolTest
 
   scoped_refptr<VideoFrame> GetFrame(int timestamp_ms) {
     scoped_refptr<VideoFrame> frame = pool_->GetFrame();
-    frame->set_timestamp(base::TimeDelta::FromMilliseconds(timestamp_ms));
+    frame->set_timestamp(base::Milliseconds(timestamp_ms));
 
     EXPECT_EQ(layout_->modifier(), frame->layout().modifier());
     EXPECT_EQ(layout_->fourcc(),

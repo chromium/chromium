@@ -122,16 +122,15 @@ class ConnectJobTest : public testing::Test {
 // completion.
 TEST_F(ConnectJobTest, NoTimeoutOnSyncCompletion) {
   TestConnectJob job(TestConnectJob::JobType::kSyncSuccess,
-                     base::TimeDelta::FromMicroseconds(1),
-                     &common_connect_job_params_, &delegate_);
+                     base::Microseconds(1), &common_connect_job_params_,
+                     &delegate_);
   EXPECT_THAT(job.Connect(), test::IsOk());
 }
 
 // Even though a timeout is specified, it doesn't time out on an asynchronous
 // completion.
 TEST_F(ConnectJobTest, NoTimeoutOnAsyncCompletion) {
-  TestConnectJob job(TestConnectJob::JobType::kAsyncSuccess,
-                     base::TimeDelta::FromMinutes(1),
+  TestConnectJob job(TestConnectJob::JobType::kAsyncSuccess, base::Minutes(1),
                      &common_connect_job_params_, &delegate_);
   ASSERT_THAT(job.Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(delegate_.WaitForResult(), test::IsOk());
@@ -150,8 +149,8 @@ TEST_F(ConnectJobTest, NoTimeoutWithNoTimeDelta) {
 // subclasses during the SetPriorityInternal call.
 TEST_F(ConnectJobTest, SetPriority) {
   TestConnectJob job(TestConnectJob::JobType::kAsyncSuccess,
-                     base::TimeDelta::FromMicroseconds(1),
-                     &common_connect_job_params_, &delegate_);
+                     base::Microseconds(1), &common_connect_job_params_,
+                     &delegate_);
   ASSERT_THAT(job.Connect(), test::IsError(ERR_IO_PENDING));
 
   job.ChangePriority(HIGHEST);
@@ -166,7 +165,7 @@ TEST_F(ConnectJobTest, SetPriority) {
 }
 
 TEST_F(ConnectJobTest, TimedOut) {
-  const base::TimeDelta kTimeout = base::TimeDelta::FromHours(1);
+  const base::TimeDelta kTimeout = base::Hours(1);
 
   std::unique_ptr<TestConnectJob> job =
       std::make_unique<TestConnectJob>(TestConnectJob::JobType::kHung, kTimeout,
@@ -174,13 +173,12 @@ TEST_F(ConnectJobTest, TimedOut) {
   ASSERT_THAT(job->Connect(), test::IsError(ERR_IO_PENDING));
 
   // Nothing should happen before the specified time.
-  task_environment_.FastForwardBy(kTimeout -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kTimeout - base::Milliseconds(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate_.has_result());
 
   // At which point the job should time out.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(delegate_.WaitForResult(), test::IsError(ERR_TIMED_OUT));
 
   // Have to delete the job for it to log the end event.
@@ -204,26 +202,24 @@ TEST_F(ConnectJobTest, TimedOut) {
 }
 
 TEST_F(ConnectJobTest, TimedOutWithRestartedTimer) {
-  const base::TimeDelta kTimeout = base::TimeDelta::FromHours(1);
+  const base::TimeDelta kTimeout = base::Hours(1);
 
   TestConnectJob job(TestConnectJob::JobType::kHung, kTimeout,
                      &common_connect_job_params_, &delegate_);
   ASSERT_THAT(job.Connect(), test::IsError(ERR_IO_PENDING));
 
   // Nothing should happen before the specified time.
-  task_environment_.FastForwardBy(kTimeout -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kTimeout - base::Milliseconds(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate_.has_result());
 
   // Make sure restarting the timer is respected.
   job.ResetTimer(kTimeout);
-  task_environment_.FastForwardBy(kTimeout -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kTimeout - base::Milliseconds(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate_.has_result());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(delegate_.WaitForResult(), test::IsError(ERR_TIMED_OUT));
 }
 

@@ -767,7 +767,7 @@ void ScriptExecutor::MaybeShowSlowConnectionWarning() {
   bool should_show_warning =
       !delegate_->GetSettings().only_show_connection_warning_once ||
       !connection_warning_already_shown_;
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(0);
+  base::TimeDelta delay = base::Milliseconds(0);
   // MaybeShowSlowWarning is only called if should_sown_warning is true.
   bool warning_was_shown =
       should_show_warning &&
@@ -942,7 +942,7 @@ void ScriptExecutor::ProcessNextAction() {
         FROM_HERE,
         base::BindOnce(&ScriptExecutor::ProcessAction,
                        weak_ptr_factory_.GetWeakPtr(), action),
-        base::TimeDelta::FromMilliseconds(delay_ms));
+        base::Milliseconds(delay_ms));
   } else {
     ProcessAction(action);
   }
@@ -1170,7 +1170,7 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
   wait_time_total_ =
       (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period())
           // It's the first run of the checks, set the total time waited to 0.
-          ? base::TimeDelta::FromSeconds(0)
+          ? base::Seconds(0)
           // If this is not the first run of the checks, in order to estimate
           // the real cost of periodic checks, half the duration of the retry
           // timer period is removed from the total wait time. This is to

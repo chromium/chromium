@@ -111,7 +111,7 @@ TouchSelectionControllerClientAura::TouchSelectionControllerClientAura(
       active_client_(&internal_client_),
       active_menu_client_(this),
       quick_menu_timer_(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(kQuickMenuDelayInMs),
+                        base::Milliseconds(kQuickMenuDelayInMs),
                         base::BindRepeating(
                             &TouchSelectionControllerClientAura::ShowQuickMenu,
                             base::Unretained(this))),

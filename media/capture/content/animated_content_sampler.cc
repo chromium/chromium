@@ -22,23 +22,23 @@ namespace {
 // These values were established by experimenting with a wide variety of
 // scenarios, including 24/25/30 FPS videos, 60 FPS WebGL demos, and the
 // transitions between static and animated content.
-constexpr auto kMinObservationWindow = base::TimeDelta::FromSeconds(1);
-constexpr auto kMaxObservationWindow = base::TimeDelta::FromSeconds(2);
+constexpr auto kMinObservationWindow = base::Seconds(1);
+constexpr auto kMaxObservationWindow = base::Seconds(2);
 
 // The maximum amount of time that can elapse before declaring two subsequent
 // events as "not animating."  This is the same value found in
 // cc::FrameRateCounter.
-constexpr auto kNonAnimatingThreshold = base::TimeDelta::FromSeconds(1) / 4;
+constexpr auto kNonAnimatingThreshold = base::Seconds(1) / 4;
 
 // The slowest that content can be animating in order for AnimatedContentSampler
 // to lock-in.  This is the threshold at which the "smoothness" problem is no
 // longer relevant.
-constexpr auto kMaxLockInPeriod = base::TimeDelta::FromSeconds(1) / 12;
+constexpr auto kMaxLockInPeriod = base::Seconds(1) / 12;
 
 // The amount of time over which to fully correct the drift of the rewritten
 // frame timestamps from the presentation event timestamps.  The lower the
 // value, the higher the variance in frame timestamps.
-constexpr auto kDriftCorrection = base::TimeDelta::FromSeconds(2);
+constexpr auto kDriftCorrection = base::Seconds(2);
 
 }  // anonymous namespace
 

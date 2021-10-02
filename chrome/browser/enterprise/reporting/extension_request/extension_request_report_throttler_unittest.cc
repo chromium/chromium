@@ -16,7 +16,7 @@ namespace {
 
 constexpr char kProfileName1[] = "profile-name-1";
 constexpr char kProfileName2[] = "profile-name-2";
-constexpr base::TimeDelta kThrottleTime = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kThrottleTime = base::Seconds(2);
 
 }  // namespace
 
@@ -106,7 +106,7 @@ TEST_F(ExtensionRequestReportThrottlerTest, RequestThrottleByTimer) {
   throttler_.OnExtensionRequestUploaded();
   throttler_.AddProfile(profile2->GetPath());
 
-  base::TimeDelta wait_time = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta wait_time = base::Seconds(1);
   task_environment_.FastForwardBy(wait_time);
 
   ::testing::Mock::VerifyAndClearExpectations(&report_trigger_);

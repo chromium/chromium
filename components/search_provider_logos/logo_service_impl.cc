@@ -68,7 +68,7 @@ class ImageDecodedHandlerWithTimeout {
         FROM_HERE,
         base::BindOnce(&ImageDecodedHandlerWithTimeout::OnImageDecoded,
                        handler->weak_ptr_factory_.GetWeakPtr(), gfx::Image()),
-        base::TimeDelta::FromSeconds(kDecodeLogoTimeoutSeconds));
+        base::Seconds(kDecodeLogoTimeoutSeconds));
     return base::BindOnce(&ImageDecodedHandlerWithTimeout::OnImageDecoded,
                           handler->weak_ptr_factory_.GetWeakPtr());
   }
@@ -133,8 +133,7 @@ void RunCallbacksWithDisabled(LogoCallbacks callbacks) {
 // OK to show, i.e. it's not expired or it's allowed to be shown temporarily
 // after expiration.
 bool IsLogoOkToShow(const LogoMetadata& metadata, base::Time now) {
-  base::TimeDelta offset =
-      base::TimeDelta::FromMilliseconds(kMaxTimeToLiveMS * 3 / 2);
+  base::TimeDelta offset = base::Milliseconds(kMaxTimeToLiveMS * 3 / 2);
   base::Time distant_past = now - offset;
   // Sanity check so logos aren't accidentally cached forever.
   if (metadata.expiration_time < distant_past) {

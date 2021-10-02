@@ -697,8 +697,7 @@ void ChromeCleanerControllerImpl::OnCleanerProcessDone(
       DCHECK(!time_cleanup_started_.is_null());
       UMA_HISTOGRAM_CUSTOM_TIMES("SoftwareReporter.Cleaner.CleaningTime",
                                  base::Time::Now() - time_cleanup_started_,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromHours(5), 100);
+                                 base::Milliseconds(1), base::Hours(5), 100);
     }
 
     if (process_status.exit_code == kRebootRequiredExitCode) {

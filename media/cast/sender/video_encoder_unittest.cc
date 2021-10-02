@@ -122,8 +122,8 @@ class VideoEncoderTest
 
   void RunTasksAndAdvanceClock() {
     DCHECK_GT(video_config_.max_frame_rate, 0);
-    const base::TimeDelta frame_duration = base::TimeDelta::FromMicroseconds(
-        1000000.0 / video_config_.max_frame_rate);
+    const base::TimeDelta frame_duration =
+        base::Microseconds(1000000.0 / video_config_.max_frame_rate);
 #if defined(OS_MAC)
     if (is_testing_video_toolbox_encoder()) {
       // The H264VideoToolboxEncoder (on MAC_OSX and IOS) is not a faked

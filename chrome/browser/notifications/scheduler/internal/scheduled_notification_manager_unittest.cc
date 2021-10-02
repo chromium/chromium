@@ -37,10 +37,8 @@ const char kLargeIconUuid[] = "test_large_icon_uuid";
 
 NotificationEntry CreateNotificationEntry(SchedulerClientType type) {
   NotificationEntry entry(type, base::GenerateGUID());
-  entry.schedule_params.deliver_time_start =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
-  entry.schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(2);
+  entry.schedule_params.deliver_time_start = base::Time::Now() + base::Days(1);
+  entry.schedule_params.deliver_time_end = base::Time::Now() + base::Days(2);
   return entry;
 }
 
@@ -129,7 +127,7 @@ class ScheduledNotificationManagerTest : public testing::Test {
     auto icon_store = std::make_unique<MockIconStore>();
     notification_store_ = notification_store.get();
     icon_store_ = icon_store.get();
-    config_.notification_expiration = base::TimeDelta::FromDays(1);
+    config_.notification_expiration = base::Days(1);
     manager_ = ScheduledNotificationManager::Create(
         std::move(notification_store), std::move(icon_store),
         {SchedulerClientType::kTest1, SchedulerClientType::kTest2}, config_);
@@ -305,8 +303,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotification) {
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, notification_data, schedule_params);
   params->schedule_params.deliver_time_start = base::Time::Now();
-  params->schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  params->schedule_params.deliver_time_end = base::Time::Now() + base::Days(1);
 
   params->enable_ihnr_buttons = true;
   std::string guid = params->guid;
@@ -373,8 +370,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotificationDuplicateGuid) {
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, notification_data, schedule_params);
   params->schedule_params.deliver_time_start = base::Time::Now();
-  params->schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  params->schedule_params.deliver_time_end = base::Time::Now() + base::Days(1);
   // Duplicate guid.
   params->guid = kGuid;
 
@@ -389,8 +385,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotificationEmptyGuid) {
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, NotificationData(), ScheduleParams());
   params->schedule_params.deliver_time_start = base::Time::Now();
-  params->schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  params->schedule_params.deliver_time_end = base::Time::Now() + base::Days(1);
 
   // Verify call contract.
   EXPECT_CALL(*icon_store(), AddIcons(_, _))
@@ -461,9 +456,9 @@ TEST_F(ScheduledNotificationManagerTest, GetAllNotifications) {
   auto entry0 = CreateNotificationEntry(SchedulerClientType::kTest1);
   entry0.create_time = now;
   auto entry1 = CreateNotificationEntry(SchedulerClientType::kTest1);
-  entry1.create_time = now - base::TimeDelta::FromMinutes(1);
+  entry1.create_time = now - base::Minutes(1);
   auto entry2 = CreateNotificationEntry(SchedulerClientType::kTest1);
-  entry2.create_time = now + base::TimeDelta::FromMinutes(1);
+  entry2.create_time = now + base::Minutes(1);
 
   InitWithData(std::vector<NotificationEntry>({entry0, entry1, entry2}));
   ScheduledNotificationManager::Notifications notifications;
@@ -545,17 +540,15 @@ TEST_F(ScheduledNotificationManagerTest, PruneNotifications) {
   // Type3: entry4(unregistered client)
   auto now = base::Time::Now();
   auto entry0 = CreateNotificationEntry(SchedulerClientType::kTest1);
-  entry0.create_time = now - base::TimeDelta::FromHours(12);
+  entry0.create_time = now - base::Hours(12);
   auto entry1 = CreateNotificationEntry(SchedulerClientType::kTest2);
-  entry1.create_time = now - base::TimeDelta::FromHours(14);
-  entry1.schedule_params.deliver_time_start =
-      base::Time::Now() - base::TimeDelta::FromDays(2);
-  entry1.schedule_params.deliver_time_end =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  entry1.create_time = now - base::Hours(14);
+  entry1.schedule_params.deliver_time_start = base::Time::Now() - base::Days(2);
+  entry1.schedule_params.deliver_time_end = base::Time::Now() - base::Days(1);
   auto entry2 = CreateNotificationEntry(SchedulerClientType::kTest2);
-  entry2.create_time = now - base::TimeDelta::FromHours(24);
+  entry2.create_time = now - base::Hours(24);
   auto entry3 = CreateNotificationEntry(SchedulerClientType::kTest2);
-  entry3.create_time = now - base::TimeDelta::FromHours(23);
+  entry3.create_time = now - base::Hours(23);
   auto entry4 = CreateNotificationEntry(SchedulerClientType::kTest3);
 
   EXPECT_CALL(*notification_store(), Delete(_, _)).Times(3);
@@ -578,8 +571,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotificationWithIcons) {
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, notification_data, schedule_params);
   params->schedule_params.deliver_time_start = base::Time::Now();
-  params->schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  params->schedule_params.deliver_time_end = base::Time::Now() + base::Days(1);
 
   std::string guid = params->guid;
   EXPECT_FALSE(guid.empty());
@@ -626,8 +618,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotificationWithIconsFailed) {
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, notification_data, schedule_params);
   params->schedule_params.deliver_time_start = base::Time::Now();
-  params->schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  params->schedule_params.deliver_time_end = base::Time::Now() + base::Days(1);
 
   // Verify call contract.
   EXPECT_CALL(*icon_store(), AddIcons(_, _))
@@ -660,8 +651,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleAddNotificationFailed) {
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, notification_data, schedule_params);
   params->schedule_params.deliver_time_start = base::Time::Now();
-  params->schedule_params.deliver_time_end =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  params->schedule_params.deliver_time_end = base::Time::Now() + base::Days(1);
 
   // Succeeded to add icons.
   EXPECT_CALL(*icon_store(), AddIcons(_, _))

@@ -184,9 +184,9 @@ void IceTransport::EnsurePendingTransportInfoMessage() {
     pending_transport_info_message_ = std::make_unique<IceTransportInfo>();
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.
-    transport_info_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kTransportInfoSendDelayMs),
-        this, &IceTransport::SendTransportInfo);
+    transport_info_timer_.Start(FROM_HERE,
+                                base::Milliseconds(kTransportInfoSendDelayMs),
+                                this, &IceTransport::SendTransportInfo);
   }
 }
 

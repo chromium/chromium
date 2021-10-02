@@ -35,8 +35,7 @@ namespace arc {
 namespace {
 
 // Interval to update system stats.
-constexpr base::TimeDelta kSystemStatUpdateInterval =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kSystemStatUpdateInterval = base::Milliseconds(10);
 
 const base::FilePath::CharType kZramPath[] =
     FILE_PATH_LITERAL("/sys/block/zram0/stat");
@@ -530,7 +529,7 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
     return false;
   }
 
-  max_interval_ = base::TimeDelta::FromMicroseconds(max_interval_mcs);
+  max_interval_ = base::Microseconds(max_interval_mcs);
 
   const base::Value* sample_list =
       root.FindKeyOfType(kKeySamples, base::Value::Type::LIST);
@@ -549,8 +548,7 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
         !base::StringToInt64(timestamp->GetString(), &timestamp_mcs))
       return false;
 
-    sample.timestamp =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_mcs);
+    sample.timestamp = base::TimeTicks() + base::Microseconds(timestamp_mcs);
 
     if (!ReadNonNegativeInt(sample_entry, kKeySwapSectorsRead,
                             &sample.swap_sectors_read) ||

@@ -40,8 +40,7 @@ constexpr char kCastSource[] =
 static constexpr char kPresentationId[] = "presentationId";
 static constexpr char kOrigin[] = "https://www.youtube.com";
 static constexpr int kTabId = 1;
-static constexpr base::TimeDelta kRouteTimeout =
-    base::TimeDelta::FromSeconds(30);
+static constexpr base::TimeDelta kRouteTimeout = base::Seconds(30);
 
 base::Value MakeReceiverStatus() {
   return base::test::ParseJson(R"({

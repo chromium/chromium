@@ -83,12 +83,11 @@ class SessionRestorePageLoadMetricsObserverTest
   void PopulateFirstPaintTimings() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::FromDoubleT(1);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
+    timing_.parse_timing->parse_start = base::Milliseconds(10);
 
     // Should be large enough (e.g., >20 ms) for some tests to be able to hide
     // foreground tabs before the first pains.
-    timing_.paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromSeconds(1);
+    timing_.paint_timing->first_meaningful_paint = base::Seconds(1);
     PopulateRequiredTimingFields(&timing_);
   }
 

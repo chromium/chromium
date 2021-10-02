@@ -43,9 +43,9 @@ bool UnpickleNetworkResponseInfo(base::PickleIterator& iterator,
         iterator.ReadString(&value.bless_nonce) &&
         iterator.ReadString(&base_request_url)))
     return false;
-  value.fetch_duration = base::TimeDelta::FromMilliseconds(fetch_duration_ms);
-  value.fetch_time = base::TimeDelta::FromMilliseconds(fetch_time_ms) +
-                     base::Time::UnixEpoch();
+  value.fetch_duration = base::Milliseconds(fetch_duration_ms);
+  value.fetch_time =
+      base::Milliseconds(fetch_time_ms) + base::Time::UnixEpoch();
   value.base_request_url = GURL(base_request_url);
   return true;
 }

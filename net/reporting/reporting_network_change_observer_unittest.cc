@@ -34,9 +34,8 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   }
 
   void SetEndpoint() {
-    ASSERT_TRUE(
-        SetEndpointInCache(kGroupKey_, kEndpoint_,
-                           base::Time::Now() + base::TimeDelta::FromDays(7)));
+    ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_,
+                                   base::Time::Now() + base::Days(7)));
   }
 
   size_t report_count() {

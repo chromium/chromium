@@ -278,10 +278,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
   base::Time lastCompletedCheck =
       base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
-  EXPECT_GE(lastCompletedCheck,
-            base::Time::Now() - base::TimeDelta::FromSeconds(1));
-  EXPECT_LE(lastCompletedCheck,
-            base::Time::Now() + base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
+  EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
 
   resetNSUserDefaultsForTesting();
 }
@@ -294,10 +292,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
   base::Time lastCompletedCheck =
       base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
-  EXPECT_GE(lastCompletedCheck,
-            base::Time::Now() - base::TimeDelta::FromSeconds(1));
-  EXPECT_LE(lastCompletedCheck,
-            base::Time::Now() + base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
+  EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
 
   mediator_.checkDidRun = true;
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;

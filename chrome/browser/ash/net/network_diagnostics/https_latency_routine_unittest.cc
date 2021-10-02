@@ -23,12 +23,9 @@ namespace chromeos {
 namespace network_diagnostics {
 namespace {
 
-const base::TimeDelta kNoProblemDelayMs =
-    base::TimeDelta::FromMilliseconds(100);
-const base::TimeDelta kHighLatencyDelayMs =
-    base::TimeDelta::FromMilliseconds(550);
-const base::TimeDelta kVeryHighLatencyDelayMs =
-    base::TimeDelta::FromMilliseconds(1050);
+const base::TimeDelta kNoProblemDelayMs = base::Milliseconds(100);
+const base::TimeDelta kHighLatencyDelayMs = base::Milliseconds(550);
+const base::TimeDelta kVeryHighLatencyDelayMs = base::Milliseconds(1050);
 
 // The number of hosts the the routine tests for. Based on GetHostnamesToQuery()
 // in https_latency_routine.cc.

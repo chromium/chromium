@@ -116,7 +116,7 @@ class TelemetryLogWriterTest : public testing::Test {
     // Mock clock will auto-fast-forward, so the delay here is somewhat
     // arbitrary.
     timer.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(1),
+        FROM_HERE, base::Seconds(1),
         base::BindRepeating(
             [](TelemetryLogWriter* log_writer,
                base::RepeatingClosure quit_closure) {

@@ -317,22 +317,22 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(3)))
+      .WillOnce(Return(now + base::Milliseconds(3)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(6)))
+      .WillOnce(Return(now + base::Milliseconds(6)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(9)))
+      .WillOnce(Return(now + base::Milliseconds(9)))
       // Time check after the next 5 words.  This is over the chunk
       // time limit, so a continuation task will be posted.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(12)))
+      .WillOnce(Return(now + base::Milliseconds(12)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(22)))
+      .WillOnce(Return(now + base::Milliseconds(22)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(25)))
+      .WillOnce(Return(now + base::Milliseconds(25)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(28)))
+      .WillOnce(Return(now + base::Milliseconds(28)))
       // A final check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(30)));
+      .WillOnce(Return(now + base::Milliseconds(30)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
@@ -412,13 +412,13 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 5 words,
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(300)))
+      .WillOnce(Return(now + base::Milliseconds(300)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(350)))
+      .WillOnce(Return(now + base::Milliseconds(350)))
       // Time check after the next 5 words.  This is over the limit.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(600)))
+      .WillOnce(Return(now + base::Milliseconds(600)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(620)));
+      .WillOnce(Return(now + base::Milliseconds(620)));
 
   features.Clear();
   shingle_hashes.clear();
@@ -439,10 +439,10 @@ TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(7)))
+      .WillOnce(Return(now + base::Milliseconds(7)))
       // Time check after the next 5 words. This should be greater than
       // kMaxTimePerChunkMs so that we stop and schedule extraction for later.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(14)));
+      .WillOnce(Return(now + base::Milliseconds(14)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap features;

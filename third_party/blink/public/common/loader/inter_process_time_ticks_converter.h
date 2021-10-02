@@ -23,7 +23,7 @@ class SiteSpecificTimeDelta final {
     return SiteSpecificTimeDelta<T>(delta);
   }
   static SiteSpecificTimeDelta<T> FromMicroseconds(int64_t usec) {
-    return SiteSpecificTimeDelta<T>(base::TimeDelta::FromMicroseconds(usec));
+    return SiteSpecificTimeDelta<T>(base::Microseconds(usec));
   }
 
   base::TimeDelta ToTimeDelta() const { return delta_; }

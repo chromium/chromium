@@ -326,7 +326,7 @@ TEST_F(FuchsiaCdmManagerTest, CdmDataQuotaBytes) {
                           kEmptyKeySystemDirectory, 0);
 
   // Sleep to account for coarse-grained filesystem timestamps.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   // Create the recently-used directories.
   CreateDummyCdmDirectory(temp_path, kOriginDirectory1, kKeySystemDirectory2,
@@ -389,7 +389,7 @@ TEST_F(FuchsiaCdmManagerTest, EmptyOriginDirectory) {
                           kKeySystemDirectory2, kTestQuotaBytes / 2);
 
   // Sleep to account for coarse-grained filesystem timestamps.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   // Create dummy data for a recently-used, active origin.
   CreateDummyCdmDirectory(temp_path, kActiveOriginDirectory,

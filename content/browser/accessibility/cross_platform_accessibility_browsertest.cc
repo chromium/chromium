@@ -1735,8 +1735,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                                            ax::mojom::Event::kLayoutComplete);
     // Run test for 1 second, counting the number of layout completes.
     while (timer.Elapsed().InMilliseconds() < 1000) {
-      waiter.WaitForNotificationWithTimeout(
-          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
+                                            timer.Elapsed());
       ++num_batches;
     }
   }
@@ -1793,8 +1793,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       ax::mojom::Event::kDocumentSelectionChanged);
   // Run test for 1 second, counting the number of selection changes.
   while (timer.Elapsed().InMilliseconds() < 1000) {
-    waiter.WaitForNotificationWithTimeout(
-        base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+    waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
+                                          timer.Elapsed());
     ++num_batches;
   }
 
@@ -1851,8 +1851,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED);
     // Run test for 1 second, counting the number of active descendant changes.
     while (timer.Elapsed().InMilliseconds() < 1000) {
-      waiter.WaitForNotificationWithTimeout(
-          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
+                                            timer.Elapsed());
       ++num_batches;
     }
   }

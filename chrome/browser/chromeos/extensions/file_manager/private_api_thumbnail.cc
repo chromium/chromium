@@ -122,8 +122,7 @@ void FileManagerPrivateGetThumbnailFunction::SendEncodedThumbnail(
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::
     FileManagerPrivateInternalGetDriveThumbnailFunction() {
-  SetWarningThresholds(base::TimeDelta::FromSeconds(5),
-                       base::TimeDelta::FromMinutes(1));
+  SetWarningThresholds(base::Seconds(5), base::Minutes(1));
 }
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::

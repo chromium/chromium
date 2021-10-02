@@ -214,7 +214,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
             media::PIXEL_FORMAT_ARGB, mailbox_holders,
             media::VideoFrame::ReleaseMailboxCB(), gfx::Size(640, 360),
             gfx::Rect(640, 360), gfx::Size(640, 360),
-            base::TimeDelta::FromMicroseconds(timestamp));
+            base::Microseconds(timestamp));
     output_cb_.Run(std::move(frame));
   }
 

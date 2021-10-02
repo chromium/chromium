@@ -326,11 +326,10 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       is_held_ = true;
       DCHECK(!delay_timer_->IsRunning());
       DCHECK(!repeat_timer_->IsRunning());
-      delay_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kInitialBackspaceDelayMs),
-          base::BindOnce(&BackspacePinButton::DispatchPress,
-                         base::Unretained(this), nullptr));
+      delay_timer_->Start(FROM_HERE,
+                          base::Milliseconds(kInitialBackspaceDelayMs),
+                          base::BindOnce(&BackspacePinButton::DispatchPress,
+                                         base::Unretained(this), nullptr));
 
       if (event)
         event->SetHandled();
@@ -346,8 +345,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     // make sure the repeat_timer_ is running so the function will fire again.
     if (!repeat_timer_->IsRunning()) {
       repeat_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kRepeatingBackspaceDelayMs),
+          FROM_HERE, base::Milliseconds(kRepeatingBackspaceDelayMs),
           base::BindRepeating(&BackspacePinButton::DispatchPress,
                               base::Unretained(this), nullptr));
     }

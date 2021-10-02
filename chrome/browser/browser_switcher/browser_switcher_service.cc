@@ -37,7 +37,7 @@ namespace {
 const base::TimeDelta kFetchSitelistDelay = base::TimeDelta();
 
 // How long to wait after a fetch to re-fetch the sitelist to keep it fresh.
-const base::TimeDelta kRefreshSitelistDelay = base::TimeDelta::FromMinutes(30);
+const base::TimeDelta kRefreshSitelistDelay = base::Minutes(30);
 
 // How many times to re-try fetching the XML file for the sitelist.
 const int kFetchNumRetries = 1;

@@ -170,7 +170,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool FlingInProgress() { return fling_controller_->fling_in_progress(); }
 
   void AdvanceTime(double time_delta_ms = kFrameDelta) {
-    mock_clock_.Advance(base::TimeDelta::FromMillisecondsD(time_delta_ms));
+    mock_clock_.Advance(base::Milliseconds(time_delta_ms));
   }
 
   base::TimeTicks NowTicks() const { return mock_clock_.NowTicks(); }

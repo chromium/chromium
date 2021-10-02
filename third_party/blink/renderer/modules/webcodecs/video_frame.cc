@@ -168,8 +168,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 
 // static -- defined out of line to satisfy link time requirements.
 const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
-const base::TimeDelta CachedVideoFramePool::kIdleTimeout =
-    base::TimeDelta::FromSeconds(10);
+const base::TimeDelta CachedVideoFramePool::kIdleTimeout = base::Seconds(10);
 
 class CanvasResourceProviderCache
     : public GarbageCollected<CanvasResourceProviderCache>,
@@ -256,7 +255,7 @@ class CanvasResourceProviderCache
 const char CanvasResourceProviderCache::kSupplementName[] =
     "CanvasResourceProviderCache";
 const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 absl::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {
@@ -465,12 +464,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
       wrapped_frame->set_color_space(source_frame->ColorSpace());
       if (init->hasTimestamp()) {
-        wrapped_frame->set_timestamp(
-            base::TimeDelta::FromMicroseconds(init->timestamp()));
+        wrapped_frame->set_timestamp(base::Microseconds(init->timestamp()));
       }
       if (init->hasDuration()) {
         wrapped_frame->metadata().frame_duration =
-            base::TimeDelta::FromMicroseconds(init->duration());
+            base::Microseconds(init->duration());
       }
       source_frame = std::move(wrapped_frame);
     }
@@ -492,7 +490,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  const auto timestamp = base::TimeDelta::FromMicroseconds(
+  const auto timestamp = base::Microseconds(
       (init && init->hasTimestamp()) ? init->timestamp() : 0);
 
   const auto paint_image = image->PaintImageForCurrentFrame();
@@ -590,8 +588,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   frame->set_color_space(gfx_color_space);
   if (init->hasDuration()) {
-    frame->metadata().frame_duration =
-        base::TimeDelta::FromMicroseconds(init->duration());
+    frame->metadata().frame_duration = base::Microseconds(init->duration());
   }
   if (orientation != ImageOrientationEnum::kDefault) {
     frame->metadata().transformation =
@@ -670,7 +667,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   // Create a frame.
-  const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  const auto timestamp = base::Microseconds(init->timestamp());
   auto& frame_pool = CachedVideoFramePool::From(*execution_context);
   auto frame = frame_pool.CreateFrame(media_fmt, coded_size, visible_rect,
                                       display_size, timestamp);
@@ -699,8 +696,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   if (init->hasDuration()) {
-    frame->metadata().frame_duration =
-        base::TimeDelta::FromMicroseconds(init->duration());
+    frame->metadata().frame_duration = base::Microseconds(init->duration());
   }
 
   // Copy planes.

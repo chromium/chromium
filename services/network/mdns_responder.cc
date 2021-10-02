@@ -62,15 +62,12 @@ using MdnsResponderServiceError = MdnsResponderManager::ServiceError;
 //
 // The multicast of responses of the same record on an interface must be at
 // least one second apart on that particular interface.
-const base::TimeDelta kMinIntervalBetweenSameRecord =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kMinIntervalBetweenSameRecord = base::Seconds(1);
 
-const base::TimeDelta kMinIntervalBetweenMdnsResponses =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kMinIntervalBetweenMdnsResponses = base::Seconds(1);
 
 // RFC 6762, Section 10.
-const base::TimeDelta kDefaultTtlForRecordWithHostname =
-    base::TimeDelta::FromSeconds(120);
+const base::TimeDelta kDefaultTtlForRecordWithHostname = base::Seconds(120);
 
 // RFC 6762, Section 8.3.
 const int kMinNumAnnouncementsToSend = 2;
@@ -80,7 +77,7 @@ const uint8_t kMaxMdnsResponseRetries = 2;
 // The capacity of the send queue for packets blocked by an incomplete send.
 const uint8_t kSendQueueCapacity = 100;
 // Maximum delay allowed for per-response rate-limited responses.
-const base::TimeDelta kMaxScheduledDelay = base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kMaxScheduledDelay = base::Seconds(10);
 
 // The query name of the mDNS name generator service.
 const char kMdnsNameGeneratorServiceInstanceName[] =
@@ -106,10 +103,8 @@ const char kTxtversLine[] = "\x9txtvers=1";
 // shared resource record set, should be delayed uniformly and randomly in the
 // range of 20-120 ms. This delay is applied in addition to the scheduled delay
 // by rate limiting.
-const base::TimeDelta kMinRandDelayForSharedResult =
-    base::TimeDelta::FromMilliseconds(20);
-const base::TimeDelta kMaxRandDelayForSharedResult =
-    base::TimeDelta::FromMilliseconds(120);
+const base::TimeDelta kMinRandDelayForSharedResult = base::Milliseconds(20);
+const base::TimeDelta kMaxRandDelayForSharedResult = base::Milliseconds(120);
 
 class RandomUuidNameGenerator
     : public network::MdnsResponderManager::NameGenerator {
@@ -324,7 +319,7 @@ struct PendingPacket {
 base::TimeDelta GetRandTimeDelta(const base::TimeDelta& min,
                                  const base::TimeDelta& max) {
   DCHECK_LE(min, max);
-  return base::TimeDelta::FromMicroseconds(
+  return base::Microseconds(
       base::RandInt(min.InMicroseconds(), max.InMicroseconds()));
 }
 

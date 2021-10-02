@@ -47,24 +47,21 @@ TEST(AudioDiscardHelperTest, TimeDeltaToFrames) {
   AudioDiscardHelper discard_helper(kSampleRate, 0, false);
 
   EXPECT_EQ(0u, discard_helper.TimeDeltaToFrames(base::TimeDelta()));
-  EXPECT_EQ(
-      kSampleRate / 100,
-      discard_helper.TimeDeltaToFrames(base::TimeDelta::FromMilliseconds(10)));
+  EXPECT_EQ(kSampleRate / 100,
+            discard_helper.TimeDeltaToFrames(base::Milliseconds(10)));
 
   // Ensure partial frames are rounded down correctly.  The equation below
   // calculates a frame count with a fractional part < 0.5.
   const int small_remainder =
       base::Time::kMicrosecondsPerSecond * (kSampleRate - 0.9) / kSampleRate;
-  EXPECT_EQ(kSampleRate - 1,
-            discard_helper.TimeDeltaToFrames(
-                base::TimeDelta::FromMicroseconds(small_remainder)));
+  EXPECT_EQ(kSampleRate - 1, discard_helper.TimeDeltaToFrames(
+                                 base::Microseconds(small_remainder)));
 
   // Ditto, but rounded up using a fractional part > 0.5.
   const int large_remainder =
       base::Time::kMicrosecondsPerSecond * (kSampleRate - 0.4) / kSampleRate;
-  EXPECT_EQ(kSampleRate,
-            discard_helper.TimeDeltaToFrames(
-                base::TimeDelta::FromMicroseconds(large_remainder)));
+  EXPECT_EQ(kSampleRate, discard_helper.TimeDeltaToFrames(
+                             base::Microseconds(large_remainder)));
 }
 
 TEST(AudioDiscardHelperTest, BasicProcessBuffers) {
@@ -75,9 +72,8 @@ TEST(AudioDiscardHelperTest, BasicProcessBuffers) {
 
   // Use an estimated duration which doesn't match the number of decoded frames
   // to ensure the helper is correctly setting durations based on output frames.
-  const base::TimeDelta kEstimatedDuration =
-      base::TimeDelta::FromMilliseconds(9);
-  const base::TimeDelta kActualDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kEstimatedDuration = base::Milliseconds(9);
+  const base::TimeDelta kActualDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kActualDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -104,8 +100,8 @@ TEST(AudioDiscardHelperTest, NegativeTimestampClampsToZero) {
   AudioDiscardHelper discard_helper(kSampleRate, 0, false);
   ASSERT_FALSE(discard_helper.initialized());
 
-  const base::TimeDelta kTimestamp = -base::TimeDelta::FromSeconds(1);
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kTimestamp = -base::Seconds(1);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -126,7 +122,7 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithInitialDiscard) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   // Tell the helper we want to discard half of the initial frames.
@@ -153,7 +149,7 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithLargeInitialDiscard) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   // Tell the helper we want to discard 1.5 buffers worth of frames.
@@ -188,7 +184,7 @@ TEST(AudioDiscardHelperTest, AllowNonMonotonicTimestamps) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -216,7 +212,7 @@ TEST(AudioDiscardHelperTest, DiscardEndPadding) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -240,7 +236,7 @@ TEST(AudioDiscardHelperTest, BadDiscardEndPadding) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -262,7 +258,7 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardEndPadding) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -292,7 +288,7 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPadding) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -323,7 +319,7 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   discard_helper.Reset(kDecoderDelay);
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -434,7 +430,7 @@ TEST(AudioDiscardHelperTest, DelayedDiscardInitialDiscardAndDiscardPadding) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =
@@ -470,7 +466,7 @@ TEST(AudioDiscardHelperTest, CompleteDiscard) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
   discard_helper.Reset(0);
 
@@ -502,7 +498,7 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithDelayedDiscard) {
   ASSERT_FALSE(discard_helper.initialized());
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
   discard_helper.Reset(0);
 
@@ -541,7 +537,7 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithInitialDiscardDecoderDelay) {
   discard_helper.Reset(kDecoderDelay);
 
   const base::TimeDelta kTimestamp = base::TimeDelta();
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
 
   scoped_refptr<DecoderBuffer> encoded_buffer =

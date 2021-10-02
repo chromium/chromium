@@ -85,7 +85,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->relying_party_id = effective_relying_party_identity_;
   options->timeout = request_->timeout.has_value()
                          ? request_->timeout.value()
-                         : base::TimeDelta::FromMinutes(kDefaultTimeoutMinutes);
+                         : base::Minutes(kDefaultTimeoutMinutes);
   options->user_verification = device::UserVerificationRequirement::kRequired;
   std::vector<device::PublicKeyCredentialDescriptor> credentials;
 

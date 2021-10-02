@@ -131,7 +131,7 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistEvents) {
   breadcrumb_manager_service_->AddEvent("event");
 
   // Advance clock to trigger writing final events.
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_env_.FastForwardBy(base::Minutes(1));
 
   __block bool events_received = false;
   persistent_storage_->GetStoredEvents(
@@ -155,13 +155,13 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistLargeBucket) {
   while (event_count < kEventCountTooManyForPersisting) {
     event = base::StringPrintf("event %lu", event_count);
     breadcrumb_manager_service_->AddEvent(event);
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    task_env_.FastForwardBy(base::Milliseconds(1));
 
     event_count++;
   }
 
   // Advance clock to trigger writing final events.
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_env_.FastForwardBy(base::Minutes(1));
 
   __block bool events_received = false;
   persistent_storage_->GetStoredEvents(
@@ -186,13 +186,13 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistManyEventsOverTime) {
   while (event_count < kEventCountTooManyForPersisting) {
     event = base::StringPrintf("event %lu", event_count);
     breadcrumb_manager_service_->AddEvent(event);
-    task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_env_.FastForwardBy(base::Seconds(1));
 
     event_count++;
   }
 
   // Advance clock to trigger writing final events.
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_env_.FastForwardBy(base::Minutes(1));
 
   __block bool events_received = false;
   persistent_storage_->GetStoredEvents(
@@ -224,12 +224,12 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
     event_counter++;
 
     if (event_counter % kNumEventsPerBucket == 0) {
-      task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
+      task_env_.FastForwardBy(base::Hours(1));
     }
   }
 
   // Advance clock to trigger writing final events.
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_env_.FastForwardBy(base::Minutes(1));
 
   __block bool events_received = false;
   persistent_storage_->GetStoredEvents(

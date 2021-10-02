@@ -26,37 +26,36 @@ TEST(PhysicsBasedFlingCurveTest, BasicFlingTestVelocityY) {
   gfx::Vector2dF delta;
   gfx::Vector2dF cumulative_scroll;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now - base::TimeDelta::FromMilliseconds(20), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now - base::Milliseconds(20), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_EQ(0, delta.x());
   EXPECT_EQ(0, delta.y());
   cumulative_scroll = offset;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromMilliseconds(20), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now + base::Milliseconds(20), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_EQ(0, delta.x());
   EXPECT_NEAR(delta.y(), 98, 1);
   cumulative_scroll = offset;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromMilliseconds(250), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now + base::Milliseconds(250), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_EQ(0, delta.x());
   EXPECT_NEAR(delta.y(), 923, 1);
   cumulative_scroll = offset;
 
   EXPECT_FALSE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromSeconds(curve.curve_duration()), &offset,
-      &velocity));
+      now + base::Seconds(curve.curve_duration()), &offset, &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_EQ(0, delta.x());
   EXPECT_NEAR(delta.y(), 2218, 1);
   cumulative_scroll = offset;
 
-  EXPECT_FALSE(curve.ComputeScrollOffset(now + base::TimeDelta::FromSeconds(10),
-                                         &offset, &velocity));
+  EXPECT_FALSE(
+      curve.ComputeScrollOffset(now + base::Seconds(10), &offset, &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_TRUE(delta.IsZero());
 }
@@ -76,36 +75,36 @@ TEST(PhysicsBasedFlingCurveTest, BasicFlingTestVelocityX) {
   gfx::Vector2dF delta;
   gfx::Vector2dF cumulative_scroll;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now - base::TimeDelta::FromMilliseconds(20), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now - base::Milliseconds(20), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_EQ(0, delta.x());
   EXPECT_EQ(0, delta.y());
   cumulative_scroll = offset;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromMilliseconds(20), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now + base::Milliseconds(20), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_NEAR(delta.x(), 99, 1);
   EXPECT_EQ(0, delta.y());
   cumulative_scroll = offset;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromMilliseconds(250), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now + base::Milliseconds(250), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_NEAR(delta.x(), 1054, 1);
   EXPECT_EQ(0, delta.y());
   cumulative_scroll = offset;
 
-  EXPECT_FALSE(curve.ComputeScrollOffset(now + base::TimeDelta::FromSeconds(10),
-                                         &offset, &velocity));
+  EXPECT_FALSE(
+      curve.ComputeScrollOffset(now + base::Seconds(10), &offset, &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_NEAR(delta.x(), 3571, 1);
   EXPECT_EQ(0, delta.y());
   cumulative_scroll = offset;
 
-  EXPECT_FALSE(curve.ComputeScrollOffset(now + base::TimeDelta::FromSeconds(20),
-                                         &offset, &velocity));
+  EXPECT_FALSE(
+      curve.ComputeScrollOffset(now + base::Seconds(20), &offset, &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_TRUE(delta.IsZero());
 }
@@ -125,36 +124,36 @@ TEST(PhysicsBasedFlingCurveTest, BasicFlingTestVelocityXAndY) {
   gfx::Vector2dF delta;
   gfx::Vector2dF cumulative_scroll;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now - base::TimeDelta::FromMilliseconds(20), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now - base::Milliseconds(20), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_EQ(0, delta.x());
   EXPECT_EQ(0, delta.y());
   cumulative_scroll = offset;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromMilliseconds(20), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now + base::Milliseconds(20), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_NEAR(delta.x(), 19, 1);
   EXPECT_NEAR(delta.y(), 79, 1);
   cumulative_scroll = offset;
 
-  EXPECT_TRUE(curve.ComputeScrollOffset(
-      now + base::TimeDelta::FromMilliseconds(250), &offset, &velocity));
+  EXPECT_TRUE(curve.ComputeScrollOffset(now + base::Milliseconds(250), &offset,
+                                        &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_NEAR(delta.x(), 200, 1);
   EXPECT_NEAR(delta.y(), 803, 1);
   cumulative_scroll = offset;
 
-  EXPECT_FALSE(curve.ComputeScrollOffset(now + base::TimeDelta::FromSeconds(10),
-                                         &offset, &velocity));
+  EXPECT_FALSE(
+      curve.ComputeScrollOffset(now + base::Seconds(10), &offset, &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_NEAR(delta.x(), 535, 1);
   EXPECT_NEAR(delta.y(), 2141, 1);
   cumulative_scroll = offset;
 
-  EXPECT_FALSE(curve.ComputeScrollOffset(now + base::TimeDelta::FromSeconds(20),
-                                         &offset, &velocity));
+  EXPECT_FALSE(
+      curve.ComputeScrollOffset(now + base::Seconds(20), &offset, &velocity));
   delta = offset - cumulative_scroll;
   EXPECT_TRUE(delta.IsZero());
 }

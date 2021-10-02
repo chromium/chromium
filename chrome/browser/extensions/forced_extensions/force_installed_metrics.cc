@@ -32,8 +32,7 @@ using FailureReason = InstallStageTracker::FailureReason;
 
 namespace {
 // Timeout to report UMA if not all force-installed extension were loaded.
-constexpr base::TimeDelta kInstallationTimeout =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Converts user_manager::UserType to InstallStageTracker::UserType for

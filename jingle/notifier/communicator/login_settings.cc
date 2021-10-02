@@ -54,8 +54,7 @@ void LoginSettings::SetRedirectServer(
     const ServerInformation& redirect_server) {
   redirect_server_ = redirect_server;
   redirect_expiration_ =
-      base::Time::Now() +
-      base::TimeDelta::FromMinutes(kRedirectExpirationTimeMinutes);
+      base::Time::Now() + base::Minutes(kRedirectExpirationTimeMinutes);
 }
 
 ServerList LoginSettings::GetServersForTimeForTest(base::Time now) const {

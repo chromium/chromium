@@ -45,10 +45,8 @@ TEST_F(DateChangedHelperTest, TestOldFires) {
   date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName);
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        return TimeNowIgnoringOverride() + base::TimeDelta::FromHours(25);
-      },
-      nullptr, nullptr);
+      []() { return TimeNowIgnoringOverride() + base::Hours(25); }, nullptr,
+      nullptr);
   ASSERT_TRUE(
       date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName));
 }
@@ -60,10 +58,8 @@ TEST_F(DateChangedHelperTest, TestFutureFires) {
   date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName);
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        return TimeNowIgnoringOverride() - base::TimeDelta::FromHours(25);
-      },
-      nullptr, nullptr);
+      []() { return TimeNowIgnoringOverride() - base::Hours(25); }, nullptr,
+      nullptr);
   ASSERT_TRUE(
       date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName));
 }
@@ -74,8 +70,7 @@ TEST_F(DateChangedHelperTest, TestEarlierSameDayNotFired) {
   {
     base::subtle::ScopedTimeClockOverrides time_override(
         []() {
-          return TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(2);
+          return TimeNowIgnoringOverride().LocalMidnight() + base::Hours(2);
         },
         nullptr, nullptr);
     date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName);
@@ -83,8 +78,7 @@ TEST_F(DateChangedHelperTest, TestEarlierSameDayNotFired) {
 
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
-        return TimeNowIgnoringOverride().LocalMidnight() +
-               base::TimeDelta::FromHours(22);
+        return TimeNowIgnoringOverride().LocalMidnight() + base::Hours(22);
       },
       nullptr, nullptr);
   ASSERT_FALSE(
@@ -97,8 +91,7 @@ TEST_F(DateChangedHelperTest, TestLaterSameDayNotFired) {
   {
     base::subtle::ScopedTimeClockOverrides time_override(
         []() {
-          return TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromHours(22);
+          return TimeNowIgnoringOverride().LocalMidnight() + base::Hours(22);
         },
         nullptr, nullptr);
     date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName);
@@ -106,8 +99,7 @@ TEST_F(DateChangedHelperTest, TestLaterSameDayNotFired) {
 
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
-        return TimeNowIgnoringOverride().LocalMidnight() +
-               base::TimeDelta::FromHours(2);
+        return TimeNowIgnoringOverride().LocalMidnight() + base::Hours(2);
       },
       nullptr, nullptr);
   ASSERT_FALSE(
@@ -120,8 +112,7 @@ TEST_F(DateChangedHelperTest, TestJustNextDayFired) {
   {
     base::subtle::ScopedTimeClockOverrides time_override(
         []() {
-          return TimeNowIgnoringOverride().LocalMidnight() -
-                 base::TimeDelta::FromMinutes(5);
+          return TimeNowIgnoringOverride().LocalMidnight() - base::Minutes(5);
         },
         nullptr, nullptr);
     date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName);
@@ -129,8 +120,7 @@ TEST_F(DateChangedHelperTest, TestJustNextDayFired) {
 
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
-        return TimeNowIgnoringOverride().LocalMidnight() +
-               base::TimeDelta::FromMinutes(5);
+        return TimeNowIgnoringOverride().LocalMidnight() + base::Minutes(5);
       },
       nullptr, nullptr);
   ASSERT_TRUE(
@@ -143,8 +133,7 @@ TEST_F(DateChangedHelperTest, TestJustPreviousDayFired) {
   {
     base::subtle::ScopedTimeClockOverrides time_override(
         []() {
-          return TimeNowIgnoringOverride().LocalMidnight() +
-                 base::TimeDelta::FromMinutes(5);
+          return TimeNowIgnoringOverride().LocalMidnight() + base::Minutes(5);
         },
         nullptr, nullptr);
     date_changed_helper::HasDateChangedSinceLastCall(&prefs_, kTestPrefName);
@@ -152,8 +141,7 @@ TEST_F(DateChangedHelperTest, TestJustPreviousDayFired) {
 
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
-        return TimeNowIgnoringOverride().LocalMidnight() -
-               base::TimeDelta::FromMinutes(5);
+        return TimeNowIgnoringOverride().LocalMidnight() - base::Minutes(5);
       },
       nullptr, nullptr);
   ASSERT_TRUE(

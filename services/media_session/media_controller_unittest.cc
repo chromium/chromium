@@ -506,8 +506,7 @@ TEST_F(MediaControllerTest, ActiveController_Seek) {
     EXPECT_EQ(0, media_session.seek_count());
   }
 
-  controller()->Seek(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->Seek(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_EQ(1, media_session.seek_count());
@@ -527,8 +526,7 @@ TEST_F(MediaControllerTest, ActiveController_SeekTo) {
     EXPECT_EQ(0, media_session.seek_to_count());
   }
 
-  controller()->SeekTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->SeekTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_EQ(1, media_session.seek_to_count());
@@ -550,22 +548,19 @@ TEST_F(MediaControllerTest, ActiveController_ScrubTo) {
     EXPECT_EQ(0, media_session.seek_to_count());
   }
 
-  controller()->ScrubTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->ScrubTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_TRUE(media_session.is_scrubbing());
   EXPECT_EQ(0, media_session.seek_to_count());
 
-  controller()->ScrubTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->ScrubTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_TRUE(media_session.is_scrubbing());
   EXPECT_EQ(0, media_session.seek_to_count());
 
-  controller()->SeekTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->SeekTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_FALSE(media_session.is_scrubbing());
@@ -916,8 +911,8 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_Empty) {
 TEST_F(MediaControllerTest, ActiveController_Position_Observer_WithInfo) {
   MediaPosition position(
       /*playback_rate=*/1,
-      /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300),
+      /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
       /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
@@ -961,8 +956,8 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_Empty) {
 TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
   MediaPosition position(
       /*playback_rate=*/1,
-      /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300),
+      /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
       /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
@@ -987,8 +982,8 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
 TEST_F(MediaControllerTest, ActiveController_Position_Observer_Abandoned) {
   MediaPosition position(
       /*playback_rate=*/1,
-      /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300),
+      /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
       /*end_of_media=*/false);
 
   test::MockMediaSession media_session;

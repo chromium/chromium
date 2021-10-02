@@ -584,14 +584,13 @@ void SiteEngagementService::SetLastEngagementTime(
 }
 
 base::TimeDelta SiteEngagementService::GetMaxDecayPeriod() const {
-  return base::TimeDelta::FromHours(
-             SiteEngagementScore::GetDecayPeriodInHours()) *
+  return base::Hours(SiteEngagementScore::GetDecayPeriodInHours()) *
          SiteEngagementScore::GetMaxDecaysPerScore();
 }
 
 base::TimeDelta SiteEngagementService::GetStalePeriod() const {
   return GetMaxDecayPeriod() +
-         base::TimeDelta::FromHours(
+         base::Hours(
              SiteEngagementScore::GetLastEngagementGracePeriodInHours());
 }
 

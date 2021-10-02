@@ -116,7 +116,7 @@ absl::optional<ContentIndexEntry> EntryFromSerializedProto(
 
   auto description = DescriptionFromProto(entry_proto.description());
   base::Time registration_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(entry_proto.timestamp()));
+      base::Microseconds(entry_proto.timestamp()));
 
   return ContentIndexEntry(service_worker_registration_id,
                            std::move(description), std::move(launch_url),

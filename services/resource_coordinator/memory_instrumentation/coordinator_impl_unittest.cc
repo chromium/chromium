@@ -133,8 +133,7 @@ class CoordinatorImplTest : public testing::Test {
   }
 
   void ReduceCoordinatorClientProcessTimeout() {
-    coordinator_->set_client_process_timeout(
-        base::TimeDelta::FromMilliseconds(5));
+    coordinator_->set_client_process_timeout(base::Milliseconds(5));
   }
 
  protected:
@@ -329,8 +328,7 @@ TEST_F(CoordinatorImplTest, QueuedRequest) {
              MockClientProcess::RequestChromeMemoryDumpCallback& callback) {
             // Skip the wall clock time-ticks forward to make sure start_time
             // is strictly increasing.
-            task_environment->FastForwardBy(
-                base::TimeDelta::FromMilliseconds(10));
+            task_environment->FastForwardBy(base::Milliseconds(10));
             MemoryDumpArgs dump_args{MemoryDumpLevelOfDetail::DETAILED};
             auto pmd = std::make_unique<ProcessMemoryDump>(dump_args);
             std::move(callback).Run(true, args.dump_guid, std::move(pmd));

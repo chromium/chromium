@@ -397,7 +397,7 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_FALSE(HasPermissionToActivate(window));
 
   // Can grant permission.
-  GrantPermissionToActivate(window, base::TimeDelta::FromDays(1));
+  GrantPermissionToActivate(window, base::Days(1));
   exo::Permission* permission = window->GetProperty(kPermissionKey);
   EXPECT_TRUE(permission->Check(Permission::Capability::kActivate));
   EXPECT_TRUE(HasPermissionToActivate(window));
@@ -407,7 +407,7 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_FALSE(HasPermissionToActivate(window));
 
   // Can grant permission again.
-  GrantPermissionToActivate(window, base::TimeDelta::FromDays(2));
+  GrantPermissionToActivate(window, base::Days(2));
   exo::Permission* permission2 = window->GetProperty(kPermissionKey);
   EXPECT_TRUE(permission2->Check(Permission::Capability::kActivate));
   EXPECT_TRUE(HasPermissionToActivate(window));
@@ -440,8 +440,7 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   EXPECT_TRUE(widget2->IsActive());
 
   // Grant permission to activate the first window.
-  GrantPermissionToActivate(widget1->GetNativeWindow(),
-                            base::TimeDelta::FromDays(1));
+  GrantPermissionToActivate(widget1->GetNativeWindow(), base::Days(1));
 
   // The first window can activate itself.
   surface1->RequestActivation();

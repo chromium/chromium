@@ -75,7 +75,7 @@ TEST_F(UpdateCheckHelperTest, TimeoutExceeded) {
   update_helper_->CheckConnectivity(base::BindOnce(
       &UpdateCheckHelperTest::VerifyResult, base::Unretained(this)));
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment_.FastForwardBy(base::Seconds(6));
   // Request should timeout after 5 seconds.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   VerifyCallbackInvoked();
@@ -101,7 +101,7 @@ TEST_F(UpdateCheckHelperTest, MultipleConnectivityChecks_AtOnce) {
   update_helper_->CheckConnectivity(base::BindOnce(
       &UpdateCheckHelperTest::VerifyResult, base::Unretained(this)));
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   // Start another check 1 second later.
   update_helper_->CheckConnectivity(base::BindOnce(
       &UpdateCheckHelperTest::VerifyResult, base::Unretained(this)));
@@ -127,7 +127,7 @@ TEST_F(UpdateCheckHelperTest, MultipleConnectivityChecks_Sequential) {
 
   // Another check after 10 seconds - this time successful.
   ResetCallbackInvoked();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   SetExpectedResult(true);
   update_helper_->CheckConnectivity(base::BindOnce(
       &UpdateCheckHelperTest::VerifyResult, base::Unretained(this)));

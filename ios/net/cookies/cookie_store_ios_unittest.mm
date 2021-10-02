@@ -244,7 +244,7 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
   SetCookie("abc=def");
 
   // Time is different, though.
-  base::Time not_now = base::Time::Now() - base::TimeDelta::FromDays(30);
+  base::Time not_now = base::Time::Now() - base::Days(30);
 
   // Semantics for CookieMonster::DeleteCanonicalCookieAsync don't match deletes
   // for same key if cookie value changed.  Document CookieStoreIOS compat.

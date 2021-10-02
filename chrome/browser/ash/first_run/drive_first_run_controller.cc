@@ -308,11 +308,9 @@ DriveFirstRunController::~DriveFirstRunController() {
 void DriveFirstRunController::EnableOfflineMode() {
   if (!started_) {
     started_ = true;
-    initial_delay_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(initial_delay_secs_),
-      this,
-      &DriveFirstRunController::EnableOfflineMode);
+    initial_delay_timer_.Start(FROM_HERE, base::Seconds(initial_delay_secs_),
+                               this,
+                               &DriveFirstRunController::EnableOfflineMode);
     return;
   }
 
@@ -346,11 +344,9 @@ void DriveFirstRunController::EnableOfflineMode() {
       base::BindOnce(&DriveFirstRunController::OnOfflineInit,
                      base::Unretained(this)));
   web_contents_manager_->StartLoad();
-  web_contents_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(web_contents_timeout_secs_),
-      this,
-      &DriveFirstRunController::OnWebContentsTimedOut);
+  web_contents_timer_.Start(FROM_HERE,
+                            base::Seconds(web_contents_timeout_secs_), this,
+                            &DriveFirstRunController::OnWebContentsTimedOut);
 }
 
 void DriveFirstRunController::AddObserver(Observer* observer) {

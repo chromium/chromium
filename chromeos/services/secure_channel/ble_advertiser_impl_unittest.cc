@@ -183,9 +183,9 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
 
     // The timer should have been started.
     EXPECT_TRUE(fake_timer->IsRunning());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(
-                  BleAdvertiserImpl::kNumSecondsPerAdvertisementTimeslot),
-              fake_timer->GetCurrentDelay());
+    EXPECT_EQ(
+        base::Seconds(BleAdvertiserImpl::kNumSecondsPerAdvertisementTimeslot),
+        fake_timer->GetCurrentDelay());
 
     return fake_timer;
   }

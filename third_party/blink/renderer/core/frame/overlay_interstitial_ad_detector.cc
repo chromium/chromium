@@ -20,7 +20,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kFireInterval = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kFireInterval = base::Seconds(1);
 constexpr double kLargeAdSizeToViewportSizeThreshold = 0.1;
 
 // An overlay interstitial element shouldn't move with scrolling and should be

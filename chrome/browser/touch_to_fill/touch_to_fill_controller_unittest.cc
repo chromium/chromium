@@ -267,14 +267,14 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Android_Credential) {
       MakeUiCredential({
           .username = "alice",
           .password = "p4ssw0rd",
-          .time_since_last_use = base::TimeDelta::FromMinutes(2),
+          .time_since_last_use = base::Minutes(2),
       }),
       MakeUiCredential({
           .username = "bob",
           .password = "s3cr3t",
           .origin = "",
           .is_affiliation_based_match = true,
-          .time_since_last_use = base::TimeDelta::FromMinutes(3),
+          .time_since_last_use = base::Minutes(3),
       }),
   };
 
@@ -308,24 +308,24 @@ TEST_F(TouchToFillControllerTest, Show_Orders_Credentials) {
   auto alice = MakeUiCredential({
       .username = "alice",
       .password = "p4ssw0rd",
-      .time_since_last_use = base::TimeDelta::FromMinutes(3),
+      .time_since_last_use = base::Minutes(3),
   });
   auto bob = MakeUiCredential({
       .username = "bob",
       .password = "s3cr3t",
       .is_public_suffix_match = true,
-      .time_since_last_use = base::TimeDelta::FromMinutes(1),
+      .time_since_last_use = base::Minutes(1),
   });
   auto charlie = MakeUiCredential({
       .username = "charlie",
       .password = "very_s3cr3t",
-      .time_since_last_use = base::TimeDelta::FromMinutes(2),
+      .time_since_last_use = base::Minutes(2),
   });
   auto david = MakeUiCredential({
       .username = "david",
       .password = "even_more_s3cr3t",
       .is_public_suffix_match = true,
-      .time_since_last_use = base::TimeDelta::FromMinutes(4),
+      .time_since_last_use = base::Minutes(4),
   });
 
   UiCredential credentials[] = {alice, bob, charlie, david};

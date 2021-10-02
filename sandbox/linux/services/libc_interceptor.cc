@@ -145,7 +145,7 @@ void ProxyLocaltimeCallToBrowser(time_t input,
 
   base::UmaHistogramCustomMicrosecondsTimes(
       "Linux.ProxyLocaltimeCallToBrowserUs", timer.Elapsed(),
-      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(1),
+      base::Microseconds(1), base::Seconds(1),
       /*buckets=*/50);
 }
 

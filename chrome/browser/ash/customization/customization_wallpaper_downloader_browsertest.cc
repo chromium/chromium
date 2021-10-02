@@ -198,7 +198,7 @@ class CustomizationWallpaperDownloaderBrowserTest
         ServicesCustomizationDocument::GetInstance();
     customization->wallpaper_downloader_for_testing()
         ->set_retry_delay_for_testing(
-            base::TimeDelta::FromMilliseconds(kDownloadRetryIntervalMS));
+            base::Milliseconds(kDownloadRetryIntervalMS));
 
     attempts_.push_back(base::TimeTicks::Now());
     if (attempts_.size() > 1) {
@@ -206,10 +206,9 @@ class CustomizationWallpaperDownloaderBrowserTest
       const base::TimeDelta current_delay =
           customization->wallpaper_downloader_for_testing()
               ->retry_current_delay_for_testing();
-      const double base_interval = base::TimeDelta::FromMilliseconds(
-                                       kDownloadRetryIntervalMS).InSecondsF();
-      EXPECT_GE(current_delay,
-                base::TimeDelta::FromSecondsD(base_interval * retry * retry))
+      const double base_interval =
+          base::Milliseconds(kDownloadRetryIntervalMS).InSecondsF();
+      EXPECT_GE(current_delay, base::Seconds(base_interval * retry * retry))
           << "Retry too fast. Actual interval " << current_delay.InSecondsF()
           << " seconds, but expected at least " << base_interval
           << " * (retry=" << retry

@@ -171,7 +171,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_parameter = base::TimeDelta::FromSeconds(value);
+        routine_parameter = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunUrandomRoutine(
@@ -239,7 +239,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunCpuCacheRoutine(
@@ -266,7 +266,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunCpuStressRoutine(
@@ -295,7 +295,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunFloatingPointAccuracyRoutine(
@@ -376,7 +376,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      auto exec_duration = base::TimeDelta::FromSeconds(length_seconds.value());
+      auto exec_duration = base::Seconds(length_seconds.value());
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunDiskReadRoutine(
               type_enum, exec_duration, file_size_mb.value(),
@@ -402,7 +402,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunPrimeSearchRoutine(
@@ -436,7 +436,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryDischargeRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              base::Seconds(length_seconds.value()),
               maximum_discharge_percent_allowed.value(),
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
@@ -466,7 +466,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryChargeRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              base::Seconds(length_seconds.value()),
               minimum_charge_percent_required.value(),
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,

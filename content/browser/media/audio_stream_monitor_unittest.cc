@@ -51,7 +51,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
  public:
   AudioStreamMonitorTest() {
     // Start |clock_| at non-zero.
-    clock_.Advance(base::TimeDelta::FromSeconds(1000000));
+    clock_.Advance(base::Seconds(1000000));
   }
 
   void SetUp() override {
@@ -125,13 +125,10 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   }
 
   // A small time step useful for testing the passage of time.
-  static base::TimeDelta one_time_step() {
-    return base::TimeDelta::FromSeconds(1) / 15;
-  }
+  static base::TimeDelta one_time_step() { return base::Seconds(1) / 15; }
 
   static base::TimeDelta holding_period() {
-    return base::TimeDelta::FromMilliseconds(
-        AudioStreamMonitor::kHoldOnMilliseconds);
+    return base::Milliseconds(AudioStreamMonitor::kHoldOnMilliseconds);
   }
 
   void StartMonitoring(int render_process_id,

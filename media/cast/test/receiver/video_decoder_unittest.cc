@@ -86,7 +86,7 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
         next_frame_size_, next_frame_timestamp_);
     const base::TimeTicks reference_time =
         base::TimeTicks::UnixEpoch() + next_frame_timestamp_;
-    next_frame_timestamp_ += base::TimeDelta::FromSeconds(1) / kFrameRate;
+    next_frame_timestamp_ += base::Seconds(1) / kFrameRate;
     PopulateVideoFrame(video_frame.get(), 0);
 
     // Encode |frame| into |encoded_frame->data|.

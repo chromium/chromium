@@ -182,7 +182,7 @@ double HUPScoringParams::ScoreBuckets::HalfLifeTimeDecay(
     return 1.0;
 
   const double half_life_intervals =
-      time_ms / base::TimeDelta::FromDays(half_life_days_).InMillisecondsF();
+      time_ms / base::Days(half_life_days_).InMillisecondsF();
   return pow(2.0, -half_life_intervals);
 }
 
@@ -220,8 +220,8 @@ base::TimeDelta OmniboxFieldTrial::StopTimerFieldTrialDuration() {
   if (base::StringToInt(
           base::FieldTrialList::FindFullName(kStopTimerFieldTrialName),
           &stop_timer_ms))
-    return base::TimeDelta::FromMilliseconds(stop_timer_ms);
-  return base::TimeDelta::FromMilliseconds(1500);
+    return base::Milliseconds(stop_timer_ms);
+  return base::Milliseconds(1500);
 }
 
 base::Time OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold() {
@@ -236,7 +236,7 @@ base::Time OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold() {
     param_value_as_int = 7;
   }
 
-  return (base::Time::Now() - base::TimeDelta::FromDays(param_value_as_int));
+  return (base::Time::Now() - base::Days(param_value_as_int));
 }
 
 bool OmniboxFieldTrial::ShortcutsScoringMaxRelevance(

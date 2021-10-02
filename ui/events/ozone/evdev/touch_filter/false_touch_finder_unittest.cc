@@ -59,8 +59,8 @@ class FalseTouchFinderTest : public testing::Test {
       touches.push_back(touch);
 
       if (i == count - 1 || entry.time_ms != entries[i + 1].time_ms) {
-        false_touch_finder_->HandleTouches(touches, base::TimeTicks() +
-            base::TimeDelta::FromMilliseconds(entry.time_ms));
+        false_touch_finder_->HandleTouches(
+            touches, base::TimeTicks() + base::Milliseconds(entry.time_ms));
 
         for (size_t j = 0; j < touches.size(); ++j) {
           bool expect_delay = entries[j + start_index].expect_delay;

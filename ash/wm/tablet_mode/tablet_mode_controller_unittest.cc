@@ -166,7 +166,7 @@ class TabletModeControllerTest : public AshTestBase {
   // Attaches a SimpleTestTickClock to the TabletModeController with a non
   // null value initial value.
   void AttachTickClockForTest() {
-    test_tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_tick_clock_.Advance(base::Seconds(1));
     test_api_->set_tick_clock(&test_tick_clock_);
   }
 
@@ -233,7 +233,7 @@ class TabletModeControllerTest : public AshTestBase {
   void WaitForSmoothnessMetrics() {
     ignore_result(ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::TimeDelta::FromMilliseconds(100)));
+        base::Milliseconds(100)));
   }
 
  private:
@@ -455,13 +455,13 @@ TEST_F(TabletModeControllerTest, EnterTabletModeWithUnstableLidAngle) {
   EXPECT_FALSE(IsTabletModeStarted());
 
   // 1 second after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_FALSE(CanUseUnstableLidAngle());
   OpenLidToAngle(355.0f);
   EXPECT_FALSE(IsTabletModeStarted());
 
   // 2 seconds after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_TRUE(CanUseUnstableLidAngle());
   OpenLidToAngle(355.0f);
   EXPECT_TRUE(IsTabletModeStarted());
@@ -483,13 +483,13 @@ TEST_F(TabletModeControllerTest, NotExitTabletModeWithUnstableLidAngle) {
   EXPECT_TRUE(IsTabletModeStarted());
 
   // 1 second after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_FALSE(CanUseUnstableLidAngle());
   OpenLidToAngle(5.0f);
   EXPECT_TRUE(IsTabletModeStarted());
 
   // 2 seconds after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_TRUE(CanUseUnstableLidAngle());
   OpenLidToAngle(5.0f);
   EXPECT_TRUE(IsTabletModeStarted());

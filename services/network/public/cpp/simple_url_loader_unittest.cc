@@ -2183,7 +2183,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           break;
         }
         case TestLoaderEvent::kAdvanceOneSecond: {
-          task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+          task_environment_->FastForwardBy(base::Seconds(1));
           break;
         }
       }
@@ -3489,8 +3489,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutTriggered) {
        TestLoaderEvent::kBodyBufferReceived, TestLoaderEvent::kResponseComplete,
        TestLoaderEvent::kBodyBufferClosed});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateHelper();
-  test_helper->simple_url_loader()->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(1));
+  test_helper->simple_url_loader()->SetTimeoutDuration(base::Seconds(1));
 
   loader_factory.RunTest(test_helper.get());
 
@@ -3507,8 +3506,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, StreamResumeAfterTimeout) {
        TestLoaderEvent::kBodyDataRead, TestLoaderEvent::kAdvanceOneSecond,
        TestLoaderEvent::kResponseComplete, TestLoaderEvent::kBodyBufferClosed});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateStreamHelper();
-  test_helper->simple_url_loader()->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(1));
+  test_helper->simple_url_loader()->SetTimeoutDuration(base::Seconds(1));
   test_helper->set_download_to_stream_capture_resume(true);
 
   loader_factory.RunTest(test_helper.get());
@@ -3533,8 +3531,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutNotTriggered) {
        TestLoaderEvent::kBodyBufferReceived, TestLoaderEvent::kResponseComplete,
        TestLoaderEvent::kBodyBufferClosed});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateHelper();
-  test_helper->simple_url_loader()->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(2));
+  test_helper->simple_url_loader()->SetTimeoutDuration(base::Seconds(2));
 
   loader_factory.RunTest(test_helper.get());
 
@@ -3574,8 +3571,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRedirectTriggered) {
        TestLoaderEvent::kBodyBufferReceived, TestLoaderEvent::kBodyBufferClosed,
        TestLoaderEvent::kResponseComplete});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateHelper();
-  test_helper->simple_url_loader()->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(2));
+  test_helper->simple_url_loader()->SetTimeoutDuration(base::Seconds(2));
 
   loader_factory.RunTest(test_helper.get());
 
@@ -3594,8 +3590,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRetryNotTriggered) {
        TestLoaderEvent::kBodyBufferReceived, TestLoaderEvent::kBodyBufferClosed,
        TestLoaderEvent::kResponseComplete});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateHelper();
-  test_helper->simple_url_loader()->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(2));
+  test_helper->simple_url_loader()->SetTimeoutDuration(base::Seconds(2));
   test_helper->simple_url_loader()->SetRetryOptions(
       1, SimpleURLLoader::RETRY_ON_5XX);
 
@@ -3620,7 +3615,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRetryTriggered) {
        TestLoaderEvent::kResponseComplete});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateHelper();
   test_helper->simple_url_loader()->SetTimeoutDuration(
-      base::TimeDelta::FromMilliseconds(1900));
+      base::Milliseconds(1900));
   test_helper->simple_url_loader()->SetRetryOptions(
       1, SimpleURLLoader::RETRY_ON_5XX);
 

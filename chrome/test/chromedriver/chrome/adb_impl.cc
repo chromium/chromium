@@ -205,8 +205,7 @@ Status AdbImpl::SetCommandLineFile(const std::string& device_serial,
       FROM_HERE,
       base::BindOnce(&SendFileOnIOThread, device_serial, command_line_file,
                      command, response_buffer, port_));
-  Status status =
-      response_buffer->GetResponse(&response, base::TimeDelta::FromSeconds(30));
+  Status status = response_buffer->GetResponse(&response, base::Seconds(30));
   return status;
 }
 
@@ -338,8 +337,7 @@ Status AdbImpl::ExecuteCommand(
   io_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(&ExecuteCommandOnIOThread, command,
                                            response_buffer, port_));
-  Status status = response_buffer->GetResponse(
-      response, base::TimeDelta::FromSeconds(30));
+  Status status = response_buffer->GetResponse(response, base::Seconds(30));
   if (status.IsOk()) {
     VLOG(1) << "Received adb response: " << *response;
   }

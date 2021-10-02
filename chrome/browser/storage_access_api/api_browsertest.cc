@@ -539,8 +539,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 
   // Manually create a pre-expired grant and ensure it doesn't grant access.
-  base::Time expiration_time =
-      base::Time::Now() - base::TimeDelta::FromMinutes(5);
+  base::Time expiration_time = base::Time::Now() - base::Minutes(5);
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   settings_map->SetContentSettingDefaultScope(

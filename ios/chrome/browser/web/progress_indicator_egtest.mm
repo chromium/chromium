@@ -87,7 +87,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
           base::AutoLock auto_lock(lock_);
           return terminated_.load(std::memory_order_acquire);
         },
-        false, base::TimeDelta::FromSeconds(10));
+        false, base::Seconds(10));
   }
 
   // HtmlResponseProvider overrides:

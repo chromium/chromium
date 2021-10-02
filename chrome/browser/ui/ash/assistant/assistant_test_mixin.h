@@ -29,8 +29,7 @@ class FakeS3Server;
 class LoggedInUserMixin;
 
 // Default wait time before we conclude the wait actions have timed out.
-constexpr base::TimeDelta kDefaultWaitTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultWaitTimeout = base::Seconds(10);
 
 // Creates everything required to test the Assistant in browser tests.
 // This includes:

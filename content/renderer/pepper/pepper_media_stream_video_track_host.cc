@@ -325,17 +325,9 @@ int32_t PepperMediaStreamVideoTrackHost::SendFrameToTrack(int32_t index) {
     int64_t ts_ms = static_cast<int64_t>(pp_frame->timestamp *
                                          base::Time::kMillisecondsPerSecond);
     scoped_refptr<VideoFrame> frame = media::VideoFrame::WrapExternalYuvData(
-        FromPpapiFormat(plugin_frame_format_),
-        plugin_frame_size_,
-        gfx::Rect(plugin_frame_size_),
-        plugin_frame_size_,
-        y_stride,
-        uv_stride,
-        uv_stride,
-        y_data,
-        u_data,
-        v_data,
-        base::TimeDelta::FromMilliseconds(ts_ms));
+        FromPpapiFormat(plugin_frame_format_), plugin_frame_size_,
+        gfx::Rect(plugin_frame_size_), plugin_frame_size_, y_stride, uv_stride,
+        uv_stride, y_data, u_data, v_data, base::Milliseconds(ts_ms));
     if (!frame)
       return PP_ERROR_FAILED;
 

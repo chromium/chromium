@@ -160,7 +160,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
                                   fake_result_delegate->GetWeakPtr());
 
   // Spin the run loop to trigger the animation.
-  base::test::ios::SpinRunLoopWithMaxDelay(base::TimeDelta::FromSecondsD(1.0));
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1.0));
   EXPECT_TRUE([base_view_controller.presentedViewController
       isMemberOfClass:[CardUnmaskPromptViewController class]]);
 
@@ -173,6 +173,6 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
       ^bool {
         return !base_view_controller.presentedViewController;
       },
-      true, base::TimeDelta::FromSeconds(10));
+      true, base::Seconds(10));
   EXPECT_EQ(nil, base_view_controller.presentedViewController);
 }

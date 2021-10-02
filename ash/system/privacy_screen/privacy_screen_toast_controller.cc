@@ -135,8 +135,8 @@ void PrivacyScreenToastController::StartAutoCloseTimer() {
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     autoclose_delay = kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
 
-  close_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(autoclose_delay),
-                     this, &PrivacyScreenToastController::HideToast);
+  close_timer_.Start(FROM_HERE, base::Seconds(autoclose_delay), this,
+                     &PrivacyScreenToastController::HideToast);
 }
 
 void PrivacyScreenToastController::UpdateToastView() {

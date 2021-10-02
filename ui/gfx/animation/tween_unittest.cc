@@ -143,12 +143,12 @@ TEST(TweenTest, ClampedFloatValueBetweenTimeTicks) {
 
   const auto t0 = base::TimeTicks();
 
-  base::TimeTicks from = t0 + base::TimeDelta::FromSecondsD(1);
-  base::TimeTicks to = t0 + base::TimeDelta::FromSecondsD(2);
+  base::TimeTicks from = t0 + base::Seconds(1);
+  base::TimeTicks to = t0 + base::Seconds(2);
 
-  base::TimeTicks t_before = t0 + base::TimeDelta::FromSecondsD(0.9);
-  base::TimeTicks t_between = t0 + base::TimeDelta::FromSecondsD(1.6);
-  base::TimeTicks t_after = t0 + base::TimeDelta::FromSecondsD(2.2);
+  base::TimeTicks t_before = t0 + base::Seconds(0.9);
+  base::TimeTicks t_between = t0 + base::Seconds(1.6);
+  base::TimeTicks t_after = t0 + base::Seconds(2.2);
 
   EXPECT_EQ(v1, Tween::ClampedFloatValueBetween(t_before, from, v1, to, v2));
   EXPECT_EQ(16.0, Tween::ClampedFloatValueBetween(t_between, from, v1, to, v2));

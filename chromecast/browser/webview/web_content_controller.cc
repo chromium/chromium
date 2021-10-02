@@ -44,7 +44,7 @@ namespace chromecast {
 namespace {
 
 base::TimeTicks TimeTicksFromTimestamp(int64_t timestamp) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp);
+  return base::TimeTicks() + base::Microseconds(timestamp);
 }
 
 }  // namespace
@@ -285,8 +285,7 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
         ui::TouchEvent evt(
             type, gfx::PointF(touch.x(), touch.y()),
             gfx::PointF(touch.root_x(), touch.root_y()),
-            base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(ev.timestamp()),
+            base::TimeTicks() + base::Microseconds(ev.timestamp()),
             ui::PointerDetails(
                 static_cast<ui::EventPointerType>(touch.pointer_type()),
                 static_cast<ui::PointerId>(touch.pointer_id()),
@@ -343,9 +342,8 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
         ui::MouseEvent evt(
             type, gfx::PointF(mouse.x(), mouse.y()),
             gfx::PointF(mouse.root_x(), mouse.root_y()),
-            base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(ev.timestamp()),
-            ev.flags(), mouse.changed_button_flags());
+            base::TimeTicks() + base::Microseconds(ev.timestamp()), ev.flags(),
+            mouse.changed_button_flags());
         if (contents->GetAccessibilityMode().has_mode(
                 ui::AXMode::kWebContents)) {
           evt.set_flags(evt.flags() | ui::EF_TOUCH_ACCESSIBILITY);

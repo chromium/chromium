@@ -212,7 +212,7 @@ void GIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
   SkCodec::FrameInfo frame_info;
   bool frame_info_received = codec_->getFrameInfo(index, &frame_info);
   DCHECK(frame_info_received);
-  frame.SetDuration(base::TimeDelta::FromMilliseconds(frame_info.fDuration));
+  frame.SetDuration(base::Milliseconds(frame_info.fDuration));
   wtf_size_t required_previous_frame_index;
   if (frame_info.fRequiredFrame == SkCodec::kNoFrame) {
     required_previous_frame_index = kNotFound;

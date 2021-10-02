@@ -37,8 +37,7 @@ namespace views {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultAnimationDuration =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDefaultAnimationDuration = base::Seconds(1);
 constexpr int kIconDimension = 20;
 constexpr gfx::Size kIconSize(kIconDimension, kIconDimension);
 constexpr int kLabelWidth = 70;
@@ -407,7 +406,7 @@ class CompositeLayoutTest : public testing::Test {
   }
 
   void AdvanceAnimations(int ms) {
-    const auto delta = base::TimeDelta::FromMilliseconds(ms);
+    const auto delta = base::Milliseconds(ms);
     if (avatar()->layout()->is_animating())
       avatar_test_api_->IncrementTime(delta);
     if (extensions()->layout()->is_animating())

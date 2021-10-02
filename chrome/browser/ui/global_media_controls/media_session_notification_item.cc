@@ -32,8 +32,7 @@ MediaSessionNotificationItem::Source GetSource(const std::string& name) {
 }
 
 // How long to wait (in milliseconds) for a new media session to begin.
-constexpr base::TimeDelta kFreezeTimerDelay =
-    base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kFreezeTimerDelay = base::Milliseconds(2500);
 
 // The minimum size in px that the media session artwork can be to be displayed
 // in the notification.

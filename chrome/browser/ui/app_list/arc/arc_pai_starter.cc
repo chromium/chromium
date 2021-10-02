@@ -24,8 +24,8 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kMinRetryTime = base::TimeDelta::FromMinutes(2);
-constexpr base::TimeDelta kMaxRetryTime = base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kMinRetryTime = base::Minutes(2);
+constexpr base::TimeDelta kMaxRetryTime = base::Minutes(30);
 
 }  // namespace
 

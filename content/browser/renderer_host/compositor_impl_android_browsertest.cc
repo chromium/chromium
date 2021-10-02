@@ -145,7 +145,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
         FROM_HERE,
         base::BindOnce(&ContextLostRunLoop::CheckForContextLoss,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 
  private:

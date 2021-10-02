@@ -34,7 +34,7 @@ static constexpr int kBandwidthEstimateWindowSize =
 static constexpr int kFrameFinishTicksCount = kBandwidthEstimateWindowSize;
 
 base::TimeDelta CalculateEstimatedTransitTime(int size, int kbps) {
-  return base::TimeDelta::FromMicroseconds(size * 1000 * 8 / kbps);
+  return base::Microseconds(size * 1000 * 8 / kbps);
 }
 
 // Uses the |time| to estimate the frame rate, and round the result in ceiling.
@@ -110,11 +110,9 @@ base::TimeDelta FrameProcessingTimeEstimator::EstimatedProcessingTime(
   // Avoid returning 0 if there are no records for delta-frames.
   if ((key_frame && !key_frame_processing_us_.IsEmpty()) ||
       delta_frame_processing_us_.IsEmpty()) {
-    return base::TimeDelta::FromMicroseconds(
-        key_frame_processing_us_.Average());
+    return base::Microseconds(key_frame_processing_us_.Average());
   }
-  return base::TimeDelta::FromMicroseconds(
-      delta_frame_processing_us_.Average());
+  return base::Microseconds(delta_frame_processing_us_.Average());
 }
 
 base::TimeDelta FrameProcessingTimeEstimator::EstimatedTransitTime(
@@ -124,7 +122,7 @@ base::TimeDelta FrameProcessingTimeEstimator::EstimatedTransitTime(
     // a fairly large value (1 minute) here. So WebrtcFrameSchedulerSimple does
     // not need to handle the overflow issue caused by returning
     // TimeDelta::Max().
-    return base::TimeDelta::FromMinutes(1);
+    return base::Minutes(1);
   }
   // Avoid returning 0 if there are no records for delta-frames.
   if ((key_frame && !key_frame_size_.IsEmpty()) ||
@@ -156,14 +154,14 @@ base::TimeDelta FrameProcessingTimeEstimator::EstimatedProcessingTime() const {
   }
   double key_frame_rate = key_frame_count_;
   key_frame_rate /= (delta_frame_count_ + key_frame_count_);
-  return base::TimeDelta::FromMicroseconds(
+  return base::Microseconds(
       key_frame_rate * key_frame_processing_us_.Average() +
       (1 - key_frame_rate) * delta_frame_processing_us_.Average());
 }
 
 base::TimeDelta FrameProcessingTimeEstimator::EstimatedTransitTime() const {
   if (bandwidth_kbps_.IsEmpty()) {
-    return base::TimeDelta::FromMinutes(1);
+    return base::Minutes(1);
   }
   return CalculateEstimatedTransitTime(
       EstimatedFrameSize(), AverageBandwidthKbps());

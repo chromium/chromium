@@ -12,7 +12,7 @@
 namespace {
 
 // The default time period used when initiating delayed shutdowns.
-constexpr base::TimeDelta kDefaultDelay = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kDefaultDelay = base::Seconds(60);
 
 }  // namespace
 

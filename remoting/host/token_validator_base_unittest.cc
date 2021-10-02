@@ -120,23 +120,19 @@ TEST_F(TokenValidatorBaseTest, TestSelectCertificate) {
   base::Time now = base::Time::Now();
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_expired_5_minutes_ago =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(10),
-                     now - base::TimeDelta::FromMinutes(5));
+      CreateFakeCert(now - base::Minutes(10), now - base::Minutes(5));
   ASSERT_TRUE(cert_expired_5_minutes_ago);
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_start_5min_expire_5min =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(5),
-                     now + base::TimeDelta::FromMinutes(5));
+      CreateFakeCert(now - base::Minutes(5), now + base::Minutes(5));
   ASSERT_TRUE(cert_start_5min_expire_5min);
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_start_10min_expire_5min =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(10),
-                     now + base::TimeDelta::FromMinutes(5));
+      CreateFakeCert(now - base::Minutes(10), now + base::Minutes(5));
   ASSERT_TRUE(cert_start_10min_expire_5min);
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_start_5min_expire_10min =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(5),
-                     now + base::TimeDelta::FromMinutes(10));
+      CreateFakeCert(now - base::Minutes(5), now + base::Minutes(10));
   ASSERT_TRUE(cert_start_5min_expire_10min);
 
   // No certificate.

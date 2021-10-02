@@ -74,11 +74,9 @@ base::Value MapAsValueDict(
 void GetModificationQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) {
   // See storage.json for the current value of these limits.
   QuotaLimitHeuristic::Config short_limit_config = {
-      api::storage::sync::MAX_WRITE_OPERATIONS_PER_MINUTE,
-      base::TimeDelta::FromMinutes(1)};
+      api::storage::sync::MAX_WRITE_OPERATIONS_PER_MINUTE, base::Minutes(1)};
   QuotaLimitHeuristic::Config long_limit_config = {
-      api::storage::sync::MAX_WRITE_OPERATIONS_PER_HOUR,
-      base::TimeDelta::FromHours(1)};
+      api::storage::sync::MAX_WRITE_OPERATIONS_PER_HOUR, base::Hours(1)};
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       short_limit_config,
       std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),

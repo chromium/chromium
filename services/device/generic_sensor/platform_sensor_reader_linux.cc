@@ -123,11 +123,10 @@ void PollingSensorReader::BlockingTaskRunnerHelper::StartPolling(
     double frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!timer_.IsRunning());
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromMicroseconds(
-                   base::Time::kMicrosecondsPerSecond / frequency),
-               this,
-               &PollingSensorReader::BlockingTaskRunnerHelper::PollForData);
+  timer_.Start(
+      FROM_HERE,
+      base::Microseconds(base::Time::kMicrosecondsPerSecond / frequency), this,
+      &PollingSensorReader::BlockingTaskRunnerHelper::PollForData);
 }
 
 void PollingSensorReader::BlockingTaskRunnerHelper::StopPolling() {

@@ -581,7 +581,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   video_track->SetIsScreencastForTesting(true);
 
   sink.ConnectToTrack(track);
-  test::RunDelayedTasks(base::TimeDelta::FromHz(kMinFrameRate));
+  test::RunDelayedTasks(base::Hertz(kMinFrameRate));
 
   EXPECT_TRUE(video_track->IsRefreshFrameTimerRunningForTesting());
   video_track->StopAndNotify(base::BindOnce([] {}));
@@ -603,7 +603,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   video_track->SetIsScreencastForTesting(false);
 
   sink.ConnectToTrack(track);
-  test::RunDelayedTasks(base::TimeDelta::FromHz(kMinFrameRate));
+  test::RunDelayedTasks(base::Hertz(kMinFrameRate));
 
   EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
 }
@@ -622,7 +622,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest, RequiredRefreshRate) {
   video_track->SetIsScreencastForTesting(true);
 
   sink.ConnectToTrack(track);
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::Seconds(1));
 }
 
 TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
@@ -644,7 +644,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
 
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::Seconds(1));
 }
 
 TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
@@ -672,7 +672,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
 
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::Seconds(1));
 }
 
 TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
@@ -703,7 +703,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
     EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
   }
 
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::Seconds(1));
 }
 
 }  // namespace media_stream_video_track_test

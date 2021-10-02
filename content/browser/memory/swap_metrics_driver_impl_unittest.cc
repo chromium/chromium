@@ -105,7 +105,7 @@ class SwapMetricsDelegateCounter : public SwapMetricsDriver::Delegate {
 
 // The time delta between updates must non-zero for the delegate callbacks to be
 // invoked.
-constexpr base::TimeDelta kUpdateDelay = base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kUpdateDelay = base::Milliseconds(50);
 
 }  // namespace
 
@@ -156,7 +156,7 @@ TEST_F(TestSwapMetricsDriver, ExpectedMetricCounts) {
 
 TEST_F(TestSwapMetricsDriver, TimerStartSuccess) {
   std::unique_ptr<SwapMetricsDriver> driver =
-      CreateDriver(base::TimeDelta::FromSeconds(60), false);
+      CreateDriver(base::Seconds(60), false);
   auto result = driver->Start();
   EXPECT_EQ(
       SwapMetricsDriver::SwapMetricsUpdateResult::kSwapMetricsUpdateSuccess,
@@ -165,7 +165,7 @@ TEST_F(TestSwapMetricsDriver, TimerStartSuccess) {
 
 TEST_F(TestSwapMetricsDriver, TimerStartFail) {
   std::unique_ptr<SwapMetricsDriver> driver =
-      CreateDriver(base::TimeDelta::FromSeconds(60), true);
+      CreateDriver(base::Seconds(60), true);
   auto result = driver->Start();
   EXPECT_EQ(
       SwapMetricsDriver::SwapMetricsUpdateResult::kSwapMetricsUpdateFailed,
@@ -174,7 +174,7 @@ TEST_F(TestSwapMetricsDriver, TimerStartFail) {
 
 TEST_F(TestSwapMetricsDriver, UpdateMetricsFail) {
   std::unique_ptr<SwapMetricsDriver> driver =
-      CreateDriver(base::TimeDelta::FromSeconds(60), true);
+      CreateDriver(base::Seconds(60), true);
   auto result = driver->InitializeMetrics();
   EXPECT_EQ(
       SwapMetricsDriver::SwapMetricsUpdateResult::kSwapMetricsUpdateFailed,

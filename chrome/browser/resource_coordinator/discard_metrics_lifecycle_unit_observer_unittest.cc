@@ -18,7 +18,7 @@ namespace resource_coordinator {
 
 namespace {
 
-constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(42);
+constexpr base::TimeDelta kShortDelay = base::Seconds(42);
 
 constexpr char kDiscardCountHistogram[] = "TabManager.Discarding.DiscardCount";
 constexpr char kReloadCountHistogram[] = "TabManager.Discarding.ReloadCount";

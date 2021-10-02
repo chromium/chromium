@@ -52,7 +52,7 @@ using remote_cocoa::mojom::VisibilityTransition;
 using remote_cocoa::mojom::WindowVisibilityState;
 
 namespace {
-constexpr auto kUIPaintTimeout = base::TimeDelta::FromSeconds(5);
+constexpr auto kUIPaintTimeout = base::Seconds(5);
 
 bool AreWindowShadowsDisabled() {
   // When:

@@ -829,8 +829,7 @@ void PageLoadMetricsUpdateDispatcher::MaybeDispatchTimingUpdates(
   if (should_buffer_timing_update_callback) {
     timer_->Start(
         FROM_HERE,
-        base::TimeDelta::FromMilliseconds(
-            GetBufferTimerDelayMillis(TimerType::kBrowser)),
+        base::Milliseconds(GetBufferTimerDelayMillis(TimerType::kBrowser)),
         base::BindOnce(&PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates,
                        base::Unretained(this)));
   } else if (!timer_->IsRunning()) {

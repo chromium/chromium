@@ -147,8 +147,7 @@ void RunAnimationForLayer(ui::Layer* layer) {
   while (controller.animator()->is_animating()) {
     controller.StartThreadedAnimationsIfNeeded();
     base::TimeTicks step_time = controller.animator()->last_step_time();
-    layer->GetAnimator()->Step(step_time +
-                               base::TimeDelta::FromMilliseconds(1000));
+    layer->GetAnimator()->Step(step_time + base::Milliseconds(1000));
   }
 }
 
@@ -317,7 +316,7 @@ WallpaperInfo InfoWithType(WallpaperType type) {
 base::Time DayBeforeYesterdayish() {
   base::TimeDelta today_delta =
       base::Time::Now().LocalMidnight().ToDeltaSinceWindowsEpoch();
-  base::TimeDelta yesterday_delta = today_delta - base::TimeDelta::FromDays(2);
+  base::TimeDelta yesterday_delta = today_delta - base::Days(2);
   return base::Time::FromDeltaSinceWindowsEpoch(yesterday_delta);
 }
 

@@ -29,8 +29,7 @@ namespace {
 
 // The minimal possible animation time for animations which should happen
 // "instantly".
-constexpr base::TimeDelta kMinimalAnimationTime =
-    base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kMinimalAnimationTime = base::Milliseconds(1);
 
 // logic while the user gets switched.
 class UserChangeActionDisabler {
@@ -209,9 +208,9 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
   UserChangeActionDisabler disabler;
 
   // Animation duration.
-  base::TimeDelta duration = base::TimeDelta::FromMilliseconds(
-      std::max(kMinimalAnimationTime.InMilliseconds(),
-               2 * animation_speed_.InMilliseconds()));
+  base::TimeDelta duration =
+      base::Milliseconds(std::max(kMinimalAnimationTime.InMilliseconds(),
+                                  2 * animation_speed_.InMilliseconds()));
 
   switch (animation_step) {
     case ANIMATION_STEP_HIDE_OLD_USER: {

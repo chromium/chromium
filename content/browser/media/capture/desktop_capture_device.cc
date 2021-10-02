@@ -249,11 +249,10 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
 
   client_ = std::move(client);
   requested_frame_rate_ = params.requested_format.frame_rate;
-  requested_frame_duration_ =
-      base::TimeDelta::FromMicroseconds(static_cast<int64_t>(
-          static_cast<double>(base::Time::kMicrosecondsPerSecond) /
-              requested_frame_rate_ +
-          0.5 /* round to nearest int */));
+  requested_frame_duration_ = base::Microseconds(static_cast<int64_t>(
+      static_cast<double>(base::Time::kMicrosecondsPerSecond) /
+          requested_frame_rate_ +
+      0.5 /* round to nearest int */));
 
   // Pass the min/max resolution and fixed aspect ratio settings from |params|
   // to the CaptureResolutionChooser.
@@ -329,8 +328,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
   DCHECK(frame);
 
-  base::TimeDelta capture_time(
-      base::TimeDelta::FromMilliseconds(frame->capture_time_ms()));
+  base::TimeDelta capture_time(base::Milliseconds(frame->capture_time_ms()));
 
   // The two UMA_ blocks must be put in its own scope since it creates a static
   // variable which expected constant histogram name.

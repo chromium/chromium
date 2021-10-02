@@ -30,8 +30,8 @@ class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
     NavigateAndCommit(kTestUrl);
 
     SetManager(ComputePressureManager::CreateForTesting(
-        std::make_unique<FakeCpuProbe>(), base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromMilliseconds(1)));
+        std::make_unique<FakeCpuProbe>(), base::Milliseconds(1),
+        base::Milliseconds(1)));
   }
 
   void TearDown() override {
@@ -222,8 +222,7 @@ TEST_F(ComputePressureManagerTest, AddObserver_InsecureOrigin) {
 
 TEST_F(ComputePressureManagerTest, AddObserver_NoProbe) {
   SetManager(ComputePressureManager::CreateForTesting(
-      /*cpu_probe=*/nullptr, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMilliseconds(1)));
+      /*cpu_probe=*/nullptr, base::Milliseconds(1), base::Milliseconds(1)));
 
   FakeComputePressureObserver observer;
   EXPECT_EQ(main_host_sync_->AddObserver(kQuantization,

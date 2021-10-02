@@ -50,7 +50,7 @@ HWND WaitForDialogWindow(const std::wstring& dialog_title) {
 
   HWND result = nullptr;
   base::TimeDelta max_wait_time = TestTimeouts::action_timeout();
-  base::TimeDelta retry_interval = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta retry_interval = base::Milliseconds(20);
   while (!result && (max_wait_time.InMilliseconds() > 0)) {
     result = ::FindWindow(kDialogClassName, dialog_title.c_str());
     base::PlatformThread::Sleep(retry_interval);
@@ -104,7 +104,7 @@ HWND WaitForDialogPrompt(HWND owner) {
   // whose owner is the file dialog.
   EnumWindowsParam param = {owner, nullptr};
   base::TimeDelta max_wait_time = TestTimeouts::action_timeout();
-  base::TimeDelta retry_interval = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta retry_interval = base::Milliseconds(20);
   while (!param.result && (max_wait_time.InMilliseconds() > 0)) {
     ::EnumWindows(&EnumWindowsCallback, reinterpret_cast<LPARAM>(&param));
     base::PlatformThread::Sleep(retry_interval);
@@ -134,7 +134,7 @@ void SendCommand(HWND window, int id) {
   // Make sure the window is visible first or the WM_COMMAND may not have any
   // effect.
   base::TimeDelta max_wait_time = TestTimeouts::action_timeout();
-  base::TimeDelta retry_interval = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta retry_interval = base::Milliseconds(20);
   while (!::IsWindowVisible(window) && (max_wait_time.InMilliseconds() > 0)) {
     base::PlatformThread::Sleep(retry_interval);
     max_wait_time -= retry_interval;

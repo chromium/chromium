@@ -168,7 +168,7 @@ TEST_F(KeepAliveOperationTest, NotifiesObserversOnResponse) {
 
 TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
   static constexpr base::TimeDelta kKeepAliveTickleResponseTime =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(remote_device_, _));
 

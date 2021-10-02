@@ -594,12 +594,12 @@ base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
 
   // Options have framerate specified, use it.
   if (options_.framerate.has_value())
-    return base::TimeDelta::FromSecondsD(1.0 / options_.framerate.value());
+    return base::Seconds(1.0 / options_.framerate.value());
 
   // No real way to figure out duration, use time passed since the last frame
   // as an educated guess, but clamp it within a reasonable limits.
-  constexpr auto min_duration = base::TimeDelta::FromSecondsD(1.0 / 60.0);
-  constexpr auto max_duration = base::TimeDelta::FromSecondsD(1.0 / 24.0);
+  constexpr auto min_duration = base::Seconds(1.0 / 60.0);
+  constexpr auto max_duration = base::Seconds(1.0 / 24.0);
   auto duration = frame.timestamp() - last_frame_timestamp_;
   return base::clamp(duration, min_duration, max_duration);
 }

@@ -290,8 +290,7 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::Value& message) {
   command_awaiting_crd_access_code_ = false;
 
   // Prints the access code.
-  base::TimeDelta expires_in =
-      base::TimeDelta::FromSeconds(code_lifetime_value->GetInt());
+  base::TimeDelta expires_in = base::Seconds(code_lifetime_value->GetInt());
   HOST_LOG << "It2Me access code is generated: " << code_value->GetString();
   HOST_LOG << "Expires at: " << (base::Time::Now() + expires_in);
 }

@@ -76,13 +76,12 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeForMax) {
   experiment.SetInactiveDays(ExperimentMetrics::kMaxLastUsed);
   experiment.SetToastCount(ExperimentMetrics::kMaxToastCount);
   experiment.SetUserSessionUptime(
-      base::TimeDelta::FromMinutes(ExperimentMetrics::kMaxSessionLength));
-  experiment.SetActionDelay(
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kMaxActionDelay));
+      base::Minutes(ExperimentMetrics::kMaxSessionLength));
+  experiment.SetActionDelay(base::Seconds(ExperimentMetrics::kMaxActionDelay));
   experiment.SetDisplayTime(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kExperimentStartSeconds) +
-      base::TimeDelta::FromDays(ExperimentMetrics::kMaxFirstToastOffsetDays));
+      base::Seconds(ExperimentMetrics::kExperimentStartSeconds) +
+      base::Days(ExperimentMetrics::kMaxFirstToastOffsetDays));
   experiment.SetState(ExperimentMetrics::kUserLogOff);  // Max state.
   ExperimentMetrics metrics = experiment.metrics();
   // toast_hour uses LocalMidnight whose value depend on local time. So, reset

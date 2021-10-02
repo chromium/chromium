@@ -25,8 +25,7 @@ namespace {
 class SyncWebSocketImplTest : public testing::Test {
  protected:
   SyncWebSocketImplTest()
-      : client_thread_("ClientThread"),
-        long_timeout_(base::TimeDelta::FromMinutes(1)) {}
+      : client_thread_("ClientThread"), long_timeout_(base::Minutes(1)) {}
   ~SyncWebSocketImplTest() override {}
 
   void SetUp() override {
@@ -180,10 +179,10 @@ TEST_F(SyncWebSocketImplTest, Reconnect) {
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));
   ASSERT_TRUE(sock.Send("1"));
   // Wait for SyncWebSocket to receive the response from the server.
-  Timeout response_timeout(base::TimeDelta::FromSeconds(20));
+  Timeout response_timeout(base::Seconds(20));
   while (!response_timeout.IsExpired()) {
     if (sock.IsConnected() && !sock.HasNextMessage())
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+      base::PlatformThread::Sleep(base::Milliseconds(10));
     else
       break;
   }

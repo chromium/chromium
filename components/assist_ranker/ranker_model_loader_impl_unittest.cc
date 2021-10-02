@@ -193,11 +193,10 @@ void RankerModelLoaderImplTest::InitRemoteModels() {
 }
 
 void RankerModelLoaderImplTest::InitLocalModels() {
-  InitModel(remote_model_url_, base::Time::Now(), base::TimeDelta::FromDays(30),
+  InitModel(remote_model_url_, base::Time::Now(), base::Days(30),
             &local_model_);
-  InitModel(remote_model_url_,
-            base::Time::Now() - base::TimeDelta::FromDays(60),
-            base::TimeDelta::FromDays(30), &expired_model_);
+  InitModel(remote_model_url_, base::Time::Now() - base::Days(60),
+            base::Days(30), &expired_model_);
   SaveModel(local_model_, local_model_path_);
   SaveModel(expired_model_, expired_model_path_);
   ASSERT_EQ(base::WriteFile(invalid_model_path_, kInvalidModelData,

@@ -73,7 +73,7 @@ TEST_F(DeepLinkUtilTest, CreateAlarmTimerDeeplink) {
       "googleassistant://"
       "alarm-timer?action=addTimeToTimer&id=1&durationMs=60000",
       CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer, "1",
-                               base::TimeDelta::FromMinutes(1))
+                               base::Minutes(1))
           .value());
   ASSERT_EQ("googleassistant://alarm-timer?action=pauseTimer&id=1",
             CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer, "1",
@@ -98,9 +98,9 @@ TEST_F(DeepLinkUtilTest, CreateAlarmTimerDeeplink) {
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer, "1",
                                      absl::nullopt));
-  ASSERT_EQ(absl::nullopt, CreateAlarmTimerDeepLink(
-                               AlarmTimerAction::kAddTimeToTimer, absl::nullopt,
-                               base::TimeDelta::FromMinutes(1)));
+  ASSERT_EQ(absl::nullopt,
+            CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
+                                     absl::nullopt, base::Minutes(1)));
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
                                      absl::nullopt, absl::nullopt));
@@ -108,32 +108,32 @@ TEST_F(DeepLinkUtilTest, CreateAlarmTimerDeeplink) {
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer,
                                      absl::nullopt, absl::nullopt));
-  ASSERT_EQ(absl::nullopt, CreateAlarmTimerDeepLink(
-                               AlarmTimerAction::kPauseTimer, absl::nullopt,
-                               base::TimeDelta::FromMinutes(1)));
+  ASSERT_EQ(absl::nullopt,
+            CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer,
+                                     absl::nullopt, base::Minutes(1)));
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer, "1",
-                                     base::TimeDelta::FromMinutes(1)));
+                                     base::Minutes(1)));
 
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kRemoveAlarmOrTimer,
                                      absl::nullopt, absl::nullopt));
-  ASSERT_EQ(absl::nullopt, CreateAlarmTimerDeepLink(
-                               AlarmTimerAction::kRemoveAlarmOrTimer,
-                               absl::nullopt, base::TimeDelta::FromMinutes(1)));
+  ASSERT_EQ(absl::nullopt,
+            CreateAlarmTimerDeepLink(AlarmTimerAction::kRemoveAlarmOrTimer,
+                                     absl::nullopt, base::Minutes(1)));
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kRemoveAlarmOrTimer, "1",
-                                     base::TimeDelta::FromMinutes(1)));
+                                     base::Minutes(1)));
 
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
                                      absl::nullopt, absl::nullopt));
-  ASSERT_EQ(absl::nullopt, CreateAlarmTimerDeepLink(
-                               AlarmTimerAction::kResumeTimer, absl::nullopt,
-                               base::TimeDelta::FromMinutes(1)));
+  ASSERT_EQ(absl::nullopt,
+            CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
+                                     absl::nullopt, base::Minutes(1)));
   ASSERT_EQ(absl::nullopt,
             CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer, "1",
-                                     base::TimeDelta::FromMinutes(1)));
+                                     base::Minutes(1)));
 }
 
 TEST_F(DeepLinkUtilTest, CreateAssistantQueryDeepLink) {
@@ -438,11 +438,9 @@ TEST_F(DeepLinkUtilTest, GetDeepLinkParamAsTimeDelta) {
 
   // Case: Deep link parameter present, well formed "60000".
   params["durationMs"] = "60000";
-  AssertDeepLinkParamEq(base::TimeDelta::FromMinutes(1),
-                        DeepLinkParam::kDurationMs);
+  AssertDeepLinkParamEq(base::Minutes(1), DeepLinkParam::kDurationMs);
   params["durationMs"] = "00";
-  AssertDeepLinkParamEq(base::TimeDelta::FromMilliseconds(0),
-                        DeepLinkParam::kDurationMs);
+  AssertDeepLinkParamEq(base::Milliseconds(0), DeepLinkParam::kDurationMs);
 
   // Case: Deep link parameter present, non-int value.
   params["durationMs"] = "true";

@@ -56,7 +56,7 @@ class TestExtensionPrefs::IncrementalClock : public base::Clock {
   ~IncrementalClock() override {}
 
   base::Time Now() const override {
-    current_time_ += base::TimeDelta::FromSeconds(10);
+    current_time_ += base::Seconds(10);
     return current_time_;
   }
 

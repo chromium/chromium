@@ -71,9 +71,7 @@ class PreflightCacheTest : public testing::Test {
         net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_);
   }
 
-  void Advance(int seconds) {
-    clock_.Advance(base::TimeDelta::FromSeconds(seconds));
-  }
+  void Advance(int seconds) { clock_.Advance(base::Seconds(seconds)); }
 
  private:
   // testing::Test implementation.

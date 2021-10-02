@@ -13,8 +13,8 @@
 namespace chromecast {
 
 namespace {
-const base::TimeDelta kInterval = base::TimeDelta::FromSeconds(3);
-const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(2);
+const base::TimeDelta kInterval = base::Seconds(3);
+const base::TimeDelta kTimeout = base::Seconds(2);
 }  // namespace
 
 class ThreadHealthCheckerTest : public ::testing::Test {
@@ -40,7 +40,7 @@ class ThreadHealthCheckerTest : public ::testing::Test {
 TEST_F(ThreadHealthCheckerTest, FiresTimeoutWhenTaskRunnerDoesNotFlush) {
   CREATE_THREAD_HEALTH_CHECKER(thc);
   // Do not flush the patient, so that the health check sentinel task won't run.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(6));
+  doctor_->FastForwardBy(base::Seconds(6));
   EXPECT_TRUE(event_.IsSignaled());
 }
 
@@ -48,12 +48,12 @@ TEST_F(ThreadHealthCheckerTest, DoesNotFireTimeoutWhenTaskRunnerFlushesInTime) {
   CREATE_THREAD_HEALTH_CHECKER(thc);
   // Advance the doctor by enough time to post the health check, but not to time
   // out.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  doctor_->FastForwardBy(base::Seconds(4));
   // Advance the patient to let the sentinel task run.
-  patient_->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  patient_->FastForwardBy(base::Seconds(4));
   // Advance the doctor by enough time such that the sentinel not running would
   // cause the failure callback to run.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  doctor_->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(event_.IsSignaled());
 }
 
@@ -61,8 +61,8 @@ TEST_F(ThreadHealthCheckerTest, FiresTimeoutWhenTaskRunnerFlushesTooLate) {
   CREATE_THREAD_HEALTH_CHECKER(thc);
   // Advance the doctor before the patient, to simulate a task in the patient
   // that takes too long.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(6));
-  patient_->FastForwardBy(base::TimeDelta::FromSeconds(6));
+  doctor_->FastForwardBy(base::Seconds(6));
+  patient_->FastForwardBy(base::Seconds(6));
   // Flush the task runner so the health check sentinel task is run.
   EXPECT_TRUE(event_.IsSignaled());
 }
@@ -70,14 +70,14 @@ TEST_F(ThreadHealthCheckerTest, FiresTimeoutWhenTaskRunnerFlushesTooLate) {
 TEST_F(ThreadHealthCheckerTest, FiresTimeoutOnLaterIteration) {
   CREATE_THREAD_HEALTH_CHECKER(thc);
   // Advance the doctor enough to start the check.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  doctor_->FastForwardBy(base::Seconds(4));
   // Advance the patient enough to run the task.
-  patient_->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  patient_->FastForwardBy(base::Seconds(4));
   // Advance the doctor enough to start the check again.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  doctor_->FastForwardBy(base::Seconds(4));
   EXPECT_FALSE(event_.IsSignaled());
   // Advance the doctor enough for the timeout from the second check to fire.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  doctor_->FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(event_.IsSignaled());
 }
 
@@ -93,13 +93,13 @@ TEST_F(ThreadHealthCheckerTest, DropPendingEventsAfterDestruction) {
   {
     CREATE_THREAD_HEALTH_CHECKER(thc);
     // Fast forward by enough time to have scheduled a health check.
-    doctor_->FastForwardBy(base::TimeDelta::FromSeconds(4));
+    doctor_->FastForwardBy(base::Seconds(4));
     EXPECT_FALSE(event_.IsSignaled());
   }
   // Fast forward by enough time for the health check to have executed.
   // However, we want all pending events to be dropped after the destructor is
   // called, so the event should not be signalled.
-  doctor_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  doctor_->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(event_.IsSignaled());
 }
 

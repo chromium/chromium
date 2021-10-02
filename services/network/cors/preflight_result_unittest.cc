@@ -177,7 +177,7 @@ TEST_F(PreflightResultTest, MaxAge) {
   std::unique_ptr<PreflightResult> result1 =
       PreflightResult::Create(mojom::CredentialsMode::kOmit, absl::nullopt,
                               absl::nullopt, std::string("573"), nullptr);
-  EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(573),
+  EXPECT_EQ(base::TimeTicks() + base::Seconds(573),
             result1->absolute_expiry_time());
 
   std::unique_ptr<PreflightResult> result2 =

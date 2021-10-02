@@ -38,7 +38,7 @@ AlsaPcmInputStream::AlsaPcmInputStream(AudioManagerBase* audio_manager,
       params_(params),
       bytes_per_buffer_(params.GetBytesPerBuffer(kSampleFormat)),
       wrapper_(wrapper),
-      buffer_duration_(base::TimeDelta::FromMicroseconds(
+      buffer_duration_(base::Microseconds(
           params.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
           static_cast<float>(params.sample_rate()))),
       callback_(nullptr),
@@ -220,7 +220,7 @@ void AlsaPcmInputStream::ReadAudio() {
                      << wrapper_->StrError(avail_frames);
         avail_frames = 0;  // Error getting number of avail frames, set it to 0
       }
-      base::TimeDelta hardware_delay = base::TimeDelta::FromSecondsD(
+      base::TimeDelta hardware_delay = base::Seconds(
           avail_frames / static_cast<double>(params_.sample_rate()));
 
       callback_->OnData(audio_bus_.get(),

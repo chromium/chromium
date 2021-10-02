@@ -203,7 +203,7 @@ TEST_F(SafeBrowsingTokenFetcherImplTest, TokenFetchTimeout) {
   EXPECT_EQ("dummy", access_token);
 
   // Fast-forward to trigger the token fetch timeout.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(
+  task_environment()->FastForwardBy(base::Milliseconds(
       safe_browsing::kTokenFetchTimeoutDelayFromMilliseconds));
 
   // Even though the delegate has not yet responded,
@@ -280,7 +280,7 @@ TEST_F(SafeBrowsingTokenFetcherImplTest, ConcurrentRequestsAtDifferentTimes) {
   EXPECT_EQ("dummy", access_token2);
 
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(delay_before_second_request_from_ms));
+      base::Milliseconds(delay_before_second_request_from_ms));
   fetcher.Start(base::BindOnce(&OnAccessTokenFetched, run_loop2.QuitClosure(),
                                &access_token2));
   EXPECT_EQ(2, delegate.get_num_outstanding_requests());
@@ -295,7 +295,7 @@ TEST_F(SafeBrowsingTokenFetcherImplTest, ConcurrentRequestsAtDifferentTimes) {
       safe_browsing::kTokenFetchTimeoutDelayFromMilliseconds -
       delay_before_second_request_from_ms;
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(time_to_trigger_first_timeout_from_ms));
+      base::Milliseconds(time_to_trigger_first_timeout_from_ms));
 
   // Verify that the first request's timeout was handled by
   // SafeBrowsingTokenFetcherImpl.

@@ -1287,7 +1287,7 @@ void V4L2VideoDecodeAccelerator::CheckGLFences() {
             FROM_HERE,
             base::BindOnce(&V4L2VideoDecodeAccelerator::Enqueue,
                            base::Unretained(this)),
-            base::TimeDelta::FromMilliseconds(resched_delay));
+            base::Milliseconds(resched_delay));
       }
       break;
     }

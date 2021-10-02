@@ -776,8 +776,7 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedTooOld) {
   // Seed the last position cache with a geoposition value with the timestamp
   // set to 20 minutes ago.
   mojom::Geoposition last_position = CreateReferencePosition(0);
-  last_position.timestamp =
-      base::Time::Now() - base::TimeDelta::FromMinutes(20);
+  last_position.timestamp = base::Time::Now() - base::Minutes(20);
   EXPECT_TRUE(ValidateGeoposition(last_position));
   position_cache_.SetLastUsedNetworkPosition(last_position);
 

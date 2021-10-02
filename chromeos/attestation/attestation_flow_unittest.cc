@@ -445,7 +445,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));
-  flow.set_retry_delay(base::TimeDelta::FromMilliseconds(30));
+  flow.set_retry_delay(base::Milliseconds(30));
   flow.GetCertificate(PROFILE_ENTERPRISE_USER_CERTIFICATE, account_id,
                       "fake_origin", true, std::string() /* key_name */,
                       std::move(callback));
@@ -487,8 +487,8 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));
-  flow.set_ready_timeout(base::TimeDelta::FromMilliseconds(20));
-  flow.set_retry_delay(base::TimeDelta::FromMilliseconds(6));
+  flow.set_ready_timeout(base::Milliseconds(20));
+  flow.set_retry_delay(base::Milliseconds(6));
   flow.GetCertificate(PROFILE_ENTERPRISE_USER_CERTIFICATE, EmptyAccountId(),
                       "fake_origin", true, std::string() /* key_name */,
                       std::move(callback));
@@ -522,8 +522,8 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));
-  flow.set_ready_timeout(base::TimeDelta::FromMilliseconds(20));
-  flow.set_retry_delay(base::TimeDelta::FromMilliseconds(6));
+  flow.set_ready_timeout(base::Milliseconds(20));
+  flow.set_retry_delay(base::Milliseconds(6));
   flow.GetCertificate(PROFILE_ENTERPRISE_USER_CERTIFICATE, EmptyAccountId(),
                       "fake_origin", true, std::string() /* key_name */,
                       std::move(callback));

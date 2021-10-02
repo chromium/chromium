@@ -55,8 +55,7 @@ OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
       std::make_unique<AutofillOfferData>();
   offer_data_entry->offer_id = 4444;
   offer_data_entry->offer_reward_amount = "5%";
-  offer_data_entry->expiry =
-      AutofillClock::Now() + base::TimeDelta::FromDays(2);
+  offer_data_entry->expiry = AutofillClock::Now() + base::Days(2);
   offer_data_entry->merchant_origins = {};
   for (auto url : domains)
     offer_data_entry->merchant_origins.emplace_back(url.GetOrigin());
@@ -71,8 +70,7 @@ OfferNotificationBubbleViewsTestBase::CreatePromoCodeOfferDataWithDomains(
   std::unique_ptr<AutofillOfferData> offer_data_entry =
       std::make_unique<AutofillOfferData>();
   offer_data_entry->offer_id = 5555;
-  offer_data_entry->expiry =
-      AutofillClock::Now() + base::TimeDelta::FromDays(2);
+  offer_data_entry->expiry = AutofillClock::Now() + base::Days(2);
   offer_data_entry->merchant_origins = {};
   for (auto url : domains)
     offer_data_entry->merchant_origins.emplace_back(url.GetOrigin());

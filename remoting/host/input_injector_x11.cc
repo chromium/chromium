@@ -79,8 +79,7 @@ bool IsDomModifierKey(ui::DomCode dom_code) {
 const float kWheelTicksPerPixel = 3.0f / 160.0f;
 
 // When the user is scrolling, generate at least one tick per time period.
-const base::TimeDelta kContinuousScrollTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 
 // A class to generate events on X11.
 class InputInjectorX11 : public InputInjector {

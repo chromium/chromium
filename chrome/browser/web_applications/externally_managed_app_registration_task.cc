@@ -45,7 +45,7 @@ ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
   service_worker_context_->AddObserver(this);
 
   registration_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(registration_timeout_in_seconds_),
+      FROM_HERE, base::Seconds(registration_timeout_in_seconds_),
       base::BindOnce(
           &ExternallyManagedAppRegistrationTask::OnRegistrationTimeout,
           weak_ptr_factory_.GetWeakPtr()));

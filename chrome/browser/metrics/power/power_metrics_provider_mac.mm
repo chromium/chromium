@@ -27,11 +27,11 @@
 
 namespace {
 constexpr base::TimeDelta kStartupPowerMetricsCollectionDuration =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 constexpr base::TimeDelta kStartupPowerMetricsCollectionInterval =
-    base::TimeDelta::FromSeconds(1);
+    base::Seconds(1);
 constexpr base::TimeDelta kPostStartupPowerMetricsCollectionInterval =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 // This API is undocumented. It can read hardware sensors including
 // temperature, voltage, and power. A useful tool for discovering new keys is

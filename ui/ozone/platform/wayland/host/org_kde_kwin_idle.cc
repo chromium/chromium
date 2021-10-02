@@ -100,7 +100,7 @@ OrgKdeKwinIdle::Timeout::~Timeout() = default;
 
 base::TimeDelta OrgKdeKwinIdle::Timeout::GetIdleTime() const {
   if (idle_timestamp_.is_null())
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   return base::Time::Now() - idle_timestamp_;
 }
 
@@ -110,7 +110,7 @@ void OrgKdeKwinIdle::Timeout::Idle(
     struct org_kde_kwin_idle_timeout* org_kde_kwin_idle_timeout) {
   auto* self = static_cast<OrgKdeKwinIdle::Timeout*>(data);
   self->idle_timestamp_ =
-      base::Time::Now() - base::TimeDelta::FromMicroseconds(kIdleThresholdMs);
+      base::Time::Now() - base::Microseconds(kIdleThresholdMs);
 }
 
 // static

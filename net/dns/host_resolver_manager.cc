@@ -1835,8 +1835,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       base::TimeDelta relative_timeout =
           total_time_for_other_transactions * extra_time_percent / 100;
       // Use at least 1ms to ensure timeout doesn't occur immediately in tests.
-      relative_timeout =
-          std::max(relative_timeout, base::TimeDelta::FromMilliseconds(1));
+      relative_timeout = std::max(relative_timeout, base::Milliseconds(1));
 
       if (timeout.is_zero()) {
         timeout = relative_timeout;
@@ -2388,10 +2387,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     if (ContainsIcannNameCollisionIp(addr_list))
       net_error = ERR_ICANN_NAME_COLLISION;
 
-    base::TimeDelta ttl =
-        base::TimeDelta::FromSeconds(kNegativeCacheEntryTTLSeconds);
+    base::TimeDelta ttl = base::Seconds(kNegativeCacheEntryTTLSeconds);
     if (net_error == OK)
-      ttl = base::TimeDelta::FromSeconds(kCacheEntryTTLSeconds);
+      ttl = base::Seconds(kCacheEntryTTLSeconds);
 
     // Source unknown because the system resolver could have gotten it from a
     // hosts file, its own cache, a DNS lookup or somewhere else.
@@ -2481,9 +2479,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     // If one of the fallback tasks doesn't complete the request, store a result
     // to use during request completion.
-    base::TimeDelta ttl = failure_results.has_ttl()
-                              ? failure_results.ttl()
-                              : base::TimeDelta::FromSeconds(0);
+    base::TimeDelta ttl =
+        failure_results.has_ttl() ? failure_results.ttl() : base::Seconds(0);
     completion_results_.push_back({failure_results, ttl, secure});
 
     dns_task_error_ = failure_results.error();
@@ -2522,8 +2519,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     if (!secure)
       resolver_->dns_client_->ClearInsecureFallbackFailures();
 
-    base::TimeDelta bounded_ttl = std::max(
-        results.ttl(), base::TimeDelta::FromSeconds(kMinimumTTLSeconds));
+    base::TimeDelta bounded_ttl =
+        std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
     if (results.addresses() &&
         ContainsIcannNameCollisionIp(results.addresses().value())) {
@@ -2655,7 +2652,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     if (category == RESOLVE_FAIL ||
         (start_time_ != base::TimeTicks() && category == RESOLVE_ABORT)) {
-      if (duration < base::TimeDelta::FromMilliseconds(10))
+      if (duration < base::Milliseconds(10))
         base::UmaHistogramSparse("Net.DNS.ResolveError.Fast", std::abs(error));
       else
         base::UmaHistogramSparse("Net.DNS.ResolveError.Slow", std::abs(error));

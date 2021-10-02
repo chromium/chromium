@@ -54,7 +54,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
           base::StringPrintf("<p>%s</p><img src='%s'/>", kPageText,
                              GetInfinitePendingResponseUrl().spec().c_str());
     } else if (request.url == GetInfinitePendingResponseUrl()) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromDays(1));
+      base::PlatformThread::Sleep(base::Days(1));
     } else {
       NOTREACHED();
     }
@@ -115,7 +115,7 @@ void WaitForMatcherVisible(id<GREYMatcher> matcher,
     [ChromeEarlGreyUI openToolsMenu];
   }
   // Sleep for UI change because synchronization is disabled.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   // Wait and verify that stop button is visible and reload button is hidden.
   WaitForMatcherVisible(chrome_test_util::StopButton(), @"stop button");
@@ -126,7 +126,7 @@ void WaitForMatcherVisible(id<GREYMatcher> matcher,
   [[EarlGrey selectElementWithMatcher:chrome_test_util::StopButton()]
       performAction:grey_tap()];
   // Sleep for UI change because synchronization is disabled.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
   if (![ChromeEarlGrey isIPadIdiom]) {
     // On iPhone Stop/Reload button is a part of tools menu, so open it.
     [ChromeEarlGreyUI openToolsMenu];

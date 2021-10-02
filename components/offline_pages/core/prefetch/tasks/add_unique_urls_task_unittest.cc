@@ -155,7 +155,7 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
 
   // Advance time by 1 hour to verify that timestamp of ID-1 is updated on the
   // next task execution.
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
   const base::Time later_time = clock.Now();
 
   // Turn ID-1 and ID-2 items into zombies.
@@ -182,11 +182,9 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
   // Note: as timestamps are inserted with microsecond variations, we're
   // comparing them using a safe range of 1 second.
   EXPECT_LE(later_time, items[kClientId1].creation_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId1].creation_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId1].creation_time);
   EXPECT_LE(later_time, items[kClientId1].freshness_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId1].freshness_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId1].freshness_time);
 
   // Previously existing ID-2 should not have been modified.
   ASSERT_GT(items.count(kClientId2), 0U);
@@ -195,11 +193,9 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
   EXPECT_EQ(PrefetchURL2().title, items[kClientId2].title);
   EXPECT_EQ(PrefetchItemState::ZOMBIE, items[kClientId2].state);
   EXPECT_LE(start_time, items[kClientId2].creation_time);
-  EXPECT_GE(start_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId2].creation_time);
+  EXPECT_GE(start_time + base::Seconds(1), items[kClientId2].creation_time);
   EXPECT_LE(start_time, items[kClientId2].freshness_time);
-  EXPECT_GE(start_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId2].freshness_time);
+  EXPECT_GE(start_time + base::Seconds(1), items[kClientId2].freshness_time);
 
   // Newly suggested ID-3 should be added.
   ASSERT_GT(items.count(kClientId3), 0U);
@@ -208,11 +204,9 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
   EXPECT_EQ(PrefetchURL3().title, items[kClientId3].title);
   EXPECT_EQ(PrefetchItemState::NEW_REQUEST, items[kClientId3].state);
   EXPECT_LE(later_time, items[kClientId3].creation_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId3].creation_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId3].creation_time);
   EXPECT_LE(later_time, items[kClientId3].freshness_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId3].freshness_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId3].freshness_time);
 }
 
 }  // namespace offline_pages

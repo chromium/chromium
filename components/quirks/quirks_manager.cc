@@ -176,7 +176,7 @@ void QuirksManager::OnIccFilePathRequestCompleted(
       base::Time::Now() - base::Time::FromDoubleT(last_check);
 
   // Don't need server check if we've checked within last 30 days.
-  if (time_since < base::TimeDelta::FromDays(kDaysBetweenServerChecks)) {
+  if (time_since < base::Days(kDaysBetweenServerChecks)) {
     VLOG(2) << time_since.InDays()
             << " days since last Quirks Server check for display "
             << IdToHexString(product_id);

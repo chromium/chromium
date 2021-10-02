@@ -979,7 +979,7 @@ class EventGenerator {
       : input_injector_(
             ui::OzonePlatform::GetInstance()->CreateSystemInputInjector()),
         host_(host),
-        interval_(base::TimeDelta::FromSeconds(1) /
+        interval_(base::Seconds(1) /
                   std::max(host->compositor()->refresh_rate(), 60.0f)),
         closure_(std::move(closure)),
         weak_ptr_factory_(this) {
@@ -1836,11 +1836,11 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
     package_value->SetKey("lastBackupAndroidId",
                           base::Value(base::NumberToString(
                               package_info->last_backup_android_id)));
-    package_value->SetKey("lastBackupTime",
-                          base::Value(base::Time::FromDeltaSinceWindowsEpoch(
-                                          base::TimeDelta::FromMicroseconds(
-                                              package_info->last_backup_time))
-                                          .ToJsTime()));
+    package_value->SetKey(
+        "lastBackupTime",
+        base::Value(base::Time::FromDeltaSinceWindowsEpoch(
+                        base::Microseconds(package_info->last_backup_time))
+                        .ToJsTime()));
     package_value->SetKey("shouldSync", base::Value(package_info->should_sync));
     package_value->SetKey("system", base::Value(package_info->system));
     package_value->SetKey("vpnProvider",
@@ -2516,7 +2516,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
 
   // Set up a timer to finish waiting after 10 seconds
   timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(10),
+      FROM_HERE, base::Seconds(10),
       base::BindOnce(
           &AutotestPrivateGetPrinterListFunction::RespondWithTimeoutError,
           this));
@@ -2741,7 +2741,7 @@ AutotestPrivateSetAssistantEnabledFunction::Run() {
   // when timeout.
   enabled_ = params->enabled;
   timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(params->timeout_ms),
+      FROM_HERE, base::Milliseconds(params->timeout_ms),
       base::BindOnce(&AutotestPrivateSetAssistantEnabledFunction::Timeout,
                      this));
   return RespondLater();
@@ -3005,7 +3005,7 @@ AutotestPrivateSendAssistantTextQueryFunction::Run() {
   // to |this| to avoid being destructed. Also make sure we stop and respond
   // when timeout.
   timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(params->timeout_ms),
+      FROM_HERE, base::Milliseconds(params->timeout_ms),
       base::BindOnce(&AutotestPrivateSendAssistantTextQueryFunction::Timeout,
                      this));
 
@@ -3069,7 +3069,7 @@ AutotestPrivateWaitForAssistantQueryStatusFunction::Run() {
 
   // Start waiting for the response before time out.
   timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(params->timeout_s),
+      FROM_HERE, base::Seconds(params->timeout_s),
       base::BindOnce(
           &AutotestPrivateWaitForAssistantQueryStatusFunction::Timeout, this));
   return RespondLater();
@@ -3558,7 +3558,7 @@ void AutotestPrivateSetOverviewModeStateFunction::OnOverviewModeChanged(
         FROM_HERE,
         base::BindOnce(&AutotestPrivateSetOverviewModeStateFunction::Respond,
                        this, std::move(arg)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   } else {
     Respond(std::move(arg));
   }
@@ -4212,7 +4212,7 @@ AutotestPrivateInstallPWAForCurrentURLFunction::Run() {
   // - There is no way to know whether ExecuteCommand fails.
   // - Current URL might not have a valid PWA.
   timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(params->timeout_ms),
+      FROM_HERE, base::Milliseconds(params->timeout_ms),
       base::BindOnce(
           &AutotestPrivateInstallPWAForCurrentURLFunction::PWATimeout, this));
   return RespondLater();
@@ -5042,7 +5042,7 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
   // gpu-process crashes and has no valid data to report. Start a timer to
   // handle this case.
   timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(5),
+      FROM_HERE, base::Seconds(5),
       base::BindOnce(&AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut,
                      this, display_id));
 
@@ -5106,7 +5106,7 @@ AutotestPrivateWaitForAmbientPhotoAnimationFunction::Run() {
 
   // Wait for photo transition animation completed in ambient mode.
   ash::AutotestAmbientApi().WaitForPhotoTransitionAnimationCompleted(
-      params->num_completions, base::TimeDelta::FromSeconds(params->timeout),
+      params->num_completions, base::Seconds(params->timeout),
       /*on_complete=*/
       base::BindOnce(&AutotestPrivateWaitForAmbientPhotoAnimationFunction::
                          OnPhotoTransitionAnimationCompleted,

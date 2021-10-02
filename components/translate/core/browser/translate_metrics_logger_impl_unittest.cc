@@ -459,18 +459,15 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   // Establish constants for this test.
   base::SimpleTestTickClock test_clock;
 
-  constexpr base::TimeDelta delay1 = base::TimeDelta::FromSeconds(100);
-  constexpr base::TimeDelta delay2 = base::TimeDelta::FromSeconds(200);
-  constexpr base::TimeDelta delay3 = base::TimeDelta::FromSeconds(300);
-  constexpr base::TimeDelta delay4 = base::TimeDelta::FromSeconds(400);
-  constexpr base::TimeDelta delay5 = base::TimeDelta::FromSeconds(500);
+  constexpr base::TimeDelta delay1 = base::Seconds(100);
+  constexpr base::TimeDelta delay2 = base::Seconds(200);
+  constexpr base::TimeDelta delay3 = base::Seconds(300);
+  constexpr base::TimeDelta delay4 = base::Seconds(400);
+  constexpr base::TimeDelta delay5 = base::Seconds(500);
 
-  constexpr base::TimeDelta translation_delay1 =
-      base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta translation_delay2 =
-      base::TimeDelta::FromSeconds(30);
-  constexpr base::TimeDelta translation_delay3 =
-      base::TimeDelta::FromSeconds(20);
+  constexpr base::TimeDelta translation_delay1 = base::Seconds(10);
+  constexpr base::TimeDelta translation_delay2 = base::Seconds(30);
+  constexpr base::TimeDelta translation_delay3 = base::Seconds(20);
 
   const ukm::SourceId ukm_source_id = 4321;
 
@@ -668,7 +665,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogRankerMetrics) {
   uint32_t ranker_model_version = 4321;
 
   translate_metrics_logger()->LogRankerStart();
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock.Advance(base::Seconds(10));
   translate_metrics_logger()->LogRankerFinish();
 
   translate_metrics_logger()->LogRankerMetrics(ranker_decision,
@@ -678,7 +675,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogRankerMetrics) {
 
   histogram_tester()->ExpectUniqueSample(
       kTranslatePageLoadRankerTimerShouldOfferTranslation,
-      base::TimeDelta::FromSeconds(10).InMilliseconds(), 1);
+      base::Seconds(10).InMilliseconds(), 1);
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadRankerDecision,
                                          ranker_decision, 1);
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadRankerVersion,
@@ -1292,10 +1289,10 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
 
 TEST_F(TranslateMetricsLoggerImplTest, TrackTimeTranslatedAndNotTranslated) {
   // Set constants for this test.
-  base::TimeDelta delay1 = base::TimeDelta::FromSeconds(100);
-  base::TimeDelta delay2 = base::TimeDelta::FromSeconds(200);
-  base::TimeDelta delay3 = base::TimeDelta::FromSeconds(300);
-  base::TimeDelta delay4 = base::TimeDelta::FromSeconds(400);
+  base::TimeDelta delay1 = base::Seconds(100);
+  base::TimeDelta delay2 = base::Seconds(200);
+  base::TimeDelta delay3 = base::Seconds(300);
+  base::TimeDelta delay4 = base::Seconds(400);
 
   // Setup test clock, so it can be controlled by the test.
   base::SimpleTestTickClock test_clock;
@@ -1335,9 +1332,9 @@ TEST_F(TranslateMetricsLoggerImplTest, TrackTimeTranslatedAndNotTranslated) {
 TEST_F(TranslateMetricsLoggerImplTest,
        TrackTimeTranslatedAndNotTranslated_LongTranslation) {
   // Set constants for this test.
-  base::TimeDelta delay1 = base::TimeDelta::FromSeconds(100);
-  base::TimeDelta delay2 = base::TimeDelta::FromSeconds(200);
-  base::TimeDelta delay3 = base::TimeDelta::FromSeconds(400);
+  base::TimeDelta delay1 = base::Seconds(100);
+  base::TimeDelta delay2 = base::Seconds(200);
+  base::TimeDelta delay3 = base::Seconds(400);
 
   // Setup test clock, so it can be controlled by the test.
   base::SimpleTestTickClock test_clock;
@@ -1441,8 +1438,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
   // Set constants for this test.
   base::SimpleTestTickClock test_clock;
 
-  constexpr base::TimeDelta default_delay = base::TimeDelta::FromSeconds(100);
-  constexpr base::TimeDelta zero_delay = base::TimeDelta::FromSeconds(0);
+  constexpr base::TimeDelta default_delay = base::Seconds(100);
+  constexpr base::TimeDelta zero_delay = base::Seconds(0);
 
   // Simulate sucessfully translating a page.
   translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
@@ -1494,11 +1491,11 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
     base::TimeDelta time_to_translate;
     TranslateErrors::Type translate_error_type;
   } kTests[] = {
-      {base::TimeDelta::FromSeconds(100), TranslateErrors::NONE},
-      {base::TimeDelta::FromSeconds(200), TranslateErrors::NETWORK},
-      {base::TimeDelta::FromSeconds(400), TranslateErrors::NONE},
-      {base::TimeDelta::FromSeconds(500), TranslateErrors::NETWORK},
-      {base::TimeDelta::FromSeconds(300), TranslateErrors::NONE},
+      {base::Seconds(100), TranslateErrors::NONE},
+      {base::Seconds(200), TranslateErrors::NETWORK},
+      {base::Seconds(400), TranslateErrors::NONE},
+      {base::Seconds(500), TranslateErrors::NETWORK},
+      {base::Seconds(300), TranslateErrors::NONE},
   };
 
   for (const auto& test : kTests) {
@@ -1513,7 +1510,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
 
   translate_metrics_logger()->RecordMetrics(true);
 
-  CheckMaxTimeToTranslate(base::TimeDelta::FromSeconds(400));
+  CheckMaxTimeToTranslate(base::Seconds(400));
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {

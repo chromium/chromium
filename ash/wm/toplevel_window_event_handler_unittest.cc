@@ -525,8 +525,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
 
   // Snap right;
   gfx::Point end(790, 0);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
 
   // Verify that the window has moved after the gesture.
@@ -538,8 +537,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   // Snap left.
   end = location = target->GetBoundsInRootWindow().CenterPoint();
   end.Offset(-100, 0);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
@@ -554,8 +552,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   // Maximize.
   end = location = target->GetBoundsInRootWindow().CenterPoint();
   end.Offset(0, -100);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
@@ -569,8 +566,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   // Minimize.
   end = location = target->GetBoundsInRootWindow().CenterPoint();
   end.Offset(0, 100);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
   EXPECT_TRUE(window_state->IsMinimized());
@@ -597,8 +593,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragMultiDisplays) {
   // create gesture events with location out of the display bounds. Let |end| be
   // out of the primary display's bounds to emulate this situation.
   end.Offset(800, 0);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
 
   // Verify that the window has moved after the gesture.
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
@@ -617,8 +612,7 @@ TEST_F(ToplevelWindowEventHandlerTest,
 
   gfx::Point end = location;
   end.Offset(0, 100);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(WindowState::Get(target.get())->IsMinimized());
 }
@@ -781,8 +775,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragToRestore) {
   gfx::Point location, end;
   end = location = window->GetBoundsInRootWindow().CenterPoint();
   end.Offset(0, 100);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(old_bounds.ToString(), window->bounds().ToString());
   EXPECT_TRUE(window_state->IsMinimized());
@@ -875,8 +868,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragForUnresizableWindow) {
 
   // Try to snap right. The window is not resizable. So it should not snap.
   end.Offset(100, 0);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
 
   // Verify that the window has moved after the gesture.
@@ -892,8 +884,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragForUnresizableWindow) {
   // Try to snap left. It should not snap.
   end = location = target->GetBoundsInRootWindow().CenterPoint();
   end.Offset(-100, 0);
-  generator.GestureScrollSequence(location, end,
-                                  base::TimeDelta::FromMilliseconds(5), 10);
+  generator.GestureScrollSequence(location, end, base::Milliseconds(5), 10);
   base::RunLoop().RunUntilIdle();
 
   // Verify that the window has moved after the gesture.
@@ -928,8 +919,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragMultipleWindows) {
     ui::test::EventGenerator gen(Shell::GetPrimaryRootWindow(), notmoved.get());
     gfx::Point start = notmoved->bounds().origin() + gfx::Vector2d(10, 10);
     gfx::Point end = start + gfx::Vector2d(100, 10);
-    gen.GestureScrollSequence(start, end, base::TimeDelta::FromMilliseconds(10),
-                              10);
+    gen.GestureScrollSequence(start, end, base::Milliseconds(10), 10);
     EXPECT_EQ(bounds.ToString(), notmoved->bounds().ToString());
   }
 }

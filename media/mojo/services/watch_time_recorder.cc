@@ -24,7 +24,7 @@ namespace media {
 // The minimum amount of media playback which can elapse before we'll report
 // watch time metrics for a playback.
 constexpr base::TimeDelta kMinimumElapsedWatchTime =
-    base::TimeDelta::FromSeconds(limits::kMinimumElapsedWatchTimeSecs);
+    base::Seconds(limits::kMinimumElapsedWatchTimeSecs);
 
 static void RecordWatchTimeInternal(
     base::StringPiece key,
@@ -32,7 +32,7 @@ static void RecordWatchTimeInternal(
     base::TimeDelta minimum = kMinimumElapsedWatchTime) {
   DCHECK(!key.empty());
   base::UmaHistogramCustomTimes(std::string(key), value, minimum,
-                                base::TimeDelta::FromHours(10), 50);
+                                base::Hours(10), 50);
 }
 
 static void RecordMeanTimeBetweenRebuffers(base::StringPiece key,
@@ -41,7 +41,7 @@ static void RecordMeanTimeBetweenRebuffers(base::StringPiece key,
 
   // There are a maximum of 5 underflow events possible in a given 7s watch time
   // period, so the minimum value is 1.4s.
-  RecordWatchTimeInternal(key, value, base::TimeDelta::FromSecondsD(1.4));
+  RecordWatchTimeInternal(key, value, base::Seconds(1.4));
 }
 
 static void RecordDiscardedWatchTime(base::StringPiece key,
@@ -331,7 +331,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
   absl::optional<uint64_t> clamped_duration_ms;
   if (duration_ != kNoTimestamp && duration_ != kInfiniteDuration) {
     clamped_duration_ms = duration_.InMilliseconds();
-    if (duration_ > base::TimeDelta::FromSeconds(1)) {
+    if (duration_ > base::Seconds(1)) {
       // Turns 54321 => 10000.
       const uint64_t base =
           std::pow(10, static_cast<uint64_t>(std::log10(*clamped_duration_ms)));

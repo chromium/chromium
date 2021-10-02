@@ -2013,7 +2013,7 @@ void BookmarkBarView::StartShowFolderDropMenuTimer(const BookmarkNode* node) {
       FROM_HERE,
       base::BindOnce(&BookmarkBarView::ShowDropFolderForNode,
                      show_folder_method_factory_.GetWeakPtr(), node),
-      base::TimeDelta::FromMilliseconds(views::GetMenuShowDelay()));
+      base::Milliseconds(views::GetMenuShowDelay()));
 }
 
 void BookmarkBarView::CalculateDropLocation(

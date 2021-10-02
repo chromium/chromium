@@ -76,7 +76,7 @@ void NotifyInitializationDoneForTesting() {
     // immediately reset. Wait at most 5 seconds for the test to signal that
     // it's ready using the same event before continuing. If the test takes
     // longer than that stop waiting to prevent hangs.
-    notifier_event->TimedWait(base::TimeDelta::FromSeconds(5));
+    notifier_event->TimedWait(base::Seconds(5));
   }
 }
 

@@ -88,10 +88,8 @@ namespace {
 constexpr char kAvailableOfflinePropertyName[] = "availableOffline";
 
 // Thresholds for logging slow operations.
-constexpr base::TimeDelta kDriveSlowOperationThreshold =
-    base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kDriveVerySlowOperationThreshold =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kDriveSlowOperationThreshold = base::Seconds(5);
+constexpr base::TimeDelta kDriveVerySlowOperationThreshold = base::Minutes(1);
 
 class SingleEntryPropertiesGetterForFileSystemProvider {
  public:

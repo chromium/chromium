@@ -169,7 +169,7 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   void FastForwardProfileRefreshDelay() {
     const base::TimeDelta kProfileRefreshCallbackDelay =
-        base::TimeDelta::FromMilliseconds(150);
+        base::Milliseconds(150);
     // Connect can result in two profile refresh calls before and after
     // enabling profile. Fast forward by delay after refresh.
     task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);

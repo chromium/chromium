@@ -1128,17 +1128,17 @@ TEST_F(SpdyStreamTestWithMockClock, NonInformationalResponseStart) {
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   EXPECT_EQ(ERR_IO_PENDING, stream()->SendRequestHeaders(std::move(headers),
                                                          NO_MORE_DATA_TO_SEND));
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // The receive headers start time should be captured at this time.
   base::TimeTicks expected_receive_headers_start_time = base::TimeTicks::Now();
 
   // Read the first header fragment.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // Read the second header fragment.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ("200", delegate().GetResponseHeaderValue(spdy::kHttp2StatusHeader));
 
   // Read the response body.
@@ -1198,17 +1198,17 @@ TEST_F(SpdyStreamTestWithMockClock, InformationalHeaders) {
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   EXPECT_EQ(ERR_IO_PENDING, stream()->SendRequestHeaders(std::move(headers),
                                                          NO_MORE_DATA_TO_SEND));
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // The receive headers start time should be captured at this time.
   base::TimeTicks expected_receive_headers_start_time = base::TimeTicks::Now();
 
   // Read the first header fragment of the informational response.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // Read the second header fragment of the informational response.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // We don't check the status code of the informational headers here because
   // SpdyStream doesn't propagate it to the delegate.
 
@@ -1219,7 +1219,7 @@ TEST_F(SpdyStreamTestWithMockClock, InformationalHeaders) {
 
   // Read the non-informational response headers.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ("200", delegate().GetResponseHeaderValue(spdy::kHttp2StatusHeader));
 
   // Read the response body.
@@ -1306,7 +1306,7 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   EXPECT_EQ(ERR_IO_PENDING, stream()->SendRequestHeaders(std::move(headers),
                                                          NO_MORE_DATA_TO_SEND));
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // The receive headers start time should be captured at this time.
   base::TimeTicks expected_receive_headers_start_time = base::TimeTicks::Now();
@@ -1314,9 +1314,9 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
   // Read the header fragments of the informational responses.
   for (int i = 0; i < kNumberOfInformationalResponses; ++i) {
     RunUntilNextPause();
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
     RunUntilNextPause();
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
   }
 
   // Check the callback was called twice with 103 status code.
@@ -1356,7 +1356,7 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
 
   // Read the non-informational response headers.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ("200", delegate().GetResponseHeaderValue(spdy::kHttp2StatusHeader));
 
   // Read the response body.

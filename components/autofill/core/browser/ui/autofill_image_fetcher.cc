@@ -112,7 +112,7 @@ void AutofillImageFetcher::FetchImageForUrl(
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
-  params.set_hold_for_expiration_interval(base::TimeDelta::FromMinutes(
+  params.set_hold_for_expiration_interval(base::Minutes(
       features::kAutofillImageFetcherDiskCacheExpirationInMinutes.Get()));
   image_fetcher_->FetchImage(
       card_art_url,

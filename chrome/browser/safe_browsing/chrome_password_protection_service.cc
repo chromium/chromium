@@ -316,10 +316,10 @@ void ChromePasswordProtectionService::Init() {
     // Bound it between 1 min and 28 days. Handles clock-resets.  We wait
     // 1 min to not slowdown browser-startup, and to improve the
     // probability that the sync system is initialized.
-    base::TimeDelta min_delay = base::TimeDelta::FromMinutes(1);
+    base::TimeDelta min_delay = base::Minutes(1);
     base::TimeDelta max_delay =
-        base::TimeDelta::FromDays(kPasswordCaptureEventLogFreqDaysMin +
-                                  kPasswordCaptureEventLogFreqDaysExtra);
+        base::Days(kPasswordCaptureEventLogFreqDaysMin +
+                   kPasswordCaptureEventLogFreqDaysExtra);
     if (delay < min_delay)
       delay = min_delay;
     else if (delay > max_delay)
@@ -628,7 +628,7 @@ void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
   // take care of whether report should be sent.
   trigger_manager_->FinishCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE, web_contents,
-      base::TimeDelta::FromMilliseconds(0), did_proceed, /*num_visit=*/0,
+      base::Milliseconds(0), did_proceed, /*num_visit=*/0,
       TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
                                                web_contents));
 }
@@ -1283,9 +1283,9 @@ void ChromePasswordProtectionService::MaybeLogPasswordCapture(bool did_log_in) {
 
   // Set a timer to log it again in 24-28 days. Spread it to avoid hammering the
   // backend with fixed cycle after this code lands in Stable.
-  base::TimeDelta delay = base::TimeDelta::FromDays(
-      (kPasswordCaptureEventLogFreqDaysMin +
-       base::RandInt(0, kPasswordCaptureEventLogFreqDaysExtra)));
+  base::TimeDelta delay =
+      base::Days((kPasswordCaptureEventLogFreqDaysMin +
+                  base::RandInt(0, kPasswordCaptureEventLogFreqDaysExtra)));
   SetLogPasswordCaptureTimer(delay);
 
   // Write the deadline to a pref to carry over restarts.

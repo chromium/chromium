@@ -114,8 +114,7 @@ class CC_EXPORT DroppedFrameCounter {
 
   void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
 
-  const base::TimeDelta kSlidingWindowInterval =
-      base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kSlidingWindowInterval = base::Seconds(1);
   std::queue<std::pair<const viz::BeginFrameArgs, bool>> sliding_window_;
   uint32_t dropped_frame_count_in_window_ = 0;
   double total_frames_in_window_ = 60.0;

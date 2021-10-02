@@ -311,8 +311,7 @@ Status DevToolsClientImpl::HandleEventsUntil(
     // when only funcinterval has expired, continue while loop
     // but return timeout status if primary timeout has expired
     // This supports cases when loading state is updated by a different client
-    Timeout funcinterval =
-        Timeout(base::TimeDelta::FromMilliseconds(500), &timeout);
+    Timeout funcinterval = Timeout(base::Milliseconds(500), &timeout);
     Status status = ProcessNextMessage(-1, false, funcinterval);
     if (status.code() == kTimeout) {
       if (timeout.IsExpired()) {
@@ -395,8 +394,7 @@ Status DevToolsClientImpl::SendCommandInternal(
         // Use a long default timeout if user has not requested one.
         Status status = ProcessNextMessage(
             command_id, true,
-            timeout != nullptr ? *timeout
-                               : Timeout(base::TimeDelta::FromMinutes(10)));
+            timeout != nullptr ? *timeout : Timeout(base::Minutes(10)));
         if (status.IsError()) {
           if (response_info->state == kReceived)
             response_info_map_.erase(command_id);

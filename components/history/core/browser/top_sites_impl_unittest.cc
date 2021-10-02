@@ -502,11 +502,11 @@ TEST_F(TopSitesImplTest, RealDatabase) {
   url2_redirects.push_back(google2_url);
   url2_redirects.push_back(google3_url);
 
-  AddPageToHistory(google3_url, url2.title,
-                   add_time - base::TimeDelta::FromMinutes(1), url2_redirects);
+  AddPageToHistory(google3_url, url2.title, add_time - base::Minutes(1),
+                   url2_redirects);
   // Add google twice so that it becomes the first visited site.
-  AddPageToHistory(google3_url, url2.title,
-                   add_time - base::TimeDelta::FromMinutes(2), url2_redirects);
+  AddPageToHistory(google3_url, url2.title, add_time - base::Minutes(2),
+                   url2_redirects);
 
   RefreshTopSitesAndRecreate();
 

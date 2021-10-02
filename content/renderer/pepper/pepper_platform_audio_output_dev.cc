@@ -27,8 +27,7 @@
 
 namespace {
 #if defined(OS_WIN) || defined(OS_MAC)
-constexpr base::TimeDelta kMaxAuthorizationTimeout =
-    base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kMaxAuthorizationTimeout = base::Seconds(4);
 #else
 constexpr base::TimeDelta kMaxAuthorizationTimeout;  // No timeout.
 #endif

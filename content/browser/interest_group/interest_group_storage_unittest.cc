@@ -53,7 +53,7 @@ class InterestGroupStorageTest : public testing::Test {
     InterestGroup result;
     result.owner = owner;
     result.name = name;
-    result.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+    result.expiry = base::Time::Now() + base::Days(30);
     return result;
   }
 
@@ -231,7 +231,7 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   EXPECT_EQ(1, interest_groups[0].group->signals->bid_count);
 
   // Add the second win *after* the first so we can check ordering.
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment().FastForwardBy(base::Seconds(1));
   std::string ad2_json = "{url: '" + ad2_url.spec() + "'}";
   storage->RecordInterestGroupBid(test_origin, "example");
   storage->RecordInterestGroupWin(test_origin, "example", ad2_json);
@@ -265,7 +265,7 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroup full;
   full.owner = full_origin;
   full.name = "full";
-  full.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  full.expiry = base::Time::Now() + base::Days(30);
   full.bidding_url = GURL("https://full.example.com/bid");
   full.update_url = GURL("https://full.example.com/update");
   full.trusted_bidding_signals_url = GURL("https://full.example.com/signals");
@@ -362,19 +362,19 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
             original_maintenance_time);
 
   task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod -
-                                   base::TimeDelta::FromSeconds(1));
+                                   base::Seconds(1));
 
   //  Maintenance should not have run yet as we are not idle.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
             original_maintenance_time);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment().FastForwardBy(base::Seconds(2));
   // Verify that maintenance has run.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
   original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
 
   task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength -
-                                   base::TimeDelta::FromDays(1));
+                                   base::Days(1));
   // Verify that maintenance has not run. It's been long enough, but we haven't
   // made any calls.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
@@ -396,8 +396,7 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   // Advance past expiration and check that since DB maintenance last ran before
   // the expiration the outdated entries are present but not reported.
-  task_environment().FastForwardBy(base::TimeDelta::FromDays(1) +
-                                   base::TimeDelta::FromSeconds(1));
+  task_environment().FastForwardBy(base::Days(1) + base::Seconds(1));
 
   // Verify that maintenance has run.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);

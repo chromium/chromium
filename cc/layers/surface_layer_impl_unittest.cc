@@ -306,7 +306,7 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
                     done->Signal();
                 },
                 base::Unretained(&updated), base::Unretained(done)),
-            base::TimeDelta::FromMilliseconds(100));
+            base::Milliseconds(100));
       });
 
   // Note that this has to be created after the callback so that the layer is

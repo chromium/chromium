@@ -62,7 +62,7 @@ class AccessTokenFetcherTest
       : signin_client_(&pref_service_),
         token_service_(&pref_service_),
         access_token_info_("access token",
-                           base::Time::Now() + base::TimeDelta::FromHours(1),
+                           base::Time::Now() + base::Hours(1),
                            std::string(kIdTokenEmptyServices)),
         account_tracker_(std::make_unique<AccountTrackerService>()),
         primary_account_manager_(&signin_client_,

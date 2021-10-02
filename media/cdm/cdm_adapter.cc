@@ -447,7 +447,7 @@ void CdmAdapter::Decrypt(StreamType stream_type,
       DecoderBuffer::CopyFrom(decrypted_block->DecryptedBuffer()->Data(),
                               decrypted_block->DecryptedBuffer()->Size()));
   decrypted_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(decrypted_block->Timestamp()));
+      base::Microseconds(decrypted_block->Timestamp()));
   std::move(decrypt_cb).Run(Decryptor::kSuccess, std::move(decrypted_buffer));
 }
 
@@ -656,7 +656,7 @@ cdm::Buffer* CdmAdapter::Allocate(uint32_t capacity) {
 void CdmAdapter::SetTimer(int64_t delay_ms, void* context) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  auto delay = base::TimeDelta::FromMilliseconds(delay_ms);
+  auto delay = base::Milliseconds(delay_ms);
   DVLOG(3) << __func__ << ": delay = " << delay << ", context = " << context;
   TRACE_EVENT2("media", "CdmAdapter::SetTimer", "delay_ms", delay_ms, "context",
                context);
@@ -1079,7 +1079,7 @@ bool CdmAdapter::AudioFramesDataToAudioFrames(
     scoped_refptr<media::AudioBuffer> frame = media::AudioBuffer::CopyFrom(
         sample_format, audio_channel_layout_, audio_channel_count,
         audio_samples_per_second_, frame_count, &channel_ptrs[0],
-        base::TimeDelta::FromMicroseconds(timestamp), pool_);
+        base::Microseconds(timestamp), pool_);
     result_frames->push_back(frame);
 
     data += frame_size;

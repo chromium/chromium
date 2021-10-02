@@ -28,8 +28,8 @@ ProfilerTrace* ProfilerTraceBuilder::FromProfile(
   if (profile) {
     for (int i = 0; i < profile->GetSamplesCount(); i++) {
       const auto* node = profile->GetSample(i);
-      auto timestamp = base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                               profile->GetSampleTimestamp(i));
+      auto timestamp = base::TimeTicks() +
+                       base::Microseconds(profile->GetSampleTimestamp(i));
       builder->AddSample(node, timestamp);
     }
   }

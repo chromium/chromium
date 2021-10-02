@@ -45,7 +45,7 @@ namespace base {
 // Example usage:
 //
 //  void FooBar(){
-//    WatchHangsInScope scope(base::TimeDelta::FromSeconds(5));
+//    WatchHangsInScope scope(base::Seconds(5));
 //    DoWork();
 //  }
 //

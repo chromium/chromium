@@ -884,7 +884,7 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
     // executing the next command, and it will be counted towards its timeout.
     Status new_status = client_->HandleEventsUntil(
         not_pending_navigation,
-        Timeout(base::TimeDelta::FromSeconds(kWaitForNavigationStopSeconds)));
+        Timeout(base::Seconds(kWaitForNavigationStopSeconds)));
     navigation_tracker_->set_timed_out(false);
     if (new_status.IsError())
       status = new_status;
@@ -933,7 +933,7 @@ Status WebViewImpl::CaptureScreenshot(
     std::string* screenshot,
     const base::DictionaryValue& params) {
   std::unique_ptr<base::DictionaryValue> result;
-  Timeout timeout(base::TimeDelta::FromSeconds(10));
+  Timeout timeout(base::Seconds(10));
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Page.captureScreenshot", params, &timeout, &result);
   if (status.IsError())
@@ -951,7 +951,7 @@ Status WebViewImpl::PrintToPDF(const base::DictionaryValue& params,
                   "PrintToPDF is only supported in headless mode");
   }
   std::unique_ptr<base::DictionaryValue> result;
-  Timeout timeout(base::TimeDelta::FromSeconds(10));
+  Timeout timeout(base::Seconds(10));
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Page.printToPDF", params, &timeout, &result);
   if (status.IsError()) {
@@ -1208,7 +1208,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
       "}",
       kJavaScriptError,
       kDocUnloadError);
-  const base::TimeDelta kOneHundredMs = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kOneHundredMs = base::Milliseconds(100);
 
   while (true) {
     base::ListValue no_args;

@@ -15,7 +15,7 @@ namespace drivefs {
 
 namespace {
 
-constexpr base::TimeDelta kQueryCacheTtl = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kQueryCacheTtl = base::Minutes(5);
 
 bool IsCloudSharedWithMeQuery(const drivefs::mojom::QueryParametersPtr& query) {
   return query->query_source ==

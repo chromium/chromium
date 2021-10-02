@@ -101,7 +101,7 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
       return false;
 
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(config->collection_start_time_s()));
+        base::Seconds(config->collection_start_time_s()));
     if (clock_->Now() - collection_start_time < min_signal_collection_length)
       return false;
   }
@@ -158,9 +158,9 @@ void SignalStorageConfig::GetSignalsForCleanup(
   for (int i = 0; i < config_.signals_size(); ++i) {
     const auto& signal_config = config_.signals(i);
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(signal_config.collection_start_time_s()));
+        base::Seconds(signal_config.collection_start_time_s()));
     base::TimeDelta required_storage_length =
-        base::TimeDelta::FromSeconds(signal_config.storage_length_s());
+        base::Seconds(signal_config.storage_length_s());
     base::Time earliest_needed_timestamp =
         clock_->Now() - required_storage_length;
 

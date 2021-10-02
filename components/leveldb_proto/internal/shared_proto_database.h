@@ -194,7 +194,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   base::queue<std::unique_ptr<InitRequest>> outstanding_init_requests_;
   bool create_if_missing_ = false;
 
-  base::TimeDelta delete_obsolete_delay_ = base::TimeDelta::FromSeconds(120);
+  base::TimeDelta delete_obsolete_delay_ = base::Seconds(120);
   base::Lock delete_obsolete_delay_lock_;
   base::CancelableOnceClosure delete_obsolete_task_;
 };

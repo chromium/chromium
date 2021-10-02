@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   std::string state = GetSessionStateJson();
   EXPECT_EQ(state, "{}");
 
-  base::Time upload_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time upload_time = base::Time::Now() - base::Days(1);
   ChromeTracingDelegate::ScenarioUploadTimestampMap upload_times;
   upload_times["TestScenario"] = upload_time;
   ChromeTracingDelegate::BackgroundTracingStateManager::SaveState(
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   std::string state = GetSessionStateJson();
   EXPECT_EQ(state, "{}");
 
-  base::Time upload_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time upload_time = base::Time::Now() - base::Days(1);
   ChromeTracingDelegate::ScenarioUploadTimestampMap upload_times;
   upload_times["TestScenario10"] = upload_time;
   upload_times["TestingScenario1"] = upload_time;
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   std::string state = GetSessionStateJson();
   EXPECT_EQ(state, "{}");
 
-  base::Time upload_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time upload_time = base::Time::Now() - base::Days(1);
   ChromeTracingDelegate::ScenarioUploadTimestampMap upload_times;
   upload_times["TestScenario10"] = upload_time;
   upload_times["TestingScenario1"] = upload_time;
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   std::string state = GetSessionStateJson();
   EXPECT_EQ(state, "{}");
 
-  base::Time upload_time = base::Time::Now() - base::TimeDelta::FromDays(8);
+  base::Time upload_time = base::Time::Now() - base::Days(8);
   ChromeTracingDelegate::ScenarioUploadTimestampMap upload_times;
   upload_times["TestScenario"] = upload_time;
   ChromeTracingDelegate::BackgroundTracingStateManager::SaveState(

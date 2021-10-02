@@ -67,7 +67,7 @@ class TabManagerTest : public ChromeRenderViewHostTestHarness {
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // Start with a non-zero time.
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(42));
+    task_environment()->FastForwardBy(base::Seconds(42));
   }
 
   std::unique_ptr<WebContents> CreateWebContents() {
@@ -205,7 +205,7 @@ TEST_F(TabManagerTest, GetSortedLifecycleUnits) {
 
   const int num_of_tabs_to_test = 20;
   for (int i = 0; i < num_of_tabs_to_test; ++i) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));
+    task_environment()->FastForwardBy(base::Seconds(10));
     tab_strip->AppendWebContents(CreateWebContents(), /*foreground=*/true);
   }
 

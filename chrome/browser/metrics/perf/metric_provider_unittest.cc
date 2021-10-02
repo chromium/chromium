@@ -124,9 +124,8 @@ class TestMetricCollector : public internal::MetricCollector {
   base::WeakPtrFactory<TestMetricCollector> weak_factory_;
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 const uint64_t kRedactedCommMd5Prefix = 0xee1f021828a1fcbc;
 }  // namespace
 
@@ -217,7 +216,7 @@ TEST_F(MetricProviderTest, SuspendDone) {
   metric_provider_->OnUserLoggedIn();
   task_environment_.RunUntilIdle();
 
-  const auto kSuspendDuration = base::TimeDelta::FromMinutes(3);
+  const auto kSuspendDuration = base::Minutes(3);
 
   metric_provider_->SuspendDone(kSuspendDuration);
 

@@ -146,7 +146,7 @@ int MaxOriginRobotsRulesCacheSize() {
 
 base::TimeDelta GetLitePagesBypassRandomDuration() {
   // Default is a random duration between 1 to 5 minutes.
-  return base::TimeDelta::FromSeconds(
+  return base::Seconds(
       base::RandInt(base::GetFieldTrialParamByFeatureAsInt(
                         blink::features::kSubresourceRedirect,
                         "litepages_bypass_random_duration_min_secs", 60),
@@ -156,7 +156,7 @@ base::TimeDelta GetLitePagesBypassRandomDuration() {
 }
 
 base::TimeDelta GetLitePagesBypassMaxDuration() {
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       blink::features::kSubresourceRedirect,
       "litepages_bypass_max_duration_secs", 300));
 }

@@ -114,8 +114,7 @@ TEST(SendTabToSelfEntry, IsExpired) {
                            base::Time::FromTimeT(10), base::Time::FromTimeT(10),
                            "device1", "device1");
 
-  EXPECT_TRUE(entry.IsExpired(base::Time::FromTimeT(11) +
-                              base::TimeDelta::FromDays(10)));
+  EXPECT_TRUE(entry.IsExpired(base::Time::FromTimeT(11) + base::Days(10)));
   EXPECT_FALSE(entry.IsExpired(base::Time::FromTimeT(11)));
 }
 

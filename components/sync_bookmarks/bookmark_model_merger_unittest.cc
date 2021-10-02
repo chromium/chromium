@@ -1865,8 +1865,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {
       /*server_id=*/"Id1", /*parent_id=*/kBookmarkBarId, kTitle1,
       /*url=*/kUrl,
       /*is_folder=*/false, /*unique_position=*/MakeRandomPosition(), kUrlGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle2,
       /*url=*/kUrl,
@@ -1929,8 +1928,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentDuplicatesByGUID) {
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle2,
       /*url=*/kDifferentUrl,
       /*is_folder=*/false, /*unique_position=*/MakeRandomPosition(), kUrlGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
 
   base::HistogramTester histogram_tester;
   std::unique_ptr<SyncedBookmarkTracker> tracker =
@@ -1966,8 +1964,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingFolderDuplicatesByGUID) {
       /*server_id=*/"Id1", /*parent_id=*/kBookmarkBarId, kTitle,
       /*url=*/"",
       /*is_folder=*/true, /*unique_position=*/MakeRandomPosition(), kGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle,
       /*url=*/"",
@@ -2021,8 +2018,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentFolderDuplicatesByGUID) {
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle2,
       /*url=*/"", /*is_folder=*/true, MakeRandomPosition(), kGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id21", /*parent_id=*/"Id2", "Some title 2",
       /*url=*/"", /*is_folder=*/true, MakeRandomPosition()));

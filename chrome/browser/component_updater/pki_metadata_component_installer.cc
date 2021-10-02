@@ -182,10 +182,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
         // need to be checked, because once RETIRED, the state will never
         // change.
         base::TimeDelta retired_since =
-            base::TimeDelta::FromSeconds(
-                log.state()[0].state_start().seconds()) +
-            base::TimeDelta::FromNanoseconds(
-                log.state()[0].state_start().nanos());
+            base::Seconds(log.state()[0].state_start().seconds()) +
+            base::Nanoseconds(log.state()[0].state_start().nanos());
         log_ptr->disqualified_at = retired_since;
       }
     }
@@ -194,8 +192,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
 
   base::Time update_time =
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(proto->log_list().timestamp().seconds()) +
-      base::TimeDelta::FromNanoseconds(proto->log_list().timestamp().nanos());
+      base::Seconds(proto->log_list().timestamp().seconds()) +
+      base::Nanoseconds(proto->log_list().timestamp().nanos());
   network_service->UpdateCtLogList(std::move(log_list_mojo), update_time);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }

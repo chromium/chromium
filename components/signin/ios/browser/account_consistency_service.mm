@@ -45,8 +45,7 @@ namespace {
 // ensure that Mirror account consistency is respected in light of the more
 // restrictive Intelligent Tracking Prevention (ITP) guidelines in iOS 14
 // that may remove or invalidate Gaia cookies on the Google domain.
-constexpr base::TimeDelta kDelayThresholdToUpdateGaiaCookie =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kDelayThresholdToUpdateGaiaCookie = base::Hours(1);
 
 const char* kGoogleUrl = "https://google.com";
 const char* kYoutubeUrl = "https://youtube.com";
@@ -90,7 +89,7 @@ base::TimeDelta GetDelayThresholdToUpdateGaiaCookie() {
         signin::kDelayThresholdMinutesToUpdateGaiaCookie);
     int commandLineDelay = 0;
     if (base::StringToInt(delayString, &commandLineDelay)) {
-      return base::TimeDelta::FromMinutes(commandLineDelay);
+      return base::Minutes(commandLineDelay);
     }
   }
   return kDelayThresholdToUpdateGaiaCookie;
@@ -496,8 +495,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
           /*creation_time=*/base::Time::Now(),
           // Create expiration date of Now+2y to roughly follow the SAPISID
           // cookie.
-          /*expiration_time=*/base::Time::Now() +
-              base::TimeDelta::FromDays(730),
+          /*expiration_time=*/base::Time::Now() + base::Days(730),
           /*last_access_time=*/base::Time(),
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::LAX_MODE,

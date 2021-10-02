@@ -226,7 +226,7 @@ void HoldingSpaceImage::Invalidate() {
   invalidate_timer_.Start(FROM_HERE,
                           g_use_zero_invalidation_delay_for_testing
                               ? base::TimeDelta()
-                              : base::TimeDelta::FromMilliseconds(250),
+                              : base::Milliseconds(250),
                           base::BindOnce(&HoldingSpaceImage::OnInvalidateTimer,
                                          base::Unretained(this)));
 }

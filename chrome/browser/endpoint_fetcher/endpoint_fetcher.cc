@@ -237,8 +237,7 @@ void EndpointFetcher::PerformRequest(
   }
   simple_url_loader_->SetRetryOptions(kNumRetries,
                                       network::SimpleURLLoader::RETRY_ON_5XX);
-  simple_url_loader_->SetTimeoutDuration(
-      base::TimeDelta::FromMilliseconds(timeout_ms_));
+  simple_url_loader_->SetTimeoutDuration(base::Milliseconds(timeout_ms_));
   simple_url_loader_->SetAllowHttpErrorResults(true);
   network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
       base::BindOnce(&EndpointFetcher::OnResponseFetched,

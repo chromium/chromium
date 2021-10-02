@@ -1055,7 +1055,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldCommitLocalUpdate) {
   ASSERT_EQ(ctime, type_processor()->GetEntityModificationTime(kKey1));
 
   // Make sure the clock advances.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+  base::PlatformThread::Sleep(base::Milliseconds(1));
   ASSERT_NE(ctime, base::Time::Now());
 
   bridge()->WriteItem(kKey1, kValue2);
@@ -1126,7 +1126,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   ASSERT_FALSE(ctime.is_null());
 
   // Make sure the clock advances.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+  base::PlatformThread::Sleep(base::Milliseconds(1));
   ASSERT_NE(ctime, base::Time::Now());
 
   bridge()->WriteItem(kKey1, kValue2);

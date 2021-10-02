@@ -120,7 +120,7 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   ::media::BitstreamBufferMetadata input_metadata;
   input_metadata.payload_size_bytes = 1234;
   input_metadata.key_frame = true;
-  input_metadata.timestamp = base::TimeDelta::FromMilliseconds(123456);
+  input_metadata.timestamp = base::Milliseconds(123456);
   ::media::BitstreamBufferMetadata output_metadata;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(

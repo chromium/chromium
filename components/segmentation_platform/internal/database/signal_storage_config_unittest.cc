@@ -111,8 +111,7 @@ TEST_F(SignalStorageConfigTest,
   proto::SignalStorageConfig signal_config = config.signals(0);
   EXPECT_EQ(name_hash, signal_config.name_hash());
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
-  EXPECT_EQ(base::TimeDelta::FromDays(2).InSeconds(),
-            signal_config.storage_length_s());
+  EXPECT_EQ(base::Days(2).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Add the second model. It should do a overwrite of previous value.
@@ -128,8 +127,7 @@ TEST_F(SignalStorageConfigTest,
   signal_config = config.signals(0);
   EXPECT_EQ(name_hash, signal_config.name_hash());
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
-  EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
-            signal_config.storage_length_s());
+  EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Signal collection shouldn't satisfy.
@@ -138,7 +136,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Advance clock by 1 day. Start collection. Signal collection still won't
   // satisfy.
-  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  test_clock_.Advance(base::Days(1));
   EXPECT_FALSE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_FALSE(
@@ -147,7 +145,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Advance clock by 2 days. Signal collection should be sufficient for the
   // first model.
-  test_clock_.Advance(base::TimeDelta::FromDays(2));
+  test_clock_.Advance(base::Days(2));
   EXPECT_TRUE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_NE(0, signal_config.collection_start_time_s());
@@ -158,7 +156,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Advance clock by 3 days. Signal collection should be sufficient for second
   // model as well.
-  test_clock_.Advance(base::TimeDelta::FromDays(3));
+  test_clock_.Advance(base::Days(3));
   EXPECT_TRUE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_TRUE(
@@ -169,8 +167,7 @@ TEST_F(SignalStorageConfigTest,
   signal_config = config.signals(0);
   EXPECT_EQ(name_hash, signal_config.name_hash());
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
-  EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
-            signal_config.storage_length_s());
+  EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 }
 
@@ -184,31 +181,28 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
   proto::SignalStorageConfig* signal1 = config.add_signals();
   signal1->set_name_hash(base::HashMetricName("1"));
   signal1->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
-  signal1->set_collection_start_time_s(
-      (test_clock_.Now() - base::TimeDelta::FromDays(3))
-          .ToDeltaSinceWindowsEpoch()
-          .InSeconds());
-  signal1->set_storage_length_s(base::TimeDelta::FromDays(2).InSeconds());
+  signal1->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                           .ToDeltaSinceWindowsEpoch()
+                                           .InSeconds());
+  signal1->set_storage_length_s(base::Days(2).InSeconds());
 
   // Unknown.
   proto::SignalStorageConfig* signal2 = config.add_signals();
   signal2->set_name_hash(base::HashMetricName("2"));
   signal2->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
-  signal2->set_collection_start_time_s(
-      (test_clock_.Now() - base::TimeDelta::FromDays(3))
-          .ToDeltaSinceWindowsEpoch()
-          .InSeconds());
-  signal2->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
+  signal2->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                           .ToDeltaSinceWindowsEpoch()
+                                           .InSeconds());
+  signal2->set_storage_length_s(base::Days(5).InSeconds());
 
   // Known.
   proto::SignalStorageConfig* signal3 = config.add_signals();
   signal3->set_name_hash(base::HashMetricName("3"));
   signal3->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
-  signal3->set_collection_start_time_s(
-      (test_clock_.Now() - base::TimeDelta::FromDays(3))
-          .ToDeltaSinceWindowsEpoch()
-          .InSeconds());
-  signal3->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
+  signal3->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                           .ToDeltaSinceWindowsEpoch()
+                                           .InSeconds());
+  signal3->set_storage_length_s(base::Days(5).InSeconds());
 
   // Initialize non-empty DB.
   db_entries_.insert({kDatabaseKey, config});
@@ -245,7 +239,7 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
   signal_storage_config_->UpdateSignalsForCleanup(result);
   db_->UpdateCallback(true);
   auto signal = db_entries_[kDatabaseKey].signals(0);
-  EXPECT_EQ((test_clock_.Now() - base::TimeDelta::FromDays(2))
+  EXPECT_EQ((test_clock_.Now() - base::Days(2))
                 .ToDeltaSinceWindowsEpoch()
                 .InSeconds(),
             signal.collection_start_time_s());

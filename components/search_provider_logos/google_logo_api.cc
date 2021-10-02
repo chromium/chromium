@@ -330,10 +330,10 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   // The JSON doesn't guarantee the number to fit into an int.
   double ttl_ms = 0;  // Expires immediately if the parameter is missing.
   if (ddljson->GetDouble("time_to_live_ms", &ttl_ms)) {
-    time_to_live = base::TimeDelta::FromMillisecondsD(ttl_ms);
+    time_to_live = base::Milliseconds(ttl_ms);
     logo->metadata.can_show_after_expiration = false;
   } else {
-    time_to_live = base::TimeDelta::FromMilliseconds(kMaxTimeToLiveMS);
+    time_to_live = base::Milliseconds(kMaxTimeToLiveMS);
     logo->metadata.can_show_after_expiration = true;
   }
   logo->metadata.expiration_time = response_time + time_to_live;

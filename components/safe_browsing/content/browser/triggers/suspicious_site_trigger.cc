@@ -112,7 +112,7 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
       FROM_HERE,
       base::BindOnce(&SuspiciousSiteTrigger::ReportDelayTimerFired,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(finish_report_delay_ms_));
+      base::Milliseconds(finish_report_delay_ms_));
 
   UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                             SuspiciousSiteTriggerEvent::REPORT_STARTED);

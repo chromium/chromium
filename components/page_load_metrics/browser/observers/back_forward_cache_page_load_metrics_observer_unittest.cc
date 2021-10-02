@@ -159,10 +159,8 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 //   cache restore.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        TestOnFirstPaintAfterBackForwardCacheRestoreInPage) {
-  absl::optional<base::TimeDelta> first_bg_time(
-      base::TimeDelta::FromMilliseconds(50));
-  absl::optional<base::TimeDelta> second_bg_time(
-      base::TimeDelta::FromMilliseconds(200));
+  absl::optional<base::TimeDelta> first_bg_time(base::Milliseconds(50));
+  absl::optional<base::TimeDelta> second_bg_time(base::Milliseconds(200));
 
   AddBFCacheRestoreState(observer_with_fake_delegate_.get(),
                          fake_delegate_.get(), /*was_in_foreground=*/true,
@@ -179,7 +177,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 
   page_load_metrics::mojom::BackForwardCacheTiming bf_cache_timing;
   bf_cache_timing.first_paint_after_back_forward_cache_restore =
-      base::TimeDelta::FromMilliseconds(100);
+      base::Milliseconds(100);
 
   size_t expected_metrics_count = 0;
   auto& test_ukm_recorder = tester()->test_ukm_recorder();
@@ -213,7 +211,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   // index 2 has no background time (i.e. is still active).
   expected_metrics_count++;
   bf_cache_timing.first_paint_after_back_forward_cache_restore =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
   observer_with_fake_delegate_->OnFirstPaintAfterBackForwardCacheRestoreInPage(
       bf_cache_timing, /*index=*/2);
   result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(

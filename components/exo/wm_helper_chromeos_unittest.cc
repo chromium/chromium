@@ -91,8 +91,7 @@ TEST_F(WMHelperChromeOSTest, FrameThrottling) {
   EXPECT_EQ(vsync_timing_manager.throttled_interval(), base::TimeDelta());
 
   // Both windows are to be throttled, vsync timing will be adjusted.
-  base::TimeDelta throttled_interval =
-      base::TimeDelta::FromHz(ftc->throttled_fps());
+  base::TimeDelta throttled_interval = base::Hertz(ftc->throttled_fps());
   EXPECT_CALL(observer,
               OnUpdateVSyncParameters(testing::_, throttled_interval));
   ftc->StartThrottling({arc_window_1.get(), arc_window_2.get()});

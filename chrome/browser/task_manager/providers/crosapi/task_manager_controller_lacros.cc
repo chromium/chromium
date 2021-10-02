@@ -64,7 +64,7 @@ crosapi::mojom::WebCacheResourceTypeStatsPtr ToMojo(
 }  // namespace
 
 TaskManagerControllerLacros::TaskManagerControllerLacros()
-    : TaskManagerObserver(base::TimeDelta::FromSeconds(1), REFRESH_TYPE_NONE) {}
+    : TaskManagerObserver(base::Seconds(1), REFRESH_TYPE_NONE) {}
 
 TaskManagerControllerLacros::~TaskManagerControllerLacros() {
   if (observed_task_manager())

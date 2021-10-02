@@ -150,7 +150,7 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
     return false;
 
   base::Time cutoff_time;
-  cutoff_time = clock->Now() - base::TimeDelta::FromSeconds(error_reset_time);
+  cutoff_time = clock->Now() - base::Seconds(error_reset_time);
 
   // Assume that the values in the list are in increasing order;
   // UpdateRecurrentInterstitialPref() maintains this ordering. Check if there
@@ -390,8 +390,7 @@ void StatefulSSLHostStateDelegate::AllowHttpForHost(
   // directly storing a string value.
   GURL url = GetSecureGURLForHost(host);
   base::Time expiration_time =
-      clock_->Now() +
-      base::TimeDelta::FromSeconds(kDeltaDefaultExpirationInSeconds);
+      clock_->Now() + base::Seconds(kDeltaDefaultExpirationInSeconds);
   auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   dict->SetKey(kHTTPAllowlistExpirationTimeKey,
                base::TimeToValue(expiration_time));
@@ -667,7 +666,7 @@ base::Value* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
 
     expired = true;
     base::Time expiration_time =
-        now + base::TimeDelta::FromSeconds(kDeltaDefaultExpirationInSeconds);
+        now + base::Seconds(kDeltaDefaultExpirationInSeconds);
     // Unfortunately, JSON (and thus content settings) doesn't support int64_t
     // values, only doubles. Since this mildly depends on precision, it is
     // better to store the value as a string.

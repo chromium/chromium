@@ -21,8 +21,8 @@ TEST_F(DocumentLoadTimingTest, ensureValidNavigationStartAfterEmbedder) {
   double delta = -1000;
   double embedder_navigation_start =
       base::TimeTicks::Now().since_origin().InSecondsF() + delta;
-  timing.SetNavigationStart(base::TimeTicks() + base::TimeDelta::FromSecondsD(
-                                                    embedder_navigation_start));
+  timing.SetNavigationStart(base::TimeTicks() +
+                            base::Seconds(embedder_navigation_start));
 
   double real_wall_time = base::Time::Now().ToDoubleT();
   base::TimeDelta adjusted_wall_time =
@@ -41,8 +41,8 @@ TEST_F(DocumentLoadTimingTest, correctTimingDeltas) {
   double embedder_navigation_start =
       current_monotonic_time + navigation_start_delta;
 
-  timing.SetNavigationStart(base::TimeTicks() + base::TimeDelta::FromSecondsD(
-                                                    embedder_navigation_start));
+  timing.SetNavigationStart(base::TimeTicks() +
+                            base::Seconds(embedder_navigation_start));
 
   // Super quick load! Expect the wall time reported by this event to be
   // dominated by the navigationStartDelta, but similar to currentTime().
@@ -68,8 +68,8 @@ TEST_F(DocumentLoadTimingTest, ensureRedirectEndExcludesNextFetch) {
   DocumentLoadTiming timing(*(dummy_page->GetDocument().Loader()));
 
   base::TimeTicks origin;
-  auto t1 = base::TimeDelta::FromSeconds(5);
-  auto t2 = base::TimeDelta::FromSeconds(10);
+  auto t1 = base::Seconds(5);
+  auto t2 = base::Seconds(10);
 
   // Start a navigation to |url_that_redirects|.
   timing.SetNavigationStart(origin);

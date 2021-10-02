@@ -227,14 +227,12 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
   base::HistogramTester histogram_tester;
 
-  const auto now_before =
-      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToJsTime();
+  const auto now_before = (base::Time::Now() - base::Minutes(1)).ToJsTime();
 
   // Create a media player watch time and save it to the playbacks table.
   GURL url("http://google.com/test");
-  content::MediaPlayerWatchTime watch_time(url, url.GetOrigin(),
-                                           base::TimeDelta::FromSeconds(60),
-                                           base::TimeDelta(), true, false);
+  content::MediaPlayerWatchTime watch_time(
+      url, url.GetOrigin(), base::Seconds(60), base::TimeDelta(), true, false);
   service()->SavePlayback(watch_time);
   const auto now_after_a = base::Time::Now().ToJsTime();
 
@@ -258,14 +256,14 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
     EXPECT_EQ("http://google.com/test", playbacks[0]->url.spec());
     EXPECT_FALSE(playbacks[0]->has_audio);
     EXPECT_TRUE(playbacks[0]->has_video);
-    EXPECT_EQ(base::TimeDelta::FromSeconds(60), playbacks[0]->watchtime);
+    EXPECT_EQ(base::Seconds(60), playbacks[0]->watchtime);
     EXPECT_LE(now_before, playbacks[0]->last_updated_time);
     EXPECT_GE(now_after_a, playbacks[0]->last_updated_time);
 
     EXPECT_EQ("http://google.com/test", playbacks[1]->url.spec());
     EXPECT_FALSE(playbacks[1]->has_audio);
     EXPECT_TRUE(playbacks[1]->has_video);
-    EXPECT_EQ(base::TimeDelta::FromSeconds(60), playbacks[1]->watchtime);
+    EXPECT_EQ(base::Seconds(60), playbacks[1]->watchtime);
     EXPECT_LE(now_before, playbacks[1]->last_updated_time);
     EXPECT_GE(now_after_b, playbacks[1]->last_updated_time);
   }
@@ -295,9 +293,8 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
 TEST_P(MediaHistoryStoreUnitTest, SavePlayback_BadOrigin) {
   GURL url("http://google.com/test");
   GURL url2("http://google.co.uk/test");
-  content::MediaPlayerWatchTime watch_time(url, url2.GetOrigin(),
-                                           base::TimeDelta::FromSeconds(60),
-                                           base::TimeDelta(), true, false);
+  content::MediaPlayerWatchTime watch_time(
+      url, url2.GetOrigin(), base::Seconds(60), base::TimeDelta(), true, false);
   service()->SavePlayback(watch_time);
 
   // Verify that the origin and playbacks table are empty.
@@ -328,8 +325,8 @@ TEST_P(MediaHistoryStoreUnitTest, GetStats) {
     // Create a media player watch time and save it to the playbacks table.
     GURL url("http://google.com/test");
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url, url.GetOrigin(), base::Milliseconds(123), base::Milliseconds(321),
+        true, false);
     service()->SavePlayback(watch_time);
   }
 
@@ -451,8 +448,8 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   {
     // Record a watchtime for audio/video for 30 seconds.
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::TimeDelta::FromSeconds(30),
-        base::TimeDelta(), true /* has_video */, true /* has_audio */);
+        url, url.GetOrigin(), base::Seconds(30), base::TimeDelta(),
+        true /* has_video */, true /* has_audio */);
     service()->SavePlayback(watch_time);
     WaitForDB();
   }
@@ -460,8 +457,8 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   {
     // Record a watchtime for audio/video for 60 seconds.
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::TimeDelta::FromSeconds(60),
-        base::TimeDelta(), true /* has_video */, true /* has_audio */);
+        url, url.GetOrigin(), base::Seconds(60), base::TimeDelta(),
+        true /* has_video */, true /* has_audio */);
     service()->SavePlayback(watch_time);
     WaitForDB();
   }
@@ -469,8 +466,8 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   {
     // Record an audio-only watchtime for 30 seconds.
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::TimeDelta::FromSeconds(30),
-        base::TimeDelta(), false /* has_video */, true /* has_audio */);
+        url, url.GetOrigin(), base::Seconds(30), base::TimeDelta(),
+        false /* has_video */, true /* has_audio */);
     service()->SavePlayback(watch_time);
     WaitForDB();
   }
@@ -478,8 +475,8 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   {
     // Record a video-only watchtime for 30 seconds.
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::TimeDelta::FromSeconds(30),
-        base::TimeDelta(), true /* has_video */, false /* has_audio */);
+        url, url.GetOrigin(), base::Seconds(30), base::TimeDelta(),
+        true /* has_video */, false /* has_audio */);
     service()->SavePlayback(watch_time);
     WaitForDB();
   }
@@ -489,8 +486,8 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   {
     // Record a watchtime for audio/video for 60 seconds on a different origin.
     content::MediaPlayerWatchTime watch_time(
-        url_alt, url_alt.GetOrigin(), base::TimeDelta::FromSeconds(30),
-        base::TimeDelta(), true /* has_video */, true /* has_audio */);
+        url_alt, url_alt.GetOrigin(), base::Seconds(30), base::TimeDelta(),
+        true /* has_video */, true /* has_audio */);
     service()->SavePlayback(watch_time);
     WaitForDB();
   }
@@ -526,8 +523,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
     EXPECT_EQ(2u, origins.size());
 
     EXPECT_EQ("http://google.com", origins[0]->origin.Serialize());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(90),
-              origins[0]->cached_audio_video_watchtime);
+    EXPECT_EQ(base::Seconds(90), origins[0]->cached_audio_video_watchtime);
     EXPECT_NEAR(url_now_before, origins[0]->last_updated_time,
                 kTimeErrorMargin);
     EXPECT_GE(url_now_after, origins[0]->last_updated_time);
@@ -535,8 +531,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
               origins[0]->actual_audio_video_watchtime);
 
     EXPECT_EQ("http://example.org", origins[1]->origin.Serialize());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(30),
-              origins[1]->cached_audio_video_watchtime);
+    EXPECT_EQ(base::Seconds(30), origins[1]->cached_audio_video_watchtime);
     EXPECT_NEAR(url_now_before, origins[1]->last_updated_time,
                 kTimeErrorMargin);
     EXPECT_GE(url_alt_after, origins[1]->last_updated_time);
@@ -551,12 +546,12 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
 TEST_P(MediaHistoryStoreUnitTest, GetOriginsWithHighWatchTime) {
   const GURL url("http://google.com/test");
   const GURL url_alt("http://example.org/test");
-  const base::TimeDelta min_watch_time = base::TimeDelta::FromMinutes(30);
+  const base::TimeDelta min_watch_time = base::Minutes(30);
 
   {
     // Record a watch time that isn't high enough to get with our request.
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), min_watch_time - base::TimeDelta::FromSeconds(1),
+        url, url.GetOrigin(), min_watch_time - base::Seconds(1),
         base::TimeDelta(), true /* has_video */, true /* has_audio */);
     service()->SavePlayback(watch_time);
     WaitForDB();

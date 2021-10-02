@@ -102,7 +102,7 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
 
 ProxyConfigServiceIOS::ProxyConfigServiceIOS(
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : PollingProxyConfigService(base::TimeDelta::FromSeconds(kPollIntervalSec),
+    : PollingProxyConfigService(base::Seconds(kPollIntervalSec),
                                 GetCurrentProxyConfig,
                                 traffic_annotation) {}
 

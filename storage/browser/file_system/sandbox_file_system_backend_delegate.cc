@@ -646,7 +646,7 @@ void SandboxFileSystemBackendDelegate::CollectOpenFileSystemMetrics(
   bool throttled = now < next_release_time_for_open_filesystem_stat_;
   if (!throttled) {
     next_release_time_for_open_filesystem_stat_ =
-        now + base::TimeDelta::FromHours(kMinimumStatsCollectionIntervalHours);
+        now + base::Hours(kMinimumStatsCollectionIntervalHours);
   }
 
 #define REPORT(report_value)                                            \

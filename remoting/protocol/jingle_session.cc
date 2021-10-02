@@ -355,7 +355,7 @@ void JingleSession::SendTransportInfo(
       std::move(stanza), base::BindOnce(&JingleSession::OnTransportInfoResponse,
                                         base::Unretained(this)));
   if (request) {
-    request->SetTimeout(base::TimeDelta::FromSeconds(kTransportInfoTimeout));
+    request->SetTimeout(base::Seconds(kTransportInfoTimeout));
     transport_info_requests_.push_back(std::move(request));
   } else {
     LOG(ERROR) << "Failed to send a transport-info message";
@@ -442,7 +442,7 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
     timeout = kSessionInitiateAndAcceptTimeout;
   }
   if (request) {
-    request->SetTimeout(base::TimeDelta::FromSeconds(timeout));
+    request->SetTimeout(base::Seconds(timeout));
     pending_requests_.push_back(std::move(request));
   } else {
     LOG(ERROR) << "Failed to send a "

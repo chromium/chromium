@@ -189,8 +189,7 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
       base::Time::kMicrosecondsPerSecond / 60;
   gfx::PresentationFeedback feedback(
       base::TimeTicks::Now(),
-      base::TimeDelta::FromMicroseconds(kRefreshIntervalInMicroseconds),
-      0 /* flags */);
+      base::Microseconds(kRefreshIntervalInMicroseconds), 0 /* flags */);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -140,7 +140,7 @@ TEST_F(StylusMetricsRecorderTest, Baseline) {
 }
 
 TEST_F(StylusMetricsRecorderTest, BaselineStayInGarage) {
-  const base::TimeDelta kTimeSpentCharging = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kTimeSpentCharging = base::Minutes(5);
 
   SetChargerState(StylusChargingStyle::kGarage,
                   BatteryInfo::ChargeStatus::kCharging);
@@ -161,7 +161,7 @@ TEST_F(StylusMetricsRecorderTest, BaselineStayInGarage) {
 }
 
 TEST_F(StylusMetricsRecorderTest, BaselineStayInDock) {
-  const base::TimeDelta kTimeSpentCharging = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kTimeSpentCharging = base::Minutes(5);
 
   SetChargerState(StylusChargingStyle::kDock,
                   BatteryInfo::ChargeStatus::kCharging);
@@ -182,8 +182,8 @@ TEST_F(StylusMetricsRecorderTest, BaselineStayInDock) {
 }
 
 TEST_F(StylusMetricsRecorderTest, RemovedFromGarage) {
-  const base::TimeDelta kTimeSpentInUse = base::TimeDelta::FromMinutes(5);
-  const base::TimeDelta kTimeSpentCharging = base::TimeDelta::FromMinutes(1);
+  const base::TimeDelta kTimeSpentInUse = base::Minutes(5);
+  const base::TimeDelta kTimeSpentCharging = base::Minutes(1);
 
   SetChargerState(StylusChargingStyle::kGarage,
                   BatteryInfo::ChargeStatus::kDischarging);
@@ -233,8 +233,8 @@ TEST_F(StylusMetricsRecorderTest, RemovedFromGarage) {
 }
 
 TEST_F(StylusMetricsRecorderTest, RemovedFromDock) {
-  const base::TimeDelta kTimeSpentInUse = base::TimeDelta::FromMinutes(5);
-  const base::TimeDelta kTimeSpentCharging = base::TimeDelta::FromMinutes(1);
+  const base::TimeDelta kTimeSpentInUse = base::Minutes(5);
+  const base::TimeDelta kTimeSpentCharging = base::Minutes(1);
 
   SetChargerState(StylusChargingStyle::kDock,
                   BatteryInfo::ChargeStatus::kDischarging);
@@ -284,7 +284,7 @@ TEST_F(StylusMetricsRecorderTest, RemovedFromDock) {
 }
 
 TEST_F(StylusMetricsRecorderTest, ShutdownWhileStylusRemoved) {
-  const base::TimeDelta kTimeSpentInUse = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kTimeSpentInUse = base::Minutes(5);
 
   SetChargerState(StylusChargingStyle::kGarage,
                   BatteryInfo::ChargeStatus::kDischarging);
@@ -308,7 +308,7 @@ TEST_F(StylusMetricsRecorderTest, ShutdownWhileStylusRemoved) {
 }
 
 TEST_F(StylusMetricsRecorderTest, StylusUsageOverMultipleDays) {
-  const base::TimeDelta kTimeSpentInUse = base::TimeDelta::FromHours(48);
+  const base::TimeDelta kTimeSpentInUse = base::Hours(48);
 
   SetChargerState(StylusChargingStyle::kGarage,
                   BatteryInfo::ChargeStatus::kDischarging);
@@ -327,12 +327,10 @@ TEST_F(StylusMetricsRecorderTest, StylusUsageOverMultipleDays) {
 }
 
 TEST_F(StylusMetricsRecorderTest, StylusChargeSequencing) {
-  const base::TimeDelta kTimeSpentTrickleCharging =
-      base::TimeDelta::FromMinutes(1);
-  const base::TimeDelta kTimeSpentCharging = base::TimeDelta::FromMinutes(60);
-  const base::TimeDelta kTimeSpentFull = base::TimeDelta::FromMinutes(5);
-  const base::TimeDelta kTimeSpentDischarging =
-      base::TimeDelta::FromMinutes(60);
+  const base::TimeDelta kTimeSpentTrickleCharging = base::Minutes(1);
+  const base::TimeDelta kTimeSpentCharging = base::Minutes(60);
+  const base::TimeDelta kTimeSpentFull = base::Minutes(5);
+  const base::TimeDelta kTimeSpentDischarging = base::Minutes(60);
   const int kCycles = 2;
 
   // Initial state, stylus is garage, charging, not in use

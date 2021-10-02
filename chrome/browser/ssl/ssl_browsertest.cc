@@ -708,9 +708,9 @@ class SSLUITestBase : public InProcessBrowserTest,
     // Set network time back ten minutes, which is sufficient to
     // trigger the reporting.
     g_browser_process->network_time_tracker()->UpdateNetworkTime(
-        base::Time::Now() - base::TimeDelta::FromMinutes(10),
-        base::TimeDelta::FromMilliseconds(1),   /* resolution */
-        base::TimeDelta::FromMilliseconds(500), /* latency */
+        base::Time::Now() - base::Minutes(10),
+        base::Milliseconds(1),   /* resolution */
+        base::Milliseconds(500), /* latency */
         base::TimeTicks::Now() /* posting time of this update */);
 
     // Opt in to sending reports for invalid certificate chains.
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestHTTPSErrorCausedByClockUsingBuildTime) {
   std::unique_ptr<base::SimpleTestClock> mock_clock(
       new base::SimpleTestClock());
   mock_clock->SetNow(base::Time::NowFromSystemTime());
-  mock_clock->Advance(base::TimeDelta::FromDays(367));
+  mock_clock->Advance(base::Days(367));
   SSLErrorHandler::SetClockForTesting(mock_clock.get());
   ssl_errors::SetBuildTimeForTesting(base::Time::NowFromSystemTime());
 
@@ -1577,9 +1577,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestHTTPSErrorCausedByClockUsingNetwork) {
   // Set network forward ten minutes, which is sufficient to trigger
   // the interstitial.
   g_browser_process->network_time_tracker()->UpdateNetworkTime(
-      base::Time::Now() + base::TimeDelta::FromMinutes(10),
-      base::TimeDelta::FromMilliseconds(1),   /* resolution */
-      base::TimeDelta::FromMilliseconds(500), /* latency */
+      base::Time::Now() + base::Minutes(10),
+      base::Milliseconds(1),   /* resolution */
+      base::Milliseconds(500), /* latency */
       base::TimeTicks::Now() /* posting time of this update */);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -4588,7 +4588,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // Set up the build and current clock times to be more than a year apart.
   base::SimpleTestClock mock_clock;
   mock_clock.SetNow(base::Time::NowFromSystemTime());
-  mock_clock.Advance(base::TimeDelta::FromDays(367));
+  mock_clock.Advance(base::Days(367));
   SSLErrorHandler::SetClockForTesting(&mock_clock);
   ssl_errors::SetBuildTimeForTesting(base::Time::NowFromSystemTime());
 
@@ -4695,8 +4695,7 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest, OnDemandFetchClockOk) {
   ssl_errors::SetBuildTimeForTesting(testing_clock.Now());
 
   // Set a long timeout to ensure that the on-demand time fetch completes.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(contents);
@@ -4738,14 +4737,13 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest, OnDemandFetchClockWrong) {
   SSLErrorHandler::SetClockForTesting(&testing_clock);
   testing_clock.SetNow(
       base::Time::FromJsTime(network_time::kGoodTimeResponseHandlerJsTime[0]));
-  testing_clock.Advance(base::TimeDelta::FromDays(30));
+  testing_clock.Advance(base::Days(30));
   // Set the build time to match the testing clock, to ensure that the
   // build time heuristic doesn't fire.
   ssl_errors::SetBuildTimeForTesting(testing_clock.Now());
 
   // Set a long timeout to ensure that the on-demand time fetch completes.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(contents);
@@ -4807,8 +4805,7 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest,
 IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest, StopBeforeTimeoutExpires) {
   ASSERT_TRUE(https_server_expired_.Start());
   // Set the timer to a long delay.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(contents);
@@ -4845,8 +4842,7 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest, StopBeforeTimeoutExpires) {
 IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest, ReloadBeforeTimeoutExpires) {
   ASSERT_TRUE(https_server_expired_.Start());
   // Set the timer to a long delay.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   SSLInterstitialTimerObserver interstitial_timer_observer(contents);
@@ -4883,8 +4879,7 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest,
   ASSERT_TRUE(https_server_expired_.Start());
   ASSERT_TRUE(https_server_.Start());
   // Set the timer to a long delay.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   SSLInterstitialTimerObserver interstitial_timer_observer(contents);
@@ -5242,8 +5237,7 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
   CommonNameMismatchHandler::set_state_for_testing(
       CommonNameMismatchHandler::IGNORE_REQUESTS_FOR_TESTING);
   // Set delay long enough so that the page appears loading.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
   SSLInterstitialTimerObserver interstitial_timer_observer(contents);
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -5305,8 +5299,7 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
   CommonNameMismatchHandler::set_state_for_testing(
       CommonNameMismatchHandler::IGNORE_REQUESTS_FOR_TESTING);
   // Set delay long enough so that the page appears loading.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
   SSLInterstitialTimerObserver interstitial_timer_observer(contents);
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -5366,8 +5359,7 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
   CommonNameMismatchHandler::set_state_for_testing(
       CommonNameMismatchHandler::IGNORE_REQUESTS_FOR_TESTING);
   // Set delay long enough so that the page appears loading.
-  SSLErrorHandler::SetInterstitialDelayForTesting(
-      base::TimeDelta::FromHours(1));
+  SSLErrorHandler::SetInterstitialDelayForTesting(base::Hours(1));
   SSLInterstitialTimerObserver interstitial_timer_observer(contents);
 
   ui_test_utils::NavigateToURLWithDisposition(

@@ -48,7 +48,7 @@ void DeleteOldWindowsTempFiles(const base::FilePath& dir) {
   // exists on the order of milliseconds when working properly so "one day" is
   // generous but still ensures no big build up of these files. This is an
   // I/O intensive task so do it in the background (enforced by "file" calls).
-  base::Time one_day_ago = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time one_day_ago = base::Time::Now() - base::Days(1);
   base::FileEnumerator file_iter(dir, /*recursive=*/false,
                                  base::FileEnumerator::FILES);
   for (base::FilePath path = file_iter.Next(); !path.empty();
@@ -73,8 +73,7 @@ void DeleteOldWindowsTempFiles(const base::FilePath& dir) {
 // How much time after startup to run the above function. Two minutes is
 // enough for the system to stabilize and get the user what they want before
 // spending time on clean-up efforts.
-constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay = base::Minutes(2);
 
 #endif  // defined(OS_WIN)
 
@@ -149,7 +148,7 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
       base::BindOnce(
           base::IgnoreResult(&base::GlobalHistogramAllocator::CreateSpareFile),
           std::move(spare_file), kAllocSize),
-      base::TimeDelta::FromSeconds(kSpareFileCreateDelaySeconds));
+      base::Seconds(kSpareFileCreateDelaySeconds));
 
   return result;
 }

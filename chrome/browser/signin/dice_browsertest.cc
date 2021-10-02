@@ -720,10 +720,10 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_runner->FastForwardBy(
-      base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours / 2));
+      base::Hours(kLockAccountReconcilorTimeoutHours / 2));
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_runner->FastForwardBy(
-      base::TimeDelta::FromHours((kLockAccountReconcilorTimeoutHours + 1) / 2));
+      base::Hours((kLockAccountReconcilorTimeoutHours + 1) / 2));
   // Wait until reconcilor is unblocked.
   WaitForReconcilorUnblockedCount(1);
 }

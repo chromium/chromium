@@ -221,7 +221,7 @@ void Eviction::PostDelayedTrim() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&Eviction::DelayedTrim, ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(1000));
+      base::Milliseconds(1000));
 }
 
 void Eviction::DelayedTrim() {

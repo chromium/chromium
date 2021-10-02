@@ -394,8 +394,8 @@ void ServiceDiscoveryClientMdns::ScheduleStartNewClient() {
       FROM_HERE,
       base::BindOnce(&ServiceDiscoveryClientMdns::StartNewClient,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kRestartDelayOnNetworkChangeSeconds *
-                                   (1 << restart_attempts_)));
+      base::Seconds(kRestartDelayOnNetworkChangeSeconds *
+                    (1 << restart_attempts_)));
 }
 
 void ServiceDiscoveryClientMdns::StartNewClient() {

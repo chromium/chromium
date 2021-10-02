@@ -282,18 +282,15 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetUserDisplayMode(user_display_modes[random.next_uint(3)]);
 
   const base::Time last_badging_time =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(random.next_uint());
+      base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
   app->SetLastBadgingTime(last_badging_time);
 
   const base::Time last_launch_time =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(random.next_uint());
+      base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
   app->SetLastLaunchTime(last_launch_time);
 
   const base::Time install_time =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(random.next_uint());
+      base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
   app->SetInstallTime(install_time);
 
   const DisplayMode display_modes[4] = {
@@ -409,8 +406,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
 
   const base::Time manifest_update_time =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(random.next_uint());
+      base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
   app->SetManifestUpdateTime(manifest_update_time);
 
   // `random` should not be used after the chromeos block if the result

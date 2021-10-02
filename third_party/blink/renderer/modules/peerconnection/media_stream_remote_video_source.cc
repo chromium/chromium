@@ -147,8 +147,8 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   const base::TimeTicks render_time =
       render_immediately
           ? current_time
-          : base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                    incoming_frame.timestamp_us());
+          : base::TimeTicks() +
+                base::Microseconds(incoming_frame.timestamp_us());
   if (!start_timestamp_)
     start_timestamp_ = render_time;
   const base::TimeDelta elapsed_timestamp = render_time - *start_timestamp_;
@@ -213,16 +213,16 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
       static_cast<double>(incoming_frame.timestamp());
 
   if (incoming_frame.processing_time()) {
-    video_frame->metadata().processing_time = base::TimeDelta::FromMicroseconds(
-        incoming_frame.processing_time()->Elapsed().us());
+    video_frame->metadata().processing_time =
+        base::Microseconds(incoming_frame.processing_time()->Elapsed().us());
   }
 
   // Set capture time to the NTP time, which is the estimated capture time
   // converted to the local clock.
   if (incoming_frame.ntp_time_ms() > 0) {
     video_frame->metadata().capture_begin_time =
-        base::TimeTicks() + base::TimeDelta::FromMilliseconds(
-                                incoming_frame.ntp_time_ms() + ntp_offset_);
+        base::TimeTicks() +
+        base::Milliseconds(incoming_frame.ntp_time_ms() + ntp_offset_);
   }
 
   // Set receive time to arrival of last packet.
@@ -236,8 +236,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
             })
             ->receive_time();
     video_frame->metadata().receive_time =
-        base::TimeTicks() +
-        base::TimeDelta::FromMicroseconds(last_packet_arrival.us());
+        base::TimeTicks() + base::Microseconds(last_packet_arrival.us());
   }
 
   // Use our computed render time as estimated capture time. If timestamp_us()
@@ -266,8 +265,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   const base::TimeTicks render_time =
       render_immediately
           ? current_time
-          : base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(frame.render_time().us());
+          : base::TimeTicks() + base::Microseconds(frame.render_time().us());
 
   // Use our computed render time as estimated capture time. If render_time()
   // is set by WebRTC, it's based on the RTP timestamps in the frame's packets,

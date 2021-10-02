@@ -117,7 +117,7 @@ void CloseResState(res_state res) {
 
 void InitializeExpectedConfig(DnsConfig* config) {
   config->ndots = 2;
-  config->fallback_period = base::TimeDelta::FromSeconds(4);
+  config->fallback_period = base::Seconds(4);
   config->attempts = 7;
   config->rotate = true;
   config->append_to_multi_label_name = true;

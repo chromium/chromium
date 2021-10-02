@@ -54,7 +54,7 @@ class DrawQuadPerfTest : public testing::Test {
  public:
   DrawQuadPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void CreateRenderPass() {

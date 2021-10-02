@@ -583,8 +583,7 @@ TEST_F(ElementsUploadDataStreamTest, FileChanged) {
   FileChangedHelper(temp_file_path, file_info.last_modified, false);
 
   // Test file changed.
-  FileChangedHelper(temp_file_path,
-                    file_info.last_modified - base::TimeDelta::FromSeconds(1),
+  FileChangedHelper(temp_file_path, file_info.last_modified - base::Seconds(1),
                     true);
 }
 

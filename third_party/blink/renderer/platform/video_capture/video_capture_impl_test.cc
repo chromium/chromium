@@ -471,7 +471,7 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
       FROM_HERE, base::BindLambdaForTesting(create_and_queue_buffer));
 
   // Wait until OnFrameReady is called on |testing_io_thread|.
-  EXPECT_TRUE(frame_ready_event.TimedWait(base::TimeDelta::FromSeconds(3)));
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
 
   testing_io_thread.task_runner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(stop_capture_and_destroy_buffer));

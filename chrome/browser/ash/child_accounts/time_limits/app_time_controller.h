@@ -164,7 +164,7 @@ class AppTimeController : public SystemClockClient::Observer,
 
   // The time of the day when app time limits should be reset.
   // Defaults to 6am local time.
-  base::TimeDelta limits_reset_time_ = base::TimeDelta::FromHours(6);
+  base::TimeDelta limits_reset_time_ = base::Hours(6);
 
   // The last time when |reset_timer_| fired.
   base::Time last_limits_reset_time_;

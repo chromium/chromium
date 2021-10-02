@@ -134,7 +134,7 @@ void CastSystemMemoryPressureEvaluator::PollPressureLevel() {
       FROM_HERE,
       base::BindOnce(&CastSystemMemoryPressureEvaluator::PollPressureLevel,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMS));
+      base::Milliseconds(kPollingIntervalMS));
 }
 
 void CastSystemMemoryPressureEvaluator::UpdateMemoryPressureLevel(

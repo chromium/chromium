@@ -171,8 +171,7 @@ class WebPageReplayUtil {
 
     base::RunLoop wpr_launch_waiter;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, wpr_launch_waiter.QuitClosure(),
-        base::TimeDelta::FromSeconds(5));
+        FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
     wpr_launch_waiter.Run();
 
     if (!web_page_replay_server_.IsValid()) {
@@ -251,8 +250,7 @@ class WebPageReplayUtil {
 
     base::RunLoop wpr_launch_waiter;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, wpr_launch_waiter.QuitClosure(),
-        base::TimeDelta::FromSeconds(5));
+        FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
     wpr_launch_waiter.Run();
 
     if (!web_page_record_server_.IsValid()) {

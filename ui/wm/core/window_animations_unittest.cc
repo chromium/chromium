@@ -344,7 +344,7 @@ TEST_F(WindowAnimationsTest, RotateHideNoCrash) {
                                        WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE);
   AnimateOnChildWindowVisibilityChanged(window.get(), true);
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                       base::TimeDelta::FromSeconds(5));
+                                       base::Seconds(5));
   AnimateOnChildWindowVisibilityChanged(window.get(), false);
   animating_layer->GetAnimator()->StopAnimating();
 }

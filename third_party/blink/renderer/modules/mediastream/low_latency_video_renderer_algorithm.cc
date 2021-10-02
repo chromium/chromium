@@ -124,7 +124,7 @@ scoped_refptr<media::VideoFrame> LowLatencyVideoRendererAlgorithm::Render(
     // Record stats for every 100 s, corresponding to roughly 6000 frames in
     // normal conditions.
     if (deadline_min - *last_deadline_min_stats_recorded_ >
-        base::TimeDelta::FromSeconds(100)) {
+        base::Seconds(100)) {
       RecordAndResetStats();
       last_deadline_min_stats_recorded_ = deadline_min;
     }

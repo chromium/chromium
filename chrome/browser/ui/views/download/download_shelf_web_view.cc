@@ -27,7 +27,7 @@ DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
 
   LoadInitialURL(GURL(chrome::kChromeUIDownloadShelfURL));
 
-  shelf_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(
+  shelf_animation_.SetSlideDuration(base::Milliseconds(
       gfx::Animation::ShouldRenderRichAnimation() ? 120 : 0));
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(

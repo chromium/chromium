@@ -94,8 +94,7 @@ constexpr int kDeskTraversalsMaxValue = 20;
 // After an desk activation animation starts,
 // |kNumberOfDeskTraversalsHistogramName| will be recorded after this time
 // interval.
-constexpr base::TimeDelta kDeskTraversalsTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDeskTraversalsTimeout = base::Seconds(5);
 
 constexpr int kDeskDefaultNameIds[] = {
     IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
@@ -267,7 +266,7 @@ DesksController::DesksController()
   active_desk_->Activate(/*update_window_activation=*/true);
 
   weekly_active_desks_scheduler_.Start(
-      FROM_HERE, base::TimeDelta::FromDays(7), this,
+      FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
 }
 
@@ -1431,7 +1430,7 @@ void DesksController::RecordAndResetNumberOfWeeklyActiveDesks() {
   Desk::SetWeeklyActiveDesks(1);
 
   weekly_active_desks_scheduler_.Start(
-      FROM_HERE, base::TimeDelta::FromDays(7), this,
+      FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
 }
 

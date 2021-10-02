@@ -376,7 +376,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
         /*headers=*/"", /*contents=*/"");
   }
   auto response = std::make_unique<net::test_server::DelayedHttpResponse>(
-      base::TimeDelta::FromSeconds(delay));
+      base::Seconds(delay));
 
   if (base::StartsWith(request.relative_url, kDistillableURL)) {
     response->set_content_type("text/html");
@@ -570,7 +570,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   TapContextMenuButtonWithA11yLabelID(offlineStringId);
   [ChromeEarlGrey waitForPageToFinishLoading];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   AssertIsShowingDistillablePage(false, distillablePageURL);
 
   // Navigate to http://beans
@@ -581,7 +581,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Check that the offline version is still displayed.
   [ChromeEarlGrey waitForPageToFinishLoading];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   AssertIsShowingDistillablePage(false, distillablePageURL);
 
   // Check that a new navigation wasn't created.
@@ -626,7 +626,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   TapContextMenuButtonWithA11yLabelID(offlineStringId);
   [ChromeEarlGrey waitForPageToFinishLoading];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   AssertIsShowingDistillablePage(false, distillablePageURL);
 
   // Tap the Omnibox' Info Bubble to open the Page Info.
@@ -712,7 +712,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Stop server to reload offline.
   self.serverRespondsWithContent = NO;
   base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromSecondsD(kServerOperationDelay));
+      base::Seconds(kServerOperationDelay));
 
   [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(false, distillableURL);
@@ -742,7 +742,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Stop server to generate error.
   self.serverRespondsWithContent = NO;
   base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromSecondsD(kServerOperationDelay));
+      base::Seconds(kServerOperationDelay));
   // Long press the entry, and open it offline.
   TapEntry(kDistillableTitle);
   AssertIsShowingDistillablePage(false, distillableURL);
@@ -758,7 +758,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Start server to reload online error.
   self.serverRespondsWithContent = YES;
   base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromSecondsD(kServerOperationDelay));
+      base::Seconds(kServerOperationDelay));
 
   [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(true, distillableURL);
@@ -793,7 +793,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey goForward];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   AssertIsShowingDistillablePage(false, distillableURL);
 
   // Reload should load online page.

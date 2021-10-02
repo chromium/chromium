@@ -473,7 +473,7 @@ void ScopedOverviewTransformWindow::Close() {
       FROM_HERE,
       base::BindOnce(&ScopedOverviewTransformWindow::CloseWidget,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kCloseWindowDelayInMilliseconds));
+      base::Milliseconds(kCloseWindowDelayInMilliseconds));
 }
 
 bool ScopedOverviewTransformWindow::IsMinimized() const {

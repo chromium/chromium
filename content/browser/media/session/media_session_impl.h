@@ -467,8 +467,7 @@ class MediaSessionImpl : public MediaSession,
   // between two updates is greater than 20 seconds.
   CONTENT_EXPORT static constexpr int kDurationUpdateMaxAllowance = 3;
   CONTENT_EXPORT static constexpr base::TimeDelta
-      kDurationUpdateAllowanceIncreaseInterval =
-          base::TimeDelta::FromSeconds(20);
+      kDurationUpdateAllowanceIncreaseInterval = base::Seconds(20);
 
   // A set of actions supported by |routed_service_| and the current media
   // session.

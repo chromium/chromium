@@ -183,7 +183,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, FetchRequestHangs_TimesOut) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // The request should time out after 30 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   EXPECT_FALSE(test_url_loader_factory_.SimulateResponseForPendingRequest(

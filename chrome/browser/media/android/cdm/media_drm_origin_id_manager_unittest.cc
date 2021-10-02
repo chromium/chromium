@@ -40,9 +40,9 @@ const char kMediaDrmOriginIds[] = "media.media_drm_origin_ids";
 const char kExpirableToken[] = "expirable_token";
 const char kAvailableOriginIds[] = "origin_ids";
 constexpr size_t kExpectedPreferenceListSize = 2;
-constexpr base::TimeDelta kExpirationDelta = base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kExpirationDelta = base::Hours(24);
 constexpr size_t kConnectionAttempts = 5;
-constexpr base::TimeDelta kStartupDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kStartupDelay = base::Minutes(1);
 
 }  // namespace
 
@@ -373,7 +373,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
   // pre-provision more origin Ids.
   DVLOG(1) << "Advancing Time";
   task_environment_.FastForwardBy(kExpirationDelta);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   DVLOG(1) << "Adjusted time: " << base::Time::Now();
   PreProvision();
   task_environment_.RunUntilIdle();

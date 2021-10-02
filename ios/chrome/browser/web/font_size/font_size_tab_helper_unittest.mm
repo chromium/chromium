@@ -109,7 +109,7 @@ class FontSizeTabHelperTest : public ChromeWebTest {
                     userInfo:nil];
 
     base::test::ios::SpinRunLoopWithMinDelay(
-        base::TimeDelta::FromSecondsD(base::test::ios::kSpinDelaySeconds));
+        base::Seconds(base::test::ios::kSpinDelaySeconds));
   }
 
   std::string ZoomMultiplierPrefKey(UIContentSizeCategory category, GURL url) {
@@ -135,7 +135,7 @@ class FontSizeTabHelperTest : public ChromeWebTest {
     LoadHtml(@"<html><body>Content</body></html>", url);
 
     base::test::ios::SpinRunLoopWithMinDelay(
-        base::TimeDelta::FromSecondsD(base::test::ios::kSpinDelaySeconds));
+        base::Seconds(base::test::ios::kSpinDelaySeconds));
   }
 
   // Returns the current value of the WebKit text size adjustment style.
@@ -352,7 +352,7 @@ TEST_F(FontSizeTabHelperTest, ClearUserZoomPrefs) {
       FontSizeTabHelper::FromWebState(web_state());
   font_size_tab_helper->UserZoom(ZOOM_IN);
   base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromSecondsD(base::test::ios::kSpinDelaySeconds));
+      base::Seconds(base::test::ios::kSpinDelaySeconds));
 
   // Make sure the first value is stored in the pref store.
   const base::Value* pref =

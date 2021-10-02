@@ -18,7 +18,7 @@
 
 namespace web_app {
 
-constexpr base::TimeDelta kDelayBetweenChecks = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kDelayBetweenChecks = base::Days(1);
 constexpr const char kDisableManifestUpdateThrottle[] =
     "disable-manifest-update-throttle";
 

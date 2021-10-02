@@ -69,7 +69,7 @@ TEST_F(SystemTokenCertDbStorageTest, GetDatabaseSuccess) {
   // Check that after 1 minute, SystemTokenCertDbStorage is still waiting
   // for the system token slot to be initialized and the DB retrieval hasn't
   // timed out yet.
-  const auto kOneMinuteDelay = base::TimeDelta::FromMinutes(1);
+  const auto kOneMinuteDelay = base::Minutes(1);
   EXPECT_LT(kOneMinuteDelay,
             SystemTokenCertDbStorage::kMaxCertDbRetrievalDelay);
 
@@ -92,7 +92,7 @@ TEST_F(SystemTokenCertDbStorageTest, GetDatabaseSuccess) {
 TEST_F(SystemTokenCertDbStorageTest, GetDatabaseLateRequestSuccess) {
   // Simulate waiting for 6 minutes after the initialization of the
   // SystemTokenCertDbStorage.
-  const auto kSixMinuteDelay = base::TimeDelta::FromMinutes(6);
+  const auto kSixMinuteDelay = base::Minutes(6);
   EXPECT_GT(kSixMinuteDelay,
             SystemTokenCertDbStorage::kMaxCertDbRetrievalDelay);
   task_environment()->FastForwardBy(kSixMinuteDelay);
@@ -118,7 +118,7 @@ TEST_F(SystemTokenCertDbStorageTest, GetDatabaseTimeout) {
       get_system_token_cert_db_callback_wrapper.GetCallback());
   EXPECT_FALSE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
 
-  const auto kDelay1 = base::TimeDelta::FromMinutes(2);
+  const auto kDelay1 = base::Minutes(2);
   EXPECT_LT(kDelay1, SystemTokenCertDbStorage::kMaxCertDbRetrievalDelay);
 
   const auto kDelay2 =

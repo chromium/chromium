@@ -14,8 +14,8 @@ namespace apps {
 
 namespace {
 
-constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kFiveMinutes = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kTimerInterval = base::Minutes(10);
+constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
 
 // Returns the number of days since the origin.
 int GetDayId(base::Time time) {

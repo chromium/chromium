@@ -439,7 +439,7 @@ void PrintJobWorker::PostWaitForPage() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PrintJobWorker::OnNewPage, weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void PrintJobWorker::OnNewPage() {

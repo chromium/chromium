@@ -109,11 +109,11 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   database_data.num_action_button_clicks = kNumActionButtonClicks;
   database_data.creation_time_millis = base::Time::FromDoubleT(kInitTimeMillis);
   database_data.time_until_first_click_millis =
-      base::TimeDelta::FromMilliseconds(kTimeUntilFirstClickMillis);
+      base::Milliseconds(kTimeUntilFirstClickMillis);
   database_data.time_until_last_click_millis =
-      base::TimeDelta::FromMilliseconds(kTimeUntilLastClickMillis);
+      base::Milliseconds(kTimeUntilLastClickMillis);
   database_data.time_until_close_millis =
-      base::TimeDelta::FromMilliseconds(kTimeUntilCloseMillis);
+      base::Milliseconds(kTimeUntilCloseMillis);
   database_data.closed_reason = NotificationDatabaseData::ClosedReason::USER;
   database_data.has_triggered = kHasTriggered;
   database_data.is_shown_by_browser = true;
@@ -348,11 +348,9 @@ TEST(NotificationDatabaseConversionsTest, OptionalFieldsGetCleared) {
   NotificationDatabaseData data_without_fields;
   NotificationDatabaseData data_with_fields;
 
-  data_with_fields.time_until_close_millis = base::TimeDelta::FromSeconds(1);
-  data_with_fields.time_until_first_click_millis =
-      base::TimeDelta::FromSeconds(2);
-  data_with_fields.time_until_last_click_millis =
-      base::TimeDelta::FromSeconds(3);
+  data_with_fields.time_until_close_millis = base::Seconds(1);
+  data_with_fields.time_until_first_click_millis = base::Seconds(2);
+  data_with_fields.time_until_last_click_millis = base::Seconds(3);
   data_with_fields.notification_resources = blink::NotificationResources();
 
   std::string serialized_data;
@@ -365,11 +363,10 @@ TEST(NotificationDatabaseConversionsTest, OptionalFieldsGetCleared) {
   ASSERT_TRUE(DeserializeNotificationDatabaseData(serialized_data,
                                                   &copied_database_data));
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            copied_database_data.time_until_close_millis);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2),
+  EXPECT_EQ(base::Seconds(1), copied_database_data.time_until_close_millis);
+  EXPECT_EQ(base::Seconds(2),
             copied_database_data.time_until_first_click_millis);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(3),
+  EXPECT_EQ(base::Seconds(3),
             copied_database_data.time_until_last_click_millis);
   EXPECT_FALSE(copied_database_data.notification_resources.has_value());
 

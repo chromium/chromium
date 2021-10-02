@@ -985,7 +985,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetTimeout) {
       []() {
         // Time::Now() progress 1 ms stride for every check to force timeout.
         static base::Time now = base::subtle::TimeNowIgnoringOverride();
-        now += base::TimeDelta::FromMilliseconds(1);
+        now += base::Milliseconds(1);
         return now;
       },
       nullptr, nullptr);

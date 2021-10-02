@@ -131,7 +131,7 @@ void MarketingOptInScreenHandler::HandleSetA11yNavigationButtonsEnabled(
       ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
       enabled);
   a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(10),
+      FROM_HERE, base::Seconds(10),
       base::BindOnce(&RecordShowShelfNavigationButtonsValueChange, enabled));
 }
 

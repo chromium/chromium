@@ -17,7 +17,7 @@ namespace net {
 
 namespace {
 
-const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+const base::TimeDelta kTimeout = base::Seconds(1000);
 const quic::QuicVersionLabel kFakeVersionLabel = 0x01234567;
 const quic::QuicVersionLabel kFakeVersionLabel2 = 0x89ABCDEF;
 const uint64_t kFakeIdleTimeoutMilliseconds = 12012;

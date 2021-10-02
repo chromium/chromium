@@ -29,7 +29,7 @@ namespace libassistant {
 namespace {
 
 // Desired time between consecutive heartbeats.
-constexpr base::TimeDelta kHeartbeatInterval = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kHeartbeatInterval = base::Seconds(2);
 
 }  // namespace
 

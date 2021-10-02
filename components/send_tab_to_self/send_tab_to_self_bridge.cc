@@ -34,14 +34,13 @@ namespace {
 
 using syncer::ModelTypeStore;
 
-const base::TimeDelta kDedupeTime = base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kDedupeTime = base::Seconds(5);
 
-const base::TimeDelta kDeviceExpiration = base::TimeDelta::FromDays(10);
+const base::TimeDelta kDeviceExpiration = base::Days(10);
 
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_t) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(proto_t));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_t));
 }
 
 // Allocate a EntityData and copies |specifics| into it.

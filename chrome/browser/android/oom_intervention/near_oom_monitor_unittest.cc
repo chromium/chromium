@@ -90,7 +90,7 @@ class NearOomMonitorTest : public testing::Test {
 
 TEST_F(NearOomMonitorTest, Observe) {
   base::TimeDelta interval =
-      monitor_->GetMonitoringInterval() + base::TimeDelta::FromSeconds(1);
+      monitor_->GetMonitoringInterval() + base::Seconds(1);
 
   TestNearOomObserver observer1(monitor_.get());
   TestNearOomObserver observer2(monitor_.get());
@@ -113,9 +113,9 @@ TEST_F(NearOomMonitorTest, Observe) {
 
 TEST_F(NearOomMonitorTest, Cooldown) {
   base::TimeDelta interval =
-      monitor_->GetMonitoringInterval() + base::TimeDelta::FromSeconds(1);
+      monitor_->GetMonitoringInterval() + base::Seconds(1);
   base::TimeDelta cooldown_interval =
-      monitor_->GetCooldownInterval() + base::TimeDelta::FromSeconds(1);
+      monitor_->GetCooldownInterval() + base::Seconds(1);
 
   monitor_->SimulateNearOom();
 

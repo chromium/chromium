@@ -362,8 +362,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak __typeof(self) weakSelf = self;
   _showPromoTimer = std::make_unique<base::OneShotTimer>();
-  _showPromoTimer->Start(FROM_HERE,
-                         base::TimeDelta::FromSeconds(promoTimeInterval),
+  _showPromoTimer->Start(FROM_HERE, base::Seconds(promoTimeInterval),
                          base::BindOnce(^{
                            [weakSelf showPromoTimerFinished];
                          }));
@@ -399,10 +398,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak __typeof(self) weakSelf = self;
   _dismissPromoTimer = std::make_unique<base::OneShotTimer>();
-  _dismissPromoTimer->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kPromoTimeout), base::BindOnce(^{
-        [weakSelf dismissPromoTimerFinished];
-      }));
+  _dismissPromoTimer->Start(FROM_HERE, base::Seconds(kPromoTimeout),
+                            base::BindOnce(^{
+                              [weakSelf dismissPromoTimerFinished];
+                            }));
 }
 
 - (void)cancelDismissPromoTimer {

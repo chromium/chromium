@@ -82,12 +82,12 @@ TEST_F(LifecycleUnitBaseTest, SetStateUpdatesTime) {
   TestLifecycleUnit lifecycle_unit;
   EXPECT_EQ(NowTicks(), lifecycle_unit.GetStateChangeTime());
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   base::TimeTicks first_state_change_time = NowTicks();
   lifecycle_unit.SetState(LifecycleUnitState::DISCARDED,
                           LifecycleUnitStateChangeReason::BROWSER_INITIATED);
   EXPECT_EQ(first_state_change_time, lifecycle_unit.GetStateChangeTime());
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   EXPECT_EQ(first_state_change_time, lifecycle_unit.GetStateChangeTime());
 }
 
@@ -152,7 +152,7 @@ TEST_F(LifecycleUnitBaseTest, VisibilityChangeNotifiesObserversAndUpdatesTime) {
   lifecycle_unit.AddObserver(&observer_);
 
   // Observer is notified when the visibility changes.
-  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::Minutes(1));
   base::TimeTicks wall_time_when_hidden = NowTicks();
   base::TimeDelta usage_time_when_hidden = usage_clock_->GetTotalUsageTime();
   EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
@@ -167,7 +167,7 @@ TEST_F(LifecycleUnitBaseTest, VisibilityChangeNotifiesObserversAndUpdatesTime) {
   lifecycle_unit.OnLifecycleUnitVisibilityChanged(content::Visibility::HIDDEN);
   testing::Mock::VerifyAndClear(&observer_);
 
-  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::Minutes(1));
   EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
                              &lifecycle_unit, content::Visibility::OCCLUDED))
       .WillOnce(testing::Invoke(
@@ -181,7 +181,7 @@ TEST_F(LifecycleUnitBaseTest, VisibilityChangeNotifiesObserversAndUpdatesTime) {
       content::Visibility::OCCLUDED);
   testing::Mock::VerifyAndClear(&observer_);
 
-  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::Minutes(1));
   EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
                              &lifecycle_unit, content::Visibility::VISIBLE))
       .WillOnce(testing::Invoke([&](LifecycleUnit* lifecycle_unit,

@@ -26,8 +26,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kUpdateMediaTimePeriod =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kUpdateMediaTimePeriod = base::Seconds(1);
 const int kButtonSmallHeight = 56;
 const int kButtonBigHeight = 124;
 

@@ -37,8 +37,7 @@ void AppCacheTestHelper::AddGroupAndCache(AppCacheServiceImpl* appcache_service,
       new AppCache(appcache_service->storage(), ++appcache_id_);
   appcache->set_manifest_parser_version(0);
   appcache->set_manifest_scope("/");
-  appcache->set_token_expires(base::Time::Now() +
-                              base::TimeDelta::FromDays(10));
+  appcache->set_token_expires(base::Time::Now() + base::Days(10));
   AppCacheEntry entry(AppCacheEntry::MANIFEST, ++response_id_);
   appcache->AddEntry(manifest_url, entry);
   appcache->set_complete(true);

@@ -1100,8 +1100,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutputAsync() {
   LONGLONG sample_time;
   hr = output_data_buffer.pSample->GetSampleTime(&sample_time);
   if (SUCCEEDED(hr)) {
-    timestamp = base::TimeDelta::FromMicroseconds(
-        sample_time / kOneMicrosecondInMFSampleTimeUnits);
+    timestamp =
+        base::Microseconds(sample_time / kOneMicrosecondInMFSampleTimeUnits);
   }
 
   const bool keyframe = MFGetAttributeUINT32(
@@ -1186,8 +1186,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutputSync() {
   LONGLONG sample_time;
   hr = output_sample_->GetSampleTime(&sample_time);
   if (SUCCEEDED(hr)) {
-    timestamp = base::TimeDelta::FromMicroseconds(
-        sample_time / kOneMicrosecondInMFSampleTimeUnits);
+    timestamp =
+        base::Microseconds(sample_time / kOneMicrosecondInMFSampleTimeUnits);
   }
 
   const bool keyframe = MFGetAttributeUINT32(

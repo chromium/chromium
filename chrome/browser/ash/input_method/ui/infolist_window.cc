@@ -251,17 +251,15 @@ void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
 }
 
 void InfolistWindow::ShowWithDelay() {
-  show_hide_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kInfolistShowDelayMilliSeconds),
-      GetWidget(), &views::Widget::Show);
+  show_hide_timer_.Start(FROM_HERE,
+                         base::Milliseconds(kInfolistShowDelayMilliSeconds),
+                         GetWidget(), &views::Widget::Show);
 }
 
 void InfolistWindow::HideWithDelay() {
-  show_hide_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kInfolistHideDelayMilliSeconds),
-      GetWidget(), &views::Widget::Close);
+  show_hide_timer_.Start(FROM_HERE,
+                         base::Milliseconds(kInfolistHideDelayMilliSeconds),
+                         GetWidget(), &views::Widget::Close);
 }
 
 void InfolistWindow::ShowImmediately() {

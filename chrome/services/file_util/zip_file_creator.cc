@@ -187,7 +187,7 @@ void ZipFileCreator::WriteZipFile(
       .src_files = relative_paths,
       .progress_callback = base::BindRepeating(&ZipFileCreator::OnProgress,
                                                this, std::cref(listener)),
-      .progress_period = base::TimeDelta::FromMilliseconds(1000),
+      .progress_period = base::Milliseconds(1000),
       .recursive = true,
   });
 

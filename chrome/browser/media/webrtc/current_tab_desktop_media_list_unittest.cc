@@ -41,7 +41,7 @@ using testing::StrictMock;
 
 namespace {
 
-const base::TimeDelta kUpdatePeriod = base::TimeDelta::FromMilliseconds(1000);
+const base::TimeDelta kUpdatePeriod = base::Milliseconds(1000);
 
 class MockObserver : public DesktopMediaListObserver {
  public:

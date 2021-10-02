@@ -1584,7 +1584,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   {
     base::RunLoop run_loop;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
     run_loop.Run();
   }
   {

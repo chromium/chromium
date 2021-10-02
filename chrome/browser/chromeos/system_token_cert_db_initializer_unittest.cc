@@ -98,7 +98,7 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseSuccessSoftwareFallback) {
   // Check that after 1 minute, SystemTokenCertDBInitializer is still waiting
   // for the system token slot to be initialized and the DB retrieval hasn't
   // timed out yet.
-  const auto kOneMinuteDelay = base::TimeDelta::FromMinutes(1);
+  const auto kOneMinuteDelay = base::Minutes(1);
   EXPECT_LT(kOneMinuteDelay,
             SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay);
 
@@ -136,7 +136,7 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseFailureDisabledTPM) {
   // Check that after 1 minute, SystemTokenCertDBInitializer is still waiting
   // for the system token slot to be initialized and the DB retrieval hasn't
   // timed out yet.
-  const auto kOneMinuteDelay = base::TimeDelta::FromMinutes(1);
+  const auto kOneMinuteDelay = base::Minutes(1);
   EXPECT_LT(kOneMinuteDelay,
             SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay);
 

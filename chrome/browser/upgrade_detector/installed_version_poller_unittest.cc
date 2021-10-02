@@ -325,5 +325,5 @@ TEST_F(InstalledVersionPollerTest, TestMonitor) {
 
   // Expect a poll in ten seconds.
   EXPECT_CALL(callback, Run(_));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 }

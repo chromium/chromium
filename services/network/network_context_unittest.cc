@@ -1049,7 +1049,7 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   // Now check that ClearNetworkingHistoryBetween clears the data.
   base::RunLoop run_loop2;
   network_context->ClearNetworkingHistoryBetween(
-      base::Time::Now() - base::TimeDelta::FromHours(1), base::Time::Max(),
+      base::Time::Now() - base::Hours(1), base::Time::Max(),
       run_loop2.QuitClosure());
   run_loop2.Run();
   EXPECT_FALSE(
@@ -1086,7 +1086,7 @@ TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {
 
   base::RunLoop run_loop;
   network_context->ClearNetworkingHistoryBetween(
-      base::Time::Now() - base::TimeDelta::FromHours(1), base::Time::Max(),
+      base::Time::Now() - base::Hours(1), base::Time::Max(),
       run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(
@@ -1122,7 +1122,7 @@ TEST_F(NetworkContextTest, ClearingNetworkingHistoryClearNetworkQualityPrefs) {
   base::RunLoop run_loop;
   base::HistogramTester histogram_tester;
   network_context->ClearNetworkingHistoryBetween(
-      base::Time::Now() - base::TimeDelta::FromHours(1), base::Time::Max(),
+      base::Time::Now() - base::Hours(1), base::Time::Max(),
       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -1162,8 +1162,7 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
     net::TransportSecurityState* state =
         network_context->url_request_context()->transport_security_state();
     EXPECT_FALSE(state->GetDynamicSTSState(kDomain, &sts_state));
-    state->AddHSTS(kDomain,
-                   base::Time::Now() + base::TimeDelta::FromSecondsD(1000),
+    state->AddHSTS(kDomain, base::Time::Now() + base::Seconds(1000),
                    false /* include subdomains */);
     EXPECT_TRUE(state->GetDynamicSTSState(kDomain, &sts_state));
     ASSERT_EQ(kDomain, sts_state.domain);
@@ -1794,7 +1793,7 @@ TEST_F(NetworkContextTest, ClearHostCache) {
                               net::NetworkIsolationKey()),
           net::HostCache::Entry(net::OK, net::AddressList(),
                                 net::HostCache::Entry::SOURCE_UNKNOWN),
-          base::TimeTicks::Now(), base::TimeDelta::FromDays(1));
+          base::TimeTicks::Now(), base::Days(1));
       host_cache->Set(
           net::HostCache::Key(
               url::SchemeHostPort(url::kHttpsScheme, domain, 443),
@@ -1802,7 +1801,7 @@ TEST_F(NetworkContextTest, ClearHostCache) {
               net::NetworkIsolationKey()),
           net::HostCache::Entry(net::OK, net::AddressList(),
                                 net::HostCache::Entry::SOURCE_UNKNOWN),
-          base::TimeTicks::Now(), base::TimeDelta::FromDays(1));
+          base::TimeTicks::Now(), base::Days(1));
     }
     // Sanity check.
     EXPECT_EQ(base::size(kDomains) * 2, host_cache->entries().size());
@@ -1860,7 +1859,7 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm1", net::AuthCredentials(user, password), "/");
 
-  test_clock.Advance(base::TimeDelta::FromHours(1));  // Time now 13:00
+  test_clock.Advance(base::Hours(1));  // Time now 13:00
   cache->Add(origin, net::HttpAuth::AUTH_PROXY, "Realm2",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm2", net::AuthCredentials(user, password), "/");
@@ -1927,7 +1926,7 @@ TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm1", net::AuthCredentials(user, password), "/");
 
-  test_clock.Advance(base::TimeDelta::FromHours(1));  // Time now 13:00
+  test_clock.Advance(base::Hours(1));  // Time now 13:00
   cache->Add(origin, net::HttpAuth::AUTH_PROXY, "Realm2",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm2", net::AuthCredentials(user, password), "/");
@@ -4298,8 +4297,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
     int num_sockets = GetSocketCountForGroup(network_context.get(), group);
     EXPECT_EQ(num_sockets, 1);
 
-    const base::Time expiry =
-        base::Time::Now() + base::TimeDelta::FromSeconds(1000);
+    const base::Time expiry = base::Time::Now() + base::Seconds(1000);
     network_context->url_request_context()->transport_security_state()->AddHSTS(
         server_http_url.host(), expiry, false);
     network_context->PreconnectSockets(1, server_http_url,
@@ -4710,8 +4708,7 @@ TEST_F(NetworkContextTest, ExpectCT) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
   const char kTestDomain[] = "example.com";
-  const base::Time expiry =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = base::Time::Now() + base::Seconds(1000);
   const bool enforce = true;
   const GURL report_uri = GURL("https://example.com/foo/bar");
 
@@ -4861,9 +4858,9 @@ TEST_F(NetworkContextTest, QueryHSTS) {
   EXPECT_FALSE(result);
 
   base::RunLoop run_loop;
-  network_context->AddHSTS(
-      kTestDomain, base::Time::Now() + base::TimeDelta::FromDays(1000),
-      false /*include_subdomains*/, run_loop.QuitClosure());
+  network_context->AddHSTS(kTestDomain, base::Time::Now() + base::Days(1000),
+                           false /*include_subdomains*/,
+                           run_loop.QuitClosure());
   run_loop.Run();
 
   bool result2 = false, got_result2 = false;
@@ -4878,8 +4875,7 @@ TEST_F(NetworkContextTest, QueryHSTS) {
 
 TEST_F(NetworkContextTest, GetHSTSState) {
   const char kTestDomain[] = "example.com";
-  const base::Time expiry =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = base::Time::Now() + base::Seconds(1000);
   const GURL report_uri = GURL("https://example.com/foo/bar");
 
   std::unique_ptr<NetworkContext> network_context =
@@ -5006,8 +5002,7 @@ TEST_F(NetworkContextTest, ClearBadProxiesCache) {
   proxies.push_back(net::ProxyUriToProxyServer("http://foo1.com",
                                                net::ProxyServer::SCHEME_HTTP));
   proxy_resolution_service->MarkProxiesAsBadUntil(
-      proxy_info, base::TimeDelta::FromDays(1), proxies,
-      net::NetLogWithSource());
+      proxy_info, base::Days(1), proxies, net::NetLogWithSource());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1UL, proxy_resolution_service->proxy_retry_info().size());
 
@@ -6118,7 +6113,7 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     log_info->public_key = std::string(4, 0x41 + static_cast<char>(i));
     log_info->name = std::string(4, 0x41 + static_cast<char>(i));
     log_info->operated_by_google = false;
-    log_info->disqualified_at = base::TimeDelta::FromSeconds(i);
+    log_info->disqualified_at = base::Seconds(i);
 
     log_list_mojo.push_back(std::move(log_info));
   }
@@ -6154,14 +6149,12 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
       ::testing::UnorderedElementsAreArray({crypto::SHA256HashString("1111"),
                                             crypto::SHA256HashString("3333"),
                                             crypto::SHA256HashString("5555")}));
-  EXPECT_THAT(policy_enforcer->disqualified_logs_for_testing(),
-              ::testing::UnorderedElementsAre(
-                  ::testing::Pair(crypto::SHA256HashString("AAAA"),
-                                  base::TimeDelta::FromSeconds(0)),
-                  ::testing::Pair(crypto::SHA256HashString("BBBB"),
-                                  base::TimeDelta::FromSeconds(1)),
-                  ::testing::Pair(crypto::SHA256HashString("CCCC"),
-                                  base::TimeDelta::FromSeconds(2))));
+  EXPECT_THAT(
+      policy_enforcer->disqualified_logs_for_testing(),
+      ::testing::UnorderedElementsAre(
+          ::testing::Pair(crypto::SHA256HashString("AAAA"), base::Seconds(0)),
+          ::testing::Pair(crypto::SHA256HashString("BBBB"), base::Seconds(1)),
+          ::testing::Pair(crypto::SHA256HashString("CCCC"), base::Seconds(2))));
 }
 #endif
 

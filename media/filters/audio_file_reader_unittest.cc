@@ -156,42 +156,42 @@ TEST_F(AudioFileReaderTest, InvalidFile) {
 
 TEST_F(AudioFileReaderTest, UnknownDuration) {
   RunTest("bear-320x240-live.webm", "-3.59,-2.06,-0.43,2.15,0.77,-0.95,", 2,
-          44100, base::TimeDelta::FromMicroseconds(-1), -1, 121024);
+          44100, base::Microseconds(-1), -1, 121024);
 }
 
 TEST_F(AudioFileReaderTest, WithVideo) {
   RunTest("bear.ogv", "-0.73,0.92,0.48,-0.07,-0.92,-0.88,", 2, 44100,
-          base::TimeDelta::FromMicroseconds(1011520), 44609, 45632);
+          base::Microseconds(1011520), 44609, 45632);
 }
 
 TEST_F(AudioFileReaderTest, Vorbis) {
   RunTest("sfx.ogg", "2.17,3.31,5.15,6.33,5.97,4.35,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(350001), 15436, 15936);
+          base::Microseconds(350001), 15436, 15936);
 }
 
 TEST_F(AudioFileReaderTest, WaveU8) {
   RunTest("sfx_u8.wav", "-1.23,-1.57,-1.14,-0.91,-0.87,-0.07,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(288414), 12720, 12719);
+          base::Microseconds(288414), 12720, 12719);
 }
 
 TEST_F(AudioFileReaderTest, WaveS16LE) {
   RunTest("sfx_s16le.wav", "3.05,2.87,3.00,3.32,3.58,4.08,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(288414), 12720, 12719);
+          base::Microseconds(288414), 12720, 12719);
 }
 
 TEST_F(AudioFileReaderTest, WaveS24LE) {
   RunTest("sfx_s24le.wav", "3.03,2.86,2.99,3.31,3.57,4.06,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(288414), 12720, 12719);
+          base::Microseconds(288414), 12720, 12719);
 }
 
 TEST_F(AudioFileReaderTest, WaveF32LE) {
   RunTest("sfx_f32le.wav", "3.03,2.86,2.99,3.31,3.57,4.06,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(288414), 12720, 12719);
+          base::Microseconds(288414), 12720, 12719);
 }
 
 TEST_F(AudioFileReaderTest, MP3) {
   RunTest("sfx.mp3", "1.30,2.72,4.56,5.08,3.74,2.03,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(313470), 13825, 11025);
+          base::Microseconds(313470), 13825, 11025);
 }
 
 TEST_F(AudioFileReaderTest, CorruptMP3) {
@@ -199,23 +199,23 @@ TEST_F(AudioFileReaderTest, CorruptMP3) {
   // make any guarantees on packet consistency in this case.
   disable_packet_verification();
   RunTest("corrupt.mp3", "-4.95,-2.95,-0.44,1.16,0.31,-2.21,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(1018801), 44930, 44928);
+          base::Microseconds(1018801), 44930, 44928);
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(AudioFileReaderTest, AAC) {
   RunTest("sfx.m4a", "0.79,2.31,4.15,4.92,4.04,1.44,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(371660), 16391, 12701);
+          base::Microseconds(371660), 16391, 12701);
 }
 
 TEST_F(AudioFileReaderTest, AAC_SinglePacket) {
   RunTest("440hz-10ms.m4a", "3.77,4.53,4.75,3.48,3.67,3.76,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(69660), 3073, 441);
+          base::Microseconds(69660), 3073, 441);
 }
 
 TEST_F(AudioFileReaderTest, AAC_ADTS) {
   RunTest("sfx.adts", "1.80,1.66,2.31,3.26,4.46,3.36,", 1, 44100,
-          base::TimeDelta::FromMicroseconds(384733), 16967, 13312);
+          base::Microseconds(384733), 16967, 13312);
 }
 
 TEST_F(AudioFileReaderTest, MidStreamConfigChangesFail) {
@@ -229,7 +229,7 @@ TEST_F(AudioFileReaderTest, VorbisInvalidChannelLayout) {
 
 TEST_F(AudioFileReaderTest, WaveValidFourChannelLayout) {
   RunTest("4ch.wav", "131.71,38.02,130.31,44.89,135.98,42.52,", 4, 44100,
-          base::TimeDelta::FromMicroseconds(100001), 4411, 4410);
+          base::Microseconds(100001), 4411, 4410);
 }
 
 TEST_F(AudioFileReaderTest, ReadPartialMP3) {

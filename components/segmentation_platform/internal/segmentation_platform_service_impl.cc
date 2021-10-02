@@ -43,8 +43,7 @@ const base::FilePath::CharType kSegmentInfoDBName[] =
 const base::FilePath::CharType kSignalDBName[] = FILE_PATH_LITERAL("SignalDB");
 const base::FilePath::CharType kSignalStorageConfigDBName[] =
     FILE_PATH_LITERAL("SignalStorageConfigDB");
-const base::TimeDelta kDatabaseMaintenanceDelay =
-    base::TimeDelta::FromSeconds(30);
+const base::TimeDelta kDatabaseMaintenanceDelay = base::Seconds(30);
 }  // namespace
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(

@@ -458,8 +458,7 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
       gpu::kGpuWatchdogTimeout.InSeconds() * gpu::kRestartFactor + 5;
 #endif
 
-  timeout_.Start(FROM_HERE,
-                 base::TimeDelta::FromSeconds(kGpuChannelTimeoutInSeconds),
+  timeout_.Start(FROM_HERE, base::Seconds(kGpuChannelTimeoutInSeconds),
                  base::BindOnce(&DumpGpuStackOnProcessThread));
 #endif  // OS_ANDROID
 }

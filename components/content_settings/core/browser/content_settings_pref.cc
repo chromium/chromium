@@ -65,8 +65,8 @@ base::Time GetTimeStamp(const base::DictionaryValue* dictionary) {
   std::string timestamp_str = GetString(*dictionary, kLastModifiedPath);
   int64_t timestamp = 0;
   base::StringToInt64(timestamp_str, &timestamp);
-  base::Time last_modified = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(timestamp));
+  base::Time last_modified =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp));
   return last_modified;
 }
 
@@ -78,7 +78,7 @@ base::Time GetExpiration(const base::DictionaryValue* dictionary) {
   int64_t expiration_timestamp = 0;
   base::StringToInt64(expiration_timestamp_str, &expiration_timestamp);
   base::Time expiration = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(expiration_timestamp));
+      base::Microseconds(expiration_timestamp));
   return expiration;
 }
 

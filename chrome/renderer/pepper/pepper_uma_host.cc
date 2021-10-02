@@ -147,15 +147,12 @@ int32_t PepperUMAHost::OnHistogramCustomTimes(
   RETURN_IF_BAD_ARGS(min, max, bucket_count);
 
   base::HistogramBase* counter = base::Histogram::FactoryTimeGet(
-      name,
-      base::TimeDelta::FromMilliseconds(min),
-      base::TimeDelta::FromMilliseconds(max),
-      bucket_count,
+      name, base::Milliseconds(min), base::Milliseconds(max), bucket_count,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   // The histogram can be NULL if it is constructed with bad arguments.  Ignore
   // that data for this API.  An error message will be logged.
   if (counter)
-    counter->AddTime(base::TimeDelta::FromMilliseconds(sample));
+    counter->AddTime(base::Milliseconds(sample));
   return PP_OK;
 }
 

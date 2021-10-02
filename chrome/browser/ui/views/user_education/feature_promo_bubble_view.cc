@@ -62,11 +62,11 @@ namespace {
 
 // The amount of time the promo should stay onscreen if the user
 // never hovers over it.
-constexpr base::TimeDelta kDelayDefault = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDelayDefault = base::Seconds(10);
 
 // The amount of time the promo should stay onscreen after the
 // user stops hovering over it.
-constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDelayShort = base::Seconds(3);
 
 // Maximum width of the bubble. Longer strings will cause wrapping.
 constexpr int kBubbleMaxWidthDip = 340;

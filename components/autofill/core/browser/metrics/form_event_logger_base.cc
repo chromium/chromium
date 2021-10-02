@@ -395,18 +395,16 @@ void FormEventLoggerBase::RecordAblationMetrics() {
           base::StrCat({"Autofill.Ablation.FillDurationSinceInteraction.",
                         form_type_name_.c_str(), ".Conditional",
                         conditional_ablation_group_string}),
-          *time_from_interaction_to_submission_,
-          base::TimeDelta::FromMilliseconds(100),
-          base::TimeDelta::FromMinutes(10), 50);
+          *time_from_interaction_to_submission_, base::Milliseconds(100),
+          base::Minutes(10), 50);
     }
     if (ablation_group_string) {
       base::UmaHistogramCustomTimes(
           base::StrCat({"Autofill.Ablation.FillDurationSinceInteraction.",
                         form_type_name_.c_str(), ".Unconditional",
                         ablation_group_string}),
-          *time_from_interaction_to_submission_,
-          base::TimeDelta::FromMilliseconds(100),
-          base::TimeDelta::FromMinutes(10), 50);
+          *time_from_interaction_to_submission_, base::Milliseconds(100),
+          base::Minutes(10), 50);
     }
   }
 }

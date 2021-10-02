@@ -29,8 +29,7 @@ namespace chromeos {
 namespace {
 
 // An arbitrary timeout for taking ownership.
-constexpr base::TimeDelta kTakeOwnershipTimeout =
-    base::TimeDelta::FromSeconds(80);
+constexpr base::TimeDelta kTakeOwnershipTimeout = base::Seconds(80);
 
 TpmManagerClient* g_instance = nullptr;
 

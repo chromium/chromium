@@ -66,10 +66,8 @@ EntitySpecifics GenerateBookmarkSpecifics(const std::string& url,
 
 TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   const int64_t kBaseVersion = 7;
-  base::Time creation_time =
-      base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time modification_time =
-      creation_time + base::TimeDelta::FromSeconds(1);
+  base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
+  base::Time modification_time = creation_time + base::Seconds(1);
 
   auto data = std::make_unique<syncer::EntityData>();
 
@@ -110,10 +108,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
 
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   const int64_t kBaseVersion = 7;
-  base::Time creation_time =
-      base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time modification_time =
-      creation_time + base::TimeDelta::FromSeconds(1);
+  base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
+  base::Time modification_time = creation_time + base::Seconds(1);
 
   auto data = std::make_unique<syncer::EntityData>();
 
@@ -155,10 +151,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
 
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   const int64_t kBaseVersion = 7;
-  base::Time creation_time =
-      base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time modification_time =
-      creation_time + base::TimeDelta::FromSeconds(1);
+  base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
+  base::Time modification_time = creation_time + base::Seconds(1);
 
   auto data = std::make_unique<syncer::EntityData>();
 

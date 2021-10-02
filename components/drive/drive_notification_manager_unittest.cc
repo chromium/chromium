@@ -165,7 +165,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
       invalidation::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_runner_->FastForwardBy(base::Seconds(30));
 
   // Default corpus is has the id "" when sent to observers.
   std::map<std::string, int64_t> expected_ids = {{"", -1}};
@@ -184,7 +184,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
       invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_runner_->FastForwardBy(base::Seconds(30));
 
   // Default corpus is has the id "" when sent to observers.
   expected_ids = {{"", 2}};
@@ -196,7 +196,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
       invalidation::Invalidation::Init(team_drive_1_topic, 2, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_runner_->FastForwardBy(base::Seconds(30));
   expected_ids = {{team_drive_id_1, 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
   drive_notification_observer_->ClearNotificationIds();
@@ -217,7 +217,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
 
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_runner_->FastForwardBy(base::Seconds(30));
   expected_ids = {{"", 2}, {team_drive_id_1, 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
 }

@@ -185,7 +185,7 @@ TEST_F(ArcBootPhaseMonitorBridgeTest, TestRecordUMA_AppLaunchBeforeBoot) {
   boot_phase_monitor_bridge()->RecordFirstAppLaunchDelayUMAForTesting();
   EXPECT_EQ(0U, record_uma_counter());
   // Sleep for 1ms just to make sure 0 won't be passed to RecordUMA().
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+  base::PlatformThread::Sleep(base::Milliseconds(1));
   // UMA recording should be done on BootCompleted.
   boot_phase_monitor_bridge()->OnBootCompleted();
   EXPECT_EQ(1U, record_uma_counter());

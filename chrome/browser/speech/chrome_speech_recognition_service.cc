@@ -22,7 +22,7 @@
 
 namespace speech {
 
-constexpr base::TimeDelta kIdleProcessTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kIdleProcessTimeout = base::Seconds(5);
 
 ChromeSpeechRecognitionService::ChromeSpeechRecognitionService(
     content::BrowserContext* context)

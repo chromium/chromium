@@ -175,7 +175,7 @@ class FakeUpgradeDetector : public UpgradeDetector {
   base::TimeDelta high_threshold() const { return high_threshold_; }
 
  private:
-  base::TimeDelta high_threshold_ = base::TimeDelta::FromDays(7);
+  base::TimeDelta high_threshold_ = base::Days(7);
 };
 
 }  // namespace
@@ -561,20 +561,17 @@ TEST_F(RelaunchNotificationControllerTest, NonePeriodChange) {
       &mock_controller_delegate);
 
   // Reduce the period.
-  fake_upgrade_detector().BroadcastHighThresholdChange(
-      base::TimeDelta::FromDays(1));
+  fake_upgrade_detector().BroadcastHighThresholdChange(base::Days(1));
   FastForwardBy(fake_upgrade_detector().high_threshold());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   SetNotificationPref(1);
-  fake_upgrade_detector().BroadcastHighThresholdChange(
-      base::TimeDelta::FromHours(23));
+  fake_upgrade_detector().BroadcastHighThresholdChange(base::Hours(23));
   FastForwardBy(fake_upgrade_detector().high_threshold());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   SetNotificationPref(2);
-  fake_upgrade_detector().BroadcastHighThresholdChange(
-      base::TimeDelta::FromHours(22));
+  fake_upgrade_detector().BroadcastHighThresholdChange(base::Hours(22));
   FastForwardBy(fake_upgrade_detector().high_threshold());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 }
@@ -593,20 +590,17 @@ TEST_F(RelaunchNotificationControllerTest, VeryLowPeriodChange) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   // Reduce the period.
-  fake_upgrade_detector().BroadcastHighThresholdChange(
-      base::TimeDelta::FromDays(1));
+  fake_upgrade_detector().BroadcastHighThresholdChange(base::Days(1));
   FastForwardBy(fake_upgrade_detector().high_threshold());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   SetNotificationPref(1);
-  fake_upgrade_detector().BroadcastHighThresholdChange(
-      base::TimeDelta::FromHours(23));
+  fake_upgrade_detector().BroadcastHighThresholdChange(base::Hours(23));
   FastForwardBy(fake_upgrade_detector().high_threshold());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   SetNotificationPref(2);
-  fake_upgrade_detector().BroadcastHighThresholdChange(
-      base::TimeDelta::FromHours(22));
+  fake_upgrade_detector().BroadcastHighThresholdChange(base::Hours(22));
   FastForwardBy(fake_upgrade_detector().high_threshold());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 }
@@ -894,7 +888,7 @@ TEST_F(RelaunchNotificationControllerTest, NotifyAllWithShortestPeriod) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   // Advance to the grace threshold and raise the annoyance level.
-  FastForwardBy(delta - base::TimeDelta::FromHours(1));
+  FastForwardBy(delta - base::Hours(1));
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRequired());
   fake_upgrade_detector().BroadcastLevelChange(
@@ -908,7 +902,7 @@ TEST_F(RelaunchNotificationControllerTest, NotifyAllWithShortestPeriod) {
 
   // Advance to the deadline to restart.
   EXPECT_CALL(mock_controller_delegate, OnRelaunchDeadlineExpired());
-  FastForwardBy(base::TimeDelta::FromHours(1));
+  FastForwardBy(base::Hours(1));
   ASSERT_EQ(GetMockClock()->Now(),
             upgrade_detector()->GetAnnoyanceLevelDeadline(
                 UpgradeDetector::UPGRADE_ANNOYANCE_HIGH));
@@ -1100,8 +1094,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
   // Expect the platform_impl to show the notification synchronously.
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
-  base::Time deadline =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(1));
+  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
 
   // There should be no query at the time of showing.
   platform_impl().NotifyRelaunchRequired(deadline, callback.Get());
@@ -1122,8 +1115,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
 TEST_F(RelaunchNotificationControllerPlatformImplTest, DeferredDeadline) {
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
-  base::Time deadline =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(1));
+  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
 
   // There should be no query because the browser isn't visible.
   platform_impl().NotifyRelaunchRequired(deadline, callback.Get());

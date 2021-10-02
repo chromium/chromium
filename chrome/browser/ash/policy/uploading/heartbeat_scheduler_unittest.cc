@@ -317,7 +317,7 @@ TEST_F(HeartbeatSchedulerTest, ChangeHeartbeatFrequency) {
                            gcm::GCMClient::SERVER_ERROR);
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   CheckPendingTaskDelay(scheduler_.last_heartbeat(),
-                        base::TimeDelta::FromMilliseconds(new_delay));
+                        base::Milliseconds(new_delay));
 }
 
 TEST_F(HeartbeatSchedulerTest, DisableHeartbeats) {
@@ -370,7 +370,7 @@ TEST_F(HeartbeatSchedulerTest, CheckMessageContents) {
   // Heartbeats should have a time-to-live equivalent to the heartbeat frequency
   // so we don't have more than one heartbeat queued at a time.
   EXPECT_EQ(HeartbeatScheduler::kDefaultHeartbeatInterval,
-            base::TimeDelta::FromSeconds(message.time_to_live));
+            base::Seconds(message.time_to_live));
 
   // Check the values in the message payload.
   EXPECT_EQ("hb", message.data["type"]);

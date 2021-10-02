@@ -60,25 +60,21 @@ constexpr int kBackNudgeShadowBlurRadius2 = 6;
 constexpr SkColor kBackNudgeShadowColor2 = SkColorSetA(SK_ColorBLACK, 0x26);
 
 // Duration of the pause before sliding in to show the nudge.
-constexpr base::TimeDelta kPauseBeforeShowAnimationDuration =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kPauseBeforeShowAnimationDuration = base::Seconds(10);
 
 // Duration for the animation to show the nudge.
-constexpr base::TimeDelta kNudgeShowAnimationDuration =
-    base::TimeDelta::FromMilliseconds(600);
+constexpr base::TimeDelta kNudgeShowAnimationDuration = base::Milliseconds(600);
 
 // Duration for the animation to hide the nudge.
-constexpr base::TimeDelta kNudgeHideAnimationDuration =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kNudgeHideAnimationDuration = base::Milliseconds(400);
 
 // Duration for the animation to fade out the suggestion label and circle when
 // the back nudge showing animation is interrupted and should be dismissed.
-constexpr base::TimeDelta kSuggestionDismissDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kSuggestionDismissDuration = base::Milliseconds(100);
 
 // Duration for the animation of the suggestion part of the nudge.
 constexpr base::TimeDelta kSuggestionBounceAnimationDuration =
-    base::TimeDelta::FromMilliseconds(600);
+    base::Milliseconds(600);
 
 // Repeat bouncing times of the suggestion animation.
 constexpr int kSuggestionAnimationRepeatTimes = 4;

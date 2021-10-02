@@ -18,7 +18,7 @@ namespace {
 // Update key press count in shared memory twice as frequent as
 // AudioInputController::AudioCallback::OnData() callback for WebRTC.
 constexpr base::TimeDelta kUpdateKeyPressCountIntervalMs =
-    base::TimeDelta::FromMilliseconds(5);
+    base::Milliseconds(5);
 
 class UserInputMonitorMac : public UserInputMonitorBase {
  public:

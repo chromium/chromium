@@ -162,7 +162,7 @@ void ExternalFileRemoverImpl::RemoveAfterDelay(base::TimeDelta delay,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ScopedClosureRunner closure_runner =
       base::ScopedClosureRunner(std::move(callback));
-  bool remove_all_files = delay == base::TimeDelta::FromSeconds(0);
+  bool remove_all_files = delay == base::Seconds(0);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExternalFileRemoverImpl::RemoveFiles,

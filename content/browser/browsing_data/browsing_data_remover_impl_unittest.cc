@@ -282,7 +282,7 @@ ProbablySameFilter(const base::RepeatingCallback<bool(const GURL&)>& filter) {
 }
 
 base::Time AnHourAgo() {
-  return base::Time::Now() - base::TimeDelta::FromHours(1);
+  return base::Time::Now() - base::Hours(1);
 }
 
 bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
@@ -662,7 +662,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveLocalStorageForLastWeek) {
   CreateMockPolicy();
 
   BlockUntilBrowsingDataRemoved(
-      base::Time::Now() - base::TimeDelta::FromDays(7), base::Time::Max(),
+      base::Time::Now() - base::Days(7), base::Time::Max(),
       BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE, false);
 
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE, GetRemovalMask());
@@ -985,7 +985,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForLastHour) {
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForLastWeek) {
   BlockUntilBrowsingDataRemoved(
-      base::Time::Now() - base::TimeDelta::FromDays(7), base::Time::Max(),
+      base::Time::Now() - base::Days(7), base::Time::Max(),
       BrowsingDataRemover::DATA_TYPE_FILE_SYSTEMS |
           BrowsingDataRemover::DATA_TYPE_WEB_SQL |
           BrowsingDataRemover::DATA_TYPE_APP_CACHE |
@@ -1673,9 +1673,9 @@ TEST_F(BrowsingDataRemoverImplTest, ClearsTrustTokensForSiteDespiteTimeRange) {
   // Since Trust Tokens data is not associated with particular timestamps, we
   // should observe the same clearing behavior with a non-default time range as
   // with the default time range.
-  BlockUntilOriginDataRemoved(
-      base::Time(), base::Time() + base::TimeDelta::FromSeconds(1),
-      BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS, std::move(builder));
+  BlockUntilOriginDataRemoved(base::Time(), base::Time() + base::Seconds(1),
+                              BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+                              std::move(builder));
 }
 
 TEST_F(BrowsingDataRemoverImplTest, DeferCookieDeletion) {

@@ -46,7 +46,7 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
       base::Time::NowFromSystemTime() -
       config->GetPrefService()->GetTime(kPrefUpdateTime);
   if (base::TimeDelta() < time_since_update &&
-      time_since_update < base::TimeDelta::FromSeconds(check_delay_seconds)) {
+      time_since_update < base::Seconds(check_delay_seconds)) {
     VLOG(0) << "Skipping checking for updates: last update was "
             << time_since_update.InMinutes() << " minutes ago.";
     return true;
@@ -136,7 +136,7 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
               base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone,
                              this),
               config_)),
-      base::TimeDelta::FromSecondsD(config_->InitialDelay()));
+      base::Seconds(config_->InitialDelay()));
 }
 
 void CheckForUpdatesTask::MaybeCheckForUpdatesDone() {

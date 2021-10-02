@@ -343,7 +343,7 @@ void BluetoothTaskManagerWin::LogPollingError(const char* message,
   // Check if we need to discard this message
   if (!current_logging_batch_ticks_.is_null()) {
     if (base::TimeTicks::Now() - current_logging_batch_ticks_ <=
-        base::TimeDelta::FromMilliseconds(kLogPeriodInMilliseconds)) {
+        base::Milliseconds(kLogPeriodInMilliseconds)) {
       if (current_logging_batch_count_ >= kMaxMessagesPerLogPeriod)
         return;
     } else {
@@ -413,7 +413,7 @@ void BluetoothTaskManagerWin::PollAdapter() {
   // Re-poll.
   bluetooth_task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&BluetoothTaskManagerWin::PollAdapter, this),
-      base::TimeDelta::FromMilliseconds(kPollIntervalMs));
+      base::Milliseconds(kPollIntervalMs));
 }
 
 void BluetoothTaskManagerWin::PostAdapterStateToUi() {

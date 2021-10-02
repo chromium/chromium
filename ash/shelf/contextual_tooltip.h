@@ -46,15 +46,15 @@ constexpr int kSuccessLimitHomeToOverview = 3;
 constexpr int kSuccessLimitBackGesture = 1;
 
 // Minimum time between showing contextual nudges to the user.
-constexpr base::TimeDelta kMinInterval = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinInterval = base::Days(1);
 
 // The amount of time a nudge is shown.
-constexpr base::TimeDelta kNudgeShowDuration = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kNudgeShowDuration = base::Seconds(5);
 
 // The minimum amount of time that has to pass since showing drag handle nudge
 // before showing the back gesture nudge.
 constexpr base::TimeDelta kMinIntervalBetweenBackAndDragHandleNudge =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 // Registers profile prefs.
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);

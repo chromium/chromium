@@ -263,10 +263,10 @@ void ResourcePrefetchPredictor::StartInitialization() {
   // Create local caches using the database as loaded.
   auto host_redirect_data = std::make_unique<RedirectDataMap>(
       tables_, tables_->host_redirect_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
   auto origin_data = std::make_unique<OriginDataMap>(
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
   // will be passed to the reply task.

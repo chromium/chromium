@@ -202,8 +202,8 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
     last_frame_time = time_ms;
     const auto* paint_artifact_compositor =
         GetDocument().GetFrame()->View()->GetPaintArtifactCompositor();
-    GetDocument().GetAnimationClock().UpdateTime(
-        base::TimeTicks() + base::TimeDelta::FromMillisecondsD(time_ms));
+    GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                                 base::Milliseconds(time_ms));
     GetDocument().GetPendingAnimations().Update(paint_artifact_compositor,
                                                 false);
     // The timeline does not know about our animation, so we have to explicitly
@@ -219,8 +219,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
 
   void SimulateFrameForScrollAnimations() {
     // Advance time by 100 ms.
-    auto new_time = GetAnimationClock().CurrentTime() +
-                    base::TimeDelta::FromMilliseconds(100);
+    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
     GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 
@@ -331,8 +330,8 @@ TEST_P(AnimationAnimationTestNoCompositing, CurrentTimeDoesNotSetOutdated) {
   // FIXME: We should split simulateFrame into a version that doesn't update
   // the animation and one that does, as most of the tests don't require
   // update() to be called.
-  GetDocument().GetAnimationClock().UpdateTime(
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(10000));
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(10000));
   EXPECT_TIME(10000, GetCurrentTimeMs(animation));
   EXPECT_FALSE(animation->Outdated());
 }
@@ -1821,7 +1820,7 @@ TEST_P(AnimationAnimationTestCompositing,
           ->CcAnimation()
           ->GetKeyframeModel(compositor_target_property::OPACITY);
   EXPECT_EQ(keyframe_model->start_time() - base::TimeTicks(),
-            base::TimeDelta::FromSeconds(TEST_START_PERCENT));
+            base::Seconds(TEST_START_PERCENT));
   EXPECT_EQ(keyframe_model->time_offset(), base::TimeDelta());
 }
 

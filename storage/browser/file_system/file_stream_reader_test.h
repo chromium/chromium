@@ -111,8 +111,7 @@ TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthNormal) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthAfterModified) {
-  this->TouchFile(std::string(this->kTestFileName),
-                  base::TimeDelta::FromSeconds(10));
+  this->TouchFile(std::string(this->kTestFileName), base::Seconds(10));
 
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
@@ -159,8 +158,7 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModified) {
   // Touch file so that the file's modification time becomes different
   // from what we expect. Note that the resolution on some filesystems
   // is 1s so we can't test with deltas less than that.
-  this->TouchFile(std::string(this->kTestFileName),
-                  base::TimeDelta::FromSeconds(-1));
+  this->TouchFile(std::string(this->kTestFileName), base::Seconds(-1));
 
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
@@ -176,8 +174,7 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedLessThanThreshold) {
   // Due to precision loss converting int64_t->double->int64_t (e.g. through
   // Blink) the expected/actual time may vary by microseconds. With
   // modification time delta < 10us this should work.
-  this->TouchFile(std::string(this->kTestFileName),
-                  base::TimeDelta::FromMicroseconds(1));
+  this->TouchFile(std::string(this->kTestFileName), base::Microseconds(1));
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
@@ -203,8 +200,7 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithMatchingTimes) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithoutExpectedTime) {
-  this->TouchFile(std::string(this->kTestFileName),
-                  base::TimeDelta::FromSeconds(-1));
+  this->TouchFile(std::string(this->kTestFileName), base::Seconds(-1));
   std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
       std::string(this->kTestFileName), 0, base::Time()));
   int result = 0;

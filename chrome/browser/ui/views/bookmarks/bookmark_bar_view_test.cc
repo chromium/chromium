@@ -1031,7 +1031,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BookmarkBarViewTest9::Step4, base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(200));
+        base::Milliseconds(200));
   }
 
   void Step4() {
@@ -1327,7 +1327,7 @@ class BookmarkBarViewTest12 : public BookmarkBarViewEventTestBase {
         FROM_HERE,
         base::BindOnce(&BookmarkBarViewTest12::Step5, base::Unretained(this),
                        base::Unretained(dialog)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 
   void Step5(views::Widget* dialog) {

@@ -136,8 +136,8 @@ File* File::Create(ExecutionContext* context,
     // We don't use base::Time::FromJsTime(double) here because
     // options->lastModified() is a 64-bit integer, and casting it to
     // double is lossy.
-    last_modified = base::Time::UnixEpoch() +
-                    base::TimeDelta::FromMilliseconds(options->lastModified());
+    last_modified =
+        base::Time::UnixEpoch() + base::Milliseconds(options->lastModified());
   } else {
     last_modified = base::Time::Now();
   }

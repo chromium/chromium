@@ -37,10 +37,8 @@ constexpr char kGaia2ID[] = "222222";
 constexpr char kUser3Email[] = "test-user3@gmail.com";
 constexpr char kGaia3ID[] = "333333";
 
-constexpr base::TimeDelta kLoginOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kLoginOnlineLongDelay =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
+constexpr base::TimeDelta kLoginOnlineLongDelay = base::Seconds(20);
 
 const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};

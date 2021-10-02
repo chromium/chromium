@@ -98,7 +98,7 @@ class RendererResourceDelegate
           FROM_HERE,
           base::BindOnce(&RendererResourceDelegate::InformHostOfCacheStats,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kCacheStatsDelayMS));
+          base::Milliseconds(kCacheStatsDelayMS));
     }
   }
 

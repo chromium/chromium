@@ -39,8 +39,7 @@ namespace network {
 namespace {
 
 // The interval to send load updates.
-constexpr auto kUpdateLoadStatesInterval =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
 }  // namespace
 

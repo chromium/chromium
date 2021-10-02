@@ -15,7 +15,7 @@ namespace {
 int Log2TimeSince(int64_t timestamp) {
   return floor(
       log2((base::Time::Now() - base::Time::FromTimeT(timestamp)).InSecondsF() /
-           base::TimeDelta::FromDays(1).InSecondsF()));
+           base::Days(1).InSecondsF()));
 }
 
 }  // namespace

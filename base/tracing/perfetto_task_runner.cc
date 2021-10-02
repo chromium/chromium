@@ -59,7 +59,7 @@ void PerfettoTaskRunner::PostDelayedTask(std::function<void()> task,
             task();
           },
           task),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 }
 
 bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {

@@ -616,7 +616,7 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   const int64_t kRegistrationId = 0;
   const int64_t kVersionId = 0;
   const base::Time kToday = base::Time::Now();
-  const base::Time kYesterday = kToday - base::TimeDelta::FromDays(1);
+  const base::Time kYesterday = kToday - base::Days(1);
   std::set<blink::mojom::WebFeature> used_features = {
       blink::mojom::WebFeature::kServiceWorkerControlledPage,
       blink::mojom::WebFeature::kReferrerPolicyHeader,

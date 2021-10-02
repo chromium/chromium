@@ -529,7 +529,7 @@ TEST_F(KnownUserTest, OfflineSigninLimit) {
   KnownUser known_user(local_state());
   EXPECT_FALSE(known_user.GetOfflineSigninLimit(kDefaultAccountId).has_value());
 
-  base::TimeDelta offline_signin_limit = base::TimeDelta::FromMinutes(80);
+  base::TimeDelta offline_signin_limit = base::Minutes(80);
   known_user.SetOfflineSigninLimit(kDefaultAccountId, offline_signin_limit);
 
   EXPECT_EQ(known_user.GetOfflineSigninLimit(kDefaultAccountId).value(),
@@ -687,7 +687,7 @@ TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
                                 base::Value(true));
   }
 
-  const base::TimeDelta kLegitValue = base::TimeDelta::FromDays(14);
+  const base::TimeDelta kLegitValue = base::Days(14);
   known_user.SetPref(kDefaultAccountId2, kDeprecatedPrefName,
                      base::TimeDeltaToValue(kLegitValue));
 

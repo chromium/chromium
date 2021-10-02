@@ -70,7 +70,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 static constexpr base::TimeDelta kLongTaskObserverThreshold =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 namespace blink {
 
@@ -452,12 +452,12 @@ void WindowPerformance::ReportEventTimings(
     events_data_.pop_front();
 
     int duration_in_ms = std::round((end_time - entry->startTime()) / 8) * 8;
-    base::TimeDelta input_delay = base::TimeDelta::FromMillisecondsD(
-        entry->processingStart() - entry->startTime());
-    base::TimeDelta processing_time = base::TimeDelta::FromMillisecondsD(
-        entry->processingEnd() - entry->processingStart());
+    base::TimeDelta input_delay =
+        base::Milliseconds(entry->processingStart() - entry->startTime());
+    base::TimeDelta processing_time =
+        base::Milliseconds(entry->processingEnd() - entry->processingStart());
     base::TimeDelta time_to_next_paint =
-        base::TimeDelta::FromMillisecondsD(end_time - entry->processingEnd());
+        base::Milliseconds(end_time - entry->processingEnd());
     entry->SetDuration(duration_in_ms);
     ResponsivenessMetrics::EventTimestamps event_timestamps = {
         event_timestamp, presentation_timestamp};

@@ -256,7 +256,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
       FROM_HERE,
       base::BindOnce(&CreditCardAccessManager::SignalCanFetchUnmaskDetails,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 }
 
 void CreditCardAccessManager::FetchCreditCard(
@@ -883,7 +883,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     ready_to_start_authentication_.OnEventOrTimeOut(
         base::BindOnce(&CreditCardAccessManager::OnStopWaitingForUnmaskDetails,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kUnmaskDetailsResponseTimeoutMs));
+        base::Milliseconds(kUnmaskDetailsResponseTimeoutMs));
   } else {
     GetAuthenticationType(
         IsFidoAuthEnabled(get_unmask_details_returned &&

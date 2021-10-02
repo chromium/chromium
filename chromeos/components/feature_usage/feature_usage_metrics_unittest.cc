@@ -84,7 +84,7 @@ TEST_F(FeatureUsageMetricsTest, RecordUsetime) {
 
 TEST_F(FeatureUsageMetricsTest, RecordLongUsetime) {
   size_t repeated_periods = 4;
-  const base::TimeDelta extra_small_use_time = base::TimeDelta::FromMinutes(3);
+  const base::TimeDelta extra_small_use_time = base::Minutes(3);
   const base::TimeDelta use_time =
       FeatureUsageMetrics::kRepeatedInterval * repeated_periods +
       extra_small_use_time;

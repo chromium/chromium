@@ -86,7 +86,7 @@ base::TimeDelta GetPollingInterval() {
       cmd_line.GetSwitchValueASCII(switches::kCheckForUpdateIntervalSec);
   int seconds;
   if (!seconds_str.empty() && base::StringToInt(seconds_str, &seconds))
-    return base::TimeDelta::FromSeconds(seconds);
+    return base::Seconds(seconds);
   return InstalledVersionPoller::kDefaultPollingInterval;
 }
 
@@ -115,7 +115,7 @@ enum class InstalledVersionPoller::PollType {
 
 // static
 const base::TimeDelta InstalledVersionPoller::kDefaultPollingInterval =
-    base::TimeDelta::FromHours(2);
+    base::Hours(2);
 
 InstalledVersionPoller::InstalledVersionPoller(BuildState* build_state)
     : InstalledVersionPoller(build_state,
@@ -160,7 +160,7 @@ void InstalledVersionPoller::OnMonitorResult(bool error) {
     // Wait ten seconds before polling for the new version in case the monitor
     // provides multiple notifications during a normal update. Repeat
     // notifications will push back the poll.
-    timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10),
+    timer_.Start(FROM_HERE, base::Seconds(10),
                  base::BindOnce(&InstalledVersionPoller::Poll,
                                 base::Unretained(this), PollType::kMonitor));
   } else {

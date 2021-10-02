@@ -965,7 +965,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
                               1);
 
   tester().ExpectTimeBucketCount(kSafeBrowsingNavigationDelay,
-                                 base::TimeDelta::FromMilliseconds(0), 1);
+                                 base::Milliseconds(0), 1);
 }
 
 // Flaky on Win, Chromium and Linux. http://crbug.com/748524
@@ -990,7 +990,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
                               1);
 
   tester().ExpectTimeBucketCount(kSafeBrowsingNavigationDelay,
-                                 base::TimeDelta::FromMilliseconds(0), 1);
+                                 base::Milliseconds(0), 1);
   tester().ExpectTotalCount(kSafeBrowsingCheckTime, 2);
 }
 
@@ -1114,7 +1114,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
   EXPECT_EQ(mojom::ActivationLevel::kDisabled,
             *observer()->GetPageActivationForLastCommittedLoad());
   tester().ExpectTimeBucketCount(kSafeBrowsingNavigationDelay,
-                                 base::TimeDelta::FromMilliseconds(0), 1);
+                                 base::Milliseconds(0), 1);
 }
 
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling,

@@ -308,8 +308,8 @@ class VideoDecoderTest : public ::testing::Test {
     base::TimeDelta frame_duration;
     base::TimeDelta vsync_interval_duration;
     if (render_frame_rate > 0) {
-      frame_duration = base::TimeDelta::FromSeconds(1) / render_frame_rate;
-      vsync_interval_duration = base::TimeDelta::FromSeconds(1) / vsync_rate;
+      frame_duration = base::Seconds(1) / render_frame_rate;
+      vsync_interval_duration = base::Seconds(1) / vsync_rate;
     }
     auto frame_renderer =
         FrameRendererDummy::Create(frame_duration, vsync_interval_duration);

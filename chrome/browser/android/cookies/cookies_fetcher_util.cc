@@ -116,12 +116,11 @@ static void JNI_CookiesFetcher_RestoreCookies(
           base::android::ConvertJavaStringToUTF8(env, name),
           base::android::ConvertJavaStringToUTF8(env, value), domain_str,
           path_str,
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(creation)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(creation)),
+              base::Microseconds(expiration)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(expiration)),
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(last_access)),
+              base::Microseconds(last_access)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
           static_cast<net::CookiePriority>(priority), same_party, pk,
           static_cast<net::CookieSourceScheme>(source_scheme), source_port);

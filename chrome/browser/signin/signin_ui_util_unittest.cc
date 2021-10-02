@@ -561,7 +561,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   RecordAnimatedIdentityTriggered(profile);
 
   // Wait a few seconds.
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment.FastForwardBy(base::Seconds(6));
 
   // Animation is not shown again in a new window.
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(

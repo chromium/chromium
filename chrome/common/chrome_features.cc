@@ -399,7 +399,7 @@ const base::Feature kEnterpriseRealtimeExtensionRequest{
 const base::FeatureParam<base::TimeDelta>
     kEnterpiseRealtimeExtensionRequestThrottleDelay{
         &kEnterpriseRealtimeExtensionRequest, "throttle_delay",
-        base::TimeDelta::FromMinutes(1)};
+        base::Minutes(1)};
 #endif
 
 // Controls whether the user justification text field is visible on the
@@ -953,13 +953,11 @@ const base::Feature kTrustSafetySentimentSurvey{
 // The minimum and maximum time after a user has interacted with a Trust and
 // Safety they are eligible to be surveyed.
 const base::FeatureParam<base::TimeDelta>
-    kTrustSafetySentimentSurveyMinTimeToPrompt{&kTrustSafetySentimentSurvey,
-                                               "min-time-to-prompt",
-                                               base::TimeDelta::FromMinutes(2)};
+    kTrustSafetySentimentSurveyMinTimeToPrompt{
+        &kTrustSafetySentimentSurvey, "min-time-to-prompt", base::Minutes(2)};
 const base::FeatureParam<base::TimeDelta>
     kTrustSafetySentimentSurveyMaxTimeToPrompt{
-        &kTrustSafetySentimentSurvey, "max-time-to-prompt",
-        base::TimeDelta::FromMinutes(60)};
+        &kTrustSafetySentimentSurvey, "max-time-to-prompt", base::Minutes(60)};
 // The maximum and minimum range for the random number of NTPs that the user
 // must at least visit after interacting with a Trust and Safety feature to be
 // eligible for a survey.
@@ -992,22 +990,21 @@ extern const base::FeatureParam<std::string>
 // The time the user must remain on settings after interacting with a privacy
 // setting to be considered.
 const base::FeatureParam<base::TimeDelta>
-    kTrustSafetySentimentSurveyPrivacySettingsTime{
-        &kTrustSafetySentimentSurvey, "privacy-settings-time",
-        base::TimeDelta::FromSeconds(20)};
+    kTrustSafetySentimentSurveyPrivacySettingsTime{&kTrustSafetySentimentSurvey,
+                                                   "privacy-settings-time",
+                                                   base::Seconds(20)};
 // The time the user must have the Trusted Surface bubble open to be considered.
 // Alternatively the user can interact with the bubble, in which case this time
 // is irrelevant.
 const base::FeatureParam<base::TimeDelta>
     kTrustSafetySentimentSurveyTrustedSurfaceTime{
-        &kTrustSafetySentimentSurvey, "trusted-surface-time",
-        base::TimeDelta::FromSeconds(5)};
+        &kTrustSafetySentimentSurvey, "trusted-surface-time", base::Seconds(5)};
 // The time the user must remain on settings after visiting the password
 // manager page.
 const base::FeatureParam<base::TimeDelta>
     kTrustSafetySentimentSurveyTransactionsPasswordManagerTime{
         &kTrustSafetySentimentSurvey, "transactions-password-manager-time",
-        base::TimeDelta::FromSeconds(20)};
+        base::Seconds(20)};
 
 #endif
 

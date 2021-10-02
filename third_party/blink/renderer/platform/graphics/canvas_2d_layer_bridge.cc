@@ -437,12 +437,12 @@ void Canvas2DLayerBridge::FinishRasterTimers(
     raster_interface->GetQueryObjectuivEXT(it->gl_query_id, GL_QUERY_RESULT_EXT,
                                            &raw_gpu_duration);
     base::TimeDelta gpu_duration_microseconds =
-        base::TimeDelta::FromMicroseconds(raw_gpu_duration);
+        base::Microseconds(raw_gpu_duration);
     base::TimeDelta total_time =
         gpu_duration_microseconds + it->cpu_raster_duration;
 
-    base::TimeDelta min = base::TimeDelta::FromMicroseconds(1);
-    base::TimeDelta max = base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta min = base::Microseconds(1);
+    base::TimeDelta max = base::Milliseconds(100);
     int num_buckets = 100;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.Canvas.RasterDuration.Accelerated.GPU",
@@ -516,8 +516,7 @@ void Canvas2DLayerBridge::FlushRecording() {
     } else {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Blink.Canvas.RasterDuration.Unaccelerated", timer->Elapsed(),
-          base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromMilliseconds(100), 100);
+          base::Microseconds(1), base::Milliseconds(100), 100);
     }
   }
 

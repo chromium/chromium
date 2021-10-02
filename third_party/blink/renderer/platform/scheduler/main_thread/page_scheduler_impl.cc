@@ -46,13 +46,13 @@ constexpr double kDefaultMaxBackgroundThrottlingDelayInSeconds = 0;
 
 // Delay for fully throttling the page after backgrounding.
 constexpr base::TimeDelta kThrottlingDelayAfterBackgrounding =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // The amount of time to wait before suspending shared timers, and loading
 // etc. after the renderer has been backgrounded. This is used only if
 // background suspension is enabled.
 constexpr base::TimeDelta kDefaultDelayForBackgroundTabFreezing =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 // The amount of time to wait before checking network idleness
 // after the page has been backgrounded. If network is idle,
@@ -60,20 +60,18 @@ constexpr base::TimeDelta kDefaultDelayForBackgroundTabFreezing =
 // freeze-background-tab-on-network-idle feature is enabled.
 // This value should be smaller than kDefaultDelayForBackgroundTabFreezing.
 constexpr base::TimeDelta kDefaultDelayForBackgroundAndNetworkIdleTabFreezing =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 // Duration of a throttled wake up.
-constexpr base::TimeDelta kThrottledWakeUpDuration =
-    base::TimeDelta::FromMilliseconds(3);
+constexpr base::TimeDelta kThrottledWakeUpDuration = base::Milliseconds(3);
 
 // The duration for which intensive throttling should be inhibited for
 // same-origin frames when the page title or favicon is updated.
 constexpr base::TimeDelta
-    kTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate =
-        base::TimeDelta::FromSeconds(3);
+    kTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate = base::Seconds(3);
 
 constexpr base::TimeDelta kDefaultDelayForTrackingIPCsPostedToCachedFrames =
-    base::TimeDelta::FromSeconds(15);
+    base::Seconds(15);
 
 // Values coming from the field trial config are interpreted as follows:
 //   -1 is "not set". Scheduler should use a reasonable default.
@@ -104,7 +102,7 @@ double GetDoubleParameterFromMap(const base::FieldTrialParams& settings,
 absl::optional<base::TimeDelta> DoubleToOptionalTime(double value) {
   if (value == 0)
     return absl::nullopt;
-  return base::TimeDelta::FromSecondsD(value);
+  return base::Seconds(value);
 }
 
 BackgroundThrottlingSettings GetBackgroundThrottlingSettings() {
@@ -137,8 +135,7 @@ base::TimeDelta GetDelayForBackgroundTabFreezing() {
   static const base::FeatureParam<int> kDelayForBackgroundTabFreezingMillis{
       &features::kStopInBackground, "DelayForBackgroundTabFreezingMills",
       static_cast<int>(kDefaultDelayForBackgroundTabFreezing.InMilliseconds())};
-  return base::TimeDelta::FromMilliseconds(
-      kDelayForBackgroundTabFreezingMillis.Get());
+  return base::Milliseconds(kDelayForBackgroundTabFreezingMillis.Get());
 }
 
 base::TimeDelta GetDelayForBackgroundAndNetworkIdleTabFreezing() {
@@ -148,7 +145,7 @@ base::TimeDelta GetDelayForBackgroundAndNetworkIdleTabFreezing() {
           "DelayForBackgroundAndNetworkIdleTabFreezingMills",
           static_cast<int>(kDefaultDelayForBackgroundAndNetworkIdleTabFreezing
                                .InMilliseconds())};
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       kDelayForBackgroundAndNetworkIdleTabFreezingMillis.Get());
 }
 
@@ -161,7 +158,7 @@ base::TimeDelta GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache() {
             "delay_before_tracking_ms",
             static_cast<int>(kDefaultDelayForTrackingIPCsPostedToCachedFrames
                                  .InMilliseconds())};
-    return base::TimeDelta::FromMilliseconds(
+    return base::Milliseconds(
         kDelayForLoggingUnexpectedIPCPostedToBckForwardCacheMillis.Get());
   }
   return kDefaultDelayForTrackingIPCsPostedToCachedFrames;

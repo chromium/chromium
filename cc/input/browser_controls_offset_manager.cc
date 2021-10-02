@@ -708,7 +708,7 @@ void BrowserControlsOffsetManager::Animation::Initialize(
   direction_ = direction;
   start_value_ = start_value;
   stop_value_ = stop_value;
-  duration_ = base::TimeDelta::FromMilliseconds(duration);
+  duration_ = base::Milliseconds(duration);
   initialized_ = true;
   jump_to_end_on_reset_ = jump_to_end_on_reset;
   SetBounds(std::min(start_value_, stop_value_),

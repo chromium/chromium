@@ -401,7 +401,7 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
 
   // Add 2 seconds to account for possible rounding errors on
   // filesystems that use a 1s or 2s timestamp granularity.
-  base::Time now = base::Time::Now() + base::TimeDelta::FromSeconds(2);
+  base::Time now = base::Time::Now() + base::Seconds(2);
   EXPECT_EQ(0, info.size);
   EXPECT_FALSE(info.is_directory);
   EXPECT_FALSE(info.is_symbolic_link);
@@ -420,10 +420,8 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
   // It's best to add values that are multiples of 2 (in seconds)
   // to the current last_accessed and last_modified times, because
   // FATxx uses a 2s timestamp granularity.
-  base::Time new_last_accessed =
-      info.last_accessed + base::TimeDelta::FromSeconds(234);
-  base::Time new_last_modified =
-      info.last_modified + base::TimeDelta::FromMinutes(567);
+  base::Time new_last_accessed = info.last_accessed + base::Seconds(234);
+  base::Time new_last_modified = info.last_modified + base::Minutes(567);
 
   EXPECT_TRUE(file.SetTimes(new_last_accessed, new_last_modified));
 

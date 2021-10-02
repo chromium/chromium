@@ -26,7 +26,7 @@ constexpr char kTestOrigin[] = "https://test.com";
 
 const int kRenderFrameID = 1;
 
-constexpr base::TimeDelta kFetchTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kFetchTimeout = base::Seconds(1);
 
 // Provides a callback to send to robots rules parser, and to check the state of
 // the callback and its result.
@@ -164,7 +164,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserCacheTest, RulesFetchTimeout) {
   EXPECT_FALSE(receiver4->did_receive_result());
 
   // Let rule fetch timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_TRUE(receiver1->did_receive_result());
   EXPECT_TRUE(receiver2->did_receive_result());

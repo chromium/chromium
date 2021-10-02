@@ -46,7 +46,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kPopupEventTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kPopupEventTimeout = base::Seconds(5);
 
 }  // namespace
 
@@ -137,8 +137,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   void FinishPromptAnimation() {
     gfx::AnimationTestApi animation_api(
         GetExclusiveAccessBubble()->animation_for_test());
-    base::TimeTicks far_future =
-        base::TimeTicks::Now() + base::TimeDelta::FromDays(1);
+    base::TimeTicks far_future = base::TimeTicks::Now() + base::Days(1);
     animation_api.Step(far_future);
   }
 

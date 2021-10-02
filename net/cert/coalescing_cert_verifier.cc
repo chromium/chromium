@@ -319,12 +319,10 @@ void CoalescingCertVerifier::Job::OnVerifyComplete(int result) {
 void CoalescingCertVerifier::Job::LogMetrics() {
   base::TimeDelta latency = base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier_Job_Latency", latency,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             base::Milliseconds(1), base::Minutes(10), 100);
   if (is_first_job_) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier_First_Job_Latency", latency,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(10), 100);
+                               base::Milliseconds(1), base::Minutes(10), 100);
   }
 }
 

@@ -228,8 +228,7 @@ void PolicyOAuth2TokenFetcherImpl::RetryOnError(
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, std::move(task),
-        base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
+        FROM_HERE, std::move(task), base::Milliseconds(kRequestRestartDelay));
     return;
   }
   LOG(ERROR) << "Unrecoverable error or retry count max reached: "

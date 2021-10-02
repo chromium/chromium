@@ -63,14 +63,14 @@ class MockObserver : public DistillabilityObserver {
 // so 100ms should be pretty safe to catch extra calls.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitAfterLastCall = base::TimeDelta::FromMilliseconds(100);
+const auto kWaitAfterLastCall = base::Milliseconds(100);
 
 // Wait a bit if no calls are expected to make sure any unexpected calls are
 // caught. Expected calls happen within 100ms after content::WaitForLoadStop()
 // on linux release build, so 1s provides a safe margin.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitNoExpectedCall = base::TimeDelta::FromSeconds(1);
+const auto kWaitNoExpectedCall = base::Seconds(1);
 
 }  // namespace
 

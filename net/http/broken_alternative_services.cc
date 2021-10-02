@@ -25,7 +25,7 @@ base::TimeDelta ComputeBrokenAlternativeServiceExpirationDelay(
   DCHECK_GE(broken_count, 0);
   if (broken_count > kBrokenDelayMaxShift)
     broken_count = kBrokenDelayMaxShift;
-  return base::TimeDelta::FromSeconds(kBrokenAlternativeProtocolDelaySecs) *
+  return base::Seconds(kBrokenAlternativeProtocolDelaySecs) *
          (1 << broken_count);
 }
 

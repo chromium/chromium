@@ -146,8 +146,7 @@ void ResizingHostObserver::SetScreenResolution(
   // Resizing the desktop too often is probably not a good idea, so apply a
   // simple rate-limiting scheme.
   base::TimeTicks next_allowed_resize =
-      previous_resize_time_ +
-      base::TimeDelta::FromMilliseconds(kMinimumResizeIntervalMs);
+      previous_resize_time_ + base::Milliseconds(kMinimumResizeIntervalMs);
 
   if (now < next_allowed_resize) {
     deferred_resize_timer_.Start(

@@ -115,7 +115,7 @@ TEST_F(ServerTest, Dispatch) {
                                                 &connected_to_server, &event));
 
   // Call Dispatch() with a 5 second timeout.
-  server->Dispatch(base::TimeDelta::FromSeconds(5));
+  server->Dispatch(base::Seconds(5));
 
   // Check if client thread managed to connect to server.
   event.Wait();

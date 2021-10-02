@@ -178,7 +178,7 @@ void ReadingListDistillerPage::OnLoadURLDone(
       FROM_HERE,
       base::BindOnce(&ReadingListDistillerPage::DelayedOnLoadURLDone, weak_this,
                      delayed_task_id_),
-      base::TimeDelta::FromSeconds(kPageLoadDelayInSeconds));
+      base::Seconds(kPageLoadDelayInSeconds));
 }
 
 void ReadingListDistillerPage::DelayedOnLoadURLDone(int delayed_task_id) {

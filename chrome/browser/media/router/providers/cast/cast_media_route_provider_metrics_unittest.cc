@@ -19,19 +19,19 @@ TEST(CastMediaRouteProviderMetricsTest, RecordAppAvailabilityResult) {
 
   RecordAppAvailabilityResult(
       cast_channel::GetAppAvailabilityResult::kAvailable,
-      base::TimeDelta::FromMilliseconds(111));
+      base::Milliseconds(111));
   RecordAppAvailabilityResult(
       cast_channel::GetAppAvailabilityResult::kUnavailable,
-      base::TimeDelta::FromMilliseconds(222));
+      base::Milliseconds(222));
   tester.ExpectTimeBucketCount(kHistogramAppAvailabilitySuccess,
-                               base::TimeDelta::FromMilliseconds(111), 1);
+                               base::Milliseconds(111), 1);
   tester.ExpectTimeBucketCount(kHistogramAppAvailabilitySuccess,
-                               base::TimeDelta::FromMilliseconds(222), 1);
+                               base::Milliseconds(222), 1);
 
   RecordAppAvailabilityResult(cast_channel::GetAppAvailabilityResult::kUnknown,
-                              base::TimeDelta::FromMilliseconds(333));
+                              base::Milliseconds(333));
   tester.ExpectTimeBucketCount(kHistogramAppAvailabilityFailure,
-                               base::TimeDelta::FromMilliseconds(333), 1);
+                               base::Milliseconds(333), 1);
 }
 
 TEST(CastMediaRouteProviderMetricsTest, RecordSupportedAppTypesValue) {

@@ -92,7 +92,7 @@ const uint32_t kPrivateFootprintKb = 2;
 const uint32_t kSharedFootprintKb = 3;
 
 const base::TimeTicks kTimestamp =
-    base::TimeTicks() + base::TimeDelta::FromMicroseconds(100000);
+    base::TimeTicks() + base::Microseconds(100000);
 const uint64_t kTimestampProto = kTimestamp.since_origin().InNanoseconds();
 
 uint64_t GetFakeAddrForVmRegion(int pid, int region_index) {

@@ -400,7 +400,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
                                   kChromeInvalidExtraWaitMessage);
         }
         base::test::ios::SpinRunLoopWithMinDelay(
-            base::TimeDelta::FromSeconds(extra_wait->GetInt()));
+            base::Seconds(extra_wait->GetInt()));
       }
     }
 

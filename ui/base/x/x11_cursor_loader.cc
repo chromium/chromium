@@ -589,9 +589,9 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
     bitmap.allocN32Pixels(image.width, image.height);
     if (!ReadU32s(bitmap.getPixels(), bitmap.computeByteSize()))
       continue;
-    images.push_back(
-        XCursorLoader::Image{bitmap, gfx::Point(image.xhot, image.yhot),
-                             base::TimeDelta::FromMilliseconds(image.delay)});
+    images.push_back(XCursorLoader::Image{bitmap,
+                                          gfx::Point(image.xhot, image.yhot),
+                                          base::Milliseconds(image.delay)});
   }
   return images;
 }

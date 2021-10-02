@@ -216,7 +216,7 @@ TEST(ScrollAnimatorTest, MainThreadStates) {
                 kWaitingToSendToCompositor);
 
   // RunningOnMainThread
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_EQ(
       scroll_animator->run_state_,
@@ -275,7 +275,7 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
   EXPECT_TRUE(result.did_scroll_x);
   EXPECT_FLOAT_EQ(0.0, result.unused_scroll_delta_x);
 
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
 
@@ -289,7 +289,7 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
                               ScrollableArea::ScrollCallback());
   EXPECT_TRUE(scroll_animator->HasAnimationThatRequiresService());
 
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
 
@@ -303,7 +303,7 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
                               ScrollableArea::ScrollCallback());
   EXPECT_TRUE(scroll_animator->HasAnimationThatRequiresService());
 
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
 
@@ -311,11 +311,11 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
   EXPECT_NE(0, scroll_animator->CurrentOffset().Width());
   EXPECT_EQ(0, scroll_animator->CurrentOffset().Height());
 
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1.0));
+  task_runner->FastForwardBy(base::Seconds(1.0));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
 
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
   EXPECT_EQ(100, scroll_animator->CurrentOffset().Width());
@@ -361,7 +361,7 @@ TEST(ScrollAnimatorTest, AnimatedScrollAborted) {
   EXPECT_FLOAT_EQ(0.0, result.unused_scroll_delta_x);
   EXPECT_TRUE(scroll_animator->HasRunningAnimation());
 
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
 
@@ -376,7 +376,7 @@ TEST(ScrollAnimatorTest, AnimatedScrollAborted) {
                                        FloatSize(100, 0),
                                        ScrollableArea::ScrollCallback());
   EXPECT_TRUE(result.did_scroll_x);
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_FALSE(scroll_animator->HasRunningAnimation());
   EXPECT_EQ(x + 100, scroll_animator->CurrentOffset().Width());
@@ -417,7 +417,7 @@ TEST(ScrollAnimatorTest, AnimatedScrollTakeover) {
   EXPECT_TRUE(scroll_animator->HasRunningAnimation());
 
   // Update compositor animation.
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->SetShouldSendToCompositor(true);
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_EQ(
@@ -515,7 +515,7 @@ TEST(ScrollAnimatorTest, CancellingAnimationResetsState) {
                 kWaitingToSendToCompositor);
 
   // RunningOnMainThread
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_EQ(
       scroll_animator->run_state_,
@@ -544,7 +544,7 @@ TEST(ScrollAnimatorTest, CancellingAnimationResetsState) {
                 kWaitingToSendToCompositor);
 
   // Finish scroll animation.
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner->FastForwardBy(base::Seconds(1));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
   EXPECT_EQ(
@@ -590,7 +590,7 @@ TEST(ScrollAnimatorTest, UserScrollCallBackAtAnimationFinishOnMainThread) {
                 kWaitingToSendToCompositor);
 
   // RunningOnMainThread
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_FALSE(finished);
   EXPECT_EQ(
@@ -618,7 +618,7 @@ TEST(ScrollAnimatorTest, UserScrollCallBackAtAnimationFinishOnMainThread) {
                 kWaitingToSendToCompositor);
 
   // Finish scroll animation.
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1.0));
+  task_runner->FastForwardBy(base::Seconds(1.0));
   scroll_animator->UpdateCompositorAnimations();
   scroll_animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
   EXPECT_TRUE(finished);
@@ -665,7 +665,7 @@ TEST(ScrollAnimatorTest, UserScrollCallBackAtAnimationFinishOnCompositor) {
                 kWaitingToSendToCompositor);
 
   // Update compositor animation.
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->SetShouldSendToCompositor(true);
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_FALSE(finished);
@@ -718,7 +718,7 @@ TEST(ScrollAnimatorTest, CancellingCompositorAnimation) {
   EXPECT_EQ(0, scroll_animator->DesiredTargetOffset().Height());
 
   // Update compositor animation.
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->SetShouldSendToCompositor(true);
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_EQ(
@@ -748,7 +748,7 @@ TEST(ScrollAnimatorTest, CancellingCompositorAnimation) {
   EXPECT_EQ(0, scroll_animator->DesiredTargetOffset().Height());
 
   // Update compositor animation.
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_EQ(
       scroll_animator->run_state_,
@@ -842,7 +842,7 @@ TEST(ScrollAnimatorTest, MainThreadAnimationTargetAdjustment) {
                        ScrollableArea::ScrollCallback());
 
   // RunningOnMainThread
-  task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner->FastForwardBy(base::Milliseconds(50));
   animator->UpdateCompositorAnimations();
   animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
   ScrollOffset offset = animator->CurrentOffset();
@@ -857,7 +857,7 @@ TEST(ScrollAnimatorTest, MainThreadAnimationTargetAdjustment) {
   EXPECT_EQ(ScrollOffset(110, 90), animator->DesiredTargetOffset());
 
   // Adjusting after finished animation should do nothing.
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner->FastForwardBy(base::Seconds(1));
   animator->UpdateCompositorAnimations();
   animator->TickAnimation(NowTicksInSeconds(task_runner.get()));
   EXPECT_EQ(

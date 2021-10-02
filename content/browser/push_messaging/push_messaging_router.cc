@@ -163,7 +163,7 @@ void PushMessagingRouter::DeliverMessageToWorker(
       base::BindOnce(&PushMessagingRouter::DeliverMessageEnd, service_worker,
                      devtools_context, message_id,
                      std::move(deliver_message_callback)),
-      base::TimeDelta::FromSeconds(blink::mojom::kPushEventTimeoutSeconds),
+      base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
       ServiceWorkerVersion::KILL_ON_TIMEOUT);
 
   service_worker->endpoint()->DispatchPushEvent(
@@ -298,7 +298,7 @@ void PushMessagingRouter::FireSubscriptionChangeEventToWorker(
       ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE,
       base::BindOnce(&PushMessagingRouter::FireSubscriptionChangeEventEnd,
                      service_worker, std::move(subscription_change_callback)),
-      base::TimeDelta::FromSeconds(blink::mojom::kPushEventTimeoutSeconds),
+      base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
       ServiceWorkerVersion::KILL_ON_TIMEOUT);
 
   service_worker->endpoint()->DispatchPushSubscriptionChangeEvent(

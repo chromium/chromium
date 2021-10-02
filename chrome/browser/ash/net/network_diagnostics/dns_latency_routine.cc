@@ -37,9 +37,9 @@ constexpr int kTotalHostsToQuery = 3;
 // |kPossibleChars|.
 constexpr int kHostPrefixLength = 8;
 constexpr base::TimeDelta kBadLatencyMs =
-    base::TimeDelta::FromMilliseconds(util::kDnsPotentialProblemLatencyMs);
+    base::Milliseconds(util::kDnsPotentialProblemLatencyMs);
 constexpr base::TimeDelta kVeryBadLatencyMs =
-    base::TimeDelta::FromMilliseconds(util::kDnsProblemLatencyMs);
+    base::Milliseconds(util::kDnsProblemLatencyMs);
 constexpr char kHostSuffix[] = "-ccd-testing-v4.metric.gstatic.com";
 
 const std::string GetRandomString(int length) {

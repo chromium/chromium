@@ -143,20 +143,20 @@ AffiliatedFacets GetTestEquivalenceClassGamma() {
 }
 
 base::TimeDelta GetCacheHardExpiryPeriod() {
-  return base::TimeDelta::FromHours(FacetManager::kCacheHardExpiryInHours);
+  return base::Hours(FacetManager::kCacheHardExpiryInHours);
 }
 
 base::TimeDelta GetCacheSoftExpiryPeriod() {
-  return base::TimeDelta::FromHours(FacetManager::kCacheSoftExpiryInHours);
+  return base::Hours(FacetManager::kCacheSoftExpiryInHours);
 }
 
 base::TimeDelta GetShortTestPeriod() {
-  return base::TimeDelta::FromHours(1);
+  return base::Hours(1);
 }
 
 // Returns a smallest time difference that this test cares about.
 base::TimeDelta Epsilon() {
-  return base::TimeDelta::FromMicroseconds(1);
+  return base::Microseconds(1);
 }
 
 }  // namespace
@@ -828,7 +828,7 @@ TEST_F(AffiliationBackendTest, CancelDuplicatePrefetch) {
 // Canceling a non-existing prefetch request for a non-prefetched facet.
 TEST_F(AffiliationBackendTest, CancelingNonExistingPrefetchIsSilentlyIgnored) {
   CancelPrefetch(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
-                 backend_task_runner()->Now() + base::TimeDelta::FromHours(24));
+                 backend_task_runner()->Now() + base::Hours(24));
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
   EXPECT_EQ(0u, backend_facet_manager_count());
   EXPECT_FALSE(backend_task_runner()->HasPendingTask());

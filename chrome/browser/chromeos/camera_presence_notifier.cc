@@ -35,11 +35,9 @@ void CameraPresenceNotifier::AddObserver(
   observer->OnCameraPresenceCheckDone(camera_present_on_last_check_);
   if (had_no_observers) {
     CheckCameraPresence();
-    camera_check_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kCameraCheckIntervalSeconds),
-        this,
-        &CameraPresenceNotifier::CheckCameraPresence);
+    camera_check_timer_.Start(FROM_HERE,
+                              base::Seconds(kCameraCheckIntervalSeconds), this,
+                              &CameraPresenceNotifier::CheckCameraPresence);
   }
 }
 

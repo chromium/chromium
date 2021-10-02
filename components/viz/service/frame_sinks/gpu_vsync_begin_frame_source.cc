@@ -67,7 +67,7 @@ BeginFrameArgs GpuVSyncBeginFrameSource::GetMissedBeginFrameArgs(
 
 void GpuVSyncBeginFrameSource::SetPreferredInterval(base::TimeDelta interval) {
   auto interval_for_half_refresh_rate = vsync_interval_ * 2;
-  constexpr auto kMaxDelta = base::TimeDelta::FromMillisecondsD(0.5);
+  constexpr auto kMaxDelta = base::Milliseconds(0.5);
   bool run_at_half_refresh_rate =
       interval > (interval_for_half_refresh_rate - kMaxDelta);
   if (run_at_half_refresh_rate_ == run_at_half_refresh_rate)

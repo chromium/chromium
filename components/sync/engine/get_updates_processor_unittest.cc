@@ -270,7 +270,7 @@ TEST_F(GetUpdatesProcessorTest, RetryTest) {
   nudge_tracker.SetNextRetryTime(t1);
 
   // Get the nudge tracker to think the retry is due.
-  nudge_tracker.SetSyncCycleStartTime(t1 + base::TimeDelta::FromSeconds(1));
+  nudge_tracker.SetSyncCycleStartTime(t1 + base::Seconds(1));
 
   sync_pb::ClientToServerMessage message;
   NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
@@ -301,7 +301,7 @@ TEST_F(GetUpdatesProcessorTest, NudgeWithRetryTest) {
   nudge_tracker.SetNextRetryTime(t1);
 
   // Get the nudge tracker to think the retry is due.
-  nudge_tracker.SetSyncCycleStartTime(t1 + base::TimeDelta::FromSeconds(1));
+  nudge_tracker.SetSyncCycleStartTime(t1 + base::Seconds(1));
 
   // Record a local change, too.
   nudge_tracker.RecordLocalChange(BOOKMARKS);

@@ -244,7 +244,7 @@ TEST_F(DataReductionProxySettingsTest, TestSettingsEnabledStateHistograms) {
 TEST_F(DataReductionProxySettingsTest, TestDaysSinceEnabledWithTestClock) {
   const char kUMAEnabledState[] = "DataReductionProxy.DaysSinceEnabled";
   base::SimpleTestClock clock;
-  clock.Advance(base::TimeDelta::FromDays(1));
+  clock.Advance(base::Days(1));
   ResetSettings(&clock);
 
   base::Time last_enabled_time = clock.Now();
@@ -274,7 +274,7 @@ TEST_F(DataReductionProxySettingsTest, TestDaysSinceEnabledWithTestClock) {
     // running.
     test_context_->SetDataReductionProxyEnabled(false);
     settings_->MaybeActivateDataReductionProxy(false);
-    clock.Advance(base::TimeDelta::FromDays(1));
+    clock.Advance(base::Days(1));
     last_enabled_time = clock.Now();
 
     test_context_->SetDataReductionProxyEnabled(true);
@@ -291,7 +291,7 @@ TEST_F(DataReductionProxySettingsTest, TestDaysSinceEnabledWithTestClock) {
   {
     // Advance clock by a random number of days.
     int advance_clock_days = 42;
-    clock.Advance(base::TimeDelta::FromDays(advance_clock_days));
+    clock.Advance(base::Days(advance_clock_days));
     base::HistogramTester histogram_tester;
     // Simulate Chromium start up. Data reduction proxy was enabled
     // |advance_clock_days| ago.

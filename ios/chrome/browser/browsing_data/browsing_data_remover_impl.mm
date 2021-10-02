@@ -484,8 +484,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
         ExternalFileRemoverFactory::GetForBrowserState(browser_state_);
     if (external_file_remover) {
       external_file_remover->RemoveAfterDelay(
-          base::TimeDelta::FromSeconds(0),
-          CreatePendingTaskCompletionClosure());
+          base::Seconds(0), CreatePendingTaskCompletionClosure());
     }
   }
 

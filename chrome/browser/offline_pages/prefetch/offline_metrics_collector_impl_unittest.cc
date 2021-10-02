@@ -276,7 +276,7 @@ TEST_F(OfflineMetricsCollectorTest, ChangesWithinDay) {
   EXPECT_EQ(true, prefs().GetBoolean(prefs::kOfflineUsageOnlineObserved));
 
   // Move time ahead but still same day.
-  test_clock()->Advance(base::TimeDelta::FromHours(1));
+  test_clock()->Advance(base::Hours(1));
   collector()->OnSuccessfulNavigationOffline();
   // Timestamp shouldn't change.
   EXPECT_EQ(GetTimestampFromPrefs(), start);
@@ -300,7 +300,7 @@ TEST_F(OfflineMetricsCollectorTest, MultipleDays) {
   ExpectNotResilientOfflineUsageTotalCount(0);
 
   // Advance the clock to the next day
-  test_clock()->Advance(base::TimeDelta::FromHours(25));
+  test_clock()->Advance(base::Hours(25));
 
   collector()->OnAppStartupOrResume();
   // 1 day 'started' counter, another is being tracked as current day...
@@ -315,7 +315,7 @@ TEST_F(OfflineMetricsCollectorTest, MultipleDays) {
   ExpectNotResilientOfflineUsageTotalCount(1);
 
   // Skip the next 4 days within the virtual clock
-  test_clock()->Advance(base::TimeDelta::FromDays(4));
+  test_clock()->Advance(base::Days(4));
   collector()->OnSuccessfulNavigationOnline();
   // 2 days started, 3 days skipped ('unused').
   EXPECT_EQ(2, prefs().GetInteger(prefs::kOfflineUsageStartedCount));
@@ -350,21 +350,21 @@ TEST_F(OfflineMetricsCollectorTest, OverDayBoundaryPrefetch) {
   // Clock starts at epoch.LocalMidnight()
   collector()->OnPrefetchEnabled();
 
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   collector()->OnPrefetchEnabled();
 
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   collector()->OnSuccessfulPagePrefetch();
 
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   collector()->OnPrefetchedPageOpened();
 
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   collector()->OnPrefetchEnabled();
   collector()->OnSuccessfulPagePrefetch();
   collector()->OnPrefetchedPageOpened();
 
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   collector()->OnPrefetchEnabled();
 
   // Force collector to report stats and observe them reported correctly.

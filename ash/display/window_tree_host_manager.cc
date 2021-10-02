@@ -74,7 +74,7 @@ const char kUICompositorDefaultMemoryLimitMB[] = "512";
 // keeps track of the effective resolution most used on internal display by the
 // user.
 constexpr base::TimeDelta kEffectiveResolutionRepeatingDelay =
-    base::TimeDelta::FromMinutes(30);
+    base::Minutes(30);
 
 display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();

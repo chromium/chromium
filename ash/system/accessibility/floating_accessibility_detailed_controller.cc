@@ -24,8 +24,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 constexpr int kDetailedViewHeightDip = 350;
 
 }  // namespace

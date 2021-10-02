@@ -41,7 +41,7 @@ TEST(TileConfigTest, FinchConfigEnabled) {
             GURL("https://test.com/v1/querytiles"));
   EXPECT_TRUE(TileConfig::GetIsUnMeteredNetworkRequired());
   EXPECT_EQ(TileConfig::GetExperimentTag(), "1234");
-  EXPECT_EQ(TileConfig::GetExpireDuration(), base::TimeDelta::FromSeconds(100));
+  EXPECT_EQ(TileConfig::GetExpireDuration(), base::Seconds(100));
   EXPECT_EQ(TileConfig::GetScheduleIntervalInMs(), 123);
   EXPECT_EQ(TileConfig::GetMaxRandomWindowInMs(), 234);
   EXPECT_EQ(TileConfig::GetOneoffTaskWindowInMs(), 345);
@@ -58,17 +58,17 @@ TEST(TileConfigTest, FinchConfigDefaultParameter) {
             GURL("https://xyz.com/v1/querytiles"));
   EXPECT_FALSE(TileConfig::GetIsUnMeteredNetworkRequired());
   EXPECT_TRUE(TileConfig::GetExperimentTag().empty());
-  EXPECT_EQ(TileConfig::GetExpireDuration(), base::TimeDelta::FromDays(2));
+  EXPECT_EQ(TileConfig::GetExpireDuration(), base::Days(2));
   EXPECT_EQ(TileConfig::GetScheduleIntervalInMs(),
-            base::TimeDelta::FromHours(12).InMilliseconds());
+            base::Hours(12).InMilliseconds());
   EXPECT_EQ(TileConfig::GetMaxRandomWindowInMs(),
-            base::TimeDelta::FromHours(4).InMilliseconds());
+            base::Hours(4).InMilliseconds());
   EXPECT_EQ(TileConfig::GetOneoffTaskWindowInMs(),
-            base::TimeDelta::FromHours(2).InMilliseconds());
+            base::Hours(2).InMilliseconds());
   EXPECT_EQ(TileConfig::GetBackoffPolicyArgsInitDelayInMs(),
-            base::TimeDelta::FromSeconds(30).InMilliseconds());
+            base::Seconds(30).InMilliseconds());
   EXPECT_EQ(TileConfig::GetBackoffPolicyArgsMaxDelayInMs(),
-            base::TimeDelta::FromDays(1).InMilliseconds());
+            base::Days(1).InMilliseconds());
 }
 
 // Test to verify ImagePrefetchMode can be parsed correctly from Finch

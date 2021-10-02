@@ -210,7 +210,7 @@ void LogApplicationBackgroundedTime(NSDate* session_end_time) {
       [[NSDate date] timeIntervalSinceDate:session_end_time];
   UMA_STABILITY_HISTOGRAM_LONG_TIMES(
       "Stability.iOS.UTE.TimeBetweenUTEAndNextLaunch",
-      base::TimeDelta::FromSeconds(background_time));
+      base::Seconds(background_time));
 }
 
 // Logs the device |battery_level| as a UTE stability metric.

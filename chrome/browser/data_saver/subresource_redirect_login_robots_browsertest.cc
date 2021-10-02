@@ -990,8 +990,8 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_TRUE(RunScriptExtractBool(load_image_url));
     EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
     // The image should load closer to 2 seconds.
-    EXPECT_LT(base::TimeDelta::FromSecondsD(0.9), elapsed_timer.Elapsed());
-    EXPECT_GT(base::TimeDelta::FromSecondsD(2.6), elapsed_timer.Elapsed());
+    EXPECT_LT(base::Seconds(0.9), elapsed_timer.Elapsed());
+    EXPECT_GT(base::Seconds(2.6), elapsed_timer.Elapsed());
   }
 
   FetchHistogramsFromChildProcesses();
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(RunScriptExtractBool(load_image_url));
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
   // The image should load closer to 3 seconds.
-  EXPECT_LT(base::TimeDelta::FromSecondsD(2.9), elapsed_timer.Elapsed());
+  EXPECT_LT(base::Seconds(2.9), elapsed_timer.Elapsed());
 
   FetchHistogramsFromChildProcesses();
   histogram_tester_.ExpectUniqueSample(

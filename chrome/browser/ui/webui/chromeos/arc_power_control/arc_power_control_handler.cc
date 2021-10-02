@@ -27,8 +27,7 @@ namespace chromeos {
 namespace {
 
 // Maximum interval to display in tracing.
-constexpr base::TimeDelta kMaxIntervalToDisplay =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMaxIntervalToDisplay = base::Minutes(5);
 
 // Names of throttling mode.
 constexpr char kThrottlingDisable[] = "disable";

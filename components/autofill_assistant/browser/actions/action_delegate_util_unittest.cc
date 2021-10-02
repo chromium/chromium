@@ -131,8 +131,7 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
       test_util::MockFindElement(*mock_delegate, expected_selector);
 
   EXPECT_CALL(*mock_delegate, WaitUntilDocumentIsInReadyState(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
   // No second call to WaitUntilDocumentIsInReadyState.
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
@@ -140,8 +139,8 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
 
   AddStepIgnoreTiming(
       base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
-                     mock_delegate->GetWeakPtr(),
-                     base::TimeDelta::FromMilliseconds(0), DOCUMENT_COMPLETE),
+                     mock_delegate->GetWeakPtr(), base::Milliseconds(0),
+                     DOCUMENT_COMPLETE),
       actions.get());
   actions->emplace_back(base::BindOnce(
       [](base::OnceCallback<void()> destroy_delegate,
@@ -153,8 +152,8 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
       base::BindLambdaForTesting([&]() { mock_delegate.reset(); })));
   AddStepIgnoreTiming(
       base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
-                     mock_delegate->GetWeakPtr(),
-                     base::TimeDelta::FromMilliseconds(0), DOCUMENT_COMPLETE),
+                     mock_delegate->GetWeakPtr(), base::Milliseconds(0),
+                     DOCUMENT_COMPLETE),
       actions.get());
 
   FindElementAndPerform(

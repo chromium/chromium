@@ -21,8 +21,7 @@ namespace extensions {
 // browser (which has security consequences).
 class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  static constexpr base::TimeDelta kAutoCloseDelay =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kAutoCloseDelay = base::Seconds(5);
   using CallbackList = base::OnceClosureList;
 
   // Ensures a global infobar corresponding to the supplied extension is

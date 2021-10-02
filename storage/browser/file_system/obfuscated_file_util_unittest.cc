@@ -571,8 +571,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
     EXPECT_EQ(file_info.last_modified.ToTimeT(), last_modified_time.ToTimeT());
 
     context = NewContext(nullptr);
-    last_modified_time += base::TimeDelta::FromHours(1);
-    last_access_time += base::TimeDelta::FromHours(14);
+    last_modified_time += base::Hours(1);
+    last_access_time += base::Hours(14);
     EXPECT_EQ(
         base::File::FILE_OK,
         ofu()->Touch(context.get(), url, last_access_time, last_modified_time));
@@ -2008,8 +2008,7 @@ TEST_P(ObfuscatedFileUtilTest, TestFileEnumeratorTimestamp) {
   context = NewContext(nullptr);
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->Touch(context.get(), url1,
-                         base::Time::Now() + base::TimeDelta::FromHours(1),
-                         base::Time()));
+                         base::Time::Now() + base::Hours(1), base::Time()));
 
   context = NewContext(nullptr);
   std::unique_ptr<FileSystemFileUtil::AbstractFileEnumerator> file_enum =

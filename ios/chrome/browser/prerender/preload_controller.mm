@@ -191,9 +191,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     reset_timer.reset();
   };
 
-  reset_timer->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaximumCancelledWebStateDelay),
-      base::BindOnce(reset_block));
+  reset_timer->Start(FROM_HERE, base::Seconds(kMaximumCancelledWebStateDelay),
+                     base::BindOnce(reset_block));
 
   block_web_state->GetNavigationManager()->AddRestoreCompletionCallback(
       base::BindOnce(^{

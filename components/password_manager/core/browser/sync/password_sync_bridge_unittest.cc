@@ -704,7 +704,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
       CreateSpecificsWithSignonRealm(kSignonRealm3);
 
   base::Time now = base::Time::Now();
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
 
   form2.date_created = yesterday;
   specifics2.mutable_client_only_encrypted_data()->set_date_created(
@@ -778,7 +778,7 @@ TEST_F(PasswordSyncBridgeTest,
   // than the local one. We will assign primary keys for Form 1 and Form 2 in
   // the local DB.
   base::Time now = base::Time::Now();
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
   const int kPrimaryKey1 = 1000;
   const int kPrimaryKey2 = 1001;
   const std::string kPrimaryKeyStr1 = "1000";

@@ -30,7 +30,7 @@ class NearbyNotificationManager : public TransferUpdateCallback,
                                   public NearbySharingService::Observer {
  public:
   static constexpr base::TimeDelta kNearbyDeviceTryingToShareDismissedTimeout =
-      base::TimeDelta::FromMinutes(15);
+      base::Minutes(15);
 
   enum class SuccessNotificationAction {
     kNone,

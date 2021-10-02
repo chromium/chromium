@@ -102,7 +102,7 @@ TEST(ScopedProcess, SynchronizationBasic) {
 }
 
 void SleepInMsAndWriteOneByte(int time_to_sleep, int fd) {
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(time_to_sleep));
+  base::PlatformThread::Sleep(base::Milliseconds(time_to_sleep));
   CHECK(1 == write(fd, "1", 1));
 }
 

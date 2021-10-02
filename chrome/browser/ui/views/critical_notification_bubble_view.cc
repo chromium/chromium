@@ -56,7 +56,7 @@ CriticalNotificationBubbleView::~CriticalNotificationBubbleView() {
 
 base::TimeDelta CriticalNotificationBubbleView::GetRemainingTime() const {
   // How long to give the user until auto-restart if no action is taken.
-  constexpr auto kCountdownDuration = base::TimeDelta::FromSeconds(30);
+  constexpr auto kCountdownDuration = base::Seconds(30);
   const base::TimeDelta time_lapsed = base::TimeTicks::Now() - bubble_created_;
   return kCountdownDuration - time_lapsed;
 }
@@ -130,7 +130,7 @@ void CriticalNotificationBubbleView::Init() {
                      margins().width());
   AddChildView(std::move(message));
 
-  refresh_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+  refresh_timer_.Start(FROM_HERE, base::Seconds(1), this,
                        &CriticalNotificationBubbleView::OnCountdown);
 
   base::RecordAction(UserMetricsAction("CriticalNotificationShown"));

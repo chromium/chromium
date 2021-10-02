@@ -41,7 +41,7 @@ namespace {
 
 // The duration of the back button opacity animation.
 constexpr base::TimeDelta kButtonOpacityAnimationDuration =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Returns the bounds for the first button shown in this view (the back
 // button in tablet mode, the home button otherwise).
@@ -568,7 +568,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
   // Use the same duration for all parts of the upcoming animation.
   const base::TimeDelta animation_duration =
       animate ? ShelfConfig::Get()->shelf_animation_duration()
-              : base::TimeDelta::FromMilliseconds(0);
+              : base::Milliseconds(0);
 
   const HotseatState target_hotseat_state =
       layout_manager->CalculateHotseatState(layout_manager->visibility_state(),

@@ -46,12 +46,9 @@ namespace {
 
 const size_t kNumTestDevices = 5;
 
-constexpr base::TimeDelta kScanToAdvertisementTime =
-    base::TimeDelta::FromSeconds(3);
-constexpr base::TimeDelta kAdvertisementToConnectionTime =
-    base::TimeDelta::FromSeconds(2);
-constexpr base::TimeDelta kConnectionToAuthenticationTime =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kScanToAdvertisementTime = base::Seconds(3);
+constexpr base::TimeDelta kAdvertisementToConnectionTime = base::Seconds(2);
+constexpr base::TimeDelta kConnectionToAuthenticationTime = base::Seconds(1);
 
 class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
  public:

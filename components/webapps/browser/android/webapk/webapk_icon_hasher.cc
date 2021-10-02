@@ -125,7 +125,7 @@ WebApkIconHasher::WebApkIconHasher(
   DCHECK(url_loader_factory);
 
   download_timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(timeout_ms),
+      FROM_HERE, base::Milliseconds(timeout_ms),
       base::BindOnce(&WebApkIconHasher::OnDownloadTimedOut,
                      base::Unretained(this)));
 

@@ -229,8 +229,7 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -263,8 +262,7 @@ TEST_F(SharingFCMSenderTest, NoVapidKey) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -293,8 +291,7 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -327,8 +324,7 @@ TEST_F(SharingFCMSenderTest, SendViaSyncDisabled) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -368,8 +364,7 @@ TEST_F(SharingFCMSenderTest, PreferVapid) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -414,8 +409,7 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -481,8 +475,7 @@ TEST_P(SharingFCMSenderWebPushResultTest, ResultTest) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
@@ -560,8 +553,7 @@ TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::TimeDelta::FromSeconds(kTtlSeconds),
-      std::move(sharing_message),
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));

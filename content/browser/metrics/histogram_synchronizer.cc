@@ -191,7 +191,7 @@ void HistogramSynchronizer::FetchHistograms() {
     return;
 
   current_synchronizer->RegisterAndNotifyAllProcesses(
-      HistogramSynchronizer::UNKNOWN, base::TimeDelta::FromMinutes(1));
+      HistogramSynchronizer::UNKNOWN, base::Minutes(1));
 }
 
 void FetchHistogramsAsynchronously(scoped_refptr<base::TaskRunner> task_runner,

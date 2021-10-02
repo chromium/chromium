@@ -51,9 +51,8 @@ const char kScreenshotNotification_PasteTime[] =
 
 constexpr int kNotificationLimit = 3;
 constexpr int kContextMenuBadgeShowLimit = 3;
-constexpr base::TimeDelta kMinInterval = base::TimeDelta::FromDays(1);
-constexpr base::TimeDelta kMaxTimeBetweenPaste =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kMinInterval = base::Days(1);
+constexpr base::TimeDelta kMaxTimeBetweenPaste = base::Minutes(10);
 
 }  // namespace ash
 

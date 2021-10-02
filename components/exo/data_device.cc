@@ -32,7 +32,7 @@ static_assert(Seat::IsValidObserverPriority(kDataDeviceSeatObserverPriority),
               "kDataDeviceSeatObserverPriority is not in the valid range.");
 
 constexpr base::TimeDelta kDataOfferDestructionTimeout =
-    base::TimeDelta::FromMilliseconds(1000);
+    base::Milliseconds(1000);
 
 DragOperation DndActionToDragOperation(DndAction dnd_action) {
   switch (dnd_action) {

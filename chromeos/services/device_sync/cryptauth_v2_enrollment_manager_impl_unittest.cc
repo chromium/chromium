@@ -50,10 +50,8 @@ const char kFakeV2PublicKey[] = "public_key_v2";
 const char kFakeV2PrivateKey[] = "private_key_v2";
 const char kFakeSessionId[] = "session_id";
 
-constexpr base::TimeDelta kFakeRefreshPeriod =
-    base::TimeDelta::FromMilliseconds(2592000000);
-constexpr base::TimeDelta kFakeRetryPeriod =
-    base::TimeDelta::FromMilliseconds(43200000);
+constexpr base::TimeDelta kFakeRefreshPeriod = base::Milliseconds(2592000000);
+constexpr base::TimeDelta kFakeRetryPeriod = base::Milliseconds(43200000);
 
 const cryptauthv2::PolicyReference& GetClientDirectivePolicyReferenceForTest() {
   static const base::NoDestructor<cryptauthv2::PolicyReference>
@@ -434,10 +432,9 @@ TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest,
 
   // Now, user is due for a refresh.
   test_clock()->SetNow(test_clock()->Now() + kFakeRefreshPeriod +
-                       base::TimeDelta::FromSeconds(1));
+                       base::Seconds(1));
   EXPECT_FALSE(enrollment_manager()->IsEnrollmentValid());
-  base::TimeDelta expected_time_to_next_attempt =
-      base::TimeDelta::FromSeconds(0);
+  base::TimeDelta expected_time_to_next_attempt = base::Seconds(0);
   fake_enrollment_scheduler()->set_time_to_next_enrollment_request(
       expected_time_to_next_attempt);
   EXPECT_EQ(expected_time_to_next_attempt,

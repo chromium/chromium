@@ -151,11 +151,10 @@ NetworkChangeNotifierWin::NetworkChangeCalculatorParamsWin() {
   NetworkChangeCalculatorParams params;
   // Delay values arrived at by simple experimentation and adjusted so as to
   // produce a single signal when switching between network connections.
-  params.ip_address_offline_delay_ = base::TimeDelta::FromMilliseconds(1500);
-  params.ip_address_online_delay_ = base::TimeDelta::FromMilliseconds(1500);
-  params.connection_type_offline_delay_ =
-      base::TimeDelta::FromMilliseconds(1500);
-  params.connection_type_online_delay_ = base::TimeDelta::FromMilliseconds(500);
+  params.ip_address_offline_delay_ = base::Milliseconds(1500);
+  params.ip_address_online_delay_ = base::Milliseconds(1500);
+  params.connection_type_offline_delay_ = base::Milliseconds(1500);
+  params.connection_type_online_delay_ = base::Milliseconds(500);
   return params;
 }
 
@@ -434,7 +433,7 @@ void NetworkChangeNotifierWin::NotifyObservers(ConnectionType connection_type) {
   // If after one second we determine we are still offline, we will
   // delay again.
   offline_polls_ = 0;
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+  timer_.Start(FROM_HERE, base::Seconds(1), this,
                &NetworkChangeNotifierWin::NotifyParentOfConnectionTypeChange);
 }
 
@@ -452,8 +451,7 @@ void NetworkChangeNotifierWin::WatchForAddressChange() {
         FROM_HERE,
         base::BindOnce(&NetworkChangeNotifierWin::WatchForAddressChange,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(
-            kWatchForAddressChangeRetryIntervalMs));
+        base::Milliseconds(kWatchForAddressChangeRetryIntervalMs));
     return;
   }
 
@@ -499,7 +497,7 @@ void NetworkChangeNotifierWin::NotifyParentOfConnectionTypeChangeImpl(
   // we may not detect the transition to online state after 1 second but within
   // 20 seconds we generally do.
   if (last_announced_offline_ && current_offline && offline_polls_ <= 20) {
-    timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+    timer_.Start(FROM_HERE, base::Seconds(1), this,
                  &NetworkChangeNotifierWin::NotifyParentOfConnectionTypeChange);
     return;
   }

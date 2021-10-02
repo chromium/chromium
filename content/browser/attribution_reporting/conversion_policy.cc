@@ -73,16 +73,15 @@ base::Time ConversionPolicy::GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time,
     StorableSource::SourceType source_type) const {
-  constexpr base::TimeDelta kMinImpressionExpiry = base::TimeDelta::FromDays(1);
-  constexpr base::TimeDelta kDefaultImpressionExpiry =
-      base::TimeDelta::FromDays(30);
+  constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
+  constexpr base::TimeDelta kDefaultImpressionExpiry = base::Days(30);
 
   // Default to the maximum expiry time.
   base::TimeDelta expiry = declared_expiry.value_or(kDefaultImpressionExpiry);
 
   // Expiry time for event sources must be a whole number of days.
   if (source_type == StorableSource::SourceType::kEvent)
-    expiry = expiry.RoundToMultiple(base::TimeDelta::FromDays(1));
+    expiry = expiry.RoundToMultiple(base::Days(1));
 
   // If the impression specified its own expiry, clamp it to the minimum and
   // maximum.
@@ -101,8 +100,7 @@ base::Time ConversionPolicy::GetReportTimeForReportPastSendTime(
   // increasing this delay once we can be sure reports are still sent at
   // reasonable times, and not delayed for many browser sessions due to short
   // session up-times.
-  return now +
-         base::TimeDelta::FromMilliseconds(base::RandInt(0, 5 * 60 * 1000));
+  return now + base::Milliseconds(base::RandInt(0, 5 * 60 * 1000));
 }
 
 absl::optional<base::TimeDelta> ConversionPolicy::GetFailedReportDelay(
@@ -110,7 +108,7 @@ absl::optional<base::TimeDelta> ConversionPolicy::GetFailedReportDelay(
   DCHECK_GT(failed_send_attempts, 0);
 
   const int kMaxFailedSendAttempts = 2;
-  const base::TimeDelta kInitialReportDelay = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kInitialReportDelay = base::Minutes(5);
   const int kDelayFactor = 3;
 
   if (failed_send_attempts > kMaxFailedSendAttempts)

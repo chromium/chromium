@@ -38,10 +38,10 @@ enum TimeoutEvent {
 // versions found in Android's ViewConfiguration. Do not change these default
 // values without explicitly consulting an OWNER.
 GestureDetector::Config::Config()
-    : longpress_timeout(base::TimeDelta::FromMilliseconds(500)),
-      showpress_timeout(base::TimeDelta::FromMilliseconds(180)),
-      double_tap_timeout(base::TimeDelta::FromMilliseconds(300)),
-      double_tap_min_time(base::TimeDelta::FromMilliseconds(40)),
+    : longpress_timeout(base::Milliseconds(500)),
+      showpress_timeout(base::Milliseconds(180)),
+      double_tap_timeout(base::Milliseconds(300)),
+      double_tap_min_time(base::Milliseconds(40)),
       touch_slop(8),
       double_tap_slop(100),
       minimum_fling_velocity(50),
@@ -51,7 +51,7 @@ GestureDetector::Config::Config()
       maximum_swipe_deviation_angle(20.f),
       two_finger_tap_enabled(false),
       two_finger_tap_max_separation(300),
-      two_finger_tap_timeout(base::TimeDelta::FromMilliseconds(700)),
+      two_finger_tap_timeout(base::Milliseconds(700)),
       single_tap_repeat_interval(1),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       stylus_button_accelerated_longpress_enabled(true),

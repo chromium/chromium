@@ -154,7 +154,7 @@ ExtensionUpdater::ExtensionUpdater(
     const ExtensionDownloader::Factory& downloader_factory)
     : service_(service),
       downloader_factory_(downloader_factory),
-      frequency_(base::TimeDelta::FromSeconds(frequency_seconds)),
+      frequency_(base::Seconds(frequency_seconds)),
       extension_prefs_(extension_prefs),
       prefs_(prefs),
       profile_(profile),
@@ -166,7 +166,7 @@ ExtensionUpdater::ExtensionUpdater(
   frequency_seconds = std::max(frequency_seconds, kMinUpdateFrequencySeconds);
 #endif
   frequency_seconds = std::min(frequency_seconds, kMaxUpdateFrequencySeconds);
-  frequency_ = base::TimeDelta::FromSeconds(frequency_seconds);
+  frequency_ = base::Seconds(frequency_seconds);
 }
 
 ExtensionUpdater::~ExtensionUpdater() {
@@ -220,7 +220,7 @@ void ExtensionUpdater::ScheduleNextCheck() {
   DCHECK(alive_);
   // Jitter the frequency by +/- 20%.
   const double jitter_factor = RandDouble() * 0.4 + 0.8;
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
+  base::TimeDelta delay = base::Milliseconds(
       static_cast<int64_t>(frequency_.InMilliseconds() * jitter_factor));
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE,

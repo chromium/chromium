@@ -43,12 +43,10 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   // If suspend duration is greater than this, we reset timestamps used to calc
   // |ActivityData::recent_time_active|. We also merge video-playing sessions
   // that have a pause shorter than this.
-  static constexpr base::TimeDelta kIdleDelay =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kIdleDelay = base::Seconds(30);
 
   // Count number of key, mouse and touch events in the past hour.
-  static constexpr auto kUserInputEventsDuration =
-      base::TimeDelta::FromHours(1);
+  static constexpr auto kUserInputEventsDuration = base::Hours(1);
 
   // Granularity of input events is per minute.
   static constexpr int kNumUserInputEventsBuckets =

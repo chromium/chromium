@@ -71,7 +71,7 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
             int max_pending_frames,
             int frame_rate)
       : max_pending_frames_(max_pending_frames),
-        frame_interval_(base::TimeDelta::FromSeconds(1) / frame_rate) {
+        frame_interval_(base::Seconds(1) / frame_rate) {
     support_ = std::make_unique<viz::CompositorFrameSinkSupport>(
         this,
         VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager(),

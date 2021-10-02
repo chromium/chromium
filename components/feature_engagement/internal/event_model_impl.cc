@@ -130,7 +130,7 @@ base::Time EventModelImpl::GetLastSnoozeTimestamp(
     return base::Time();
 
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(event->last_snooze_time_us()));
+      base::Microseconds(event->last_snooze_time_us()));
 }
 
 uint32_t EventModelImpl::GetSnoozeCount(const std::string& event_name,

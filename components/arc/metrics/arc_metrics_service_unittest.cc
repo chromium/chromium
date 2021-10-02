@@ -127,8 +127,7 @@ class ArcMetricsServiceTest : public testing::Test {
 
   void SetArcStartTimeInMs(uint64_t arc_start_time_in_ms) {
     const base::TimeTicks arc_start_time =
-        base::TimeDelta::FromMilliseconds(arc_start_time_in_ms) +
-        base::TimeTicks();
+        base::Milliseconds(arc_start_time_in_ms) + base::TimeTicks();
     chromeos::FakeSessionManagerClient::Get()->set_arc_start_time(
         arc_start_time);
   }
@@ -347,8 +346,7 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
   absl::optional<base::TimeTicks> arc_start_time =
       service()->GetArcStartTimeFromEvents(events);
   EXPECT_TRUE(arc_start_time.has_value());
-  EXPECT_EQ(*arc_start_time,
-            base::TimeDelta::FromMilliseconds(10) + base::TimeTicks());
+  EXPECT_EQ(*arc_start_time, base::Milliseconds(10) + base::TimeTicks());
 
   // Check that the upgrade event was removed from events.
   EXPECT_TRUE(std::none_of(

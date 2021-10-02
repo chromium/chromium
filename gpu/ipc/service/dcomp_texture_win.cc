@@ -30,7 +30,7 @@ namespace gpu {
 namespace {
 
 constexpr base::TimeDelta kParentWindowPosPollingPeriod =
-    base::TimeDelta::FromMilliseconds(1000);
+    base::Milliseconds(1000);
 
 std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
     SharedContextState* context_state) {

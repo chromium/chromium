@@ -368,7 +368,7 @@ void DaemonProcess::DeleteAllDesktopSessions() {
 
 void DaemonProcess::StartProcessStatsReport(base::TimeDelta interval) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  if (interval <= base::TimeDelta::FromSeconds(0)) {
+  if (interval <= base::Seconds(0)) {
     interval = kDefaultProcessStatsInterval;
   }
 

@@ -1660,7 +1660,7 @@ const unsigned int RenderProcessHostImpl::kMaxFrameDepthForPriority =
 
 // static
 const base::TimeDelta RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout =
-    base::TimeDelta::FromMilliseconds(kKeepAliveHandleFactoryTimeoutInMSec);
+    base::Milliseconds(kKeepAliveHandleFactoryTimeoutInMSec);
 
 RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,

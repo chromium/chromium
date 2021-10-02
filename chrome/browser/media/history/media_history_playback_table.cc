@@ -107,14 +107,12 @@ MediaHistoryPlaybackTable::GetPlaybackRows() {
         mojom::MediaHistoryPlaybackRow::New());
 
     playback->url = GURL(statement.ColumnString(0));
-    playback->watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(1));
+    playback->watchtime = base::Seconds(statement.ColumnInt64(1));
     playback->has_audio = statement.ColumnBool(2);
     playback->has_video = statement.ColumnBool(3);
-    playback->last_updated_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromSeconds(statement.ColumnInt64(4)))
-            .ToJsTime();
+    playback->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+                                      base::Seconds(statement.ColumnInt64(4)))
+                                      .ToJsTime();
 
     playbacks.push_back(std::move(playback));
   }

@@ -137,7 +137,7 @@ class MediaSessionImplVisibilityBrowserTest
         GetVisibilityTestData().session_state_after_hide;
 
     if (state_before_hide == state_after_hide) {
-      Wait(base::TimeDelta::FromSeconds(1));
+      Wait(base::Seconds(1));
       ASSERT_EQ(state_after_hide,
                 media_session_->GetMediaSessionInfoSync()->state);
     } else {

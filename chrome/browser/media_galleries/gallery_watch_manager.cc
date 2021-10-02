@@ -427,14 +427,12 @@ void GalleryWatchManager::OnFilePathChanged(const base::FilePath& path,
 
   base::TimeDelta time_since_last_notify =
       base::Time::Now() - notification_info->second.last_notify_time;
-  if (time_since_last_notify <
-      base::TimeDelta::FromSeconds(kMinNotificationDelayInSeconds)) {
+  if (time_since_last_notify < base::Seconds(kMinNotificationDelayInSeconds)) {
     if (!notification_info->second.delayed_notification_pending) {
       notification_info->second.delayed_notification_pending = true;
       base::TimeDelta delay_to_next_valid_time =
           notification_info->second.last_notify_time +
-          base::TimeDelta::FromSeconds(kMinNotificationDelayInSeconds) -
-          base::Time::Now();
+          base::Seconds(kMinNotificationDelayInSeconds) - base::Time::Now();
       content::GetUIThreadTaskRunner({})->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&GalleryWatchManager::OnFilePathChanged,

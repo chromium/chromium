@@ -61,8 +61,7 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
 
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), network_traffic_annotation);
-  simple_loader->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kTimeoutDurationSeconds));
+  simple_loader->SetTimeoutDuration(base::Seconds(kTimeoutDurationSeconds));
 
   if (!request_body.empty()) {
     DCHECK(!content_type.empty());

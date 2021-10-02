@@ -37,8 +37,7 @@ const int kMinUploadDelayMs = 60 * 1000;  // 60 seconds
 // Minimum delay after scheduling an upload
 const int kMinUploadScheduleDelayMs = 60 * 1000;  // 60 seconds
 // Minimum interval between the last upload and the next immediate upload
-constexpr base::TimeDelta kMinImmediateUploadInterval =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 }  // namespace
 
 namespace policy {
@@ -97,7 +96,7 @@ bool StatusUploader::ScheduleNextStatusUpload(bool immediately) {
   // happened, this yields a TimeDelta of kMinUploadScheduleDelayMs).
   base::TimeDelta delay =
       std::max((last_upload_ + upload_frequency_) - now,
-               base::TimeDelta::FromMilliseconds(kMinUploadScheduleDelayMs));
+               base::Milliseconds(kMinUploadScheduleDelayMs));
 
   // The next upload should be scheduled for at least
   // kMinImmediateUploadInterval after the last upload if it is immediately.
@@ -161,9 +160,9 @@ void StatusUploader::RefreshUploadFrequency() {
   if (settings->GetInteger(chromeos::kReportUploadFrequency, &frequency)) {
     SYSLOG(INFO) << "Changing status upload frequency from "
                  << upload_frequency_ << " to "
-                 << base::TimeDelta::FromMilliseconds(frequency);
-    upload_frequency_ = base::TimeDelta::FromMilliseconds(
-        std::max(kMinUploadDelayMs, frequency));
+                 << base::Milliseconds(frequency);
+    upload_frequency_ =
+        base::Milliseconds(std::max(kMinUploadDelayMs, frequency));
   }
   // Schedule a new upload with the new frequency - only do this if we've
   // already performed the initial upload, because we want the initial upload

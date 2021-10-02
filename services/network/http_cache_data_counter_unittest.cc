@@ -170,7 +170,7 @@ class HttpCacheDataCounterTest : public testing::Test {
 
     // The upper bound is "exclusive" but appropriximately so; make it clearly
     // exclusive.
-    end_time -= base::TimeDelta::FromDays(1);
+    end_time -= base::Days(1);
 
     auto result = CountBetween(network_context_.get(), start_time, end_time);
     ASSERT_GE(result.second, 0);

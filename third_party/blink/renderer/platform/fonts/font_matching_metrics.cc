@@ -353,8 +353,7 @@ void FontMatchingMetrics::PublishEmojiGlyphMetrics() {
 void FontMatchingMetrics::OnFontLookup() {
   DCHECK(IdentifiabilityStudySettings::Get()->IsActive());
   if (!identifiability_metrics_timer_.IsActive()) {
-    identifiability_metrics_timer_.StartOneShot(base::TimeDelta::FromMinutes(1),
-                                                FROM_HERE);
+    identifiability_metrics_timer_.StartOneShot(base::Minutes(1), FROM_HERE);
   }
 }
 

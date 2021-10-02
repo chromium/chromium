@@ -92,7 +92,7 @@ class ArcProcessService : public KeyedService,
   // Also consider making ArcProcessService a push service rather than a pull
   // service.
   static constexpr base::TimeDelta kProcessSnapshotRefreshTime =
-      base::TimeDelta::FromSeconds(5);
+      base::Seconds(5);
 
   // Returns nullptr before the global instance is ready.
   static ArcProcessService* Get();

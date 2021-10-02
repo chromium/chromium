@@ -47,21 +47,18 @@ namespace media {
 //        |search_block_center_offset_|.
 
 // Overlap-and-add window size in milliseconds.
-constexpr base::TimeDelta kOlaWindowSize =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kOlaWindowSize = base::Milliseconds(20);
 
 // Size of search interval in milliseconds. The search interval is
 // [-delta delta] around |output_index_| * |playback_rate|. So the search
 // interval is 2 * delta.
-constexpr base::TimeDelta kWsolaSearchInterval =
-    base::TimeDelta::FromMilliseconds(30);
+constexpr base::TimeDelta kWsolaSearchInterval = base::Milliseconds(30);
 
 // The maximum size for the |audio_buffer_|. Arbitrarily determined.
-constexpr base::TimeDelta kMaxCapacity = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kMaxCapacity = base::Seconds(3);
 
 // The minimum size for the |audio_buffer_|. Arbitrarily determined.
-constexpr base::TimeDelta kStartingCapacity =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kStartingCapacity = base::Milliseconds(200);
 
 // The minimum size for the |audio_buffer_| for encrypted streams.
 // Set this to be larger than |kStartingCapacity| because the performance of
@@ -69,7 +66,7 @@ constexpr base::TimeDelta kStartingCapacity =
 // potentially IPC overhead. For the context, see https://crbug.com/403462,
 // https://crbug.com/718161 and https://crbug.com/879970.
 constexpr base::TimeDelta kStartingCapacityForEncrypted =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 AudioRendererAlgorithm::AudioRendererAlgorithm(MediaLog* media_log)
     : AudioRendererAlgorithm(

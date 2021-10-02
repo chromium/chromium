@@ -13,16 +13,14 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 // Up to 10 minutes, with 100 buckets.
-#define PAGE_LOAD_HISTOGRAM(name, sample)                           \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                          \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromMinutes(10), 100)
+#define PAGE_LOAD_HISTOGRAM(name, sample)                          \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(10), 100)
 
 // Up to 1 hour, with 100 buckets.
-#define PAGE_LOAD_LONG_HISTOGRAM(name, sample)                      \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                          \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromHours(1), 100)
+#define PAGE_LOAD_LONG_HISTOGRAM(name, sample)                     \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Hours(1), 100)
 
 // Records |bytes| to |histogram_name| in kilobytes (i.e., bytes / 1024).
 #define PAGE_BYTES_HISTOGRAM(histogram_name, bytes) \

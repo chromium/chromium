@@ -121,8 +121,8 @@ void PressHomeButton() {
 }
 
 void StepWidgetLayerAnimatorToEnd(views::Widget* widget) {
-  widget->GetNativeView()->layer()->GetAnimator()->Step(
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(1));
+  widget->GetNativeView()->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
+                                                        base::Seconds(1));
 }
 
 ShelfWidget* GetShelfWidget() {
@@ -1657,7 +1657,7 @@ TEST_F(ShelfLayoutManagerTest, DuplicateDragUpFromBezel) {
       gfx::Point(start.x(), shelf_widget_bounds.bottom() -
                                 AppListView::kDragSnapToPeekingThreshold - 10);
   ui::test::EventGenerator* generator = GetEventGenerator();
-  constexpr base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(100);
+  constexpr base::TimeDelta kTimeDelta = base::Milliseconds(100);
   constexpr int kNumScrollSteps = 4;
   generator->GestureScrollSequence(start, end, kTimeDelta, kNumScrollSteps);
   GetAppListTestHelper()->WaitUntilIdle();
@@ -1708,7 +1708,7 @@ TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeForAppList) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
-  constexpr base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(100);
+  constexpr base::TimeDelta kTimeDelta = base::Milliseconds(100);
   constexpr int kNumScrollSteps = 4;
 
   // Starts the drag from the center of the shelf's bottom.
@@ -1793,7 +1793,7 @@ TEST_F(ShelfLayoutManagerTest, SwipingOnShelfIfAppListOpened) {
   CreateTestWidget();
 
   ui::test::EventGenerator* generator = GetEventGenerator();
-  constexpr base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(100);
+  constexpr base::TimeDelta kTimeDelta = base::Milliseconds(100);
   constexpr int kNumScrollSteps = 4;
   gfx::Point start = GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint();
 
@@ -1892,8 +1892,7 @@ TEST_F(ShelfLayoutManagerTest,
     gfx::Point start(shelf_bounds_in_screen.CenterPoint());
     gfx::Point end(start.x(), shelf_bounds_in_screen.bottom());
     views::WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
-    generator->GestureScrollSequence(start, end,
-                                     base::TimeDelta::FromMilliseconds(10), 5);
+    generator->GestureScrollSequence(start, end, base::Milliseconds(10), 5);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
@@ -1931,8 +1930,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToVisibleWhenGestureInComplete) {
     ui::test::EventGenerator* generator = GetEventGenerator();
 
     views::WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
-    generator->GestureScrollSequence(start, end,
-                                     base::TimeDelta::FromMilliseconds(10), 1);
+    generator->GestureScrollSequence(start, end, base::Milliseconds(10), 1);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
     waiter.WaitForAnimation();
@@ -1976,7 +1974,7 @@ TEST_F(ShelfLayoutManagerTest,
 
     // Now swipe down to the endpoint.
     generator->GestureScrollSequence(start, endpoint_below_target,
-                                     base::TimeDelta::FromMilliseconds(10), 1);
+                                     base::Milliseconds(10), 1);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
     EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
@@ -2030,7 +2028,7 @@ TEST_F(ShelfLayoutManagerTest,
     // Now swipe down to the endpoint.
     views::WidgetAnimationWaiter waiter2(GetShelfWidget(), auto_hidden_bounds);
     generator->GestureScrollSequence(start, endpoint_above_target,
-                                     base::TimeDelta::FromMilliseconds(10), 1);
+                                     base::Milliseconds(10), 1);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
     EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
     waiter2.WaitForAnimation();
@@ -2477,7 +2475,7 @@ TEST_F(ShelfLayoutManagerTest, PressHomeBtnWhenAutoHideShelfBeingDragged) {
   // reproduction procedures.
   delta_y = -ShelfConfig::Get()->shelf_size() - 1;
 
-  timestamp += base::TimeDelta::FromMilliseconds(200);
+  timestamp += base::Milliseconds(200);
   ui::GestureEvent update_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, delta_y));
@@ -2491,7 +2489,7 @@ TEST_F(ShelfLayoutManagerTest, PressHomeBtnWhenAutoHideShelfBeingDragged) {
   // Release the press.
   delta_y -= 1;
   gesture_location.Offset(0, delta_y);
-  timestamp += base::TimeDelta::FromMilliseconds(200);
+  timestamp += base::Milliseconds(200);
   ui::GestureEvent scroll_end_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
@@ -2533,7 +2531,7 @@ TEST_F(ShelfLayoutManagerTest, MousePressAppListBtnWhenShelfBeingDragged) {
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, delta_y));
   GetPrimaryShelf()->shelf_widget()->OnGestureEvent(&start_event);
   delta_y = -5;
-  timestamp += base::TimeDelta::FromMilliseconds(200);
+  timestamp += base::Milliseconds(200);
   ui::GestureEvent update_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, delta_y));
@@ -2549,7 +2547,7 @@ TEST_F(ShelfLayoutManagerTest, MousePressAppListBtnWhenShelfBeingDragged) {
   // End the gesture event.
   delta_y -= 1;
   gesture_location.Offset(0, delta_y);
-  timestamp += base::TimeDelta::FromMilliseconds(200);
+  timestamp += base::Milliseconds(200);
   ui::GestureEvent scroll_end_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
@@ -2639,8 +2637,7 @@ TEST_F(ShelfLayoutManagerTest, SwipeUpAutoHideHiddenShelf) {
           const gfx::Point start(display_bounds.bottom_center());
           const gfx::Point end(start + gfx::Vector2d(x_offset, -y_offset));
           generator->GestureScrollSequence(
-              start, end, base::TimeDelta::FromMilliseconds(time_delta),
-              num_scroll_steps);
+              start, end, base::Milliseconds(time_delta), num_scroll_steps);
           EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState())
               << "Failure to show shelf after a swipe up in " << time_delta
               << "ms, " << num_scroll_steps << " steps, " << x_offset

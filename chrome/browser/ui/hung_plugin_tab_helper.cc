@@ -49,7 +49,7 @@ struct HungPluginTabHelper::PluginState {
 
   // Time to delay before re-showing the infobar for a hung plugin. This is
   // increased each time the user cancels it.
-  base::TimeDelta next_reshow_delay = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta next_reshow_delay = base::Seconds(10);
 
   // Handles calling the helper when the infobar should be re-shown.
   base::OneShotTimer timer;

@@ -1176,8 +1176,8 @@ TEST_F(GcpGaiaCredentialBaseTest,
       FakeInternetAvailabilityChecker::kHicForceNo);
   // Advance the time that is more than the offline validity period.
   BaseTimeClockOverrideValue::current_time_ =
-      base::Time::Now() + base::TimeDelta::FromDays(validity_period_in_days) +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Time::Now() + base::Days(validity_period_in_days) +
+      base::Milliseconds(1);
   base::subtle::ScopedTimeClockOverrides time_override(
       &BaseTimeClockOverrideValue::NowOverride, nullptr, nullptr);
 
@@ -2892,7 +2892,7 @@ TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, PasswordRecovery) {
 
   if (get_key_event || generate_key_event) {
     fake_password_recovery_manager()->SetRequestTimeoutForTesting(
-        base::TimeDelta::FromMilliseconds(50));
+        base::Milliseconds(50));
   }
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -2940,7 +2940,7 @@ TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, PasswordRecovery) {
 
   if (generate_key_event) {
     fake_password_recovery_manager()->SetRequestTimeoutForTesting(
-        base::TimeDelta::FromMilliseconds(50));
+        base::Milliseconds(50));
   }
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -3400,7 +3400,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
     upload_device_details_key_event = std::make_unique<base::WaitableEvent>();
 
     fake_gem_device_details_manager()->SetRequestTimeoutForTesting(
-        base::TimeDelta::FromMilliseconds(50));
+        base::Milliseconds(50));
   }
   const std::string device_resource_id = "test-device-resource-id";
   const std::string valid_server_response =

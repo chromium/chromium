@@ -15,8 +15,7 @@ namespace disks {
 namespace {
 
 // Threshold for logging the blocking of suspend.
-constexpr base::TimeDelta kBlockSuspendThreshold =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kBlockSuspendThreshold = base::Seconds(5);
 
 void OnRefreshCompleted(bool success) {}
 

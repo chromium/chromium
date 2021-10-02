@@ -95,12 +95,10 @@ class MEDIA_EXPORT AudioClock {
   // media data has been played yet.             by AudioClock, which would be
   //                                             1000 + 500 + 250 = 1750 ms.
   base::TimeDelta front_timestamp() const {
-    return base::TimeDelta::FromMicroseconds(
-        std::round(front_timestamp_micros_));
+    return base::Microseconds(std::round(front_timestamp_micros_));
   }
   base::TimeDelta back_timestamp() const {
-    return base::TimeDelta::FromMicroseconds(
-        std::round(back_timestamp_micros_));
+    return base::Microseconds(std::round(back_timestamp_micros_));
   }
 
   // Returns the amount of wall time until |timestamp| will be played by the

@@ -33,9 +33,7 @@ void HttpResponseBodyDrainer::Start(HttpNetworkSession* session) {
   int rv = DoLoop(OK);
 
   if (rv == ERR_IO_PENDING) {
-    timer_.Start(FROM_HERE,
-                 base::TimeDelta::FromSeconds(kTimeoutInSeconds),
-                 this,
+    timer_.Start(FROM_HERE, base::Seconds(kTimeoutInSeconds), this,
                  &HttpResponseBodyDrainer::OnTimerFired);
     session_ = session;
     session->AddResponseDrainer(base::WrapUnique(this));

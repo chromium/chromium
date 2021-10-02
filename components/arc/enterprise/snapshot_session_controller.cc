@@ -17,7 +17,7 @@ namespace data_snapshotd {
 namespace {
 
 // The maximum duration of all required apps being installed.
-const base::TimeDelta kDuration = base::TimeDelta::FromMinutes(40);
+const base::TimeDelta kDuration = base::Minutes(40);
 
 // This class tracks a user session lifetime and notifies its observers about
 // the appropriate session state changes.

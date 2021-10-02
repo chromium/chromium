@@ -47,12 +47,10 @@ class AndroidBatteryMetrics
 
   // Battery drain is captured and reported periodically in this interval while
   // the device is on battery power and the app is visible.
-  static constexpr base::TimeDelta kMetricsInterval =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kMetricsInterval = base::Seconds(30);
 
   // Radio state is polled with this interval to count radio wakeups.
-  static constexpr base::TimeDelta kRadioStateInterval =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kRadioStateInterval = base::Seconds(1);
 
   bool app_visible_;
   bool on_battery_power_;

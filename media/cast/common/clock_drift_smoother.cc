@@ -23,8 +23,7 @@ ClockDriftSmoother::~ClockDriftSmoother() = default;
 
 base::TimeDelta ClockDriftSmoother::Current() const {
   DCHECK(!last_update_time_.is_null());
-  return base::TimeDelta::FromMicroseconds(
-      base::ClampRound<int64_t>(estimate_us_));
+  return base::Microseconds(base::ClampRound<int64_t>(estimate_us_));
 }
 
 void ClockDriftSmoother::Reset(base::TimeTicks now,
@@ -52,7 +51,7 @@ void ClockDriftSmoother::Update(base::TimeTicks now,
 
 // static
 base::TimeDelta ClockDriftSmoother::GetDefaultTimeConstant() {
-  return base::TimeDelta::FromSeconds(30);
+  return base::Seconds(30);
 }
 
 }  // namespace cast

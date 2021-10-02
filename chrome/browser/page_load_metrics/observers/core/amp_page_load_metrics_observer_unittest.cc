@@ -44,12 +44,11 @@ class AMPPageLoadMetricsObserverTest
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     // Reset to the default testing state. Does not reset histogram state.
     timing_.navigation_start = base::Time::FromDoubleT(1);
-    timing_.response_start = base::TimeDelta::FromSeconds(2);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromSeconds(3);
-    timing_.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromSeconds(4);
-    timing_.paint_timing->first_image_paint = base::TimeDelta::FromSeconds(5);
-    timing_.document_timing->load_event_start = base::TimeDelta::FromSeconds(7);
+    timing_.response_start = base::Seconds(2);
+    timing_.parse_timing->parse_start = base::Seconds(3);
+    timing_.paint_timing->first_contentful_paint = base::Seconds(4);
+    timing_.paint_timing->first_image_paint = base::Seconds(5);
+    timing_.document_timing->load_event_start = base::Seconds(7);
     PopulateRequiredTimingFields(&timing_);
   }
 
@@ -331,22 +330,19 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
   page_load_metrics::mojom::PageLoadTiming subframe_timing;
   page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
   subframe_timing.navigation_start = base::Time::FromDoubleT(2);
-  subframe_timing.paint_timing->first_paint =
-      base::TimeDelta::FromMilliseconds(4);
-  subframe_timing.paint_timing->first_contentful_paint =
-      base::TimeDelta::FromMilliseconds(5);
+  subframe_timing.paint_timing->first_paint = base::Milliseconds(4);
+  subframe_timing.paint_timing->first_contentful_paint = base::Milliseconds(5);
   subframe_timing.paint_timing->largest_contentful_paint
       ->largest_image_paint_size = 1;
   subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
-      base::TimeDelta::FromMilliseconds(10);
+      base::Milliseconds(10);
   subframe_timing.paint_timing->experimental_largest_contentful_paint
       ->largest_text_paint_size = 3;
   subframe_timing.paint_timing->experimental_largest_contentful_paint
-      ->largest_text_paint = base::TimeDelta::FromMilliseconds(8);
+      ->largest_text_paint = base::Milliseconds(8);
   subframe_timing.interactive_timing->first_input_timestamp =
-      base::TimeDelta::FromMilliseconds(20);
-  subframe_timing.interactive_timing->first_input_delay =
-      base::TimeDelta::FromMilliseconds(3);
+      base::Milliseconds(20);
+  subframe_timing.interactive_timing->first_input_delay = base::Milliseconds(3);
   PopulateRequiredTimingFields(&subframe_timing);
 
   tester()->SimulateTimingUpdate(subframe_timing, subframe);
@@ -462,19 +458,19 @@ TEST_F(AMPPageLoadMetricsObserverTest,
 
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::TimeDelta::FromMilliseconds(4000), 0.1));
+          current_time - base::Milliseconds(4000), 0.1));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::TimeDelta::FromMilliseconds(3000), 0.1));
+          current_time - base::Milliseconds(3000), 0.1));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::TimeDelta::FromMilliseconds(2000), 0.2));
+          current_time - base::Milliseconds(2000), 0.2));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::TimeDelta::FromMilliseconds(200), 0.1));
+          current_time - base::Milliseconds(200), 0.1));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::TimeDelta::FromMilliseconds(100), 0.15));
+          current_time - base::Milliseconds(100), 0.15));
 
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
@@ -524,20 +520,18 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
   page_load_metrics::mojom::PageLoadTiming subframe_timing;
   page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
   subframe_timing.navigation_start = base::Time::FromDoubleT(2);
-  subframe_timing.paint_timing->first_contentful_paint =
-      base::TimeDelta::FromMilliseconds(5);
+  subframe_timing.paint_timing->first_contentful_paint = base::Milliseconds(5);
   subframe_timing.paint_timing->largest_contentful_paint
       ->largest_image_paint_size = 1;
   subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
-      base::TimeDelta::FromMilliseconds(10);
+      base::Milliseconds(10);
   subframe_timing.paint_timing->experimental_largest_contentful_paint
       ->largest_image_paint_size = 1;
   subframe_timing.paint_timing->experimental_largest_contentful_paint
-      ->largest_image_paint = base::TimeDelta::FromMilliseconds(5);
+      ->largest_image_paint = base::Milliseconds(5);
   subframe_timing.interactive_timing->first_input_timestamp =
-      base::TimeDelta::FromMilliseconds(20);
-  subframe_timing.interactive_timing->first_input_delay =
-      base::TimeDelta::FromMilliseconds(3);
+      base::Milliseconds(20);
+  subframe_timing.interactive_timing->first_input_delay = base::Milliseconds(3);
   PopulateRequiredTimingFields(&subframe_timing);
 
   tester()->SimulateTimingUpdate(subframe_timing, subframe);

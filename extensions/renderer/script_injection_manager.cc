@@ -188,7 +188,7 @@ void ScriptInjectionManager::RFOHelper::DidDispatchDOMContentLoadedEvent() {
           FROM_HERE,
           base::BindOnce(&ScriptInjectionManager::RFOHelper::RunIdle,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kScriptIdleTimeoutInMs));
+          base::Milliseconds(kScriptIdleTimeoutInMs));
 
   ExtensionFrameHelper::Get(render_frame())
       ->ScheduleAtDocumentIdle(

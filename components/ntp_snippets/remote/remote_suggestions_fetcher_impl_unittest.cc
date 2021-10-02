@@ -168,7 +168,7 @@ void ParseJsonDelayed(const std::string& json,
       FROM_HERE,
       base::BindOnce(&ParseJson, json, std::move(success_callback),
                      std::move(error_callback)),
-      base::TimeDelta::FromMilliseconds(kTestJsonParsingLatencyMs));
+      base::Milliseconds(kTestJsonParsingLatencyMs));
 }
 
 }  // namespace

@@ -240,18 +240,14 @@ TEST_F(StructTraitsTest, BufferUsage) {
 }
 
 TEST_F(StructTraitsTest, PresentationFeedback) {
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(12);
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(23);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Seconds(12);
+  base::TimeDelta interval = base::Milliseconds(23);
   uint32_t flags =
       PresentationFeedback::kVSync | PresentationFeedback::kZeroCopy;
   PresentationFeedback input{timestamp, interval, flags};
-  input.available_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(20);
-  input.ready_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(21);
-  input.latch_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(22);
+  input.available_timestamp = base::TimeTicks() + base::Milliseconds(20);
+  input.ready_timestamp = base::TimeTicks() + base::Milliseconds(21);
+  input.latch_timestamp = base::TimeTicks() + base::Milliseconds(22);
   PresentationFeedback output;
   mojo::test::SerializeAndDeserialize<gfx::mojom::PresentationFeedback>(input,
                                                                         output);

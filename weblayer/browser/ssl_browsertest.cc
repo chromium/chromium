@@ -372,9 +372,9 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, BadClockInterstitial) {
 
   // Set network time back ten minutes.
   BrowserProcess::GetInstance()->GetNetworkTimeTracker()->UpdateNetworkTime(
-      base::Time::Now() - base::TimeDelta::FromMinutes(10),
-      base::TimeDelta::FromMilliseconds(1),   /* resolution */
-      base::TimeDelta::FromMilliseconds(500), /* latency */
+      base::Time::Now() - base::Minutes(10),
+      base::Milliseconds(1),   /* resolution */
+      base::Milliseconds(500), /* latency */
       base::TimeTicks::Now() /* posting time of this update */);
 
   // Now navigating to a page with an expired cert should cause the bad clock

@@ -33,10 +33,8 @@ using ::testing::Return;
 
 namespace {
 
-constexpr base::TimeDelta kTabMinimumActiveDuration =
-    base::TimeDelta::FromSeconds(15);
-constexpr base::TimeDelta kNewTabOpenedTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTabMinimumActiveDuration = base::Seconds(15);
+constexpr base::TimeDelta kNewTabOpenedTimeout = base::Seconds(5);
 
 }  // namespace
 

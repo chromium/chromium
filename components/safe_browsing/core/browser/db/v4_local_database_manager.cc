@@ -933,8 +933,8 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
          check->artificial_full_hash_to_store_and_hash_prefixes) {
       for (const auto& store_and_prefix : entry.second) {
         ListIdentifier list_id = store_and_prefix.list_id;
-        base::Time next = base::Time::Now() + base::TimeDelta::FromMinutes(
-                                                  kFullHashExpiryTimeInMinutes);
+        base::Time next =
+            base::Time::Now() + base::Minutes(kFullHashExpiryTimeInMinutes);
         full_hash_infos.emplace_back(entry.first, list_id, next);
       }
     }

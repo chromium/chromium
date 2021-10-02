@@ -25,8 +25,7 @@ constexpr int kGhostCircleStrokeWidth = 2;
 constexpr int kGhostColorOpacity = 0x4D;  // 30% opacity.
 constexpr int kRootGridGhostColor = gfx::kGoogleGrey200;
 constexpr int kInFolderGhostColor = gfx::kGoogleGrey700;
-constexpr base::TimeDelta kGhostFadeInOutLength =
-    base::TimeDelta::FromMilliseconds(180);
+constexpr base::TimeDelta kGhostFadeInOutLength = base::Milliseconds(180);
 constexpr gfx::Tween::Type kGhostTween = gfx::Tween::FAST_OUT_SLOW_IN;
 
 }  // namespace

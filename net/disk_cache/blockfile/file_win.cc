@@ -280,7 +280,7 @@ size_t File::GetLength() {
 // Static.
 void File::WaitForPendingIOForTesting(int* num_pending_io) {
   // Spin on the burn-down count until the file IO completes.
-  constexpr base::TimeDelta kMillisecond = base::TimeDelta::FromMilliseconds(1);
+  constexpr base::TimeDelta kMillisecond = base::Milliseconds(1);
   for (; *num_pending_io; base::PlatformThread::Sleep(kMillisecond)) {
     // This waits for callbacks running on worker threads.
     base::ThreadPoolInstance::Get()->FlushForTesting();  // IN-TEST

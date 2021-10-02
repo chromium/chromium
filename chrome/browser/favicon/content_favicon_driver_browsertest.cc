@@ -176,7 +176,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
         FROM_HERE,
         base::BindOnce(&PendingTaskWaiter::CheckStopWaitingPeriodically,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 
   void EndLoopIfCanStopWaiting() {

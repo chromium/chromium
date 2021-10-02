@@ -327,7 +327,7 @@ TEST_F(PrerenderHostTest, LoadProgressChangedInvokedOnActivation) {
       static_cast<WebContentsImpl*>(web_contents.get());
 
   web_contents_impl->set_minimum_delay_between_loading_updates_for_testing(
-      base::TimeDelta::FromMilliseconds(0));
+      base::Milliseconds(0));
 
   // Initialize a MockWebContentsObserver and ensure that LoadProgressChanged is
   // not invoked while prerendering.

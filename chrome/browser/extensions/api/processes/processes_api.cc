@@ -188,11 +188,10 @@ void FillProcessData(
 ////////////////////////////////////////////////////////////////////////////////
 
 ProcessesEventRouter::ProcessesEventRouter(content::BrowserContext* context)
-    : task_manager::TaskManagerObserver(base::TimeDelta::FromSeconds(1),
+    : task_manager::TaskManagerObserver(base::Seconds(1),
                                         task_manager::REFRESH_TYPE_NONE),
       browser_context_(context),
-      listeners_(0) {
-}
+      listeners_(0) {}
 
 ProcessesEventRouter::~ProcessesEventRouter() {
 }
@@ -577,9 +576,8 @@ ProcessesTerminateFunction::TerminateIfAllowed(base::ProcessHandle handle) {
 
 ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
     : task_manager::TaskManagerObserver(
-          base::TimeDelta::FromSeconds(1),
-          GetRefreshTypesFlagOnlyEssentialData()) {
-}
+          base::Seconds(1),
+          GetRefreshTypesFlagOnlyEssentialData()) {}
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
   std::unique_ptr<api::processes::GetProcessInfo::Params> params(

@@ -30,7 +30,7 @@ namespace {
 Config CreateTestConfig() {
   Config config;
   config.segmentation_key = "some_key";
-  config.segment_selection_ttl = base::TimeDelta::FromDays(28);
+  config.segment_selection_ttl = base::Days(28);
   config.segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
@@ -241,7 +241,7 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
   segment_database_->AddPredictionResult(segment_id, 0.6, clock_.Now());
   segment_database_->AddPredictionResult(segment_id2, 0.5, clock_.Now());
 
-  clock_.Advance(base::TimeDelta::FromDays(1));
+  clock_.Advance(base::Days(1));
   segment_selector_->OnModelExecutionCompleted(segment_id);
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id2, prefs_->selection->segment_id);

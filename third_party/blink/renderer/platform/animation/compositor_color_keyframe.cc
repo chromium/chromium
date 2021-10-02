@@ -12,10 +12,10 @@ CompositorColorKeyframe::CompositorColorKeyframe(
     double time,
     SkColor value,
     const TimingFunction& timing_function)
-    : color_keyframe_(
-          gfx::ColorKeyframe::Create(base::TimeDelta::FromSecondsD(time),
-                                     value,
-                                     timing_function.CloneToCC())) {}
+    : color_keyframe_(gfx::ColorKeyframe::Create(base::Seconds(time),
+                                                 value,
+                                                 timing_function.CloneToCC())) {
+}
 
 CompositorColorKeyframe::CompositorColorKeyframe(
     std::unique_ptr<gfx::ColorKeyframe> color_keyframe)

@@ -22,10 +22,9 @@ namespace quic {
 #define QUIC_CLIENT_HISTOGRAM_TIMES_IMPL(name, sample, min, max, bucket_count, \
                                          docstring)                            \
   UMA_HISTOGRAM_CUSTOM_TIMES(                                                  \
-      QUIC_HISTOGRAM_NAME(name),                                               \
-      base::TimeDelta::FromMicroseconds(sample.ToMicroseconds()),              \
-      base::TimeDelta::FromMicroseconds(min.ToMicroseconds()),                 \
-      base::TimeDelta::FromMicroseconds(max.ToMicroseconds()), bucket_count)
+      QUIC_HISTOGRAM_NAME(name), base::Microseconds(sample.ToMicroseconds()),  \
+      base::Microseconds(min.ToMicroseconds()),                                \
+      base::Microseconds(max.ToMicroseconds()), bucket_count)
 
 #define QUIC_CLIENT_HISTOGRAM_COUNTS_IMPL(name, sample, min, max,          \
                                           bucket_count, docstring)         \

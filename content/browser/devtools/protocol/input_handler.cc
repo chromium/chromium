@@ -112,10 +112,9 @@ int GetEventModifiers(int modifiers,
 base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
   // Convert timestamp, in seconds since unix epoch, to an event timestamp
   // which is time ticks since platform start time.
-  return timestamp.isJust()
-             ? base::TimeDelta::FromSecondsD(timestamp.fromJust()) +
-                   base::TimeTicks::UnixEpoch()
-             : base::TimeTicks::Now();
+  return timestamp.isJust() ? base::Seconds(timestamp.fromJust()) +
+                                  base::TimeTicks::UnixEpoch()
+                            : base::TimeTicks::Now();
 }
 
 bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
@@ -1646,10 +1645,10 @@ void InputHandler::SynthesizeScrollGesture(
     return;
   }
 
-  SynthesizeRepeatingScroll(
-      gesture_params, repeat_count.fromMaybe(0),
-      base::TimeDelta::FromMilliseconds(repeat_delay_ms.fromMaybe(250)),
-      interaction_marker_name.fromMaybe(""), ++last_id_, std::move(callback));
+  SynthesizeRepeatingScroll(gesture_params, repeat_count.fromMaybe(0),
+                            base::Milliseconds(repeat_delay_ms.fromMaybe(250)),
+                            interaction_marker_name.fromMaybe(""), ++last_id_,
+                            std::move(callback));
 }
 
 void InputHandler::SynthesizeRepeatingScroll(

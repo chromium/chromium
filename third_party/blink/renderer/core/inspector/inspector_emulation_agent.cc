@@ -440,7 +440,7 @@ void InspectorEmulationAgent::ApplyVirtualTimePolicy(
                                       TRACE_ID_LOCAL(this), "budget",
                                       *new_policy.virtual_time_budget_ms);
     base::TimeDelta budget_amount =
-        base::TimeDelta::FromMillisecondsD(*new_policy.virtual_time_budget_ms);
+        base::Milliseconds(*new_policy.virtual_time_budget_ms);
     web_local_frame_->View()->Scheduler()->GrantVirtualTimeBudget(
         budget_amount,
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,

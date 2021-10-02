@@ -127,7 +127,7 @@ TEST_F(SVGImageTest, TimelineSuspendAndResume) {
   // Fire the timer/trigger a frame update. Since the observer always returns
   // true for shouldPauseAnimation, this will result in the timeline being
   // suspended.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(1) +
+  test::RunDelayedTasks(base::Milliseconds(1) +
                         timer->Value().NextFireInterval());
   EXPECT_TRUE(chrome_client.IsSuspended());
   EXPECT_FALSE(timer->Value().IsActive());
@@ -162,7 +162,7 @@ TEST_F(SVGImageTest, ResetAnimation) {
 
   // Fire the timer/trigger a frame update. The timeline will remain
   // suspended and no frame will be scheduled.
-  test::RunDelayedTasks(base::TimeDelta::FromMillisecondsD(1) +
+  test::RunDelayedTasks(base::Milliseconds(1) +
                         timer->Value().NextFireInterval());
   EXPECT_TRUE(chrome_client.IsSuspended());
   EXPECT_FALSE(timer->Value().IsActive());
@@ -286,8 +286,7 @@ TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
 
   // Wait for the next animation frame to be triggered, and then trigger a new
   // frame. The image animation timeline should be running.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(1) +
-                        timer.NextFireInterval());
+  test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
   Compositor().BeginFrame();
 
   EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
@@ -297,8 +296,7 @@ TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
   // animation timeline.)
   WebView().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                /*initial_state=*/false);
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(1) +
-                        timer.NextFireInterval());
+  test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
 
   EXPECT_TRUE(svg_image_chrome_client.IsSuspended());
 
@@ -306,8 +304,7 @@ TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
   // frame and resume the image animation.
   WebView().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                /*initial_state=*/false);
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(1) +
-                        timer.NextFireInterval());
+  test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
   Compositor().BeginFrame();
 
   EXPECT_FALSE(svg_image_chrome_client.IsSuspended());

@@ -374,8 +374,8 @@ MockTransportClientSocketFactory::MockTransportClientSocketFactory(
       client_socket_types_(nullptr),
       client_socket_index_(0),
       client_socket_index_max_(0),
-      delay_(base::TimeDelta::FromMilliseconds(
-          ClientSocketPool::kMaxConnectRetryIntervalMs)) {}
+      delay_(base::Milliseconds(ClientSocketPool::kMaxConnectRetryIntervalMs)) {
+}
 
 MockTransportClientSocketFactory::~MockTransportClientSocketFactory() = default;
 

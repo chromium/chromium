@@ -1042,8 +1042,8 @@ void LocalFileSyncContext::DidGetFileMetadata(
 
 base::TimeDelta LocalFileSyncContext::NotifyChangesDuration() {
   if (mock_notify_changes_duration_in_sec_ >= 0)
-    return base::TimeDelta::FromSeconds(mock_notify_changes_duration_in_sec_);
-  return base::TimeDelta::FromSeconds(kNotifyChangesDurationInSec);
+    return base::Seconds(mock_notify_changes_duration_in_sec_);
+  return base::Seconds(kNotifyChangesDurationInSec);
 }
 
 void LocalFileSyncContext::DidCreateDirectoryForCopyIn(

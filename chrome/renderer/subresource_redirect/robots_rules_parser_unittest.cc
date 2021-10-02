@@ -45,7 +45,7 @@ class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
  public:
   SubresourceRedirectRobotsRulesParserTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        robots_rules_parser_(base::TimeDelta::FromSeconds(1)) {}
+        robots_rules_parser_(base::Seconds(1)) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kSubresourceRedirect, {{}}}}, {});
@@ -150,7 +150,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
        RulesReceiveTimeoutDisallowsAllPaths) {
   // Let the rule fetch timeout.
   VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimerRunning);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
   VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimeout);
@@ -199,7 +199,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
 TEST_F(SubresourceRedirectRobotsRulesParserTest,
        VerifyCallbackCalledBeforeDeciderDestroy) {
   auto robots_rules_parser =
-      std::make_unique<RobotsRulesParser>(base::TimeDelta::FromSeconds(1));
+      std::make_unique<RobotsRulesParser>(base::Seconds(1));
   auto receiver1 = std::make_unique<CheckResultReceiver>();
   auto receiver2 = std::make_unique<CheckResultReceiver>();
 
@@ -237,7 +237,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
 
   // Once the rule fetch timesout,the callback should get called with the
   // result.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
   VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimeout);

@@ -22,7 +22,7 @@ const char kTestDeviceId[] = "testDeviceId";
 const char kTestTetherNetworkGuid[] = "testTetherNetworkGuid";
 const char kTestWifiNetworkGuid[] = "testWifiNetworkGuid";
 
-constexpr const base::TimeDelta kTestDuration = base::TimeDelta::FromSeconds(5);
+constexpr const base::TimeDelta kTestDuration = base::Seconds(5);
 
 }  // namespace
 

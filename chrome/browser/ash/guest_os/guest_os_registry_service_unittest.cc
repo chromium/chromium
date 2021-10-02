@@ -311,7 +311,7 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
       crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
   std::string app_id =
       crostini::CrostiniTestHelper::GenerateAppId("app", "vm", "container");
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  test_clock_.Advance(base::Hours(1));
 
   Observer observer;
   service()->AddObserver(&observer);
@@ -332,7 +332,7 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
 
   // UpdateApplicationList with nothing changed. Times shouldn't be updated and
   // the observer shouldn't fire.
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  test_clock_.Advance(base::Hours(1));
   EXPECT_CALL(observer, OnRegistryUpdated(_, _, _, _, _)).Times(0);
   service()->UpdateApplicationList(app_list);
   result = service()->GetRegistration(app_id);
@@ -340,15 +340,14 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
   EXPECT_EQ(result->LastLaunchTime(), base::Time());
 
   // Launch the app
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  test_clock_.Advance(base::Hours(1));
   service()->AppLaunched(app_id);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);
-  EXPECT_EQ(result->LastLaunchTime(),
-            base::Time() + base::TimeDelta::FromHours(3));
+  EXPECT_EQ(result->LastLaunchTime(), base::Time() + base::Hours(3));
 
   // The install time shouldn't change if fields change.
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  test_clock_.Advance(base::Hours(1));
   app_list.mutable_apps(0)->set_no_display(true);
   EXPECT_CALL(
       observer,
@@ -360,8 +359,7 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
   service()->UpdateApplicationList(app_list);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);
-  EXPECT_EQ(result->LastLaunchTime(),
-            base::Time() + base::TimeDelta::FromHours(3));
+  EXPECT_EQ(result->LastLaunchTime(), base::Time() + base::Hours(3));
 }
 
 // Test that UpdateApplicationList doesn't clobber apps from different VMs or

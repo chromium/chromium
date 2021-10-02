@@ -102,8 +102,7 @@ class GenericWifiPollingPolicy : public WifiPollingPolicy {
       // Compute the remaining duration of the current interval. If the interval
       // is not yet complete, we will schedule a scan to occur once it is.
       base::TimeDelta remaining =
-          interval_start_ +
-          base::TimeDelta::FromMilliseconds(interval_duration_) - now;
+          interval_start_ + base::Milliseconds(interval_duration_) - now;
       remaining_millis = remaining.InMilliseconds();
     }
 

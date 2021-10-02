@@ -47,7 +47,7 @@ size_t ChromeOSExtensionCacheDelegate::GetMaximumCacheSize() const {
 
 base::TimeDelta ChromeOSExtensionCacheDelegate::GetMaximumCacheAge() const {
   // Maximum age of unused extensions in the cache.
-  static constexpr base::TimeDelta kMaxCacheAge = base::TimeDelta::FromDays(30);
+  static constexpr base::TimeDelta kMaxCacheAge = base::Days(30);
   return kMaxCacheAge;
 }
 

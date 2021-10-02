@@ -77,12 +77,11 @@ constexpr float kSearchBoxOpacityStartProgress = 0.11f;
 constexpr float kSearchBoxOpacityEndProgress = 1.0f;
 
 // Duration for page transition.
-constexpr base::TimeDelta kPageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kPageTransitionDuration = base::Milliseconds(250);
 
 // Duration for overscroll page transition.
 constexpr base::TimeDelta kOverscrollPageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Calculates opacity value for the current app list progress.
 // |progress| - The target app list view progress - a value in [0.0, 2.0]

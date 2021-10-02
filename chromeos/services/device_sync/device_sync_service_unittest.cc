@@ -2404,14 +2404,12 @@ TEST_P(DeviceSyncServiceTest, NotifyDevices_Error) {
 
 TEST_P(DeviceSyncServiceTest, GetDebugInfo) {
   static const base::TimeDelta kTimeBetweenEpochAndLastEnrollment =
-      base::TimeDelta::FromDays(365 * 50);  // 50 years
-  static const base::TimeDelta kTimeUntilNextEnrollment =
-      base::TimeDelta::FromDays(10);
+      base::Days(365 * 50);  // 50 years
+  static const base::TimeDelta kTimeUntilNextEnrollment = base::Days(10);
 
   static const base::TimeDelta kTimeBetweenEpochAndLastSync =
-      base::TimeDelta::FromDays(366 * 50);  // 50 years and 1 day
-  static const base::TimeDelta kTimeUntilNextSync =
-      base::TimeDelta::FromDays(11);
+      base::Days(366 * 50);  // 50 years and 1 day
+  static const base::TimeDelta kTimeUntilNextSync = base::Days(11);
 
   InitializeServiceSuccessfully();
 

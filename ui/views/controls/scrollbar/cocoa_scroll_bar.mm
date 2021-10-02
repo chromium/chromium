@@ -143,7 +143,7 @@ void CocoaScrollBarThumb::OnMouseExited(const ui::MouseEvent& event) {
 CocoaScrollBar::CocoaScrollBar(bool horizontal)
     : ScrollBar(horizontal),
       hide_scrollbar_timer_(FROM_HERE,
-                            base::TimeDelta::FromMilliseconds(500),
+                            base::Milliseconds(500),
                             base::BindRepeating(&CocoaScrollBar::HideScrollbar,
                                                 base::Unretained(this))),
       thickness_animation_(this),
@@ -154,7 +154,7 @@ CocoaScrollBar::CocoaScrollBar(bool horizontal)
   bridge_.reset([[ViewsScrollbarBridge alloc] initWithDelegate:this]);
   scroller_style_ = [ViewsScrollbarBridge getPreferredScrollerStyle];
 
-  thickness_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(240));
+  thickness_animation_.SetSlideDuration(base::Milliseconds(240));
 
   SetPaintToLayer();
   has_scrolltrack_ = scroller_style_ == NSScrollerStyleLegacy;
@@ -448,7 +448,7 @@ void CocoaScrollBar::HideScrollbar() {
   did_start_dragging_ = false;
 
   ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(240));
+  animation.SetTransitionDuration(base::Milliseconds(240));
   animation.AddObserver(this);
   layer()->SetOpacity(0.0f);
 }

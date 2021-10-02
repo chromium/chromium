@@ -247,7 +247,7 @@ base::Time FakeWebHistoryService::GetTimeForKeyInQuery(
   int64_t us;
   if (!base::StringToInt64(value, &us))
      return base::Time();
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(us);
+  return base::Time::UnixEpoch() + base::Microseconds(us);
 }
 
 FakeWebHistoryService::Request* FakeWebHistoryService::CreateRequest(

@@ -198,7 +198,7 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
   // to repaint these bounds.
   gfx::Rect repaint_bounds_;
 
-  base::TimeDelta animation_duration_ = base::TimeDelta::FromMilliseconds(200);
+  base::TimeDelta animation_duration_ = base::Milliseconds(200);
 
   gfx::Tween::Type tween_type_ = gfx::Tween::EASE_OUT;
 };

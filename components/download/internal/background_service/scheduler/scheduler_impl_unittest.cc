@@ -351,7 +351,7 @@ TEST_F(DownloadSchedulerImplTest, PickOlderDownloadIfSameParameters) {
   entries_[0].create_time = base::Time::Now();
   entries_[1].client = DownloadClient::TEST;
   entries_[1].scheduling_params.priority = SchedulingParams::Priority::LOW;
-  entries_[1].create_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  entries_[1].create_time = base::Time::Now() - base::Days(1);
   entries_[2].client = DownloadClient::TEST;
   entries_[2].scheduling_params.priority = SchedulingParams::Priority::LOW;
   entries_[2].create_time = base::Time::Now();

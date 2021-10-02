@@ -34,8 +34,7 @@ constexpr auto VeryUnlikely = permissions::
 
 // The data we consider can only be at most 28 days old to match the data that
 // the ML model is built on.
-constexpr base::TimeDelta kPermissionActionCutoffAge =
-    base::TimeDelta::FromDays(28);
+constexpr base::TimeDelta kPermissionActionCutoffAge = base::Days(28);
 
 // Only send requests if there are at least 4 action in the user's history for
 // the particular permission type.

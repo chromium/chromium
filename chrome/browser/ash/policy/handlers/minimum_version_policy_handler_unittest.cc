@@ -348,7 +348,7 @@ TEST_F(MinimumVersionPolicyHandlerTest, DeadlineTimerExpired) {
   // Expire the timer and check that user is logged out of the session.
   EXPECT_CALL(*this, IsLoginSessionState()).Times(1);
   EXPECT_CALL(*this, RestartToLoginScreen()).Times(1);
-  const base::TimeDelta warning = base::TimeDelta::FromDays(kLongWarning);
+  const base::TimeDelta warning = base::Days(kLongWarning);
   task_environment.FastForwardBy(warning);
   EXPECT_FALSE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());

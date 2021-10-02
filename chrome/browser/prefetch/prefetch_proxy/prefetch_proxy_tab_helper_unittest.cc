@@ -303,14 +303,14 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
     auto head = network::CreateURLResponseHead(http_status);
 
     head->response_time = base::Time::Now();
-    head->request_time = head->response_time -
-                         base::TimeDelta::FromMilliseconds(kTotalTimeDuration);
+    head->request_time =
+        head->response_time - base::Milliseconds(kTotalTimeDuration);
 
     head->load_timing.connect_timing.connect_end =
-        base::TimeTicks::Now() - base::TimeDelta::FromMinutes(2);
+        base::TimeTicks::Now() - base::Minutes(2);
     head->load_timing.connect_timing.connect_start =
         head->load_timing.connect_timing.connect_end -
-        base::TimeDelta::FromMilliseconds(kConnectTimeDuration);
+        base::Milliseconds(kConnectTimeDuration);
 
     head->mime_type = mime_type;
     for (const auto& header : headers) {
@@ -1732,14 +1732,13 @@ class PrefetchProxyTabHelperRedirectTestBase
 
     final_head->response_time = base::Time::Now();
     final_head->request_time =
-        final_head->response_time -
-        base::TimeDelta::FromMilliseconds(kTotalTimeDuration);
+        final_head->response_time - base::Milliseconds(kTotalTimeDuration);
 
     final_head->load_timing.connect_timing.connect_end =
-        base::TimeTicks::Now() - base::TimeDelta::FromMinutes(2);
+        base::TimeTicks::Now() - base::Minutes(2);
     final_head->load_timing.connect_timing.connect_start =
         final_head->load_timing.connect_timing.connect_end -
-        base::TimeDelta::FromMilliseconds(kConnectTimeDuration);
+        base::Milliseconds(kConnectTimeDuration);
 
     final_head->mime_type = kHTMLMimeType;
 

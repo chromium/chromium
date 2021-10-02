@@ -22,7 +22,7 @@ namespace {
 // or make it dynamic that throttles framerate if device is overheating.
 base::TimeDelta GetVSyncInterval() {
   if (chromecast::IsFeatureEnabled(chromecast::kTripleBuffer720)) {
-    return base::TimeDelta::FromSeconds(1) / 59.94;
+    return base::Seconds(1) / 59.94;
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -31,11 +31,11 @@ base::TimeDelta GetVSyncInterval() {
         command_line->GetSwitchValueASCII(switches::kVSyncInterval);
     double interval = 0;
     if (base::StringToDouble(interval_str, &interval) && interval > 0) {
-      return base::TimeDelta::FromSeconds(1) / interval;
+      return base::Seconds(1) / interval;
     }
   }
 
-  return base::TimeDelta::FromSeconds(2) / 59.94;
+  return base::Seconds(2) / 59.94;
 }
 
 }  // namespace

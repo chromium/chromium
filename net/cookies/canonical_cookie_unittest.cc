@@ -521,8 +521,7 @@ TEST(CanonicalCookieTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(60) + creation_time,
-            cookie->ExpiryDate());
+  EXPECT_EQ(base::Seconds(60) + creation_time, cookie->ExpiryDate());
 
   // Max-age with expires (max-age should take precedence).
   cookie = CanonicalCookie::Create(
@@ -531,8 +530,7 @@ TEST(CanonicalCookieTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(60) + creation_time,
-            cookie->ExpiryDate());
+  EXPECT_EQ(base::Seconds(60) + creation_time, cookie->ExpiryDate());
 
   // Max-age=0 should create an expired cookie with expiry equal to the earliest
   // representable time.
@@ -561,8 +559,7 @@ TEST(CanonicalCookieTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(60) + creation_time,
-            cookie->ExpiryDate());
+  EXPECT_EQ(base::Seconds(60) + creation_time, cookie->ExpiryDate());
 
   // Max-age with non-integer should be ignored.
   cookie = CanonicalCookie::Create(url, "A=1; max-age=abcd", creation_time,
@@ -615,7 +612,7 @@ TEST(CanonicalCookieTest, EmptyExpiry) {
   EXPECT_EQ(base::Time(), cookie->ExpiryDate());
 
   // With a stale server time
-  server_time = creation_time - base::TimeDelta::FromHours(1);
+  server_time = creation_time - base::Hours(1);
   cookie = CanonicalCookie::Create(url, cookie_line, creation_time, server_time,
                                    absl::nullopt /* cookie_partition_key */);
   EXPECT_TRUE(cookie.get());
@@ -624,7 +621,7 @@ TEST(CanonicalCookieTest, EmptyExpiry) {
   EXPECT_EQ(base::Time(), cookie->ExpiryDate());
 
   // With a future server time
-  server_time = creation_time + base::TimeDelta::FromHours(1);
+  server_time = creation_time + base::Hours(1);
   cookie = CanonicalCookie::Create(url, cookie_line, creation_time, server_time,
                                    absl::nullopt /* cookie_partition_key */);
   EXPECT_TRUE(cookie.get());
@@ -640,7 +637,7 @@ TEST(CanonicalCookieTest, IsEquivalent) {
   std::string cookie_domain = ".www.example.com";
   std::string cookie_path = "/path";
   base::Time creation_time = base::Time::Now();
-  base::Time expiration_time = creation_time + base::TimeDelta::FromDays(2);
+  base::Time expiration_time = creation_time + base::Days(2);
   bool secure = false;
   bool httponly = false;
   CookieSameSite same_site = CookieSameSite::NO_RESTRICTION;
@@ -672,8 +669,7 @@ TEST(CanonicalCookieTest, IsEquivalent) {
   EXPECT_TRUE(cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
   EXPECT_TRUE(other_cookie->IsEquivalentForSecureCookieMatching(*cookie));
 
-  base::Time other_creation_time =
-      creation_time + base::TimeDelta::FromMinutes(2);
+  base::Time other_creation_time = creation_time + base::Minutes(2);
   other_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       cookie_name, "2", cookie_domain, cookie_path, other_creation_time,
       expiration_time, base::Time(), secure, httponly, same_site,
@@ -2687,14 +2683,14 @@ TEST(CanonicalCookieTest, BuildCookieLine) {
       url, "D=E", now, server_time, absl::nullopt /* cookie_partition_key */));
   MatchCookieLineToVector("A=B; C; D=E", cookies);
   // BuildCookieLine doesn't reorder the list, it relies on the caller to do so.
-  cookies.push_back(CanonicalCookie::Create(
-      url, "F=G", now - base::TimeDelta::FromSeconds(1), server_time,
-      absl::nullopt /* cookie_partition_key */));
+  cookies.push_back(
+      CanonicalCookie::Create(url, "F=G", now - base::Seconds(1), server_time,
+                              absl::nullopt /* cookie_partition_key */));
   MatchCookieLineToVector("A=B; C; D=E; F=G", cookies);
   // BuildCookieLine doesn't deduplicate.
-  cookies.push_back(CanonicalCookie::Create(
-      url, "D=E", now - base::TimeDelta::FromSeconds(2), server_time,
-      absl::nullopt /* cookie_partition_key */));
+  cookies.push_back(
+      CanonicalCookie::Create(url, "D=E", now - base::Seconds(2), server_time,
+                              absl::nullopt /* cookie_partition_key */));
   MatchCookieLineToVector("A=B; C; D=E; F=G; D=E", cookies);
   // BuildCookieLine should match the spec in the case of an empty name with a
   // value containing an equal sign (even if it currently produces "invalid"
@@ -2706,10 +2702,9 @@ TEST(CanonicalCookieTest, BuildCookieLine) {
 
 // Confirm that input arguments are reflected in the output cookie.
 TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
-  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
-  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  base::Time one_hour_from_now =
-      base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
+  base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
   CookieInclusionStatus status;
   std::unique_ptr<CanonicalCookie> cc;
 
@@ -2848,10 +2843,9 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
 
 // Make sure sanitization and blocking of cookies works correctly.
 TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
-  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
-  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  base::Time one_hour_from_now =
-      base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
+  base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
   CookieInclusionStatus status;
 
   // Simple path and domain variations.
@@ -3585,10 +3579,9 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
 }
 
 TEST(CanonicalCookieTest, FromStorage) {
-  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
-  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  base::Time one_hour_from_now =
-      base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
+  base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
 
   std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
@@ -4757,10 +4750,9 @@ TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
   const base::HistogramBase::Sample kInValid = 0;
   const base::HistogramBase::Sample kValid = 1;
 
-  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
-  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  base::Time one_hour_from_now =
-      base::Time::Now() + base::TimeDelta::FromHours(1);
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
+  base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
 
   // Test a cookie that is canonical and valid size
   EXPECT_TRUE(CanonicalCookie::FromStorage(

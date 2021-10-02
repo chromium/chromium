@@ -82,7 +82,7 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void SetNotificationThrottlingInterval(int ms) {
     low_disk_notification_->SetNotificationIntervalForTest(
-        base::TimeDelta::FromMilliseconds(ms));
+        base::Milliseconds(ms));
   }
 
   void OnNotificationAdded() { notification_count_++; }

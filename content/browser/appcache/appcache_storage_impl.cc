@@ -298,7 +298,7 @@ void AppCacheStorageImpl::InitTask::RunCompleted() {
 
   if (!storage_->is_disabled()) {
     storage_->usage_map_.swap(usage_map_);
-    const base::TimeDelta kDelay = base::TimeDelta::FromMinutes(5);
+    const base::TimeDelta kDelay = base::Minutes(5);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -1761,7 +1761,7 @@ void AppCacheStorageImpl::StartDeletingResponses(
 
 void AppCacheStorageImpl::ScheduleDeleteOneResponse() {
   DCHECK(!is_response_deletion_scheduled_);
-  const base::TimeDelta kBriefDelay = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kBriefDelay = base::Milliseconds(10);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AppCacheStorageImpl::DeleteOneResponse,
@@ -1936,7 +1936,7 @@ void AppCacheStorageImpl::CallScheduleReinitialize() {
 void AppCacheStorageImpl::LazilyCommitLastAccessTimes() {
   if (lazy_commit_timer_.IsRunning())
     return;
-  const base::TimeDelta kDelay = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kDelay = base::Minutes(5);
   lazy_commit_timer_.Start(
       FROM_HERE, kDelay,
       base::BindOnce(&AppCacheStorageImpl::OnLazyCommitTimer,

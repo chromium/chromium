@@ -648,17 +648,15 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     // If we started parsing, record all parser durations such as the amount of
     // time blocked on script load, even if those values are zero.
     timing->parse_timing->parse_blocked_on_script_load_duration =
-        base::TimeDelta::FromSecondsD(perf.ParseBlockedOnScriptLoadDuration());
+        base::Seconds(perf.ParseBlockedOnScriptLoadDuration());
     timing->parse_timing
         ->parse_blocked_on_script_load_from_document_write_duration =
-        base::TimeDelta::FromSecondsD(
-            perf.ParseBlockedOnScriptLoadFromDocumentWriteDuration());
+        base::Seconds(perf.ParseBlockedOnScriptLoadFromDocumentWriteDuration());
     timing->parse_timing->parse_blocked_on_script_execution_duration =
-        base::TimeDelta::FromSecondsD(
-            perf.ParseBlockedOnScriptExecutionDuration());
+        base::Seconds(perf.ParseBlockedOnScriptExecutionDuration());
     timing->parse_timing
         ->parse_blocked_on_script_execution_from_document_write_duration =
-        base::TimeDelta::FromSecondsD(
+        base::Seconds(
             perf.ParseBlockedOnScriptExecutionFromDocumentWriteDuration());
   }
   if (perf.LastPortalActivatedPaint().has_value()) {

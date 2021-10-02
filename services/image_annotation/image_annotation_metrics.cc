@@ -78,8 +78,7 @@ void ReportServerLatency(const base::TimeDelta latency) {
   // Use a custom time histogram with ~10 buckets per order of magnitude between
   // 1ms and 30sec.
   UMA_HISTOGRAM_CUSTOM_TIMES(metrics_internal::kServerLatency, latency,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(30), 50);
+                             base::Milliseconds(1), base::Seconds(30), 50);
 }
 
 void ReportImageRequestIncludesDesc(const bool includes_desc) {

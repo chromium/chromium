@@ -23,12 +23,12 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   mojom::URLResponseHead head;
-  head.response_time = base::Time() + base::TimeDelta::FromMicroseconds(10);
+  head.response_time = base::Time() + base::Microseconds(10);
   head.headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\0");
   head.mime_type = "mime_type";
   head.load_timing.first_early_hints_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(11);
+      base::TimeTicks() + base::Microseconds(11);
   head.cert_status = 12;
   head.encoded_data_length = 13;
   head.was_in_prefetch_cache = true;

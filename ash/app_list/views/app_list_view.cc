@@ -978,10 +978,9 @@ void AppListView::UpdatePageResetTimer(bool app_list_visibility) {
     page_reset_timer_.Stop();
     return;
   }
-  page_reset_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMinutes(kAppListPageResetTimeLimitMinutes), this,
-      &AppListView::SelectInitialAppsPage);
+  page_reset_timer_.Start(FROM_HERE,
+                          base::Minutes(kAppListPageResetTimeLimitMinutes),
+                          this, &AppListView::SelectInitialAppsPage);
 
   if (skip_page_reset_timer_for_testing)
     page_reset_timer_.FireNow();
@@ -1833,19 +1832,17 @@ base::TimeDelta AppListView::GetStateTransitionAnimationDuration(
   if (ShortAnimationsForTesting() || is_side_shelf_ ||
       (target_state == AppListViewState::kClosed &&
        delegate_->ShouldDismissImmediately())) {
-    return base::TimeDelta::FromMilliseconds(
-        kAppListAnimationDurationImmediateMs);
+    return base::Milliseconds(kAppListAnimationDurationImmediateMs);
   }
 
   if (is_fullscreen() || target_state == AppListViewState::kFullscreenAllApps ||
       target_state == AppListViewState::kFullscreenSearch) {
     // Animate over more time to or from a fullscreen state, to maintain a
     // similar speed.
-    return base::TimeDelta::FromMilliseconds(
-        kAppListAnimationDurationFromFullscreenMs);
+    return base::Milliseconds(kAppListAnimationDurationFromFullscreenMs);
   }
 
-  return base::TimeDelta::FromMilliseconds(kAppListAnimationDurationMs);
+  return base::Milliseconds(kAppListAnimationDurationMs);
 }
 
 void AppListView::StartAnimationForState(AppListViewState target_state) {

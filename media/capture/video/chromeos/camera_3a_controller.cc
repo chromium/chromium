@@ -222,7 +222,7 @@ void Camera3AController::Stabilize3AForStillCapture(
   }
 
   Set3aStabilizedCallback(std::move(on_3a_stabilized_callback),
-                          base::TimeDelta::FromSeconds(2));
+                          base::Seconds(2));
 
   if (af_mode_ !=
       cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_OFF) {
@@ -256,9 +256,8 @@ void Camera3AController::OnResultMetadataAvailable(
     // metadata from zero-shutter-lag request may be out of order compared to
     // previous regular requests.
     // https://developer.android.com/reference/android/hardware/camera2/CaptureResult#CONTROL_ENABLE_ZSL
-    latest_sensor_timestamp_ =
-        std::max(latest_sensor_timestamp_,
-                 base::TimeDelta::FromNanoseconds(sensor_timestamp[0]));
+    latest_sensor_timestamp_ = std::max(latest_sensor_timestamp_,
+                                        base::Nanoseconds(sensor_timestamp[0]));
   }
 
   if (!af_mode_set_) {
@@ -571,7 +570,7 @@ void Camera3AController::SetPointOfInterestOn3AModeSet() {
   Set3aStabilizedCallback(
       base::BindOnce(&Camera3AController::SetPointOfInterestOn3AStabilized,
                      GetWeakPtr()),
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
   SetCaptureMetadata(
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AF_TRIGGER,
       cros::mojom::AndroidControlAfTrigger::ANDROID_CONTROL_AF_TRIGGER_START);
@@ -590,9 +589,8 @@ void Camera3AController::SetPointOfInterestOn3AStabilized() {
   delayed_ae_unlock_callback_.Reset(base::BindOnce(
       &Camera3AController::SetPointOfInterestUnlockAe, GetWeakPtr()));
   // TODO(shik): Apply different delays for image capture / video recording.
-  task_runner_->PostDelayedTask(FROM_HERE,
-                                delayed_ae_unlock_callback_.callback(),
-                                base::TimeDelta::FromSeconds(4));
+  task_runner_->PostDelayedTask(
+      FROM_HERE, delayed_ae_unlock_callback_.callback(), base::Seconds(4));
 }
 
 void Camera3AController::SetPointOfInterestUnlockAe() {

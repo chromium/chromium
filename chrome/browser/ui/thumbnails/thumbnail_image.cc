@@ -138,9 +138,8 @@ void ThumbnailImage::AssignJPEGData(base::Token thumbnail_id,
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Tab.Preview.TimeToNotifyObserversAfterCaptureReceived",
-      base::TimeTicks::Now() - assign_sk_bitmap_time,
-      base::TimeDelta::FromMicroseconds(100),
-      base::TimeDelta::FromMilliseconds(100), 50);
+      base::TimeTicks::Now() - assign_sk_bitmap_time, base::Microseconds(100),
+      base::Milliseconds(100), 50);
 
   // We select a TRACE_EVENT_* macro based on |frame_id|'s presence.
   // Since these are scoped traces, the macro invocation must be in the

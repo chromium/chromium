@@ -22,7 +22,7 @@ namespace {
 
 // Time that the throttle will wait before canceling the upgraded navigation and
 // showing the HTTPS-Only Mode interstitial.
-base::TimeDelta g_fallback_delay = base::TimeDelta::FromSeconds(3);
+base::TimeDelta g_fallback_delay = base::Seconds(3);
 
 // Helper to record an HTTPS-First Mode navigation event.
 void RecordHttpsFirstModeNavigation(
@@ -185,7 +185,7 @@ const char* HttpsOnlyModeNavigationThrottle::GetNameForLogging() {
 // static
 void HttpsOnlyModeNavigationThrottle::set_timeout_for_testing(
     int timeout_in_seconds) {
-  g_fallback_delay = base::TimeDelta::FromSeconds(timeout_in_seconds);
+  g_fallback_delay = base::Seconds(timeout_in_seconds);
 }
 
 void HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout() {

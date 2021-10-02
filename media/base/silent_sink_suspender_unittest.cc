@@ -19,16 +19,13 @@ namespace media {
 class SilentSinkSuspenderTest : public testing::Test {
  public:
   SilentSinkSuspenderTest()
-      : params_(AudioParameters::AUDIO_FAKE,
-                CHANNEL_LAYOUT_MONO,
-                44100,
-                128),
+      : params_(AudioParameters::AUDIO_FAKE, CHANNEL_LAYOUT_MONO, 44100, 128),
         mock_sink_(new testing::StrictMock<MockAudioRendererSink>()),
         fake_callback_(0.1, params_.sample_rate()),
         temp_bus_(AudioBus::Create(params_)),
         // Set a negative timeout so any silence will suspend immediately.
         suspender_(&fake_callback_,
-                   base::TimeDelta::FromSeconds(-1),
+                   base::Seconds(-1),
                    params_,
                    mock_sink_,
                    test_loop_.task_runner()) {}
@@ -49,7 +46,7 @@ class SilentSinkSuspenderTest : public testing::Test {
 
 TEST_F(SilentSinkSuspenderTest, BasicPassthough) {
   temp_bus_->Zero();
-  auto delay = base::TimeDelta::FromMilliseconds(20);
+  auto delay = base::Milliseconds(20);
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(delay, base::TimeTicks(), 0, temp_bus_.get()));
 

@@ -23,7 +23,7 @@ std::string ToJSON(const base::Value& value) {
 
 TEST(PersistentMetricsData, SerializesAndDeserializes) {
   PersistentMetricsData data;
-  data.accumulated_time_spent_in_feed = base::TimeDelta::FromHours(2);
+  data.accumulated_time_spent_in_feed = base::Hours(2);
   data.current_day_start = base::Time::UnixEpoch();
 
   const base::Value serialized_value = PersistentMetricsDataToValue(data);

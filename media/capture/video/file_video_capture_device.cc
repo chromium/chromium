@@ -718,7 +718,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
 
   // Reschedule next CaptureTask.
   const base::TimeDelta frame_interval =
-      base::TimeDelta::FromMicroseconds(1E6 / capture_format_.frame_rate);
+      base::Microseconds(1E6 / capture_format_.frame_rate);
   if (next_frame_time_.is_null()) {
     next_frame_time_ = current_time + frame_interval;
   } else {

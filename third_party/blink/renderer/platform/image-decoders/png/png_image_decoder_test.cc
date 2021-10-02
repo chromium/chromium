@@ -122,19 +122,19 @@ struct PublicFrameInfo {
 // This is the frame data for the following PNG image:
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
 static PublicFrameInfo g_png_animated_frame_info[] = {
-    {base::TimeDelta::FromMilliseconds(500),
+    {base::Milliseconds(500),
      {IntPoint(0, 0), IntSize(5, 5)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
-    {base::TimeDelta::FromMilliseconds(900),
+    {base::Milliseconds(900),
      {IntPoint(1, 1), IntSize(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeOverwriteBgcolor},
-    {base::TimeDelta::FromMilliseconds(2000),
+    {base::Milliseconds(2000),
      {IntPoint(1, 2), IntSize(3, 2)},
      ImageFrame::kBlendAtopPreviousFrame,
      ImageFrame::kDisposeKeep},
-    {base::TimeDelta::FromMilliseconds(1500),
+    {base::Milliseconds(1500),
      {IntPoint(1, 2), IntSize(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},

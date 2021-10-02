@@ -45,10 +45,9 @@ const char kWorkerThrottlingMaxBudgetParam[] = "max_budget_ms";
 const char kWorkerThrottlingRecoveryRateParam[] = "recovery_rate";
 const char kWorkerThrottlingMaxDelayParam[] = "max_delay_ms";
 
-constexpr base::TimeDelta kDefaultMaxBudget = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDefaultMaxBudget = base::Seconds(1);
 constexpr double kDefaultRecoveryRate = 0.01;
-constexpr base::TimeDelta kDefaultMaxThrottlingDelay =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kDefaultMaxThrottlingDelay = base::Seconds(60);
 
 absl::optional<base::TimeDelta> GetMaxBudgetLevel() {
   int max_budget_level_ms;
@@ -60,7 +59,7 @@ absl::optional<base::TimeDelta> GetMaxBudgetLevel() {
   }
   if (max_budget_level_ms < 0)
     return absl::nullopt;
-  return base::TimeDelta::FromMilliseconds(max_budget_level_ms);
+  return base::Milliseconds(max_budget_level_ms);
 }
 
 double GetBudgetRecoveryRate() {
@@ -84,7 +83,7 @@ absl::optional<base::TimeDelta> GetMaxThrottlingDelay() {
   }
   if (max_throttling_delay_ms < 0)
     return absl::nullopt;
-  return base::TimeDelta::FromMilliseconds(max_throttling_delay_ms);
+  return base::Milliseconds(max_throttling_delay_ms);
 }
 
 std::unique_ptr<ukm::MojoUkmRecorder> CreateMojoUkmRecorder() {
@@ -106,7 +105,7 @@ WorkerThreadScheduler::WorkerThreadScheduler(
       idle_helper_(helper(),
                    this,
                    "WorkerSchedulerIdlePeriod",
-                   base::TimeDelta::FromMilliseconds(300),
+                   base::Milliseconds(300),
                    helper()->NewTaskQueue(TaskQueue::Spec("worker_idle_tq"))),
       lifecycle_state_(proxy ? proxy->lifecycle_state()
                              : SchedulingLifecycleState::kNotThrottled),

@@ -385,7 +385,7 @@ void MobileSectionHeaderView::EnableBluetooth() {
       ->SetPrimaryUserBluetoothPowerSetting(true /* enabled */);
   waiting_for_tether_initialize_ = true;
   enable_bluetooth_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kBluetoothTimeoutDelaySeconds),
+      FROM_HERE, base::Seconds(kBluetoothTimeoutDelaySeconds),
       base::BindOnce(&MobileSectionHeaderView::OnEnableBluetoothTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
 }

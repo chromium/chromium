@@ -136,7 +136,7 @@ class PlatformSensorChromeOSOneChannelTest
   void GetRoundedSensorReadingSingle(SensorReadingSingle* reading_single) {
     reading_single->value = kFakeSampleData * kScaleValue;
     reading_single->timestamp =
-        base::TimeDelta::FromNanoseconds(kFakeTimestampData).InSecondsF();
+        base::Nanoseconds(kFakeTimestampData).InSecondsF();
 
     // No need to do rounding for these types of sensors.
   }
@@ -317,8 +317,7 @@ class PlatformSensorChromeOSAxesTest
     reading_xyz->x = kFakeAxesSampleData[0] * kScaleValue;
     reading_xyz->y = kFakeAxesSampleData[1] * kScaleValue;
     reading_xyz->z = kFakeAxesSampleData[2] * kScaleValue;
-    reading_xyz->timestamp =
-        base::TimeDelta::FromNanoseconds(kFakeTimestampData).InSecondsF();
+    reading_xyz->timestamp = base::Nanoseconds(kFakeTimestampData).InSecondsF();
 
     switch (GetParam().first) {
       case mojom::SensorType::ACCELEROMETER:

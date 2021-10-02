@@ -383,9 +383,9 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
     EXPECT_CALL(item(), GetTotalBytes())
         .WillRepeatedly(Return(test_case.total_bytes));
     EXPECT_CALL(item(), TimeRemaining(_))
-        .WillRepeatedly(testing::DoAll(
-            testing::SetArgPointee<0>(base::TimeDelta::FromSeconds(10)),
-            Return(test_case.time_remaining_known)));
+        .WillRepeatedly(
+            testing::DoAll(testing::SetArgPointee<0>(base::Seconds(10)),
+                           Return(test_case.time_remaining_known)));
     EXPECT_CALL(item(), GetOpenWhenComplete())
         .WillRepeatedly(Return(test_case.open_when_complete));
     EXPECT_CALL(item(), IsPaused())

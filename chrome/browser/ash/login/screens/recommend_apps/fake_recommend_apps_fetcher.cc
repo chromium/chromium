@@ -13,7 +13,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kFakeLoadingTime = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kFakeLoadingTime = base::Seconds(3);
 constexpr const int kMaxAppCount = 21;
 
 }  // namespace

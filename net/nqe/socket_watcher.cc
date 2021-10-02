@@ -109,7 +109,7 @@ void SocketWatcher::OnUpdatedRTTAvailable(const base::TimeDelta& rtt) {
   // tcp_socket_posix may sometimes report RTT as 1 microsecond when the RTT was
   // actually invalid. See:
   // https://cs.chromium.org/chromium/src/net/socket/tcp_socket_posix.cc?rcl=7ad660e34f2a996e381a85b2a515263003b0c171&l=106.
-  if (rtt <= base::TimeDelta::FromMicroseconds(1))
+  if (rtt <= base::Microseconds(1))
     return;
 
   if (!first_quic_rtt_notification_received_ &&

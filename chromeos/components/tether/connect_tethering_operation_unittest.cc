@@ -37,7 +37,7 @@ namespace tether {
 namespace {
 
 constexpr base::TimeDelta kConnectTetheringResponseTimeSeconds =
-    base::TimeDelta::FromSeconds(15);
+    base::Seconds(15);
 
 // Used to verify the ConnectTetheringOperation notifies the observer
 // when appropriate.

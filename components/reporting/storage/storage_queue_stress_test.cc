@@ -184,7 +184,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   }
 
   QueueOptions BuildStorageQueueOptionsPeriodic(
-      base::TimeDelta upload_period = base::TimeDelta::FromSeconds(1)) const {
+      base::TimeDelta upload_period = base::Seconds(1)) const {
     return BuildStorageQueueOptionsImmediate().set_upload_period(upload_period);
   }
 

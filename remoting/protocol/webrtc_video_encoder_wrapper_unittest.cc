@@ -238,7 +238,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnBitrateChanged) {
 }
 
 TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnRttUpdate) {
-  EXPECT_CALL(observer_, OnRttUpdate(base::TimeDelta::FromMilliseconds(123)));
+  EXPECT_CALL(observer_, OnRttUpdate(base::Milliseconds(123)));
 
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
   encoder->OnRttUpdate(123);

@@ -393,8 +393,7 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
 
   scoped_refptr<VideoFrame> video_frame =
       reinterpret_cast<VideoFrame*>(av_buffer_get_opaque(frame->buf[0]));
-  video_frame->set_timestamp(
-      base::TimeDelta::FromMicroseconds(frame->reordered_opaque));
+  video_frame->set_timestamp(base::Microseconds(frame->reordered_opaque));
   video_frame->metadata().power_efficient = false;
   output_cb_.Run(video_frame);
   return true;

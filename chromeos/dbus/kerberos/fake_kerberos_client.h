@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   absl::optional<std::string> recorded_function_calls_;
 
   // Fake delay for any asynchronous operation.
-  base::TimeDelta task_delay_ = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta task_delay_ = base::Milliseconds(100);
 
   // The simulated number of network failures on |AcquireKerberosTgt()| (for
   // testing).

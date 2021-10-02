@@ -85,10 +85,9 @@ void FetchBatteryStatus(CFDictionaryRef description,
 
     // Battery is charging: set the charging time if it's available, otherwise
     // set to +infinity.
-    status->charging_time =
-        charging_time != -1
-            ? base::TimeDelta::FromMinutes(charging_time).InSeconds()
-            : std::numeric_limits<double>::infinity();
+    status->charging_time = charging_time != -1
+                                ? base::Minutes(charging_time).InSeconds()
+                                : std::numeric_limits<double>::infinity();
   } else {
     // Battery is not charging.
     // Set chargingTime to +infinity if the battery is not charged. Otherwise
@@ -102,8 +101,7 @@ void FetchBatteryStatus(CFDictionaryRef description,
       SInt64 discharging_time =
           GetValueAsSInt64(description, CFSTR(kIOPSTimeToEmptyKey), -1);
       if (discharging_time != -1) {
-        status->discharging_time =
-            base::TimeDelta::FromMinutes(discharging_time).InSeconds();
+        status->discharging_time = base::Minutes(discharging_time).InSeconds();
       }
     }
   }

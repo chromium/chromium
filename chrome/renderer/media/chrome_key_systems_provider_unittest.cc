@@ -119,9 +119,9 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
 
   // This is timing related. The update interval for Widevine is 1000 ms.
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(990));
+  tick_clock.Advance(base::Milliseconds(990));
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(10));
+  tick_clock.Advance(base::Milliseconds(10));
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   // Require update once enough time has passed for builds that install Widevine
@@ -145,9 +145,9 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
 
   // Update not needed now, nor later because Widevine has been described.
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  tick_clock.Advance(base::Milliseconds(1000));
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  tick_clock.Advance(base::Milliseconds(1000));
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
 #else
   // No update needed for builds that either don't offer Widevine or do so

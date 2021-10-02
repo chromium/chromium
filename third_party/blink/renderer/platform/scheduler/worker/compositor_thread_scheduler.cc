@@ -122,7 +122,7 @@ base::TimeTicks CompositorThreadScheduler::WillProcessIdleTask() {
   // TODO(flackr): Return the next frame time as the deadline instead.
   // TODO(flackr): Ensure that oilpan GC does happen on the compositor thread
   // even though we will have no long idle periods. https://crbug.com/609531
-  return base::TimeTicks::Now() + base::TimeDelta::FromMillisecondsD(16.7);
+  return base::TimeTicks::Now() + base::Milliseconds(16.7);
 }
 
 void CompositorThreadScheduler::DidProcessIdleTask() {}

@@ -207,8 +207,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   adapter()->Initialize(profile_, options, std::move(output_cb),
                         ValidatingStatusCB());
 
-  auto frame = CreateGreenFrame(options.frame_size, pixel_format,
-                                base::TimeDelta::FromMilliseconds(1));
+  auto frame =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
   adapter()->Encode(frame, true, ValidatingStatusCB());
   RunUntilIdle();
   EXPECT_EQ(outputs_count, 1);
@@ -223,9 +223,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           absl::optional<VideoEncoder::CodecDescription>) {
-        if (output.timestamp == base::TimeDelta::FromMilliseconds(1))
+        if (output.timestamp == base::Milliseconds(1))
           EXPECT_EQ(output.temporal_id, 1);
-        else if (output.timestamp == base::TimeDelta::FromMilliseconds(2))
+        else if (output.timestamp == base::Milliseconds(2))
           EXPECT_EQ(output.temporal_id, 1);
         else
           EXPECT_EQ(output.temporal_id, 2);
@@ -235,10 +235,10 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
         BitstreamBufferMetadata result(1, keyframe, frame->timestamp());
-        if (frame->timestamp() == base::TimeDelta::FromMilliseconds(1)) {
+        if (frame->timestamp() == base::Milliseconds(1)) {
           result.h264 = H264Metadata();
           result.h264->temporal_idx = 1;
-        } else if (frame->timestamp() == base::TimeDelta::FromMilliseconds(2)) {
+        } else if (frame->timestamp() == base::Milliseconds(2)) {
           result.vp8 = Vp8Metadata();
           result.vp8->temporal_idx = 1;
         } else {
@@ -250,12 +250,12 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   adapter()->Initialize(profile_, options, std::move(output_cb),
                         ValidatingStatusCB());
 
-  auto frame1 = CreateGreenFrame(options.frame_size, pixel_format,
-                                 base::TimeDelta::FromMilliseconds(1));
-  auto frame2 = CreateGreenFrame(options.frame_size, pixel_format,
-                                 base::TimeDelta::FromMilliseconds(2));
-  auto frame3 = CreateGreenFrame(options.frame_size, pixel_format,
-                                 base::TimeDelta::FromMilliseconds(3));
+  auto frame1 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
+  auto frame2 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(2));
+  auto frame3 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(3));
   adapter()->Encode(frame1, true, ValidatingStatusCB());
   RunUntilIdle();
   adapter()->Encode(frame2, true, ValidatingStatusCB());
@@ -285,8 +285,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
   adapter()->Initialize(profile_, options, std::move(output_cb),
                         ValidatingStatusCB());
 
-  auto frame = CreateGreenFrame(options.frame_size, pixel_format,
-                                base::TimeDelta::FromMilliseconds(1));
+  auto frame =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
   adapter()->Encode(frame, true, ValidatingStatusCB());
   adapter()->Flush(base::BindLambdaForTesting([&](Status s) {
     EXPECT_TRUE(s.is_ok());
@@ -316,8 +316,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
   adapter()->Initialize(VIDEO_CODEC_PROFILE_UNKNOWN, options,
                         std::move(output_cb), ValidatingStatusCB());
 
-  auto frame = CreateGreenFrame(options.frame_size, pixel_format,
-                                base::TimeDelta::FromMilliseconds(1));
+  auto frame =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
   adapter()->Encode(frame, true, std::move(expect_error_done_cb));
   RunUntilIdle();
   EXPECT_EQ(outputs_count, 0);
@@ -350,10 +350,10 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   adapter()->Initialize(profile_, options, std::move(output_cb),
                         ValidatingStatusCB());
 
-  auto small_frame = CreateGreenFrame(small_size, pixel_format,
-                                      base::TimeDelta::FromMilliseconds(1));
-  auto large_frame = CreateGreenFrame(large_size, pixel_format,
-                                      base::TimeDelta::FromMilliseconds(2));
+  auto small_frame =
+      CreateGreenFrame(small_size, pixel_format, base::Milliseconds(1));
+  auto large_frame =
+      CreateGreenFrame(large_size, pixel_format, base::Milliseconds(2));
   adapter()->Encode(small_frame, true, ValidatingStatusCB());
   adapter()->Encode(large_frame, false, ValidatingStatusCB());
   RunUntilIdle();
@@ -380,10 +380,10 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
   adapter()->Initialize(profile_, options, std::move(output_cb),
                         ValidatingStatusCB());
 
-  auto frame1 = CreateGreenFrame(small_size, pixel_format,
-                                 base::TimeDelta::FromMilliseconds(1));
-  auto frame2 = CreateGreenFrame(small_size, pixel_format,
-                                 base::TimeDelta::FromMilliseconds(2));
+  auto frame1 =
+      CreateGreenFrame(small_size, pixel_format, base::Milliseconds(1));
+  auto frame2 =
+      CreateGreenFrame(small_size, pixel_format, base::Milliseconds(2));
   adapter()->Encode(frame1, true, ValidatingStatusCB());
   adapter()->Encode(frame2, false, ValidatingStatusCB());
   RunUntilIdle();
@@ -437,8 +437,8 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
     else if (rem < 8)
       format = PIXEL_FORMAT_NV12;
     bool key = frame_index % 9 == 0;
-    auto frame = CreateGreenFrame(
-        size, format, base::TimeDelta::FromMilliseconds(frame_index));
+    auto frame =
+        CreateGreenFrame(size, format, base::Milliseconds(frame_index));
     adapter()->Encode(frame, key, ValidatingStatusCB());
   }
 

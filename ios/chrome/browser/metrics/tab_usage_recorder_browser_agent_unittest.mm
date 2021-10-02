@@ -345,12 +345,11 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
   for (int seconds = kExpiredTimesAddedCount; seconds > 0; seconds--) {
     int expired_time_delta =
         tab_usage_recorder::kSecondsBeforeRendererTermination + seconds;
-    AddTimeToDequeInTabUsageRecorder(
-        now - base::TimeDelta::FromSeconds(expired_time_delta));
+    AddTimeToDequeInTabUsageRecorder(now - base::Seconds(expired_time_delta));
   }
   base::TimeTicks recent_time =
-      now - base::TimeDelta::FromSeconds(
-                tab_usage_recorder::kSecondsBeforeRendererTermination / 2);
+      now -
+      base::Seconds(tab_usage_recorder::kSecondsBeforeRendererTermination / 2);
   AddTimeToDequeInTabUsageRecorder(recent_time);
 
   mock_tab_a->OnRenderProcessGone();

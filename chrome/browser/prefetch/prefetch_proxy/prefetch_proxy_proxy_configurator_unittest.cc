@@ -149,7 +149,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest,
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.Fallback.NetError",
                                       std::abs(net::ERR_FAILED), 1);
 
-  FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
+  FastForwardBy(base::Seconds(5 * 60 + 1));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 }
@@ -172,7 +172,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.Fallback.NetError",
                                       net::OK, 1);
 
-  FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
+  FastForwardBy(base::Seconds(5 * 60 + 1));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 }
@@ -252,7 +252,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 500, 1);
 
-  FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
+  FastForwardBy(base::Seconds(5 * 60 + 1));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 }
 
@@ -277,9 +277,9 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 500, 1);
 
-  FastForwardBy(base::TimeDelta::FromSeconds(119));
+  FastForwardBy(base::Seconds(119));
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
 
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 }

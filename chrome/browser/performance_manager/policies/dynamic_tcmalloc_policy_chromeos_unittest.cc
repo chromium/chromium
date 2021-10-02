@@ -157,8 +157,7 @@ class DynamicTcmallocPolicyTest : public ::testing::Test {
 TEST_F(DynamicTcmallocPolicyTest, PeriodicPressureCheck) {
   // Advance through two intervals to confirm that we see our periodic checks.
   EXPECT_CALL(*policy(), CheckAndUpdateTunables()).Times(2);
-  FastForwardBy(base::TimeDelta::FromSeconds(
-      2 * features::kDynamicTuningTimeSec.Get() + 1));
+  FastForwardBy(base::Seconds(2 * features::kDynamicTuningTimeSec.Get() + 1));
 }
 
 // This test will validate that for a mocked value of memory available we see a
@@ -188,8 +187,7 @@ TEST_F(DynamicTcmallocPolicyTest, DynamicallyAdjustThreadCacheSize) {
       .Times(1);
 
   // Advancing beyond our interval will cause a periodic pressure check.
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(features::kDynamicTuningTimeSec.Get() + 1));
+  FastForwardBy(base::Seconds(features::kDynamicTuningTimeSec.Get() + 1));
 }
 
 // This test validates that process nodes with no frame nodes are skipped.
@@ -212,8 +210,7 @@ TEST_F(DynamicTcmallocPolicyTest, SkipProcessNodesWithNoFrameNodes) {
   EXPECT_CALL(*policy(), EnsureTcmallocTunablesForProcess(testing::_)).Times(0);
 
   // Advancing beyond our interval will cause a periodic pressure check.
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(features::kDynamicTuningTimeSec.Get() + 1));
+  FastForwardBy(base::Seconds(features::kDynamicTuningTimeSec.Get() + 1));
 }
 
 // This test will validate that the minimum size is enforced and we won't
@@ -245,8 +242,7 @@ TEST_F(DynamicTcmallocPolicyTest,
       .Times(1);
 
   // Advancing beyond our interval will cause a periodic pressure check.
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(features::kDynamicTuningTimeSec.Get() + 1));
+  FastForwardBy(base::Seconds(features::kDynamicTuningTimeSec.Get() + 1));
 }
 
 // This test will validate that we apply the invisible scale factor only when
@@ -297,7 +293,7 @@ TEST_F(DynamicTcmallocPolicyTest, OnlyApplyInvisibleScaleFactorAfterCutoff) {
 
   // Advancing beyond our interval will cause two periodic checks and the second
   // will result in the additional scaling because the page node is invisible.
-  FastForwardBy(base::TimeDelta::FromSeconds(dynamic_tuning_time_sec + 1));
+  FastForwardBy(base::Seconds(dynamic_tuning_time_sec + 1));
 
   // And we're expecting that we do apply it on our second call as it will have
   // moved us beyond the invisible time cutoff time.
@@ -310,7 +306,7 @@ TEST_F(DynamicTcmallocPolicyTest, OnlyApplyInvisibleScaleFactorAfterCutoff) {
 
   // This second advance will also cause us to pass the invisible scale cutoff
   // time, so we will expect the second call with a scaled value this time.
-  FastForwardBy(base::TimeDelta::FromSeconds(dynamic_tuning_time_sec + 1));
+  FastForwardBy(base::Seconds(dynamic_tuning_time_sec + 1));
 }
 
 #endif  // BUILDFLAG(USE_TCMALLOC)

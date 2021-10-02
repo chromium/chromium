@@ -251,9 +251,8 @@ void RealTimeUrlLookupServiceBase::HandleLookupError() {
 
   // Enter backoff mode, calculate duration.
   next_backoff_duration_secs_ = GetBackoffDurationInSeconds();
-  backoff_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(next_backoff_duration_secs_),
-      this, &RealTimeUrlLookupServiceBase::ResetFailures);
+  backoff_timer_.Start(FROM_HERE, base::Seconds(next_backoff_duration_secs_),
+                       this, &RealTimeUrlLookupServiceBase::ResetFailures);
   did_successful_lookup_since_last_backoff_ = false;
 }
 
@@ -406,7 +405,7 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
                                     GetMetricSuffix(), req_data.size());
   owned_loader->AttachStringForUpload(req_data, "application/octet-stream");
   owned_loader->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kURLLookupTimeoutDurationInSeconds));
+      base::Seconds(kURLLookupTimeoutDurationInSeconds));
   owned_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&RealTimeUrlLookupServiceBase::OnURLLoaderComplete,

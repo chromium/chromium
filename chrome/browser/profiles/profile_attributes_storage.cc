@@ -324,7 +324,7 @@ ProfileAttributesStorage::ProfileAttributesStorage(
   }
 
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
-      prefs_, kProfileCountLastUpdatePref, base::TimeDelta::FromHours(24),
+      prefs_, kProfileCountLastUpdatePref, base::Hours(24),
       base::BindRepeating(&ProfileMetrics::LogNumberOfProfiles, this));
   repeating_timer_->Start();
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

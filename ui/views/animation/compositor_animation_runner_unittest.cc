@@ -16,7 +16,7 @@
 namespace views {
 namespace test {
 namespace {
-constexpr base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kDuration = base::Milliseconds(100);
 }
 
 using CompositorAnimationRunnerTest = WidgetTest;

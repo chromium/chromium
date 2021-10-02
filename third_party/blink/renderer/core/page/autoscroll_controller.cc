@@ -48,7 +48,7 @@ namespace blink {
 
 // Delay time in second for start autoscroll if pointer is in border edge of
 // scrollable element.
-constexpr base::TimeDelta kAutoscrollDelay = base::TimeDelta::FromSecondsD(0.2);
+constexpr base::TimeDelta kAutoscrollDelay = base::Seconds(0.2);
 
 static const int kNoMiddleClickAutoscrollRadius = 15;
 

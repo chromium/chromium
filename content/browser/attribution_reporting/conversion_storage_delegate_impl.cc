@@ -59,12 +59,12 @@ ConversionStorageDelegateImpl::GetRateLimits(
     case AttributionType::kNavigation:
     case AttributionType::kEvent:
       return {
-          .time_window = base::TimeDelta::FromDays(30),
+          .time_window = base::Days(30),
           .max_contributions_per_window = 100,
       };
     case AttributionType::kAggregate:
       return {
-          .time_window = base::TimeDelta::FromDays(7),
+          .time_window = base::Days(7),
           .max_contributions_per_window = 65536,
       };
   }
@@ -79,13 +79,13 @@ uint64_t ConversionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
 base::TimeDelta
 ConversionStorageDelegateImpl::GetDeleteExpiredImpressionsFrequency() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::TimeDelta::FromMinutes(5);
+  return base::Minutes(5);
 }
 
 base::TimeDelta
 ConversionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::TimeDelta::FromMinutes(5);
+  return base::Minutes(5);
 }
 
 base::Time ConversionStorageDelegateImpl::GetReportTime(

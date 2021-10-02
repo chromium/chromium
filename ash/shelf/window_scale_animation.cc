@@ -27,12 +27,10 @@ namespace {
 
 // The time to do window transform to scale up to its original position or
 // scale down to homescreen animation.
-constexpr base::TimeDelta kWindowScaleUpOrDownTime =
-    base::TimeDelta::FromMilliseconds(350);
+constexpr base::TimeDelta kWindowScaleUpOrDownTime = base::Milliseconds(350);
 
 // The delay to do window opacity fade out when scaling down the dragged window.
-constexpr base::TimeDelta kWindowFadeOutDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kWindowFadeOutDelay = base::Milliseconds(100);
 
 // The window scale down factor if we head to home screen after drag ends.
 constexpr float kWindowScaleDownFactor = 0.001f;

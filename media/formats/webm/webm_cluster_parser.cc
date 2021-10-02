@@ -108,8 +108,8 @@ int WebMClusterParser::Parse(const uint8_t* buf, int size) {
       if (cluster_timecode_ < 0)
         return -1;
 
-      cluster_start_time_ = base::TimeDelta::FromMicroseconds(
-          cluster_timecode_ * timecode_multiplier_);
+      cluster_start_time_ =
+          base::Microseconds(cluster_timecode_ * timecode_multiplier_);
     }
 
     // Reset the parser if we're done parsing so that
@@ -189,8 +189,7 @@ base::TimeDelta WebMClusterParser::ReadOpusDuration(const uint8_t* data,
   static const uint8_t kTocConfigMask = 0xf8;
   static const uint8_t kTocFrameCountCodeMask = 0x03;
   static const uint8_t kFrameCountMask = 0x3f;
-  static const base::TimeDelta kPacketDurationMax =
-      base::TimeDelta::FromMilliseconds(120);
+  static const base::TimeDelta kPacketDurationMax = base::Milliseconds(120);
 
   if (size < 1) {
     LIMITED_MEDIA_LOG(DEBUG, media_log_, num_duration_errors_,
@@ -246,8 +245,8 @@ base::TimeDelta WebMClusterParser::ReadOpusDuration(const uint8_t* data,
   CHECK_LT(opusConfig, static_cast<int>(base::size(kOpusFrameDurationsMu)));
 
   DCHECK_GT(frame_count, 0);
-  base::TimeDelta duration = base::TimeDelta::FromMicroseconds(
-      kOpusFrameDurationsMu[opusConfig] * frame_count);
+  base::TimeDelta duration =
+      base::Microseconds(kOpusFrameDurationsMu[opusConfig] * frame_count);
 
   if (duration > kPacketDurationMax) {
     // Intentionally allowing packet to pass through for now. Decoder should
@@ -503,7 +502,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     return false;
   }
 
-  base::TimeDelta timestamp = base::TimeDelta::FromMicroseconds(microseconds);
+  base::TimeDelta timestamp = base::Microseconds(microseconds);
 
   if (timestamp == kNoTimestamp || timestamp == kInfiniteDuration) {
     MEDIA_LOG(ERROR, media_log_) << "Invalid block timestamp.";
@@ -562,8 +561,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
 
   base::TimeDelta block_duration_time_delta = kNoTimestamp;
   if (block_duration >= 0) {
-    block_duration_time_delta = base::TimeDelta::FromMicroseconds(
-        block_duration * timecode_multiplier_);
+    block_duration_time_delta =
+        base::Microseconds(block_duration * timecode_multiplier_);
   }
 
   // Prefer encoded duration over BlockGroup->BlockDuration or
@@ -590,7 +589,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
           block_duration_time_delta - encoded_duration;
 
       const auto kWarnDurationDiff =
-          base::TimeDelta::FromMicroseconds(timecode_multiplier_ * 2);
+          base::Microseconds(timecode_multiplier_ * 2);
       if (duration_difference.magnitude() > kWarnDurationDiff) {
         LIMITED_MEDIA_LOG(DEBUG, media_log_, num_duration_errors_,
                           kMaxDurationErrorLogs)
@@ -610,8 +609,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // https://crbug.com/969195.
   if (discard_padding != 0) {
     buffer->set_discard_padding(std::make_pair(
-        base::TimeDelta(),
-        base::TimeDelta::FromMicroseconds(discard_padding / 1000)));
+        base::TimeDelta(), base::Microseconds(discard_padding / 1000)));
   }
 
   return track->AddBuffer(std::move(buffer));
@@ -790,12 +788,10 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
   if (max_frame_duration_ == kNoTimestamp) {
     DVLOG(3) << __func__ << " : using hardcoded default duration";
     if (track_type_ == TrackType::AUDIO) {
-      duration =
-          base::TimeDelta::FromMilliseconds(kDefaultAudioBufferDurationInMs);
+      duration = base::Milliseconds(kDefaultAudioBufferDurationInMs);
     } else {
       // Text and video tracks can both use the larger video default duration.
-      duration =
-          base::TimeDelta::FromMilliseconds(kDefaultVideoBufferDurationInMs);
+      duration = base::Milliseconds(kDefaultVideoBufferDurationInMs);
     }
   } else {
     // Use max duration to minimize the risk of introducing gaps in the buffered

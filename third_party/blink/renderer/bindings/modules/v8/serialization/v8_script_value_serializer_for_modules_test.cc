@@ -1087,7 +1087,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   const unsigned kChannels = 2;
   const unsigned kSampleRate = 8000;
   const unsigned kFrames = 500;
-  constexpr base::TimeDelta kTimestamp = base::TimeDelta::FromMilliseconds(314);
+  constexpr base::TimeDelta kTimestamp = base::Milliseconds(314);
 
   auto audio_bus = media::AudioBus::Create(kChannels, kFrames);
 
@@ -1118,8 +1118,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
 
   AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(new_data->timestamp()),
-            kTimestamp);
+  EXPECT_EQ(base::Microseconds(new_data->timestamp()), kTimestamp);
   EXPECT_EQ(new_data->numberOfChannels(), kChannels);
   EXPECT_EQ(new_data->numberOfFrames(), kFrames);
   EXPECT_EQ(new_data->sampleRate(), kSampleRate);
@@ -1158,7 +1157,7 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
       /*channel_count=*/2,
       /*sample_rate=*/8000,
-      /*frame_count=*/500, base::TimeDelta::FromMilliseconds(314));
+      /*frame_count=*/500, base::Milliseconds(314));
 
   // Create and close the frame.
   auto* audio_data = MakeGarbageCollected<AudioData>(std::move(audio_buffer));

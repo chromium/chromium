@@ -23,11 +23,9 @@ namespace {
 // TODO(b/183573525): This timeout is chosen tentatively. We should adjust the
 // value after collecting the latency metrics.
 constexpr base::TimeDelta kKeyEventDoneCallbackTimeout =
-    base::TimeDelta::FromMilliseconds(300);
-constexpr base::TimeDelta kKeyEventLatencyMin =
-    base::TimeDelta::FromMilliseconds(1);
-constexpr base::TimeDelta kKeyEventLatencyMax =
-    base::TimeDelta::FromMilliseconds(350);
+    base::Milliseconds(300);
+constexpr base::TimeDelta kKeyEventLatencyMin = base::Milliseconds(1);
+constexpr base::TimeDelta kKeyEventLatencyMax = base::Milliseconds(350);
 
 constexpr char kImeLatencyHistogramName[] = "Arc.ChromeOsImeLatency";
 

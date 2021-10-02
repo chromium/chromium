@@ -458,7 +458,7 @@ TEST_F(HostFrameSinkManagerTest, ContextLossRecreateNonRoot) {
 TEST_F(HostFrameSinkManagerTest, ThrottleFramePainting) {
   const std::vector<FrameSinkId> frame_sink_ids{
       FrameSinkId(1, 1), FrameSinkId(2, 2), FrameSinkId(3, 3)};
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(10);
+  constexpr base::TimeDelta interval = base::Hertz(10);
   EXPECT_CALL(impl(), Throttle(frame_sink_ids, interval));
   host().Throttle(frame_sink_ids, interval);
 

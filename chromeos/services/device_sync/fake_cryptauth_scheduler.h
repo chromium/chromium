@@ -23,10 +23,9 @@ namespace device_sync {
 // Fake CryptAuthScheduler implementation.
 class FakeCryptAuthScheduler : public CryptAuthScheduler {
  public:
-  static constexpr base::TimeDelta kDefaultRefreshPeriod =
-      base::TimeDelta::FromDays(30);
+  static constexpr base::TimeDelta kDefaultRefreshPeriod = base::Days(30);
   static constexpr base::TimeDelta kDefaultTimeToNextEnrollmentRequest =
-      base::TimeDelta::FromHours(12);
+      base::Hours(12);
 
   FakeCryptAuthScheduler();
 

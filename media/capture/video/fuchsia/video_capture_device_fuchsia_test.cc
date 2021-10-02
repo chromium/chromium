@@ -313,8 +313,7 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, MultipleFrames) {
   for (size_t i = 0; i < 10; ++i) {
     ASSERT_TRUE(stream->WaitFreeBuffer());
 
-    auto frame_timestamp =
-        start_timestamp + base::TimeDelta::FromMilliseconds(i * 16);
+    auto frame_timestamp = start_timestamp + base::Milliseconds(i * 16);
     stream->ProduceFrame(frame_timestamp, i);
     client_->WaitFrame();
 

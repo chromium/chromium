@@ -74,7 +74,7 @@ TEST_F(FlingAnimationTest, TestNoFling) {
   EXPECT_FALSE(fling_animation_.IsAnimationInProgress());
 
   // This should not change the delta.
-  TickAnimation(base::TimeDelta::FromMilliseconds(100));
+  TickAnimation(base::Milliseconds(100));
 }
 
 TEST_F(FlingAnimationTest, TestFlingWillEventuallyStop) {
@@ -82,7 +82,7 @@ TEST_F(FlingAnimationTest, TestFlingWillEventuallyStop) {
 
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
 
-  TickAnimation(base::TimeDelta::FromMinutes(1));
+  TickAnimation(base::Minutes(1));
 
   EXPECT_FALSE(fling_animation_.IsAnimationInProgress());
 }
@@ -94,7 +94,7 @@ TEST_F(FlingAnimationTest, TestFlingDeltaIsDecreasing) {
   float previous_dy = std::numeric_limits<float>::infinity();
 
   while (true) {
-    TickAnimation(base::TimeDelta::FromMilliseconds(16));
+    TickAnimation(base::Milliseconds(16));
     if (!fling_animation_.IsAnimationInProgress()) {
       break;
     }
@@ -115,7 +115,7 @@ TEST_F(FlingAnimationTest, TestIgnoreLowVelocity) {
   EXPECT_FALSE(fling_animation_.IsAnimationInProgress());
 
   // This should not change the delta.
-  TickAnimation(base::TimeDelta::FromMilliseconds(5));
+  TickAnimation(base::Milliseconds(5));
 }
 
 TEST_F(FlingAnimationTest, TestAbortAnimation) {
@@ -123,7 +123,7 @@ TEST_F(FlingAnimationTest, TestAbortAnimation) {
 
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
 
-  TickAnimation(base::TimeDelta::FromMilliseconds(16));
+  TickAnimation(base::Milliseconds(16));
   AssertDeltaChanged();
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
 
@@ -134,7 +134,7 @@ TEST_F(FlingAnimationTest, TestAbortAnimation) {
 TEST_F(FlingAnimationTest, TestResetVelocity) {
   fling_animation_.SetVelocity(1000.f, -1000.f);
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
-  TickAnimation(base::TimeDelta::FromMilliseconds(16));
+  TickAnimation(base::Milliseconds(16));
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
   AssertDeltaChanged();
   EXPECT_GT(received_dx_, 0);
@@ -142,7 +142,7 @@ TEST_F(FlingAnimationTest, TestResetVelocity) {
 
   fling_animation_.SetVelocity(-1000.f, 1000.f);
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
-  TickAnimation(base::TimeDelta::FromMilliseconds(16));
+  TickAnimation(base::Milliseconds(16));
   EXPECT_TRUE(fling_animation_.IsAnimationInProgress());
   AssertDeltaChanged();
   EXPECT_LT(received_dx_, 0);

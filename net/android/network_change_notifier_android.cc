@@ -238,10 +238,10 @@ NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid() {
   // IPAddressChanged is produced immediately prior to ConnectionTypeChanged
   // so delay IPAddressChanged so they get merged with the following
   // ConnectionTypeChanged signal.
-  params.ip_address_offline_delay_ = base::TimeDelta::FromSeconds(1);
-  params.ip_address_online_delay_ = base::TimeDelta::FromSeconds(1);
-  params.connection_type_offline_delay_ = base::TimeDelta::FromSeconds(0);
-  params.connection_type_online_delay_ = base::TimeDelta::FromSeconds(0);
+  params.ip_address_offline_delay_ = base::Seconds(1);
+  params.ip_address_online_delay_ = base::Seconds(1);
+  params.connection_type_offline_delay_ = base::Seconds(0);
+  params.connection_type_online_delay_ = base::Seconds(0);
   return params;
 }
 

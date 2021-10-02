@@ -62,7 +62,7 @@ constexpr base::TimeDelta kDefaultThrottledWakeUpInterval =
     PageSchedulerImpl::kDefaultThrottledWakeUpInterval;
 constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
     PageSchedulerImpl::kIntensiveThrottledWakeUpInterval;
-constexpr auto kShortDelay = base::TimeDelta::FromMilliseconds(10);
+constexpr auto kShortDelay = base::Milliseconds(10);
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
@@ -882,8 +882,7 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   // Schedule tasks with a short delay, during the intensive wake up throttling
   // grace period.
   int num_remaining_tasks =
-      base::TimeDelta::FromSeconds(
-          kIntensiveWakeUpThrottling_GracePeriodSeconds_Default)
+      base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Default)
           .IntDiv(kDefaultThrottledWakeUpInterval);
   task_runner->PostDelayedTask(
       FROM_HERE,
@@ -1012,13 +1011,13 @@ TEST_F(FrameSchedulerImplTest, PagePostsCpuTasks) {
   EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
   UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
-                                base::TimeDelta::FromMilliseconds(10)));
+                                base::Milliseconds(10)));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetTaskTime().is_zero());
   EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
   UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
-                                base::TimeDelta::FromMilliseconds(100)));
+                                base::Milliseconds(100)));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetTaskTime().is_zero());
   EXPECT_EQ(1, GetTotalUpdateTaskTimeCalls());
@@ -1052,7 +1051,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
     // Check the rest of the values after different types of commit.
     UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
         FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
-                                  base::TimeDelta::FromMilliseconds(60)));
+                                  base::Milliseconds(60)));
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(GetTaskTime().is_zero());
     EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
@@ -1061,7 +1060,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
 
     UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
         FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
-                                  base::TimeDelta::FromMilliseconds(60)));
+                                  base::Milliseconds(60)));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(test_case.expect_task_time_zero, GetTaskTime().is_zero());
     EXPECT_EQ(test_case.expected_total_calls, GetTotalUpdateTaskTimeCalls());
@@ -1137,7 +1136,7 @@ TEST_F(FrameSchedulerImplTest, LifecycleObserver) {
   observer->CheckObserverState(FROM_HERE, not_throttled_count, hidden_count,
                                throttled_count, stopped_count);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
 
   // The frame gets throttled after some time in background.
   observer->CheckObserverState(FROM_HERE, not_throttled_count, hidden_count,
@@ -1171,7 +1170,7 @@ TEST_F(FrameSchedulerImplTest, LifecycleObserver) {
   page_scheduler_->SetPageVisible(false);
 
   // Wait 100 secs virtually and run pending tasks just in case.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_environment_.FastForwardBy(base::Seconds(100));
   base::RunLoop().RunUntilIdle();
 
   observer->CheckObserverState(FROM_HERE, not_throttled_count, hidden_count,
@@ -1283,7 +1282,7 @@ TEST_F(FrameSchedulerImplTest, LogIpcsPostedToFramesInBackForwardCache) {
   StorePageInBackForwardCache();
 
   // Run the tasks so that they are recorded in the histogram
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Post IPC tasks, accounting for delay for when tracking starts.
   {
@@ -1337,7 +1336,7 @@ TEST_F(FrameSchedulerImplTest,
   StorePageInBackForwardCache();
 
   // Run the tasks so that they are recorded in the histogram
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -2811,12 +2810,11 @@ TEST_F(WebSchedulingTaskQueueTest, DynamicTaskPriorityOrder) {
 TEST_F(WebSchedulingTaskQueueTest, DynamicTaskPriorityOrderDelayedTasks) {
   Vector<String> run_order;
 
-  PostWebSchedulingTestTasks(&run_order, "U1 U2 V1 V2",
-                             base::TimeDelta::FromMilliseconds(5));
+  PostWebSchedulingTestTasks(&run_order, "U1 U2 V1 V2", base::Milliseconds(5));
   task_queues_[static_cast<int>(WebSchedulingPriority::kUserBlockingPriority)]
       ->SetPriority(WebSchedulingPriority::kBackgroundPriority);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  task_environment_.FastForwardBy(base::Milliseconds(5));
 
   EXPECT_THAT(run_order, testing::ElementsAre("V1", "V2", "U1", "U2"));
 }
@@ -2831,7 +2829,7 @@ TEST_F(FrameSchedulerImplTest, ThrottledJSTimerTasksRunTime) {
 
   // Snap the time to a multiple of 1 second. Otherwise, the exact run time
   // of throttled tasks after hiding the page will vary.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   // Hide the page to start throttling JS Timers.
@@ -2861,36 +2859,35 @@ TEST_F(FrameSchedulerImplTest, ThrottledJSTimerTasksRunTime) {
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times[task_type]));
     task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times[task_type]),
-        base::TimeDelta::FromMilliseconds(1000));
+        base::Milliseconds(1000));
     task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times[task_type]),
-        base::TimeDelta::FromMilliseconds(1002));
+        base::Milliseconds(1002));
     task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times[task_type]),
-        base::TimeDelta::FromMilliseconds(1004));
+        base::Milliseconds(1004));
     task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times[task_type]),
-        base::TimeDelta::FromMilliseconds(2500));
+        base::Milliseconds(2500));
     task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times[task_type]),
-        base::TimeDelta::FromMilliseconds(6000));
+        base::Milliseconds(6000));
   }
 
   // Make posted tasks run.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // The effective delay of a throttled task is >= the requested delay, and is
   // within [N * 1000, N * 1000 + 3] ms, where N is an integer. This is because
   // the wake up rate is 1 per second, and the duration of each wake up is 3 ms.
   for (TaskType task_type : kJavaScriptTimerTaskTypes) {
-    EXPECT_THAT(
-        run_times[task_type],
-        testing::ElementsAre(start + base::TimeDelta::FromMilliseconds(0),
-                             start + base::TimeDelta::FromMilliseconds(1000),
-                             start + base::TimeDelta::FromMilliseconds(1002),
-                             start + base::TimeDelta::FromMilliseconds(2000),
-                             start + base::TimeDelta::FromMilliseconds(3000),
-                             start + base::TimeDelta::FromMilliseconds(6000)));
+    EXPECT_THAT(run_times[task_type],
+                testing::ElementsAre(start + base::Milliseconds(0),
+                                     start + base::Milliseconds(1000),
+                                     start + base::Milliseconds(1002),
+                                     start + base::Milliseconds(2000),
+                                     start + base::Milliseconds(3000),
+                                     start + base::Milliseconds(6000)));
   }
 }
 
@@ -3000,7 +2997,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // Test that wake ups are 1-second aligned if there is no recent wake up.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(5));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(5));
     std::vector<base::TimeTicks> run_times;
 
     task_runner->PostDelayedTask(FROM_HERE,
@@ -3008,8 +3005,8 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                                  kDefaultThrottledWakeUpInterval);
 
     task_environment_.FastForwardBy(kDefaultThrottledWakeUpInterval);
-    EXPECT_THAT(run_times, testing::ElementsAre(
-                               scope_start + base::TimeDelta::FromSeconds(1)));
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(scope_start + base::Seconds(1)));
   }
 
   // Test that if there is a recent wake up:
@@ -3017,8 +3014,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   //   Otherwise:                               Wake ups are 1-second aligned
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(5) +
-                               base::TimeDelta::FromSeconds(1));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(5) + base::Seconds(1));
     std::vector<base::TimeTicks> run_times;
 
     for (int i = 0; i < kNumTasks; ++i) {
@@ -3030,19 +3026,17 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
 
     if (IsIntensiveThrottlingExpected()) {
-      const base::TimeTicks aligned_time =
-          scope_start + base::TimeDelta::FromSeconds(59);
+      const base::TimeTicks aligned_time = scope_start + base::Seconds(59);
       EXPECT_THAT(run_times,
                   testing::ElementsAre(aligned_time, aligned_time, aligned_time,
                                        aligned_time, aligned_time));
     } else {
-      EXPECT_THAT(
-          run_times,
-          testing::ElementsAre(scope_start + base::TimeDelta::FromSeconds(1),
-                               scope_start + base::TimeDelta::FromSeconds(2),
-                               scope_start + base::TimeDelta::FromSeconds(3),
-                               scope_start + base::TimeDelta::FromSeconds(4),
-                               scope_start + base::TimeDelta::FromSeconds(5)));
+      EXPECT_THAT(run_times,
+                  testing::ElementsAre(scope_start + base::Seconds(1),
+                                       scope_start + base::Seconds(2),
+                                       scope_start + base::Seconds(3),
+                                       scope_start + base::Seconds(4),
+                                       scope_start + base::Seconds(5)));
     }
   }
 
@@ -3051,7 +3045,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // otherwise.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(6));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(6));
     std::vector<base::TimeTicks> run_times;
 
     task_runner->PostDelayedTask(FROM_HERE,
@@ -3070,7 +3064,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // minute.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(7));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(7));
     std::vector<base::TimeTicks> run_times;
 
     const base::TimeDelta kLongDelay =
@@ -3088,8 +3082,8 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // aligned.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(12) +
-                               kDefaultThrottledWakeUpInterval);
+    EXPECT_EQ(scope_start,
+              test_start + base::Minutes(12) + kDefaultThrottledWakeUpInterval);
     std::vector<base::TimeTicks> run_times;
 
     page_scheduler_->OnTitleOrFaviconUpdated();
@@ -3107,25 +3101,22 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     task_environment_.FastForwardUntilNoTasksRemain();
 
     if (IsIntensiveThrottlingExpected()) {
-      EXPECT_THAT(run_times, testing::ElementsAre(
-                                 scope_start + base::TimeDelta::FromSeconds(1),
-                                 scope_start + base::TimeDelta::FromSeconds(2),
-                                 scope_start + base::TimeDelta::FromSeconds(3),
-                                 scope_start - kDefaultThrottledWakeUpInterval +
-                                     base::TimeDelta::FromMinutes(1),
-                                 scope_start - kDefaultThrottledWakeUpInterval +
-                                     base::TimeDelta::FromMinutes(1),
-                                 scope_start - kDefaultThrottledWakeUpInterval +
-                                     base::TimeDelta::FromMinutes(1)));
+      EXPECT_THAT(
+          run_times,
+          testing::ElementsAre(
+              scope_start + base::Seconds(1), scope_start + base::Seconds(2),
+              scope_start + base::Seconds(3),
+              scope_start - kDefaultThrottledWakeUpInterval + base::Minutes(1),
+              scope_start - kDefaultThrottledWakeUpInterval + base::Minutes(1),
+              scope_start - kDefaultThrottledWakeUpInterval +
+                  base::Minutes(1)));
     } else {
       EXPECT_THAT(
           run_times,
-          testing::ElementsAre(scope_start + base::TimeDelta::FromSeconds(1),
-                               scope_start + base::TimeDelta::FromSeconds(2),
-                               scope_start + base::TimeDelta::FromSeconds(3),
-                               scope_start + base::TimeDelta::FromSeconds(4),
-                               scope_start + base::TimeDelta::FromSeconds(5),
-                               scope_start + base::TimeDelta::FromSeconds(6)));
+          testing::ElementsAre(
+              scope_start + base::Seconds(1), scope_start + base::Seconds(2),
+              scope_start + base::Seconds(3), scope_start + base::Seconds(4),
+              scope_start + base::Seconds(5), scope_start + base::Seconds(6)));
     }
   }
 }
@@ -3163,12 +3154,12 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     }
 
     task_environment_.FastForwardBy(kGracePeriod);
-    EXPECT_THAT(run_times, testing::ElementsAre(
-                               scope_start + base::TimeDelta::FromSeconds(1),
-                               scope_start + base::TimeDelta::FromSeconds(2),
-                               scope_start + base::TimeDelta::FromSeconds(3),
-                               scope_start + base::TimeDelta::FromSeconds(4),
-                               scope_start + base::TimeDelta::FromSeconds(5)));
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(scope_start + base::Seconds(1),
+                                     scope_start + base::Seconds(2),
+                                     scope_start + base::Seconds(3),
+                                     scope_start + base::Seconds(4),
+                                     scope_start + base::Seconds(5)));
   }
 
   // After the grace period:
@@ -3179,7 +3170,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // the last minute). Otherwise, it should be 1-second aligned.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(5));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(5));
     std::vector<base::TimeTicks> run_times;
 
     task_runner->PostDelayedTask(FROM_HERE,
@@ -3196,7 +3187,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // otherwise.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(6));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(6));
     std::vector<base::TimeTicks> run_times;
 
     for (int i = 0; i < kNumTasks; ++i) {
@@ -3214,13 +3205,12 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                   testing::ElementsAre(aligned_time, aligned_time, aligned_time,
                                        aligned_time, aligned_time));
     } else {
-      EXPECT_THAT(
-          run_times,
-          testing::ElementsAre(scope_start + base::TimeDelta::FromSeconds(1),
-                               scope_start + base::TimeDelta::FromSeconds(2),
-                               scope_start + base::TimeDelta::FromSeconds(3),
-                               scope_start + base::TimeDelta::FromSeconds(4),
-                               scope_start + base::TimeDelta::FromSeconds(5)));
+      EXPECT_THAT(run_times,
+                  testing::ElementsAre(scope_start + base::Seconds(1),
+                                       scope_start + base::Seconds(2),
+                                       scope_start + base::Seconds(3),
+                                       scope_start + base::Seconds(4),
+                                       scope_start + base::Seconds(5)));
     }
   }
 
@@ -3229,7 +3219,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // otherwise.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(7));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(7));
     std::vector<base::TimeTicks> run_times;
 
     task_runner->PostDelayedTask(FROM_HERE,
@@ -3248,7 +3238,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // should be 1-second aligned.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(8));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(8));
     std::vector<base::TimeTicks> run_times;
 
     const base::TimeDelta kLongDelay = kIntensiveThrottledWakeUpInterval * 6;
@@ -3266,7 +3256,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // or favicon update. Otherwise, they should be 1-second aligned.
   {
     const base::TimeTicks scope_start = base::TimeTicks::Now();
-    EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(14));
+    EXPECT_EQ(scope_start, test_start + base::Minutes(14));
     std::vector<base::TimeTicks> run_times;
 
     page_scheduler_->OnTitleOrFaviconUpdated();
@@ -3287,21 +3277,17 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     if (IsIntensiveThrottlingExpected()) {
       EXPECT_THAT(
           run_times,
-          testing::ElementsAre(scope_start + base::TimeDelta::FromMinutes(1),
-                               scope_start + base::TimeDelta::FromMinutes(2),
-                               scope_start + base::TimeDelta::FromMinutes(2),
-                               scope_start + base::TimeDelta::FromMinutes(2),
-                               scope_start + base::TimeDelta::FromMinutes(2),
-                               scope_start + base::TimeDelta::FromMinutes(2)));
+          testing::ElementsAre(
+              scope_start + base::Minutes(1), scope_start + base::Minutes(2),
+              scope_start + base::Minutes(2), scope_start + base::Minutes(2),
+              scope_start + base::Minutes(2), scope_start + base::Minutes(2)));
     } else {
       EXPECT_THAT(
           run_times,
-          testing::ElementsAre(scope_start + base::TimeDelta::FromSeconds(1),
-                               scope_start + base::TimeDelta::FromSeconds(2),
-                               scope_start + base::TimeDelta::FromSeconds(3),
-                               scope_start + base::TimeDelta::FromSeconds(4),
-                               scope_start + base::TimeDelta::FromSeconds(5),
-                               scope_start + base::TimeDelta::FromSeconds(6)));
+          testing::ElementsAre(
+              scope_start + base::Seconds(1), scope_start + base::Seconds(2),
+              scope_start + base::Seconds(3), scope_start + base::Seconds(4),
+              scope_start + base::Seconds(5), scope_start + base::Seconds(6)));
     }
   }
 }
@@ -3609,9 +3595,9 @@ TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
   EXPECT_TRUE(IsIntensiveWakeUpThrottlingEnabled());
 
   // The parameters should be the defaults.
-  EXPECT_EQ(base::TimeDelta::FromSeconds(
-                kIntensiveWakeUpThrottling_GracePeriodSeconds_Default),
-            GetIntensiveWakeUpThrottlingGracePeriod());
+  EXPECT_EQ(
+      base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Default),
+      GetIntensiveWakeUpThrottlingGracePeriod());
 }
 
 TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
@@ -3867,8 +3853,8 @@ TEST_F(FrameSchedulerImplTest, ImmediateWebSchedulingTasksAreNotThrottled) {
   // Make sure we are *not* aligned to a 1 second boundary by aligning to a 1
   // second boundary and moving past it a bit. If we were throttled, even
   // non-delayed tasks will need to wait until the next aligned interval to run.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
 
   const base::TimeTicks start = base::TimeTicks::Now();
 
@@ -3902,7 +3888,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   page_scheduler_->SetPageVisible(true);
 
   // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
@@ -3913,18 +3899,17 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   for (int i = 0; i < 5; i++) {
     task_runner->PostDelayedTask(FROM_HERE,
                                  base::BindOnce(&RecordRunTime, &run_times),
-                                 base::TimeDelta::FromMilliseconds(50) * i);
+                                 base::Milliseconds(50) * i);
   }
 
   // Make posted tasks run.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(
-                  start, start + base::TimeDelta::FromMilliseconds(100),
-                  start + base::TimeDelta::FromMilliseconds(100),
-                  start + base::TimeDelta::FromMilliseconds(200),
-                  start + base::TimeDelta::FromMilliseconds(200)));
+              testing::ElementsAre(start, start + base::Milliseconds(100),
+                                   start + base::Milliseconds(100),
+                                   start + base::Milliseconds(200),
+                                   start + base::Milliseconds(200)));
 }
 
 // Make sure the normal throttling (1 wake up per second) is applied when the
@@ -3934,7 +3919,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   page_scheduler_->SetPageVisible(false);
 
   // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
@@ -3945,18 +3930,17 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   for (int i = 0; i < 5; i++) {
     task_runner->PostDelayedTask(FROM_HERE,
                                  base::BindOnce(&RecordRunTime, &run_times),
-                                 base::TimeDelta::FromMilliseconds(50) * i);
+                                 base::Milliseconds(50) * i);
   }
 
   // Make posted tasks run.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(
-                  start, start + base::TimeDelta::FromMilliseconds(1000),
-                  start + base::TimeDelta::FromMilliseconds(1000),
-                  start + base::TimeDelta::FromMilliseconds(1000),
-                  start + base::TimeDelta::FromMilliseconds(1000)));
+              testing::ElementsAre(start, start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000)));
 }
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
@@ -3965,7 +3949,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   page_scheduler_->AudioStateChanged(/*is_audio_playing=*/true);
 
   // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
@@ -3976,18 +3960,17 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   for (int i = 0; i < 5; i++) {
     task_runner->PostDelayedTask(FROM_HERE,
                                  base::BindOnce(&RecordRunTime, &run_times),
-                                 base::TimeDelta::FromMilliseconds(50) * i);
+                                 base::Milliseconds(50) * i);
   }
 
   // Make posted tasks run.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(
-                  start, start + base::TimeDelta::FromMilliseconds(100),
-                  start + base::TimeDelta::FromMilliseconds(100),
-                  start + base::TimeDelta::FromMilliseconds(200),
-                  start + base::TimeDelta::FromMilliseconds(200)));
+              testing::ElementsAre(start, start + base::Milliseconds(100),
+                                   start + base::Milliseconds(100),
+                                   start + base::Milliseconds(200),
+                                   start + base::Milliseconds(200)));
 }
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
@@ -4004,25 +3987,24 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
 
   cross_origin_frame_scheduler->SetFrameVisible(true);
   // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
   for (int i = 0; i < 5; i++) {
     cross_origin_task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
-        base::TimeDelta::FromMilliseconds(50) * i);
+        base::Milliseconds(50) * i);
   }
 
   // Make posted tasks run.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(
-                  start, start + base::TimeDelta::FromMilliseconds(100),
-                  start + base::TimeDelta::FromMilliseconds(100),
-                  start + base::TimeDelta::FromMilliseconds(200),
-                  start + base::TimeDelta::FromMilliseconds(200)));
+              testing::ElementsAre(start, start + base::Milliseconds(100),
+                                   start + base::Milliseconds(100),
+                                   start + base::Milliseconds(200),
+                                   start + base::Milliseconds(200)));
 }
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
@@ -4039,25 +4021,24 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
 
   cross_origin_frame_scheduler->SetFrameVisible(false);
   // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::TimeDelta::FromSeconds(1));
+  FastForwardToAlignedTime(base::Seconds(1));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
   for (int i = 0; i < 5; i++) {
     cross_origin_task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
-        base::TimeDelta::FromMilliseconds(50) * i);
+        base::Milliseconds(50) * i);
   }
 
   // Make posted tasks run.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(
-                  start, start + base::TimeDelta::FromMilliseconds(1000),
-                  start + base::TimeDelta::FromMilliseconds(1000),
-                  start + base::TimeDelta::FromMilliseconds(1000),
-                  start + base::TimeDelta::FromMilliseconds(1000)));
+              testing::ElementsAre(start, start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000)));
 }
 
 class FrameSchedulerImplDisablePrioritizedPostMessageForwarding

@@ -48,7 +48,7 @@ TEST_F(WallClockTimerTest, PowerResume) {
   // Set up a WallClockTimer that will fire in one minute.
   WallClockTimer wall_clock_timer(&clock_,
                                   task_environment_.GetMockTickClock());
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
   const auto start_time = base::Time::Now();
   const auto run_time = start_time + delay;
   clock_.SetNow(start_time);
@@ -56,7 +56,7 @@ TEST_F(WallClockTimerTest, PowerResume) {
   EXPECT_EQ(wall_clock_timer.desired_run_time(), start_time + delay);
 
   // Pretend that time jumps forward 30 seconds while the machine is suspended.
-  constexpr auto past_time = base::TimeDelta::FromSeconds(30);
+  constexpr auto past_time = base::Seconds(30);
   FastForwardBy(past_time, /*with_power=*/false);
   // Ensure that the timer has not yet fired.
   ::testing::Mock::VerifyAndClearExpectations(&callback);
@@ -81,7 +81,7 @@ TEST_F(WallClockTimerTest, UseTimerTwiceInRow) {
   // Once it's done, it will invoke |second_callback| after the other minute.
   WallClockTimer wall_clock_timer(&clock_,
                                   task_environment_.GetMockTickClock());
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
   wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay, first_callback.Get());
   EXPECT_CALL(first_callback, Run())
       .WillOnce(::testing::InvokeWithoutArgs(
@@ -96,7 +96,7 @@ TEST_F(WallClockTimerTest, UseTimerTwiceInRow) {
 
   // When the |wall_clock_time| is used for the second time, it can still handle
   // power suspension properly.
-  constexpr auto past_time = base::TimeDelta::FromSeconds(30);
+  constexpr auto past_time = base::Seconds(30);
   FastForwardBy(past_time, /*with_power=*/false);
   ::testing::Mock::VerifyAndClearExpectations(&second_callback);
 
@@ -112,11 +112,11 @@ TEST_F(WallClockTimerTest, Stop) {
   // Set up a WallClockTimer.
   WallClockTimer wall_clock_timer(&clock_,
                                   task_environment_.GetMockTickClock());
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
   wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay, callback.Get());
 
   // After 20 seconds, timer is stopped.
-  constexpr auto past_time = base::TimeDelta::FromSeconds(20);
+  constexpr auto past_time = base::Seconds(20);
   FastForwardBy(past_time);
   EXPECT_TRUE(wall_clock_timer.IsRunning());
   wall_clock_timer.Stop();
@@ -134,7 +134,7 @@ TEST_F(WallClockTimerTest, Stop) {
 TEST_F(WallClockTimerTest, RestartRunningTimer) {
   ::testing::StrictMock<base::MockOnceClosure> first_callback;
   ::testing::StrictMock<base::MockOnceClosure> second_callback;
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
 
   // Set up a WallClockTimer that will invoke |first_callback| in one minute.
   clock_.SetNow(base::Time::Now());
@@ -168,7 +168,7 @@ TEST_F(WallClockTimerTest, DoubleStop) {
   // Set up a WallClockTimer.
   WallClockTimer wall_clock_timer(&clock_,
                                   task_environment_.GetMockTickClock());
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
   wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay, callback.Get());
 
   // After 15 seconds, timer is stopped.
@@ -197,7 +197,7 @@ TEST_F(WallClockTimerTest, NonStopTickClock) {
   // Set up a WallClockTimer that will fire in one minute.
   WallClockTimer wall_clock_timer(&clock_,
                                   task_environment_.GetMockTickClock());
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
   const auto start_time = base::Time::Now();
   const auto run_time = start_time + delay;
   clock_.SetNow(start_time);
@@ -205,7 +205,7 @@ TEST_F(WallClockTimerTest, NonStopTickClock) {
   EXPECT_EQ(wall_clock_timer.desired_run_time(), start_time + delay);
 
   // Pretend that time jumps forward 30 seconds while the machine is suspended.
-  constexpr auto past_time = base::TimeDelta::FromSeconds(30);
+  constexpr auto past_time = base::Seconds(30);
 
   // Fastword with both clocks even the power is suspended.
   fake_power_monitor_source_.Suspend();
@@ -231,7 +231,7 @@ TEST_F(WallClockTimerTest, NonStopTickClockWithLongPause) {
   // Set up a WallClockTimer that will fire in one minute.
   WallClockTimer wall_clock_timer(&clock_,
                                   task_environment_.GetMockTickClock());
-  constexpr auto delay = base::TimeDelta::FromMinutes(1);
+  constexpr auto delay = base::Minutes(1);
   const auto start_time = base::Time::Now();
   const auto run_time = start_time + delay;
   clock_.SetNow(start_time);
@@ -239,7 +239,7 @@ TEST_F(WallClockTimerTest, NonStopTickClockWithLongPause) {
   EXPECT_EQ(wall_clock_timer.desired_run_time(), start_time + delay);
 
   // Pretend that time jumps forward 60 seconds while the machine is suspended.
-  constexpr auto past_time = base::TimeDelta::FromSeconds(60);
+  constexpr auto past_time = base::Seconds(60);
 
   // Fastword with both clocks even the power is suspended. Timer fires at the
   // moment of power resume.

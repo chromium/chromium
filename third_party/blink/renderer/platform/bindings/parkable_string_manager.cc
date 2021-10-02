@@ -211,7 +211,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
         FROM_HERE,
         base::BindOnce(&ParkableStringManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
-        base::TimeDelta::FromMinutes(5));
+        base::Minutes(5));
     has_posted_unparking_time_accounting_task_ = true;
   }
 
@@ -391,7 +391,7 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(kAgingIntervalInSeconds));
+      base::Seconds(kAgingIntervalInSeconds));
   has_pending_aging_task_ = true;
 }
 

@@ -92,10 +92,10 @@ TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
   request->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
 
   // Generate response and verify that callback is called.
-  EXPECT_CALL(callback_, Run("", base::TimeDelta::FromSeconds(0),
-                             ErrorCode::SIGNALING_TIMEOUT));
+  EXPECT_CALL(callback_,
+              Run("", base::Seconds(0), ErrorCode::SIGNALING_TIMEOUT));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+  task_environment_.FastForwardBy(base::Seconds(15));
 }
 
 TEST_F(XmppRegisterSupportHostRequestTest, Send) {
@@ -157,8 +157,7 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   EXPECT_EQ(expected_signature, signature->BodyText());
 
   // Generate response and verify that callback is called.
-  EXPECT_CALL(callback_, Run(kSupportId, base::TimeDelta::FromSeconds(300),
-                             ErrorCode::OK));
+  EXPECT_CALL(callback_, Run(kSupportId, base::Seconds(300), ErrorCode::OK));
 
   std::unique_ptr<XmlElement> response(new XmlElement(jingle_xmpp::QN_IQ));
   response->AddAttr(QName(std::string(), "from"), kTestBotJid);

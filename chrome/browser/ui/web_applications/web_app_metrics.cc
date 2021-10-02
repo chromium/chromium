@@ -37,8 +37,7 @@ namespace {
 // Max amount of time to record as a session. If a session exceeds this length,
 // treat it as invalid (0 time).
 // TODO (crbug.com/1081187): Use an idle timeout instead.
-constexpr base::TimeDelta max_valid_session_delta_ =
-    base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta max_valid_session_delta_ = base::Hours(12);
 
 void RecordEngagementHistogram(
     const std::string& histogram_name,

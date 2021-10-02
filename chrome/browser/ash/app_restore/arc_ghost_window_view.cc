@@ -28,7 +28,7 @@ class Throbber : public views::View {
   explicit Throbber(uint32_t color) : color_(color) {
     start_time_ = base::TimeTicks::Now();
     timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(30),
+        FROM_HERE, base::Milliseconds(30),
         base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
     SchedulePaint();  // paint right away
   }

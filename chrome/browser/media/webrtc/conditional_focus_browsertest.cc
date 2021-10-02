@@ -146,7 +146,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
       if (ActiveTab() == Tab::kCapturedTab) {
         return true;
       }
-      Wait(base::TimeDelta::FromMilliseconds(500));
+      Wait(base::Milliseconds(500));
     }
     return (ActiveTab() == Tab::kCapturedTab);
   }
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   // Whereas calls to Wait() in previous tests served to minimize flakiness,
   // this one is to prove no false-positives. Namely, we allow enough time
   // for the focus-change, yet it does not occur.
-  Wait(base::TimeDelta::FromMilliseconds(10000));
+  Wait(base::Milliseconds(10000));
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusTriggeredByMicrotask) {
   Capture(0, FocusEnumValue::kNoValue);
   // Note that the Wait(), which is necessary in order to minimize flakiness,
   // has a duration less than |kConditionalFocusWindowMs|.
-  Wait(base::TimeDelta::FromMilliseconds(4500));
+  Wait(base::Milliseconds(4500));
   // Focus-change already occurred before kConditionalFocusWindowMs.
   EXPECT_EQ(ActiveTab(), Tab::kCapturedTab);
 }
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
 
   // No additional focus-change - user activity has suppressed that.
-  Wait(base::TimeDelta::FromMilliseconds(7500));
+  Wait(base::Milliseconds(7500));
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             browser()->tab_strip_model()->GetWebContentsAt(0));
 }

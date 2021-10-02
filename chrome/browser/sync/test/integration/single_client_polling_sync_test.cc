@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
   // Set small polling interval to make random delays introduced in
   // SyncSchedulerImpl::ComputeLastPollOnStart() negligible, but big enough to
   // avoid periodic polls during a test run.
-  remote_prefs.SetPollInterval(base::TimeDelta::FromSeconds(300));
+  remote_prefs.SetPollInterval(base::Seconds(300));
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 

@@ -189,7 +189,7 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   bool key_pressed = true;
   double volume = 0.9;
   const base::TimeTicks capture_time =
-      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(delay_ms);
+      base::TimeTicks::Now() + base::Milliseconds(delay_ms);
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(2, kExpectedSourceBufferSize);
   audio_bus->Zero();

@@ -48,7 +48,7 @@ namespace {
 
 // Maximum time for AutomaticRebootManager initialization to complete.
 constexpr base::TimeDelta kAutomaticRebootManagerInitTimeout =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 // Blocks until |manager| is initialized and then sets |success_out| to true and
 // runs |quit_closure|. If initialization does not occur within |timeout|, sets
@@ -84,7 +84,7 @@ class KioskAppUpdateServiceTest
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     const base::FilePath& temp_dir = temp_dir_.GetPath();
 
-    const base::TimeDelta uptime = base::TimeDelta::FromHours(3);
+    const base::TimeDelta uptime = base::Hours(3);
     const std::string uptime_seconds =
         base::NumberToString(uptime.InSecondsF());
     const base::FilePath uptime_file = temp_dir.Append("uptime");
@@ -155,8 +155,8 @@ class KioskAppUpdateServiceTest
 
   void RequestPeriodicReboot() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    g_browser_process->local_state()->SetInteger(
-        prefs::kUptimeLimit, base::TimeDelta::FromHours(2).InSeconds());
+    g_browser_process->local_state()->SetInteger(prefs::kUptimeLimit,
+                                                 base::Hours(2).InSeconds());
     run_loop_->Run();
   }
 

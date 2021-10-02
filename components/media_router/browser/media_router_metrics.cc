@@ -144,7 +144,7 @@ const char MediaRouterMetrics::kHistogramUiIconStateAtInit[] =
 
 // static
 const base::TimeDelta MediaRouterMetrics::kDeviceCountMetricDelay =
-    base::TimeDelta::FromSeconds(3);
+    base::Seconds(3);
 
 // static
 void MediaRouterMetrics::RecordMediaRouterDialogOrigin(

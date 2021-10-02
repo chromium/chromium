@@ -22,8 +22,7 @@ namespace remoting {
 // Handles the lifetime and validity of the messaging stream used for FTL.
 class FtlMessageReceptionChannel final : public MessageReceptionChannel {
  public:
-  static constexpr base::TimeDelta kPongTimeout =
-      base::TimeDelta::FromSeconds(15);
+  static constexpr base::TimeDelta kPongTimeout = base::Seconds(15);
 
   // |signaling_tracker| is nullable.
   explicit FtlMessageReceptionChannel(SignalingTracker* signaling_tracker);

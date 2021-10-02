@@ -92,7 +92,7 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
   // a short delay.
   void PostTask(base::Location from_here, base::OnceClosure task) {
     PostTask(std::move(from_here), std::move(task),
-             base::TimeDelta::FromMilliseconds(kTaskDelayMs));
+             base::Milliseconds(kTaskDelayMs));
   }
 
   void PostTask(base::Location from_here,
@@ -178,7 +178,7 @@ TEST_F(TextInputClientMacTest, NotFoundCharacterIndex) {
   PostTask(FROM_HERE,
            base::BindOnce(&TextInputClientMac::SetCharacterIndexAndSignal,
                           base::Unretained(service()), UINT32_MAX),
-           base::TimeDelta::FromMilliseconds(kTaskDelayMs) * 2);
+           base::Milliseconds(kTaskDelayMs) * 2);
 
   base::RunLoop run_loop1;
   local_frame()->SetCallback(run_loop1.QuitClosure());
@@ -214,7 +214,7 @@ TEST_F(TextInputClientMacTest, TimeoutRectForRange) {
   local_frame()->SetCallback(run_loop.QuitClosure());
 
   base::TimeDelta old_timeout = service()->wait_timeout_for_tests();
-  service()->set_wait_timeout_for_tests(base::TimeDelta::FromMilliseconds(300));
+  service()->set_wait_timeout_for_tests(base::Milliseconds(300));
 
   gfx::Rect rect =
       service()->GetFirstRectForRange(widget(), gfx::Range(NSMakeRange(0, 32)));

@@ -321,8 +321,7 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
       0);
 
   // After |kTimeSpentOnlinePSim|, PSim Cellular becomes not connected.
-  const base::TimeDelta kTimeSpentOnlinePSim =
-      base::TimeDelta::FromSeconds(123);
+  const base::TimeDelta kTimeSpentOnlinePSim = base::Seconds(123);
   task_environment_.FastForwardBy(kTimeSpentOnlinePSim);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kTestIdleStateValue);
@@ -366,8 +365,7 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
       CellularMetricsLogger::CellularUsage::kConnectedAndOnlyNetwork, 1);
 
   // After |kTimeSpentOnlineESim|, ESim Cellular becomes not connected.
-  const base::TimeDelta kTimeSpentOnlineESim =
-      base::TimeDelta::FromSeconds(123);
+  const base::TimeDelta kTimeSpentOnlineESim = base::Seconds(123);
   task_environment_.FastForwardBy(kTimeSpentOnlineESim);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kTestIdleStateValue);
@@ -766,8 +764,7 @@ TEST_F(CellularMetricsLoggerTest, UserInitiatedConnectionResult) {
 TEST_F(CellularMetricsLoggerTest, CellularTimeToConnectedTest) {
   SetUpMetricsLogger();
 
-  constexpr base::TimeDelta kTestConnectionTime =
-      base::TimeDelta::FromMilliseconds(321);
+  constexpr base::TimeDelta kTestConnectionTime = base::Milliseconds(321);
   InitCellular();
   const base::Value kOnlineStateValue(shill::kStateOnline);
   const base::Value kAssocStateValue(shill::kStateAssociation);

@@ -196,9 +196,8 @@ TEST_F(DataElementDeserializationTest, Bytes) {
 
 TEST_F(DataElementDeserializationTest, File) {
   const base::FilePath kPath = base::FilePath::FromUTF8Unsafe("foobar");
-  DataElement src(DataElementFile(
-      kPath, /*offset=*/3, /*length=*/8,
-      base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+  DataElement src(DataElementFile(kPath, /*offset=*/3, /*length=*/8,
+                                  base::Time::UnixEpoch() + base::Minutes(2)));
   DataElement dest;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::DataElement>(src, dest));

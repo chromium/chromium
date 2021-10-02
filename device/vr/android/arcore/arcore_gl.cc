@@ -854,10 +854,8 @@ base::TimeDelta ArCoreGl::EstimatedArCoreFrameTime() {
   DCHECK_GE(range.max, range.min);
 
   // The min frame time corresponds to the max frame rate and vice versa.
-  base::TimeDelta min_frametime =
-      base::TimeDelta::FromSecondsD(1.0f / range.max);
-  base::TimeDelta max_frametime =
-      base::TimeDelta::FromSecondsD(1.0f / range.min);
+  base::TimeDelta min_frametime = base::Seconds(1.0f / range.max);
+  base::TimeDelta max_frametime = base::Seconds(1.0f / range.min);
 
   base::TimeDelta frametime =
       average_camera_frametime_.GetAverageOrDefault(min_frametime);

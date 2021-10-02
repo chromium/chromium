@@ -334,8 +334,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 }
 
 base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
-  constexpr base::TimeDelta kDefaultInterval =
-      base::TimeDelta::FromSecondsD(1. / 60);
+  constexpr base::TimeDelta kDefaultInterval = base::Seconds(1. / 60);
   x11::RandR randr = x11::Connection::Get()->randr();
   auto root = ui::GetX11RootWindow();
   auto resources = randr.GetScreenResourcesCurrent({root}).Sync();
@@ -378,7 +377,7 @@ base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
     if (refresh_rate == 0)
       continue;
 
-    return base::TimeDelta::FromSecondsD(1. / refresh_rate);
+    return base::Seconds(1. / refresh_rate);
   }
   return kDefaultInterval;
 }

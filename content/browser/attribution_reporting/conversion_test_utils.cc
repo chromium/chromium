@@ -94,8 +94,7 @@ ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 base::Time ConfigurableStorageDelegate::GetReportTime(
     const StorableSource& impression,
     base::Time conversion_time) const {
-  return impression.impression_time() +
-         base::TimeDelta::FromMilliseconds(report_time_ms_);
+  return impression.impression_time() + base::Milliseconds(report_time_ms_);
 }
 
 int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
@@ -218,7 +217,7 @@ void TestConversionManager::Reset() {
 ImpressionBuilder::ImpressionBuilder(base::Time time)
     : impression_data_(123),
       impression_time_(time),
-      expiry_(base::TimeDelta::FromMilliseconds(kExpiryTime)),
+      expiry_(base::Milliseconds(kExpiryTime)),
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
       conversion_origin_(url::Origin::Create(GURL(kDefaultConversionOrigin))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),

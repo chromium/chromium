@@ -16,7 +16,7 @@
 
 namespace {
 const speech::LanguageCode kEnglishLocale = speech::LanguageCode::kEnUs;
-const base::TimeDelta kSodaUninstallTime = base::TimeDelta::FromDays(30);
+const base::TimeDelta kSodaUninstallTime = base::Days(30);
 }  // namespace
 
 namespace speech {

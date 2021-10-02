@@ -51,11 +51,11 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
  public:
   // Interval between throttled wake ups, without intensive throttling.
   static constexpr base::TimeDelta kDefaultThrottledWakeUpInterval =
-      base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
 
   // Interval between throttled wake ups, with intensive throttling.
   static constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
-      base::TimeDelta::FromMinutes(1);
+      base::Minutes(1);
 
   PageSchedulerImpl(PageScheduler::Delegate*, AgentGroupSchedulerImpl&);
   PageSchedulerImpl(const PageSchedulerImpl&) = delete;
@@ -226,8 +226,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // silence during which a logo and button are shown after a YouTube ad. Since
   // most pages don't play audio in background, it was decided that the delay
   // can be increased to 30 seconds without significantly affecting performance.
-  static constexpr base::TimeDelta kRecentAudioDelay =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kRecentAudioDelay = base::Seconds(30);
 
   static const char kHistogramPageLifecycleStateTransition[];
 

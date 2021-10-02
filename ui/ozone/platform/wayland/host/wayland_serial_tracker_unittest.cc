@@ -68,11 +68,11 @@ TEST(WaylandSerialTrackerTest, Queries) {
   absl::optional<Serial> serial;
 
   serial_tracker.UpdateSerial(SerialType::kMouseEnter, 1u);
-  env.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  env.FastForwardBy(base::Milliseconds(100));
   serial_tracker.UpdateSerial(SerialType::kMousePress, 2u);
-  env.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  env.FastForwardBy(base::Milliseconds(100));
   serial_tracker.UpdateSerial(SerialType::kTouchPress, 3u);
-  env.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  env.FastForwardBy(base::Milliseconds(100));
   serial_tracker.UpdateSerial(SerialType::kKeyPress, 4u);
 
   serial = serial_tracker.GetSerial(

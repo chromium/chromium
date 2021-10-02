@@ -119,9 +119,8 @@ AudioContext* AudioContext::Create(Document& document,
       latency_hint =
           WebAudioLatencyHint(context_options->latencyHint()->GetAsDouble());
 
-      base::UmaHistogramTimes(
-          "WebAudio.AudioContext.latencyHintMilliSeconds",
-          base::TimeDelta::FromSecondsD(latency_hint.Seconds()));
+      base::UmaHistogramTimes("WebAudio.AudioContext.latencyHintMilliSeconds",
+                              base::Seconds(latency_hint.Seconds()));
   }
 
   base::UmaHistogramEnumeration(
@@ -371,7 +370,7 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
   }
 
   double performance_time = performance->MonotonicTimeToDOMHighResTimeStamp(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(position.timestamp));
+      base::TimeTicks() + base::Seconds(position.timestamp));
   if (performance_time < 0.0)
     performance_time = 0.0;
 

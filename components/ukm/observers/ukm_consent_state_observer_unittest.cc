@@ -46,8 +46,7 @@ class MockSyncService : public syncer::TestSyncService {
         0, true, 0, base::Time::Now(), base::Time::Now(),
         std::vector<int>(syncer::GetNumModelTypes(), 0),
         std::vector<int>(syncer::GetNumModelTypes(), 0),
-        sync_pb::SyncEnums::UNKNOWN_ORIGIN, base::TimeDelta::FromMinutes(1),
-        false));
+        sync_pb::SyncEnums::UNKNOWN_ORIGIN, base::Minutes(1), false));
 
     NotifyObserversOfStateChanged();
   }

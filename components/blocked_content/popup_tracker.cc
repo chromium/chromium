@@ -75,14 +75,13 @@ void PopupTracker::WebContentsDestroyed() {
         "ContentSettings.Popups.FirstDocumentEngagementTime2",
         first_load_visible_time);
   }
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "ContentSettings.Popups.EngagementTime", total_foreground_duration,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(6), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES("ContentSettings.Popups.EngagementTime",
+                             total_foreground_duration, base::Milliseconds(1),
+                             base::Hours(6), 50);
   if (web_contents()->GetClosedByUserGesture()) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "ContentSettings.Popups.EngagementTime.GestureClose",
-        total_foreground_duration, base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromHours(6), 50);
+        total_foreground_duration, base::Milliseconds(1), base::Hours(6), 50);
   }
 
   if (opener_source_id_ != ukm::kInvalidSourceId) {

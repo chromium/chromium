@@ -30,7 +30,7 @@ namespace {
 
 // A lower-bound for the refresh interval.
 constexpr base::TimeDelta kLowerBoundRefreshInterval =
-    base::TimeDelta::FromHz(media::limits::kMaxFramesPerSecond);
+    base::Hertz(media::limits::kMaxFramesPerSecond);
 
 // This alias mimics the definition of VideoCaptureDeliverFrameCB.
 using VideoCaptureDeliverFrameInternalCallback = WTF::CrossThreadFunction<void(
@@ -52,11 +52,10 @@ base::TimeDelta ComputeRefreshIntervalFromBounds(
   // the maximum frameRate if it happens to be less than the default.
   base::TimeDelta refresh_interval = required_min_refresh_interval;
   if (min_frame_rate.has_value())
-    refresh_interval = base::TimeDelta::FromHz(*min_frame_rate);
+    refresh_interval = base::Hertz(*min_frame_rate);
 
   if (max_frame_rate.has_value()) {
-    refresh_interval =
-        std::max(refresh_interval, base::TimeDelta::FromHz(*max_frame_rate));
+    refresh_interval = std::max(refresh_interval, base::Hertz(*max_frame_rate));
   }
 
   if (refresh_interval < kLowerBoundRefreshInterval)
@@ -797,8 +796,7 @@ void MediaStreamVideoTrack::StartTimerForRequestingFrames() {
   }
 
   base::TimeDelta refresh_interval = ComputeRefreshIntervalFromBounds(
-      base::TimeDelta::FromHz(required_min_fps), min_frame_rate_,
-      max_frame_rate_);
+      base::Hertz(required_min_fps), min_frame_rate_, max_frame_rate_);
 
   if (refresh_interval.is_max()) {
     refresh_timer_.Stop();

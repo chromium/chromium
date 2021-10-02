@@ -209,7 +209,7 @@ class OverviewSessionTest : public OverviewTestBase {
     // is a next frame.
     ignore_result(ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::TimeDelta::FromMilliseconds(500)));
+        base::Milliseconds(500)));
 
     {
       SCOPED_TRACE(trace + std::string(".Enter"));
@@ -3183,8 +3183,8 @@ class TabletModeOverviewSessionTest : public OverviewSessionTest {
 
  protected:
   void GenerateScrollSequence(const gfx::Point& start, const gfx::Point& end) {
-    GetEventGenerator()->GestureScrollSequence(
-        start, end, base::TimeDelta::FromMilliseconds(100), 1000);
+    GetEventGenerator()->GestureScrollSequence(start, end,
+                                               base::Milliseconds(100), 1000);
   }
 
   void DispatchLongPress(OverviewItem* item) {
@@ -3343,7 +3343,7 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
 
   // Scroll a bit to the left, so the overview items that are offscreen on the
   // right start to become visible.
-  const base::TimeDelta step_delay = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta step_delay = base::Milliseconds(5);
   for (int i = 0; i < 10; ++i) {
     timestamp += step_delay;
     ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(x, y), timestamp,
@@ -3501,9 +3501,8 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
 
   // Create a scroll sequence which results in a fling.
   const gfx::Vector2d shift(-200, 0);
-  GetEventGenerator()->GestureScrollSequence(
-      item_center, item_center + shift, base::TimeDelta::FromMilliseconds(10),
-      10);
+  GetEventGenerator()->GestureScrollSequence(item_center, item_center + shift,
+                                             base::Milliseconds(10), 10);
 
   ui::Compositor* const compositor =
       windows[0]->GetRootWindow()->layer()->GetCompositor();
@@ -3521,7 +3520,7 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
   for (int i = 0;
        i < kMaxLoops && grid_event_handler->IsFlingInProgressForTesting();
        ++i) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+    task_environment()->FastForwardBy(base::Milliseconds(50));
     ui::DrawWaiterForTest::WaitForCompositingStarted(compositor);
 
     float scroll_offset = grid->scroll_offset();
@@ -4218,7 +4217,7 @@ TEST_F(SplitViewOverviewSessionTest, OverviewDragControllerBehavior) {
   // Simulate a long press, which is required to snap windows.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(2));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
   run_loop.Run();
 
   OverviewWindowDragController* drag_controller =
@@ -5162,8 +5161,7 @@ TEST_F(SplitViewOverviewSessionTest,
   {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(2));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
   }
   EXPECT_EQ(
@@ -5184,8 +5182,7 @@ TEST_F(SplitViewOverviewSessionTest,
   {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(2));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
   }
   EXPECT_EQ(

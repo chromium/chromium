@@ -15,7 +15,7 @@ namespace federated_learning {
 
 namespace {
 
-const base::TimeDelta kSecondAttemptDelay = base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kSecondAttemptDelay = base::Seconds(10);
 
 }  // namespace
 

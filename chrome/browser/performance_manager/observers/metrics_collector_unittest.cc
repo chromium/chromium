@@ -17,7 +17,7 @@
 namespace performance_manager {
 
 const base::TimeDelta kTestMetricsReportDelayTimeout =
-    kMetricsReportDelayTimeout + base::TimeDelta::FromSeconds(1);
+    kMetricsReportDelayTimeout + base::Seconds(1);
 const char kHtmlMimeType[] = "text/html";
 
 // TODO(crbug.com/759905) Enable on Windows once this bug is fixed.

@@ -26,9 +26,8 @@
 
 namespace policy {
 
-constexpr base::TimeDelta kCommandAge = base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kVeryoldCommandAge =
-    base::TimeDelta::FromDays(5 * 365 - 1);
+constexpr base::TimeDelta kCommandAge = base::Minutes(10);
+constexpr base::TimeDelta kVeryoldCommandAge = base::Days(5 * 365 - 1);
 
 class TestingRemoteCommandsService : public RemoteCommandsService {
  public:
@@ -166,12 +165,12 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestFailsafeTimerStartsPowerwash) {
   run_loop_.Run();
 
   // After 5s the timer is not run yet.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_runner_->FastForwardBy(base::Seconds(5));
   EXPECT_EQ(0, chromeos::FakeSessionManagerClient::Get()
                    ->start_device_wipe_call_count());
 
   // After 10s the timer is run.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_runner_->FastForwardBy(base::Seconds(5));
   EXPECT_EQ(1, chromeos::FakeSessionManagerClient::Get()
                    ->start_device_wipe_call_count());
 }

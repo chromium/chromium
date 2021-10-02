@@ -20,10 +20,9 @@
 namespace ash {
 
 namespace {
-constexpr base::TimeDelta kNudgeShowTime = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kNudgeShowTime = base::Seconds(10);
 constexpr float kNudgeFadeAnimationScale = 1.2f;
-constexpr base::TimeDelta kNudgeFadeAnimationTime =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kNudgeFadeAnimationTime = base::Milliseconds(250);
 constexpr gfx::Tween::Type kNudgeFadeOpacityAnimationTweenType =
     gfx::Tween::LINEAR;
 constexpr gfx::Tween::Type kNudgeFadeScalingAnimationTweenType =

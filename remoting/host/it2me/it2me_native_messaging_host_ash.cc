@@ -234,8 +234,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
       return;
     }
     remote_->OnHostStateReceivedAccessCode(
-        *access_code,
-        base::TimeDelta::FromSeconds(access_code_lifetime.value()));
+        *access_code, base::Seconds(access_code_lifetime.value()));
   } else if (*new_state == kHostStateConnecting) {
     remote_->OnHostStateConnecting();
   } else if (*new_state == kHostStateConnected) {

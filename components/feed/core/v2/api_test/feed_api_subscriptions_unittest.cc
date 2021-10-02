@@ -656,7 +656,7 @@ TEST_F(FeedApiSubscriptionsTest,
 
   // Wait until the delayed task would normally run, verify no request is made.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(0, network_.GetListRecommendedWebFeedsRequestCount());
 }
@@ -669,7 +669,7 @@ TEST_F(
 
   // Wait until the delayed task would normally run, verify no request is made.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   EXPECT_EQ(0, network_.GetListRecommendedWebFeedsRequestCount());
   EXPECT_EQ(0, network_.GetListFollowedWebFeedsRequestCount());
@@ -681,7 +681,7 @@ TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreFetchedAfterStartup) {
 
   // Wait until the delayed task runs, and verify the network request was sent.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
 
@@ -709,7 +709,7 @@ TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreClearedOnSignOut) {
     // Wait until the delayed task runs, and verify the network request was
     // sent.
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
     ASSERT_EQ(
@@ -734,7 +734,7 @@ TEST_F(FeedApiSubscriptionsTest,
 
   // Wait until the delayed task runs, and verify the network request was sent.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
 
@@ -764,7 +764,7 @@ TEST_F(FeedApiSubscriptionsTest,
     InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
   }
@@ -775,7 +775,7 @@ TEST_F(FeedApiSubscriptionsTest,
     CreateStream();
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
   }
@@ -790,7 +790,7 @@ TEST_F(FeedApiSubscriptionsTest,
     CreateStream();
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(2, network_.GetListRecommendedWebFeedsRequestCount());
     EXPECT_EQ(
@@ -812,7 +812,7 @@ TEST_F(FeedApiSubscriptionsTest,
 
   // Wait until the delayed task would normally run, verify no request is made.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(0, network_.GetListFollowedWebFeedsRequestCount());
 }
@@ -823,7 +823,7 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreFetchedAfterStartup) {
 
   // Wait until the delayed task runs, and verify the network request was sent.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
 
@@ -851,7 +851,7 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
     // Wait until the delayed task runs, and verify the network request was
     // sent.
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
     ASSERT_EQ(
@@ -876,7 +876,7 @@ TEST_F(FeedApiSubscriptionsTest,
 
   // Wait until the delayed task runs, and verify the network request was sent.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                  base::TimeDelta::FromSeconds(1));
+                                  base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
 
@@ -908,7 +908,7 @@ TEST_F(FeedApiSubscriptionsTest,
     network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   }
@@ -919,7 +919,7 @@ TEST_F(FeedApiSubscriptionsTest,
     CreateStream();
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   }
@@ -933,7 +933,7 @@ TEST_F(FeedApiSubscriptionsTest,
     CreateStream();
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
-                                    base::TimeDelta::FromSeconds(1));
+                                    base::Seconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(2, network_.GetListFollowedWebFeedsRequestCount());
     EXPECT_EQ(

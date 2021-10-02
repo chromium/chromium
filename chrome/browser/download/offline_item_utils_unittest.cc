@@ -162,8 +162,7 @@ TEST_F(OfflineItemUtilsTest, BasicConversions) {
 
   ON_CALL(*download, TimeRemaining(_))
       .WillByDefault(testing::DoAll(
-          testing::SetArgPointee<0>(
-              base::TimeDelta::FromMilliseconds(time_remaining_ms)),
+          testing::SetArgPointee<0>(base::Milliseconds(time_remaining_ms)),
           Return(true)));
   ON_CALL(*download, IsDangerous()).WillByDefault(Return(is_dangerous));
 

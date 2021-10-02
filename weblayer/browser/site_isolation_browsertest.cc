@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
   base::RunLoop run_loop;
   base::Time now = base::Time::Now();
   GetProfile()->ClearBrowsingData({BrowsingDataType::COOKIES_AND_SITE_DATA},
-                                  now - base::TimeDelta::FromDays(1), now,
+                                  now - base::Days(1), now,
                                   run_loop.QuitClosure());
   run_loop.Run();
 

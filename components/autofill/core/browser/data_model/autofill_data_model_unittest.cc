@@ -113,7 +113,7 @@ TEST(AutofillDataModelTest, IsDeletable) {
   EXPECT_FALSE(model.IsDeletable());
 
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::TimeDelta::FromDays(1));
+                    base::Days(1));
   EXPECT_TRUE(model.IsDeletable());
 }
 
@@ -161,24 +161,22 @@ INSTANTIATE_TEST_SUITE_P(
                                        LESS},
         // Same frequency, model_a is more recent.
         HasGreaterFrecencyThanTestCase{"guid_a", 8, now, "guid_b", 8,
-                                       now - base::TimeDelta::FromDays(1),
-                                       GREATER},
+                                       now - base::Days(1), GREATER},
         // Same frequency, model_a is less recent.
-        HasGreaterFrecencyThanTestCase{"guid_a", 8,
-                                       now - base::TimeDelta::FromDays(1),
+        HasGreaterFrecencyThanTestCase{"guid_a", 8, now - base::Days(1),
                                        "guid_b", 8, now, LESS},
         // Special case: occasional profiles. A profile with relatively low
         // usage and used recently (model_b) should not rank higher than a more
         // used profile that has been unused for a short amount of time
         // (model_a).
-        HasGreaterFrecencyThanTestCase{
-            "guid_a", 300, now - base::TimeDelta::FromDays(5), "guid_b", 10,
-            now - base::TimeDelta::FromDays(1), GREATER},
+        HasGreaterFrecencyThanTestCase{"guid_a", 300, now - base::Days(5),
+                                       "guid_b", 10, now - base::Days(1),
+                                       GREATER},
         // Special case: moving. A new profile used frequently (model_b) should
         // rank higher than a profile with more usage that has not been used for
         // a while (model_a).
-        HasGreaterFrecencyThanTestCase{
-            "guid_a", 300, now - base::TimeDelta::FromDays(15), "guid_b", 10,
-            now - base::TimeDelta::FromDays(1), LESS}));
+        HasGreaterFrecencyThanTestCase{"guid_a", 300, now - base::Days(15),
+                                       "guid_b", 10, now - base::Days(1),
+                                       LESS}));
 
 }  // namespace autofill

@@ -325,7 +325,7 @@ class CONTENT_EXPORT VideoCaptureManager
 
   // Closes video device capture sessions after a timeout. Idle timeout value
   // chosen based on UMA metrics. See https://crbug.com/1163105#c28
-  base::TimeDelta idle_close_timeout_ = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta idle_close_timeout_ = base::Seconds(15);
   base::OneShotTimer idle_close_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureManager);

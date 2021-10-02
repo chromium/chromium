@@ -33,8 +33,7 @@ constexpr char kUserActionCancel[] = "cancel";
 
 // Amount of time the user has to be idle for before showing the online login
 // page.
-constexpr const base::TimeDelta kIdleTimeDelta =
-    base::TimeDelta::FromMinutes(3);
+constexpr const base::TimeDelta kIdleTimeDelta = base::Minutes(3);
 
 // These values should not be renumbered and numeric values should never
 // be reused. This must be kept in sync with ChromeOSHiddenUserPodsOfflineLogin

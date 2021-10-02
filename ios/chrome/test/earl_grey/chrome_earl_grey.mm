@@ -254,7 +254,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
   // Saving is always performed on a separate thread, so spin the run loop a
   // bit to ensure save.
-  base::test::ios::SpinRunLoopWithMaxDelay(base::TimeDelta::FromSeconds(1));
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1));
 }
 
 - (void)setCurrentTabsToBeColdStartTabs {

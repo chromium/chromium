@@ -33,7 +33,7 @@ FuchsiaToBaseMemoryPressureLevel(fuchsia::memorypressure::Level level) {
 
 const base::TimeDelta
     SystemMemoryPressureEvaluatorFuchsia::kRenotifyVotePeriod =
-        base::TimeDelta::FromSeconds(5);
+        base::Seconds(5);
 
 SystemMemoryPressureEvaluatorFuchsia::SystemMemoryPressureEvaluatorFuchsia(
     std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)

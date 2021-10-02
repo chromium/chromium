@@ -111,7 +111,7 @@ TEST_F(PasswordReuseDetectionManagerTest,
   manager.OnKeyPressedCommitted(u"1");
 
   // Simulate 10 seconds of inactivity.
-  clock.SetNow(now + base::TimeDelta::FromSeconds(10));
+  clock.SetNow(now + base::Seconds(10));
   // Expect that a keystroke typed before inactivity is cleared.
   EXPECT_CALL(reuse_manager_, CheckReuse(std::u16string(u"2"), _, _));
   manager.OnKeyPressedCommitted(u"2");

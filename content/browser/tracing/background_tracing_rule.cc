@@ -398,10 +398,10 @@ class HistogramRule : public BackgroundTracingRule,
           NOTREACHED();  // Handled above.
           break;
         case Units::kMilliseconds:
-          delta = base::TimeDelta::FromMilliseconds(actual_value);
+          delta = base::Milliseconds(actual_value);
           break;
         case Units::kMicroseconds:
-          delta = base::TimeDelta::FromMicroseconds(actual_value);
+          delta = base::Microseconds(actual_value);
           break;
       }
       TRACE_EVENT_BEGIN("toplevel", "HistogramSampleTrigger", track,
@@ -548,7 +548,7 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
     int time_to_wait = base::RandInt(kReactiveTraceRandomStartTimeMin,
                                      kReactiveTraceRandomStartTimeMax);
     trigger_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(time_to_wait),
+        FROM_HERE, base::Seconds(time_to_wait),
         base::BindOnce(&TraceAtRandomIntervalsRule::OnTriggerTimer,
                        base::Unretained(this)));
   }

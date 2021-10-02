@@ -48,8 +48,7 @@ constexpr int kWebVrSpinnerTimeoutSeconds = 2;
 
 // Heuristic time limit to detect overstuffed GVR buffers for a
 // >60fps capable web app.
-constexpr base::TimeDelta kWebVrSlowAcquireThreshold =
-    base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kWebVrSlowAcquireThreshold = base::Milliseconds(2);
 
 // If running too fast, allow dropping frames occasionally to let GVR catch up.
 // Drop at most one frame in MaxDropRate.
@@ -57,14 +56,13 @@ constexpr int kWebVrUnstuffMaxDropRate = 7;
 
 // Timeout for checking for the WebVR rendering GL fence. If the timeout is
 // reached, yield to let other tasks execute before rechecking.
-constexpr base::TimeDelta kWebVRFenceCheckTimeout =
-    base::TimeDelta::FromMicroseconds(2000);
+constexpr base::TimeDelta kWebVRFenceCheckTimeout = base::Microseconds(2000);
 
 // Polling interval for checking for the WebVR rendering GL fence. Used as
 // an alternative to kWebVRFenceCheckTimeout if the GPU workaround is active.
 // The actual interval may be longer due to PostDelayedTask's resolution.
 constexpr base::TimeDelta kWebVRFenceCheckPollInterval =
-    base::TimeDelta::FromMicroseconds(500);
+    base::Microseconds(500);
 
 bool ValidateRect(const gfx::RectF& bounds) {
   // Bounds should be between 0 and 1, with positive width/height.
@@ -1283,8 +1281,8 @@ bool GvrSchedulerDelegate::SubmitFrameCommon(int16_t frame_index,
   // to a reasonable range to avoid math errors.
   if (time_waited < base::TimeDelta())
     time_waited = base::TimeDelta();
-  if (time_waited > base::TimeDelta::FromSeconds(1))
-    time_waited = base::TimeDelta::FromSeconds(1);
+  if (time_waited > base::Seconds(1))
+    time_waited = base::Seconds(1);
   webvr_js_wait_time_.AddSample(time_waited);
   TRACE_COUNTER1("gpu", "WebVR JS wait (ms)",
                  webvr_js_wait_time_.GetAverage().InMilliseconds());

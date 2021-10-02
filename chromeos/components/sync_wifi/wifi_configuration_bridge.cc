@@ -54,8 +54,7 @@ std::unique_ptr<syncer::EntityData> GenerateWifiEntityData(
 // Delay before attempting to save a newly configured network to sync.  This
 // is to give time for an initial connection attempt to fail in case of a bad
 // password, which will prevent syncing.
-constexpr base::TimeDelta kSyncAfterCreatedTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kSyncAfterCreatedTimeout = base::Seconds(20);
 
 }  // namespace
 

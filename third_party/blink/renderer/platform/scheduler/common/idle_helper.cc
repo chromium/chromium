@@ -100,7 +100,7 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
   }
 
   if (long_idle_period_duration >=
-      base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
+      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
     *next_long_idle_period_delay_out = long_idle_period_duration;
     if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask())
       return IdlePeriodState::kInLongIdlePeriodPaused;
@@ -109,8 +109,8 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     return IdlePeriodState::kInLongIdlePeriod;
   } else {
     // If we can't start the idle period yet then try again after wake-up.
-    *next_long_idle_period_delay_out = base::TimeDelta::FromMilliseconds(
-        kRetryEnableLongIdlePeriodDelayMillis);
+    *next_long_idle_period_delay_out =
+        base::Milliseconds(kRetryEnableLongIdlePeriodDelayMillis);
     return IdlePeriodState::kNotInIdlePeriod;
   }
 }
@@ -176,7 +176,7 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
 
   base::TimeDelta idle_period_duration(idle_period_deadline - now);
   if (idle_period_duration <
-      base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
+      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                  "NotStartingIdlePeriodBecauseDeadlineIsTooClose",
                  "idle_period_duration_ms",

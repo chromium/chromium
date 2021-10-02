@@ -27,8 +27,7 @@ constexpr int kPointRadius = 20;
 constexpr SkColor kProjectionFillColor = SkColorSetRGB(0xF5, 0xF5, 0xDC);
 constexpr SkColor kProjectionStrokeColor = SK_ColorGRAY;
 constexpr int kProjectionAlpha = 0xB0;
-constexpr base::TimeDelta kFadeoutDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kFadeoutDuration = base::Milliseconds(250);
 constexpr int kFadeoutFrameRate = 60;
 
 // TouchPointView draws a single touch point.

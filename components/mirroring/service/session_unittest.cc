@@ -243,7 +243,7 @@ class SessionTest : public mojom::ResourceProvider,
     session_params->receiver_model_name = "Chromecast";
     if (target_playout_delay_ms_ != kDefaultPlayoutDelay) {
       session_params->target_playout_delay =
-          base::TimeDelta::FromMilliseconds(target_playout_delay_ms_);
+          base::Milliseconds(target_playout_delay_ms_);
     }
     cast_mode_ = "mirroring";
     mojo::PendingRemote<mojom::ResourceProvider> resource_provider_remote;

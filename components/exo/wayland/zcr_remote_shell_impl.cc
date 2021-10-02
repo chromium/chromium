@@ -557,7 +557,7 @@ void WaylandRemoteShell::ScheduleSendDisplayMetrics(int delay_ms) {
       FROM_HERE,
       base::BindOnce(&WaylandRemoteShell::SendDisplayMetrics,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 }
 
 // Returns the transform that a display's output is currently adjusted for.

@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
   // need to wait 10 seconds, but testing the feature only requires a 5 second
   // wait.
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_FALSE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 
@@ -1010,12 +1010,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   OnPartialTranscription("Killer whales");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Killer whales", GetLabelText());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  test_task_runner->FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsWidgetVisible());
   OnPartialTranscription("Killer whales travel in matrifocal groups");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Killer whales travel in matrifocal groups", GetLabelText());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  test_task_runner->FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsWidgetVisible());
   OnFinalTranscription(
       "Killer whales travel in matrifocal groups--a family unit centered on "
@@ -1025,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
       "Killer whales travel in matrifocal groups--a family unit centered on "
       "the mother.",
       GetLabelText());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  test_task_runner->FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsWidgetVisible());
 
   // TODO(crbug.com/1055150): Test that widget doesn't hide when focused. It
@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
   // need to wait 10 seconds, but testing the feature only requires a 5 second
   // wait.
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_FALSE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 

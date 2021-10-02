@@ -769,8 +769,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     GetSaveCardIconView()->ReduceAnimationTimeForTesting();
     auto* const animating_layout = GetAnimatingLayoutManager();
     if (animating_layout) {
-      animating_layout->SetAnimationDuration(
-          base::TimeDelta::FromMilliseconds(1));
+      animating_layout->SetAnimationDuration(base::Milliseconds(1));
     }
   }
 
@@ -1777,7 +1776,7 @@ IN_PROC_BROWSER_TEST_F(
   // be selected, so selecting the current January will always be expired.
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  test_clock.Advance(base::TimeDelta::FromDays(40));
+  test_clock.Advance(base::Days(40));
   // Selecting expired date will disable [Save] button.
   month_input()->SetSelectedRow(1);
   year_input()->SetSelectedRow(1);

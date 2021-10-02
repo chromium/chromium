@@ -77,7 +77,7 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
   }
 
   dns_config.ndots = res.ndots;
-  dns_config.fallback_period = base::TimeDelta::FromSeconds(res.retrans);
+  dns_config.fallback_period = base::Seconds(res.retrans);
   dns_config.attempts = res.retry;
 #if defined(RES_ROTATE)
   dns_config.rotate = res.options & RES_ROTATE;

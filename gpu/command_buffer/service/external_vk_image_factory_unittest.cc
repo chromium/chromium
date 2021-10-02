@@ -383,7 +383,7 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
         &done);
 
     while (!done) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(100));
+      base::PlatformThread::Sleep(base::Microseconds(100));
       dawn_device_.Tick();
     }
 

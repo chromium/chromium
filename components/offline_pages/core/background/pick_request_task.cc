@@ -36,8 +36,7 @@ bool kNonUserRequestsFound = true;
 
 namespace offline_pages {
 
-const base::TimeDelta PickRequestTask::kDeferInterval =
-    base::TimeDelta::FromMinutes(1);
+const base::TimeDelta PickRequestTask::kDeferInterval = base::Minutes(1);
 
 PickRequestTask::PickRequestTask(
     RequestQueueStore* store,

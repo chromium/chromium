@@ -112,8 +112,7 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
 
   base::UmaHistogramCustomTimes(histogram_tag_ + ".TimeInitializeDB",
                                 base::Time::Now() - start,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(1), 50);
+                                base::Milliseconds(1), base::Minutes(1), 50);
 
   initialized_ = DoInitializeDatabase();
 

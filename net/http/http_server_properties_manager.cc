@@ -510,8 +510,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
 
   // Expiration is optional, defaults to one day.
   if (!dict.FindKey(kExpirationKey)) {
-    alternative_service_info->set_expiration(base::Time::Now() +
-                                             base::TimeDelta::FromDays(1));
+    alternative_service_info->set_expiration(base::Time::Now() + base::Days(1));
   } else {
     const std::string* expiration_string = dict.FindStringKey(kExpirationKey);
     if (expiration_string) {
@@ -637,8 +636,7 @@ void HttpServerPropertiesManager::ParseNetworkStats(
     return;
   }
   ServerNetworkStats server_network_stats;
-  server_network_stats.srtt =
-      base::TimeDelta::FromMicroseconds(maybe_srtt.value());
+  server_network_stats.srtt = base::Microseconds(maybe_srtt.value());
   // TODO(rtenneti): When QUIC starts using bandwidth_estimate, then persist
   // bandwidth_estimate.
   server_info->server_network_stats = server_network_stats;

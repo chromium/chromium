@@ -31,7 +31,7 @@ bool ParseLifetime(const std::string& string, base::TimeDelta* result) {
       !base::StringToDouble(string.substr(0, string.size() - 1), &seconds)) {
     return false;
   }
-  *result = base::TimeDelta::FromSecondsD(seconds);
+  *result = base::Seconds(seconds);
   return true;
 }
 
@@ -231,8 +231,8 @@ IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
 
   // Parse lifetimeDuration field.
   base::TimeDelta lifetime =
-      base::TimeDelta::FromSeconds(config.lifetime_duration().seconds()) +
-      base::TimeDelta::FromNanoseconds(config.lifetime_duration().nanos());
+      base::Seconds(config.lifetime_duration().seconds()) +
+      base::Nanoseconds(config.lifetime_duration().nanos());
   ice_config.expiration_time = base::Time::Now() + lifetime;
 
   // Parse iceServers list and store them in |ice_config|.

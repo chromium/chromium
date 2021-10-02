@@ -201,8 +201,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
     std::unique_ptr<ui::LayerAnimationElement> scale_and_move_up =
         ui::LayerAnimationElement::CreateInterpolatedTransformElement(
             std::move(scale_about_pivot),
-            base::TimeDelta::FromMilliseconds(
-                kNotificationIconAnimationUpDurationMs));
+            base::Milliseconds(kNotificationIconAnimationUpDurationMs));
     scale_and_move_up->set_tween_type(gfx::Tween::EASE_IN);
 
     std::unique_ptr<ui::LayerAnimationElement> move_down =
@@ -210,8 +209,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
             std::make_unique<ui::InterpolatedTranslation>(
                 gfx::PointF(0, kNotificationIconAnimationHighPosition),
                 gfx::PointF(0, 0)),
-            base::TimeDelta::FromMilliseconds(
-                kNotificationIconAnimationDownDurationMs));
+            base::Milliseconds(kNotificationIconAnimationDownDurationMs));
 
     std::unique_ptr<ui::LayerAnimationSequence> sequence =
         std::make_unique<ui::LayerAnimationSequence>();
@@ -247,8 +245,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
     std::unique_ptr<ui::LayerAnimationElement> scale_and_move_down =
         ui::LayerAnimationElement::CreateInterpolatedTransformElement(
             std::move(scale_about_pivot),
-            base::TimeDelta::FromMilliseconds(
-                kNotificationIconAnimationOutDurationMs));
+            base::Milliseconds(kNotificationIconAnimationOutDurationMs));
     scale_and_move_down->set_tween_type(gfx::Tween::EASE_IN);
 
     std::unique_ptr<ui::LayerAnimationSequence> sequence =

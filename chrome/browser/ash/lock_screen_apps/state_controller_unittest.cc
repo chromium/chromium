@@ -431,7 +431,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     focus_cycler_delegate_ = std::make_unique<TestFocusCyclerDelegate>();
 
     // Advance the clock to have non-null value.
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    tick_clock_.Advance(base::Milliseconds(1));
 
     state_controller_ = std::make_unique<lock_screen_apps::StateController>();
     state_controller_->SetTrayActionForTesting(

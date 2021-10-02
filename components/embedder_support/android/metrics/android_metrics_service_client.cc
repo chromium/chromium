@@ -500,7 +500,7 @@ void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
   base::StatisticsRecorder::ImportProvidedHistograms();
 
   base::TimeDelta timeout =
-      base::TimeDelta::FromMilliseconds(kMaxHistogramGatheringWaitDuration);
+      base::Milliseconds(kMaxHistogramGatheringWaitDuration);
 
   // Set up the callback task to call after we receive histograms from all
   // child processes. |timeout| specifies how long to wait before absolutely

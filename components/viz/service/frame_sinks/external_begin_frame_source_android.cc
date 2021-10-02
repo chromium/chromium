@@ -34,9 +34,8 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   base::TimeTicks frame_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(time_micros);
-  base::TimeDelta vsync_period(
-      base::TimeDelta::FromMicroseconds(period_micros));
+      base::TimeTicks() + base::Microseconds(time_micros);
+  base::TimeDelta vsync_period(base::Microseconds(period_micros));
   // Calculate the next frame deadline:
   base::TimeTicks deadline = frame_time + vsync_period;
 

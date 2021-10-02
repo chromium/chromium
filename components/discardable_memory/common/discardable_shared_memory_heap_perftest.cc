@@ -61,7 +61,7 @@ TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
   std::vector<std::unique_ptr<base::ScopedClosureRunner>> spans;
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeTicks end = start + base::TimeDelta::FromMilliseconds(kTimeLimitMs);
+  base::TimeTicks end = start + base::Milliseconds(kTimeLimitMs);
   base::TimeDelta accumulator;
   int count = 0;
   while (start < end) {

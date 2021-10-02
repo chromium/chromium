@@ -55,7 +55,7 @@ void AwRenderThreadObserver::EnableIdleThrottling(int32_t policy,
                                                   float min_cputime_ratio) {
   power_scheduler::SchedulingPolicyParams params{
       (power_scheduler::SchedulingPolicy)policy,
-      base::TimeDelta::FromMilliseconds(min_time_ms), min_cputime_ratio};
+      base::Milliseconds(min_time_ms), min_cputime_ratio};
   power_scheduler::PowerScheduler::GetInstance()->SetPolicy(params);
 }
 

@@ -785,7 +785,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
       callback_observer.GetCallback(), /*signals=*/absl::nullopt);
 
   // |challenge_key_subtle_| should wait until the certificate is uploaded.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   EXPECT_FALSE(callback_observer.IsResultReceived());
 
   // Emulate callback from the certificate uploader, |challenge_key_subtle_|

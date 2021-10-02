@@ -122,7 +122,7 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider,
   void CreateRouteTimeOut(CreateRouteCallback callback);
 
   bool close_route_with_error_on_send_ = false;
-  base::TimeDelta delay_ = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta delay_ = base::Seconds(0);
   std::string route_error_message_;
   std::map<std::string, MediaRoute> presentation_ids_to_routes_;
   std::map<MediaRoute::Id, MediaRoute> routes_;

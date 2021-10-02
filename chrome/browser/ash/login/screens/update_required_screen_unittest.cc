@@ -87,7 +87,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
         fake_view_.get(), mock_error_screen_.get(), base::DoNothing());
 
     update_required_screen_->GetVersionUpdaterForTesting()
-        ->set_wait_for_reboot_time_for_testing(base::TimeDelta::FromSeconds(0));
+        ->set_wait_for_reboot_time_for_testing(base::Seconds(0));
   }
 
   void TearDown() override {

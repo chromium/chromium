@@ -28,10 +28,9 @@ void FullscreenNotificationBlocker::CheckState() {
     NotifyBlockingStateChanged();
 
   if (is_fullscreen_mode_) {
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kFullscreenStatePollingIntervalSeconds),
-        this, &FullscreenNotificationBlocker::CheckState);
+    timer_.Start(FROM_HERE,
+                 base::Seconds(kFullscreenStatePollingIntervalSeconds), this,
+                 &FullscreenNotificationBlocker::CheckState);
   }
 }
 

@@ -163,7 +163,7 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
     delegate_.SetSiteEngagementScore(30);
 
     // Put the clock in the future so that we can LastActiveTimes in the past.
-    clock_.Advance(base::TimeDelta::FromDays(1));
+    clock_.Advance(base::Days(1));
 
     CreateTestContents();
   }
@@ -196,14 +196,11 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
 
   void CreateTestContents() {
     contents1_ = CreateAndInitTestWebContents(
-        GURL("https://a.com"),
-        clock_.NowTicks() - base::TimeDelta::FromHours(1));
+        GURL("https://a.com"), clock_.NowTicks() - base::Hours(1));
     contents2_ = CreateAndInitTestWebContents(
-        GURL("https://b.com"),
-        clock_.NowTicks() - base::TimeDelta::FromHours(2));
+        GURL("https://b.com"), clock_.NowTicks() - base::Hours(2));
     contents3_ = CreateAndInitTestWebContents(
-        GURL("https://c.com"),
-        clock_.NowTicks() - base::TimeDelta::FromHours(3));
+        GURL("https://c.com"), clock_.NowTicks() - base::Hours(3));
 
     tab_for_scoring_ = {contents1_.get(), contents2_.get(), contents3_.get()};
   }
@@ -236,8 +233,7 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
     policy_->min_tabs_to_restore_ = 2;
     policy_->max_tabs_to_restore_ = 30;
     policy_->mb_free_memory_per_tab_to_restore_ = 150;
-    policy_->max_time_since_last_use_to_restore_ =
-        base::TimeDelta::FromHours(6);
+    policy_->max_time_since_last_use_to_restore_ = base::Hours(6);
     policy_->min_site_engagement_to_restore_ = 15;
 
     // Ensure the simultaneous tab loads is properly calculated wrt the above
@@ -361,8 +357,7 @@ TEST_F(SessionRestorePolicyTest, ShouldLoadFeatureEnabled) {
   // Reset and impose a max time since use policy. The contents have ages of 1,
   // 2 and 3 hours respectively.
   policy_->SetTabLoadsStartedForTesting(0);
-  policy_->max_time_since_last_use_to_restore_ =
-      base::TimeDelta::FromMinutes(90);
+  policy_->max_time_since_last_use_to_restore_ = base::Minutes(90);
   EXPECT_TRUE(policy_->ShouldLoad(contents1_.get()));
   policy_->NotifyTabLoadStarted();
   EXPECT_FALSE(policy_->ShouldLoad(contents2_.get()));
@@ -399,8 +394,7 @@ TEST_F(SessionRestorePolicyTest, ShouldLoadFeatureDisabled) {
   policy_->min_tabs_to_restore_ = 0;
   policy_->max_tabs_to_restore_ = 1;
   policy_->mb_free_memory_per_tab_to_restore_ = 1024;
-  policy_->max_time_since_last_use_to_restore_ =
-      base::TimeDelta::FromMinutes(1);
+  policy_->max_time_since_last_use_to_restore_ = base::Minutes(1);
   policy_->min_site_engagement_to_restore_ = 100;
 
   // Make the system look like its effectively out of memory as well.
@@ -516,35 +510,35 @@ TEST_F(SessionRestorePolicyTest, CalculateAgeScore) {
 
   // Generate some known edge cases.
   size_t i = 0;
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(-1001);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(-1000);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(-999);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(-500);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(0);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(500);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(999);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(1000);
-  tab_data[i++]->last_active = base::TimeDelta::FromMilliseconds(1001);
+  tab_data[i++]->last_active = base::Milliseconds(-1001);
+  tab_data[i++]->last_active = base::Milliseconds(-1000);
+  tab_data[i++]->last_active = base::Milliseconds(-999);
+  tab_data[i++]->last_active = base::Milliseconds(-500);
+  tab_data[i++]->last_active = base::Milliseconds(0);
+  tab_data[i++]->last_active = base::Milliseconds(500);
+  tab_data[i++]->last_active = base::Milliseconds(999);
+  tab_data[i++]->last_active = base::Milliseconds(1000);
+  tab_data[i++]->last_active = base::Milliseconds(1001);
 
   // Generate a logarithmic selection of ages to test the whole range.
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(-1000000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(-100000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(-10000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(-1000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(-100);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(-10);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(10);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(100);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(1000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(10000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(100000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(1000000);
-  tab_data[i++]->last_active = base::TimeDelta::FromSeconds(10000000);
+  tab_data[i++]->last_active = base::Seconds(-1000000);
+  tab_data[i++]->last_active = base::Seconds(-100000);
+  tab_data[i++]->last_active = base::Seconds(-10000);
+  tab_data[i++]->last_active = base::Seconds(-1000);
+  tab_data[i++]->last_active = base::Seconds(-100);
+  tab_data[i++]->last_active = base::Seconds(-10);
+  tab_data[i++]->last_active = base::Seconds(10);
+  tab_data[i++]->last_active = base::Seconds(100);
+  tab_data[i++]->last_active = base::Seconds(1000);
+  tab_data[i++]->last_active = base::Seconds(10000);
+  tab_data[i++]->last_active = base::Seconds(100000);
+  tab_data[i++]->last_active = base::Seconds(1000000);
+  tab_data[i++]->last_active = base::Seconds(10000000);
 
   // Generate a bunch more random ages.
   for (; i < tab_data.size(); ++i) {
-    tab_data[i]->last_active = base::TimeDelta::FromSeconds(
-        base::RandInt(-kMonthInSeconds, kMonthInSeconds));
+    tab_data[i]->last_active =
+        base::Seconds(base::RandInt(-kMonthInSeconds, kMonthInSeconds));
   }
 
   // Calculate the tab scores.
@@ -571,13 +565,13 @@ TEST_F(SessionRestorePolicyTest, ScoreTab) {
 
   TabData td_bg;
   td_bg.used_in_bg = true;
-  td_bg.last_active = base::TimeDelta::FromDays(30);
+  td_bg.last_active = base::Days(30);
   EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_bg));
 
   TabData td_normal_young;
   TabData td_normal_old;
-  td_normal_young.last_active = base::TimeDelta::FromSeconds(1);
-  td_normal_old.last_active = base::TimeDelta::FromDays(7);
+  td_normal_young.last_active = base::Seconds(1);
+  td_normal_old.last_active = base::Days(7);
   EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_normal_young));
   EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_normal_old));
 

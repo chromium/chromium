@@ -26,7 +26,7 @@ namespace {
 
 // The duration to delay the start of media remoting to ensure all preconditions
 // are held stable before switching to media remoting.
-constexpr base::TimeDelta kDelayedStart = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDelayedStart = base::Seconds(5);
 
 constexpr int kPixelsPerSec4k = 3840 * 2160 * 30;  // 4k 30fps.
 constexpr int kPixelsPerSec2k = 1920 * 1080 * 30;  // 1080p 30fps.

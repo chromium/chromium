@@ -77,7 +77,7 @@ void PressAndReleasePowerButton() {
   base::SimpleTestTickClock tick_clock;
   auto dispatch_power_button_event_after_delay =
       [&](const base::TimeDelta& delta, bool down) {
-        tick_clock.Advance(delta + base::TimeDelta::FromMilliseconds(1));
+        tick_clock.Advance(delta + base::Milliseconds(1));
         Shell::Get()->power_button_controller()->OnPowerButtonEvent(
             down, tick_clock.NowTicks());
         base::RunLoop().RunUntilIdle();
@@ -109,8 +109,7 @@ void SimulateMediaSessionChanged(
 // important.
 AuthDisabledData GetTestDisabledAuthData() {
   return AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
-                          base::Time::Now() + base::TimeDelta::FromHours(8),
-                          base::TimeDelta::FromHours(1),
+                          base::Time::Now() + base::Hours(8), base::Hours(1),
                           true /*disable_lock_screen_media*/);
 }
 
@@ -2138,10 +2137,9 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   // Setting auth disabled due to time window limit.
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
-      AuthDisabledData(
-          ash::AuthDisabledReason::kTimeWindowLimit,
-          base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(8),
-          base::TimeDelta::FromHours(1), true /*disable_lock_screen_media*/));
+      AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
+                       base::Time::Now().LocalMidnight() + base::Hours(8),
+                       base::Hours(1), true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_EQ(
@@ -2151,7 +2149,7 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(ash::AuthDisabledReason::kTimeUsageLimit,
-                       base::Time::Now(), base::TimeDelta::FromMinutes(30),
+                       base::Time::Now(), base::Minutes(30),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
@@ -2162,7 +2160,7 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(ash::AuthDisabledReason::kTimeLimitOverride,
-                       base::Time::Now(), base::TimeDelta::FromMinutes(30),
+                       base::Time::Now(), base::Minutes(30),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
@@ -2271,8 +2269,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
 }
@@ -2297,8 +2294,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
 
@@ -2333,8 +2329,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        false /*disable_lock_screen_media*/));
   EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
 }

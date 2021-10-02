@@ -70,8 +70,7 @@ void OtaActivatorImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
 OtaActivatorImpl::Factory::~Factory() = default;
 
 // static
-const base::TimeDelta OtaActivatorImpl::kConnectRetryDelay =
-    base::TimeDelta::FromSeconds(3);
+const base::TimeDelta OtaActivatorImpl::kConnectRetryDelay = base::Seconds(3);
 
 // static
 const size_t OtaActivatorImpl::kMaxConnectRetryAttempt = 3;

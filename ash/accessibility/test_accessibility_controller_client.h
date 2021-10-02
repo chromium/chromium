@@ -29,7 +29,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
   ~TestAccessibilityControllerClient();
 
   static constexpr base::TimeDelta kShutdownSoundDuration =
-      base::TimeDelta::FromMilliseconds(1000);
+      base::Milliseconds(1000);
 
   // AccessibilityControllerClient:
   void TriggerAccessibilityAlert(AccessibilityAlert alert) override;

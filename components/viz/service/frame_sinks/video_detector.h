@@ -64,13 +64,11 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   static constexpr int kMinFramesPerSecond = 15;
 
   // Timeout after which video is no longer considered to be playing.
-  static constexpr base::TimeDelta kVideoTimeout =
-      base::TimeDelta::FromMilliseconds(1000);
+  static constexpr base::TimeDelta kVideoTimeout = base::Milliseconds(1000);
 
   // Duration video must be playing in a client before it is reported to
   // observers.
-  static constexpr base::TimeDelta kMinVideoDuration =
-      base::TimeDelta::FromMilliseconds(3000);
+  static constexpr base::TimeDelta kMinVideoDuration = base::Milliseconds(3000);
 
   // If no video activity is detected for |kVideoTimeout|, this
   // method will be called by |video_inactive_timer_|;

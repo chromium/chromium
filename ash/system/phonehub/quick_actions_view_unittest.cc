@@ -23,8 +23,7 @@ class DummyEvent : public ui::Event {
   DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
 };
 
-constexpr base::TimeDelta kWaitForRequestTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(10);
 
 }  // namespace
 

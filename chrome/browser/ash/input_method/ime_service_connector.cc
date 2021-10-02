@@ -94,7 +94,7 @@ void ImeServiceConnector::DownloadImeFileTo(
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
   // TODO(https://crbug.com/971954): Allow the client to specify the timeout.
-  url_loader_->SetTimeoutDuration(base::TimeDelta::FromMinutes(10));
+  url_loader_->SetTimeoutDuration(base::Minutes(10));
 
   // Download the language module into a preconfigured ime folder of current
   // user's home which is allowed in IME service's sandbox.

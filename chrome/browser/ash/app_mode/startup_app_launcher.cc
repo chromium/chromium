@@ -509,7 +509,7 @@ void StartupAppLauncher::MaybeInstallSecondaryApps() {
 
   if (!AreSecondaryAppsInstalled() && !delegate_->IsNetworkReady()) {
     DelayNetworkCall(
-        base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS),
+        base::Milliseconds(kDefaultNetworkRetryDelayMS),
         base::BindOnce(&StartupAppLauncher::MaybeInstallSecondaryApps,
                        weak_ptr_factory_.GetWeakPtr()));
     return;

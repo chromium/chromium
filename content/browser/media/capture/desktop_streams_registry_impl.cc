@@ -70,7 +70,7 @@ std::string DesktopStreamsRegistryImpl::RegisterStream(
       FROM_HERE,
       base::BindOnce(&DesktopStreamsRegistryImpl::CleanupStream,
                      base::Unretained(this), id),
-      base::TimeDelta::FromSeconds(kApprovedStreamTimeToLiveSeconds));
+      base::Seconds(kApprovedStreamTimeToLiveSeconds));
 
   return id;
 }

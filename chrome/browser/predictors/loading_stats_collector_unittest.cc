@@ -134,7 +134,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectPrecisionRecallMetrics) {
   base::TimeTicks now = base::TimeTicks::Now();
   PageRequestSummary summary =
       CreatePageRequestSummary(main_frame_url, main_frame_url, resources, now);
-  summary.navigation_committed = now + base::TimeDelta::FromMilliseconds(3);
+  summary.navigation_committed = now + base::Milliseconds(3);
   summary.preconnect_origins = {
       url::Origin::Create(GURL(gen(1))),
       url::Origin::Create(GURL(gen(2))),
@@ -230,7 +230,7 @@ TEST_F(LoadingStatsCollectorTest,
       optimization_guide::OptimizationGuideDecision::kTrue;
   base::TimeTicks now = base::TimeTicks::Now();
   optimization_guide_prediction->optimization_guide_prediction_arrived =
-      now + base::TimeDelta::FromMilliseconds(3);
+      now + base::Milliseconds(3);
   optimization_guide_prediction->preconnect_prediction =
       CreatePreconnectPrediction(
           GURL(main_frame_url).host(), false,
@@ -257,7 +257,7 @@ TEST_F(LoadingStatsCollectorTest,
       GURL(gen(2)),
       GURL(gen(3)),
   };
-  summary.first_prefetch_initiated = now + base::TimeDelta::FromMilliseconds(1);
+  summary.first_prefetch_initiated = now + base::Milliseconds(1);
 
   stats_collector_->RecordPageRequestSummary(summary,
                                              optimization_guide_prediction);
@@ -434,7 +434,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectHistogramsEmpty) {
   base::TimeTicks now = base::TimeTicks::Now();
   PageRequestSummary summary =
       CreatePageRequestSummary(main_frame_url, main_frame_url, resources, now);
-  summary.navigation_committed = now + base::TimeDelta::FromMilliseconds(3);
+  summary.navigation_committed = now + base::Milliseconds(3);
   stats_collector_->RecordPageRequestSummary(summary, absl::nullopt);
 
   // No histograms should be recorded.

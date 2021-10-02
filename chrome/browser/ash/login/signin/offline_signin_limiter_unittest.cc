@@ -233,7 +233,7 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
   DestroyLimiter();
 
   // Advance clock by 1 hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate offline. Verify that the flag enforcing online login is not
   // changed.
@@ -316,7 +316,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
   DestroyLimiter();
 
   // Advance time by an hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate against Gaia without SAML. Verify that the flag enforcing
   // online login is cleared and the time of last login without SAML is updated.
@@ -342,7 +342,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
 
   // Advance time by an hour.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate offline. Verify that the flag enforcing online login and the
   // time of last login without SAML are not changed.
@@ -389,7 +389,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
   DestroyLimiter();
 
   // Advance time by an hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate against Gaia without SAML. Verify that the flag enforcing
   // online login is cleared and the time of last login without SAML is updated.
@@ -415,7 +415,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
 
   // Advance time by an hour.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate offline. Verify that the flag enforcing online login and the
   // time of last login without SAML are not changed.
@@ -544,7 +544,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInWithExpiredLimit) {
   prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 7);  // 1 week.
 
   // Advance time by four weeks.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate against Gaia without SAML. Verify that the flag enforcing
   // online login is cleared and the time of last login without SAML is updated.
@@ -576,7 +576,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
 
   // Advance time by four weeks.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate offline. Verify that the flag enforcing online login is
   // set and the time of last login without SAML is not changed.
@@ -622,7 +622,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
 
   // Suspend for 4 weeks.
   test_power_monitor_source_.Suspend();
-  task_environment_.AdvanceClock(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.AdvanceClock(base::Days(28));  // 4 weeks.
 
   // Resume power. Verify that the flag enforcing online login is set.
   Mock::VerifyAndClearExpectations(user_manager_);
@@ -649,7 +649,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
   prefs->SetBoolean(prefs::kLockScreenReauthenticationEnabled, true);
 
   // Advance time by four weeks.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate offline and check if InSessionPasswordSyncManager is created.
   CreateLimiter();
@@ -714,7 +714,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
 
   // Advance time by an hour.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate offline. Verify that the flag enforcing online login and the
   // time of last login without SAML are not changed.
@@ -958,7 +958,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLLogInWithExpiredLimit) {
                  task_environment_.GetMockClock()->Now());
 
   // Advance time by four weeks.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate against GAIA without SAML. Verify that the flag enforcing
   // online login and the time of last login with SAML are cleared.
@@ -1006,7 +1006,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
   DestroyLimiter();
 
   // Advance time by an hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate against GAIA with SAML. Verify that the flag enforcing online
   // login is cleared and the time of last login with SAML is updated.
@@ -1032,7 +1032,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
 
   // Advance time by an hour.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate offline. Verify that the flag enforcing online login and the
   // time of last login with SAML are not changed.
@@ -1060,7 +1060,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
               SaveForceOnlineSignin(test_saml_account_id_, true))
       .Times(1);
   // Advance time by four weeks.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 }
 
 TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
@@ -1092,7 +1092,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
   DestroyLimiter();
 
   // Advance time by an hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate against GAIA with SAML. Verify that the flag enforcing online
   // login is cleared and the time of last login with SAML is updated.
@@ -1118,7 +1118,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
 
   // Advance time by an hour.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // Authenticate offline. Verify that the flag enforcing online login and the
   // time of last login with SAML are not changed.
@@ -1242,7 +1242,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInWithExpiredLimit) {
                  task_environment_.GetMockClock()->Now());
 
   // Advance time by four weeks.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate against GAIA with SAML. Verify that the flag enforcing online
   // login is cleared and the time of last login with SAML is updated.
@@ -1273,7 +1273,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithExpiredLimit) {
 
   // Advance time by four weeks.
   const base::Time gaia_signin_time = task_environment_.GetMockClock()->Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate offline. Verify that the flag enforcing online login is
   // set and the time of last login with SAML is not changed.
@@ -1315,7 +1315,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLimitExpiredWhileSuspended) {
 
   // Suspend for 4 weeks.
   test_power_monitor_source_.Suspend();
-  task_environment_.AdvanceClock(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.AdvanceClock(base::Days(28));  // 4 weeks.
 
   // Resume power. Verify that the flag enforcing online login is set.
   Mock::VerifyAndClearExpectations(user_manager_);
@@ -1338,13 +1338,13 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
                  task_environment_.GetMockClock()->Now());
   prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
-                    base::TimeDelta::FromDays(1).InSeconds());  // 1 day.
+                    base::Days(1).InSeconds());  // 1 day.
 
   // Enable re-authentication on the lock screen.
   prefs->SetBoolean(prefs::kLockScreenReauthenticationEnabled, true);
 
   // Advance time by four weeks.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(28));  // 4 weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   // Authenticate offline and check if InSessionPasswordSyncManager is created.
   CreateLimiter();

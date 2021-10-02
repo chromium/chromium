@@ -568,12 +568,12 @@ TEST_F(NotificationListTest, NotificationOrderAndPriority) {
   optional.priority = 2;
   std::string max_id = AddNotification(optional);
 
-  now += base::TimeDelta::FromSeconds(1);
+  now += base::Seconds(1);
   optional.timestamp = now;
   optional.priority = 1;
   std::string high_id = AddNotification(optional);
 
-  now += base::TimeDelta::FromSeconds(1);
+  now += base::Seconds(1);
   optional.timestamp = now;
   optional.priority = 0;
   std::string default_id = AddNotification(optional);

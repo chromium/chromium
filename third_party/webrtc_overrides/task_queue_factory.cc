@@ -122,13 +122,13 @@ void WebrtcTaskQueue::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
         FROM_HERE,
         base::BindOnce(&WebrtcTaskQueue::ResumeAndRunTask,
                        base::Unretained(this), is_active_, std::move(task)),
-        base::TimeDelta::FromMilliseconds(milliseconds));
+        base::Milliseconds(milliseconds));
   } else {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebrtcTaskQueue::RunTask, base::Unretained(this),
                        is_active_, std::move(task)),
-        base::TimeDelta::FromMilliseconds(milliseconds));
+        base::Milliseconds(milliseconds));
   }
 }
 

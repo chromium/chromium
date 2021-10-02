@@ -60,8 +60,7 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
       LOG(INFO) << "Checking media blocking, re-try = " << i;
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
 
       const std::string command =

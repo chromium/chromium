@@ -35,24 +35,18 @@ namespace {
 using ::chromeos::WindowStateType;
 
 // The animation speed at which the highlights fade in or out.
-constexpr base::TimeDelta kHighlightsFadeInOut =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kHighlightsFadeInOut = base::Milliseconds(250);
 // The animation speed which the other highlight fades in or out.
-constexpr base::TimeDelta kOtherFadeInOut =
-    base::TimeDelta::FromMilliseconds(133);
+constexpr base::TimeDelta kOtherFadeInOut = base::Milliseconds(133);
 // The delay before the other highlight starts fading in.
-constexpr base::TimeDelta kOtherFadeInDelay =
-    base::TimeDelta::FromMilliseconds(117);
+constexpr base::TimeDelta kOtherFadeInDelay = base::Milliseconds(117);
 // The animation speed at which the preview area fades out (when you snap a
 // window).
-constexpr base::TimeDelta kPreviewAreaFadeOut =
-    base::TimeDelta::FromMilliseconds(67);
+constexpr base::TimeDelta kPreviewAreaFadeOut = base::Milliseconds(67);
 // The time duration for the indicator label opacity animations.
-constexpr base::TimeDelta kLabelAnimation =
-    base::TimeDelta::FromMilliseconds(83);
+constexpr base::TimeDelta kLabelAnimation = base::Milliseconds(83);
 // The delay before the indicator labels start fading in.
-constexpr base::TimeDelta kLabelAnimationDelay =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
 // Toast data.
 constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";

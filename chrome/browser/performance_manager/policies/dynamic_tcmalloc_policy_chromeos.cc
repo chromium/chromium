@@ -68,8 +68,7 @@ DynamicTcmallocPolicy::~DynamicTcmallocPolicy() = default;
 void DynamicTcmallocPolicy::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
   timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(features::kDynamicTuningTimeSec.Get()),
+      FROM_HERE, base::Seconds(features::kDynamicTuningTimeSec.Get()),
       base::BindRepeating(&DynamicTcmallocPolicy::CheckAndUpdateTunables,
                           base::Unretained(this)));
 }
@@ -171,7 +170,7 @@ void DynamicTcmallocPolicy::CheckAndUpdateTunables() {
           // invisible time cutoff we will reduce the overall thread cache
           // size for that ProcessNode to 75%.
           if (last_visibility_change <
-              base::TimeDelta::FromSeconds(
+              base::Seconds(
                   features::kDynamicTuningScaleInvisibleTimeSec.Get())) {
             // This frame is invisible but not for long enough so we cannot
             // scale any further.

@@ -29,8 +29,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kConnectingViewGracePeriod =
-    base::TimeDelta::FromSeconds(40);
+constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
 // A mock implementation of |NewWindowDelegate| for use in tests.
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -490,13 +489,13 @@ TEST_F(PhoneHubTrayTest, OnSessionChanged) {
   // Disable the tray first.
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(3));
   EXPECT_FALSE(phone_hub_tray_->GetVisible());
 
   // Enable it to let it visible.
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(3));
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
@@ -509,14 +508,14 @@ TEST_F(PhoneHubTrayTest, OnSessionChanged) {
   // Gives it a small duration to let the session get changed. This duration is
   // way smaller than the animation duration, so that the animation will not
   // finish when this duration ends. The same for the other places below.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   for (int i = 0; i < 3; i++) {
     SCOPED_TRACE(::testing::Message() << "iteration=" << i);
     EXPECT_FALSE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
     EXPECT_TRUE(phone_hub_tray_->GetVisible());
     GetFeatureStatusProvider()->SetStatus(
         chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::Seconds(1));
     EXPECT_FALSE(phone_hub_tray_->GetVisible());
     GetFeatureStatusProvider()->SetStatus(
         chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
@@ -526,7 +525,7 @@ TEST_F(PhoneHubTrayTest, OnSessionChanged) {
 
   // Animation is enabled after 5 seconds. We already fast forwarded 3 second in
   // the above loop. So here we are forwarding 2 more seconds.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
   GetFeatureStatusProvider()->SetStatus(

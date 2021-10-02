@@ -45,8 +45,7 @@ namespace media_history {
 
 namespace {
 
-constexpr base::TimeDelta kTestClipDuration =
-    base::TimeDelta::FromMilliseconds(26771);
+constexpr base::TimeDelta kTestClipDuration = base::Milliseconds(26771);
 
 enum class TestState {
   kNormal,
@@ -851,7 +850,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
       EXPECT_TRUE(playbacks[0]->has_audio);
       EXPECT_TRUE(playbacks[0]->has_video);
       EXPECT_EQ(GetTestURL(), playbacks[0]->url);
-      EXPECT_GE(base::TimeDelta::FromSeconds(7), playbacks[0]->watchtime);
+      EXPECT_GE(base::Seconds(7), playbacks[0]->watchtime);
 
       EXPECT_EQ(1u, origins.size());
       EXPECT_EQ(url::Origin::Create(GetTestURL()), origins[0]->origin);
@@ -929,7 +928,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_AudioOnly) {
       EXPECT_TRUE(playbacks[0]->has_audio);
       EXPECT_FALSE(playbacks[0]->has_video);
       EXPECT_EQ(GetTestURL(), playbacks[0]->url);
-      EXPECT_GE(base::TimeDelta::FromSeconds(7), playbacks[0]->watchtime);
+      EXPECT_GE(base::Seconds(7), playbacks[0]->watchtime);
 
       EXPECT_EQ(1u, origins.size());
       EXPECT_EQ(url::Origin::Create(GetTestURL()), origins[0]->origin);
@@ -999,7 +998,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_VideoOnly) {
       EXPECT_FALSE(playbacks[0]->has_audio);
       EXPECT_TRUE(playbacks[0]->has_video);
       EXPECT_EQ(GetTestURL(), playbacks[0]->url);
-      EXPECT_GE(base::TimeDelta::FromSeconds(7), playbacks[0]->watchtime);
+      EXPECT_GE(base::Seconds(7), playbacks[0]->watchtime);
 
       EXPECT_EQ(1u, origins.size());
       EXPECT_EQ(url::Origin::Create(GetTestURL()), origins[0]->origin);
@@ -1136,7 +1135,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   auto playbacks = GetPlaybacksSync(service);
   if (!playbacks.empty()) {
     ASSERT_EQ(1u, playbacks.size());
-    EXPECT_GE(base::TimeDelta::FromSeconds(2), playbacks[0]->watchtime);
+    EXPECT_GE(base::Seconds(2), playbacks[0]->watchtime);
   }
 }
 

@@ -173,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
       ->ReleaseFreeMemory();
 
   // Busy wait for host memory usage to be reduced.
-  base::TimeTicks end =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(5);
+  base::TimeTicks end = base::TimeTicks::Now() + base::Seconds(5);
   while (base::TimeTicks::Now() < end) {
     if (!discardable_memory::DiscardableSharedMemoryManager::Get()
              ->GetBytesAllocated())

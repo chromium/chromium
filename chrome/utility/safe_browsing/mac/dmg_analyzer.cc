@@ -155,7 +155,7 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
     if (!stream)
       continue;
     if (base::Time::Now() - start_time >=
-        base::TimeDelta::FromMilliseconds(kDmgAnalysisTimeoutMs)) {
+        base::Milliseconds(kDmgAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

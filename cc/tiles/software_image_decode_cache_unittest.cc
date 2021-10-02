@@ -1699,10 +1699,10 @@ TEST(SoftwareImageDecodeCacheTest, ClearCache) {
 TEST(SoftwareImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   TestSoftwareImageDecodeCache cache;
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(2)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(3)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(4)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(5)),
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3)),
+      FrameMetadata(true, base::Milliseconds(4)),
+      FrameMetadata(true, base::Milliseconds(5)),
   };
   sk_sp<FakePaintImageGenerator> generator =
       sk_make_sp<FakePaintImageGenerator>(

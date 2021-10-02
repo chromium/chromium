@@ -529,10 +529,9 @@ Response InspectorLayerTreeAgent::profileSnapshot(
   FloatRect rect;
   if (clip_rect.isJust())
     ParseRect(clip_rect.fromJust(), &rect);
-  auto timings = snapshot->Profile(
-      min_repeat_count.fromMaybe(1),
-      base::TimeDelta::FromSecondsD(min_duration.fromMaybe(0)),
-      clip_rect.isJust() ? &rect : nullptr);
+  auto timings = snapshot->Profile(min_repeat_count.fromMaybe(1),
+                                   base::Seconds(min_duration.fromMaybe(0)),
+                                   clip_rect.isJust() ? &rect : nullptr);
   *out_timings = std::make_unique<Array<Array<double>>>();
   for (const auto& row : timings) {
     auto out_row = std::make_unique<protocol::Array<double>>();

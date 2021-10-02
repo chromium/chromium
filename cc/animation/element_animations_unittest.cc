@@ -30,7 +30,7 @@ using base::TimeDelta;
 using base::TimeTicks;
 
 static base::TimeTicks TicksFromSecondsF(double seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSecondsD(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 // An ElementAnimations cannot be ticked at 0.0, since an animation
@@ -606,8 +606,7 @@ TEST_F(ElementAnimationsTest, SyncPause) {
 
   // Pause the animation at the middle of the second range so the offset
   // delays animation until the middle of the third range.
-  animation_->PauseKeyframeModel(keyframe_model_id,
-                                 base::TimeDelta::FromMilliseconds(1500));
+  animation_->PauseKeyframeModel(keyframe_model_id, base::Milliseconds(1500));
   EXPECT_EQ(KeyframeModel::PAUSED, animation_->keyframe_effect()
                                        ->GetKeyframeModelById(keyframe_model_id)
                                        ->run_state());
@@ -809,8 +808,8 @@ TEST_F(ElementAnimationsTest, FilterTransition) {
       FilterKeyframe::Create(base::TimeDelta(), start_filters, nullptr));
   FilterOperations end_filters;
   end_filters.Append(FilterOperation::CreateBrightnessFilter(2.f));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
-                                            end_filters, nullptr));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(1.0), end_filters, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 1, 0,
@@ -852,8 +851,8 @@ TEST_F(ElementAnimationsTest, BackdropFilterTransition) {
       FilterKeyframe::Create(base::TimeDelta(), start_filters, nullptr));
   FilterOperations end_filters;
   end_filters.Append(FilterOperation::CreateInvertFilter(1.f));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
-                                            end_filters, nullptr));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(1.0), end_filters, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 1, 0,
@@ -2266,8 +2265,8 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
   curve1->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
   operations1.AppendTranslate(10.0, 15.0, 0.0);
-  curve1->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations1, nullptr));
+  curve1->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operations1, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve1), 2, 2,
@@ -2295,8 +2294,8 @@ TEST_F(ElementAnimationsTest, MaximumAnimationNonCalculatableScale) {
   curve1->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
   operations1.AppendTranslate(10.0, 15.0, 0.0);
-  curve1->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations1, nullptr));
+  curve1->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operations1, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve1), 2, 2,
@@ -2324,8 +2323,8 @@ TEST_F(ElementAnimationsTest, MaximumAnimationPartialNonCalculatableScale) {
   curve1->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
   operations1.AppendPerspective(100);
-  curve1->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations1, nullptr));
+  curve1->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operations1, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve1), 2, 2,
@@ -2354,8 +2353,8 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations1a, nullptr));
   gfx::TransformOperations operations1b;
   operations1b.AppendScale(5.0, 4.0, 3.0);
-  curve1->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations1b, nullptr));
+  curve1->AddKeyframe(gfx::TransformKeyframe::Create(base::Seconds(1.0),
+                                                     operations1b, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve1), 1, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
@@ -2382,8 +2381,8 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations2a, nullptr));
   gfx::TransformOperations operations2b;
   operations2b.AppendScale(6.0, 5.0, 4.0);
-  curve2->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations2b, nullptr));
+  curve2->AddKeyframe(gfx::TransformKeyframe::Create(base::Seconds(1.0),
+                                                     operations2b, nullptr));
 
   animation_impl_->RemoveKeyframeModel(1);
   keyframe_model = KeyframeModel::Create(
@@ -2404,8 +2403,8 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations3a, nullptr));
   gfx::TransformOperations operations3b;
   operations3b.AppendScale(1.5, 2.5, 3.5);
-  curve3->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations3b, nullptr));
+  curve3->AddKeyframe(gfx::TransformKeyframe::Create(base::Seconds(1.0),
+                                                     operations3b, nullptr));
 
   keyframe_model = KeyframeModel::Create(
       std::move(curve3), 3, 3,
@@ -2447,8 +2446,8 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleWithDirection) {
       gfx::TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
   gfx::TransformOperations operations2;
   operations2.AppendScale(4.0, 5.0, 6.0);
-  curve1->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operations2, nullptr));
+  curve1->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operations2, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model_owned(KeyframeModel::Create(
       std::move(curve1), 1, 1,
@@ -2748,7 +2747,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
       AddAnimatedTransformToAnimation(animation_.get(), 10.0, 2, 1);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(animation2_id)
-      ->set_time_offset(base::TimeDelta::FromMilliseconds(-10000));
+      ->set_time_offset(base::Milliseconds(-10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(animation2_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -2860,7 +2859,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
       AddAnimatedTransformToAnimation(animation_.get(), 1.0, 1, 6);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::TimeDelta::FromMilliseconds(-10000));
+      ->set_time_offset(base::Milliseconds(-10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3075,7 +3074,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
       animation_.get(), 1.0, 0.f, 0.5f, false /*use_timing_function*/);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::TimeDelta::FromMilliseconds(-10000));
+      ->set_time_offset(base::Milliseconds(-10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3289,7 +3288,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
       AddAnimatedFilterToAnimation(animation_.get(), 1.0, 0.f, 0.5f);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::TimeDelta::FromMilliseconds(-10000));
+      ->set_time_offset(base::Milliseconds(-10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3504,7 +3503,7 @@ TEST_F(ElementAnimationsTest,
       AddAnimatedBackdropFilterToAnimation(animation_.get(), 1.0, 0.f, 0.5f);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::TimeDelta::FromMilliseconds(-10000));
+      ->set_time_offset(base::Milliseconds(-10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);

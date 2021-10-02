@@ -563,7 +563,7 @@ TEST_F(CrosHealthdServiceConnectionTest, RunBatteryDischargeRoutine) {
   FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
   base::RunLoop run_loop;
   ServiceConnection::GetInstance()->RunBatteryDischargeRoutine(
-      /*exec_duration=*/base::TimeDelta::FromSeconds(12),
+      /*exec_duration=*/base::Seconds(12),
       /*maximum_discharge_percent_allowed=*/99,
       base::BindLambdaForTesting([&](mojom::RunRoutineResponsePtr response) {
         EXPECT_EQ(response, MakeRunRoutineResponse());
@@ -578,7 +578,7 @@ TEST_F(CrosHealthdServiceConnectionTest, RunBatteryChargeRoutine) {
   FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
   base::RunLoop run_loop;
   ServiceConnection::GetInstance()->RunBatteryChargeRoutine(
-      /*exec_duration=*/base::TimeDelta::FromSeconds(30),
+      /*exec_duration=*/base::Seconds(30),
       /*minimum_charge_percent_required=*/10,
       base::BindLambdaForTesting([&](mojom::RunRoutineResponsePtr response) {
         EXPECT_EQ(response, MakeRunRoutineResponse());

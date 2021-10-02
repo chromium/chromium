@@ -184,8 +184,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
       std::min(update_context->retry_after_sec, kMaxRetryAfterSec);
   if (throttle_sec >= 0) {
     throttle_updates_until_ =
-        throttle_sec ? base::TimeTicks::Now() +
-                           base::TimeDelta::FromSeconds(throttle_sec)
+        throttle_sec ? base::TimeTicks::Now() + base::Seconds(throttle_sec)
                      : base::TimeTicks();
   }
 
@@ -372,7 +371,7 @@ bool UpdateEngine::IsThrottled(bool is_foreground) const {
 
   // Throttle the calls in the interval (t - 1 day, t) to limit the effect of
   // unset clocks or clock drift.
-  return throttle_updates_until_ - base::TimeDelta::FromDays(1) < now &&
+  return throttle_updates_until_ - base::Days(1) < now &&
          now < throttle_updates_until_;
 }
 

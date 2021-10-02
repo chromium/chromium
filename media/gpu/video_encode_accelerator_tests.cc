@@ -101,8 +101,7 @@ constexpr size_t kNumFramesToEncodeForBitrateCheck = 300;
 constexpr double kBitrateTolerance = 0.1;
 // The event timeout used in bitrate check tests because encoding 2160p and
 // validating |kNumFramesToEncodeBitrateCheck| frames take much time.
-constexpr base::TimeDelta kBitrateCheckEventTimeout =
-    base::TimeDelta::FromSeconds(180);
+constexpr base::TimeDelta kBitrateCheckEventTimeout = base::Seconds(180);
 
 media::test::VideoEncoderTestEnvironment* g_env;
 

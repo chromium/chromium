@@ -224,7 +224,7 @@ StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
   if (!process.IsValid())
     return StorageMonitor::EJECT_FAILURE;
 
-  static constexpr auto kEjectTimeout = base::TimeDelta::FromSeconds(3);
+  static constexpr auto kEjectTimeout = base::Seconds(3);
   int exit_code = -1;
   if (!process.WaitForExitWithTimeout(kEjectTimeout, &exit_code)) {
     process.Terminate(-1, false);

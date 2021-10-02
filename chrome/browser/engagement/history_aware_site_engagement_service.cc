@@ -48,7 +48,7 @@ void HistoryAwareSiteEngagementService::UpdateEngagementScores(
   // time" is 4 weeks ago. Set the last updated date to 4 weeks ago for origins
   // where we can't find a valid last visit date.
   base::Time now = clock().Now();
-  base::Time four_weeks_ago = now - base::TimeDelta::FromDays(28);
+  base::Time four_weeks_ago = now - base::Days(28);
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());

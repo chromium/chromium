@@ -62,8 +62,7 @@ class SubresourceFilterSafeBrowsingClientRequest
   // verify a URL. After this amount of time the outstanding check will be
   // aborted, and the URL will be treated as if it didn't belong to the
   // Subresource Filter only list.
-  static constexpr base::TimeDelta kCheckURLTimeout =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kCheckURLTimeout = base::Seconds(5);
 
  private:
   // Callback for when the safe browsing check has taken longer than

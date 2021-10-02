@@ -252,7 +252,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // Authenticators that return a response in less than this time are likely to
   // have done so without interaction from the user.
   static constexpr base::TimeDelta kMinExpectedAuthenticatorResponseTime =
-      base::TimeDelta::FromMilliseconds(300);
+      base::Milliseconds(300);
 
   // Subclasses implement this method to dispatch their request onto the given
   // FidoAuthenticator. The FidoAuthenticator is owned by this

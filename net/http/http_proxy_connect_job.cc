@@ -50,11 +50,9 @@ namespace {
 // HttpProxyConnectJobs will time out after this many seconds.  Note this is in
 // addition to the timeout for the transport socket.
 #if defined(OS_ANDROID) || defined(OS_IOS)
-constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout = base::Seconds(10);
 #else
-constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout = base::Seconds(30);
 #endif
 
 class HttpProxyTimeoutExperiments {
@@ -65,14 +63,14 @@ class HttpProxyTimeoutExperiments {
 
   void Init() {
 #if defined(OS_ANDROID) || defined(OS_IOS)
-    min_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
-        GetInt32Param("min_proxy_connection_timeout_seconds", 8));
-    max_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
+    min_proxy_connection_timeout_ =
+        base::Seconds(GetInt32Param("min_proxy_connection_timeout_seconds", 8));
+    max_proxy_connection_timeout_ = base::Seconds(
         GetInt32Param("max_proxy_connection_timeout_seconds", 30));
 #else
-    min_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
+    min_proxy_connection_timeout_ = base::Seconds(
         GetInt32Param("min_proxy_connection_timeout_seconds", 30));
-    max_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
+    max_proxy_connection_timeout_ = base::Seconds(
         GetInt32Param("max_proxy_connection_timeout_seconds", 60));
 #endif
     ssl_http_rtt_multiplier_ = GetInt32Param("ssl_http_rtt_multiplier", 10);

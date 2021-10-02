@@ -222,20 +222,20 @@ void VisibilityMetricsLogger::RecordVisibilityMetrics() {
   any_webview_visible_seconds =
       visible_duration_tracker_.any_webview_tracked_duration_.InSeconds();
   visible_duration_tracker_.any_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(any_webview_visible_seconds);
+      base::Seconds(any_webview_visible_seconds);
   no_webview_visible_seconds =
       visible_duration_tracker_.no_webview_tracked_duration_.InSeconds();
   visible_duration_tracker_.no_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(no_webview_visible_seconds);
+      base::Seconds(no_webview_visible_seconds);
 
   total_webview_visible_seconds =
       visible_duration_tracker_.per_webview_duration_.InSeconds();
   visible_duration_tracker_.per_webview_duration_ -=
-      base::TimeDelta::FromSeconds(total_webview_visible_seconds);
+      base::Seconds(total_webview_visible_seconds);
   total_no_webview_visible_seconds =
       visible_duration_tracker_.per_webview_untracked_duration_.InSeconds();
   visible_duration_tracker_.per_webview_untracked_duration_ -=
-      base::TimeDelta::FromSeconds(total_no_webview_visible_seconds);
+      base::Seconds(total_no_webview_visible_seconds);
 
   if (any_webview_visible_seconds) {
     GetGlobalVisibilityHistogram()->AddCount(
@@ -266,20 +266,20 @@ void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
   any_webcontent_visible_seconds =
       webcontent_visible_tracker_.any_webview_tracked_duration_.InSeconds();
   webcontent_visible_tracker_.any_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(any_webcontent_visible_seconds);
+      base::Seconds(any_webcontent_visible_seconds);
   no_webcontent_visible_seconds =
       webcontent_visible_tracker_.no_webview_tracked_duration_.InSeconds();
   webcontent_visible_tracker_.no_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(no_webcontent_visible_seconds);
+      base::Seconds(no_webcontent_visible_seconds);
 
   total_webcontent_isible_seconds =
       webcontent_visible_tracker_.per_webview_duration_.InSeconds();
   webcontent_visible_tracker_.per_webview_duration_ -=
-      base::TimeDelta::FromSeconds(total_webcontent_isible_seconds);
+      base::Seconds(total_webcontent_isible_seconds);
   total_not_webcontent_or_not_visible_seconds =
       webcontent_visible_tracker_.per_webview_untracked_duration_.InSeconds();
   webcontent_visible_tracker_.per_webview_untracked_duration_ -=
-      base::TimeDelta::FromSeconds(total_not_webcontent_or_not_visible_seconds);
+      base::Seconds(total_not_webcontent_or_not_visible_seconds);
 
   if (any_webcontent_visible_seconds) {
     GetGlobalOpenWebVisibilityHistogram()->AddCount(
@@ -313,7 +313,7 @@ void VisibilityMetricsLogger::RecordScreenPortionMetrics() {
       continue;
 
     open_web_screen_portion_tracked_duration_[i] -=
-        base::TimeDelta::FromSeconds(elapsed_seconds);
+        base::Seconds(elapsed_seconds);
     GetOpenWebVisibileScreenPortionHistogram()->AddCount(i, elapsed_seconds);
   }
 }

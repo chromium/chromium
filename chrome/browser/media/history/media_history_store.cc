@@ -478,14 +478,13 @@ MediaHistoryStore::GetOriginRowsForDebug() {
     mojom::MediaHistoryOriginRowPtr origin(mojom::MediaHistoryOriginRow::New());
 
     origin->origin = url::Origin::Create(GURL(statement.ColumnString(0)));
-    origin->last_updated_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromSeconds(statement.ColumnInt64(1)))
-            .ToJsTime();
+    origin->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+                                    base::Seconds(statement.ColumnInt64(1)))
+                                    .ToJsTime();
     origin->cached_audio_video_watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(2));
+        base::Seconds(statement.ColumnInt64(2));
     origin->actual_audio_video_watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(3));
+        base::Seconds(statement.ColumnInt64(3));
 
     origins.push_back(std::move(origin));
   }

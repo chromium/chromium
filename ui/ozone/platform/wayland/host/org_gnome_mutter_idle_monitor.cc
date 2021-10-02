@@ -65,14 +65,14 @@ absl::optional<base::TimeDelta> OrgGnomeMutterIdleMonitor::GetIdleTime() const {
             base::BindOnce(&OrgGnomeMutterIdleMonitor::OnServiceHasOwner,
                            weak_factory_.GetWeakPtr()));
       }
-      return base::TimeDelta::FromSeconds(0);
+      return base::Seconds(0);
 
     case ServiceState::kInitializing:
-      return base::TimeDelta::FromSeconds(0);
+      return base::Seconds(0);
 
     case ServiceState::kWorking:
       if (idle_timestamp_.is_null())
-        return base::TimeDelta::FromSeconds(0);
+        return base::Seconds(0);
       return base::Time::Now() - idle_timestamp_;
 
     case ServiceState::kNotAvailable:
@@ -193,8 +193,7 @@ void OrgGnomeMutterIdleMonitor::OnWatchFired(dbus::Signal* signal) {
   }
 
   if (id == idle_watch_id_) {
-    idle_timestamp_ =
-        base::Time::Now() - base::TimeDelta::FromMilliseconds(kIdleThresholdMs);
+    idle_timestamp_ = base::Time::Now() - base::Milliseconds(kIdleThresholdMs);
     dbus::MethodCall call(kInterface, kMethodAddUserActiveWatch);
     proxy_->CallMethod(
         &call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -213,8 +212,7 @@ bool OrgGnomeMutterIdleMonitor::UpdateIdleTime(dbus::Message* message) {
   uint64_t idletime;
   if (!reader.PopUint64(&idletime) || reader.HasMoreData())
     return false;
-  idle_timestamp_ =
-      base::Time::Now() - base::TimeDelta::FromMilliseconds(idletime);
+  idle_timestamp_ = base::Time::Now() - base::Milliseconds(idletime);
   return true;
 }
 

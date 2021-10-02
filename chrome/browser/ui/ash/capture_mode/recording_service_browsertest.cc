@@ -40,8 +40,7 @@ namespace {
 void WaitForMilliseconds(int milliseconds) {
   base::RunLoop loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(milliseconds));
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(milliseconds));
   loop.Run();
 }
 

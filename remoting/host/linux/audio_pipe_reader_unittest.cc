@@ -117,7 +117,7 @@ TEST_F(AudioPipeReaderTest, Pacing) {
   base::TimeDelta time_passed = base::TimeTicks::Now() - start_time;
 
   EXPECT_EQ(test_data, read_data_);
-  EXPECT_GE(time_passed, base::TimeDelta::FromMilliseconds(500));
+  EXPECT_GE(time_passed, base::Milliseconds(500));
 }
 
 }  // namespace remoting

@@ -221,7 +221,7 @@ double AdaptiveCongestionControl::CalculateSafeBitrate() {
   if (acked_bits_in_history_ == 0 || transmit_time <= base::TimeDelta()) {
     return min_bitrate_configured_;
   }
-  transmit_time = std::max(transmit_time, base::TimeDelta::FromMilliseconds(1));
+  transmit_time = std::max(transmit_time, base::Milliseconds(1));
   return acked_bits_in_history_ / transmit_time.InSecondsF();
 }
 
@@ -362,8 +362,8 @@ base::TimeTicks AdaptiveCongestionControl::EstimatedSendingTime(
     // ~RTT/2 amount of time to travel to the receiver.  Finally, the ACK from
     // the receiver is sent and this takes another ~RTT/2 amount of time to
     // reach the sender.
-    const base::TimeDelta frame_transmit_time = base::TimeDelta::FromSecondsD(
-        stats->frame_size_in_bits / estimated_bitrate);
+    const base::TimeDelta frame_transmit_time =
+        base::Seconds(stats->frame_size_in_bits / estimated_bitrate);
     estimated_ack_time = std::max(estimated_sending_time, stats->enqueue_time) +
                          frame_transmit_time + rtt_;
 

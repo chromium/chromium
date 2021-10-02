@@ -139,7 +139,7 @@ using InterestingFailureReason =
 using FailureReasonCallbackReceiver =
     ::device::test::TestCallbackReceiver<InterestingFailureReason>;
 
-constexpr base::TimeDelta kTestTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kTestTimeout = base::Minutes(1);
 
 // The size of credential IDs returned by GetTestCredentials().
 constexpr size_t kTestCredentialIdLength = 32u;
@@ -379,7 +379,7 @@ GetTestPublicKeyCredentialCreationOptions() {
   options->public_key_parameters = GetTestPublicKeyCredentialParameters(
       static_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256));
   options->challenge.assign(32, 0x0A);
-  options->timeout = base::TimeDelta::FromMinutes(1);
+  options->timeout = base::Minutes(1);
   options->authenticator_selection = GetTestAuthenticatorSelectionCriteria();
   return options;
 }
@@ -389,7 +389,7 @@ GetTestPublicKeyCredentialRequestOptions() {
   auto options = PublicKeyCredentialRequestOptions::New();
   options->relying_party_id = std::string(kTestRelyingPartyId);
   options->challenge.assign(32, 0x0A);
-  options->timeout = base::TimeDelta::FromMinutes(1);
+  options->timeout = base::Minutes(1);
   options->user_verification = device::UserVerificationRequirement::kPreferred;
   options->allow_credentials = GetTestCredentials();
   return options;
@@ -1971,7 +1971,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
       PublicKeyCredentialCreationOptionsPtr options =
           GetTestPublicKeyCredentialCreationOptions();
       options->relying_party.id = "example.com";
-      options->timeout = base::TimeDelta::FromSeconds(1);
+      options->timeout = base::Seconds(1);
       options->attestation =
           ConvertAttestationConveyancePreference(test.attestation_requested);
 
@@ -5455,7 +5455,7 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredential) {
         !test_case.fingerprints_enrolled &&
         test_case.uv == device::UserVerificationRequirement::kRequired;
     if (should_timeout) {
-      options->timeout = base::TimeDelta::FromMilliseconds(100);
+      options->timeout = base::Milliseconds(100);
     }
 
     MakeCredentialResult result =

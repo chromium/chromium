@@ -737,7 +737,7 @@ void CancelRequestAndPause(
   // Sleep for a little bit. This makes it more likely for the worker
   // thread to have returned from its call, and serves as a regression
   // test for http://crbug.com/173373.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(30));
+  base::PlatformThread::Sleep(base::Milliseconds(30));
 
   run_loop->Quit();
 }
@@ -785,7 +785,7 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhileBlockedInNonBlockingDns2) {
   // Wait a bit, so the DNS task has hopefully been posted. The test will
   // work whatever the delay is here, but it is most useful if the delay
   // is large enough to allow a task to be posted back.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
   request.reset();
 
   EXPECT_EQ(0u, host_resolver.num_resolve());

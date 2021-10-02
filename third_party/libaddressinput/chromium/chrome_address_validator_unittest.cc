@@ -857,7 +857,7 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
 
    protected:
     base::TimeDelta GetBaseRetryPeriod() const override {
-      return base::TimeDelta::FromSeconds(0);
+      return base::Seconds(0);
     }
   };
 

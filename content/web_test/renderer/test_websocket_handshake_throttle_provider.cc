@@ -40,7 +40,7 @@ base::TimeDelta ExtractDelayFromUrl(const GURL& url) {
     if (!base::StringToInt(value_piece, &value_int) || value_int < 0)
       return base::TimeDelta();
 
-    return base::TimeDelta::FromMilliseconds(value_int);
+    return base::Milliseconds(value_int);
   }
 
   // Parameter was not found.

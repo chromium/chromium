@@ -203,7 +203,7 @@ TEST_F(TileManagerTest, InitWithEmptyDb) {
 TEST_F(TileManagerTest, InitAndLoadWithInvalidGroup) {
   // Create an expired group.
   auto expired_group = CreateValidGroup("expired_group_id", "tile_id");
-  expired_group.last_updated_ts = current_time() - base::TimeDelta::FromDays(3);
+  expired_group.last_updated_ts = current_time() - base::Days(3);
 
   // Locale mismatch group.
   auto locale_mismatch_group =
@@ -219,7 +219,7 @@ TEST_F(TileManagerTest, InitAndLoadWithInvalidGroup) {
 TEST_F(TileManagerTest, InitAndLoadSuccess) {
   // Two valid groups are loaded, the most recent one will be selected.
   auto group1 = CreateValidGroup("group_id_1", "tile_id_1");
-  group1.last_updated_ts -= base::TimeDelta::FromMinutes(5);
+  group1.last_updated_ts -= base::Minutes(5);
   auto group2 = CreateValidGroup("group_id_2", "tile_id_2");
   const Tile expected = *group2.tiles[0];
 

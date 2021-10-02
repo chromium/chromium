@@ -951,7 +951,7 @@ void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
 
 void AutofillAgent::TriggerReparse() {
   if (!reparse_timer_.IsRunning()) {
-    reparse_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+    reparse_timer_.Start(FROM_HERE, base::Milliseconds(100),
                          base::BindRepeating(&AutofillAgent::ProcessForms,
                                              weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1044,8 +1044,7 @@ void AutofillAgent::SelectFieldOptionsChanged(
   // Start the timer to notify the driver that the select field was updated
   // after the options have finished changing,
   on_select_update_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kWaitTimeForSelectOptionsChangesMs),
+      FROM_HERE, base::Milliseconds(kWaitTimeForSelectOptionsChangesMs),
       base::BindRepeating(&AutofillAgent::SelectWasUpdated,
                           weak_ptr_factory_.GetWeakPtr(), element));
 }

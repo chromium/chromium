@@ -21,7 +21,7 @@ namespace ash {
 namespace input_method {
 namespace {
 
-constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kCheckDelay = base::Seconds(2);
 const uint64_t HashMultiplier = 1LL << 32;
 
 const char16_t kShowGrammarSuggestionMessage[] =

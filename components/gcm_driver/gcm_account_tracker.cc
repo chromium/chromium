@@ -212,8 +212,7 @@ void GCMAccountTracker::SanitizeTokens() {
        ++iter) {
     if (iter->second.state == TOKEN_PRESENT &&
         iter->second.expiration_time <
-            base::Time::Now() +
-                base::TimeDelta::FromMilliseconds(kMinimumTokenValidityMs)) {
+            base::Time::Now() + base::Milliseconds(kMinimumTokenValidityMs)) {
       iter->second.access_token.clear();
       iter->second.state = TOKEN_NEEDED;
       iter->second.expiration_time = base::Time();
@@ -249,8 +248,7 @@ bool GCMAccountTracker::IsTokenFetchingRequired() const {
 base::TimeDelta GCMAccountTracker::GetTimeToNextTokenReporting() const {
   base::TimeDelta time_till_next_reporting =
       driver_->GetLastTokenFetchTime() +
-      base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs) -
-      base::Time::Now();
+      base::Milliseconds(kTokenReportingIntervalMs) - base::Time::Now();
 
   // Case when token fetching is overdue.
   if (time_till_next_reporting < base::TimeDelta())
@@ -260,8 +258,8 @@ base::TimeDelta GCMAccountTracker::GetTimeToNextTokenReporting() const {
   // situation when the method is called before GCM driver is completely
   // initialized.
   if (time_till_next_reporting >
-          base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs)) {
-    return base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs);
+      base::Milliseconds(kTokenReportingIntervalMs)) {
+    return base::Milliseconds(kTokenReportingIntervalMs);
   }
 
   return time_till_next_reporting;

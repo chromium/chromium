@@ -529,8 +529,7 @@ bool FullscreenMagnifierController::RedrawDIP(
 
   const ui::LayerAnimator::PreemptionStrategy strategy =
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET;
-  const base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(duration_in_ms);
+  const base::TimeDelta duration = base::Milliseconds(duration_in_ms);
 
   ui::ScopedLayerAnimationSettings root_layer_settings(
       root_window_->layer()->GetAnimator());

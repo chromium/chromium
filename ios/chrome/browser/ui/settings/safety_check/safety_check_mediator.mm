@@ -1182,7 +1182,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
   std::u16string timestamp;
   // If check found issues less than 1 minuete ago.
-  if (elapsedTime < base::TimeDelta::FromMinutes(1)) {
+  if (elapsedTime < base::Minutes(1)) {
     timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   } else {
     timestamp = ui::TimeFormat::SimpleWithMonthAndYear(

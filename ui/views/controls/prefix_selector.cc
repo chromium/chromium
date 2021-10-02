@@ -36,7 +36,7 @@ void PrefixSelector::OnViewBlur() {
 
 bool PrefixSelector::ShouldContinueSelection() const {
   const base::TimeTicks now(tick_clock_->NowTicks());
-  constexpr auto kTimeBeforeClearing = base::TimeDelta::FromSeconds(1);
+  constexpr auto kTimeBeforeClearing = base::Seconds(1);
   return (now - time_of_last_key_) < kTimeBeforeClearing;
 }
 

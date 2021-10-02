@@ -1203,7 +1203,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   if (requires_copy) {
     const base::TimeDelta timestamp =
         frame ? frame->timestamp()
-              : base::TimeDelta::FromMilliseconds(next_frame->ntp_time_ms());
+              : base::Milliseconds(next_frame->ntp_time_ms());
     // TODO(https://crbug.com/1194500): Android (e.g. android-pie-arm64-rel)
     // and CrOS does not support the optimzed path, perhaps due to not
     // supporting STORAGE_GPU_MEMORY_BUFFER or NV12? When this is fixed, remove
@@ -1338,8 +1338,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
     frame = media::VideoFrame::WrapVideoFrame(
         black_gmb_frame_, black_gmb_frame_->format(),
         black_gmb_frame_->visible_rect(), black_gmb_frame_->natural_size());
-    frame->set_timestamp(
-        base::TimeDelta::FromMilliseconds(next_frame->ntp_time_ms()));
+    frame->set_timestamp(base::Milliseconds(next_frame->ntp_time_ms()));
   } else {
     frame = static_cast<WebRtcVideoFrameAdapter*>(
                 next_frame->video_frame_buffer().get())

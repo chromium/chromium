@@ -428,7 +428,7 @@ void ReportUMAForLastCleanerRun() {
       cleaner_key.ReadInt64(chrome_cleaner::kStartTimeValueName,
                             &start_time_value);
       const base::Time start_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(start_time_value));
+          base::Microseconds(start_time_value));
 
       const bool completed =
           cleaner_key.HasValue(chrome_cleaner::kEndTimeValueName);
@@ -437,7 +437,7 @@ void ReportUMAForLastCleanerRun() {
         cleaner_key.ReadInt64(chrome_cleaner::kEndTimeValueName,
                               &end_time_value);
         const base::Time end_time = base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(end_time_value));
+            base::Microseconds(end_time_value));
 
         cleaner_key.DeleteValue(chrome_cleaner::kEndTimeValueName);
         UMA_HISTOGRAM_LONG_TIMES("SoftwareReporter.Cleaner.RunningTime",

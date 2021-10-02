@@ -144,7 +144,7 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
     cache->RemoveEndpointGroup(group_key);
     return false;
   }
-  parsed_endpoint_group_out->ttl = base::TimeDelta::FromSeconds(ttl_sec);
+  parsed_endpoint_group_out->ttl = base::Seconds(ttl_sec);
 
   absl::optional<bool> subdomains_bool =
       dict->FindBoolKey(kIncludeSubdomainsKey);

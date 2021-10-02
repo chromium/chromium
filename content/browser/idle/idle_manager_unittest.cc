@@ -46,7 +46,7 @@ namespace {
 
 const char kTestUrl[] = "https://www.google.com";
 
-constexpr base::TimeDelta kThreshold = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kThreshold = base::Seconds(60);
 
 class MockIdleMonitor : public blink::mojom::IdleMonitor {
  public:
@@ -140,7 +140,7 @@ class IdleManagerTest : public RenderViewHostTestHarness {
             }));
 
     // Fast forward to run polling task.
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::Seconds(1));
     loop.Run();
     return std::make_tuple(user_result, screen_result);
   }
@@ -179,7 +179,7 @@ TEST_F(IdleManagerTest, AddMonitor) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -192,7 +192,7 @@ TEST_F(IdleManagerTest, Idle) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -201,7 +201,7 @@ TEST_F(IdleManagerTest, Idle) {
 
   // Simulates a user going idle.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(60)));
+      .WillOnce(Return(base::Seconds(60)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(true));
 
@@ -210,7 +210,7 @@ TEST_F(IdleManagerTest, Idle) {
 
   // Simulates a user going active, calling a callback under the threshold.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -223,7 +223,7 @@ TEST_F(IdleManagerTest, UnlockingScreen) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(70)));
+      .WillOnce(Return(base::Seconds(70)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(true));
 
@@ -232,7 +232,7 @@ TEST_F(IdleManagerTest, UnlockingScreen) {
 
   // Simulates a user unlocking the screen.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -245,7 +245,7 @@ TEST_F(IdleManagerTest, LockingScreen) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -254,7 +254,7 @@ TEST_F(IdleManagerTest, LockingScreen) {
 
   // Simulates a user locking the screen.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(10)));
+      .WillOnce(Return(base::Seconds(10)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(true));
 
@@ -267,7 +267,7 @@ TEST_F(IdleManagerTest, LockingScreenThenIdle) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -276,7 +276,7 @@ TEST_F(IdleManagerTest, LockingScreenThenIdle) {
 
   // Simulates a user locking screen.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(10)));
+      .WillOnce(Return(base::Seconds(10)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(true));
 
@@ -285,7 +285,7 @@ TEST_F(IdleManagerTest, LockingScreenThenIdle) {
 
   // Simulates a user going idle, while the screen is still locked.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(70)));
+      .WillOnce(Return(base::Seconds(70)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(true));
 
@@ -298,7 +298,7 @@ TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(0)));
+      .WillOnce(Return(base::Seconds(0)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -307,7 +307,7 @@ TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
 
   // Simulates a user going idle, but with the screen still unlocked.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(60)));
+      .WillOnce(Return(base::Seconds(60)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
@@ -318,7 +318,7 @@ TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
   // idle (e.g. screensaver kicks in first, throwing idleness, then getting
   // locked).
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(60)));
+      .WillOnce(Return(base::Seconds(60)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(true));
 
@@ -346,12 +346,12 @@ TEST_F(IdleManagerTest, Threshold) {
 
   // Initial state of the system.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::TimeDelta::FromSeconds(90)));
+      .WillOnce(Return(base::Seconds(90)));
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
       .WillOnce(Return(false));
 
   EXPECT_EQ(
-      AddMonitorRequest(base::TimeDelta::FromSeconds(91)),
+      AddMonitorRequest(base::Seconds(91)),
       std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked));
 }
 
@@ -366,7 +366,7 @@ TEST_F(IdleManagerTest, InvalidThreshold) {
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime()).Times(0);
   EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked()).Times(0);
 
-  service_remote_->AddMonitor(base::TimeDelta::FromSeconds(50),
+  service_remote_->AddMonitor(base::Seconds(50),
                               monitor_receiver.BindNewPipeAndPassRemote(),
                               base::NullCallback());
 

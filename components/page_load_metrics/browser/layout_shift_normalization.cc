@@ -5,8 +5,7 @@
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 
 namespace page_load_metrics {
-constexpr auto NEW_SHIFT_BUFFER_WINDOW_DURATION =
-    base::TimeDelta::FromSeconds(5);
+constexpr auto NEW_SHIFT_BUFFER_WINDOW_DURATION = base::Seconds(5);
 constexpr auto MAX_SHIFT_BUFFER_SIZE = 300;
 
 LayoutShiftNormalization::LayoutShiftNormalization() = default;
@@ -114,15 +113,15 @@ void LayoutShiftNormalization::UpdateWindowCLS(
 
   // Update Session Windows.
   UpdateSessionWindow(
-      &session_gap1000ms_max5000ms_, base::TimeDelta::FromMilliseconds(1000),
-      base::TimeDelta::FromMilliseconds(5000), first, first_non_stale,
+      &session_gap1000ms_max5000ms_, base::Milliseconds(1000),
+      base::Milliseconds(5000), first, first_non_stale,
       normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls,
       dummy_count);
   auto tmp_session_gap1000ms_max5000ms = session_gap1000ms_max5000ms_;
 
   UpdateSessionWindow(
-      &tmp_session_gap1000ms_max5000ms, base::TimeDelta::FromMilliseconds(1000),
-      base::TimeDelta::FromMilliseconds(5000), first_non_stale, last,
+      &tmp_session_gap1000ms_max5000ms, base::Milliseconds(1000),
+      base::Milliseconds(5000), first_non_stale, last,
       normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls,
       dummy_count);
 }

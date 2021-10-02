@@ -53,9 +53,9 @@ class EventsMetricsManagerTest : public testing::Test {
 
  protected:
   std::unique_ptr<EventMetrics> CreateEventMetrics(ui::EventType type) {
-    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(10));
+    test_tick_clock_.Advance(base::Microseconds(10));
     base::TimeTicks event_time = test_tick_clock_.NowTicks();
-    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(10));
+    test_tick_clock_.Advance(base::Microseconds(10));
     return EventMetrics::CreateForTesting(type, absl::nullopt, event_time,
                                           &test_tick_clock_);
   }

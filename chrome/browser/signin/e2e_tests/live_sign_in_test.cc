@@ -43,7 +43,7 @@
 namespace signin {
 namespace test {
 
-const base::TimeDelta kDialogTimeout = base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kDialogTimeout = base::Seconds(10);
 
 // A wrapper importing the settings module when the chrome://settings serve the
 // Polymer 3 version.

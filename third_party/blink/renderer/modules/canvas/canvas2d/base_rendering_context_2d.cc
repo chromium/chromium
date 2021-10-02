@@ -77,8 +77,7 @@ const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
 // restore the context. This wait needs to be long enough to avoid spamming the
 // GPU process with retry attempts and short enough to provide decent UX. It's
 // currently set to 500ms.
-const base::TimeDelta kTryRestoreContextInterval =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta kTryRestoreContextInterval = base::Milliseconds(500);
 
 BaseRenderingContext2D::BaseRenderingContext2D()
     : dispatch_context_lost_event_timer_(

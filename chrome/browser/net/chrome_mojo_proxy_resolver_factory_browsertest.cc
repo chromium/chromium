@@ -26,8 +26,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kServiceShutdownTimeout =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kServiceShutdownTimeout = base::Seconds(3);
 
 constexpr char kPacScript[] =
     "function FindProxyForURL(url, host) { return 'PROXY proxy.example.com:1; "

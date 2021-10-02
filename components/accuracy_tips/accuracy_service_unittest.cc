@@ -233,7 +233,7 @@ TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
 
   // Future calls will return that the rate limit is active.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
 
   // Until sufficient time passed and the tip can be shown again.
@@ -253,7 +253,7 @@ TEST_F(AccuracyServiceTest, OptOut) {
       .WillOnce(Invoke(&OptOutClicked));
   service()->MaybeShowAccuracyTip(web_contents());
 
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kOptOut);
 
   // Forwarding |kTimeBetweenPrompts| days will also not show the prompt again.
@@ -355,7 +355,7 @@ TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
 
   // Future calls will return that the rate limit is active.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
-  clock()->Advance(base::TimeDelta::FromDays(1));
+  clock()->Advance(base::Days(1));
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
 
   // Until sufficient time passed and the tip can be shown again.
@@ -504,7 +504,7 @@ TEST_F(AccuracyServiceSurveyTest,
   clock()->Advance(features::kMinTimeToShowSurvey.Get());
 
   // History deleted for the last day...
-  base::Time begin = clock()->Now() - base::TimeDelta::FromDays(1);
+  base::Time begin = clock()->Now() - base::Days(1);
   base::Time end = clock()->Now();
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(begin, end), false /* is_from_expiration */,

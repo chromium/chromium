@@ -55,7 +55,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       std::vector<int>(GetNumModelTypes(), 0),
       std::vector<int>(GetNumModelTypes(), 0),
       sync_pb::SyncEnums::UNKNOWN_ORIGIN,
-      /*poll_interval=*/base::TimeDelta::FromMinutes(30),
+      /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
   EXPECT_EQ(21u, value->DictSize());

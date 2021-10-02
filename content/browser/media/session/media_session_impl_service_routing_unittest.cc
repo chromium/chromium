@@ -35,7 +35,7 @@ namespace content {
 namespace {
 
 constexpr base::TimeDelta kDefaultSeekTime =
-    base::TimeDelta::FromSeconds(media_session::mojom::kDefaultSeekTimeSeconds);
+    base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds);
 
 static const int kPlayerId = 0;
 
@@ -635,7 +635,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
   CreateServiceForFrame(main_frame_);
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta seek_time = base::Seconds(10);
 
   EXPECT_CALL(*GetClientForFrame(main_frame_),
               DidReceiveAction(MediaSessionAction::kSeekTo, _))
@@ -660,7 +660,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
   CreateServiceForFrame(main_frame_);
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta seek_time = base::Seconds(10);
 
   EXPECT_CALL(*GetClientForFrame(main_frame_),
               DidReceiveAction(MediaSessionAction::kSeekTo, _))
@@ -1013,7 +1013,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   StartPlayerForFrame(main_frame_);
 
   media_session::MediaPosition player_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(20),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(20),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   media_session::test::MockMediaSessionMojoObserver observer(
@@ -1027,7 +1027,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   services_[main_frame_]->SetPositionState(expected_position);
@@ -1046,7 +1046,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, PositionFromServiceCanBeReset) {
   StartPlayerForFrame(main_frame_);
 
   media_session::MediaPosition player_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(20),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(20),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   media_session::test::MockMediaSessionMojoObserver observer(
@@ -1060,7 +1060,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, PositionFromServiceCanBeReset) {
   EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   services_[main_frame_]->SetPositionState(expected_position);
@@ -1210,7 +1210,7 @@ TEST_F(MediaSessionImplServiceRoutingThrottleTest,
        ++duration) {
     media_session::MediaPosition expected_position(
         /*playback_rate=*/0.0,
-        /*duration=*/base::TimeDelta::FromSeconds(duration),
+        /*duration=*/base::Seconds(duration),
         /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     services_[main_frame_]->SetPositionState(expected_position);

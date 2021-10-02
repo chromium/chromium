@@ -183,16 +183,14 @@ TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
   test::RunPendingTasks();
   auto expiration_duration = stub->OutgoingDatagramExpirationDurationValue();
   ASSERT_TRUE(expiration_duration.has_value());
-  EXPECT_EQ(expiration_duration.value(),
-            base::TimeDelta::FromMillisecondsD(1.0));
+  EXPECT_EQ(expiration_duration.value(), base::Milliseconds(1.0));
 
   duplex->setOutgoingMaxAge(absl::nullopt);
   ASSERT_FALSE(duplex->outgoingMaxAge().has_value());
   test::RunPendingTasks();
   expiration_duration = stub->OutgoingDatagramExpirationDurationValue();
   ASSERT_TRUE(expiration_duration.has_value());
-  EXPECT_EQ(expiration_duration.value(),
-            base::TimeDelta::FromMillisecondsD(0.0));
+  EXPECT_EQ(expiration_duration.value(), base::Milliseconds(0.0));
 
   duplex->setOutgoingMaxAge(0.5);
   ASSERT_TRUE(duplex->outgoingMaxAge().has_value());
@@ -200,8 +198,7 @@ TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
   test::RunPendingTasks();
   expiration_duration = stub->OutgoingDatagramExpirationDurationValue();
   ASSERT_TRUE(expiration_duration.has_value());
-  EXPECT_EQ(expiration_duration.value(),
-            base::TimeDelta::FromMillisecondsD(0.5));
+  EXPECT_EQ(expiration_duration.value(), base::Milliseconds(0.5));
 
   duplex->setOutgoingMaxAge(0.0);
   ASSERT_TRUE(duplex->outgoingMaxAge().has_value());
@@ -210,7 +207,7 @@ TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
   expiration_duration = stub->OutgoingDatagramExpirationDurationValue();
   ASSERT_TRUE(expiration_duration.has_value());
   EXPECT_EQ(expiration_duration.value(),
-            base::TimeDelta::FromMillisecondsD(0.5));  // Unchanged
+            base::Milliseconds(0.5));  // Unchanged
 
   duplex->setOutgoingMaxAge(-1.0);
   ASSERT_TRUE(duplex->outgoingMaxAge().has_value());
@@ -219,7 +216,7 @@ TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
   expiration_duration = stub->OutgoingDatagramExpirationDurationValue();
   ASSERT_TRUE(expiration_duration.has_value());
   EXPECT_EQ(expiration_duration.value(),
-            base::TimeDelta::FromMillisecondsD(0.5));  // Unchanged
+            base::Milliseconds(0.5));  // Unchanged
 }
 
 TEST(DatagramDuplexStreamTest, SetIncomingHighWaterMark) {

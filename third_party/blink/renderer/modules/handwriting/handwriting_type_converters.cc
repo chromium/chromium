@@ -44,7 +44,7 @@ TypeConverter<HandwritingPointPtr, blink::HandwritingPoint*>::Convert(
   auto output = handwriting::mojom::blink::HandwritingPoint::New();
   output->location = gfx::PointF(input->x(), input->y());
   if (input->hasT()) {
-    output->t = base::TimeDelta::FromMilliseconds(input->t());
+    output->t = base::Milliseconds(input->t());
   }
   return output;
 }

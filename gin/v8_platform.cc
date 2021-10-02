@@ -329,8 +329,7 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
         arg_convertables);
     DCHECK_LE(num_args, 2);
     base::TimeTicks timestamp =
-        base::TimeTicks() +
-        base::TimeDelta::FromMicroseconds(timestampMicroseconds);
+        base::TimeTicks() + base::Microseconds(timestampMicroseconds);
     base::trace_event::TraceEventHandle handle =
         TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
             phase, category_enabled_flag, name, scope, id, bind_id,
@@ -419,7 +418,7 @@ void V8Platform::CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, kDefaultTaskTraits,
       base::BindOnce(&v8::Task::Run, std::move(task)),
-      base::TimeDelta::FromSecondsD(delay_in_seconds));
+      base::Seconds(delay_in_seconds));
 }
 
 std::unique_ptr<v8::JobHandle> V8Platform::PostJob(

@@ -141,9 +141,9 @@ base::TimeDelta GetModulesLoadTimeout() {
   // integer, return the default value.
   unsigned int param_value_as_int = 0;
   if (!base::StringToUint(param_value, &param_value_as_int)) {
-    return base::TimeDelta::FromSeconds(3);
+    return base::Seconds(3);
   }
-  return base::TimeDelta::FromMilliseconds(param_value_as_int);
+  return base::Milliseconds(param_value_as_int);
 }
 
 }  // namespace ntp_features

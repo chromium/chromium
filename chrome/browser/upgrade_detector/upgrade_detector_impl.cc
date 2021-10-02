@@ -52,26 +52,24 @@
 namespace {
 
 // The default thresholds for reaching annoyance levels.
-constexpr auto kDefaultVeryLowThreshold = base::TimeDelta::FromHours(1);
-constexpr auto kDefaultLowThreshold = base::TimeDelta::FromDays(2);
-constexpr auto kDefaultElevatedThreshold = base::TimeDelta::FromDays(4);
-constexpr auto kDefaultHighThreshold = base::TimeDelta::FromDays(7);
-constexpr auto kDefaultGraceThreshold =
-    kDefaultHighThreshold - base::TimeDelta::FromHours(1);
+constexpr auto kDefaultVeryLowThreshold = base::Hours(1);
+constexpr auto kDefaultLowThreshold = base::Days(2);
+constexpr auto kDefaultElevatedThreshold = base::Days(4);
+constexpr auto kDefaultHighThreshold = base::Days(7);
+constexpr auto kDefaultGraceThreshold = kDefaultHighThreshold - base::Hours(1);
 
 // How long to wait (each cycle) before checking which severity level we should
 // be at. Once we reach the highest severity, the timer will stop.
-constexpr auto kNotifyCycleTime = base::TimeDelta::FromMinutes(20);
+constexpr auto kNotifyCycleTime = base::Minutes(20);
 
 // Same as kNotifyCycleTimeMs but only used during testing.
-constexpr auto kNotifyCycleTimeForTesting =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr auto kNotifyCycleTimeForTesting = base::Milliseconds(500);
 
 // How often to check to see if the build has become outdated.
-constexpr auto kOutdatedBuildDetectorPeriod = base::TimeDelta::FromDays(1);
+constexpr auto kOutdatedBuildDetectorPeriod = base::Days(1);
 
 // The number of days after which we identify a build/install as outdated.
-constexpr auto kOutdatedBuildAge = base::TimeDelta::FromDays(7) * 12;
+constexpr auto kOutdatedBuildAge = base::Days(7) * 12;
 
 constexpr bool ShouldDetectOutdatedBuilds() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -193,8 +191,7 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
 
   // When testing, scale everything back so that a day passes in ten seconds.
   if (is_testing_ && !relaunch_window) {
-    constexpr int64_t scale_factor =
-        base::TimeDelta::FromDays(1) / base::TimeDelta::FromSeconds(10);
+    constexpr int64_t scale_factor = base::Days(1) / base::Seconds(10);
     for (auto& stage : stages_)
       stage /= scale_factor;
   }
@@ -587,6 +584,5 @@ base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
 // static
 UpgradeDetector::RelaunchWindow UpgradeDetector::GetDefaultRelaunchWindow() {
   // Relaunch window is the whole day and any time is within the window.
-  return RelaunchWindow(/*start_hour=*/0, /*start_minute=*/0,
-                        base::TimeDelta::FromHours(24));
+  return RelaunchWindow(/*start_hour=*/0, /*start_minute=*/0, base::Hours(24));
 }

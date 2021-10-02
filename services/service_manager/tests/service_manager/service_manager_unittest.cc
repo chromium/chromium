@@ -326,7 +326,7 @@ class ServiceManagerTest : public testing::Test,
     if (!expect_service_started) {
       // Wait briefly and test no new service was created.
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+          FROM_HERE, loop.QuitClosure(), base::Seconds(1));
     }
 
     loop.Run();

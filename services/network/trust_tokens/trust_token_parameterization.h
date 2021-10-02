@@ -26,8 +26,7 @@ constexpr base::TaskPriority kTrustTokenDatabaseTaskPriority =
 // The maximum time Trust Tokens backing database writes will be buffered before
 // being committed to disk. Two seconds was chosen fairly arbitrarily as a value
 // close to what the cookie store uses.
-constexpr base::TimeDelta kTrustTokenWriteBufferingWindow =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kTrustTokenWriteBufferingWindow = base::Seconds(2);
 
 // This is the path relative to the issuer origin where this
 // implementation of the Trust Tokens protocol expects key

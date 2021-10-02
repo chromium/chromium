@@ -42,7 +42,7 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   DCHECK(NeedsBeginFrame());
   DCHECK_GT(time_delta_in_seconds, 0);
 
-  last_frame_time_ += base::TimeDelta::FromSecondsD(time_delta_in_seconds);
+  last_frame_time_ += base::Seconds(time_delta_in_seconds);
 
   SimCanvas::Commands commands;
   paint_commands_ = &commands;

@@ -202,7 +202,7 @@ class TouchSelectionControllerTest : public testing::Test,
     base::TimeTicks now = base::TimeTicks::Now();
     while (needs_animate_) {
       needs_animate_ = controller_->Animate(now);
-      now += base::TimeDelta::FromMilliseconds(16);
+      now += base::Milliseconds(16);
     }
   }
 
@@ -255,8 +255,7 @@ class TouchSelectionControllerTest : public testing::Test,
     // |enable_longpress_drag_selection| is set to false by default, and should
     // be overriden for explicit testing.
     TouchSelectionController::Config config;
-    config.max_tap_duration =
-        base::TimeDelta::FromMilliseconds(kDefaultTapTimeoutMs);
+    config.max_tap_duration = base::Milliseconds(kDefaultTapTimeoutMs);
     config.tap_slop = kDefaulTapSlop;
     config.enable_longpress_drag_selection = false;
     return config;
@@ -478,7 +477,7 @@ TEST_F(TouchSelectionControllerTest, InsertionTapped) {
   event = MockMotionEvent(MockMotionEvent::Action::DOWN, event_time, 0, 0);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   event = MockMotionEvent(MockMotionEvent::Action::UP,
-                          event_time + base::TimeDelta::FromSeconds(1), 0, 0);
+                          event_time + base::Seconds(1), 0, 0);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_DRAG_STARTED,
                                                INSERTION_HANDLE_DRAG_STOPPED));
@@ -1260,7 +1259,7 @@ TEST_F(TouchSelectionControllerTest, SelectionNoOrientationChangeWhenSwapped) {
   EXPECT_EQ(test_controller.GetEndHandleOrientation(),
             TouchHandleOrientation::RIGHT);
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time,
                           offset_rect.x(), offset_rect.bottom());
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1284,7 +1283,7 @@ TEST_F(TouchSelectionControllerTest, SelectionNoOrientationChangeWhenSwapped) {
   EXPECT_EQ(test_controller.GetEndHandleOrientation(),
             TouchHandleOrientation::LEFT);
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time,
                           offset_rect.x(), offset_rect.bottom());
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1308,7 +1307,7 @@ TEST_F(TouchSelectionControllerTest, SelectionNoOrientationChangeWhenSwapped) {
   EXPECT_EQ(test_controller.GetEndHandleOrientation(),
             TouchHandleOrientation::RIGHT);
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time,
                           offset_rect.x(), offset_rect.bottom());
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1332,7 +1331,7 @@ TEST_F(TouchSelectionControllerTest, SelectionNoOrientationChangeWhenSwapped) {
   EXPECT_EQ(test_controller.GetEndHandleOrientation(),
             TouchHandleOrientation::RIGHT);
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time,
                           offset_rect.x(), offset_rect.bottom());
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1381,7 +1380,7 @@ TEST_F(TouchSelectionControllerTest, VerticalTextSelectionHandleSwap) {
             TouchHandleOrientation::RIGHT);
 
   // Release.
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time,
                           offset_rect.x(), offset_rect.bottom());
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1408,7 +1407,7 @@ TEST_F(TouchSelectionControllerTest, VerticalTextSelectionHandleSwap) {
             TouchHandleOrientation::LEFT);
 
   // Release.
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time,
                           offset_rect.x(), offset_rect.bottom());
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1456,7 +1455,7 @@ TEST_F(TouchSelectionControllerTest, InsertionUpdateDragPosition) {
   // Don't follow the y-coordinate change.
   EXPECT_EQ(gfx::PointF(11.f, 6.f), GetLastDragUpdatePosition());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 0, 0);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_DRAG_STOPPED));
@@ -1493,7 +1492,7 @@ TEST_F(TouchSelectionControllerTest, SelectionUpdateDragPosition) {
   // Don't follow the y-coordinate change but only x-coordinate change.
   EXPECT_EQ(gfx::PointF(16.f, 5.f), GetLastDragUpdatePosition());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 15, 5);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STOPPED));
@@ -1513,7 +1512,7 @@ TEST_F(TouchSelectionControllerTest, SelectionUpdateDragPosition) {
   EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_MOVED));
   EXPECT_EQ(gfx::PointF(45.f, 5.f), GetLastDragUpdatePosition());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 45, 5);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STOPPED));
@@ -1612,7 +1611,7 @@ TEST_F(TouchSelectionControllerTest, HideActiveInsertionHandle) {
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   EXPECT_EQ(0.f, test_controller.GetInsertionHandleAlpha());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   // UP will reset the alpha to visible.
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 0, 0);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1652,7 +1651,7 @@ TEST_F(TouchSelectionControllerTest, NoHideActiveSelectionHandle) {
   EXPECT_EQ(1.f, test_controller.GetStartAlpha());
   EXPECT_EQ(1.f, test_controller.GetEndAlpha());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 50, 5);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
   EXPECT_EQ(1.f, test_controller.GetStartAlpha());
@@ -1686,7 +1685,7 @@ TEST_F(TouchSelectionControllerTest, HideActiveSelectionHandle) {
   EXPECT_EQ(0.f, test_controller.GetStartAlpha());
   EXPECT_EQ(1.f, test_controller.GetEndAlpha());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   // UP will reset alpha to be visible.
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 10, 5);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));
@@ -1705,7 +1704,7 @@ TEST_F(TouchSelectionControllerTest, HideActiveSelectionHandle) {
   EXPECT_EQ(1.f, test_controller.GetStartAlpha());
   EXPECT_EQ(0.f, test_controller.GetEndAlpha());
 
-  event_time += base::TimeDelta::FromMilliseconds(2 * kDefaultTapTimeoutMs);
+  event_time += base::Milliseconds(2 * kDefaultTapTimeoutMs);
   // UP will reset alpha to be visible.
   event = MockMotionEvent(MockMotionEvent::Action::UP, event_time, 50, 5);
   EXPECT_TRUE(controller().WillHandleTouchEvent(event));

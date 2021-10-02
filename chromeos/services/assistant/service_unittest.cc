@@ -40,7 +40,7 @@ namespace assistant {
 
 namespace {
 constexpr base::TimeDelta kDefaultTokenExpirationDelay =
-    base::TimeDelta::FromMilliseconds(60000);
+    base::Milliseconds(60000);
 
 #define EXPECT_STATE(_state) EXPECT_EQ(_state, assistant_manager()->GetState())
 

@@ -92,13 +92,13 @@ TEST_F(PageNodeImplTest, TimeSinceLastVisibilityChange) {
 
   mock_graph.page->SetIsVisible(true);
   EXPECT_TRUE(mock_graph.page->is_visible());
-  AdvanceClock(base::TimeDelta::FromSeconds(42));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(42),
+  AdvanceClock(base::Seconds(42));
+  EXPECT_EQ(base::Seconds(42),
             mock_graph.page->TimeSinceLastVisibilityChange());
 
   mock_graph.page->SetIsVisible(false);
-  AdvanceClock(base::TimeDelta::FromSeconds(23));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(23),
+  AdvanceClock(base::Seconds(23));
+  EXPECT_EQ(base::Seconds(23),
             mock_graph.page->TimeSinceLastVisibilityChange());
   EXPECT_FALSE(mock_graph.page->is_visible());
 }
@@ -115,9 +115,8 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(url, mock_graph.page->main_frame_url());
   EXPECT_EQ(10u, mock_graph.page->navigation_id());
   EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
-  AdvanceClock(base::TimeDelta::FromSeconds(11));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(11),
-            mock_graph.page->TimeSinceLastNavigation());
+  AdvanceClock(base::Seconds(11));
+  EXPECT_EQ(base::Seconds(11), mock_graph.page->TimeSinceLastNavigation());
 
   // 2nd navigation.
   url = GURL("http://www.example.org/bobcat");
@@ -126,9 +125,8 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(url, mock_graph.page->main_frame_url());
   EXPECT_EQ(20u, mock_graph.page->navigation_id());
   EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
-  AdvanceClock(base::TimeDelta::FromSeconds(17));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(17),
-            mock_graph.page->TimeSinceLastNavigation());
+  AdvanceClock(base::Seconds(17));
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
 
   // Test a same-document navigation.
   url = GURL("http://www.example.org/bobcat#fun");
@@ -137,9 +135,8 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(url, mock_graph.page->main_frame_url());
   EXPECT_EQ(30u, mock_graph.page->navigation_id());
   EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
-  AdvanceClock(base::TimeDelta::FromSeconds(17));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(17),
-            mock_graph.page->TimeSinceLastNavigation());
+  AdvanceClock(base::Seconds(17));
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
 
   // Test a navigation to a page with a different MIME type.
   url = GURL("http://www.example.org/document.pdf");
@@ -148,9 +145,8 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(url, mock_graph.page->main_frame_url());
   EXPECT_EQ(40u, mock_graph.page->navigation_id());
   EXPECT_EQ(kPdfMimeType, mock_graph.page->contents_mime_type());
-  AdvanceClock(base::TimeDelta::FromSeconds(17));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(17),
-            mock_graph.page->TimeSinceLastNavigation());
+  AdvanceClock(base::Seconds(17));
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
 }
 
 TEST_F(PageNodeImplTest, BrowserContextID) {

@@ -23,10 +23,8 @@ namespace cast {
 namespace {
 
 constexpr int kNumAggressiveReportsSentAtStart = 100;
-constexpr base::TimeDelta kMinSchedulingDelay =
-    base::TimeDelta::FromMilliseconds(1);
-constexpr base::TimeDelta kReceiverProcessTime =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kMinSchedulingDelay = base::Milliseconds(1);
+constexpr base::TimeDelta kReceiverProcessTime = base::Milliseconds(250);
 
 // The additional number of frames that can be in-flight when input exceeds the
 // maximum frame rate.
@@ -113,7 +111,7 @@ void FrameSender::ScheduleNextRtcpReport() {
       CastEnvironment::MAIN, FROM_HERE,
       base::BindOnce(&FrameSender::SendRtcpReport, weak_factory_.GetWeakPtr(),
                      true),
-      base::TimeDelta::FromMilliseconds(kRtcpReportIntervalMs));
+      base::Milliseconds(kRtcpReportIntervalMs));
 }
 
 void FrameSender::SendRtcpReport(bool schedule_future_reports) {

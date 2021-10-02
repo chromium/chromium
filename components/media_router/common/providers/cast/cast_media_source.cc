@@ -260,8 +260,7 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
   int launch_timeout_millis = 0;
   if (base::StringToInt(launch_timeout_str, &launch_timeout_millis) &&
       launch_timeout_millis > 0) {
-    cast_source->set_launch_timeout(
-        base::TimeDelta::FromMilliseconds(launch_timeout_millis));
+    cast_source->set_launch_timeout(base::Milliseconds(launch_timeout_millis));
   }
 
   int target_playout_delay_millis = 0;
@@ -269,7 +268,7 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
                         &target_playout_delay_millis) &&
       target_playout_delay_millis > 0) {
     cast_source->set_target_playout_delay(
-        base::TimeDelta::FromMilliseconds(target_playout_delay_millis));
+        base::Milliseconds(target_playout_delay_millis));
   }
 
   if (audio_capture_str == "0")

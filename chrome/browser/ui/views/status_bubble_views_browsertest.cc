@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   ASSERT_TRUE(GetShowHideAnimationForTesting());
   // Advance well past the time for the animation to ensure it completes.
   static_cast<gfx::AnimationContainerElement*>(GetShowHideAnimationForTesting())
-      ->Step(base::TimeTicks::Now() + base::TimeDelta::FromMinutes(1));
+      ->Step(base::TimeTicks::Now() + base::Minutes(1));
   // Widget should still exist.
   ASSERT_TRUE(GetWidget());
   EXPECT_FALSE(widget->IsVisible());
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(GetShowHideAnimationForTesting());
   // Advance well past the time for the animation to ensure it completes.
   static_cast<gfx::AnimationContainerElement*>(GetShowHideAnimationForTesting())
-      ->Step(base::TimeTicks::Now() + base::TimeDelta::FromMinutes(1));
+      ->Step(base::TimeTicks::Now() + base::Minutes(1));
   // Widget should still exist.
   ASSERT_TRUE(GetWidget());
   EXPECT_FALSE(widget->IsVisible());

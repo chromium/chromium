@@ -66,8 +66,7 @@ struct NET_EXPORT SendResult {
 };
 
 // Don't delay writes more than this.
-const base::TimeDelta kWriteAsyncMsThreshold =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kWriteAsyncMsThreshold = base::Milliseconds(1);
 // Prefer local if number of writes is not more than this.
 const int kWriteAsyncMinBuffersThreshold = 2;
 // Don't allow more than this many outstanding async writes.

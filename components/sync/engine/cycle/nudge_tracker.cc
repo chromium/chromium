@@ -16,10 +16,8 @@ namespace syncer {
 namespace {
 
 // Nudge delays for local refresh and invalidations. Common to all data types.
-constexpr base::TimeDelta kLocalRefreshDelay =
-    base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kRemoteInvalidationDelay =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kLocalRefreshDelay = base::Milliseconds(500);
+constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);
 
 }  // namespace
 

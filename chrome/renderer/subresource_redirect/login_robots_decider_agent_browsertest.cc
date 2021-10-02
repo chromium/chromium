@@ -62,8 +62,8 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
     RobotsRulesParserCache& robots_rules_parser_cache =
         RobotsRulesParserCache::Get();
     if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
-      robots_rules_parser_cache.CreateRobotsRulesParser(
-          origin, base::TimeDelta::FromSeconds(2));
+      robots_rules_parser_cache.CreateRobotsRulesParser(origin,
+                                                        base::Seconds(2));
     }
     EXPECT_TRUE(robots_rules_parser_cache.DoRobotsRulesParserExist(origin));
     robots_rules_parser_cache.UpdateRobotsRules(
@@ -80,7 +80,7 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
       EXPECT_FALSE(result_receiver.did_receive_result());
       return *immediate_result == SubresourceRedirectResult::kRedirectable;
     }
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+    task_environment_.FastForwardBy(base::Seconds(10));
     return result_receiver.did_receive_result() &&
            result_receiver.subresource_redirect_result() ==
                SubresourceRedirectResult::kRedirectable;

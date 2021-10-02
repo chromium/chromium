@@ -31,7 +31,7 @@ namespace {
 // Time to wait before starting an update the preferences from the
 // http_server_properties_impl_ cache. Scheduling another update during this
 // period will be a no-op.
-constexpr base::TimeDelta kUpdatePrefsDelay = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kUpdatePrefsDelay = base::Seconds(60);
 
 url::SchemeHostPort NormalizeSchemeHostPort(
     const url::SchemeHostPort& scheme_host_port) {

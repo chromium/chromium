@@ -227,7 +227,7 @@ void SubresourceFilterSafeBrowsingActivationThrottle::
   DCHECK(HasFinishedAllSafeBrowsingChecks());
 
   base::TimeDelta delay = defer_time_.is_null()
-                              ? base::TimeDelta::FromMilliseconds(0)
+                              ? base::Milliseconds(0)
                               : base::TimeTicks::Now() - defer_time_;
   UMA_HISTOGRAM_TIMES("SubresourceFilter.PageLoad.SafeBrowsingDelay", delay);
 

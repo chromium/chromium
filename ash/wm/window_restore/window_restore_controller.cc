@@ -72,8 +72,7 @@ constexpr AppType kSupportedAppTypes[3] = {
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user
 // flow.
-constexpr base::TimeDelta kAllowActivationDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAllowActivationDelay = base::Seconds(2);
 
 app_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
   return window->GetProperty(app_restore::kWindowInfoKey);

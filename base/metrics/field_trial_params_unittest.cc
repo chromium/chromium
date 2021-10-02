@@ -412,8 +412,8 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
-  EXPECT_EQ(a.Get(), base::TimeDelta::FromSecondsD(1.5));
-  EXPECT_EQ(b.Get(), base::TimeDelta::FromMinutes(62));
+  EXPECT_EQ(a.Get(), base::Seconds(1.5));
+  EXPECT_EQ(b.Get(), base::Minutes(62));
   EXPECT_EQ(c.Get(), base::TimeDelta());  // invalid
   EXPECT_EQ(d.Get(), base::TimeDelta());  // invalid
   EXPECT_EQ(e.Get(), base::TimeDelta());  // empty

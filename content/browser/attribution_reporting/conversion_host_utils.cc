@@ -96,7 +96,7 @@ absl::optional<blink::Impression> ParseImpressionFromApp(
   }
 
   if (expiry != 0)
-    impression.expiry = base::TimeDelta::FromMilliseconds(expiry);
+    impression.expiry = base::Milliseconds(expiry);
 
   return impression;
 }

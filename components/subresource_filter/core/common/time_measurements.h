@@ -64,10 +64,9 @@ namespace subresource_filter {
 // the histogram stores times in microseconds, up to 1 second, in 50 buckets.
 //
 // WARNING: The generated code is not thread-safe.
-#define UMA_HISTOGRAM_MICRO_TIMES(name, sample)                          \
-  UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(name, sample,                         \
-                                   base::TimeDelta::FromMicroseconds(1), \
-                                   base::TimeDelta::FromSeconds(1), 50)
+#define UMA_HISTOGRAM_MICRO_TIMES(name, sample)                         \
+  UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(name, sample, base::Microseconds(1), \
+                                   base::Seconds(1), 50)
 
 // This can be used when the default ranges are not sufficient. This macro lets
 // the metric developer customize the min and max of the sampled range, as well

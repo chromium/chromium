@@ -88,7 +88,7 @@ class MediaCodecLoopTest : public testing::Test {
 
     // TODO(liberato): assume that MCL doesn't retry for 30 seconds.  Note
     // that this doesn't actually wall-clock wait.
-    mock_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
+    mock_task_runner_->FastForwardBy(base::Seconds(30));
   }
 
   void ConstructCodecLoop(int sdk_int = base::android::SDK_VERSION_LOLLIPOP) {
@@ -142,7 +142,7 @@ class MediaCodecLoopTest : public testing::Test {
     MediaCodecLoop::InputData data;
     data.memory = reinterpret_cast<const uint8_t*>("big buck bunny");
     data.length = 14;
-    data.presentation_time = base::TimeDelta::FromSeconds(1);
+    data.presentation_time = base::Seconds(1);
     return data;
   }
 
@@ -150,7 +150,7 @@ class MediaCodecLoopTest : public testing::Test {
     int index = 1;
     size_t offset = 0;
     size_t size = 1024;
-    base::TimeDelta pts = base::TimeDelta::FromSeconds(1);
+    base::TimeDelta pts = base::Seconds(1);
     bool eos = false;
     bool key_frame = true;
   };
@@ -404,7 +404,7 @@ TEST_F(MediaCodecLoopTest, TestSeveralPendingIOBuffers) {
     OutputBuffer buffer;
     buffer.index = i;
     buffer.size += i;
-    buffer.pts = base::TimeDelta::FromSeconds(i + 1);
+    buffer.pts = base::Seconds(i + 1);
     ExpectDequeueOutputBuffer(buffer);
     ExpectOnDecodedFrame(buffer);
   }

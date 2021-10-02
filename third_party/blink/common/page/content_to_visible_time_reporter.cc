@@ -52,8 +52,7 @@ void RecordBackForwardCacheRestoreMetric(
   // "PageLoad.PaintTiming.NavigationToFirstContentfulPaint" metric.
   base::UmaHistogramCustomTimes(
       "BackForwardCache.Restore.NavigationToFirstPaint", delta,
-      base::TimeDelta::FromMilliseconds(10), base::TimeDelta::FromMinutes(10),
-      100);
+      base::Milliseconds(10), base::Minutes(10), 100);
 }
 
 }  // namespace

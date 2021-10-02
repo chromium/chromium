@@ -146,9 +146,7 @@ class MeasurementObserver {
 class AudioPowerMonitorTest : public ::testing::TestWithParam<TestScenario> {
  public:
   AudioPowerMonitorTest()
-      : power_monitor_(kSampleRate,
-                       base::TimeDelta::FromMilliseconds(kTimeConstantMillis)) {
-  }
+      : power_monitor_(kSampleRate, base::Milliseconds(kTimeConstantMillis)) {}
 
   void FeedAndCheckExpectedPowerIsMeasured(const AudioBus& bus,
                                            float power,

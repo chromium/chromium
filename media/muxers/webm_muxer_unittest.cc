@@ -146,7 +146,7 @@ TEST_P(WebmMuxerTest,
   bool video_success =
       !GetParam().num_video_tracks ||
       webm_muxer_->OnEncodedVideo(video_params, encoded_data, std::string(),
-                                  now + base::TimeDelta::FromMilliseconds(1),
+                                  now + base::Milliseconds(1),
                                   /*is_key_frame=*/true);
   EXPECT_FALSE(audio_success && video_success);
 }
@@ -166,7 +166,7 @@ TEST_P(WebmMuxerTest,
   bool video_success =
       !GetParam().num_video_tracks ||
       webm_muxer_->OnEncodedVideo(video_params, encoded_data, std::string(),
-                                  now + base::TimeDelta::FromMilliseconds(1),
+                                  now + base::Milliseconds(1),
                                   /*is_key_frame=*/true);
   bool audio_success =
       !GetParam().num_audio_tracks ||
@@ -388,14 +388,12 @@ TEST_P(WebmMuxerTest, VideoIsStoredWhileWaitingForAudio) {
   // Timestamp: video origin + X
   webm_muxer_->OnEncodedVideo(
       GetVideoParameters(video_frame), encoded_video, std::string(),
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1),
-      false /* keyframe */);
+      base::TimeTicks() + base::Milliseconds(1), false /* keyframe */);
 
   // Timestamp: video origin + X + Y
   webm_muxer_->OnEncodedVideo(
       GetVideoParameters(video_frame), encoded_video, std::string(),
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(2),
-      false /* keyframe */);
+      base::TimeTicks() + base::Milliseconds(2), false /* keyframe */);
 
   const int sample_rate = 48000;
   const int frames_per_buffer = 480;
@@ -418,9 +416,8 @@ TEST_P(WebmMuxerTest, VideoIsStoredWhileWaitingForAudio) {
       .Times(AnyNumber());
 
   // Timestamp: 0 (audio origin)
-  webm_muxer_->OnEncodedAudio(
-      audio_params, encoded_audio,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(3));
+  webm_muxer_->OnEncodedAudio(audio_params, encoded_audio,
+                              base::TimeTicks() + base::Milliseconds(3));
   webm_muxer_.reset();
 }
 
@@ -489,8 +486,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
         gfx::Size(1, 1), 0, media::VideoCodec::kVP8, gfx::ColorSpace());
     webm_muxer_->OnEncodedVideo(
         params, "video_at_offset", "",
-        base::TimeTicks() +
-            base::TimeDelta::FromMilliseconds(system_timestamp_offset_ms),
+        base::TimeTicks() + base::Milliseconds(system_timestamp_offset_ms),
         is_key_frame);
     got_video_ = true;
   }
@@ -504,8 +500,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
         media::CHANNEL_LAYOUT_MONO, frame_rate_hz, frames_per_buffer);
     webm_muxer_->OnEncodedAudio(
         audio_params, "audio_at_offset",
-        base::TimeTicks() +
-            base::TimeDelta::FromMilliseconds(system_timestamp_offset_ms));
+        base::TimeTicks() + base::Milliseconds(system_timestamp_offset_ms));
   }
 
   MOCK_METHOD(void, OnWrite, ());
@@ -558,7 +553,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
 TEST_F(WebmMuxerTestUnparametrized, MuxerCompensatesForPausedTimeWithVideo) {
   AddVideoAtOffset(123, /*is_key_frame=*/true);
   webm_muxer_->Pause();
-  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  environment_.FastForwardBy(base::Milliseconds(200));
   webm_muxer_->Resume();
   AddVideoAtOffset(123 + 266, /*is_key_frame=*/false);
   EXPECT_TRUE(Parse());
@@ -569,7 +564,7 @@ TEST_F(WebmMuxerTestUnparametrized, MuxerCompensatesForPausedTimeWithVideo) {
 TEST_F(WebmMuxerTestUnparametrized, MuxerCompensatesForPausedTimeWithAudio) {
   AddAudioAtOffsetWithDuration(234, 10);
   webm_muxer_->Pause();
-  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(666));
+  environment_.FastForwardBy(base::Milliseconds(666));
   webm_muxer_->Resume();
   AddAudioAtOffsetWithDuration(234 + 686, 10);
   EXPECT_TRUE(Parse());
@@ -582,7 +577,7 @@ TEST_F(WebmMuxerTestUnparametrized,
   AddAudioAtOffsetWithDuration(234, 10);
   AddVideoAtOffset(234 + 1, /*is_key_frame=*/true);
   webm_muxer_->Pause();
-  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(300));
+  environment_.FastForwardBy(base::Milliseconds(300));
   webm_muxer_->Resume();
   AddAudioAtOffsetWithDuration(234 + 321, 10);
   AddVideoAtOffset(234 + 315, /*is_key_frame=*/false);
@@ -596,7 +591,7 @@ TEST_F(WebmMuxerTestUnparametrized,
 TEST_F(WebmMuxerTestUnparametrized,
        MuxerCompensatesForPausedTimeBeforeAudioVideo) {
   webm_muxer_->Pause();
-  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  environment_.FastForwardBy(base::Milliseconds(100));
   webm_muxer_->Resume();
   AddAudioAtOffsetWithDuration(50, 10);
   AddVideoAtOffset(65, /*is_key_frame=*/true);
@@ -609,8 +604,7 @@ TEST_F(WebmMuxerTestUnparametrized,
 }
 
 TEST_F(WebmMuxerTestUnparametrized, HoldsDataUntilDurationExpiry) {
-  webm_muxer_->SetMaximumDurationToForceDataOutput(
-      base::TimeDelta::FromMilliseconds(200));
+  webm_muxer_->SetMaximumDurationToForceDataOutput(base::Milliseconds(200));
   AddVideoAtOffset(0, /*is_key_frame=*/true);
   AddAudioAtOffsetWithDuration(0, 10);
   // Mute video. The muxer will hold on to audio data after this until the max
@@ -623,7 +617,7 @@ TEST_F(WebmMuxerTestUnparametrized, HoldsDataUntilDurationExpiry) {
   AddAudioAtOffsetWithDuration(30, 10);
   AddAudioAtOffsetWithDuration(40, 10);
   Mock::VerifyAndClearExpectations(this);
-  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  environment_.FastForwardBy(base::Milliseconds(200));
   EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
   AddAudioAtOffsetWithDuration(50, 10);
   Mock::VerifyAndClearExpectations(this);
@@ -632,9 +626,8 @@ TEST_F(WebmMuxerTestUnparametrized, HoldsDataUntilDurationExpiry) {
 }
 
 TEST_F(WebmMuxerTestUnparametrized, DurationExpiryLimitedByMaxFrequency) {
-  webm_muxer_->SetMaximumDurationToForceDataOutput(
-      base::TimeDelta::FromMilliseconds(
-          50));  // This value is below the minimum limit of 100 ms.
+  webm_muxer_->SetMaximumDurationToForceDataOutput(base::Milliseconds(
+      50));  // This value is below the minimum limit of 100 ms.
   AddVideoAtOffset(0, /*is_key_frame=*/true);
   AddAudioAtOffsetWithDuration(0, 10);
   // Mute video. The muxer will hold on to audio data after this until the max
@@ -647,7 +640,7 @@ TEST_F(WebmMuxerTestUnparametrized, DurationExpiryLimitedByMaxFrequency) {
   AddAudioAtOffsetWithDuration(30, 10);
   AddAudioAtOffsetWithDuration(40, 10);
   Mock::VerifyAndClearExpectations(this);
-  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
   AddAudioAtOffsetWithDuration(50, 10);
   Mock::VerifyAndClearExpectations(this);

@@ -131,7 +131,7 @@ class AudioSenderTest : public ::testing::Test {
 };
 
 TEST_F(AudioSenderTest, Encode20ms) {
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(20);
+  const base::TimeDelta kDuration = base::Milliseconds(20);
   std::unique_ptr<AudioBus> bus(
       TestAudioBusFactory(audio_config_.channels, audio_config_.rtp_timebase,
                           TestAudioBusFactory::kMiddleANoteFreq, 0.5f)
@@ -144,7 +144,7 @@ TEST_F(AudioSenderTest, Encode20ms) {
 }
 
 TEST_F(AudioSenderTest, RtcpTimer) {
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(20);
+  const base::TimeDelta kDuration = base::Milliseconds(20);
   std::unique_ptr<AudioBus> bus(
       TestAudioBusFactory(audio_config_.channels, audio_config_.rtp_timebase,
                           TestAudioBusFactory::kMiddleANoteFreq, 0.5f)
@@ -155,7 +155,7 @@ TEST_F(AudioSenderTest, RtcpTimer) {
 
   // Make sure that we send at least one RTCP packet.
   base::TimeDelta max_rtcp_timeout =
-      base::TimeDelta::FromMilliseconds(1 + kRtcpReportIntervalMs * 3 / 2);
+      base::Milliseconds(1 + kRtcpReportIntervalMs * 3 / 2);
   testing_clock_.Advance(max_rtcp_timeout);
   task_runner_->RunTasks();
   EXPECT_LE(1, transport_->number_of_rtp_packets());

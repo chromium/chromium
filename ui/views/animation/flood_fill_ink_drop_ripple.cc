@@ -448,8 +448,8 @@ base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(int state) {
     state_override = HIDDEN_TRANSFORM;
   }
 
-  return base::TimeDelta::FromMilliseconds(
-      kAnimationDurationInMs[state_override] * duration_factor_);
+  return base::Milliseconds(kAnimationDurationInMs[state_override] *
+                            duration_factor_);
 }
 
 }  // namespace views

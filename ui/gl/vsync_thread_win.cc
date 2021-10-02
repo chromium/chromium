@@ -111,8 +111,7 @@ void VSyncThreadWin::WaitForVSync() {
   // WaitForVBlank and fallback to Sleep() if it returns before that.  This
   // could happen during normal operation for the first call after the vsync
   // thread becomes non-idle, but it shouldn't happen often.
-  constexpr auto kVBlankIntervalThreshold =
-      base::TimeDelta::FromMilliseconds(1);
+  constexpr auto kVBlankIntervalThreshold = base::Milliseconds(1);
   const base::TimeDelta wait_for_vblank_elapsed_time =
       base::TimeTicks::Now() - wait_for_vblank_start_time;
   if (!wait_for_vblank_succeeded ||

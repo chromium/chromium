@@ -91,7 +91,7 @@ void ClientHints::PersistClientHints(
     return;
   }
 
-  if (expiration_duration <= base::TimeDelta::FromSeconds(0))
+  if (expiration_duration <= base::Seconds(0))
     return;
 
   base::Value::ListStorage expiration_times_list;
@@ -119,15 +119,13 @@ void ClientHints::PersistClientHints(
 
   UMA_HISTOGRAM_EXACT_LINEAR("ClientHints.UpdateEventCount", 1, 2);
   UMA_HISTOGRAM_CUSTOM_TIMES(
-      "ClientHints.PersistDuration", expiration_duration,
-      base::TimeDelta::FromSeconds(1),
+      "ClientHints.PersistDuration", expiration_duration, base::Seconds(1),
       // TODO(crbug.com/949034): Rename and fix this histogram to have some
       // intended max value. We throw away the 32 most-significant bits of the
       // 64-bit time delta in milliseconds. Before it happened silently in
       // histogram.cc, now it is explicit here. The previous value of 365 days
       // effectively turns into roughly 17 days when getting cast to int.
-      base::TimeDelta::FromMilliseconds(
-          static_cast<int>(base::TimeDelta::FromDays(365).InMilliseconds())),
+      base::Milliseconds(static_cast<int>(base::Days(365).InMilliseconds())),
       100);
 
   UMA_HISTOGRAM_COUNTS_100("ClientHints.UpdateSize", client_hints.size());

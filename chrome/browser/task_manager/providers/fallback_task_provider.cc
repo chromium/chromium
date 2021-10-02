@@ -19,8 +19,7 @@ namespace task_manager {
 
 namespace {
 
-constexpr base::TimeDelta kTimeDelayForPendingTask =
-    base::TimeDelta::FromMilliseconds(750);
+constexpr base::TimeDelta kTimeDelayForPendingTask = base::Milliseconds(750);
 
 // Returns a task that is in the vector if the task in the vector shares a Pid
 // with the other task.

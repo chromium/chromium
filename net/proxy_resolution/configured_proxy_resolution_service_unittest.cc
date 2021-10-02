@@ -65,7 +65,7 @@ class ImmediatePollPolicy
   Mode GetNextDelay(int error,
                     base::TimeDelta current_delay,
                     base::TimeDelta* next_delay) const override {
-    *next_delay = base::TimeDelta::FromMilliseconds(1);
+    *next_delay = base::Milliseconds(1);
     return MODE_USE_TIMER;
   }
 
@@ -82,7 +82,7 @@ class NeverPollPolicy : public ConfiguredProxyResolutionService::PacPollPolicy {
   Mode GetNextDelay(int error,
                     base::TimeDelta current_delay,
                     base::TimeDelta* next_delay) const override {
-    *next_delay = base::TimeDelta::FromDays(60);
+    *next_delay = base::Days(60);
     return MODE_USE_TIMER;
   }
 
@@ -2019,7 +2019,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   ProxyInfo proxy_info;
   proxy_info.UseProxyList(proxy_list);
   const ProxyRetryInfoMap& retry_info = service.proxy_retry_info();
-  service.MarkProxiesAsBadUntil(proxy_info, base::TimeDelta::FromSeconds(1),
+  service.MarkProxiesAsBadUntil(proxy_info, base::Seconds(1),
                                 additional_bad_proxies, NetLogWithSource());
   ASSERT_EQ(4u, retry_info.size());
   for (const ProxyServer& proxy_server :
@@ -3568,7 +3568,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PACScriptPollingPolicy) {
 
   int error;
   ConfiguredProxyResolutionService::PacPollPolicy::Mode mode;
-  const base::TimeDelta initial_delay = base::TimeDelta::FromMilliseconds(-1);
+  const base::TimeDelta initial_delay = base::Milliseconds(-1);
   base::TimeDelta delay = initial_delay;
 
   // --------------------------------------------------
@@ -3765,7 +3765,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, IpAddressChangeResetsProxy) {
   service.SetPacFileFetchers(std::move(fetcher),
                              std::make_unique<DoNothingDhcpPacFileFetcher>());
 
-  const base::TimeDelta kConfigDelay = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta kConfigDelay = base::Seconds(5);
   service.set_stall_proxy_auto_config_delay(kConfigDelay);
 
   // Initialize by making and completing a proxy request.
@@ -3789,9 +3789,9 @@ TEST_F(ConfiguredProxyResolutionServiceTest, IpAddressChangeResetsProxy) {
 
   // Expect IP address notification to trigger a fetch after wait period.
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
-  FastForwardBy(kConfigDelay - base::TimeDelta::FromMilliseconds(2));
+  FastForwardBy(kConfigDelay - base::Milliseconds(2));
   EXPECT_FALSE(fetcher_ptr->has_pending_request());
-  FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  FastForwardBy(base::Milliseconds(2));
   EXPECT_TRUE(fetcher_ptr->has_pending_request());
 
   // Leave pending fetch hanging.

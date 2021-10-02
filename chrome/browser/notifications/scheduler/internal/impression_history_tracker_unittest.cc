@@ -120,8 +120,8 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
   ~ImpressionHistoryTrackerTest() override = default;
 
   void SetUp() override {
-    config_.impression_expiration = base::TimeDelta::FromDays(28);
-    config_.suppression_duration = base::TimeDelta::FromDays(56);
+    config_.impression_expiration = base::Days(28);
+    config_.suppression_duration = base::Days(56);
     config_.initial_daily_shown_per_type = 2;
   }
 
@@ -222,10 +222,10 @@ TEST_F(ImpressionHistoryTrackerTest, DeprecateClient) {
 // Verifies expired impression will be deleted.
 TEST_F(ImpressionHistoryTrackerTest, DeleteExpiredImpression) {
   TestCase test_case = CreateDefaultTestCase();
-  auto expired_create_time = clock()->Now() - base::TimeDelta::FromDays(1) -
-                             config().impression_expiration;
-  auto not_expired_time = clock()->Now() + base::TimeDelta::FromDays(1) -
-                          config().impression_expiration;
+  auto expired_create_time =
+      clock()->Now() - base::Days(1) - config().impression_expiration;
+  auto not_expired_time =
+      clock()->Now() + base::Days(1) - config().impression_expiration;
 
   Impression expired = CreateImpression(expired_create_time, "guid1");
   Impression not_expired = CreateImpression(not_expired_time, "guid2");
@@ -300,15 +300,12 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismisses) {
 
   // Construct 3 dismisses in a row, which will generate neutral impression
   // result.
-  auto dismiss_0 =
-      CreateImpression(clock()->Now() - base::TimeDelta::FromDays(1), "guid0",
-                       UserFeedback::kDismiss);
-  auto dismiss_1 =
-      CreateImpression(clock()->Now() - base::TimeDelta::FromMinutes(30),
-                       "guid1", UserFeedback::kDismiss);
-  auto dismiss_2 =
-      CreateImpression(clock()->Now() - base::TimeDelta::FromMinutes(15),
-                       "guid2", UserFeedback::kDismiss);
+  auto dismiss_0 = CreateImpression(clock()->Now() - base::Days(1), "guid0",
+                                    UserFeedback::kDismiss);
+  auto dismiss_1 = CreateImpression(clock()->Now() - base::Minutes(30), "guid1",
+                                    UserFeedback::kDismiss);
+  auto dismiss_2 = CreateImpression(clock()->Now() - base::Minutes(15), "guid2",
+                                    UserFeedback::kDismiss);
   test_case.input.front().impressions = {dismiss_0, dismiss_1, dismiss_2};
   test_case.expected.front().impressions = test_case.input.front().impressions;
   for (auto& impression : test_case.expected.front().impressions) {
@@ -345,19 +342,19 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismissesWithIgnoreTimeout) {
                              ImpressionResult::kNegative);
   impression_mapping.emplace(UserFeedback::kIgnore,
                              ImpressionResult::kNegative);
-  base::TimeDelta ignore_timeout_duration = base::TimeDelta::FromHours(12);
+  base::TimeDelta ignore_timeout_duration = base::Hours(12);
 
   // Construct 3 dismisses or timeout-ignored impressions in a row, which will
   // generate negative impression result.
   auto dismiss_0 = CreateImpression(
-      clock()->Now() - base::TimeDelta::FromDays(1), "guid0",
-      UserFeedback::kNoFeedback, ignore_timeout_duration, impression_mapping);
+      clock()->Now() - base::Days(1), "guid0", UserFeedback::kNoFeedback,
+      ignore_timeout_duration, impression_mapping);
   auto dismiss_1 = CreateImpression(
-      clock()->Now() - base::TimeDelta::FromHours(16), "guid1",
-      UserFeedback::kNoFeedback, ignore_timeout_duration, impression_mapping);
+      clock()->Now() - base::Hours(16), "guid1", UserFeedback::kNoFeedback,
+      ignore_timeout_duration, impression_mapping);
   auto dismiss_2 = CreateImpression(
-      clock()->Now() - base::TimeDelta::FromMinutes(15), "guid2",
-      UserFeedback::kDismiss, ignore_timeout_duration, impression_mapping);
+      clock()->Now() - base::Minutes(15), "guid2", UserFeedback::kDismiss,
+      ignore_timeout_duration, impression_mapping);
   test_case.input.front().impressions = {dismiss_0, dismiss_1, dismiss_2};
   test_case.expected.front().impressions = test_case.input.front().impressions;
   for (auto& impression : test_case.expected.front().impressions) {

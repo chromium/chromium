@@ -141,7 +141,7 @@ ZeroSuggestPrefetcher::ZeroSuggestPrefetcher(Profile* profile)
   controller_->Start(input);
   // Delete ourselves after 10s. This is enough time to cache results or
   // give up if the results haven't been received.
-  expire_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10000), this,
+  expire_timer_.Start(FROM_HERE, base::Milliseconds(10000), this,
                       &ZeroSuggestPrefetcher::SelfDestruct);
 }
 
@@ -281,7 +281,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(renderer_delay_ms));
+        base::Milliseconds(renderer_delay_ms));
   }
 
   input_ = AutocompleteInput(omnibox_text, page_class,
@@ -354,8 +354,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       static_cast<WindowOpenDisposition>(j_window_open_disposition), false,
       sessions::SessionTabHelper::IdForTab(web_contents),
       OmniboxEventProto::PageClassification(j_page_classification),
-      base::TimeDelta::FromMilliseconds(elapsed_time_since_first_modified),
-      completed_length,
+      base::Milliseconds(elapsed_time_since_first_modified), completed_length,
       now - autocomplete_controller_->last_time_default_match_changed(),
       autocomplete_controller_->result());
   log.is_query_started_from_tile = is_query_started_from_tiles_;
@@ -417,8 +416,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
   }
   autocomplete_controller_
       ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
-          base::TimeDelta::FromMilliseconds(elapsed_time_since_input_change),
-          &match);
+          base::Milliseconds(elapsed_time_since_input_change), &match);
   return url::GURLAndroid::FromNativeGURL(env, match.destination_url);
 }
 

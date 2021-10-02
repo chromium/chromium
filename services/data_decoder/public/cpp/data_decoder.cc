@@ -33,8 +33,7 @@ namespace {
 // (if any) may be killed and only restarted once needed again.
 // On platforms (like iOS) or environments (like some unit tests) where
 // out-of-process services are not used, this has no effect.
-constexpr base::TimeDelta kServiceProcessIdleTimeoutDefault{
-    base::TimeDelta::FromSeconds(5)};
+constexpr base::TimeDelta kServiceProcessIdleTimeoutDefault{base::Seconds(5)};
 
 // Encapsulates an in-process data decoder parsing request. This provides shared
 // ownership of the caller's callback so that it may be invoked exactly once by

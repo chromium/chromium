@@ -169,11 +169,11 @@ TEST_F(LiteVideoUserBlocklistTest, NavigationUnblocklistedByNavigation) {
   content::MockNavigationHandle nav_handle;
   nav_handle.set_url(url);
   blocklist()->AddNavigationToBlocklist(&nav_handle, true);
-  test_clock()->Advance(base::TimeDelta::FromSeconds(1));
+  test_clock()->Advance(base::Seconds(1));
   EXPECT_EQ(CheckBlocklistForMainframeNavigation(url),
             LiteVideoBlocklistReason::kNavigationBlocklisted);
   blocklist()->AddNavigationToBlocklist(&nav_handle, false);
-  test_clock()->Advance(base::TimeDelta::FromSeconds(1));
+  test_clock()->Advance(base::Seconds(1));
   EXPECT_EQ(CheckBlocklistForMainframeNavigation(url),
             LiteVideoBlocklistReason::kAllowed);
 }
@@ -220,7 +220,7 @@ TEST_F(LiteVideoUserBlocklistTest, DefaultParams) {
 
   EXPECT_TRUE(blocklist()->ShouldUseHostPolicy(&duration, &history, &threshold,
                                                &max_hosts));
-  EXPECT_EQ(base::TimeDelta::FromDays(1), duration);
+  EXPECT_EQ(base::Days(1), duration);
   EXPECT_EQ(5u, history);
   EXPECT_EQ(5, threshold);
   EXPECT_EQ(50u, max_hosts);

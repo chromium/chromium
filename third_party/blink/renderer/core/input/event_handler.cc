@@ -192,8 +192,7 @@ IntPoint DetermineHotSpot(const Image& image,
 
 // The amount of time to wait for a cursor update on style and layout changes
 // Set to 50Hz, no need to be faster than common screen refresh rate
-static constexpr base::TimeDelta kCursorUpdateInterval =
-    base::TimeDelta::FromMilliseconds(20);
+static constexpr base::TimeDelta kCursorUpdateInterval = base::Milliseconds(20);
 
 static const int kMaximumCursorSize = 128;
 
@@ -209,8 +208,7 @@ static const double kMinimumCursorScale = 0.001;
 
 // The minimum amount of time an element stays active after a ShowPress
 // This is roughly 9 frames, which should be long enough to be noticeable.
-constexpr base::TimeDelta kMinimumActiveInterval =
-    base::TimeDelta::FromSecondsD(0.15);
+constexpr base::TimeDelta kMinimumActiveInterval = base::Seconds(0.15);
 
 EventHandler::EventHandler(LocalFrame& frame)
     : frame_(frame),

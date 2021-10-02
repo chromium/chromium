@@ -1062,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
   host_destructions_ = 0;
   process_exits_ = 0;
   Observe(rph);
-  rfh->SetKeepAliveTimeoutForTesting(base::TimeDelta::FromSeconds(30));
+  rfh->SetKeepAliveTimeoutForTesting(base::Seconds(30));
 
   // Navigate to a site that will be in a different process.
   base::TimeTicks start = base::TimeTicks::Now();
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
 
   WaitUntilProcessExits(1);
 
-  EXPECT_LT(base::TimeTicks::Now() - start, base::TimeDelta::FromSeconds(30));
+  EXPECT_LT(base::TimeTicks::Now() - start, base::Seconds(30));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
@@ -1150,14 +1150,14 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   host_destructions_ = 0;
   process_exits_ = 0;
   Observe(rph);
-  rfh->SetKeepAliveTimeoutForTesting(base::TimeDelta::FromSeconds(1));
+  rfh->SetKeepAliveTimeoutForTesting(base::Seconds(1));
 
   base::TimeTicks start = base::TimeTicks::Now();
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,<p>hello</p>")));
 
   WaitUntilProcessExits(1);
 
-  EXPECT_GE(base::TimeTicks::Now() - start, base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(base::TimeTicks::Now() - start, base::Seconds(1));
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
@@ -1208,14 +1208,14 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   host_destructions_ = 0;
   process_exits_ = 0;
   Observe(rph);
-  rfh->SetKeepAliveTimeoutForTesting(base::TimeDelta::FromSeconds(1));
+  rfh->SetKeepAliveTimeoutForTesting(base::Seconds(1));
 
   base::TimeTicks start = base::TimeTicks::Now();
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,<p>hello</p>")));
 
   WaitUntilProcessExits(1);
 
-  EXPECT_GE(base::TimeTicks::Now() - start, base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(base::TimeTicks::Now() - start, base::Seconds(1));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ManyKeepaliveRequests) {

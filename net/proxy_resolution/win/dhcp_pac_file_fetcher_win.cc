@@ -104,8 +104,7 @@ constexpr int kMaxConcurrentDhcpLookupTasks = 12;
 // How long to wait at maximum after we get results (a PAC file or
 // knowledge that no PAC file is configured) from whichever network
 // adapter finishes first.
-constexpr base::TimeDelta kMaxWaitAfterFirstResult =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kMaxWaitAfterFirstResult = base::Milliseconds(400);
 
 // A TaskRunner that never schedules more than |kMaxConcurrentDhcpLookupTasks|
 // tasks concurrently.

@@ -538,7 +538,7 @@ std::vector<base::TimeDelta> AssistantTestMixin::ExpectAndReturnTimersResponse(
                  [](const std::string& timer_as_string) {
                    int seconds_remaining = 0;
                    base::StringToInt(timer_as_string, &seconds_remaining);
-                   return base::TimeDelta::FromSeconds(seconds_remaining);
+                   return base::Seconds(seconds_remaining);
                  });
 
   return timers;

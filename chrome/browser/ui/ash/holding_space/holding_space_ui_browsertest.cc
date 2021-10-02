@@ -2671,8 +2671,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenRecording) {
   // Record a 100 ms long video.
   base::RunLoop video_recording_time;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, video_recording_time.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(100));
+      FROM_HERE, video_recording_time.QuitClosure(), base::Milliseconds(100));
   video_recording_time.Run();
   capture_mode_test_api.StopVideoRecording();
 

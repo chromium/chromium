@@ -75,14 +75,14 @@ void MemoryPressureWatcherDelegate::OnObjectSignaled(HANDLE handle) {
 
 // Check the amount of RAM left every 5 seconds.
 const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // The following constants have been lifted from similar values in the ChromeOS
 // memory pressure monitor. The values were determined experimentally to ensure
 // sufficient responsiveness of the memory pressure subsystem, and minimal
 // overhead.
 const base::TimeDelta SystemMemoryPressureEvaluator::kModeratePressureCooldown =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // TODO(chrisha): Explore the following constants further with an experiment.
 
@@ -142,7 +142,7 @@ class SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator {
 
   // The period of the critical pressure notification timer.
   static constexpr base::TimeDelta kHighPressureNotificationInterval =
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 
   // The voter used to cast the votes.
   std::unique_ptr<MemoryPressureVoter> voter_;

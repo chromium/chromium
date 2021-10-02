@@ -33,7 +33,7 @@ class TabManagerWebContentsDataTest : public ChromeRenderViewHostTestHarness {
       : scoped_set_tick_clock_for_testing_(&test_clock_) {
     // Fast-forward time to prevent the first call to NowTicks() in a test from
     // returning a null TimeTicks.
-    test_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    test_clock_.Advance(base::Milliseconds(1));
   }
 
   void SetUp() override {

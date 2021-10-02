@@ -775,8 +775,7 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
     pending_result.shutter_timestamp = shutter_time;
     // Shutter timestamp is in ns.
     base::TimeTicks reference_time =
-        base::TimeTicks() +
-        base::TimeDelta::FromMicroseconds(shutter_time / 1000);
+        base::TimeTicks() + base::Microseconds(shutter_time / 1000);
     pending_result.reference_time = reference_time;
     if (first_frame_shutter_time_.is_null()) {
       // Record the shutter time of the first frame for calculating the

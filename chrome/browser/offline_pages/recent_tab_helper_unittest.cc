@@ -273,7 +273,7 @@ void RecentTabHelperTest::RunUntilIdle() {
 }
 
 void RecentTabHelperTest::FastForwardSnapshotController() {
-  constexpr base::TimeDelta kLongDelay = base::TimeDelta::FromSeconds(100);
+  constexpr base::TimeDelta kLongDelay = base::Seconds(100);
   (*mocked_main_runner_)->FastForwardBy(kLongDelay);
 }
 

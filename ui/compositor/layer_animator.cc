@@ -63,13 +63,13 @@ LayerAnimator::~LayerAnimator() {
 
 // static
 LayerAnimator* LayerAnimator::CreateDefaultAnimator() {
-  return new LayerAnimator(base::TimeDelta::FromMilliseconds(0));
+  return new LayerAnimator(base::Milliseconds(0));
 }
 
 // static
 LayerAnimator* LayerAnimator::CreateImplicitAnimator() {
-  return new LayerAnimator(base::TimeDelta::FromMilliseconds(
-      kLayerAnimatorDefaultTransitionDurationMs));
+  return new LayerAnimator(
+      base::Milliseconds(kLayerAnimatorDefaultTransitionDurationMs));
 }
 
 // This macro provides the implementation for the setter and getter (well,

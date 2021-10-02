@@ -38,8 +38,7 @@ constexpr BYTE kKeyPressedFlag = 0x80;
 
 constexpr int kKeyboardStateLength = 256;
 
-constexpr base::TimeDelta kReapplyResolutionPeriod =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kReapplyResolutionPeriod = base::Milliseconds(250);
 
 // We want to try to reapply resolution changes for ~5 seconds (20 * 250ms).
 constexpr int kMaxResolutionReapplyAttempts = 20;

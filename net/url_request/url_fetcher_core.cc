@@ -621,9 +621,7 @@ void URLFetcherCore::StartURLRequest() {
       //  layer and avoid using timer here.
       upload_progress_checker_timer_ = std::make_unique<base::RepeatingTimer>();
       upload_progress_checker_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kUploadProgressTimerInterval),
-          this,
+          FROM_HERE, base::Milliseconds(kUploadProgressTimerInterval), this,
           &URLFetcherCore::InformDelegateUploadProgress);
       break;
     }
@@ -682,7 +680,7 @@ void URLFetcherCore::StartURLRequestWhenAppropriate() {
       if (delay != 0) {
         network_task_runner_->PostDelayedTask(
             FROM_HERE, base::BindOnce(&URLFetcherCore::StartURLRequest, this),
-            base::TimeDelta::FromMilliseconds(delay));
+            base::Milliseconds(delay));
         return;
       }
     }

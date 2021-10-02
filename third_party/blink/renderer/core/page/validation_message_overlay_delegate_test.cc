@@ -123,7 +123,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   AnimationClock& external_clock = GetPage().Animator().Clock();
   base::TimeTicks current_time = external_clock.CurrentTime();
 
-  base::TimeTicks new_time = current_time + base::TimeDelta::FromSeconds(1);
+  base::TimeTicks new_time = current_time + base::Seconds(1);
   PageWidgetDelegate::Animate(GetPage(), new_time);
 
   // TODO(crbug.com/785940): Until this bug is fixed, this comparison could pass

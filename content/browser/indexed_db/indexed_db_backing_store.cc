@@ -388,7 +388,7 @@ bool DecodeExternalObjects(const std::string& data,
           return false;
         ret.emplace_back(blob_number, type, file_name,
                          base::Time::FromDeltaSinceWindowsEpoch(
-                             base::TimeDelta::FromMicroseconds(last_modified)),
+                             base::Microseconds(last_modified)),
                          size);
         break;
       }
@@ -1723,7 +1723,7 @@ void IndexedDBBackingStore::StartJournalCleaningTimer() {
   base::TimeDelta delay =
       std::min(kInitialJournalCleaningWindowTime, time_until_max);
 
-  if (delay <= base::TimeDelta::FromSeconds(0)) {
+  if (delay <= base::Seconds(0)) {
     journal_cleaning_timer_.AbandonAndStop();
     CleanRecoveryJournalIgnoreReturn();
     return;

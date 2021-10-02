@@ -36,8 +36,7 @@ WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate* g_arcvm_delegate_for_testing =
     nullptr;
 
 // Reports ARCVM trim metrics every |kArcVmTrimMetricReportDelay| minutes.
-constexpr base::TimeDelta kArcVmTrimMetricReportDelay =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kArcVmTrimMetricReportDelay = base::Minutes(30);
 
 // It is very unlikely to do the trim more than |kArcVmTrimMetricMaxCount|
 // times in |kArcVmTrimMetricReportDelay|.

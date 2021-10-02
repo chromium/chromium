@@ -231,8 +231,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
-  const base::TimeDelta warning =
-      base::TimeDelta::FromDays(kLongWarningInDays - 1);
+  const base::TimeDelta warning = base::Days(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_last_day = u"Last day to update Chrome device";
   std::u16string expected_message_last_day =
@@ -275,8 +274,7 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
-  const base::TimeDelta warning =
-      base::TimeDelta::FromDays(kLongWarningInDays - 1);
+  const base::TimeDelta warning = base::Days(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_last_day = u"Last day to update Chrome device";
   std::u16string expected_message_last_day =
@@ -289,7 +287,7 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
 TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
   // Set device state to end of life.
   update_engine()->set_eol_date(base::DefaultClock::GetInstance()->Now() -
-                                base::TimeDelta::FromDays(1));
+                                base::Days(1));
 
   // This is needed to wait till EOL status is fetched from the update_engine.
   base::RunLoop run_loop;
@@ -312,15 +310,14 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire notification timer to show new notification a week before deadline.
-  const base::TimeDelta warning =
-      base::TimeDelta::FromDays(kLongWarningInDays - 7);
+  const base::TimeDelta warning = base::Days(kLongWarningInDays - 7);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_one_week =
       u"Return Chrome device within 1 week";
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
-  const base::TimeDelta warning_last_day = base::TimeDelta::FromDays(6);
+  const base::TimeDelta warning_last_day = base::Days(6);
   task_environment_.FastForwardBy(warning_last_day);
   std::u16string expected_title_last_day = u"Immediate return required";
   std::u16string expected_message_last_day =
@@ -333,17 +330,17 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
 TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
   // Set device state to end of life.
   update_engine()->set_eol_date(base::DefaultClock::GetInstance()->Now() -
-                                base::TimeDelta::FromDays(kLongWarningInDays));
+                                base::Days(kLongWarningInDays));
 
   // Set local state to simulate update required timer running and one hour to
   // deadline.
   PrefService* prefs = g_browser_process->local_state();
-  const base::TimeDelta delta = base::TimeDelta::FromDays(kShortWarningInDays) -
-                                base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta =
+      base::Days(kShortWarningInDays) - base::Hours(1);
   prefs->SetTime(prefs::kUpdateRequiredTimerStartTime,
                  base::Time::Now() - delta);
   prefs->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod,
-                      base::TimeDelta::FromDays(kShortWarningInDays));
+                      base::Days(kShortWarningInDays));
 
   // This is needed to wait till EOL status is fetched from the update_engine.
   base::RunLoop run_loop;
@@ -371,7 +368,7 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
                                                 base::Time::Now());
   // Set device state to end of life reached.
   update_engine()->set_eol_date(base::DefaultClock::GetInstance()->Now() -
-                                base::TimeDelta::FromDays(kLongWarningInDays));
+                                base::Days(kLongWarningInDays));
 
   // This is needed to wait till EOL status is fetched from the update_engine.
   base::RunLoop run_loop;
@@ -395,8 +392,7 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire notification timer to show new notification a week before deadline.
-  const base::TimeDelta warning =
-      base::TimeDelta::FromDays(kLongWarningInDays - 7);
+  const base::TimeDelta warning = base::Days(kLongWarningInDays - 7);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_one_week = u"Return Chromebox within 1 week";
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);

@@ -70,11 +70,11 @@ static inline const base::TimeDelta EncodePollDelay() {
   // pictures have been fed to saturate any internal buffering).  This is
   // speculative and it's unclear that this would be a win (nor that there's a
   // reasonably device-agnostic way to fill in the "believes" above).
-  return base::TimeDelta::FromMilliseconds(10);
+  return base::Milliseconds(10);
 }
 
 static inline const base::TimeDelta NoWaitTimeOut() {
-  return base::TimeDelta::FromMicroseconds(0);
+  return base::Microseconds(0);
 }
 
 static bool GetSupportedColorFormatForMime(const std::string& mime,
@@ -369,7 +369,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // mapping to the generated |presentation_timestamp_|, and will read them out
   // after encoding. Then encoder can work happily always and we can preserve
   // the timestamps in captured frames for other purpose.
-  presentation_timestamp_ += base::TimeDelta::FromMicroseconds(
+  presentation_timestamp_ += base::Microseconds(
       base::Time::kMicrosecondsPerSecond / INITIAL_FRAMERATE);
   DCHECK(frame_timestamp_map_.find(presentation_timestamp_) ==
          frame_timestamp_map_.end());

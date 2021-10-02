@@ -81,8 +81,8 @@ class KeyDataTest : public testing::Test {
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("keys"); }
 
   void MakeKeyData() {
-    key_data_ = std::make_unique<KeyData>(
-        GetPath(), base::TimeDelta::FromSeconds(0), base::DoNothing());
+    key_data_ = std::make_unique<KeyData>(GetPath(), base::Seconds(0),
+                                          base::DoNothing());
     Wait();
   }
 
@@ -286,7 +286,7 @@ TEST_F(KeyDataTest, KeysRotated) {
 
   {
     // Advancing by 50 days, the key should not be rotated.
-    time_.Advance(base::TimeDelta::FromDays(50));
+    time_.Advance(base::Days(50));
     EXPECT_EQ(key_data_->Id(kProjectOneHash), first_id);
     EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
     SaveKeyData();
@@ -298,7 +298,7 @@ TEST_F(KeyDataTest, KeysRotated) {
   {
     // Advancing by another 50 days, the key should be rotated and the last
     // rotation day should be incremented by 90.
-    time_.Advance(base::TimeDelta::FromDays(50));
+    time_.Advance(base::Days(50));
     EXPECT_NE(key_data_->Id(kProjectOneHash), first_id);
     SaveKeyData();
 
@@ -314,7 +314,7 @@ TEST_F(KeyDataTest, KeysRotated) {
   {
     // Advancing by 453 days, the last rotation day should now 6 periods of 90
     // days ahead.
-    time_.Advance(base::TimeDelta::FromDays(453));
+    time_.Advance(base::Days(453));
     key_data_->Id(kProjectOneHash);
     SaveKeyData();
 

@@ -67,7 +67,7 @@ namespace net {
 
 namespace {
 
-base::TimeDelta kFallbackPeriod = base::TimeDelta::FromSeconds(1);
+base::TimeDelta kFallbackPeriod = base::Seconds(1);
 
 const char kMockHostname[] = "mock.http";
 
@@ -2737,7 +2737,7 @@ TEST_F(DnsTransactionTestWithMockTime, HttpsTimeout) {
   ASSERT_FALSE(helper.has_completed());
 
   // Stop a tiny bit short to ensure transaction doesn't finish early.
-  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTimeHoldback = base::Milliseconds(5);
   base::TimeDelta timeout = resolve_context_->SecureTransactionTimeout(
       SecureDnsMode::kSecure, session_.get());
   ASSERT_LT(kTimeHoldback, timeout);
@@ -2797,7 +2797,7 @@ TEST_F(DnsTransactionTestWithMockTime, HttpsTimeout2) {
   timeout_remainder -= fallback_period;
 
   // Stop a tiny bit short to ensure transaction doesn't finish early.
-  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTimeHoldback = base::Milliseconds(5);
   ASSERT_LT(kTimeHoldback, timeout_remainder);
   FastForwardBy(timeout_remainder - kTimeHoldback);
   EXPECT_FALSE(helper.has_completed());
@@ -2926,7 +2926,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_Timeout) {
   base::TimeDelta timeout_remainder = timeout - fallback_period;
 
   // Stop a tiny bit short to ensure transaction doesn't finish early.
-  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTimeHoldback = base::Milliseconds(5);
   ASSERT_LT(kTimeHoldback, timeout_remainder);
   FastForwardBy(timeout_remainder - kTimeHoldback);
   EXPECT_FALSE(helper.has_completed());

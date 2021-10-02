@@ -148,7 +148,7 @@ MATCHER(ReservedValueInSampleDependencyInfo, "") {
 
 TEST(TimeDeltaFromRationalTest, RoundsTowardZero) {
   // In each case, 1.5us should round to 1us.
-  base::TimeDelta expected = base::TimeDelta::FromMicroseconds(1);
+  base::TimeDelta expected = base::Microseconds(1);
   EXPECT_EQ(TimeDeltaFromRational(3, 2000000), expected);
   EXPECT_EQ(TimeDeltaFromRational(-3, 2000000), -expected);
 }
@@ -160,7 +160,7 @@ TEST(TimeDeltaFromRationalTest, HandlesLargeValues) {
   // Note: kNoTimestamp is printed as "9.22337e+12 s", which is visually
   // indistinguishable from |expected|.
   int64_t seconds = max_seconds - 1;
-  base::TimeDelta expected = base::TimeDelta::FromSeconds(seconds);
+  base::TimeDelta expected = base::Seconds(seconds);
   EXPECT_EQ(TimeDeltaFromRational(seconds, 1), expected);
   EXPECT_EQ(TimeDeltaFromRational(-seconds, 1), -expected);
 }

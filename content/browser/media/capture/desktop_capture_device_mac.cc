@@ -164,7 +164,7 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     if (!min_frame_rate_enforcement_timer_) {
       min_frame_rate_enforcement_timer_ =
           std::make_unique<base::RepeatingTimer>(
-              FROM_HERE, base::TimeDelta::FromSecondsD(1 / min_frame_rate_),
+              FROM_HERE, base::Seconds(1 / min_frame_rate_),
               base::BindRepeating(
                   &DesktopCaptureDeviceMac::SendLastReceivedIOSurfaceToClient,
                   weak_factory_.GetWeakPtr()));

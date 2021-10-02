@@ -318,8 +318,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 
   base::RunLoop run_loop_2;
   // When token expired, another token request will get empty token.
-  constexpr base::TimeDelta kTokenRefreshDelay =
-      base::TimeDelta::FromSeconds(60);
+  constexpr base::TimeDelta kTokenRefreshDelay = base::Seconds(60);
   task_environment()->FastForwardBy(kTokenRefreshDelay);
 
   closure = base::MakeExpectedRunClosure(FROM_HERE);

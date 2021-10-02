@@ -673,7 +673,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
     time_since_last_fetch = now - last_request_started_time_;
   UMA_HISTOGRAM_CUSTOM_COUNTS("Variations.TimeSinceLastFetchAttempt",
                               time_since_last_fetch.InMinutes(), 1,
-                              base::TimeDelta::FromDays(7).InMinutes(), 50);
+                              base::Days(7).InMinutes(), 50);
   UMA_HISTOGRAM_COUNTS_100("Variations.RequestCount", request_count_);
   ++request_count_;
   last_request_started_time_ = now;
@@ -830,8 +830,7 @@ void VariationsService::OnSimpleLoaderComplete(
     const base::TimeTicks now = base::TimeTicks::Now();
     const base::TimeDelta latency = now - last_request_started_time_;
     client_->GetNetworkTimeTracker()->UpdateNetworkTime(
-        response_date,
-        base::TimeDelta::FromSeconds(kServerTimeResolutionInSeconds), latency,
+        response_date, base::Seconds(kServerTimeResolutionInSeconds), latency,
         now);
   }
 

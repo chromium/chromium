@@ -73,13 +73,11 @@ using permissions::PermissionAction;
 // This long after the last top-level tab or window for an origin is closed (or
 // is navigated to another origin), all the permissions for that origin will be
 // revoked.
-constexpr base::TimeDelta kPermissionRevocationTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kPermissionRevocationTimeout = base::Seconds(5);
 
 // Interval at which to periodically sweep persisted permissions to revoke
 // expired grants and renew those with corresponding active grants.
-constexpr base::TimeDelta kPersistentPermissionSweepInterval =
-    base::TimeDelta::FromHours(3);
+constexpr base::TimeDelta kPersistentPermissionSweepInterval = base::Hours(3);
 
 // Dictionary keys for the FILE_SYSTEM_ACCESS_CHOOSER_DATA setting.
 const char kPermissionPathKey[] = "path";
@@ -1588,8 +1586,8 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
     base::UmaHistogramCustomTimes(
         base::StrCat({"Storage.FileSystemAccess.PersistedPermissions.Age.",
                       is_installed_pwa ? "PWA" : "NonPWA"}),
-        clock_->Now() - last_activity_time, base::TimeDelta::FromSeconds(1),
-        base::TimeDelta::FromDays(24), 60);
+        clock_->Now() - last_activity_time, base::Seconds(1), base::Days(24),
+        60);
   }
 
   return !PersistentPermissionIsExpired(last_activity_time, is_installed_pwa);

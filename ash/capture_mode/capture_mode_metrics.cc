@@ -90,10 +90,10 @@ void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {
 void RecordCaptureModeRecordTime(int64_t length_in_seconds) {
   // Use custom counts macro instead of custom times so we can record in
   // seconds instead of milliseconds. The max bucket is 3 hours.
-  base::UmaHistogramCustomCounts(
-      kRecordTimeHistogramName, length_in_seconds, /*min=*/1,
-      /*max=*/base::TimeDelta::FromHours(3).InSeconds(),
-      /*bucket_count=*/50);
+  base::UmaHistogramCustomCounts(kRecordTimeHistogramName, length_in_seconds,
+                                 /*min=*/1,
+                                 /*max=*/base::Hours(3).InSeconds(),
+                                 /*bucket_count=*/50);
 }
 
 void RecordCaptureModeSwitchesFromInitialMode(bool switched) {

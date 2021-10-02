@@ -42,8 +42,7 @@ constexpr XrViewConfigurationType kSupportedViewConfiguration =
 // occasionally polled, a timer loop run every kTimeBetweenPollingEvents to poll
 // events if significant time has elapsed since the last time events were
 // polled.
-constexpr base::TimeDelta kTimeBetweenPollingEvents =
-    base::TimeDelta::FromSecondsD(1);
+constexpr base::TimeDelta kTimeBetweenPollingEvents = base::Seconds(1);
 
 }  // namespace
 

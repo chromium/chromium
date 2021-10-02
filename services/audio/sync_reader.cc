@@ -73,7 +73,7 @@ SyncReader::SyncReader(
     maximum_wait_time_ =
         params.GetBufferDuration() * kBufferDurationPercent.Get();
   } else {
-    maximum_wait_time_ = base::TimeDelta::FromMilliseconds(20);
+    maximum_wait_time_ = base::Milliseconds(20);
   }
 #endif
 
@@ -292,9 +292,8 @@ bool SyncReader::WaitUntilDataIsReady() {
 
     base::TimeDelta time_since_start = base::TimeTicks::Now() - start_time;
     UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioOutputControllerDataNotReady",
-                               time_since_start,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMilliseconds(1000), 50);
+                               time_since_start, base::Milliseconds(1),
+                               base::Milliseconds(1000), 50);
     return false;
   }
 

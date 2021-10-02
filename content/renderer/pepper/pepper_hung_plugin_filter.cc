@@ -97,7 +97,7 @@ void PepperHungPluginFilter::EnsureTimerScheduled() {
   timer_task_pending_ = true;
   io_task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PepperHungPluginFilter::OnHangTimer, this),
-      base::TimeDelta::FromSeconds(kHungThresholdSec));
+      base::Seconds(kHungThresholdSec));
 }
 
 void PepperHungPluginFilter::MayHaveBecomeUnhung() {
@@ -118,12 +118,11 @@ base::TimeTicks PepperHungPluginFilter::GetHungTime() const {
 
   // Always considered hung at the hard threshold.
   base::TimeTicks hard_time =
-      began_blocking_time_ +
-      base::TimeDelta::FromSeconds(kBlockedHardThresholdSec);
+      began_blocking_time_ + base::Seconds(kBlockedHardThresholdSec);
 
   // Hung after a soft threshold from last message of any sort.
   base::TimeTicks soft_time =
-      last_message_received_ + base::TimeDelta::FromSeconds(kHungThresholdSec);
+      last_message_received_ + base::Seconds(kHungThresholdSec);
 
   return std::min(soft_time, hard_time);
 }

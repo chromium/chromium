@@ -166,7 +166,7 @@ void PaintPreviewTabService::TabClosed(int tab_id) {
         FROM_HERE,
         base::BindOnce(&PaintPreviewTabService::TabClosed,
                        weak_ptr_factory_.GetWeakPtr(), tab_id),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
     return;
   }
 
@@ -192,7 +192,7 @@ void PaintPreviewTabService::AuditArtifacts(
         FROM_HERE,
         base::BindOnce(&PaintPreviewTabService::AuditArtifacts,
                        weak_ptr_factory_.GetWeakPtr(), active_tab_ids),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
     return;
   }
 

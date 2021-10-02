@@ -620,7 +620,7 @@ AutofillOfferData GetCardLinkedOfferData1() {
   AutofillOfferData data;
   data.offer_id = 111;
   // Sets the expiry to be 45 days later.
-  data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(45);
+  data.expiry = AutofillClock::Now() + base::Days(45);
   data.offer_details_url = GURL("http://www.example1.com");
   data.merchant_origins.emplace_back("http://www.example1.com");
   data.display_strings.value_prop_text = "Get 5% off your purchase";
@@ -636,7 +636,7 @@ AutofillOfferData GetCardLinkedOfferData2() {
   AutofillOfferData data;
   data.offer_id = 222;
   // Sets the expiry to be 40 days later.
-  data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(40);
+  data.expiry = AutofillClock::Now() + base::Days(40);
   data.offer_details_url = GURL("http://www.example2.com");
   data.merchant_origins.emplace_back("http://www.example2.com");
   data.display_strings.value_prop_text = "Get $10 off your purchase";
@@ -652,9 +652,8 @@ AutofillOfferData GetPromoCodeOfferData(GURL origin, bool is_expired) {
   AutofillOfferData data;
   data.offer_id = 333;
   // Sets the expiry to be later if not expired, or earlier if expired.
-  data.expiry = is_expired
-                    ? AutofillClock::Now() - base::TimeDelta::FromDays(1)
-                    : AutofillClock::Now() + base::TimeDelta::FromDays(35);
+  data.expiry = is_expired ? AutofillClock::Now() - base::Days(1)
+                           : AutofillClock::Now() + base::Days(35);
   data.offer_details_url = GURL("http://www.example.com");
   data.merchant_origins.emplace_back(origin);
   data.display_strings.value_prop_text = "5% off on shoes. Up to $50.";

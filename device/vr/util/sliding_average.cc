@@ -31,7 +31,7 @@ void SlidingTimeDeltaAverage::AddSample(base::TimeDelta value) {
 
 base::TimeDelta SlidingTimeDeltaAverage::GetAverageOrDefault(
     base::TimeDelta default_value) const {
-  return base::TimeDelta::FromMicroseconds(
+  return base::Microseconds(
       sample_microseconds_.GetAverageOrDefault(default_value.InMicroseconds()));
 }
 

@@ -28,7 +28,7 @@ namespace {
 using testing::_;
 
 constexpr char kTestEmail[] = "test@example.com";
-constexpr base::TimeDelta kTokenLifetime = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kTokenLifetime = base::Hours(1);
 
 class AuthDelegateImpl : public DriveFsAuth::Delegate {
  public:
@@ -281,7 +281,7 @@ TEST_F(DriveFsAuthTest, CacheExpired) {
   EXPECT_TRUE(identity_test_env_.IsAccessTokenRequestPending());
   RespondWithAccessToken("auth token");
 
-  clock_.Advance(base::TimeDelta::FromHours(2));
+  clock_.Advance(base::Hours(2));
 
   // The token expired so a new one is requested.
   auth_->GetAccessToken(true, base::BindOnce([](mojom::AccessTokenStatus status,

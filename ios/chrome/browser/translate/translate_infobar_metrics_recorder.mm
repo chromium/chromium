@@ -31,7 +31,7 @@
 }
 
 + (void)recordUnusedLegacyInfobarScreenDuration:(NSTimeInterval)duration {
-  base::TimeDelta timeDelta = base::TimeDelta::FromSecondsD(duration);
+  base::TimeDelta timeDelta = base::Seconds(duration);
   // TODO(crbug.com/1025440): Use function version of macros.
   UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Legacy.Translate.Unused.Duration",
                              timeDelta);
@@ -43,7 +43,7 @@
 }
 
 + (void)recordLegacyInfobarToggleDelay:(NSTimeInterval)delay {
-  base::TimeDelta timeDelta = base::TimeDelta::FromSecondsD(delay);
+  base::TimeDelta timeDelta = base::Seconds(delay);
   // TODO(crbug.com/1025440): Use function version of macros.
   UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Legacy.Translate.Toggle.Delay", timeDelta);
 }

@@ -62,8 +62,7 @@ namespace {
 // Note: For better user experience, this is made shorter than
 // ET_GESTURE_LONG_PRESS delay, which is too long for this case, e.g., about
 // 650ms.
-constexpr base::TimeDelta kTouchLongpressDelay =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kTouchLongpressDelay = base::Milliseconds(300);
 
 class WebUIBackgroundMenuModel : public ui::SimpleMenuModel {
  public:
@@ -819,7 +818,7 @@ void TabStripPageHandler::SetThumbnailTracked(int32_t tab_id,
 
 void TabStripPageHandler::ReportTabActivationDuration(uint32_t duration_ms) {
   UMA_HISTOGRAM_TIMES("WebUITabStrip.TabActivation",
-                      base::TimeDelta::FromMilliseconds(duration_ms));
+                      base::Milliseconds(duration_ms));
   base::UmaHistogramEnumeration("TabStrip.Tab.WebUI.ActivationAction",
                                 TabStripModel::TabActivationTypes::kTab);
 }
@@ -827,13 +826,13 @@ void TabStripPageHandler::ReportTabActivationDuration(uint32_t duration_ms) {
 void TabStripPageHandler::ReportTabDataReceivedDuration(uint32_t tab_count,
                                                         uint32_t duration_ms) {
   ReportTabDurationHistogram("TabDataReceived", tab_count,
-                             base::TimeDelta::FromMilliseconds(duration_ms));
+                             base::Milliseconds(duration_ms));
 }
 
 void TabStripPageHandler::ReportTabCreationDuration(uint32_t tab_count,
                                                     uint32_t duration_ms) {
   ReportTabDurationHistogram("TabCreation", tab_count,
-                             base::TimeDelta::FromMilliseconds(duration_ms));
+                             base::Milliseconds(duration_ms));
 }
 
 // Callback passed to |thumbnail_tracker_|. Called when a tab's thumbnail

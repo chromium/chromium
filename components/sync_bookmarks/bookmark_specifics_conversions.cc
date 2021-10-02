@@ -343,7 +343,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
       // Use FromDeltaSinceWindowsEpoch because creation_time_us has
       // always used the Windows epoch.
-      base::TimeDelta::FromMicroseconds(creation_time_us));
+      base::Microseconds(creation_time_us));
 
   switch (specifics.type()) {
     case sync_pb::BookmarkSpecifics::UNSPECIFIED:

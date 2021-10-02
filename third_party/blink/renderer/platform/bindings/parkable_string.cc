@@ -88,9 +88,9 @@ void RecordStatistics(size_t size,
   base::UmaHistogramCounts1000(size_histogram, size_kb);
   // Size is at least 10kB, and at most ~10MB, and throughput ranges from
   // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
-  base::UmaHistogramCustomMicrosecondsTimes(
-      latency_histogram, duration, base::TimeDelta::FromMicroseconds(500),
-      base::TimeDelta::FromSeconds(1), 100);
+  base::UmaHistogramCustomMicrosecondsTimes(latency_histogram, duration,
+                                            base::Microseconds(500),
+                                            base::Seconds(1), 100);
   base::UmaHistogramCounts1000(throughput_histogram, throughput_mb_s);
 }
 

@@ -352,50 +352,45 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
 // credentials are ordered by recency.
 TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsOrders) {
   PasswordForm form_com_username1 = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form_com_username1, InsecureType::kLeaked,
-                 base::TimeDelta::FromMinutes(1));
+  AddIssueToForm(&form_com_username1, InsecureType::kLeaked, base::Minutes(1));
   store().AddLogin(form_com_username1);
 
   PasswordForm form_com_username2 = MakeSavedPassword(kExampleCom, kUsername2);
-  AddIssueToForm(&form_com_username2, InsecureType::kPhished,
-                 base::TimeDelta::FromMinutes(2));
+  AddIssueToForm(&form_com_username2, InsecureType::kPhished, base::Minutes(2));
   store().AddLogin(form_com_username2);
 
   PasswordForm form_org_username1 = MakeSavedPassword(kExampleOrg, kUsername1);
-  AddIssueToForm(&form_org_username1, InsecureType::kPhished,
-                 base::TimeDelta::FromMinutes(4));
+  AddIssueToForm(&form_org_username1, InsecureType::kPhished, base::Minutes(4));
   store().AddLogin(form_org_username1);
 
   PasswordForm form_org_username2 = MakeSavedPassword(kExampleOrg, kUsername2);
-  AddIssueToForm(&form_org_username2, InsecureType::kLeaked,
-                 base::TimeDelta::FromMinutes(3));
+  AddIssueToForm(&form_org_username2, InsecureType::kLeaked, base::Minutes(3));
   store().AddLogin(form_org_username2);
 
   RunUntilIdle();
 
   EXPECT_THAT(
       delegate().GetCompromisedCredentials(),
-      ElementsAre(
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com",
-              "https://example.com/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromMinutes(2), "2 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
-          ExpectCompromisedCredential(
-              "example.org", "http://www.example.org",
-              "http://www.example.org/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromMinutes(4), "4 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com",
-              "https://example.com/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromMinutes(1), "1 minute ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED),
-          ExpectCompromisedCredential(
-              "example.org", "http://www.example.org",
-              "http://www.example.org/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromMinutes(3), "3 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+      ElementsAre(ExpectCompromisedCredential(
+                      "example.com", "https://example.com",
+                      "https://example.com/.well-known/change-password",
+                      kUsername2, base::Minutes(2), "2 minutes ago",
+                      api::passwords_private::COMPROMISE_TYPE_PHISHED),
+                  ExpectCompromisedCredential(
+                      "example.org", "http://www.example.org",
+                      "http://www.example.org/.well-known/change-password",
+                      kUsername1, base::Minutes(4), "4 minutes ago",
+                      api::passwords_private::COMPROMISE_TYPE_PHISHED),
+                  ExpectCompromisedCredential(
+                      "example.com", "https://example.com",
+                      "https://example.com/.well-known/change-password",
+                      kUsername1, base::Minutes(1), "1 minute ago",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                  ExpectCompromisedCredential(
+                      "example.org", "http://www.example.org",
+                      "http://www.example.org/.well-known/change-password",
+                      kUsername2, base::Minutes(3), "3 minutes ago",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED)));
 }
 
 // Verifies that the formatted timestamp associated with a compromised
@@ -403,50 +398,45 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsOrders) {
 // months and years.
 TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsHandlesTimes) {
   PasswordForm form_com_username1 = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form_com_username1, InsecureType::kLeaked,
-                 base::TimeDelta::FromSeconds(59));
+  AddIssueToForm(&form_com_username1, InsecureType::kLeaked, base::Seconds(59));
   store().AddLogin(form_com_username1);
 
   PasswordForm form_com_username2 = MakeSavedPassword(kExampleCom, kUsername2);
-  AddIssueToForm(&form_com_username2, InsecureType::kLeaked,
-                 base::TimeDelta::FromSeconds(60));
+  AddIssueToForm(&form_com_username2, InsecureType::kLeaked, base::Seconds(60));
   store().AddLogin(form_com_username2);
 
   PasswordForm form_org_username1 = MakeSavedPassword(kExampleOrg, kUsername1);
-  AddIssueToForm(&form_org_username1, InsecureType::kLeaked,
-                 base::TimeDelta::FromDays(100));
+  AddIssueToForm(&form_org_username1, InsecureType::kLeaked, base::Days(100));
   store().AddLogin(form_org_username1);
 
   PasswordForm form_org_username2 = MakeSavedPassword(kExampleOrg, kUsername2);
-  AddIssueToForm(&form_org_username2, InsecureType::kLeaked,
-                 base::TimeDelta::FromDays(800));
+  AddIssueToForm(&form_org_username2, InsecureType::kLeaked, base::Days(800));
   store().AddLogin(form_org_username2);
 
   RunUntilIdle();
 
   EXPECT_THAT(
       delegate().GetCompromisedCredentials(),
-      ElementsAre(
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com",
-              "https://example.com/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromSeconds(59), "Just now",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED),
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com",
-              "https://example.com/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromSeconds(60), "1 minute ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED),
-          ExpectCompromisedCredential(
-              "example.org", "http://www.example.org",
-              "http://www.example.org/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromDays(100), "3 months ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED),
-          ExpectCompromisedCredential(
-              "example.org", "http://www.example.org",
-              "http://www.example.org/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromDays(800), "2 years ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+      ElementsAre(ExpectCompromisedCredential(
+                      "example.com", "https://example.com",
+                      "https://example.com/.well-known/change-password",
+                      kUsername1, base::Seconds(59), "Just now",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                  ExpectCompromisedCredential(
+                      "example.com", "https://example.com",
+                      "https://example.com/.well-known/change-password",
+                      kUsername2, base::Seconds(60), "1 minute ago",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                  ExpectCompromisedCredential(
+                      "example.org", "http://www.example.org",
+                      "http://www.example.org/.well-known/change-password",
+                      kUsername1, base::Days(100), "3 months ago",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                  ExpectCompromisedCredential(
+                      "example.org", "http://www.example.org",
+                      "http://www.example.org/.well-known/change-password",
+                      kUsername2, base::Days(800), "2 years ago",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED)));
 }
 
 // Verifies that both leaked and phished credentials are ordered correctly
@@ -456,27 +446,21 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsHandlesTimes) {
 TEST_F(PasswordCheckDelegateTest,
        GetCompromisedCredentialsDedupesLeakedAndCompromised) {
   PasswordForm form_com_username1 = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form_com_username1, InsecureType::kLeaked,
-                 base::TimeDelta::FromMinutes(1));
-  AddIssueToForm(&form_com_username1, InsecureType::kPhished,
-                 base::TimeDelta::FromMinutes(5));
+  AddIssueToForm(&form_com_username1, InsecureType::kLeaked, base::Minutes(1));
+  AddIssueToForm(&form_com_username1, InsecureType::kPhished, base::Minutes(5));
   store().AddLogin(form_com_username1);
 
   PasswordForm form_com_username2 = MakeSavedPassword(kExampleCom, kUsername2);
-  AddIssueToForm(&form_com_username2, InsecureType::kLeaked,
-                 base::TimeDelta::FromMinutes(2));
+  AddIssueToForm(&form_com_username2, InsecureType::kLeaked, base::Minutes(2));
   store().AddLogin(form_com_username2);
 
   PasswordForm form_org_username1 = MakeSavedPassword(kExampleOrg, kUsername1);
-  AddIssueToForm(&form_org_username1, InsecureType::kPhished,
-                 base::TimeDelta::FromMinutes(3));
+  AddIssueToForm(&form_org_username1, InsecureType::kPhished, base::Minutes(3));
   store().AddLogin(form_org_username1);
 
   PasswordForm form_org_username2 = MakeSavedPassword(kExampleOrg, kUsername2);
-  AddIssueToForm(&form_org_username2, InsecureType::kPhished,
-                 base::TimeDelta::FromMinutes(4));
-  AddIssueToForm(&form_org_username2, InsecureType::kLeaked,
-                 base::TimeDelta::FromMinutes(6));
+  AddIssueToForm(&form_org_username2, InsecureType::kPhished, base::Minutes(4));
+  AddIssueToForm(&form_org_username2, InsecureType::kLeaked, base::Minutes(6));
   store().AddLogin(form_org_username2);
 
   RunUntilIdle();
@@ -487,40 +471,38 @@ TEST_F(PasswordCheckDelegateTest,
           ExpectCompromisedCredential(
               "example.com", "https://example.com",
               "https://example.com/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromMinutes(1), "1 minute ago",
+              base::Minutes(1), "1 minute ago",
               api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED),
           ExpectCompromisedCredential(
               "example.org", "http://www.example.org",
               "http://www.example.org/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromMinutes(3), "3 minutes ago",
+              base::Minutes(3), "3 minutes ago",
               api::passwords_private::COMPROMISE_TYPE_PHISHED),
           ExpectCompromisedCredential(
               "example.org", "http://www.example.org",
               "http://www.example.org/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromMinutes(4), "4 minutes ago",
+              base::Minutes(4), "4 minutes ago",
               api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED),
           ExpectCompromisedCredential(
               "example.com", "https://example.com",
               "https://example.com/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromMinutes(2), "2 minutes ago",
+              base::Minutes(2), "2 minutes ago",
               api::passwords_private::COMPROMISE_TYPE_LEAKED)));
 }
 
 TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsInjectsAndroid) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta::FromMinutes(5));
+  AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(5));
   store().AddLogin(form);
 
   PasswordForm android_form1 =
       MakeSavedAndroidPassword(kExampleApp, kUsername1);
-  AddIssueToForm(&android_form1, InsecureType::kPhished,
-                 base::TimeDelta::FromDays(4));
+  AddIssueToForm(&android_form1, InsecureType::kPhished, base::Days(4));
   store().AddLogin(android_form1);
 
   PasswordForm android_form2 = MakeSavedAndroidPassword(
       kExampleApp, kUsername2, "Example App", kExampleCom);
-  AddIssueToForm(&android_form2, InsecureType::kPhished,
-                 base::TimeDelta::FromDays(3));
+  AddIssueToForm(&android_form2, InsecureType::kPhished, base::Days(3));
   store().AddLogin(android_form2);
 
   RunUntilIdle();
@@ -529,21 +511,20 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsInjectsAndroid) {
   // password store.
   EXPECT_THAT(
       delegate().GetCompromisedCredentials(),
-      ElementsAre(
-          ExpectCompromisedCredential(
-              "Example App", "Example App",
-              "https://example.com/.well-known/change-password", kUsername2,
-              base::TimeDelta::FromDays(3), "3 days ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
-          ExpectCompromisedCredential(
-              "App (com.example.app)", "com.example.app", absl::nullopt,
-              kUsername1, base::TimeDelta::FromDays(4), "4 days ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com",
-              "https://example.com/.well-known/change-password", kUsername1,
-              base::TimeDelta::FromMinutes(5), "5 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+      ElementsAre(ExpectCompromisedCredential(
+                      "Example App", "Example App",
+                      "https://example.com/.well-known/change-password",
+                      kUsername2, base::Days(3), "3 days ago",
+                      api::passwords_private::COMPROMISE_TYPE_PHISHED),
+                  ExpectCompromisedCredential(
+                      "App (com.example.app)", "com.example.app", absl::nullopt,
+                      kUsername1, base::Days(4), "4 days ago",
+                      api::passwords_private::COMPROMISE_TYPE_PHISHED),
+                  ExpectCompromisedCredential(
+                      "example.com", "https://example.com",
+                      "https://example.com/.well-known/change-password",
+                      kUsername1, base::Minutes(5), "5 minutes ago",
+                      api::passwords_private::COMPROMISE_TYPE_LEAKED)));
 }
 
 // Test that a change to compromised credential notifies observers.
@@ -1038,7 +1019,7 @@ TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedNotSet) {
 TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedIsSet) {
   profile().GetPrefs()->SetDouble(
       kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::TimeDelta::FromMinutes(5)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(5)).ToDoubleT());
 
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
   EXPECT_THAT(status.elapsed_time_since_last_check,

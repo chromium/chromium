@@ -199,8 +199,7 @@ void WebTestWithWebState::WaitForBackgroundTasks() {
 }
 
 void WebTestWithWebState::WaitForCondition(ConditionBlock condition) {
-  base::test::ios::WaitUntilCondition(condition, true,
-                                      base::TimeDelta::FromSeconds(1000));
+  base::test::ios::WaitUntilCondition(condition, true, base::Seconds(1000));
 }
 
 bool WebTestWithWebState::WaitUntilLoaded() {

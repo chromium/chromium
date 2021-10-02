@@ -70,7 +70,7 @@ bool SyncWebSocketImpl::Core::Connect(const GURL& url) {
     context_getter_->GetNetworkTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&SyncWebSocketImpl::Core::ConnectOnIO, this,
                                   url, &success, &event));
-    if (event.TimedWait(base::TimeDelta::FromSeconds(timeout)))
+    if (event.TimedWait(base::Seconds(timeout)))
       break;
     LOG(WARNING) << "Timed out connecting to Chrome, "
                  << (timeout < kMaxTimeout ? "retrying..." : "giving up.");

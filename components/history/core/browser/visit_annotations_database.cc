@@ -155,13 +155,13 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
 // Convenience to construct a `AnnotatedVisitRow`. Assumes the visit values are
 // bound starting at index 0.
 AnnotatedVisitRow StatementToAnnotatedVisitRow(sql::Statement& statement) {
-  return {statement.ColumnInt64(0),
-          ConstructContextAnnotationsWithFlags(
-              statement.ColumnInt64(1),
-              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-              statement.ColumnInt(3),
-              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(4))),
-          {}};
+  return {
+      statement.ColumnInt64(0),
+      ConstructContextAnnotationsWithFlags(
+          statement.ColumnInt64(1),
+          base::Microseconds(statement.ColumnInt64(2)), statement.ColumnInt(3),
+          base::Microseconds(statement.ColumnInt64(4))),
+      {}};
 }
 
 // Like `StatementToAnnotatedVisitRow()` but for multiple rows.
@@ -347,10 +347,8 @@ bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
   // The `VisitID` in column 0 is intentionally ignored, as it's not part of
   // `VisitContextAnnotations`.
   *out_context_annotations = ConstructContextAnnotationsWithFlags(
-      statement.ColumnInt64(1),
-      base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-      statement.ColumnInt(3),
-      base::TimeDelta::FromMicroseconds(statement.ColumnInt64(4)));
+      statement.ColumnInt64(1), base::Microseconds(statement.ColumnInt64(2)),
+      statement.ColumnInt(3), base::Microseconds(statement.ColumnInt64(4)));
   return true;
 }
 

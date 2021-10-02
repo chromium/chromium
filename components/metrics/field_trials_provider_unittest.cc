@@ -74,7 +74,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
   // take between 1-15ms per the documented resolution of base::TimeTicks.
   void WaitUntilTimeChanges(const base::TimeTicks& value) {
     while (base::TimeTicks::Now() == value) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
   }
 

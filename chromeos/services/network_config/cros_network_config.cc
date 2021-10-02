@@ -1501,7 +1501,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
   double traffic_counter_reset_time =
       GetDouble(properties, ::onc::network_config::kTrafficCounterResetTime);
   result->traffic_counter_reset_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMillisecondsD(traffic_counter_reset_time));
+      base::Milliseconds(traffic_counter_reset_time));
 
   // Managed properties
   result->ip_address_config_type = GetRequiredManagedString(

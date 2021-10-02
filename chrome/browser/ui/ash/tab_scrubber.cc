@@ -263,8 +263,8 @@ void TabScrubber::FinishScrub(bool activate) {
 void TabScrubber::ScheduleFinishScrubIfNeeded() {
   // Tests use a really long delay to ensure RunLoops don't unnecessarily
   // trigger the timer running.
-  const base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
-      use_default_activation_delay_ ? 200 : 20000);
+  const base::TimeDelta delay =
+      base::Milliseconds(use_default_activation_delay_ ? 200 : 20000);
   activate_timer_.Start(FROM_HERE, delay,
                         base::BindRepeating(&TabScrubber::FinishScrub,
                                             base::Unretained(this), true));

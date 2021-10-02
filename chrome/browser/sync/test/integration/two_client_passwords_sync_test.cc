@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
   // be merged such that recent passwords are chosen.
 
   base::Time now = base::Time::Now();
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
 
   PasswordForm form0_recent = CreateTestPasswordForm(0);
   form0_recent.date_created = now;

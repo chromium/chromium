@@ -28,7 +28,7 @@ class LayerPerfTest : public testing::Test {
   LayerPerfTest()
       : host_impl_(&task_runner_provider_, &task_graph_runner_),
         timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
  protected:

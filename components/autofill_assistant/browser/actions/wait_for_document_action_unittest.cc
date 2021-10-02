@@ -43,7 +43,7 @@ class WaitForDocumentActionTest : public testing::Test {
         .WillByDefault(Return(&mock_web_controller_));
     ON_CALL(mock_action_delegate_, WaitForDocumentReadyState(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(), DOCUMENT_COMPLETE,
-                                          base::TimeDelta::FromSeconds(0)));
+                                          base::Seconds(0)));
   }
 
   // Runs the action defined in |proto_| and reports the result to
@@ -140,7 +140,7 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractive) {
   EXPECT_CALL(mock_action_delegate_,
               WaitForDocumentReadyState(_, DOCUMENT_INTERACTIVE, _, _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(), DOCUMENT_INTERACTIVE,
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::Seconds(0)));
   proto_.set_timeout_ms(1000);
   Run();
   EXPECT_EQ(ACTION_APPLIED, processed_action_.status());
@@ -160,7 +160,7 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
               WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _, _))
       .WillOnce(RunOnceCallback<3>(ClientStatus(TIMED_OUT),
                                    DOCUMENT_UNKNOWN_READY_STATE,
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::Seconds(0)));
   // The second time the document is reported interactive.
   EXPECT_CALL(mock_web_controller_, GetDocumentReadyState(_, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_INTERACTIVE));
@@ -179,8 +179,7 @@ TEST_F(WaitForDocumentActionTest, CheckDocumentInFrame) {
   Selector expected_frame_selector({"#frame"});
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_frame_selector, _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(),
-                                         base::TimeDelta::FromSeconds(0)));
+      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(mock_web_controller_,
               GetDocumentReadyState(
                   EqualsElement(test_util::MockFindElement(
@@ -196,9 +195,8 @@ TEST_F(WaitForDocumentActionTest, CheckDocumentInFrame) {
 
 TEST_F(WaitForDocumentActionTest, CheckFrameElementNotFound) {
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                             base::TimeDelta::FromSeconds(0)));
+      .WillRepeatedly(RunOnceCallback<1>(
+          ClientStatus(ELEMENT_RESOLUTION_FAILED), base::Seconds(0)));
 
   proto_.set_timeout_ms(0);
   *proto_.mutable_frame() = ToSelectorProto("#frame");

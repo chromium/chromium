@@ -2067,7 +2067,7 @@ void V4L2SliceVideoDecodeAccelerator::CheckGLFences() {
         FROM_HERE,
         base::BindOnce(&V4L2SliceVideoDecodeAccelerator::DecodeBufferTask,
                        base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(kRescheduleDelayMs));
+        base::Milliseconds(kRescheduleDelayMs));
   }
 }
 

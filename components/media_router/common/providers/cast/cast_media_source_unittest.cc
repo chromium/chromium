@@ -67,14 +67,13 @@ TEST(CastMediaSourceTest, FromCastURL) {
   EXPECT_EQ("namespace", broadcast_request->broadcast_namespace);
   EXPECT_EQ("message%", broadcast_request->message);
   EXPECT_EQ("12345", source->client_id());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(30000), source->launch_timeout());
+  EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kTabAndOriginScoped, source->auto_join_policy());
   EXPECT_EQ(DefaultActionPolicy::kCastThisTab, source->default_action_policy());
   EXPECT_EQ(ReceiverAppType::kAndroidTv, source->supported_app_types()[0]);
   EXPECT_EQ(ReceiverAppType::kWeb, source->supported_app_types()[1]);
   EXPECT_EQ("appParams", source->app_params());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(42),
-            source->target_playout_delay());
+  EXPECT_EQ(base::Milliseconds(42), source->target_playout_delay());
   EXPECT_EQ(false, source->site_requested_audio_capture());
   EXPECT_EQ(cast_channel::VirtualConnectionType::kInvisible,
             source->connection_type());
@@ -107,7 +106,7 @@ TEST(CastMediaSourceTest, FromLegacyCastURL) {
   EXPECT_EQ("namespace", broadcast_request->broadcast_namespace);
   EXPECT_EQ("message%", broadcast_request->message);
   EXPECT_EQ("12345", source->client_id());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(30000), source->launch_timeout());
+  EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kOriginScoped, source->auto_join_policy());
   EXPECT_EQ(DefaultActionPolicy::kCastThisTab, source->default_action_policy());
   EXPECT_EQ(ReceiverAppType::kWeb, source->supported_app_types()[0]);

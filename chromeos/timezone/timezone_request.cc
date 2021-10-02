@@ -328,10 +328,10 @@ TimeZoneRequest::TimeZoneRequest(
       service_url_(service_url),
       geoposition_(geoposition),
       retry_timeout_abs_(base::Time::Now() + retry_timeout),
-      retry_sleep_on_server_error_(base::TimeDelta::FromSeconds(
-          kResolveTimeZoneRetrySleepOnServerErrorSeconds)),
-      retry_sleep_on_bad_response_(base::TimeDelta::FromSeconds(
-          kResolveTimeZoneRetrySleepBadResponseSeconds)),
+      retry_sleep_on_server_error_(
+          base::Seconds(kResolveTimeZoneRetrySleepOnServerErrorSeconds)),
+      retry_sleep_on_bad_response_(
+          base::Seconds(kResolveTimeZoneRetrySleepBadResponseSeconds)),
       retries_(0) {}
 
 TimeZoneRequest::~TimeZoneRequest() {

@@ -437,7 +437,7 @@ TEST_F(ThreadWatcherTestWithMockTime, MemoryPressureCrashKey) {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   watchdog_thread_->FlushForTesting();
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
+  task_environment_.FastForwardBy(base::Seconds(4));
   watchdog_thread_->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ui_watcher_->SetTimeSinceLastCriticalMemoryPressureCrashKey();
@@ -800,8 +800,7 @@ TEST_F(ThreadWatcherListTest, Restart) {
     base::RunLoop run_loop;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(),
-        base::TimeDelta::FromSeconds(
-            ThreadWatcherList::g_initialize_delay_seconds));
+        base::Seconds(ThreadWatcherList::g_initialize_delay_seconds));
     run_loop.Run();
   }
 
@@ -814,8 +813,7 @@ TEST_F(ThreadWatcherListTest, Restart) {
     base::RunLoop run_loop;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(),
-        base::TimeDelta::FromSeconds(
-            ThreadWatcherList::g_initialize_delay_seconds + 1));
+        base::Seconds(ThreadWatcherList::g_initialize_delay_seconds + 1));
     run_loop.Run();
   }
 
@@ -828,8 +826,7 @@ TEST_F(ThreadWatcherListTest, Restart) {
     base::RunLoop run_loop;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(),
-        base::TimeDelta::FromSeconds(
-            ThreadWatcherList::g_initialize_delay_seconds));
+        base::Seconds(ThreadWatcherList::g_initialize_delay_seconds));
     run_loop.Run();
   }
 

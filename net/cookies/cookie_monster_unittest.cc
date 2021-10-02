@@ -341,7 +341,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     }
 
     EXPECT_EQ(cookies.size(), this->GetAllCookies(cm).size());
-    return now + base::TimeDelta::FromMilliseconds(100);
+    return now + base::Milliseconds(100);
   }
 
   Time GetFirstCookieAccessDate(CookieMonster* cm) {
@@ -1720,10 +1720,9 @@ TEST_F(CookieMonsterTest, TestCookieDeleteMatchingCookies) {
   EXPECT_TRUE(GetAllCookies(cm.get()).empty());
 }
 
-static const base::TimeDelta kLastAccessThreshold =
-    base::TimeDelta::FromMilliseconds(200);
+static const base::TimeDelta kLastAccessThreshold = base::Milliseconds(200);
 static const base::TimeDelta kAccessDelay =
-    kLastAccessThreshold + base::TimeDelta::FromMilliseconds(20);
+    kLastAccessThreshold + base::Milliseconds(20);
 
 TEST_F(CookieMonsterTest, TestLastAccess) {
   std::unique_ptr<CookieMonster> cm(
@@ -2097,7 +2096,7 @@ TEST_F(CookieMonsterTest, CookieSorting) {
         "A=A1; path=/", "A=A2; path=/foo", "A=A3; path=/foo/bar"}) {
     EXPECT_TRUE(SetCookieWithSystemTime(cm.get(), http_www_foo_.url(),
                                         cookie_line, system_time));
-    system_time += base::TimeDelta::FromMilliseconds(100);
+    system_time += base::Milliseconds(100);
   }
 
   // Re-set cookie which should not change sort order, as the creation date
@@ -2118,8 +2117,7 @@ TEST_F(CookieMonsterTest, CookieSorting) {
 TEST_F(CookieMonsterTest, InheritCreationDate) {
   auto cm = std::make_unique<CookieMonster>(nullptr, &net_log_);
 
-  base::Time the_not_so_distant_past(base::Time::Now() -
-                                     base::TimeDelta::FromSeconds(1000));
+  base::Time the_not_so_distant_past(base::Time::Now() - base::Seconds(1000));
   EXPECT_TRUE(SetCookieWithCreationTime(cm.get(), http_www_foo_.url(),
                                         "Name=Value; path=/",
                                         the_not_so_distant_past));
@@ -2470,7 +2468,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
   base::Time current(base::Time::Now());
   scoped_refptr<MockSimplePersistentCookieStore> store(
       new MockSimplePersistentCookieStore);
-  base::Time expires(base::Time::Now() + base::TimeDelta::FromSeconds(100));
+  base::Time expires(base::Time::Now() + base::Seconds(100));
 
   const CookiesInputInfo input_info[] = {
       {GURL("https://a.b.foo.com"), "a", "1", "a.b.foo.com", "/path/to/cookie",
@@ -2480,7 +2478,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
        expires + TimeDelta::FromSeconds(10), true, true,
        CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true},
       {GURL("https://foo.com"), "c", "3", "foo.com", "/another/path/to/cookie",
-       base::Time::Now() + base::TimeDelta::FromSeconds(100), false, false,
+       base::Time::Now() + base::Seconds(100), false, false,
        CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false}};
   const int INPUT_DELETE = 1;
 
@@ -3053,8 +3051,8 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
       expired_histogram->SnapshotSamples());
   auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "a", "b", "a.url", "/", base::Time(),
-      base::Time::Now() + base::TimeDelta::FromMinutes(59), base::Time(), true,
-      false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
+      base::Time::Now() + base::Minutes(59), base::Time(), true, false,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
   GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
   ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                  true /*modify_httponly*/));
@@ -4401,7 +4399,7 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
 
 TEST_F(CookieMonsterTest, DeleteCookieWithInheritedTimestamps) {
   Time t1 = Time::Now();
-  Time t2 = t1 + base::TimeDelta::FromSeconds(1);
+  Time t2 = t1 + base::Seconds(1);
   GURL url("http://www.example.com");
   std::string cookie_line = "foo=bar";
   CookieOptions options = CookieOptions::MakeAllInclusive();
@@ -4659,7 +4657,7 @@ TEST_F(CookieMonsterNotificationTest, NoNotificationOnLoad) {
       url, "Y=1; path=/", base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
-      url, "Y=2; path=/", base::Time::Now() + base::TimeDelta::FromDays(1),
+      url, "Y=2; path=/", base::Time::Now() + base::Days(1),
       absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */));
 

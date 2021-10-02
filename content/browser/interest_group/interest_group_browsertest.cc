@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // to remove it.
   manager_->JoinInterestGroup(
       blink::InterestGroup(
-          /*expiry=*/base::Time::Now() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time::Now() + base::Seconds(300),
           /*owner=*/test_origin_d,
           /*name=*/"candy",
           /*bidding_url=*/absl::nullopt,
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // try to remove it.
   GURL disabled_domain = https_server_->GetURL("d.test", "/");
   blink::InterestGroup disabled_group;
-  disabled_group.expiry = base::Time::Now() + base::TimeDelta::FromSeconds(300);
+  disabled_group.expiry = base::Time::Now() + base::Seconds(300);
   disabled_group.owner = url::Origin::Create(disabled_domain);
   disabled_group.name = "candy";
   disabled_group.bidding_url = https_server_->GetURL(
@@ -2129,7 +2129,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url.GetOrigin()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2174,7 +2174,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url_b.GetOrigin()),
           /*name=*/"boats",
           /*bidding_url=*/
@@ -2200,7 +2200,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url.GetOrigin()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2247,7 +2247,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url.GetOrigin()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2289,7 +2289,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url.GetOrigin()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2396,7 +2396,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url.GetOrigin()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2466,7 +2466,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::TimeDelta::FromSeconds(300),
+          /*expiry=*/base::Time() + base::Seconds(300),
           /*owner=*/url::Origin::Create(test_url.GetOrigin()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2566,8 +2566,7 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
 
     // Set up kAdUrl as the only interest group ad in the auction.
     blink::InterestGroup interest_group;
-    interest_group.expiry =
-        base::Time::Now() + base::TimeDelta::FromSeconds(300);
+    interest_group.expiry = base::Time::Now() + base::Seconds(300);
     constexpr char kGroupName[] = "cars";
     interest_group.name = kGroupName;
     interest_group.owner = test_origin_a_;

@@ -792,7 +792,7 @@ void TestDriver::WaitForProfilingToStartForAllRenderersUIThreadCallback(
 
   // Brief sleep to prevent spamming the task queue, since this code is called
   // in a tight loop.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(100));
+  base::PlatformThread::Sleep(base::Microseconds(100));
 
   WaitForProfilingToStartForAllRenderersUIThreadAndSignal();
 }

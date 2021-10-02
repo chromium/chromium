@@ -190,7 +190,7 @@ std::string PerFrameTranslateAgent::GetPageSourceLanguage() {
 base::TimeDelta PerFrameTranslateAgent::AdjustDelay(int delay_in_milliseconds) {
   // Just converts |delay_in_milliseconds| without any modification in practical
   // cases. Tests will override this function to return modified value.
-  return base::TimeDelta::FromMilliseconds(delay_in_milliseconds);
+  return base::Milliseconds(delay_in_milliseconds);
 }
 
 void PerFrameTranslateAgent::ExecuteScript(const std::string& script) {

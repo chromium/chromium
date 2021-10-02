@@ -41,8 +41,8 @@ SignalKey::Kind FromInternalSignalKindRepresentation(char kind) {
 }
 
 base::Time StripResolutionSmallerThanSeconds(base::Time time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
-      time.ToDeltaSinceWindowsEpoch().InSeconds()));
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Seconds(time.ToDeltaSinceWindowsEpoch().InSeconds()));
 }
 }  // namespace
 
@@ -91,9 +91,9 @@ bool SignalKey::FromBinary(const std::string& input, SignalKey* output) {
       FromInternalSignalKindRepresentation(internal_key.prefix.kind);
   output->name_hash_ = internal_key.prefix.name_hash;
   output->range_start_ = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(internal_key.time_range_start_sec));
+      base::Seconds(internal_key.time_range_start_sec));
   output->range_end_ = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(internal_key.time_range_end_sec));
+      base::Seconds(internal_key.time_range_end_sec));
   return true;
 }
 

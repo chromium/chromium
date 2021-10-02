@@ -746,7 +746,7 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnTimeout) {
   RequestObserver observer;
   request_manager_->AddObserver(&observer);
 
-  request_manager_->SetTimeoutForTesting(base::TimeDelta::FromSeconds(0));
+  request_manager_->SetTimeoutForTesting(base::Seconds(0));
   const int request_id = request_manager_->CreateRequest(
       TESTING,
       base::WrapUnique<RequestManager::HandlerInterface>(
@@ -791,7 +791,7 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
   RequestObserver observer;
   request_manager_->AddObserver(&observer);
 
-  request_manager_->SetTimeoutForTesting(base::TimeDelta::FromSeconds(0));
+  request_manager_->SetTimeoutForTesting(base::Seconds(0));
   const int request_id = request_manager_->CreateRequest(
       TESTING,
       base::WrapUnique<RequestManager::HandlerInterface>(

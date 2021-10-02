@@ -84,7 +84,7 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
   DVLOG(1) << "Receiver name: " << receiver_;
   // Wait for MediaSinks compatible with |source| to be discovered.
   ASSERT_TRUE(ConditionalWait(
-      base::TimeDelta::FromSeconds(30), base::TimeDelta::FromSeconds(1),
+      base::Seconds(30), base::Seconds(1),
       base::BindRepeating(&MediaRouterE2EBrowserTest::IsSinkDiscovered,
                           base::Unretained(this))));
 
@@ -101,7 +101,7 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
 
   // Wait for the route request to be fulfilled (and route to be started).
   ASSERT_TRUE(ConditionalWait(
-      base::TimeDelta::FromSeconds(30), base::TimeDelta::FromSeconds(1),
+      base::Seconds(30), base::Seconds(1),
       base::BindRepeating(&MediaRouterE2EBrowserTest::IsRouteCreated,
                           base::Unretained(this))));
 }
@@ -143,11 +143,11 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_TabMirroring) {
   // Wait for 30 seconds to make sure the route is stable.
   CreateMediaRoute(MediaSource::ForTab(tab_id.id()),
                    url::Origin::Create(GURL(kOrigin)), web_contents);
-  Wait(base::TimeDelta::FromSeconds(30));
+  Wait(base::Seconds(30));
 
   // Wait for 10 seconds to make sure route has been stopped.
   StopMediaRoute();
-  Wait(base::TimeDelta::FromSeconds(10));
+  Wait(base::Seconds(10));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_CastApp) {
@@ -155,11 +155,11 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_CastApp) {
   CreateMediaRoute(
       MediaSource::ForPresentationUrl(GURL(kCastAppPresentationUrl)),
       url::Origin::Create(GURL(kOrigin)), nullptr);
-  Wait(base::TimeDelta::FromSeconds(30));
+  Wait(base::Seconds(30));
 
   // Wait for 10 seconds to make sure route has been stopped.
   StopMediaRoute();
-  Wait(base::TimeDelta::FromSeconds(10));
+  Wait(base::Seconds(10));
 }
 
 }  // namespace media_router

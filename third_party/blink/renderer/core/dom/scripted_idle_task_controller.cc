@@ -146,7 +146,7 @@ void ScriptedIdleTaskController::ScheduleCallback(
             FROM_HERE,
             WTF::Bind(&internal::IdleRequestCallbackWrapper::TimeoutFired,
                       callback_wrapper),
-            base::TimeDelta::FromMilliseconds(timeout_millis));
+            base::Milliseconds(timeout_millis));
   }
 }
 

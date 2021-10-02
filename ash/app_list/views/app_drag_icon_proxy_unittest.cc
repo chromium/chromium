@@ -232,8 +232,7 @@ TEST_F(AppDragIconProxyTest,
   {
     ui::ScopedLayerAnimationSettings animation_settings(
         drag_icon_proxy->GetImageLayerForTesting()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(300));
+    animation_settings.SetTransitionDuration(base::Milliseconds(300));
     gfx::Transform transform;
     transform.Translate(100, 100);
     drag_icon_proxy->GetImageLayerForTesting()->SetTransform(transform);

@@ -20,11 +20,11 @@ namespace {
 // state key generation, so they rotate over time. The quantum size is pretty
 // coarse though (currently 2^23 seconds), so simply polling for a new state
 // keys once a day is good enough.
-constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kPollInterval = base::Days(1);
 
 // In case state key fetching failed, we need to try again, sooner than
 // |kPollInterval|.
-constexpr base::TimeDelta kRetryInterval = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kRetryInterval = base::Minutes(1);
 
 }  // namespace
 

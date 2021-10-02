@@ -605,7 +605,7 @@ bool CanUseEntry(const PrefetchedSignedExchangeCacheEntry& entry,
   if (outer_response->headers->GetCurrentAge(outer_response->request_time,
                                              outer_response->response_time,
                                              verification_time) <
-      base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins)) {
+      base::Minutes(net::HttpCache::kPrefetchReuseMins)) {
     return true;
   }
   // We use the prefetched entry when we don't need the validation.

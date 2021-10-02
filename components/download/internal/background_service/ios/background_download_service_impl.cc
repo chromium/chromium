@@ -28,7 +28,7 @@ namespace download {
 namespace {
 
 // Interval to throttle the download update that results in a database update.
-const base::TimeDelta kUpdateInterval = base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kUpdateInterval = base::Seconds(5);
 
 }  // namespace
 

@@ -55,8 +55,7 @@ namespace {
 
 // The incoming max age to to be used when datagrams.incomingMaxAge is set to
 // null.
-constexpr base::TimeDelta kDefaultIncomingMaxAge =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kDefaultIncomingMaxAge = base::Seconds(60);
 
 // Creates a mojo DataPipe with the options we use for our stream data pipes. On
 // success, returns true. On failure, throws an exception and returns false.
@@ -406,7 +405,7 @@ class WebTransport::DatagramUnderlyingSource final
     bool max_age_is_default = false;
     base::TimeDelta max_age;
     if (optional_max_age.has_value()) {
-      max_age = base::TimeDelta::FromMillisecondsD(optional_max_age.value());
+      max_age = base::Milliseconds(optional_max_age.value());
     } else {
       max_age_is_default = true;
       max_age = kDefaultIncomingMaxAge;
@@ -448,8 +447,8 @@ class WebTransport::DatagramUnderlyingSource final
 
     // To reduce the number of wakeups, don't try to expire any more datagrams
     // for at least a second.
-    if (time_until_next_expiry < base::TimeDelta::FromSeconds(1)) {
-      time_until_next_expiry = base::TimeDelta::FromSeconds(1);
+    if (time_until_next_expiry < base::Seconds(1)) {
+      time_until_next_expiry = base::Seconds(1);
     }
 
     if (expiry_timer_.IsActive() &&
@@ -826,8 +825,7 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
 }
 
 void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
-  outgoing_datagram_expiration_duration_ =
-      base::TimeDelta::FromMillisecondsD(duration);
+  outgoing_datagram_expiration_duration_ = base::Milliseconds(duration);
   if (transport_remote_.is_bound()) {
     transport_remote_->SetOutgoingDatagramExpirationDuration(
         outgoing_datagram_expiration_duration_);

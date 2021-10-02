@@ -34,13 +34,12 @@ namespace audio {
 namespace {
 
 constexpr float kAudioData = 0.618;
-constexpr base::TimeDelta kDelay = base::TimeDelta::FromMicroseconds(123);
+constexpr base::TimeDelta kDelay = base::Microseconds(123);
 constexpr char kDeviceId[] = "testdeviceid";
 constexpr int kFramesSkipped = 456;
 constexpr int kFrames = 789;
 constexpr char kNonDefaultDeviceId[] = "valid-nondefault-device-id";
-constexpr base::TimeDelta kAuthTimeout =
-    base::TimeDelta::FromMilliseconds(10000);
+constexpr base::TimeDelta kAuthTimeout = base::Milliseconds(10000);
 constexpr int kBitstreamFrames = 101;
 constexpr size_t kBitstreamDataSize = 512;
 
@@ -153,8 +152,7 @@ struct DataFlowTestEnvironment {
     // TODO(https://crbug.com/838367): Fuchsia bots use nested virtualization,
     // which can result in unusually long scheduling delays, so allow a longer
     // timeout.
-    reader->set_max_wait_timeout_for_test(
-        base::TimeDelta::FromMilliseconds(250));
+    reader->set_max_wait_timeout_for_test(base::Milliseconds(250));
 #endif
   }
 

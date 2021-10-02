@@ -52,7 +52,7 @@ absl::optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial() {
 }
 
 base::TimeDelta LiteVideoTargetDownlinkRTTLatency() {
-  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       ::features::kLiteVideo, "target_downlink_rtt_latency_ms", 500));
 }
 
@@ -62,7 +62,7 @@ int LiteVideoKilobytesToBufferBeforeThrottle() {
 }
 
 base::TimeDelta LiteVideoMaxThrottlingDelay() {
-  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       ::features::kLiteVideo, "max_throttling_delay_ms", 5000));
 }
 
@@ -72,7 +72,7 @@ size_t MaxUserBlocklistHosts() {
 }
 
 base::TimeDelta UserBlocklistHostDuration() {
-  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+  return base::Days(GetFieldTrialParamByFeatureAsInt(
       ::features::kLiteVideo, "user_blocklist_host_duration_in_days", 1));
 }
 

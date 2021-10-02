@@ -24,8 +24,7 @@ namespace internal {
 // constructed on a different sequence than which it's later called on.
 class NET_EXPORT_PRIVATE DnsConfigServiceAndroid : public DnsConfigService {
  public:
-  static constexpr base::TimeDelta kConfigChangeDelay =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kConfigChangeDelay = base::Milliseconds(50);
 
   DnsConfigServiceAndroid();
   ~DnsConfigServiceAndroid() override;

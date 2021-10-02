@@ -46,7 +46,7 @@ base::TimeDelta AdsInterventionManager::GetInterventionDuration(
     mojom::AdsViolation violation) {
   switch (violation) {
     case mojom::AdsViolation::kHeavyAdsInterventionAtHostLimit:
-      return base::TimeDelta::FromDays(1);
+      return base::Days(1);
     default:
       return kAdsInterventionDuration.Get();
   }

@@ -32,11 +32,11 @@ using test::RunPendingTasks;
 namespace {
 
 base::TimeTicks GetTimeOrigin() {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(500);
+  return base::TimeTicks() + base::Seconds(500);
 }
 
 base::TimeTicks GetTimeStamp(int64_t time) {
-  return GetTimeOrigin() + base::TimeDelta::FromMilliseconds(time);
+  return GetTimeOrigin() + base::Milliseconds(time);
 }
 
 }  // namespace
@@ -68,8 +68,8 @@ class WindowPerformanceTest : public testing::Test {
     auto* monitor = GetFrame()->GetPerformanceMonitor();
     monitor->WillExecuteScript(GetWindow());
     monitor->DidExecuteScript();
-    monitor->DidProcessTask(
-        base::TimeTicks(), base::TimeTicks() + base::TimeDelta::FromSeconds(1));
+    monitor->DidProcessTask(base::TimeTicks(),
+                            base::TimeTicks() + base::Seconds(1));
   }
 
   void SimulateSwapPromise(base::TimeTicks timestamp) {
@@ -240,12 +240,12 @@ TEST_F(WindowPerformanceTest, EnsureEntryListOrder) {
   test_task_runner_->FastForwardBy(GetTimeOrigin() - base::TimeTicks());
 
   DummyExceptionStateForTesting exception_state;
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  test_task_runner_->FastForwardBy(base::Seconds(2));
   for (int i = 0; i < 8; i++) {
     performance_->mark(GetScriptState(), AtomicString::Number(i), nullptr,
                        exception_state);
   }
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  test_task_runner_->FastForwardBy(base::Seconds(2));
   for (int i = 8; i < 17; i++) {
     performance_->mark(GetScriptState(), AtomicString::Number(i), nullptr,
                        exception_state);
@@ -265,16 +265,12 @@ TEST_F(WindowPerformanceTest, EnsureEntryListOrder) {
 TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
   EXPECT_TRUE(page_holder_->GetFrame().Loader().GetDocumentLoader());
 
-  base::TimeTicks start_time =
-      GetTimeOrigin() + base::TimeDelta::FromSecondsD(1.1);
-  base::TimeTicks processing_start =
-      GetTimeOrigin() + base::TimeDelta::FromSecondsD(3.3);
-  base::TimeTicks processing_end =
-      GetTimeOrigin() + base::TimeDelta::FromSecondsD(3.8);
+  base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1.1);
+  base::TimeTicks processing_start = GetTimeOrigin() + base::Seconds(3.3);
+  base::TimeTicks processing_end = GetTimeOrigin() + base::Seconds(3.8);
   performance_->RegisterEventTiming("click", start_time, processing_start,
                                     processing_end, false, nullptr, 4, 4);
-  base::TimeTicks swap_time =
-      GetTimeOrigin() + base::TimeDelta::FromSecondsD(6.0);
+  base::TimeTicks swap_time = GetTimeOrigin() + base::Seconds(6.0);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(1u, performance_->getBufferedEntriesByType("event").size());
 
@@ -298,24 +294,19 @@ TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
 }
 
 TEST_F(WindowPerformanceTest, Expose100MsEvents) {
-  base::TimeTicks start_time =
-      GetTimeOrigin() + base::TimeDelta::FromSeconds(1);
-  base::TimeTicks processing_start =
-      start_time + base::TimeDelta::FromMilliseconds(10);
-  base::TimeTicks processing_end =
-      processing_start + base::TimeDelta::FromMilliseconds(10);
+  base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
+  base::TimeTicks processing_start = start_time + base::Milliseconds(10);
+  base::TimeTicks processing_end = processing_start + base::Milliseconds(10);
   performance_->RegisterEventTiming("mousedown", start_time, processing_start,
                                     processing_end, false, nullptr, 4, 4);
 
-  base::TimeTicks start_time2 =
-      start_time + base::TimeDelta::FromMicroseconds(200);
+  base::TimeTicks start_time2 = start_time + base::Microseconds(200);
   performance_->RegisterEventTiming("click", start_time2, processing_start,
                                     processing_end, false, nullptr, 4, 4);
 
   // The swap time is 100.1 ms after |start_time| but only 99.9 ms after
   // |start_time2|.
-  base::TimeTicks swap_time =
-      start_time + base::TimeDelta::FromMicroseconds(100100);
+  base::TimeTicks swap_time = start_time + base::Microseconds(100100);
   SimulateSwapPromise(swap_time);
   // Only the longer event should have been reported.
   const auto& entries = performance_->getBufferedEntriesByType("event");
@@ -324,23 +315,18 @@ TEST_F(WindowPerformanceTest, Expose100MsEvents) {
 }
 
 TEST_F(WindowPerformanceTest, EventTimingDuration) {
-  base::TimeTicks start_time =
-      GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1000);
-  base::TimeTicks processing_start =
-      GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1001);
-  base::TimeTicks processing_end =
-      GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1002);
+  base::TimeTicks start_time = GetTimeOrigin() + base::Milliseconds(1000);
+  base::TimeTicks processing_start = GetTimeOrigin() + base::Milliseconds(1001);
+  base::TimeTicks processing_end = GetTimeOrigin() + base::Milliseconds(1002);
   performance_->RegisterEventTiming("click", start_time, processing_start,
                                     processing_end, false, nullptr, 4, 4);
-  base::TimeTicks short_swap_time =
-      GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1003);
+  base::TimeTicks short_swap_time = GetTimeOrigin() + base::Milliseconds(1003);
   SimulateSwapPromise(short_swap_time);
   EXPECT_EQ(0u, performance_->getBufferedEntriesByType("event").size());
 
   performance_->RegisterEventTiming("click", start_time, processing_start,
                                     processing_end, true, nullptr, 4, 4);
-  base::TimeTicks long_swap_time =
-      GetTimeOrigin() + base::TimeDelta::FromMilliseconds(2000);
+  base::TimeTicks long_swap_time = GetTimeOrigin() + base::Milliseconds(2000);
   SimulateSwapPromise(long_swap_time);
   EXPECT_EQ(1u, performance_->getBufferedEntriesByType("event").size());
 
@@ -358,18 +344,14 @@ TEST_F(WindowPerformanceTest, EventTimingDuration) {
 TEST_F(WindowPerformanceTest, MultipleEventsThenSwap) {
   size_t num_events = 10;
   for (size_t i = 0; i < num_events; ++i) {
-    base::TimeTicks start_time =
-        GetTimeOrigin() + base::TimeDelta::FromSeconds(i);
-    base::TimeTicks processing_start =
-        start_time + base::TimeDelta::FromMilliseconds(100);
-    base::TimeTicks processing_end =
-        start_time + base::TimeDelta::FromMilliseconds(200);
+    base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(i);
+    base::TimeTicks processing_start = start_time + base::Milliseconds(100);
+    base::TimeTicks processing_end = start_time + base::Milliseconds(200);
     performance_->RegisterEventTiming("click", start_time, processing_start,
                                       processing_end, false, nullptr, 4, 4);
     EXPECT_EQ(0u, performance_->getBufferedEntriesByType("event").size());
   }
-  base::TimeTicks swap_time =
-      GetTimeOrigin() + base::TimeDelta::FromSeconds(num_events);
+  base::TimeTicks swap_time = GetTimeOrigin() + base::Seconds(num_events);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(num_events, performance_->getBufferedEntriesByType("event").size());
 }
@@ -384,12 +366,11 @@ TEST_F(WindowPerformanceTest, FirstInput) {
                 {"mousedown", true}, {"mouseover", false}};
   for (const auto& input : inputs) {
     // first-input does not have a |duration| threshold so use close values.
-    performance_->RegisterEventTiming(
-        input.event_type, GetTimeOrigin(),
-        GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1),
-        GetTimeOrigin() + base::TimeDelta::FromMilliseconds(2), false, nullptr,
-        4, 4);
-    SimulateSwapPromise(GetTimeOrigin() + base::TimeDelta::FromMilliseconds(3));
+    performance_->RegisterEventTiming(input.event_type, GetTimeOrigin(),
+                                      GetTimeOrigin() + base::Milliseconds(1),
+                                      GetTimeOrigin() + base::Milliseconds(2),
+                                      false, nullptr, 4, 4);
+    SimulateSwapPromise(GetTimeOrigin() + base::Milliseconds(3));
     PerformanceEntryVector firstInputs =
         performance_->getEntriesByType("first-input");
     EXPECT_GE(1u, firstInputs.size());
@@ -404,11 +385,9 @@ TEST_F(WindowPerformanceTest, FirstInputAfterIgnored) {
   AtomicString several_events[] = {"mouseover", "mousedown", "pointerup"};
   for (const auto& event : several_events) {
     performance_->RegisterEventTiming(
-        event, GetTimeOrigin(),
-        GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1),
-        GetTimeOrigin() + base::TimeDelta::FromMilliseconds(2), false, nullptr,
-        4, 4);
-    SimulateSwapPromise(GetTimeOrigin() + base::TimeDelta::FromMilliseconds(3));
+        event, GetTimeOrigin(), GetTimeOrigin() + base::Milliseconds(1),
+        GetTimeOrigin() + base::Milliseconds(2), false, nullptr, 4, 4);
+    SimulateSwapPromise(GetTimeOrigin() + base::Milliseconds(3));
   }
   ASSERT_EQ(1u, performance_->getEntriesByType("first-input").size());
   EXPECT_EQ("mousedown",

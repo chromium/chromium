@@ -643,23 +643,23 @@ TEST_F(PersonalInfoSuggesterTest, AnnouncesSpokenFeedbackWhenChromeVoxIsOn) {
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
 
   suggester_->Suggest(u"my email is ", 12, 12);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(200));
   suggestion_handler_->VerifyAnnouncement(
       u"Personal info suggested. Press down arrow to access; escape to "
       u"ignore.");
 
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
   SendKeyboardEvent(ui::DomCode::ENTER);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(200));
   suggestion_handler_->VerifyAnnouncement(u"Suggestion inserted.");
 
   suggester_->Suggest(u"my email is ", 12, 12);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+  task_environment_.FastForwardBy(base::Milliseconds(1500));
   suggestion_handler_->VerifyAnnouncement(
       u"Personal info suggested. Press down arrow to access; escape to "
       u"ignore.");
   SendKeyboardEvent(ui::DomCode::ESCAPE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(200));
   suggestion_handler_->VerifyAnnouncement(u"Suggestion dismissed.");
 }
 

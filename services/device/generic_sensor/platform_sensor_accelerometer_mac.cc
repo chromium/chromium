@@ -109,9 +109,7 @@ void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::StartPolling(
 
   timer_.Start(
       FROM_HERE,
-      base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                        frequency),
-      this,
+      base::Microseconds(base::Time::kMicrosecondsPerSecond / frequency), this,
       &PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::PollForData);
 }
 

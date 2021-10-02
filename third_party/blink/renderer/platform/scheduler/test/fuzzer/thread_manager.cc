@@ -69,7 +69,7 @@ base::TimeTicks ThreadManager::NowTicks() {
 }
 
 base::TimeDelta ThreadManager::NextPendingTaskDelay() {
-  return std::max(base::TimeDelta::FromMilliseconds(0),
+  return std::max(base::Milliseconds(0),
                   test_task_runner_->NextPendingTaskDelay());
 }
 
@@ -212,7 +212,7 @@ void ThreadManager::PostDelayedTask(
       FROM_HERE,
       BindOnce(&Task::Execute, pending_task->weak_ptr_factory_.GetWeakPtr(),
                task),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 
   {
     AutoLock lock(lock_);
@@ -371,9 +371,8 @@ void ThreadManager::ExecuteTask(
 
   base::TimeTicks next_time =
       start_time +
-      std::max(base::TimeDelta(),
-               base::TimeDelta::FromMilliseconds(task.duration_ms()) -
-                   (end_time - start_time));
+      std::max(base::TimeDelta(), base::Milliseconds(task.duration_ms()) -
+                                      (end_time - start_time));
 
   while (NowTicks() != next_time) {
     processor_->thread_pool_manager()->AdvanceClockSynchronouslyToTime(

@@ -8,7 +8,7 @@ namespace mojo {
 
 namespace {
 
-constexpr base::TimeDelta kZeroTime = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kZeroTime = base::Seconds(0);
 
 }  // namespace
 

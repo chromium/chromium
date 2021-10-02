@@ -859,7 +859,7 @@ base::TimeDelta KioskAppManager::GetAutoLaunchDelay() const {
           kAccountsPrefDeviceLocalAccountAutoLoginDelay, &delay)) {
     return base::TimeDelta();  // Default delay is 0ms.
   }
-  return base::TimeDelta::FromMilliseconds(delay);
+  return base::Milliseconds(delay);
 }
 
 }  // namespace ash

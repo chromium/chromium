@@ -115,8 +115,8 @@ void RecordDownloadOpened(download::DownloadDangerType danger_type,
   base::UmaHistogramCustomTimes(
       "SBClientDownload.SafeDownloadOpenedLatency2" + metric_suffix,
       /* sample */ download_opened_time - download_end_time,
-      /* min */ base::TimeDelta::FromSeconds(1),
-      /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
+      /* min */ base::Seconds(1),
+      /* max */ base::Days(1), /* buckets */ 50);
 
   RecordDownloadOpenedFileType(download_content, download_opened_time,
                                download_end_time);
@@ -189,8 +189,8 @@ void RecordDownloadOpenedFileType(download::DownloadContent download_content,
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType." +
           download_content_str,
       /* sample */ download_opened_time - download_end_time,
-      /* min */ base::TimeDelta::FromSeconds(1),
-      /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
+      /* min */ base::Seconds(1),
+      /* max */ base::Days(1), /* buckets */ 50);
 }
 
 void RecordDownloadFileTypeAttributes(
@@ -227,8 +227,8 @@ void RecordDownloadFileTypeAttributes(
     base::UmaHistogramCustomTimes(
         "SBClientDownload.UserGestureFileType.LastBypassDownloadInterval",
         /* sample */ base::Time::Now() - last_bypass_time.value(),
-        /* min */ base::TimeDelta::FromSeconds(1),
-        /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
+        /* min */ base::Seconds(1),
+        /* max */ base::Days(1), /* buckets */ 50);
   }
 }
 

@@ -821,7 +821,7 @@ void MediaCodecVideoDecoder::StartTimerOrPumpCodec() {
   // TODO: Experiment with this number to save power. Since we already pump the
   // codec in response to receiving a decode and output buffer release, polling
   // at this frequency is likely overkill in the steady state.
-  const auto kPollingPeriod = base::TimeDelta::FromMilliseconds(10);
+  const auto kPollingPeriod = base::Milliseconds(10);
   if (!pump_codec_timer_.IsRunning()) {
     pump_codec_timer_.Start(
         FROM_HERE, kPollingPeriod,
@@ -835,7 +835,7 @@ void MediaCodecVideoDecoder::StopTimerIfIdle() {
   DCHECK(!using_async_api_);
 
   // Stop the timer if we've been idle for one second. Chosen arbitrarily.
-  const auto kTimeout = base::TimeDelta::FromSeconds(1);
+  const auto kTimeout = base::Seconds(1);
   if (idle_timer_.Elapsed() > kTimeout) {
     DVLOG(2) << "Stopping timer; idle timeout hit";
     pump_codec_timer_.Stop();
@@ -1053,8 +1053,8 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   // Record how long this frame was pending.
   const base::TimeDelta duration = base::TimeTicks::Now() - started_at;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.MCVD.ForwardVideoFrameTiming", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMilliseconds(100), 25);
+                             base::Milliseconds(1), base::Milliseconds(100),
+                             25);
 
   // No |frame| indicates an error creating it.
   if (!frame) {

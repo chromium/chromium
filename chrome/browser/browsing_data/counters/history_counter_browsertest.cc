@@ -55,9 +55,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
   void SetTime(base::Time time) { time_ = time; }
 
-  void RevertTimeInDays(int days) {
-    time_ -= base::TimeDelta::FromDays(days);
-  }
+  void RevertTimeInDays(int days) { time_ -= base::Days(days); }
 
   void SetHistoryDeletionPref(bool value) {
     browser()->profile()->GetPrefs()->SetBoolean(
@@ -321,10 +319,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   // No entries locally. There are some entries in Sync, but they are out of the
   // time range.
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
-  service->AddSyncedVisit(
-      "www.google.com", GetCurrentTime() - base::TimeDelta::FromHours(2));
-  service->AddSyncedVisit(
-      "www.chrome.com", GetCurrentTime() - base::TimeDelta::FromHours(2));
+  service->AddSyncedVisit("www.google.com", GetCurrentTime() - base::Hours(2));
+  service->AddSyncedVisit("www.chrome.com", GetCurrentTime() - base::Hours(2));
   service->SetupFakeResponse(true /* success */, net::HTTP_OK);
   counter.Restart();
   WaitForCounting();

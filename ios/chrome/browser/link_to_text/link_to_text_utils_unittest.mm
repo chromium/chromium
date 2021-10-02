@@ -96,12 +96,12 @@ TEST_F(LinkToTextUtilsTest, ParseURL) {
 // Tests that IsLinkGenerationTimeout returns the right values based on
 // different input values.
 TEST_F(LinkToTextUtilsTest, IsLinkGenerationTimeout) {
+  EXPECT_TRUE(
+      IsLinkGenerationTimeout(base::Milliseconds(kLinkGenerationTimeoutInMs)));
   EXPECT_TRUE(IsLinkGenerationTimeout(
-      base::TimeDelta::FromMilliseconds(kLinkGenerationTimeoutInMs)));
-  EXPECT_TRUE(IsLinkGenerationTimeout(
-      base::TimeDelta::FromMilliseconds(kLinkGenerationTimeoutInMs + 1)));
+      base::Milliseconds(kLinkGenerationTimeoutInMs + 1)));
   EXPECT_FALSE(IsLinkGenerationTimeout(
-      base::TimeDelta::FromMilliseconds(kLinkGenerationTimeoutInMs - 1)));
+      base::Milliseconds(kLinkGenerationTimeoutInMs - 1)));
 }
 
 }  // namespace link_to_text

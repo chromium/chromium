@@ -405,7 +405,7 @@ void PasswordProtectionRequest::StartTimeout() {
   ui_task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PasswordProtectionRequest::Cancel, AsWeakPtr(), true),
-      base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
+      base::Milliseconds(request_timeout_in_ms_));
 }
 
 void PasswordProtectionRequest::OnURLLoaderComplete(

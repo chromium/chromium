@@ -224,8 +224,7 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecution) {
   scoped_refptr<TaskRunnerProxy> proxy = new TaskRunnerProxy(&mock_runner);
 
   EXPECT_CALL(mock_runner, PostDelayedTask(_, _)).Times(0);
-  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(
-                               _, base::TimeDelta::FromMilliseconds(0)))
+  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(_, base::Milliseconds(0)))
       .Times(testing::Between(2, 3))
       .WillRepeatedly(testing::Return(true));
 
@@ -270,8 +269,7 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecutionFailedTask) {
   scoped_refptr<TaskRunnerProxy> proxy = new TaskRunnerProxy(&mock_runner);
 
   EXPECT_CALL(mock_runner, PostDelayedTask(_, _)).Times(0);
-  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(
-                               _, base::TimeDelta::FromMilliseconds(0)))
+  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(_, base::Milliseconds(0)))
       .Times(testing::Between(1, 2))
       .WillRepeatedly(testing::Return(true));
 

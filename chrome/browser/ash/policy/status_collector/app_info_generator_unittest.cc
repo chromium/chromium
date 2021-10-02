@@ -232,8 +232,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
   }
 
   std::unique_ptr<AppInfoGenerator> GetGenerator(
-      base::TimeDelta max_stored_past_activity_interval =
-          base::TimeDelta::FromDays(0)) {
+      base::TimeDelta max_stored_past_activity_interval = base::Days(0)) {
     return std::make_unique<AppInfoGenerator>(
         nullptr, max_stored_past_activity_interval, &test_clock());
   }
@@ -654,7 +653,7 @@ TEST_F(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
           apps::mojom::AppType::kExtension);
-  auto max_days_past = base::TimeDelta::FromDays(
+  auto max_days_past = base::Days(
       1);  // Exclude all past usage except for UTC today and yesterday.
   auto generator = GetGenerator(max_days_past);
   generator->OnReportingChanged(true);

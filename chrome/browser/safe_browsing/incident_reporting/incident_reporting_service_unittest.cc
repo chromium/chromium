@@ -76,9 +76,7 @@ class IncidentReportingServiceTest : public testing::Test {
         const CollectEnvironmentCallback& collect_environment_callback,
         const CreateDownloadFinderCallback& create_download_finder_callback,
         const StartUploadCallback& start_upload_callback)
-        : IncidentReportingService(nullptr,
-                                   base::TimeDelta::FromMilliseconds(5),
-                                   task_runner),
+        : IncidentReportingService(nullptr, base::Milliseconds(5), task_runner),
           pre_profile_add_callback_(pre_profile_add_callback),
           collect_environment_callback_(collect_environment_callback),
           create_download_finder_callback_(create_download_finder_callback),

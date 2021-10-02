@@ -582,7 +582,7 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     payments::PaymentsClient::UploadRequestDetails* upload_request) {
   std::vector<AutofillProfile> candidate_profiles;
   const base::Time now = AutofillClock::Now();
-  const base::TimeDelta fifteen_minutes = base::TimeDelta::FromMinutes(15);
+  const base::TimeDelta fifteen_minutes = base::Minutes(15);
   // Reset |upload_decision_metrics_| to begin logging detected problems.
   upload_decision_metrics_ = 0;
   bool has_profile = false;

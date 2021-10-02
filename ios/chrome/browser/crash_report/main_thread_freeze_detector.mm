@@ -153,7 +153,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     if (_lastSessionEndedFrozen) {
-      LogRecoveryTime(base::TimeDelta::FromSeconds(0));
+      LogRecoveryTime(base::Seconds(0));
     }
   });
   _enabled = enabled;
@@ -191,7 +191,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     // Remove information about the last session info.
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
-    LogRecoveryTime(base::TimeDelta::FromSecondsD(
+    LogRecoveryTime(base::Seconds(
         [[NSDate date] timeIntervalSinceDate:oldLastSeenMainThread]));
     // Restart the freeze detection.
     dispatch_async(_freezeDetectionQueue, ^{

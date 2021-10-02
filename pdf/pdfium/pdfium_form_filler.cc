@@ -179,8 +179,7 @@ int PDFiumFormFiller::Form_SetTimer(FPDF_FORMFILLINFO* param,
                                     int elapse,
                                     TimerCallback timer_func) {
   auto* form_filler = static_cast<PDFiumFormFiller*>(param);
-  return form_filler->SetTimer(base::TimeDelta::FromMilliseconds(elapse),
-                               timer_func);
+  return form_filler->SetTimer(base::Milliseconds(elapse), timer_func);
 }
 
 // static

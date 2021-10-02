@@ -97,7 +97,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
 };
 
 const base::TimeDelta UnifiedSystemTray::kNotificationCountUpdateDelay =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
     : ui_controller_(std::make_unique<MessageCenterUiController>(this)),

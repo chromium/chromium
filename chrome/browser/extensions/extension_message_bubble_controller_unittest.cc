@@ -1034,7 +1034,7 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // The bubble will not show if the extension was installed in the last 7 days
   // so we artificially set the install time to simulate an old install during
   // testing.
-  base::Time old_enough = base::Time::Now() - base::TimeDelta::FromDays(8);
+  base::Time old_enough = base::Time::Now() - base::Days(8);
   SetInstallTime(kId1, old_enough, prefs);
   SetInstallTime(kId2, base::Time::Now(), prefs);
   SetInstallTime(kId3, old_enough, prefs);

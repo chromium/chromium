@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
     // that there was no delay. However a slowly running test can still take
     // longer than the timeout.
     base::TimeDelta test_duration = base::Time::Now() - start_time;
-    EXPECT_GE(test_duration, base::TimeDelta::FromSeconds(1));
+    EXPECT_GE(test_duration, base::Seconds(1));
   } else {
     content::RunAllTasksUntilIdle();
   }

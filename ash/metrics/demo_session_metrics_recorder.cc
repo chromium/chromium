@@ -32,7 +32,7 @@ namespace {
 using DemoModeApp = DemoSessionMetricsRecorder::DemoModeApp;
 
 // How often to sample.
-constexpr auto kSamplePeriod = base::TimeDelta::FromSeconds(1);
+constexpr auto kSamplePeriod = base::Seconds(1);
 
 // Redefining chromeos::preinstalled_web_apps::kHelpAppId as ash can't depend on
 // chrome.
@@ -42,8 +42,7 @@ constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 // This timeout is low because demo sessions tend to be very short. If we
 // recorded samples for a full minute while the device is in between uses, we
 // would bias our measurements toward whatever app was used last.
-constexpr int kMaxPeriodsWithoutActivity =
-    base::TimeDelta::FromSeconds(15) / kSamplePeriod;
+constexpr int kMaxPeriodsWithoutActivity = base::Seconds(15) / kSamplePeriod;
 
 // Maps a Chrome app ID to a DemoModeApp value for metrics.
 DemoModeApp GetAppFromAppId(const std::string& app_id) {

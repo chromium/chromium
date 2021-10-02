@@ -53,7 +53,7 @@ base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
       CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
   const base::TimeDelta timestamp =
       CMTIME_IS_VALID(cm_timestamp)
-          ? base::TimeDelta::FromSecondsD(CMTimeGetSeconds(cm_timestamp))
+          ? base::Seconds(CMTimeGetSeconds(cm_timestamp))
           : media::kNoTimestamp;
   return timestamp;
 }
@@ -489,7 +489,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
               [weakSelf.get() takePhotoInternal];
             },
             _weakPtrFactoryForTakePhoto->GetWeakPtr()),
-        base::TimeDelta::FromSeconds(3));
+        base::Seconds(3));
   }
 }
 
@@ -580,8 +580,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
             [strongSelf stopStillImageOutput];
           },
           _weakPtrFactoryForTakePhoto->GetWeakPtr(), _takePhotoStartedCount),
-      base::TimeDelta::FromSeconds(
-          kTimeToWaitBeforeStoppingStillImageCaptureInSeconds));
+      base::Seconds(kTimeToWaitBeforeStoppingStillImageCaptureInSeconds));
 }
 
 - (void)stopStillImageOutput {
@@ -868,8 +867,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       _weakPtrFactoryForStallCheck = std::make_unique<
           base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>(self);
     }
-    constexpr base::TimeDelta kStallCheckInterval =
-        base::TimeDelta::FromSeconds(1);
+    constexpr base::TimeDelta kStallCheckInterval = base::Seconds(1);
     auto callback_lambda =
         [](base::WeakPtr<VideoCaptureDeviceAVFoundation> weakSelf,
            int failedCheckCount) {

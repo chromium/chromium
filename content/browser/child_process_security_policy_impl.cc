@@ -851,7 +851,7 @@ bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::
 ChildProcessSecurityPolicyImpl::ChildProcessSecurityPolicyImpl()
     : browsing_instance_cleanup_delay_(
           RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout +
-          base::TimeDelta::FromSeconds(2)) {
+          base::Seconds(2)) {
   // We know about these schemes and believe them to be safe.
   RegisterWebSafeScheme(url::kHttpScheme);
   RegisterWebSafeScheme(url::kHttpsScheme);

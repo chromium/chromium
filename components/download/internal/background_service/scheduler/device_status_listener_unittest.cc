@@ -181,8 +181,8 @@ TEST_F(DeviceStatusListenerTest, DuplicateStart) {
   ChangeNetworkType(ConnectionType::CONNECTION_NONE);
   SimulateBatteryChange(true); /* Not charging. */
   EXPECT_EQ(DeviceStatus(), listener_->CurrentDeviceStatus());
-  const auto acutual_delay = base::TimeDelta::FromSeconds(0);
-  listener_->Start(base::TimeDelta::FromSeconds(1));
+  const auto acutual_delay = base::Seconds(0);
+  listener_->Start(base::Seconds(1));
   listener_->Start(acutual_delay);
   EXPECT_CALL(mock_observer_, OnDeviceStatusChanged(_)).Times(1);
   base::RunLoop().RunUntilIdle();

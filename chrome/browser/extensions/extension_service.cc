@@ -132,7 +132,7 @@ namespace {
 bool g_external_updates_disabled_for_test_ = false;
 
 // Wait this long after an extensions becomes idle before updating it.
-constexpr base::TimeDelta kUpdateIdleDelay = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kUpdateIdleDelay = base::Seconds(5);
 
 // IDs of component extensions that have been obsoleted and need to be
 // uninstalled.

@@ -146,7 +146,7 @@ TEST_F(MojoIpcServerTest, DeleteMojoServer_NoLingeringInvitations) {
   // For posix, the socket doesn't seem to be closed immediately after the
   // isolated connection is deleted, so we wait for 1s to make sure the socket
   // is really closed.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   auto endpoint = ConnectToTestServer();
   ASSERT_FALSE(endpoint.is_valid());

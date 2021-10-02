@@ -24,12 +24,12 @@ namespace {
 
 // The minimum delay between successive storage pressure events.
 constexpr base::TimeDelta kDefaultQuotaChangeIntervalSeconds =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 base::TimeDelta GetRandomDelay() {
   int64_t delay_micros = static_cast<int64_t>(
       base::RandInt(0, 2 * base::Time::kMicrosecondsPerSecond));
-  return base::TimeDelta::FromMicroseconds(delay_micros);
+  return base::Microseconds(delay_micros);
 }
 
 }  // namespace
@@ -130,7 +130,7 @@ const base::TimeDelta QuotaChangeDispatcher::GetQuotaChangeEventInterval() {
 
       int int_value;
       if (base::StringToInt(string_value, &int_value) && int_value >= 0) {
-        return base::TimeDelta::FromSeconds(int_value);
+        return base::Seconds(int_value);
       }
     } else {
       quota_change_event_interval_ = kDefaultQuotaChangeIntervalSeconds;

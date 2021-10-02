@@ -7,8 +7,7 @@
 namespace ui {
 namespace ime {
 
-constexpr base::TimeDelta kAnnouncementDelayMs =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kAnnouncementDelayMs = base::Milliseconds(100);
 
 SuggestionAccessibilityLabel::SuggestionAccessibilityLabel() = default;
 

@@ -77,7 +77,7 @@ gfx::Transform CalculateEventTransformer(int touch_device_id) {
 // Time interval after a touch event during which all other touch events are
 // ignored during calibration.
 const base::TimeDelta TouchCalibratorController::kTouchIntervalThreshold =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
 TouchCalibratorController::TouchCalibratorController()
     : last_touch_timestamp_(base::Time::Now()) {}

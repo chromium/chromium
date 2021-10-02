@@ -183,7 +183,7 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::Initialize() {
         continue;
       }
       if ((base::Time::Now() - *upload_time) >
-          base::TimeDelta::FromDays(kMinDaysUntilNextUpload)) {
+          base::Days(kMinDaysUntilNextUpload)) {
         continue;
       }
       scenario_last_upload_timestamp_[*scenario] = *upload_time;
@@ -258,7 +258,7 @@ bool ChromeTracingDelegate::BackgroundTracingStateManager::
   auto it = scenario_last_upload_timestamp_.find(stripped_scenario_name);
   if (it != scenario_last_upload_timestamp_.end()) {
     return (base::Time::Now() - it->second) <=
-           base::TimeDelta::FromDays(kMinDaysUntilNextUpload);
+           base::Days(kMinDaysUntilNextUpload);
   }
   return false;
 }
@@ -413,7 +413,7 @@ bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
         BackgroundTracingStateManager::GetInstance().SetState(
             BackgroundTracingState::RAN_30_SECONDS);
       }),
-      base::TimeDelta::FromSeconds(30));
+      base::Seconds(30));
   return true;
 }
 

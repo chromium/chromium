@@ -37,7 +37,7 @@ absl::optional<base::TimeDelta> GetAudioThreadHangDeadline() {
   int timeout_int = 0;
   if (!base::StringToInt(timeout_string, &timeout_int) || timeout_int == 0)
     return absl::nullopt;
-  return base::TimeDelta::FromSeconds(timeout_int);
+  return base::Seconds(timeout_int);
 }
 
 HangAction GetAudioThreadHangAction() {

@@ -912,7 +912,7 @@ TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithSavingModeset) {
   EXPECT_EQ(0, successful_page_flips_count_);
 
   // Some time passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1623));
+  task_environment_.FastForwardBy(base::Milliseconds(1623));
 
   // A modeset event occurs and prevents the GPU process from crashing.
   modeset_planes.clear();

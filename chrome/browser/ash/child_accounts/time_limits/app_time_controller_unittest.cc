@@ -46,10 +46,10 @@ namespace app_time {
 namespace {
 
 constexpr char kStartTime[] = "1 Jan 2020 00:00:00 GMT";
-constexpr base::TimeDelta kDay = base::TimeDelta::FromHours(24);
-constexpr base::TimeDelta kSixHours = base::TimeDelta::FromHours(6);
-constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kZeroTime = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kDay = base::Hours(24);
+constexpr base::TimeDelta kSixHours = base::Hours(6);
+constexpr base::TimeDelta kOneHour = base::Hours(1);
+constexpr base::TimeDelta kZeroTime = base::Seconds(0);
 constexpr char kApp1Name[] = "App1";
 constexpr char kApp2Name[] = "App2";
 const AppId kApp1(apps::mojom::AppType::kArc, "1");
@@ -62,14 +62,14 @@ base::Time GetLastResetTime(base::Time timestamp) {
   if (timestamp > nearest_midnight)
     prev_midnight = nearest_midnight;
   else
-    prev_midnight = nearest_midnight - base::TimeDelta::FromHours(24);
+    prev_midnight = nearest_midnight - base::Hours(24);
 
   // Reset time is at 6 am for the tests.
-  base::Time reset_time = prev_midnight + base::TimeDelta::FromHours(6);
+  base::Time reset_time = prev_midnight + base::Hours(6);
   if (reset_time <= timestamp)
     return reset_time;
   else
-    return reset_time - base::TimeDelta::FromHours(24);
+    return reset_time - base::Hours(24);
 }
 
 }  // namespace
@@ -317,7 +317,7 @@ TEST_F(AppTimeControllerTest, ResetTimeReached) {
 
   // The default reset time is 6 hours after local midnight. Fast forward by 4
   // hours to reach it. FastForwardBy triggers the reset timer.
-  task_environment().FastForwardBy(base::TimeDelta::FromHours(4));
+  task_environment().FastForwardBy(base::Hours(4));
 
   // Make sure that there is no activity
   EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kZeroTime);
@@ -387,10 +387,10 @@ TEST_F(AppTimeControllerTest, SystemTimeChangedGoingBackwards) {
 TEST_F(AppTimeControllerTest, TimeLimitNotification) {
   AppActivityRegistry* registry = controller()->app_registry();
 
-  const AppLimit limit1(AppRestriction::kTimeLimit,
-                        base::TimeDelta::FromMinutes(35), base::Time::Now());
-  const AppLimit limit2(AppRestriction::kTimeLimit,
-                        base::TimeDelta::FromMinutes(30), base::Time::Now());
+  const AppLimit limit1(AppRestriction::kTimeLimit, base::Minutes(35),
+                        base::Time::Now());
+  const AppLimit limit2(AppRestriction::kTimeLimit, base::Minutes(30),
+                        base::Time::Now());
   const std::map<AppId, AppLimit> limits{{kApp1, limit1}, {kApp2, limit2}};
   registry->UpdateAppLimits(limits);
   task_environment().RunUntilIdle();
@@ -399,19 +399,19 @@ TEST_F(AppTimeControllerTest, TimeLimitNotification) {
   registry->OnAppActive(kApp1, instance_key, base::Time::Now());
   registry->OnAppActive(kApp2, instance_key, base::Time::Now());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromMinutes(25));
+  task_environment().FastForwardBy(base::Minutes(25));
 
   // Expect that there is a 5 minute notification for kApp2.
   EXPECT_TRUE(HasNotificationFor(kApp2Name, AppNotification::kFiveMinutes));
 
   // One minute left notification will be shown and then the app will reach its
   // time limit.
-  task_environment().FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment().FastForwardBy(base::Minutes(5));
 
   EXPECT_TRUE(HasNotificationFor(kApp2Name, AppNotification::kOneMinute));
   EXPECT_TRUE(HasNotificationFor(kApp1Name, AppNotification::kFiveMinutes));
 
-  task_environment().FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment().FastForwardBy(base::Minutes(5));
 
   EXPECT_TRUE(HasNotificationFor(kApp1Name, AppNotification::kOneMinute));
 }
@@ -420,10 +420,10 @@ TEST_F(AppTimeControllerTest, TimeLimitUpdatedNotification) {
   AppActivityRegistry* registry = controller()->app_registry();
 
   // Set new time limits.
-  const AppLimit limit1(AppRestriction::kTimeLimit,
-                        base::TimeDelta::FromMinutes(35), base::Time::Now());
-  const AppLimit limit2(AppRestriction::kTimeLimit,
-                        base::TimeDelta::FromMinutes(30), base::Time::Now());
+  const AppLimit limit1(AppRestriction::kTimeLimit, base::Minutes(35),
+                        base::Time::Now());
+  const AppLimit limit2(AppRestriction::kTimeLimit, base::Minutes(30),
+                        base::Time::Now());
   registry->UpdateAppLimits({{kApp1, limit1}, {kApp2, limit2}});
   task_environment().RunUntilIdle();
 
@@ -437,9 +437,8 @@ TEST_F(AppTimeControllerTest, TimeLimitUpdatedNotification) {
   DismissNotifications();
 
   // Only update one time limit.
-  const base::TimeDelta delta = base::TimeDelta::FromMinutes(1);
-  const AppLimit limit3(AppRestriction::kTimeLimit,
-                        base::TimeDelta::FromMinutes(10),
+  const base::TimeDelta delta = base::Minutes(1);
+  const AppLimit limit3(AppRestriction::kTimeLimit, base::Minutes(10),
                         base::Time::Now() + delta);
   registry->UpdateAppLimits({{kApp1, limit1}, {kApp2, limit3}});
   task_environment().RunUntilIdle();

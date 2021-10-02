@@ -4341,7 +4341,7 @@ TEST_F(GLRendererWithOverlaysTest, OutputSurfaceReshapeScheme) {
   Mock::VerifyAndClearExpectations(&scheduler_);
 
   // Tighten OutputSurface size after 1 second passes without size changes.
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromMilliseconds(999);
+  TimeTicksOverride::now_ticks_ += base::Milliseconds(999);
 
   pass = CreateRenderPass();
   CreateOpaqueQuadAt(resource_provider_.get(),
@@ -4358,7 +4358,7 @@ TEST_F(GLRendererWithOverlaysTest, OutputSurfaceReshapeScheme) {
   EXPECT_EQ(gfx::Size(2304, 2304), output_surface_->size());
   Mock::VerifyAndClearExpectations(&scheduler_);
 
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromMilliseconds(1);
+  TimeTicksOverride::now_ticks_ += base::Milliseconds(1);
 
   pass = CreateRenderPass();
   CreateOpaqueQuadAt(resource_provider_.get(),

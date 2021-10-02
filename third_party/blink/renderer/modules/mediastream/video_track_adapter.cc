@@ -734,8 +734,7 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
       CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
                           WrapRefCounted(this), std::move(on_muted_callback),
                           frame_counter_),
-      base::TimeDelta::FromSecondsD(kFirstFrameTimeoutInFrameIntervals /
-                                    source_frame_rate_));
+      base::Seconds(kFirstFrameTimeoutInFrameIntervals / source_frame_rate_));
 }
 
 void VideoTrackAdapter::StopFrameMonitoringOnIO() {
@@ -854,8 +853,7 @@ void VideoTrackAdapter::CheckFramesReceivedOnIO(
       CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
                           WrapRefCounted(this),
                           std::move(set_muted_state_callback), frame_counter_),
-      base::TimeDelta::FromSecondsD(kNormalFrameTimeoutInFrameIntervals /
-                                    source_frame_rate_));
+      base::Seconds(kNormalFrameTimeoutInFrameIntervals / source_frame_rate_));
 }
 
 }  // namespace blink

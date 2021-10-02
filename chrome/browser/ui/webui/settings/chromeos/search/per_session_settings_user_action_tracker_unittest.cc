@@ -29,7 +29,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
   tracker_.RecordClick();
   tracker_.RecordNavigation();
   tracker_.RecordSearch();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   tracker_.RecordSettingChange();
 
   // The "first change" metrics should have been logged.
@@ -44,7 +44,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
       /*count=*/1);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.FirstChange",
-      /*sample=*/base::TimeDelta::FromSeconds(10),
+      /*sample=*/base::Seconds(10),
       /*count=*/1);
 
   // Without leaving the page, perform some more tasks, and change another
@@ -52,7 +52,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
   tracker_.RecordClick();
   tracker_.RecordNavigation();
   tracker_.RecordSearch();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   tracker_.RecordSettingChange();
 
   // The "subsequent change" metrics should have been logged.
@@ -67,7 +67,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
       /*count=*/1);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.SubsequentChange",
-      /*sample=*/base::TimeDelta::FromSeconds(10),
+      /*sample=*/base::Seconds(10),
       /*count=*/1);
 
   // Repeat this, but only after 100ms. This is lower than the minimum value
@@ -75,7 +75,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
   tracker_.RecordClick();
   tracker_.RecordNavigation();
   tracker_.RecordSearch();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   tracker_.RecordSettingChange();
 
   // No additional logging should have occurred, so make the same verifications
@@ -91,14 +91,14 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
       /*count=*/1);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.SubsequentChange",
-      /*sample=*/base::TimeDelta::FromSeconds(10),
+      /*sample=*/base::Seconds(10),
       /*count=*/1);
 
   // Repeat this once more, and verify that the counts increased.
   tracker_.RecordClick();
   tracker_.RecordNavigation();
   tracker_.RecordSearch();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   tracker_.RecordSettingChange();
 
   // The "subsequent change" metrics should have been logged.
@@ -113,7 +113,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
       /*count=*/2);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.SubsequentChange",
-      /*sample=*/base::TimeDelta::FromSeconds(10),
+      /*sample=*/base::Seconds(10),
       /*count=*/2);
 }
 
@@ -121,54 +121,54 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestBlurAndFocus) {
   // Focus the page, click, and change a setting.
   tracker_.RecordPageFocus();
   tracker_.RecordClick();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   tracker_.RecordSettingChange();
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.NumClicksUntilChange.FirstChange",
       /*count=*/1);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.FirstChange",
-      /*sample=*/base::TimeDelta::FromSeconds(1),
+      /*sample=*/base::Seconds(1),
       /*count=*/1);
 
   // Blur for 59 seconds (not quite a minute), click, and change a setting.
   // Since the blur was under a minute, this should count for the "subsequent
   // change" metrics.
   tracker_.RecordPageBlur();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
+  task_environment_.FastForwardBy(base::Seconds(59));
   tracker_.RecordPageFocus();
   tracker_.RecordClick();
   tracker_.RecordSettingChange();
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.BlurredWindowDuration",
-      /*sample=*/base::TimeDelta::FromSeconds(59),
+      /*sample=*/base::Seconds(59),
       /*count=*/1);
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.NumClicksUntilChange.SubsequentChange",
       /*count=*/1);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.SubsequentChange",
-      /*sample=*/base::TimeDelta::FromSeconds(59),
+      /*sample=*/base::Seconds(59),
       /*count=*/1);
 
   // Now, blur for a full minute, click, and change a setting. Since the blur
   // was a full minute, this should count for the "first change" metrics.
   tracker_.RecordPageBlur();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   tracker_.RecordPageFocus();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
   tracker_.RecordClick();
   tracker_.RecordSettingChange();
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.BlurredWindowDuration",
-      /*sample=*/base::TimeDelta::FromMinutes(1),
+      /*sample=*/base::Minutes(1),
       /*count=*/2);
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.NumClicksUntilChange.FirstChange",
       /*count=*/2);
   histogram_tester_.ExpectTimeBucketCount(
       "ChromeOS.Settings.TimeUntilChange.FirstChange",
-      /*sample=*/base::TimeDelta::FromSeconds(5),
+      /*sample=*/base::Seconds(5),
       /*count=*/1);
 }
 

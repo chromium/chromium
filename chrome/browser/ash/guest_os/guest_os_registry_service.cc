@@ -158,8 +158,7 @@ base::Time GetTime(const base::Value& pref, const char* key) {
   int64_t time;
   if (!value || !base::StringToInt64(value->GetString(), &time))
     return base::Time();
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(time));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time));
 }
 
 bool EqualsExcludingTimestamps(const base::Value& left,

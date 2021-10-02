@@ -474,12 +474,11 @@ bool OutputPresenterX11::OnX11::OnCompleteNotifyEvent(
   if (event->msc > last_present_msc_)
     last_present_msc_ = event->msc;
 
-  auto timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(event->ust);
+  auto timestamp = base::TimeTicks() + base::Microseconds(event->ust);
   // Assume the refresh rate is 60 Hz for now.
   // TODO(penghuang): query refresh rate from Xserver.
-  constexpr auto kInterval = base::TimeDelta::FromMicroseconds(
-      base::Time::kMicrosecondsPerSecond / 60);
+  constexpr auto kInterval =
+      base::Microseconds(base::Time::kMicrosecondsPerSecond / 60);
   uint32_t flags = gfx::PresentationFeedback::kVSync;
   if (event->mode == x11::Present::CompleteMode::Flip)
     flags |= gfx::PresentationFeedback::kZeroCopy;

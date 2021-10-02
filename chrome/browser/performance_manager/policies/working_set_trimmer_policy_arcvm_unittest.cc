@@ -79,7 +79,7 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  base::TimeDelta GetInterval() { return base::TimeDelta::FromMinutes(1); }
+  base::TimeDelta GetInterval() { return base::Minutes(1); }
   WorkingSetTrimmerPolicyArcVm* trimmer() { return policy_.get(); }
 
  private:
@@ -103,7 +103,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootComplete) {
   trimmer()->OnConnectionReady();
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 }
 
@@ -112,13 +112,13 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootComplete) {
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, UserInteraction) {
   trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   trimmer()->OnUserInteraction(
       arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER);
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 }
 
@@ -127,14 +127,14 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, UserInteraction) {
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, ArcVmNotRunning) {
   trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   trimmer()->OnArcSessionRestarting();
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 
   trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   trimmer()->OnArcSessionStopped(arc::ArcStopReason::CRASH);
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
@@ -160,7 +160,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   // After boot, ARCVM becomes eligible to reclaim.
   trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 
   // ARCVM window is focused. ARCVM is ineligible to reclaim now.
@@ -169,7 +169,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
       chrome_window);
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 
   // ARCVM window is unfocused. ARCVM becomes eligible to reclaim after the
@@ -179,7 +179,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
       chrome_window, arc_window);
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 }
 
@@ -193,7 +193,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootComplete) {
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
 
   FastForwardBy(GetInterval());
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   // After the interval, the function returns true again.
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
 }

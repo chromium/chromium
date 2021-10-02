@@ -36,10 +36,10 @@ namespace memory_pressure {
 namespace os_linux {
 
 const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 const base::TimeDelta SystemMemoryPressureEvaluator::kModeratePressureCooldown =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 const int SystemMemoryPressureEvaluator::kDefaultModerateThresholdPc = 75;
 const int SystemMemoryPressureEvaluator::kDefaultCriticalThresholdPc = 85;

@@ -46,7 +46,7 @@ bool gIgnoreUrlChecksForTesting = false;
 int gDayOffsetForTesting = 0;
 
 base::Time GetTimeNow() {
-  return base::Time::Now() + base::TimeDelta::FromDays(gDayOffsetForTesting);
+  return base::Time::Now() + base::Days(gDayOffsetForTesting);
 }
 
 }  // namespace
@@ -147,7 +147,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   // Or if it has been shown too recently.
   base::Time last_shown = base::Time::FromInternalValue(
       prefs->GetInt64(prefs::kSearchGeolocationDisclosureLastShowDate));
-  if (GetTimeNow() - last_shown < base::TimeDelta::FromDays(kDaysPerShow)) {
+  if (GetTimeNow() - last_shown < base::Days(kDaysPerShow)) {
     return;
   }
 

@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, IdleTimeout) {
   auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>();
 
   base::RunLoop wait_for_idle_loop;
-  constexpr auto kTimeout = base::TimeDelta::FromSeconds(1);
+  constexpr auto kTimeout = base::Seconds(1);
   echo_service.set_idle_handler(kTimeout, base::BindLambdaForTesting([&] {
                                   wait_for_idle_loop.Quit();
                                   echo_service.reset();

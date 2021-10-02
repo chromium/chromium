@@ -46,7 +46,7 @@ uint32_t CacheTag(CacheTagKind kind, const String& encoding) {
 
 // Check previously stored timestamp.
 bool IsResourceHotForCaching(const SingleCachedMetadataHandler* cache_handler) {
-  static constexpr base::TimeDelta kHotHours = base::TimeDelta::FromHours(72);
+  static constexpr base::TimeDelta kHotHours = base::Hours(72);
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(
           V8CodeCache::TagForTimeStamp(cache_handler));
@@ -57,7 +57,7 @@ bool IsResourceHotForCaching(const SingleCachedMetadataHandler* cache_handler) {
   DCHECK_EQ(cached_metadata->size(), size);
   memcpy(&time_stamp_ms, cached_metadata->Data(), size);
   base::TimeTicks time_stamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_stamp_ms);
+      base::TimeTicks() + base::Milliseconds(time_stamp_ms);
   return (base::TimeTicks::Now() - time_stamp) < kHotHours;
 }
 

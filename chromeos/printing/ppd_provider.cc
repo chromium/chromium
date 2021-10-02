@@ -39,7 +39,7 @@ constexpr size_t kMethodDeferralLimit = 20;
 
 // Age limit for time-sensitive API calls. Typically denotes "Please
 // respond with data no older than kMaxDataAge." Arbitrarily chosen.
-constexpr base::TimeDelta kMaxDataAge = base::TimeDelta::FromMinutes(30LL);
+constexpr base::TimeDelta kMaxDataAge = base::Minutes(30LL);
 
 // Effective-make-and-model string that describes a printer capable of
 // using the generic Epson PPD.

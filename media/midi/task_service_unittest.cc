@@ -84,7 +84,7 @@ class TaskServiceClient {
     task_service()->PostBoundDelayedTask(
         runner_id,
         base::BindOnce(&TaskServiceClient::SignalEvent, base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
   }
 
   void WaitTask() { wait_task_event_->Wait(); }

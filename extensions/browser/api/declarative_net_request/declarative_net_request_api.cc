@@ -393,7 +393,7 @@ void DeclarativeNetRequestGetMatchedRulesFunction::GetQuotaLimitHeuristics(
     QuotaLimitHeuristics* heuristics) const {
   QuotaLimitHeuristic::Config limit = {
       dnr_api::MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL,
-      base::TimeDelta::FromMinutes(dnr_api::GETMATCHEDRULES_QUOTA_INTERVAL)};
+      base::Minutes(dnr_api::GETMATCHEDRULES_QUOTA_INTERVAL)};
 
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       limit, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),

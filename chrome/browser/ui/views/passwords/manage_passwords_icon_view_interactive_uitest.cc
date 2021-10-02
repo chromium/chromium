@@ -88,8 +88,7 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
   void ReduceAnimationTime() {
     auto* const animating_layout = GetAnimatingLayoutManager();
     if (animating_layout) {
-      animating_layout->SetAnimationDuration(
-          base::TimeDelta::FromMilliseconds(1));
+      animating_layout->SetAnimationDuration(base::Milliseconds(1));
     }
   }
 

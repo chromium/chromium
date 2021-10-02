@@ -370,7 +370,7 @@ void PpapiThread::OnCrash() {
 void PpapiThread::OnHang() {
   // Intentionally hang upon the request of the browser.
   for (;;)
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
 }
 
 bool PpapiThread::SetupChannel(base::ProcessId renderer_pid,

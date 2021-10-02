@@ -98,7 +98,7 @@ class AudioWaitingExtensionTest : public ExtensionApiTest {
       base::RunLoop().RunUntilIdle();
       if (audio_playing)
         break;
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+      base::PlatformThread::Sleep(base::Milliseconds(100));
     }
     if (!audio_playing)
       FAIL() << "Audio did not start playing within ~5 seconds.";

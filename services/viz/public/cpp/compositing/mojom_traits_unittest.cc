@@ -77,7 +77,7 @@ using StructTraitsTest = testing::Test;
 TEST_F(StructTraitsTest, BeginFrameArgs) {
   const base::TimeTicks frame_time = base::TimeTicks::Now();
   const base::TimeTicks deadline = base::TimeTicks::Now();
-  const base::TimeDelta interval = base::TimeDelta::FromMilliseconds(1337);
+  const base::TimeDelta interval = base::Milliseconds(1337);
   const BeginFrameArgs::BeginFrameArgsType type = BeginFrameArgs::NORMAL;
   const bool on_critical_path = true;
   const uint64_t source_id = 5;

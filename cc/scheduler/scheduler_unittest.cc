@@ -52,8 +52,8 @@ using power_scheduler::PowerMode;
 using power_scheduler::PowerModeArbiter;
 using power_scheduler::PowerModeVoter;
 
-base::TimeDelta kSlowDuration = base::TimeDelta::FromSeconds(1);
-base::TimeDelta kFastDuration = base::TimeDelta::FromMilliseconds(1);
+base::TimeDelta kSlowDuration = base::Seconds(1);
+base::TimeDelta kFastDuration = base::Milliseconds(1);
 
 class FakeSchedulerClient : public SchedulerClient,
                             public viz::FakeExternalBeginFrameSource::Client {
@@ -310,7 +310,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   SchedulerTestTaskRunner()
       : base::TestMockTimeTaskRunner(
             base::TestMockTimeTaskRunner::Type::kStandalone) {
-    AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(110000));
+    AdvanceMockTickClock(base::Microseconds(110000));
   }
 
   void RunUntilTime(base::TimeTicks end_time) {
@@ -465,7 +465,7 @@ class SchedulerTest : public testing::Test {
       SCOPED_TRACE("Do first frame to commit after initialize.");
       AdvanceFrame();
 
-      task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMilliseconds(1));
+      task_runner_->AdvanceMockTickClock(base::Milliseconds(1));
       scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
       scheduler_->NotifyReadyToCommit(nullptr);
       scheduler_->NotifyReadyToActivate();
@@ -566,7 +566,7 @@ class SchedulerTest : public testing::Test {
     // fast or slow.
     base::TimeDelta delta;
     if (!defer)
-      delta = base::TimeDelta::FromSeconds(1);
+      delta = base::Seconds(1);
     fake_compositor_timing_history_
         ->SetBeginMainFrameStartToReadyToCommitDurationEstimate(delta);
     fake_compositor_timing_history_
@@ -1521,8 +1521,8 @@ TEST_F(SchedulerTest, FrameIntervalUpdated) {
   constexpr uint64_t kSourceId = viz::BeginFrameArgs::kStartingSourceId;
   uint64_t sequence_number = viz::BeginFrameArgs::kStartingFrameNumber;
 
-  base::TimeDelta interval = base::TimeDelta::FromMicroseconds(
-      base::Time::kMicrosecondsPerSecond / 120.0);
+  base::TimeDelta interval =
+      base::Microseconds(base::Time::kMicrosecondsPerSecond / 120.0);
 
   // Send BeginFrameArgs with 120hz refresh rate and confirm client gets update.
   scheduler_->SetNeedsRedraw();
@@ -1538,7 +1538,7 @@ TEST_F(SchedulerTest, FrameIntervalUpdated) {
   // though the interval between begin frames arriving is bigger than |interval|
   // the client only hears the interval specified in BeginFrameArgs.
   scheduler_->SetNeedsRedraw();
-  const base::TimeDelta late_delta = base::TimeDelta::FromMilliseconds(4);
+  const base::TimeDelta late_delta = base::Milliseconds(4);
   task_runner_->AdvanceMockTickClock(interval + late_delta);
   viz::BeginFrameArgs args2 = viz::BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, kSourceId, sequence_number++, args1.deadline,
@@ -1547,8 +1547,7 @@ TEST_F(SchedulerTest, FrameIntervalUpdated) {
   EXPECT_EQ(client_->frame_interval(), interval);
 
   // Change the interval for 90hz refresh rate.
-  interval = base::TimeDelta::FromMicroseconds(
-      base::Time::kMicrosecondsPerSecond / 90.0);
+  interval = base::Microseconds(base::Time::kMicrosecondsPerSecond / 90.0);
 
   // Send BeginFrameArgs with 90hz refresh rate and confirm client gets update.
   scheduler_->SetNeedsRedraw();
@@ -2082,8 +2081,7 @@ TEST_F(SchedulerTest,
 
   // BeginImplFrame is not started.
   client_->Reset();
-  task_runner_->RunUntilTime(task_runner_->NowTicks() +
-                             base::TimeDelta::FromMilliseconds(10));
+  task_runner_->RunUntilTime(task_runner_->NowTicks() + base::Milliseconds(10));
   EXPECT_NO_ACTION();
   EXPECT_FALSE(client_->IsInsideBeginImplFrame());
 
@@ -3256,8 +3254,7 @@ TEST_F(SchedulerTest, SynchronousCompositorResourcelessOnDrawWhenInvisible) {
 TEST_F(SchedulerTest, AuthoritativeVSyncInterval) {
   SetUpScheduler(THROTTLED_BFS);
   base::TimeDelta initial_interval = scheduler_->BeginImplFrameInterval();
-  base::TimeDelta authoritative_interval =
-      base::TimeDelta::FromMilliseconds(33);
+  base::TimeDelta authoritative_interval = base::Milliseconds(33);
 
   scheduler_->SetNeedsBeginMainFrame();
   EXPECT_SCOPED(AdvanceFrame());
@@ -3694,7 +3691,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
   SetUpScheduler(EXTERNAL_BFS);
 
   scheduler_->SetNeedsRedraw();
-  base::TimeDelta estimate_duration = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta estimate_duration = base::Milliseconds(1);
   fake_compositor_timing_history_->SetAllEstimatesTo(estimate_duration);
 
   // If we have a scroll handler but the critical main frame is slow, we should
@@ -3704,7 +3701,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
       ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER);
   scheduler_->SetNeedsRedraw();
   // An interval of 2ms makes sure that the main frame is considered slow.
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(2);
+  base::TimeDelta interval = base::Milliseconds(2);
   task_runner_->AdvanceMockTickClock(interval);
   viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, 0u, 1u, task_runner_->NowTicks(),
@@ -3721,7 +3718,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
   // With a draw time of 1ms and fudge factor of 1ms, the interval available for
   // the main frame to be activated is 8ms, so it should be considered fast.
   scheduler_->SetNeedsRedraw();
-  interval = base::TimeDelta::FromMilliseconds(10);
+  interval = base::Milliseconds(10);
   task_runner_->AdvanceMockTickClock(interval);
   args = viz::BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, 0u, 2u,
                                      task_runner_->NowTicks(),
@@ -3737,7 +3734,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
   // frame. This should prioritize the impl thread.
   scheduler_->SetNeedsRedraw();
   fake_compositor_timing_history_->SetDrawDurationEstimate(
-      base::TimeDelta::FromMilliseconds(7));
+      base::Milliseconds(7));
   task_runner_->AdvanceMockTickClock(interval);
   args = viz::BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, 0u, 3u,
                                      task_runner_->NowTicks(),
@@ -3764,7 +3761,7 @@ TEST_F(SchedulerTest, WaitForAllPipelineStagesUsesMissedBeginFrames) {
   client_->Reset();
 
   // Uses MISSED BeginFrames even after the deadline has passed.
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(16);
+  base::TimeDelta interval = base::Milliseconds(16);
   task_runner_->AdvanceMockTickClock(interval);
   base::TimeTicks timestamp = task_runner_->NowTicks();
   // Deadline should have passed after this.
@@ -3800,7 +3797,7 @@ TEST_F(SchedulerTest, WaitForAllPipelineStagesAlwaysObservesBeginFrames) {
   EXPECT_TRUE(scheduler_->BeginFrameNeeded());
 
   // Scheduler begins a frame even if otherwise idle.
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(16);
+  base::TimeDelta interval = base::Milliseconds(16);
   task_runner_->AdvanceMockTickClock(interval);
   base::TimeTicks timestamp = task_runner_->NowTicks();
   viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
@@ -4017,7 +4014,7 @@ TEST_F(SchedulerTest,
   scheduler_->SetNeedsBeginMainFrame();
   EXPECT_ACTIONS("ScheduledActionSendBeginMainFrame");
   fake_compositor_timing_history_->SetBeginMainFrameSentTime(
-      task_runner_->NowTicks() + base::TimeDelta::FromMilliseconds(8));
+      task_runner_->NowTicks() + base::Milliseconds(8));
   client_->Reset();
   scheduler_->NotifyReadyToActivate();
   task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));

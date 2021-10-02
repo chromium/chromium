@@ -132,16 +132,13 @@ const char kTestModeCSSClass[] = "test-mode";
 const char kImmersiveModeCSSClass[] = "immersive-mode";
 
 // The delay between two taps to be recognized as a double tap gesture.
-constexpr base::TimeDelta kDoubleTapDelay =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kDoubleTapDelay = base::Milliseconds(300);
 
 // The time user have to hover on mute button to show volume slider.
 // If this value is changed, you need to change the corresponding value in
 // media_controls_impl_test.cc
-constexpr base::TimeDelta kTimeToShowVolumeSlider =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kTimeToShowVolumeSliderTest =
-    base::TimeDelta::FromMilliseconds(0);
+constexpr base::TimeDelta kTimeToShowVolumeSlider = base::Milliseconds(200);
+constexpr base::TimeDelta kTimeToShowVolumeSliderTest = base::Milliseconds(0);
 
 // The number of seconds to jump when double tapping.
 constexpr int kNumberOfSecondsToJump = 10;
@@ -213,7 +210,7 @@ bool PreferHiddenVolumeControls(const Document& document) {
 // If you change this value, then also update the corresponding value in
 // web_tests/media/media-controls.js.
 constexpr base::TimeDelta kTimeWithoutMouseMovementBeforeHidingMediaControls =
-    base::TimeDelta::FromSecondsD(2.5);
+    base::Seconds(2.5);
 
 base::TimeDelta GetTimeWithoutMouseMovementBeforeHidingMediaControls() {
   return kTimeWithoutMouseMovementBeforeHidingMediaControls;

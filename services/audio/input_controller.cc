@@ -35,13 +35,11 @@ namespace {
 using OpenOutcome = media::AudioInputStream::OpenOutcome;
 
 const int kMaxInputChannels = 3;
-constexpr base::TimeDelta kCheckMutedStateInterval =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCheckMutedStateInterval = base::Seconds(1);
 
 #if defined(AUDIO_POWER_MONITORING)
 // Time in seconds between two successive measurements of audio power levels.
-constexpr base::TimeDelta kPowerMonitorLogInterval =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
 // A warning will be logged when the microphone audio volume is below this
 // threshold.

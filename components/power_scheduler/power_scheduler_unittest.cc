@@ -97,7 +97,7 @@ class PowerSchedulerTest : public testing::Test {
     }
     EXPECT_EQ(scheduler_.GetPolicy().policy, policy);
     EXPECT_EQ(scheduler_.GetPolicy().min_time_in_mode,
-              base::TimeDelta::FromMilliseconds(min_time_in_mode_ms));
+              base::Milliseconds(min_time_in_mode_ms));
     EXPECT_NEAR(scheduler_.GetPolicy().min_cputime_ratio, min_cputime_ratio,
                 0.01);
   }
@@ -152,7 +152,7 @@ TEST_F(PowerSchedulerTest, ThrottleIdleAndNopAnimation) {
 
 TEST_F(PowerSchedulerTest, ThrottleIdleWithMinimums) {
   SchedulingPolicyParams params{SchedulingPolicy::kThrottleIdle,
-                                base::TimeDelta::FromMilliseconds(500), 0.5};
+                                base::Milliseconds(500), 0.5};
   SetPolicyAndExpect(params, base::CpuAffinityMode::kDefault);
 
   SetPowerModeAndExpect(PowerMode::kIdle, base::CpuAffinityMode::kDefault);
@@ -165,7 +165,7 @@ TEST_F(PowerSchedulerTest, ThrottleIdleWithMinimums) {
                           base::CpuAffinityMode::kDefault);
     SetPowerModeAndExpect(PowerMode::kIdle, base::CpuAffinityMode::kDefault);
     // Advancing time with incrementing CPU above min - throttle.
-    scheduler_.AdvanceCpuTime(base::TimeDelta::FromMilliseconds(300));
+    scheduler_.AdvanceCpuTime(base::Milliseconds(300));
     task_environment_.FastForwardBy(params.min_time_in_mode);
     Expect(base::CpuAffinityMode::kLittleCoresOnly);
 
@@ -174,7 +174,7 @@ TEST_F(PowerSchedulerTest, ThrottleIdleWithMinimums) {
                           base::CpuAffinityMode::kDefault);
     SetPowerModeAndExpect(PowerMode::kIdle, base::CpuAffinityMode::kDefault);
     // Advancing time with incrementing CPU below min - stay unthrottled.
-    scheduler_.AdvanceCpuTime(base::TimeDelta::FromMilliseconds(100));
+    scheduler_.AdvanceCpuTime(base::Milliseconds(100));
     task_environment_.FastForwardBy(params.min_time_in_mode);
     Expect(base::CpuAffinityMode::kDefault);
   }
@@ -184,7 +184,7 @@ TEST_F(PowerSchedulerTest, ThrottleIdleWithMinimums) {
     SetPowerModeAndExpect(PowerMode::kAnimation,
                           base::CpuAffinityMode::kDefault);
     SetPowerModeAndExpect(PowerMode::kIdle, base::CpuAffinityMode::kDefault);
-    scheduler_.AdvanceCpuTime(base::TimeDelta::FromMilliseconds(300));
+    scheduler_.AdvanceCpuTime(base::Milliseconds(300));
     task_environment_.FastForwardBy(params.min_time_in_mode / 2);
     Expect(base::CpuAffinityMode::kDefault);
   }

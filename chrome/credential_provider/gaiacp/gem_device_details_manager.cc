@@ -30,7 +30,7 @@ namespace credential_provider {
 
 const base::TimeDelta
     GemDeviceDetailsManager::kDefaultUploadDeviceDetailsRequestTimeout =
-        base::TimeDelta::FromMilliseconds(12000);
+        base::Milliseconds(12000);
 
 namespace {
 
@@ -62,8 +62,7 @@ const wchar_t kUploadDeviceDetailsFromEsaEnabledRegKey[] =
     L"upload_device_details_from_esa";
 
 // The period of uploading device details to the backend.
-const base::TimeDelta kUploadDeviceDetailsExecutionPeriod =
-    base::TimeDelta::FromHours(3);
+const base::TimeDelta kUploadDeviceDetailsExecutionPeriod = base::Hours(3);
 
 // True when upload device details from ESA feature  is enabled.
 bool g_upload_device_details_from_esa_enabled = false;

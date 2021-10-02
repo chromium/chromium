@@ -154,7 +154,7 @@ TEST_F(ClientTelemetryLoggerTest, SessionIdExpiration) {
   // kMaxSessionIdAgeDays = 1. Fake the generation time to be 2 days ago and
   // force it to expire.
   logger_->SetSessionIdGenerationTimeForTest(base::TimeTicks::Now() -
-                                             base::TimeDelta::FromDays(2));
+                                             base::Days(2));
   protocol::PerformanceTracker perf_tracker;
   logger_->LogStatistics(perf_tracker);
   EXPECT_NE(last_id, logger_->session_id());

@@ -120,8 +120,8 @@ TEST(ProcessStatsSenderTest, ReportUsage) {
       base::BindOnce(
           [](std::unique_ptr<ProcessStatsSender>* stats,
              FakeProcessStatsStub* stub, FakeProcessStatsAgent* agent) -> void {
-            stats->reset(new ProcessStatsSender(
-                stub, base::TimeDelta::FromMilliseconds(1), { agent }));
+            stats->reset(
+                new ProcessStatsSender(stub, base::Milliseconds(1), {agent}));
           },
           base::Unretained(&stats), base::Unretained(&stub),
           base::Unretained(&agent)));
@@ -160,9 +160,8 @@ TEST(ProcessStatsSenderTest, MergeUsage) {
           [](std::unique_ptr<ProcessStatsSender>* stats,
              FakeProcessStatsStub* stub, FakeProcessStatsAgent* agent1,
              FakeProcessStatsAgent* agent2) -> void {
-            stats->reset(new ProcessStatsSender(
-                stub, base::TimeDelta::FromMilliseconds(1),
-                { agent1, agent2 } ));
+            stats->reset(new ProcessStatsSender(stub, base::Milliseconds(1),
+                                                {agent1, agent2}));
           },
           base::Unretained(&stats), base::Unretained(&stub),
           base::Unretained(&agent1), base::Unretained(&agent2)));

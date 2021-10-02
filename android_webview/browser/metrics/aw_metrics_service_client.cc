@@ -242,7 +242,7 @@ void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
     JNIEnv* env,
     jlong upload_interval_ms) {
   AwMetricsServiceClient::GetInstance()->SetUploadIntervalForTesting(
-      base::TimeDelta::FromMilliseconds(upload_interval_ms));
+      base::Milliseconds(upload_interval_ms));
 }
 
 // static
@@ -263,8 +263,7 @@ void JNI_AwMetricsServiceClient_SetAppPackageNameLoggingRuleForTesting(
   AwMetricsServiceClient::GetInstance()->SetAppPackageNameLoggingRule(
       AppPackageNameLoggingRule(
           base::Version(base::android::ConvertJavaStringToUTF8(env, version)),
-          base::Time::UnixEpoch() +
-              base::TimeDelta::FromMilliseconds(expiry_date_ms)));
+          base::Time::UnixEpoch() + base::Milliseconds(expiry_date_ms)));
 }
 
 }  // namespace android_webview

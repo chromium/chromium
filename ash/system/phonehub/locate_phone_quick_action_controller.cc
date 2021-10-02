@@ -21,8 +21,7 @@ namespace {
 
 // Time to wait until we check the state of the phone to prevent showing wrong
 // state
-constexpr base::TimeDelta kWaitForRequestTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(5);
 
 }  // namespace
 

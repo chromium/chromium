@@ -525,8 +525,8 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
 std::unique_ptr<SyncSchedulerImpl> CreateSyncScheduler(
     SyncScheduler::Delegate* delegate) {
   return std::make_unique<SyncSchedulerImpl>(
-      delegate, base::TimeDelta::FromHours(kRefreshPeriodHours),
-      base::TimeDelta::FromMinutes(kDeviceSyncBaseRecoveryPeriodMinutes),
+      delegate, base::Hours(kRefreshPeriodHours),
+      base::Minutes(kDeviceSyncBaseRecoveryPeriodMinutes),
       kDeviceSyncMaxJitterRatio, "CryptAuth DeviceSync");
 }
 

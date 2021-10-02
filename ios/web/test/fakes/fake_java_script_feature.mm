@@ -77,7 +77,7 @@ void FakeJavaScriptFeature::GetErrorCount(
     WebFrame* web_frame,
     base::OnceCallback<void(const base::Value*)> callback) {
   CallJavaScriptFunction(web_frame, kGetErrorCount, {}, std::move(callback),
-                         base::TimeDelta::FromSeconds(kGetErrorCountTimeout));
+                         base::Seconds(kGetErrorCountTimeout));
 }
 
 absl::optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()

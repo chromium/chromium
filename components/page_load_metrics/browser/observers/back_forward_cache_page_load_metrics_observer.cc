@@ -188,8 +188,7 @@ void BackForwardCachePageLoadMetricsObserver::
               first_input_delay, GetDelegate(), index)) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramFirstInputDelayAfterBackForwardCacheRestore,
-        *first_input_delay, base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromSeconds(60), 50);
+        *first_input_delay, base::Milliseconds(1), base::Seconds(60), 50);
 
     // HistoryNavigation is a singular event, and we share the same instance as
     // long as we use the same source ID.

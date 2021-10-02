@@ -273,9 +273,8 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 }
 
 void TestRunner::SetTimeout(DWORD timeout_ms) {
-  SetTimeout(timeout_ms == INFINITE
-                 ? base::TimeDelta::Max()
-                 : base::TimeDelta::FromMilliseconds(timeout_ms));
+  SetTimeout(timeout_ms == INFINITE ? base::TimeDelta::Max()
+                                    : base::Milliseconds(timeout_ms));
 }
 
 void TestRunner::SetTimeout(base::TimeDelta timeout) {
@@ -283,8 +282,7 @@ void TestRunner::SetTimeout(base::TimeDelta timeout) {
   DCHECK(timeout >= base::TimeDelta());
   // We need millisecond DWORDS but also cannot take exactly INFINITE,
   // for that should supply ::Max().
-  DCHECK(timeout.is_inf() ||
-         timeout < base::TimeDelta::FromMilliseconds(UINT_MAX));
+  DCHECK(timeout.is_inf() || timeout < base::Milliseconds(UINT_MAX));
   timeout_ = timeout;
 }
 

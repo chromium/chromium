@@ -1222,7 +1222,7 @@ TEST_F(URLFetcherTest, ThrottleOnRepeatedFetches) {
 
   // 20 requests were sent. Due to throttling, they should have collectively
   // taken over 1 second.
-  EXPECT_GE(Time::Now() - start_time, base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(Time::Now() - start_time, base::Seconds(1));
 }
 
 // If throttling kicks in for a chunked upload, there should be no crash.
@@ -1290,7 +1290,7 @@ TEST_F(URLFetcherTest, ThrottleOn5xxRetries) {
   // The request should have been retried 11 times (12 times including the first
   // attempt).  Due to throttling, they should have collectively taken over 1
   // second.
-  EXPECT_GE(Time::Now() - start_time, base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(Time::Now() - start_time, base::Seconds(1));
 }
 
 // Tests overload protection, when responses passed through.

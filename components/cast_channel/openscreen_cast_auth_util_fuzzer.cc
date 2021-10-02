@@ -44,15 +44,15 @@ time_t GenerateCertTime(TimeBoundCase c, int direction) {
   switch (c) {
     case TimeBoundCase::VALID:
       // Create bound that include the current date.
-      t = base::Time::Now() + base::TimeDelta::FromDays(direction);
+      t = base::Time::Now() + base::Days(direction);
       break;
     case TimeBoundCase::INVALID:
       // Create a bound that excludes the current date.
-      t = base::Time::Now() + base::TimeDelta::FromDays(-direction);
+      t = base::Time::Now() + base::Days(-direction);
       break;
     case TimeBoundCase::OOB:
       // Create a bound so far in the past/future it's not valid.
-      t = base::Time::Now() + base::TimeDelta::FromDays(direction * 10000);
+      t = base::Time::Now() + base::Days(direction * 10000);
       break;
     case TimeBoundCase::MISSING:
       // Remove any existing bound.

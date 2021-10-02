@@ -94,8 +94,7 @@ void CheckDuplicateOngoingDownloads(
           UMA_HISTOGRAM_CUSTOM_COUNTS(
               "OfflinePages.DownloadRequestTimeSinceDuplicateRequested",
               (OfflineTimeNow() - latest_request_time).InSeconds(),
-              base::TimeDelta::FromSeconds(1).InSeconds(),
-              base::TimeDelta::FromDays(7).InSeconds(), 50);
+              base::Seconds(1).InSeconds(), base::Days(7).InSeconds(), 50);
 
           std::move(callback).Run(
               OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND);
@@ -285,8 +284,7 @@ void OfflinePageUtils::CheckDuplicateDownloads(
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "OfflinePages.DownloadRequestTimeSinceDuplicateSaved",
           (OfflineTimeNow() - latest_saved_time).InSeconds(),
-          base::TimeDelta::FromSeconds(1).InSeconds(),
-          base::TimeDelta::FromDays(7).InSeconds(), 50);
+          base::Seconds(1).InSeconds(), base::Days(7).InSeconds(), 50);
 
       std::move(callback).Run(DuplicateCheckResult::DUPLICATE_PAGE_FOUND);
     }

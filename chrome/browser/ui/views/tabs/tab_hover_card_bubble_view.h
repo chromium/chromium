@@ -36,7 +36,7 @@ class Tab;
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
  public:
   static constexpr base::TimeDelta kHoverCardSlideDuration =
-      base::TimeDelta::FromMilliseconds(200);
+      base::Milliseconds(200);
 
   // Helper class used to elide local filenames with a RenderText object that
   // is provided with the correct setup and formatting.

@@ -140,7 +140,7 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
     settings->SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
 
     constexpr base::TimeDelta kPopupOpacityAnimationDuration =
-        base::TimeDelta::FromMilliseconds(82);
+        base::Milliseconds(82);
     settings->SetTransitionDuration(kPopupOpacityAnimationDuration);
 
     return settings;

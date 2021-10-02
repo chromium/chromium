@@ -273,12 +273,11 @@ ChromeBrowsingDataLifetimeManager::ChromeBrowsingDataLifetimeManager(
           base::TaskPriority::BEST_EFFORT,
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       })
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&ChromeBrowsingDataLifetimeManager::
-                             UpdateScheduledRemovalSettings,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromSeconds(kInitialCleanupDelayInSeconds));
+      ->PostDelayedTask(FROM_HERE,
+                        base::BindOnce(&ChromeBrowsingDataLifetimeManager::
+                                           UpdateScheduledRemovalSettings,
+                                       weak_ptr_factory_.GetWeakPtr()),
+                        base::Seconds(kInitialCleanupDelayInSeconds));
 }
 
 ChromeBrowsingDataLifetimeManager::~ChromeBrowsingDataLifetimeManager() =
@@ -338,7 +337,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
 
     auto deletion_end_time = end_time_for_testing_.value_or(
         base::Time::Now() -
-        base::TimeDelta::FromHours(removal_settings.time_to_live_in_hours));
+        base::Hours(removal_settings.time_to_live_in_hours));
     auto filterable_remove_mask =
         removal_settings.remove_mask &
         chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
@@ -375,10 +374,9 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
           base::TaskPriority::BEST_EFFORT,
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       })
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&ChromeBrowsingDataLifetimeManager::
-                             StartScheduledBrowsingDataRemoval,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromHours(kDefaultCleanupPeriodInHours));
+      ->PostDelayedTask(FROM_HERE,
+                        base::BindOnce(&ChromeBrowsingDataLifetimeManager::
+                                           StartScheduledBrowsingDataRemoval,
+                                       weak_ptr_factory_.GetWeakPtr()),
+                        base::Hours(kDefaultCleanupPeriodInHours));
 }

@@ -36,11 +36,11 @@ namespace {
 constexpr int kBucketSize = 15;
 
 // Interval at which data should be logged.
-constexpr auto kLoggingInterval = base::TimeDelta::FromMinutes(30);
+constexpr auto kLoggingInterval = base::Minutes(30);
 
 // Count number of key, mouse, touch events or duration of audio/video playing
 // in the past 30 minutes.
-constexpr auto kUserActivityDuration = base::TimeDelta::FromMinutes(30);
+constexpr auto kUserActivityDuration = base::Minutes(30);
 
 // Granularity of input events is per minute.
 constexpr int kNumUserInputEventsBuckets = kUserActivityDuration.InMinutes();
@@ -502,7 +502,7 @@ base::TimeDelta SmartChargingManager::DurationRecentVideoPlaying() {
   }
 
   // Calculates total time.
-  base::TimeDelta total_time = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta total_time = base::Seconds(0);
   for (const auto& event : recent_video_usage_) {
     total_time += std::min(event.end_time - event.start_time,
                            event.end_time - start_of_duration);

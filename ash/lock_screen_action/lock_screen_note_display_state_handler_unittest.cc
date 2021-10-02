@@ -115,7 +115,7 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
     power_manager_observer_->ClearBrightnessChanges();
 
     // Advance the tick clock so it's not close to the null clock value.
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10000));
+    tick_clock_.Advance(base::Milliseconds(10000));
   }
   void TearDown() override {
     power_manager_observer_.reset();
@@ -154,7 +154,7 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
 
   void SimulatePowerButtonPress() {
     power_manager_client()->SendPowerButtonEvent(true, tick_clock_.NowTicks());
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    tick_clock_.Advance(base::Milliseconds(10));
     power_manager_client()->SendPowerButtonEvent(false, tick_clock_.NowTicks());
     base::RunLoop().RunUntilIdle();
   }

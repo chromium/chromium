@@ -81,8 +81,7 @@ constexpr float kMaxStableAngle = 340.0f;
 // to prevent entering tablet mode if an erroneous accelerometer reading makes
 // the lid appear to be fully open when the user is opening the lid from a
 // closed position or is closing the lid from an opened position.
-constexpr base::TimeDelta kUnstableLidAngleDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kUnstableLidAngleDuration = base::Seconds(2);
 
 // When the device approaches vertical orientation (i.e. portrait orientation)
 // the accelerometers for the base and lid approach the same values (i.e.
@@ -103,13 +102,11 @@ constexpr float kHingeVerticalSmoothingMaximum = 8.7f;
 constexpr float kNoisyMagnitudeDeviation = 1.0f;
 
 // Interval between calls to RecordLidAngle().
-constexpr base::TimeDelta kRecordLidAngleInterval =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRecordLidAngleInterval = base::Hours(1);
 
 // Time that should wait to reset |occlusion_tracker_pauser_| on
 // entering/exiting tablet mode.
-constexpr base::TimeDelta kOcclusionTrackerTimeout =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kOcclusionTrackerTimeout = base::Seconds(1);
 
 // Histogram names for recording animation smoothness when entering or exiting
 // tablet mode.
@@ -599,10 +596,10 @@ void TabletModeController::OnChromeTerminating() {
   if (CanEnterTabletMode()) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.TouchView.TouchViewActiveTotal",
                                 total_tablet_mode_time_.InMinutes(), 1,
-                                base::TimeDelta::FromDays(7).InMinutes(), 50);
+                                base::Days(7).InMinutes(), 50);
     UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.TouchView.TouchViewInactiveTotal",
                                 total_non_tablet_mode_time_.InMinutes(), 1,
-                                base::TimeDelta::FromDays(7).InMinutes(), 50);
+                                base::Days(7).InMinutes(), 50);
     base::TimeDelta total_runtime =
         total_tablet_mode_time_ + total_non_tablet_mode_time_;
     if (total_runtime.InSeconds() > 0) {

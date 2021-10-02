@@ -13,7 +13,7 @@
 namespace {
 
 constexpr base::TimeDelta kDefaultSeekTimeSeconds =
-    base::TimeDelta::FromSeconds(media_session::mojom::kDefaultSeekTimeSeconds);
+    base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds);
 
 bool IsPlaying(const media_router::mojom::MediaStatusPtr& media_status) {
   return media_status &&
@@ -125,8 +125,7 @@ void CastMediaSessionController::IncrementCurrentTimeAfterOneSecond() {
   // TODO(crbug.com/1052156): If the playback rate is not 1, we must increment
   // at a different rate.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, increment_current_time_callback_.callback(),
-      base::TimeDelta::FromSeconds(1));
+      FROM_HERE, increment_current_time_callback_.callback(), base::Seconds(1));
 }
 
 void CastMediaSessionController::IncrementCurrentTime() {
@@ -135,6 +134,6 @@ void CastMediaSessionController::IncrementCurrentTime() {
 
   if (media_status_->current_time < media_status_->duration)
     IncrementCurrentTimeAfterOneSecond();
-  media_status_->current_time = PutWithinBounds(
-      media_status_->current_time + base::TimeDelta::FromSeconds(1));
+  media_status_->current_time =
+      PutWithinBounds(media_status_->current_time + base::Seconds(1));
 }

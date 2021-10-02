@@ -179,9 +179,9 @@ void IOSThreadProfiler::SetCollectorForChildProcess(
 base::StackSamplingProfiler::SamplingParams
 IOSThreadProfiler::GetSamplingParams() {
   base::StackSamplingProfiler::SamplingParams params;
-  params.initial_delay = base::TimeDelta::FromMilliseconds(0);
-  const base::TimeDelta duration = base::TimeDelta::FromSeconds(30);
-  params.sampling_interval = base::TimeDelta::FromMilliseconds(100);
+  params.initial_delay = base::Milliseconds(0);
+  const base::TimeDelta duration = base::Seconds(30);
+  params.sampling_interval = base::Milliseconds(100);
   params.samples_per_profile = duration / params.sampling_interval;
 
   return params;

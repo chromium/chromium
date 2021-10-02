@@ -60,13 +60,13 @@ constexpr float kMaximizeCueEntraceAnimationYPositionMoveDownFactor = 1.5f;
 
 // The duration of the maximize cue entrance animation.
 constexpr base::TimeDelta kMaximizeCueEntranceAnimationDurationMs =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 // The duration of the maximize cue exit animation.
 constexpr base::TimeDelta kMaximizeCueExitAnimationDurationMs =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 // The delay of the maximize cue entrance and exit animation.
 constexpr base::TimeDelta kMaximizeCueAnimationDelayMs =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 }  // namespace
 
@@ -194,8 +194,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   // Fade the window in.
   widget_layer->SetOpacity(0);
   ui::ScopedLayerAnimationSettings scoped_setter(widget_layer->GetAnimator());
-  scoped_setter.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kAnimationDurationMs));
+  scoped_setter.SetTransitionDuration(base::Milliseconds(kAnimationDurationMs));
   scoped_setter.SetTweenType(gfx::Tween::EASE_IN);
   scoped_setter.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);

@@ -102,10 +102,10 @@ float ShelfTooltipPreviewBubble::GetMaxPreviewRatio() const {
 }
 
 void ShelfTooltipPreviewBubble::DismissAfterDelay() {
-  dismiss_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kPreviewBubbleDismissDelay),
-      base::BindOnce(&ShelfTooltipPreviewBubble::Dismiss,
-                     base::Unretained(this)));
+  dismiss_timer_.Start(FROM_HERE,
+                       base::Milliseconds(kPreviewBubbleDismissDelay),
+                       base::BindOnce(&ShelfTooltipPreviewBubble::Dismiss,
+                                      base::Unretained(this)));
 }
 
 void ShelfTooltipPreviewBubble::Dismiss() {

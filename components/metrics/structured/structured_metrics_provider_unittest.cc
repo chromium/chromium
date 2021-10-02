@@ -108,7 +108,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     StructuredMetricsClient::Get()->SetDelegate(Recorder::GetInstance());
     // Move the mock date forward from day 0, because KeyData assumes that day 0
     // is a bug.
-    task_environment_.AdvanceClock(base::TimeDelta::FromDays(1000));
+    task_environment_.AdvanceClock(base::Days(1000));
   }
 
   base::FilePath TempDirPath() { return temp_dir_.GetPath(); }
@@ -232,7 +232,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     // Independent metrics are only reported at intervals. So advance time to
     // ensure HasIndependentMetrics will return true if there are recorded
     // metrics.
-    task_environment_.AdvanceClock(base::TimeDelta::FromHours(1));
+    task_environment_.AdvanceClock(base::Hours(1));
 
     ChromeUserMetricsExtension uma_proto;
     if (provider_->HasIndependentMetrics()) {
@@ -662,7 +662,7 @@ TEST_F(StructuredMetricsProviderTest, ExternalMetricsAreReported) {
   OnProfileAdded(TempDirPath());
   OnRecordingEnabled();
   SetExternalMetricsDirForTest(events_dir);
-  task_environment_.AdvanceClock(base::TimeDelta::FromHours(10));
+  task_environment_.AdvanceClock(base::Hours(10));
   Wait();
   EXPECT_EQ(GetSessionData().events_size(), 3);
 }

@@ -303,7 +303,7 @@ Status PerformanceLogger::CollectTraceEvents() {
   status = browser_client_->HandleEventsUntil(
       base::BindRepeating(&PerformanceLogger::IsTraceDone,
                           base::Unretained(this)),
-      Timeout(base::TimeDelta::FromSeconds(30)));
+      Timeout(base::Seconds(30)));
   if (status.IsError())
     return status;
 

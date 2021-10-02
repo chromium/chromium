@@ -22,7 +22,7 @@ using testing::IsEmpty;
 
 // Helper for TimeTicks usage
 base::TimeTicks MillisecondsToTimeTicks(int t_ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(t_ms);
+  return base::TimeTicks() + base::Milliseconds(t_ms);
 }
 
 // Helper function returning a successful `FrameTimingDetails` for use in
@@ -61,7 +61,7 @@ class AverageLagTrackingManagerTest : public testing::Test {
     events[0] = PrepareScrollEvent(AverageLagTracker::EventType::ScrollBegin,
                                    event_time, 0, scroll_delta);
     for (size_t i = 1; i < events.size(); i++) {
-      event_time += base::TimeDelta::FromMilliseconds(scroll_rate);
+      event_time += base::Milliseconds(scroll_rate);
       events[i] = PrepareScrollEvent(AverageLagTracker::EventType::ScrollUpdate,
                                      event_time, i, scroll_delta);
     }
@@ -72,7 +72,7 @@ class AverageLagTrackingManagerTest : public testing::Test {
       int time_delta = gpu_swap_times[frame] - gpu_swap_times[frame - 1];
       events = std::vector<ui::LatencyInfo>(time_delta / scroll_rate);
       for (size_t i = 0; i < events.size(); i++) {
-        event_time += base::TimeDelta::FromMilliseconds(scroll_rate);
+        event_time += base::Milliseconds(scroll_rate);
         events[i] =
             PrepareScrollEvent(AverageLagTracker::EventType::ScrollUpdate,
                                event_time, i, scroll_delta);
@@ -126,9 +126,9 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
   int frame_id = 1;
 
   // ScrollBegin
-  event_time += base::TimeDelta::FromMilliseconds(10);         // 15ms
-  gpu_swap_time += base::TimeDelta::FromMilliseconds(10);      // 20ms
-  presentation_time += base::TimeDelta::FromMilliseconds(10);  // 23ms
+  event_time += base::Milliseconds(10);         // 15ms
+  gpu_swap_time += base::Milliseconds(10);      // 20ms
+  presentation_time += base::Milliseconds(10);  // 23ms
   ui::LatencyInfo evt =
       PrepareScrollEvent(AverageLagTracker::EventType::ScrollBegin, event_time,
                          trace_id, scroll_delta);
@@ -140,9 +140,9 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
   // per 1 second.
   const int kUpdates = 101;
   for (int i = 0; i < kUpdates; i++) {
-    event_time += base::TimeDelta::FromMilliseconds(10);
-    gpu_swap_time += base::TimeDelta::FromMilliseconds(10);
-    presentation_time += base::TimeDelta::FromMilliseconds(10);
+    event_time += base::Milliseconds(10);
+    gpu_swap_time += base::Milliseconds(10);
+    presentation_time += base::Milliseconds(10);
     // First 50 has positive delta, others negative delta.
     const int sign = (i < kUpdates / 2) ? 1 : -1;
 

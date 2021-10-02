@@ -291,7 +291,7 @@ void ReportingTestBase::CreateContext(const ReportingPolicy& policy,
 }
 
 base::TimeTicks ReportingTestBase::yesterday() {
-  return tick_clock()->NowTicks() - base::TimeDelta::FromDays(1);
+  return tick_clock()->NowTicks() - base::Days(1);
 }
 
 base::TimeTicks ReportingTestBase::now() {
@@ -299,7 +299,7 @@ base::TimeTicks ReportingTestBase::now() {
 }
 
 base::TimeTicks ReportingTestBase::tomorrow() {
-  return tick_clock()->NowTicks() + base::TimeDelta::FromDays(1);
+  return tick_clock()->NowTicks() + base::Days(1);
 }
 
 TestReportingService::Report::Report() = default;

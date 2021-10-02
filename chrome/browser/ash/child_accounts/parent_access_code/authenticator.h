@@ -111,8 +111,7 @@ class Authenticator {
  public:
   // Granularity of which generation and verification of access code are carried
   // out. Should not exceed code validity period.
-  static constexpr base::TimeDelta kAccessCodeGranularity =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kAccessCodeGranularity = base::Minutes(1);
 
   explicit Authenticator(AccessCodeConfig config);
 

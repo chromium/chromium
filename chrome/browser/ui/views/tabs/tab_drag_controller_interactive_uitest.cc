@@ -582,7 +582,7 @@ class DetachToBrowserTabDragControllerTest
           base::BindOnce(&DetachToBrowserTabDragControllerTest::
                              ReleaseInputAfterWindowDetached,
                          base::Unretained(this), first_dragged_tab_width),
-          base::TimeDelta::FromMilliseconds(1));
+          base::Milliseconds(1));
       return;
     }
 
@@ -4498,14 +4498,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   clock.SetNowTicks(base::TimeTicks::Now());
   ui::SetEventTickClockForTesting(&clock);
   ASSERT_TRUE(PressInput(tab_0_center));
-  clock.Advance(base::TimeDelta::FromMilliseconds(5));
+  clock.Advance(base::Milliseconds(5));
   ASSERT_TRUE(DragInputToNotifyWhenDone(
       tab_0_center + detach, base::BindLambdaForTesting([&]() {
         // Drag down again; this should cause a fling-down event.
-        clock.Advance(base::TimeDelta::FromMilliseconds(5));
+        clock.Advance(base::Milliseconds(5));
         ASSERT_TRUE(DragInputToNotifyWhenDone(
             tab_0_center + detach + detach, base::BindLambdaForTesting([&]() {
-              clock.Advance(base::TimeDelta::FromMilliseconds(5));
+              clock.Advance(base::Milliseconds(5));
               ASSERT_TRUE(ReleaseInput());
             })));
       })));
@@ -4534,11 +4534,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   clock.SetNowTicks(base::TimeTicks::Now());
   ui::SetEventTickClockForTesting(&clock);
   ASSERT_TRUE(PressInput(tab_0_center));
-  clock.Advance(base::TimeDelta::FromMilliseconds(5));
+  clock.Advance(base::Milliseconds(5));
   ASSERT_TRUE(DragInputToAsync(tab_0_center + detach));
-  clock.Advance(base::TimeDelta::FromMilliseconds(5));
+  clock.Advance(base::Milliseconds(5));
   ASSERT_TRUE(DragInputToAsync(tab_0_center + detach + detach));
-  clock.Advance(base::TimeDelta::FromMilliseconds(2));
+  clock.Advance(base::Milliseconds(2));
   ASSERT_TRUE(ReleaseInput());
   observer.Wait();
 

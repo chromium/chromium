@@ -68,7 +68,7 @@ constexpr double kStoragePressureThresholdRatio = 0.02;
 // Limit how frequently QuotaManagerImpl polls for free disk space when
 // only using that information to identify storage pressure.
 constexpr base::TimeDelta kStoragePressureCheckDiskStatsInterval =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 // Modifies a given value by a uniformly random amount from
 // -percent to +percent.
@@ -1542,9 +1542,9 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
       special_storage_policy_.get());
 
   if (!is_incognito_) {
-    histogram_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kReportHistogramInterval),
-        this, &QuotaManagerImpl::ReportHistogram);
+    histogram_timer_.Start(FROM_HERE,
+                           base::Milliseconds(kReportHistogramInterval), this,
+                           &QuotaManagerImpl::ReportHistogram);
   }
 
   base::PostTaskAndReplyWithResult(
@@ -2184,7 +2184,7 @@ void QuotaManagerImpl::DidGetSettings(absl::optional<QuotaSettings> settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!settings) {
     settings = settings_;
-    settings->refresh_interval = base::TimeDelta::FromMinutes(1);
+    settings->refresh_interval = base::Minutes(1);
   }
   SetQuotaSettings(*settings);
   settings_callbacks_.Run(*settings);

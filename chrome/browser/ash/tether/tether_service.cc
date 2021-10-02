@@ -638,8 +638,7 @@ bool TetherService::HandleFeatureStateMetricIfUninitialized() {
   // recorded. |kMetricFalsePositiveSeconds| is chosen such that it is long
   // enough that we can assume a false positive did not occur and that the
   // metric value is actually correct.
-  timer_->Start(FROM_HERE,
-                base::TimeDelta::FromSeconds(kMetricFalsePositiveSeconds),
+  timer_->Start(FROM_HERE, base::Seconds(kMetricFalsePositiveSeconds),
                 base::BindOnce(&TetherService::RecordTetherFeatureState,
                                weak_ptr_factory_.GetWeakPtr()));
 

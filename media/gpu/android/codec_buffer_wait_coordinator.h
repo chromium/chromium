@@ -68,10 +68,9 @@ class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
 
   // 5msec covers >99.9% of cases, so just wait for up to that much before
   // giving up. If an error occurs, we might not ever get a notification.
-  Tuneable<base::TimeDelta> max_wait_ = {"MediaCodecOutputBufferMaxWaitTime",
-                                         base::TimeDelta::FromMilliseconds(0),
-                                         base::TimeDelta::FromMilliseconds(5),
-                                         base::TimeDelta::FromMilliseconds(20)};
+  Tuneable<base::TimeDelta> max_wait_ = {
+      "MediaCodecOutputBufferMaxWaitTime", base::Milliseconds(0),
+      base::Milliseconds(5), base::Milliseconds(20)};
 
   DISALLOW_COPY_AND_ASSIGN(CodecBufferWaitCoordinator);
 };

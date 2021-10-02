@@ -21,7 +21,7 @@ namespace {
 constexpr base::FeatureParam<base::TimeDelta> kSlackValueMs{
     &kLudicrousTimerSlack, "slack_ms",
     // 1.5 seconds default slack for this ludicrous experiment.
-    base::TimeDelta::FromMilliseconds(1500)};
+    base::Milliseconds(1500)};
 
 }  // namespace
 }  // namespace features

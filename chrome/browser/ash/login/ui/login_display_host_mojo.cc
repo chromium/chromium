@@ -344,8 +344,7 @@ void LoginDisplayHostMojo::OnBrowserCreated() {
     return;
   base::TimeDelta delta = base::TimeTicks::Now() - startup_time;
   UMA_HISTOGRAM_CUSTOM_TIMES("OOBE.BootToSignInCompleted", delta,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromMinutes(30), 100);
+                             base::Milliseconds(10), base::Minutes(30), 100);
 }
 
 void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {

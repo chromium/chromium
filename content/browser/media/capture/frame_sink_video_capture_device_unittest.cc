@@ -71,8 +71,8 @@ namespace {
 // Capture parameters.
 constexpr gfx::Size kResolution = gfx::Size(320, 180);
 constexpr int kMaxFrameRate = 25;  // It evenly divides 1 million usec.
-constexpr base::TimeDelta kMinCapturePeriod = base::TimeDelta::FromMicroseconds(
-    base::Time::kMicrosecondsPerSecond / kMaxFrameRate);
+constexpr base::TimeDelta kMinCapturePeriod =
+    base::Microseconds(base::Time::kMicrosecondsPerSecond / kMaxFrameRate);
 constexpr media::VideoPixelFormat kFormat = media::PIXEL_FORMAT_I420;
 
 // Video buffer parameters.

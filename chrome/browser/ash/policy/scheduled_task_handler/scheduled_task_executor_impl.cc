@@ -109,7 +109,7 @@ base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b) {
   UDate b_ms = b.getTime(status);
   DCHECK(U_SUCCESS(status));
   DCHECK(a_ms >= b_ms);
-  return base::TimeDelta::FromMilliseconds(a_ms - b_ms);
+  return base::Milliseconds(a_ms - b_ms);
 }
 
 std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,

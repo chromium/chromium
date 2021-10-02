@@ -632,8 +632,8 @@ void SpdyHttpStream::MaybeScheduleBufferedReadCallback() {
   // Handing small chunks of data to the caller creates measurable overhead.
   // Wait 1ms to allow handing off multiple chunks of data received within a
   // short time span at once.
-  buffered_read_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-                             this, &SpdyHttpStream::DoBufferedReadCallback);
+  buffered_read_timer_.Start(FROM_HERE, base::Milliseconds(1), this,
+                             &SpdyHttpStream::DoBufferedReadCallback);
 }
 
 void SpdyHttpStream::DoBufferedReadCallback() {

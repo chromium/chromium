@@ -125,7 +125,7 @@ base::TimeDelta ParseAcceptCHLifetime(const std::string& header) {
       persist_duration_seconds <= 0)
     return base::TimeDelta();
 
-  return base::TimeDelta::FromSeconds(persist_duration_seconds);
+  return base::Seconds(persist_duration_seconds);
 }
 
 }  // namespace network

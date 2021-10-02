@@ -50,11 +50,9 @@ void VariationsRequestSchedulerMobile::OnAppEnterForeground() {
   // Since Start() launches a one-off execution, we can reuse it here. Also
   // note that since Start() verifies that the seed needs to be refreshed, we
   // do not verify here.
-  schedule_fetch_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kScheduleFetchDelaySeconds),
-      this,
-      &VariationsRequestSchedulerMobile::Start);
+  schedule_fetch_timer_.Start(FROM_HERE,
+                              base::Seconds(kScheduleFetchDelaySeconds), this,
+                              &VariationsRequestSchedulerMobile::Start);
 }
 
 // static

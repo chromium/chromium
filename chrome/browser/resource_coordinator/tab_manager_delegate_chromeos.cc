@@ -61,8 +61,7 @@ namespace resource_coordinator {
 namespace {
 
 // The default interval after which to adjust OOM scores.
-constexpr base::TimeDelta kAdjustmentInterval =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kAdjustmentInterval = base::Seconds(10);
 
 // When switching to a new tab the tab's renderer's OOM score needs to be
 // updated to reflect its front-most status and protect it from discard.

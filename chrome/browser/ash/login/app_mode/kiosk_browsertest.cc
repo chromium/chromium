@@ -509,7 +509,7 @@ class KioskTest : public OobeBaseTest {
     skip_splash_wait_override_ =
         KioskLaunchController::SkipSplashScreenWaitForTesting();
     network_wait_override_ = KioskLaunchController::SetNetworkWaitForTesting(
-        base::TimeDelta::FromSeconds(kTestNetworkTimeoutSeconds));
+        base::Seconds(kTestNetworkTimeoutSeconds));
 
     OobeBaseTest::SetUp();
   }
@@ -951,8 +951,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
       display_bounds.bottom() - ShelfConfig::Get()->shelf_size() / 2);
   gfx::Point end_point(start_point.x(), start_point.y() - 80);
   ui::test::EventGenerator event_generator(window);
-  event_generator.GestureScrollSequence(
-      start_point, end_point, base::TimeDelta::FromMilliseconds(500), 4);
+  event_generator.GestureScrollSequence(start_point, end_point,
+                                        base::Milliseconds(500), 4);
 
   // The shelf should be still hidden after the gesture.
   EXPECT_FALSE(ShelfTestApi().IsVisible());

@@ -32,8 +32,7 @@ using MetricRefreshFrequencies =
 SystemMonitor* g_system_metrics_monitor = nullptr;
 
 // The default interval at which the metrics are refreshed.
-constexpr base::TimeDelta kDefaultRefreshInterval =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kDefaultRefreshInterval = base::Seconds(2);
 
 }  // namespace
 

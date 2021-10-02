@@ -34,7 +34,7 @@ class TestTabStripModelDelegateNoUnloadListener
   }
 };
 
-constexpr base::TimeDelta kTimeStep = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kTimeStep = base::Seconds(1);
 
 }  // namespace
 

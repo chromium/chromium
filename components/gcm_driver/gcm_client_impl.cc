@@ -432,7 +432,7 @@ void GCMClientImpl::OnLoadCompleted(
           FROM_HERE,
           base::BindOnce(&GCMClientImpl::DestroyStoreWhenNotNeeded,
                          destroying_gcm_store_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kDestroyGCMStoreDelayMS));
+          base::Milliseconds(kDestroyGCMStoreDelayMS));
     }
 
     return;

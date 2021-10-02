@@ -53,7 +53,7 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
     list_->SetThumbnailSize(gfx::Size(kThumbnailSize, kThumbnailSize));
 
     // Set update period to reduce the time it takes to run tests.
-    list_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(1));
+    list_->SetUpdatePeriod(base::Milliseconds(1));
   }
 
  protected:

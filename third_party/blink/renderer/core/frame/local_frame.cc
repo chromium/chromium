@@ -3042,8 +3042,7 @@ bool LocalFrame::ShouldThrottleDownload() {
   if (num_burst_download_requests_ == 0) {
     burst_download_start_time_ = now;
   } else if (num_burst_download_requests_ >= kBurstDownloadLimit) {
-    static constexpr auto kBurstDownloadLimitResetInterval =
-        base::TimeDelta::FromSeconds(1);
+    static constexpr auto kBurstDownloadLimitResetInterval = base::Seconds(1);
     if (now - burst_download_start_time_ > kBurstDownloadLimitResetInterval) {
       num_burst_download_requests_ = 1;
       burst_download_start_time_ = now;

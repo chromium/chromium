@@ -256,7 +256,7 @@ void Viewport::PinchEnd(const gfx::Point& anchor, bool snap_to_min) {
     DCHECK(active_tree->InnerViewportScrollNode());
     const float kMaxZoomForSnapToMin = 1.05f;
     const base::TimeDelta kSnapToMinZoomAnimationDuration =
-        base::TimeDelta::FromMilliseconds(200);
+        base::Milliseconds(200);
     float page_scale = active_tree->current_page_scale_factor();
     float min_scale = active_tree->min_page_scale_factor();
 

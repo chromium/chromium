@@ -131,7 +131,7 @@ static const int kPresentationTimeBase = 100;
 static const int kMaxInputPts = kPresentationTimeBase + 2;
 
 static inline const base::TimeDelta InfiniteTimeOut() {
-  return base::TimeDelta::FromMicroseconds(-1);
+  return base::Microseconds(-1);
 }
 
 void DecodeMediaFrame(MediaCodecBridge* media_codec,
@@ -164,7 +164,7 @@ void DecodeMediaFrame(MediaCodecBridge* media_codec,
     }
     // Output time stamp should not be smaller than old timestamp.
     ASSERT_TRUE(new_timestamp >= timestamp);
-    input_pts += base::TimeDelta::FromMicroseconds(33000);
+    input_pts += base::Microseconds(33000);
     timestamp = new_timestamp;
   }
 }
@@ -313,11 +313,11 @@ TEST(MediaCodecBridgeTest, DoNormal) {
 
   int64_t input_pts = kPresentationTimeBase;
   media_codec->QueueInputBuffer(input_buf_index, test_mp3, sizeof(test_mp3),
-                                base::TimeDelta::FromMicroseconds(++input_pts));
+                                base::Microseconds(++input_pts));
 
   status = media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
   media_codec->QueueInputBuffer(input_buf_index, test_mp3, sizeof(test_mp3),
-                                base::TimeDelta::FromMicroseconds(++input_pts));
+                                base::Microseconds(++input_pts));
 
   status = media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
   media_codec->QueueEOS(input_buf_index);
@@ -389,7 +389,7 @@ TEST(MediaCodecBridgeTest, InvalidOpusHeader) {
   // Seek Preroll is < 0.
   ASSERT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
                   NewAudioConfig(AudioCodec::kOpus, dummy_extra_data,
-                                 base::TimeDelta::FromMicroseconds(-1)),
+                                 base::Microseconds(-1)),
                   nullptr),
               IsNull());
 }
@@ -418,14 +418,12 @@ TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
                buffer->data() + buffer->data_size());
   media_codec->Flush();
   DecodeMediaFrame(media_codec.get(), &chunk[0], chunk.size(),
-                   base::TimeDelta::FromMicroseconds(10000000),
-                   base::TimeDelta::FromMicroseconds(9900000));
+                   base::Microseconds(10000000), base::Microseconds(9900000));
 
   // Simulate a seek to 5 seconds.
   media_codec->Flush();
   DecodeMediaFrame(media_codec.get(), &chunk[0], chunk.size(),
-                   base::TimeDelta::FromMicroseconds(5000000),
-                   base::TimeDelta::FromMicroseconds(4900000));
+                   base::Microseconds(5000000), base::Microseconds(4900000));
 }
 
 TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
@@ -493,8 +491,8 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
 
   // Src_file contains 1 frames. Encode it 3 times.
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {
-    input_timestamp += base::TimeDelta::FromMicroseconds(
-        base::Time::kMicrosecondsPerSecond / frame_rate);
+    input_timestamp +=
+        base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
     EncodeMediaFrame(media_codec.get(), frame_data.get(), frame_size, width,
                      height, input_timestamp);
   }
@@ -503,8 +501,8 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
   // also contain SPS/PPS NALUs.
   media_codec->RequestKeyFrameSoon();
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {
-    input_timestamp += base::TimeDelta::FromMicroseconds(
-        base::Time::kMicrosecondsPerSecond / frame_rate);
+    input_timestamp +=
+        base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
     EncodeMediaFrame(media_codec.get(), frame_data.get(), frame_size, width,
                      height, input_timestamp);
   }

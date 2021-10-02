@@ -35,7 +35,7 @@ class FakeAudioWorkerTest : public testing::Test {
   FakeAudioWorkerTest()
       : params_(AudioParameters::AUDIO_FAKE, CHANNEL_LAYOUT_STEREO, 44100, 128),
         fake_worker_(task_environment_.GetMainThreadTaskRunner(), params_) {
-    time_between_callbacks_ = base::TimeDelta::FromMicroseconds(
+    time_between_callbacks_ = base::Microseconds(
         params_.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
         static_cast<float>(params_.sample_rate()));
   }
@@ -181,7 +181,7 @@ class FakeAudioWorkerMockTaskTest : public testing::Test {
         fake_worker_(task_runner_, params_) {
     DCHECK(!global_clock_);
     global_clock_ = task_runner_->GetMockTickClock();
-    time_between_callbacks_ = base::TimeDelta::FromMicroseconds(
+    time_between_callbacks_ = base::Microseconds(
         params_.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
         static_cast<float>(params_.sample_rate()));
     clock_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(

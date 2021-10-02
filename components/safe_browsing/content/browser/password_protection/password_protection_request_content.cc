@@ -192,7 +192,7 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
           base::BindOnce(
               &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
               AsWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kDomFeatureTimeoutMs));
+          base::Milliseconds(kDomFeatureTimeoutMs));
   dom_feature_start_time_ = base::TimeTicks::Now();
 }
 

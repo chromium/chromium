@@ -28,7 +28,7 @@ const int kMaxFailureCount = 4389;
 // latest version.
 bool BackoffDurationSafeToSerialize(const base::TimeDelta& duration) {
   return !duration.is_inf() &&
-         !base::TimeDelta::FromMicroseconds(duration.InMicroseconds()).is_inf();
+         !base::Microseconds(duration.InMicroseconds()).is_inf();
 }
 }  // namespace
 
@@ -105,7 +105,7 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
         return nullptr;
       double original_backoff_duration_double = list_view[2].GetDouble();
       original_backoff_duration =
-          base::TimeDelta::FromSecondsD(original_backoff_duration_double);
+          base::Seconds(original_backoff_duration_double);
       break;
     }
     case kVersion2: {
@@ -118,7 +118,7 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
         return nullptr;
       }
       original_backoff_duration =
-          base::TimeDelta::FromMicroseconds(original_backoff_duration_us);
+          base::Microseconds(original_backoff_duration_us);
       break;
     }
     default:

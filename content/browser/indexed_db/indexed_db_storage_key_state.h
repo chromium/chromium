@@ -59,23 +59,23 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   // occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestGlobalSweepFromNow =
-      base::TimeDelta::FromHours(1);
+      base::Hours(1);
   // Maximum time interval between runs of the IndexedDBSweeper for a given
   // storage_key. Sweeping only occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestStorageKeySweepFromNow =
-      base::TimeDelta::FromDays(3);
+      base::Days(3);
 
   // Maximum time interval between runs of the IndexedDBCompactionTask.
   // Compaction only occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestGlobalCompactionFromNow =
-      base::TimeDelta::FromHours(1);
+      base::Hours(1);
   // Maximum time interval between runs of the IndexedDBCompactionTask for a
   // given storage_key. Compaction only occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta
-      kMaxEarliestStorageKeyCompactionFromNow = base::TimeDelta::FromDays(3);
+      kMaxEarliestStorageKeyCompactionFromNow = base::Days(3);
 
   enum class ClosingState {
     // IndexedDBStorageKeyState isn't closing.

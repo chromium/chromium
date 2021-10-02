@@ -26,10 +26,8 @@ const char kTestCrosGaiaIdMigrationStarted[] = "started";
 
 // Max and min number of seconds that must pass between showing user contextual
 // nudges when override switch is set.
-constexpr base::TimeDelta kAshContextualNudgesMinInterval =
-    base::TimeDelta::FromSeconds(0);
-constexpr base::TimeDelta kAshContextualNudgesMaxInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
+constexpr base::TimeDelta kAshContextualNudgesMaxInterval = base::Seconds(60);
 
 }  // namespace
 
@@ -925,8 +923,7 @@ absl::optional<base::TimeDelta> ContextualNudgesInterval() {
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               kAshContextualNudgesInterval),
           &numeric_cooldown_time)) {
-    base::TimeDelta cooldown_time =
-        base::TimeDelta::FromSeconds(numeric_cooldown_time);
+    base::TimeDelta cooldown_time = base::Seconds(numeric_cooldown_time);
     cooldown_time = base::clamp(cooldown_time, kAshContextualNudgesMinInterval,
                                 kAshContextualNudgesMaxInterval);
     return absl::optional<base::TimeDelta>(cooldown_time);

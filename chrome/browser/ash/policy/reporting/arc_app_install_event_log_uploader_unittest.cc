@@ -37,8 +37,8 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kMinRetryBackoff = base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kMaxRetryBackoff = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinRetryBackoff = base::Seconds(10);
+constexpr base::TimeDelta kMaxRetryBackoff = base::Days(1);
 
 static const char kDmToken[] = "token";
 static const char kPackageName[] = "package";

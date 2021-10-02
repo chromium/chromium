@@ -99,9 +99,9 @@ TEST_F(MetricKitSubscriberTest, Metrics) {
   NSArray* array = @[ mock_report ];
   [[MetricKitSubscriber sharedInstance] didReceiveMetricPayloads:array];
   tester.ExpectUniqueTimeSample("IOS.MetricKit.ForegroundTimePerDay",
-                                base::TimeDelta::FromSeconds(1), 1);
+                                base::Seconds(1), 1);
   tester.ExpectUniqueTimeSample("IOS.MetricKit.BackgroundTimePerDay",
-                                base::TimeDelta::FromSeconds(2), 1);
+                                base::Seconds(2), 1);
   tester.ExpectUniqueSample("IOS.MetricKit.PeakMemoryUsage", 3, 1);
   tester.ExpectUniqueSample("IOS.MetricKit.AverageSuspendedMemory", 4, 1);
 

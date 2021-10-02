@@ -44,7 +44,7 @@ const char kDefaultToPersistCookieValue[] = "true";
 
 // static
 const base::TimeDelta AndroidSmsAppSetupControllerImpl::kInstallRetryDelay =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 const size_t AndroidSmsAppSetupControllerImpl::kMaxInstallRetryCount = 7u;
 
 AndroidSmsAppSetupControllerImpl::PwaDelegate::PwaDelegate() = default;

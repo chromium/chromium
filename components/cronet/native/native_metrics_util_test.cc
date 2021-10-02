@@ -15,8 +15,8 @@ namespace native_metrics_util {
 namespace {
 
 TEST(NativeMetricsUtilTest, ConvertsTimes) {
-  constexpr auto start_delta = base::TimeDelta::FromMilliseconds(20);
-  constexpr auto event_delta = base::TimeDelta::FromMilliseconds(30);
+  constexpr auto start_delta = base::Milliseconds(20);
+  constexpr auto event_delta = base::Milliseconds(30);
 
   absl::optional<Cronet_DateTime> converted;
   ConvertTime(base::TimeTicks::UnixEpoch() + event_delta,
@@ -27,8 +27,8 @@ TEST(NativeMetricsUtilTest, ConvertsTimes) {
 }
 
 TEST(NativeMetricsUtilTest, OverwritesOldOutParam) {
-  constexpr auto start_delta = base::TimeDelta::FromMilliseconds(20);
-  constexpr auto event_delta = base::TimeDelta::FromMilliseconds(30);
+  constexpr auto start_delta = base::Milliseconds(20);
+  constexpr auto event_delta = base::Milliseconds(30);
 
   absl::optional<Cronet_DateTime> converted;
   converted.emplace();
@@ -41,7 +41,7 @@ TEST(NativeMetricsUtilTest, OverwritesOldOutParam) {
 }
 
 TEST(NativeMetricsUtilTest, NullTicks) {
-  constexpr auto start_delta = base::TimeDelta::FromMilliseconds(20);
+  constexpr auto start_delta = base::Milliseconds(20);
 
   absl::optional<Cronet_DateTime> converted;
   ConvertTime(base::TimeTicks(), base::TimeTicks::UnixEpoch() + start_delta,
@@ -50,8 +50,8 @@ TEST(NativeMetricsUtilTest, NullTicks) {
 }
 
 TEST(NativeMetricsUtilTest, NullStartTicks) {
-  constexpr auto start_delta = base::TimeDelta::FromMilliseconds(20);
-  constexpr auto event_delta = base::TimeDelta::FromMilliseconds(30);
+  constexpr auto start_delta = base::Milliseconds(20);
+  constexpr auto event_delta = base::Milliseconds(30);
 
   absl::optional<Cronet_DateTime> converted;
   ConvertTime(base::TimeTicks::UnixEpoch() + event_delta, base::TimeTicks(),
@@ -60,8 +60,8 @@ TEST(NativeMetricsUtilTest, NullStartTicks) {
 }
 
 TEST(NativeMetricsUtilTest, NullStartTime) {
-  constexpr auto start_delta = base::TimeDelta::FromMilliseconds(20);
-  constexpr auto event_delta = base::TimeDelta::FromMilliseconds(30);
+  constexpr auto start_delta = base::Milliseconds(20);
+  constexpr auto event_delta = base::Milliseconds(30);
 
   absl::optional<Cronet_DateTime> converted;
   EXPECT_DCHECK_DEATH(ConvertTime(base::TimeTicks::UnixEpoch() + event_delta,

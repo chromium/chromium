@@ -77,7 +77,7 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
       PolicyOverride::NO_OVERRIDE) {
     seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
   }
-  return base::TimeDelta::FromSeconds(seconds);
+  return base::Seconds(seconds);
 }
 
 const base::Feature kThrottleForegroundTimers{
@@ -90,7 +90,7 @@ base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
           &kThrottleForegroundTimers,
           "ForegroundTimersThrottledWakeUpIntervalMills",
           kForegroundTimersThrottling_WakeUpIntervalMillis_Default};
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       kForegroundTimersThrottledWakeUpIntervalMills.Get());
 }
 

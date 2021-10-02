@@ -112,8 +112,7 @@ TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
   for (size_t i = 0; i < base::size(test_data); ++i) {
     test_clipboard_->WriteText(test_data[i].clipboard.data(),
                                test_data[i].clipboard.length());
-    test_clipboard_->SetLastModifiedTime(now -
-                                         base::TimeDelta::FromSeconds(10));
+    test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
     EXPECT_EQ(test_data[i].expected_get_recent_url_value,
               recent_content.GetRecentURLFromClipboard().has_value())
         << "for input " << test_data[i].clipboard;
@@ -125,11 +124,11 @@ TEST_F(ClipboardRecentContentGenericTest, OlderURLsNotSuggested) {
   base::Time now = base::Time::Now();
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text.data(), text.length());
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromMinutes(9));
+  test_clipboard_->SetLastModifiedTime(now - base::Minutes(9));
   EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
   // If the last modified time is 10 minutes ago, the URL shouldn't be
   // suggested.
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromMinutes(11));
+  test_clipboard_->SetLastModifiedTime(now - base::Minutes(11));
   EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
 }
 
@@ -138,12 +137,11 @@ TEST_F(ClipboardRecentContentGenericTest, GetClipboardContentAge) {
   base::Time now = base::Time::Now();
   std::string text = " whether URL or not should not matter here.";
   test_clipboard_->WriteText(text.data(), text.length());
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(32));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(32));
   base::TimeDelta age = recent_content.GetClipboardContentAge();
   // It's possible the GetClipboardContentAge() took some time, so allow a
   // little slop (5 seconds) in this comparison; don't check for equality.
-  EXPECT_LT(age - base::TimeDelta::FromSeconds(32),
-            base::TimeDelta::FromSeconds(5));
+  EXPECT_LT(age - base::Seconds(32), base::Seconds(5));
 }
 
 TEST_F(ClipboardRecentContentGenericTest, SuppressClipboardContent) {
@@ -152,7 +150,7 @@ TEST_F(ClipboardRecentContentGenericTest, SuppressClipboardContent) {
   base::Time now = base::Time::Now();
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text.data(), text.length());
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
   EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
   EXPECT_TRUE(recent_content.GetRecentTextFromClipboard().has_value());
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
@@ -176,7 +174,7 @@ TEST_F(ClipboardRecentContentGenericTest, GetRecentTextFromClipboard) {
   base::Time now = base::Time::Now();
   std::string text = "  Foo Bar   ";
   test_clipboard_->WriteText(text.data(), text.length());
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
   EXPECT_TRUE(recent_content.GetRecentTextFromClipboard().has_value());
   EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
@@ -192,7 +190,7 @@ TEST_F(ClipboardRecentContentGenericTest, ClearClipboardContent) {
   base::Time now = base::Time::Now();
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text.data(), text.length());
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
   EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
 
   // After clear it, it shouldn't be suggested.
@@ -215,7 +213,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
 
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
   test_clipboard_->WriteBitmap(bitmap);
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
   EXPECT_TRUE(recent_content.HasRecentImageFromClipboard());
   EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
   EXPECT_FALSE(recent_content.GetRecentTextFromClipboard().has_value());
@@ -238,7 +236,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {
   test_clipboard_->WriteBookmark(title.data(), title.length(), url_text.data(),
                                  url_text.length());
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 
   HasDataCallbackWaiter waiter(&recent_content);
   waiter.WaitForCallbackDone();
@@ -252,7 +250,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Text) {
   base::Time now = base::Time::Now();
   std::string text = "  Foo Bar   ";
   test_clipboard_->WriteText(text.data(), text.length());
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 
   HasDataCallbackWaiter waiter(&recent_content);
   waiter.WaitForCallbackDone();
@@ -268,7 +266,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Image) {
   bitmap.allocN32Pixels(3, 2);
   bitmap.eraseARGB(255, 0, 255, 0);
   test_clipboard_->WriteBitmap(bitmap);
-  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+  test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 
   HasDataCallbackWaiter waiter(&recent_content);
   waiter.WaitForCallbackDone();

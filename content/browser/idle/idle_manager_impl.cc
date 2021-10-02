@@ -24,7 +24,7 @@ using blink::mojom::IdleManagerError;
 using blink::mojom::IdleState;
 using blink::mojom::PermissionStatus;
 
-constexpr base::TimeDelta kMinimumThreshold = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMinimumThreshold = base::Seconds(60);
 
 }  // namespace
 

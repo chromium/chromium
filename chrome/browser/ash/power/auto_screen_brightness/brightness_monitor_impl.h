@@ -29,8 +29,7 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
   // Once a user brightness adjustment is received, we wait for
   // |brightness_sample_delay_| to record the final brightness. It can be
   // configured from finch with default value set to |kBrightnessSampleDelay|.
-  static constexpr base::TimeDelta kBrightnessSampleDelay =
-      base::TimeDelta::FromSeconds(3);
+  static constexpr base::TimeDelta kBrightnessSampleDelay = base::Seconds(3);
 
   BrightnessMonitorImpl();
 

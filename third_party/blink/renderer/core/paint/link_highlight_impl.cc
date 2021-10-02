@@ -185,8 +185,8 @@ void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
 
   is_animating_ = true;
   // FIXME: Should duration be configurable?
-  constexpr auto kFadeDuration = base::TimeDelta::FromMilliseconds(100);
-  constexpr auto kMinPreFadeDuration = base::TimeDelta::FromMilliseconds(100);
+  constexpr auto kFadeDuration = base::Milliseconds(100);
+  constexpr auto kMinPreFadeDuration = base::Milliseconds(100);
 
   auto curve = std::make_unique<CompositorFloatAnimationCurve>();
 

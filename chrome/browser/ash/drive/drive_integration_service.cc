@@ -423,7 +423,7 @@ class DriveIntegrationService::PreferenceWatcher
           base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
                              AddNetworkPortalDetectorObserver,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromSeconds(5));
+          base::Seconds(5));
     }
   }
 
@@ -749,7 +749,7 @@ void DriveIntegrationService::ClearCacheAndRemountFileSystem(
     RemoveDriveMountPoint();
     // TODO(crbug/1069328): We wait 2 seconds here so that DriveFS can unmount
     // completely. Ideally we'd wait for an unmount complete callback.
-    delay = base::TimeDelta::FromSeconds(2);
+    delay = base::Seconds(2);
   }
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -922,8 +922,8 @@ void DriveIntegrationService::MaybeRemountFileSystem(
         observer.OnFileSystemMountFailed();
       return;
     }
-    remount_delay = base::TimeDelta::FromSeconds(
-        5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
+    remount_delay =
+        base::Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
     logger_->Log(logging::LOG_WARNING, "DriveFs died, retry in %d seconds",
                  static_cast<int>(remount_delay.value().InSeconds()));
   }

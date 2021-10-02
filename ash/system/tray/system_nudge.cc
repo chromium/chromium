@@ -46,8 +46,7 @@ constexpr int kIconLabelSpacing = 16;
 // The padding which separates the nudge's border with its inner contents.
 constexpr int kNudgePadding = 16;
 
-constexpr base::TimeDelta kNudgeBoundsAnimationTime =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kNudgeBoundsAnimationTime = base::Milliseconds(250);
 
 }  // namespace
 

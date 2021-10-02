@@ -34,10 +34,9 @@ void RecordReadStatistics(size_t size, base::TimeDelta duration) {
   // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
   // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
   // ranges.
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "Memory.ParkableImage.Read.Latency", duration,
-      base::TimeDelta::FromMicroseconds(500), base::TimeDelta::FromSeconds(1),
-      100);
+  base::UmaHistogramCustomMicrosecondsTimes("Memory.ParkableImage.Read.Latency",
+                                            duration, base::Microseconds(500),
+                                            base::Seconds(1), 100);
   base::UmaHistogramCounts1000("Memory.ParkableImage.Read.Throughput",
                                throughput_mb_s);
 }
@@ -53,9 +52,8 @@ void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
   // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
   // ranges.
   base::UmaHistogramCustomMicrosecondsTimes(
-      "Memory.ParkableImage.Write.Latency", duration,
-      base::TimeDelta::FromMicroseconds(500), base::TimeDelta::FromSeconds(1),
-      100);
+      "Memory.ParkableImage.Write.Latency", duration, base::Microseconds(500),
+      base::Seconds(1), 100);
   base::UmaHistogramCounts1000("Memory.ParkableImage.Write.Throughput",
                                throughput_mb_s);
 }

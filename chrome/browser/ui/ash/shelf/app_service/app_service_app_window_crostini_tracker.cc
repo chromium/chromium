@@ -43,8 +43,7 @@ namespace {
 
 // Time allowed for apps to self-activate after launch, see
 // go/crostini-self-activate for details.
-constexpr base::TimeDelta kSelfActivationTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSelfActivationTimeout = base::Seconds(5);
 
 void MoveWindowFromOldDisplayToNewDisplay(aura::Window* window,
                                           display::Display& old_display,

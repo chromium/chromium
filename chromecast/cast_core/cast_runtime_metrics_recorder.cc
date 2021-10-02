@@ -43,8 +43,7 @@ void PopulateEventBuilder(CastEventBuilder* event_builder,
                           const std::string& app_id,
                           const std::string& sdk_version,
                           const std::string& session_id) {
-  event_builder->SetTime(base::TimeTicks() +
-                         base::TimeDelta::FromMicrosecondsD(event_time));
+  event_builder->SetTime(base::TimeTicks() + base::Microseconds(event_time));
   if (!app_id.empty())
     event_builder->SetAppId(app_id);
   if (!sdk_version.empty())
@@ -163,10 +162,9 @@ void CastRuntimeMetricsRecorder::RecordHistogramTime(const std::string& name,
                                                      int min,
                                                      int max,
                                                      int num_buckets) {
-  UMA_HISTOGRAM_CUSTOM_TIMES_NO_CACHE(
-      name, base::TimeDelta::FromMilliseconds(sample),
-      base::TimeDelta::FromMilliseconds(min),
-      base::TimeDelta::FromMilliseconds(max), num_buckets);
+  UMA_HISTOGRAM_CUSTOM_TIMES_NO_CACHE(name, base::Milliseconds(sample),
+                                      base::Milliseconds(min),
+                                      base::Milliseconds(max), num_buckets);
 }
 
 void CastRuntimeMetricsRecorder::RecordHistogramCount(const std::string& name,

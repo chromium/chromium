@@ -960,7 +960,7 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
   // Again, wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "this one works", base::Time::Now() + base::TimeDelta::FromDays(10));
+      "this one works", base::Time::Now() + base::Days(10));
 
   // Check that sync auth error state cleared.
   EXPECT_EQ(GoogleServiceAuthError::NONE, service()->GetAuthError().state());

@@ -91,7 +91,7 @@ bool DeserializeEvent(const base::Value& serialized_event,
   int64_t time_int;
   if (!base::StringToInt64(*time_value, &time_int))
     return false;
-  event.time = base::Time() + base::TimeDelta::FromMicroseconds(time_int);
+  event.time = base::Time() + base::Microseconds(time_int);
 
   switch (event.type) {
     case SessionServiceEventLogType::kStart: {

@@ -220,14 +220,12 @@ class BinaryUploadServiceTest : public testing::Test {
 
   void ValidateAuthorizationTimerIdle() {
     EXPECT_FALSE(service_->timer_.IsRunning());
-    EXPECT_EQ(base::TimeDelta::FromHours(0),
-              service_->timer_.GetCurrentDelay());
+    EXPECT_EQ(base::Hours(0), service_->timer_.GetCurrentDelay());
   }
 
   void ValidateAuthorizationTimerStarted() {
     EXPECT_TRUE(service_->timer_.IsRunning());
-    EXPECT_EQ(base::TimeDelta::FromHours(24),
-              service_->timer_.GetCurrentDelay());
+    EXPECT_EQ(base::Hours(24), service_->timer_.GetCurrentDelay());
   }
 
  protected:
@@ -378,7 +376,7 @@ TEST_F(BinaryUploadServiceTest, TimesOut) {
   ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
   UploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(300));
+  task_environment_.FastForwardBy(base::Seconds(300));
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 }
@@ -403,7 +401,7 @@ TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
   ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
   UploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(300));
+  task_environment_.FastForwardBy(base::Seconds(300));
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 
@@ -432,7 +430,7 @@ TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout_Authentication) {
   ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
   service_->MaybeUploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(300));
+  task_environment_.FastForwardBy(base::Seconds(300));
 
   // The auth request timing out means that the result for the real request is
   // UNAUTHORIZED.
@@ -458,7 +456,7 @@ TEST_F(BinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {
   MockRequest* raw_request = request.get();
   UploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(300));
+  task_environment_.FastForwardBy(base::Seconds(300));
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 
   // Expect nothing to change if the upload finishes after the timeout.
@@ -481,7 +479,7 @@ TEST_F(BinaryUploadServiceTest, OnGetResponseAfterTimeout) {
   MockRequest* raw_request = request.get();
   UploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(300));
+  task_environment_.FastForwardBy(base::Seconds(300));
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 
   // Expect nothing to change if we get a message after the timeout.

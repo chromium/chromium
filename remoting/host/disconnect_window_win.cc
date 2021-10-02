@@ -46,7 +46,7 @@ constexpr int kWindowBorderRadius = 14;
 constexpr int kWindowTextMargin = 8;
 
 // The amount of time to wait before hiding the disconnect window.
-constexpr base::TimeDelta kAutoHideTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
 
 // The length of the hide and show animations.
 constexpr DWORD kAnimationDurationMs = 200;

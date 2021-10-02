@@ -108,7 +108,7 @@ TEST_F(RtpStreamTest, VideoStreaming) {
 // Test the audio streaming pipeline.
 TEST_F(RtpStreamTest, AudioStreaming) {
   // Create audio data.
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   media::cast::FrameSenderConfig audio_config =
       media::cast::GetDefaultAudioSenderConfig();
   std::unique_ptr<media::AudioBus> audio_bus =

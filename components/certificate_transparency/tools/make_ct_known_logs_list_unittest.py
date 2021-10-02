@@ -188,7 +188,7 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
         '\\x7a\\x9c\\xb4\\x10\\xff\\x61\\xf2\\x00\\x15\\xad",\n    {"\\x61'
         '\\x62\\x63",\n     3,\n     "Test Description"'
         '},\n     '
-        "base::TimeDelta::FromSeconds(1551083574)}")
+        "base::Seconds(1551083574)}")
 
     self.assertEqual(
         make_ct_known_logs_list._to_disqualified_loginfo_struct(log),
@@ -248,7 +248,7 @@ class LogListTimestampGenerationTest(unittest.TestCase):
     expected_generated_timestamp = (
         '// The time at which this log list was last updated.\n'
         'const base::TimeDelta kLogListTimestamp = '
-        'base::TimeDelta::FromSeconds(1628467200);\n\n')
+        'base::Seconds(1628467200);\n\n')
 
     self.assertEqual(
         make_ct_known_logs_list._generate_log_list_timestamp(iso_timestamp),

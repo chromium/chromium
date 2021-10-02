@@ -948,7 +948,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
 TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
   InSequence sequence;
 
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
 
   DeviceManagementService::JobForTesting hash_dance_job;
   DeviceManagementService::JobForTesting device_state_job;
@@ -990,7 +990,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
   ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(1),
+      /*expected_time_recorded=*/base::Seconds(1),
       /*success_time_recorded=*/true);
 
   // Verify device state job has been captured.
@@ -1915,7 +1915,7 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
   InSequence sequence;
 
   const bool kExpectedMembershipResult = GetExpectedMembershipResult();
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
 
@@ -2100,7 +2100,7 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   InSequence sequence;
 
   const bool kExpectedMembershipResult = GetExpectedMembershipResult();
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
 
@@ -2244,7 +2244,7 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
   InSequence sequence;
 
   const bool kExpectedMembershipResult = GetExpectedMembershipResult();
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
 
@@ -2302,7 +2302,7 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
   InSequence sequence;
 
   const bool kExpectedMembershipResult = GetExpectedMembershipResult();
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
 

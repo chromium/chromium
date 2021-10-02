@@ -115,10 +115,10 @@ void SetDiscardPadding(AVPacket* packet,
           packet, AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
   if (skip_samples_size < 4)
     return;
-  buffer->set_discard_padding(std::make_pair(
-      base::TimeDelta::FromSecondsD(base::ByteSwapToLE32(*skip_samples_ptr) /
-                                    samples_per_second),
-      base::TimeDelta()));
+  buffer->set_discard_padding(
+      std::make_pair(base::Seconds(base::ByteSwapToLE32(*skip_samples_ptr) /
+                                   samples_per_second),
+                     base::TimeDelta()));
 }
 
 }  // namespace

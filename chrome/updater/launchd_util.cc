@@ -60,7 +60,7 @@ void PollLaunchctlListImpl(UpdaterScope scope,
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(&PollLaunchctlListImpl, scope, service, expectation,
                      deadline, std::move(callback)),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 }  // namespace

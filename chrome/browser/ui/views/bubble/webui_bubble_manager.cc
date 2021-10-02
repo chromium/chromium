@@ -10,8 +10,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kWebViewRetentionTime =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kWebViewRetentionTime = base::Seconds(30);
 
 }  // namespace
 

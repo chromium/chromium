@@ -370,7 +370,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_EndToEnd) {
   CreateCartDiscountFetcherFactory(std::move(fake_result), false);
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             base::Time());
@@ -400,7 +400,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithRBDDiscount) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
@@ -431,7 +431,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithCouponDiscount) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
@@ -460,7 +460,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedClearDiscount) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
@@ -489,11 +489,11 @@ TEST_F(FetchDiscountWorkerTest, TestStart_FetcherRefetched) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(7));
+  task_environment_.FastForwardBy(base::Hours(7));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2, FakeCartDiscountFetcher::GetFetchCount());
 }
@@ -525,7 +525,7 @@ TEST_F(FetchDiscountWorkerTest, TestTesterFetch) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
@@ -549,7 +549,7 @@ TEST_F(FetchDiscountWorkerTest, TestFetchSkippedForNonPartnerMerchants) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0, FakeCartDiscountFetcher::GetFetchCount());
 }
@@ -575,7 +575,7 @@ TEST_F(FetchDiscountWorkerTest, TestFetchForCouponPartnerMerchants) {
 
   CreateWorker();
 
-  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }

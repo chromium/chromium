@@ -71,7 +71,7 @@ class DownloadResponse : public net::test_server::BasicHttpResponse {
         FROM_HERE,
         base::BindOnce(&net::test_server::HttpResponseDelegate::SendContents,
                        delegate, content_block, std::move(next_send)),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
   }
 
   int length_ = 0;

@@ -131,7 +131,7 @@ TEST_F(BiometricAuthenticatorAndroidTest, TriggersAuthIfMoreThan60Seconds) {
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
                                 base::DoNothing());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_environment().FastForwardBy(base::Seconds(60));
 
   // The next call to `Authenticate()` should re-trigger an authentication.
   EXPECT_CALL(bridge(), Authenticate(_))

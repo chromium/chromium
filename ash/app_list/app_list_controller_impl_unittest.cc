@@ -539,8 +539,8 @@ TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
 
   // Swipe away notification by gesture. Verifies that AppListView still shows.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureScrollSequence(
-      drag_start, drag_end, base::TimeDelta::FromMicroseconds(500), 10);
+  event_generator->GestureScrollSequence(drag_start, drag_end,
+                                         base::Microseconds(500), 10);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetAppListView());
   EXPECT_EQ(
@@ -599,7 +599,7 @@ TEST_F(AppListControllerImplTest,
   // launcher to finish. Note that the launcher does not exist before toggling
   // the home button.
   PressHomeButton();
-  const base::TimeDelta delta = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta delta = base::Milliseconds(200);
   do {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -1261,7 +1261,7 @@ TEST_F(AppListControllerImplMetricsTest,
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds().CenterPoint();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureScrollSequence(shelf_center, target_point,
-                                   base::TimeDelta::FromMicroseconds(500), 1);
+                                   base::Microseconds(500), 1);
   EXPECT_EQ(AppListViewState::kFullscreenAllApps,
             GetAppListView()->app_list_state());
   histogram_tester_.ExpectTotalCount(

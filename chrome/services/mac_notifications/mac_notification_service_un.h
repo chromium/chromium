@@ -32,8 +32,7 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
     : public mojom::MacNotificationService {
  public:
   // Timer interval used to synchronize displayed notifications.
-  static constexpr auto kSynchronizationInterval =
-      base::TimeDelta::FromMinutes(10);
+  static constexpr auto kSynchronizationInterval = base::Minutes(10);
 
   MacNotificationServiceUN(
       mojo::PendingReceiver<mojom::MacNotificationService> service,

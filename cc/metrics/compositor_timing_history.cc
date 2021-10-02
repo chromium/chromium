@@ -53,7 +53,7 @@ int g_num_long_draw_intervals = 0;
 // The threshold to emit a trace event is the 99th percentile
 // of the histogram on Windows Stable as of Feb 26th, 2020.
 constexpr base::TimeDelta kDrawIntervalTraceThreshold =
-    base::TimeDelta::FromMicroseconds(34478);
+    base::Microseconds(34478);
 
 // Using the 90th percentile will disable latency recovery
 // if we are missing the deadline approximately ~6 times per

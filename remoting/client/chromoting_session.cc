@@ -53,12 +53,11 @@ const int kDefaultDPI = 96;
 const int kMinDimension = 640;
 
 // Interval at which to log performance statistics, if enabled.
-constexpr base::TimeDelta kPerfStatsInterval = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kPerfStatsInterval = base::Minutes(1);
 
 // Delay to destroy the signal strategy, so that the session-terminate event can
 // still be sent out.
-constexpr base::TimeDelta kDestroySignalingDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kDestroySignalingDelay = base::Seconds(2);
 
 bool IsClientResolutionValid(int dips_width, int dips_height) {
   // This prevents sending resolution on a portrait mode small phone screen

@@ -82,7 +82,7 @@ TEST_F(GrCacheControllerTest, PurgeGrCache) {
   EXPECT_TRUE(task_runner_->HasPendingTask());
 
   // Fast forward by a second, the task runs and the cache is cleared.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(gr_context()->getResourceCachePurgeableBytes(), 0u);
 }
 
@@ -109,12 +109,12 @@ TEST_F(GrCacheControllerTest, ResetPurgeGrCacheOnReuse) {
 
   // Fast forward by a second, the task runs but since the context was used
   // since the task was posted, the cache is not cleared.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_GT(gr_context()->getResourceCachePurgeableBytes(), 0u);
 
   // Fast forward by another second. Since there is no activity, the cache is
   // cleared.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(gr_context()->getResourceCachePurgeableBytes(), 0u);
 }
 

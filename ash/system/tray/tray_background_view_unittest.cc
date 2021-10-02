@@ -140,7 +140,7 @@ TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
   // Here we wait until the animation is finished and we give it one more second
   // to finish the callbacks in `OnVisibilityAnimationFinished()`.
   StatusAreaWidgetTestHelper::WaitForLayerAnimationEnd(test_view()->layer());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   // After the hide animation is finished, test_view() is not visible.
   EXPECT_FALSE(test_view()->GetVisible());
@@ -157,42 +157,42 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   // Gives it a small duration to let the session get changed. This duration is
   // way smaller than the animation duration, so that the animation will not
   // finish when this duration ends. The same for the other places below.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
 
   test_view()->SetVisiblePreferred(false);
   test_view()->SetVisiblePreferred(true);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view()->GetVisible());
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view()->GetVisible());
 
   // Enable the animation after session state get changed.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   test_view()->SetVisiblePreferred(false);
   test_view()->SetVisiblePreferred(true);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view()->GetVisible());
 
   // Not showing animation after unlocking screen.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
 
   test_view()->SetVisiblePreferred(false);
   test_view()->SetVisiblePreferred(true);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view()->GetVisible());
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view()->GetVisible());
 
@@ -205,7 +205,7 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
 
   // Simulates user switching by changing the order of session_ids.
   Shell::Get()->session_controller()->SetUserSessionOrder({2u, 1u});
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view()->GetVisible());
 }
@@ -219,7 +219,7 @@ TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
 
   // Switch the primary and secondary screen.
   SwapPrimaryDisplay();
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
@@ -228,24 +228,24 @@ TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
   EXPECT_TRUE(GetSecondaryDictationTray()->GetVisible());
 
   // Enable the animation after showing up on the secondary screen.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   GetPrimaryDictationTray()->SetVisiblePreferred(false);
   GetPrimaryDictationTray()->SetVisiblePreferred(true);
   GetSecondaryDictationTray()->SetVisiblePreferred(false);
   GetSecondaryDictationTray()->SetVisiblePreferred(true);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(
       GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
   EXPECT_TRUE(
       GetSecondaryDictationTray()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(GetSecondaryDictationTray()->GetVisible());
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(3));
 
   // Remove the secondary screen.
   UpdateDisplay("800x600");
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());

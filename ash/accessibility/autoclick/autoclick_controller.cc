@@ -69,7 +69,7 @@ views::Widget::InitParams CreateAutoclickOverlayWidgetParams(
 
 // static.
 base::TimeDelta AutoclickController::GetDefaultAutoclickDelay() {
-  return base::TimeDelta::FromMilliseconds(int64_t{kDefaultAutoclickDelayMs});
+  return base::Milliseconds(int64_t{kDefaultAutoclickDelayMs});
 }
 
 AutoclickController::AutoclickController()

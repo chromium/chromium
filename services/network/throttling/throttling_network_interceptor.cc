@@ -21,8 +21,8 @@ namespace {
 constexpr int64_t kPacketSize = 1500;
 
 base::TimeDelta CalculateTickLength(double throughput) {
-  return throughput ? base::TimeDelta::FromSecondsD(kPacketSize / throughput)
-                    : base::TimeDelta::FromMicroseconds(1);
+  return throughput ? base::Seconds(kPacketSize / throughput)
+                    : base::Microseconds(1);
 }
 
 }  // namespace
@@ -90,7 +90,7 @@ void ThrottlingNetworkInterceptor::UpdateConditions(
   latency_length_ = base::TimeDelta();
   double latency = conditions_->latency();
   if (latency > 0)
-    latency_length_ = base::TimeDelta::FromMillisecondsD(latency);
+    latency_length_ = base::Milliseconds(latency);
   ArmTimer(now);
 }
 
@@ -209,8 +209,7 @@ void ThrottlingNetworkInterceptor::ArmTimer(base::TimeTicks now) {
   }
   if (suspend_count) {
     base::TimeTicks activation_time =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(min_baseline) +
-        latency_length_;
+        base::TimeTicks() + base::Microseconds(min_baseline) + latency_length_;
     if (activation_time < desired_time)
       desired_time = activation_time;
   }

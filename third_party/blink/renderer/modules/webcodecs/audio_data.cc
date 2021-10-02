@@ -193,7 +193,7 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
   data_ = media::AudioBuffer::CopyFrom(
       media_format, channel_layout, init->numberOfChannels(), sample_rate,
       init->numberOfFrames(), wrapped_data.data(),
-      base::TimeDelta::FromMicroseconds(timestamp_));
+      base::Microseconds(timestamp_));
 }
 
 AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)

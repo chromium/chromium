@@ -262,7 +262,7 @@ bool InitPulse(pa_threaded_mainloop** mainloop, pa_context** context) {
   // browser startup (other times it's during audio process startup). In the
   // normal case, this should only take ~50ms, but we've seen some test bots
   // hang indefinitely when the pulse daemon can't be started.
-  constexpr base::TimeDelta kStartupTimeout = base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kStartupTimeout = base::Seconds(5);
   const bool was_signaled = context_wait.TimedWait(kStartupTimeout);
 
   // Require the mainloop lock before checking the context state.
@@ -387,7 +387,7 @@ base::TimeDelta GetHardwareLatency(pa_stream* stream) {
   if (negative)
     return base::TimeDelta();
 
-  return base::TimeDelta::FromMicroseconds(latency_micros);
+  return base::Microseconds(latency_micros);
 }
 
 // Helper macro for CreateInput/OutputStream() to avoid code spam and

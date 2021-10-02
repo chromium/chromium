@@ -41,7 +41,7 @@ class GLReadbackTest : public testing::Test {
           FROM_HERE,
           base::BindOnce(&GLReadbackTest::WaitForQueryCallback,
                          base::Unretained(this), q, std::move(cb)),
-          base::TimeDelta::FromMilliseconds(3));
+          base::Milliseconds(3));
     }
   }
 

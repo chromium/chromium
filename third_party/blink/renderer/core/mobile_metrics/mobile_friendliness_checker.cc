@@ -37,7 +37,7 @@ static constexpr double kMaximumScalePreventsZoomingThreshold = 1.2;
 // Finding bad tap targets may takes too time for big page and should abort if
 // it takes more than 5ms.
 static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
-    base::TimeDelta::FromMilliseconds(5);
+    base::Milliseconds(5);
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),

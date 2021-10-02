@@ -232,7 +232,7 @@ TEST_F(SettingsResetPromptConfigTest, DelayBeforePromptSecondsParam) {
   {
     auto config = SettingsResetPromptConfig::Create();
     ASSERT_TRUE(config);
-    EXPECT_EQ(config->delay_before_prompt(), base::TimeDelta::FromSeconds(12));
+    EXPECT_EQ(config->delay_before_prompt(), base::Seconds(12));
   }
 
   // Correct edge case parameter value.
@@ -241,7 +241,7 @@ TEST_F(SettingsResetPromptConfigTest, DelayBeforePromptSecondsParam) {
   {
     auto config = SettingsResetPromptConfig::Create();
     ASSERT_TRUE(config);
-    EXPECT_EQ(config->delay_before_prompt(), base::TimeDelta::FromSeconds(0));
+    EXPECT_EQ(config->delay_before_prompt(), base::Seconds(0));
   }
 }
 
@@ -311,8 +311,7 @@ TEST_F(SettingsResetPromptConfigTest, TimeBetweenPromptsParam) {
   {
     auto config = SettingsResetPromptConfig::Create();
     ASSERT_TRUE(config);
-    EXPECT_EQ(config->time_between_prompts(),
-              base::TimeDelta::FromSeconds(3600));
+    EXPECT_EQ(config->time_between_prompts(), base::Seconds(3600));
   }
 }
 

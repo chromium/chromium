@@ -252,9 +252,9 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
   // Store incognito lifetime and navigations count histogram.
   if (IsIncognitoProfile()) {
     auto duration = base::Time::Now() - start_time_;
-    base::UmaHistogramCustomCounts(
-        "Profile.Incognito.Lifetime", duration.InMinutes(), 1,
-        base::TimeDelta::FromDays(28).InMinutes(), 100);
+    base::UmaHistogramCustomCounts("Profile.Incognito.Lifetime",
+                                   duration.InMinutes(), 1,
+                                   base::Days(28).InMinutes(), 100);
 
     base::UmaHistogramCounts1000(
         "Profile.Incognito.MainFrameNavigationsPerSession",

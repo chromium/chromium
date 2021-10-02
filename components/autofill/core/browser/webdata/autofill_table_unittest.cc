@@ -174,7 +174,7 @@ TEST_F(AutofillTableTest, Autofill) {
   field.name = u"Name";
   field.value = u"Superman";
   base::Time now = AutofillClock::Now();
-  base::TimeDelta two_seconds = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta two_seconds = base::Seconds(2);
   EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
   std::vector<AutofillEntry> v;
   for (int i = 0; i < 5; ++i) {
@@ -305,7 +305,7 @@ TEST_F(AutofillTableTest, Autofill_GetEntry_Populated) {
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 
   // Update date_last_used.
-  base::Time new_time = now + base::TimeDelta::FromSeconds(1000);
+  base::Time new_time = now + base::Seconds(1000);
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, new_time));
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"Super", &prefix_v, 10));
@@ -750,9 +750,9 @@ TEST_F(AutofillTableTest,
 TEST_F(AutofillTableTest,
        Autofill_RemoveFormElementsAddedBetween_OlderThan30Days) {
   const base::Time kNow = AutofillClock::Now();
-  const base::Time k29DaysOld = kNow - base::TimeDelta::FromDays(29);
-  const base::Time k30DaysOld = kNow - base::TimeDelta::FromDays(30);
-  const base::Time k31DaysOld = kNow - base::TimeDelta::FromDays(31);
+  const base::Time k29DaysOld = kNow - base::Days(29);
+  const base::Time k30DaysOld = kNow - base::Days(30);
+  const base::Time k31DaysOld = kNow - base::Days(31);
 
   // Add some form field entries.
   AutofillChangeList changes;
@@ -784,8 +784,8 @@ TEST_F(AutofillTableTest,
 // delete an old entry.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
   auto kNow = AutofillClock::Now();
-  auto k2YearsOld = kNow - base::TimeDelta::FromDays(
-                               2 * kAutocompleteRetentionPolicyPeriodInDays);
+  auto k2YearsOld =
+      kNow - base::Days(2 * kAutocompleteRetentionPolicyPeriodInDays);
 
   AutofillChangeList changes;
   FormFieldData field;
@@ -805,7 +805,7 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
 // delete non-expired entries' data from the SQLite table.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_NotOldEnough) {
   auto kNow = AutofillClock::Now();
-  auto k2DaysOld = kNow - base::TimeDelta::FromDays(2);
+  auto k2DaysOld = kNow - base::Days(2);
 
   AutofillChangeList changes;
   FormFieldData field;
@@ -3130,9 +3130,8 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   std::vector<std::unique_ptr<CreditCard>> credit_cards;
   ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(
-      unmasked_time + base::TimeDelta::FromDays(365),
-      unmasked_time + base::TimeDelta::FromDays(530), &profiles,
-      &credit_cards));
+      unmasked_time + base::Days(365), unmasked_time + base::Days(530),
+      &profiles, &credit_cards));
 
   // This should not affect the unmasked card (should be unmasked).
   std::vector<std::unique_ptr<CreditCard>> outputs;
@@ -3145,9 +3144,9 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
   // Delete data in the range of the last 24 hours.
   // Fudge |now| to make sure it's strictly greater than the |now| that
   // the database uses.
-  base::Time now = AutofillClock::Now() + base::TimeDelta::FromSeconds(1);
+  base::Time now = AutofillClock::Now() + base::Seconds(1);
   ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(
-      now - base::TimeDelta::FromDays(1), now, &profiles, &credit_cards));
+      now - base::Days(1), now, &profiles, &credit_cards));
 
   // This should re-mask.
   ASSERT_TRUE(table_->GetServerCreditCards(&outputs));

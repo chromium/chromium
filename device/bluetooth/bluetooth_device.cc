@@ -547,9 +547,8 @@ void BluetoothDevice::RemoveGattConnection(
 }
 
 void BluetoothDevice::SetAsExpiredForTesting() {
-  last_update_time_ =
-      base::Time::NowFromSystemTime() -
-      (BluetoothAdapter::timeoutSec + base::TimeDelta::FromSeconds(1));
+  last_update_time_ = base::Time::NowFromSystemTime() -
+                      (BluetoothAdapter::timeoutSec + base::Seconds(1));
 }
 
 void BluetoothDevice::Pair(PairingDelegate* pairing_delegate,

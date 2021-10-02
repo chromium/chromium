@@ -19,7 +19,7 @@
 namespace syncer {
 namespace {
 
-constexpr base::TimeDelta kSessionTime = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kSessionTime = base::Seconds(10);
 
 class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
  public:

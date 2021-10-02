@@ -42,7 +42,7 @@ ProfilingProcessHost::ProfilingProcessHost() = default;
 ProfilingProcessHost::~ProfilingProcessHost() = default;
 
 void ProfilingProcessHost::Start() {
-  metrics_timer_.Start(FROM_HERE, base::TimeDelta::FromHours(24),
+  metrics_timer_.Start(FROM_HERE, base::Hours(24),
                        base::BindRepeating(&ProfilingProcessHost::ReportMetrics,
                                            base::Unretained(this)));
 }

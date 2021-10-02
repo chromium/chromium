@@ -53,7 +53,7 @@ class FakeAnimationContainerObserver : public AnimationContainerObserver {
 class TestAnimation : public LinearAnimation {
  public:
   explicit TestAnimation(AnimationDelegate* delegate)
-      : LinearAnimation(base::TimeDelta::FromMilliseconds(20), 20, delegate) {}
+      : LinearAnimation(base::Milliseconds(20), 20, delegate) {}
 
   TestAnimation(const TestAnimation&) = delete;
   TestAnimation& operator=(const TestAnimation&) = delete;

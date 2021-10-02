@@ -789,7 +789,7 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateBeforeDelay) {
   SimulateNavigateToURL(response, nil);
 
   // Advance clock, but stay within the one-hour Gaia update time.
-  base::TimeDelta oneMinuteDelta = base::TimeDelta::FromMinutes(1);
+  base::TimeDelta oneMinuteDelta = base::Minutes(1);
   task_environment_.FastForwardBy(oneMinuteDelta);
   SimulateNavigateToURLWithInterruption(response, nil);
 
@@ -815,7 +815,7 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAfterDelay) {
   SimulateNavigateToURL(response, nil);
 
   // Advance clock past the one-hour Gaia update time.
-  base::TimeDelta twoHourDelta = base::TimeDelta::FromHours(2);
+  base::TimeDelta twoHourDelta = base::Hours(2);
   task_environment_.FastForwardBy(twoHourDelta);
   SimulateNavigateToURL(response, nil);
 

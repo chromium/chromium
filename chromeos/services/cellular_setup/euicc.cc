@@ -35,8 +35,7 @@ namespace {
 
 // Delay before pending profile refresh callback is called. This ensures that
 // eSIM profiles are updated before callback returns.
-constexpr base::TimeDelta kPendingProfileRefreshDelay =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kPendingProfileRefreshDelay = base::Milliseconds(150);
 
 // Prefix for EID when encoded in QR Code.
 const char kEidQrCodePrefix[] = "EID:";

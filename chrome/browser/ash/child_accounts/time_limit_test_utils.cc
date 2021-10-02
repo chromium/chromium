@@ -61,18 +61,15 @@ base::TimeDelta CreateTime(int hour, int minute) {
   DCHECK_GE(hour, 0);
   DCHECK_LT(minute, 60);
   DCHECK_GE(minute, 0);
-  return base::TimeDelta::FromMinutes(hour * 60 + minute);
+  return base::Minutes(hour * 60 + minute);
 }
 
 base::Value CreatePolicyTime(base::TimeDelta time) {
-  DCHECK_EQ(
-      time.InNanoseconds() % base::TimeDelta::FromMinutes(1).InNanoseconds(),
-      0);
-  DCHECK_LT(time, base::TimeDelta::FromHours(24));
+  DCHECK_EQ(time.InNanoseconds() % base::Minutes(1).InNanoseconds(), 0);
+  DCHECK_LT(time, base::Hours(24));
 
   int hour = time.InHours();
-  int minute = time.InMinutes() -
-               time.InHours() * base::TimeDelta::FromHours(1).InMinutes();
+  int minute = time.InMinutes() - time.InHours() * base::Hours(1).InMinutes();
   base::Value policyTime(base::Value::Type::DICTIONARY);
   policyTime.SetKey(kWindowLimitEntryTimeHour, base::Value(hour));
   policyTime.SetKey(kWindowLimitEntryTimeMinute, base::Value(minute));
@@ -118,10 +115,8 @@ void AddTimeUsageLimit(base::Value* policy,
                        base::Time last_updated) {
   // Asserts that the usage limit quota in minutes corresponds to an integer
   // number.
-  DCHECK_EQ(
-      quota.InNanoseconds() % base::TimeDelta::FromMinutes(1).InNanoseconds(),
-      0);
-  DCHECK_LT(quota, base::TimeDelta::FromHours(24));
+  DCHECK_EQ(quota.InNanoseconds() % base::Minutes(1).InNanoseconds(), 0);
+  DCHECK_LT(quota, base::Hours(24));
 
   std::transform(day.begin(), day.end(), day.begin(), ::tolower);
   policy->FindKey(kTimeUsageLimit)

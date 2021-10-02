@@ -34,7 +34,7 @@ class ReportQueueManualTestContextTest : public testing::Test {
   const Priority kPriority = Priority::FAST_BATCH;
   const Destination kDestination = Destination::UPLOAD_EVENTS;
   const uint64_t kNumberOfMessagesToEnqueue = 5;
-  const base::TimeDelta kMessageFrequency = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kMessageFrequency = base::Seconds(1);
 
   void SetUp() override {
     task_runner_ =

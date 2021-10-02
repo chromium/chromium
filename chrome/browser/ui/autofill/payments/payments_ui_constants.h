@@ -16,8 +16,7 @@ constexpr gfx::Insets kMigrationDialogInsets = gfx::Insets(0, 24, 48, 24);
 // The time span a card bubble should be visible even if the document
 // navigates away meanwhile. This is to ensure that the user can see
 // the bubble.
-constexpr base::TimeDelta kCardBubbleSurviveNavigationTime =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kCardBubbleSurviveNavigationTime = base::Seconds(5);
 
 }  // namespace autofill
 

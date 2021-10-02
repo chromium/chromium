@@ -387,7 +387,7 @@ void TestFeedNetwork::SendQueryRequest(
     result.response_info.status_code = http_status_code;
 
   result.response_info.response_body_bytes = 100;
-  result.response_info.fetch_duration = base::TimeDelta::FromMilliseconds(42);
+  result.response_info.fetch_duration = base::Milliseconds(42);
   result.response_info.was_signed_in = true;
   if (injected_response_) {
     result.response_body = std::make_unique<feedwire::Response>(

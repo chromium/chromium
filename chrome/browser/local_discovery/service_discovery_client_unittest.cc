@@ -254,7 +254,7 @@ TEST_F(ServiceDiscoveryTest, AddRemoveService) {
                                          "hello._privet._tcp.local"))
       .Times(Exactly(1));
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 }
 
 TEST_F(ServiceDiscoveryTest, DiscoverNewServices) {
@@ -272,7 +272,7 @@ TEST_F(ServiceDiscoveryTest, DiscoverNewServices) {
 
   EXPECT_CALL(socket_factory_, OnSendTo(_)).Times(2);
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 }
 
 // Test that we can query the network with a service name that includes
@@ -292,7 +292,7 @@ TEST_F(ServiceDiscoveryTest, DiscoverNewServicesUnrestricted) {
 
   EXPECT_CALL(socket_factory_, OnSendTo(_)).Times(2);
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 }
 
 TEST_F(ServiceDiscoveryTest, ReadCachedServices) {
@@ -422,7 +422,7 @@ TEST_F(ServiceDiscoveryTest, ActivelyRefreshServices) {
                                          "hello._privet._tcp.local"))
       .Times(Exactly(1));
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -515,7 +515,7 @@ TEST_F(ServiceResolverTest, JustSrv) {
 
   // TODO(noamsml): When NSEC record support is added, change this to use an
   // NSEC record.
-  RunFor(base::TimeDelta::FromSeconds(4));
+  RunFor(base::Seconds(4));
 }
 
 TEST_F(ServiceResolverTest, WithNothing) {
@@ -528,7 +528,7 @@ TEST_F(ServiceResolverTest, WithNothing) {
 
   // TODO(noamsml): When NSEC record support is added, change this to use an
   // NSEC record.
-  RunFor(base::TimeDelta::FromSeconds(4));
+  RunFor(base::Seconds(4));
 }
 
 }  // namespace

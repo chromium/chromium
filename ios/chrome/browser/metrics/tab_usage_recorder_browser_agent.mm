@@ -314,8 +314,8 @@ void TabUsageRecorderBrowserAgent::RendererTerminated(
 
   // Clear |termination_timestamps_| of timestamps older than
   // |kSecondsBeforeRendererTermination| ago.
-  base::TimeDelta seconds_before = base::TimeDelta::FromSeconds(
-      tab_usage_recorder::kSecondsBeforeRendererTermination);
+  base::TimeDelta seconds_before =
+      base::Seconds(tab_usage_recorder::kSecondsBeforeRendererTermination);
   base::TimeTicks timestamp_boundary = now - seconds_before;
   while (termination_timestamps_.front() < timestamp_boundary) {
     termination_timestamps_.pop_front();

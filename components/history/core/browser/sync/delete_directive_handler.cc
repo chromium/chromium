@@ -61,7 +61,7 @@ bool TimeRangeLessThan(const syncer::SyncData& data1,
 
 // Converts a Unix timestamp in microseconds to a base::Time value.
 base::Time UnixUsecToTime(int64_t usec) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(usec);
+  return base::Time::UnixEpoch() + base::Microseconds(usec);
 }
 
 // Converts a base::Time value to a Unix timestamp in microseconds.
@@ -254,7 +254,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
     // range in directive is inclusive.
     history_backend->ExpireHistoryForTimes(
         group_it->second, group_it->first.first,
-        group_it->first.second + base::TimeDelta::FromMicroseconds(1));
+        group_it->first.second + base::Microseconds(1));
   }
 }
 
@@ -295,7 +295,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
         // time range in directive is inclusive.
         history_backend->ExpireHistoryBetween(
             std::set<GURL>(), current_start_time,
-            current_end_time + base::TimeDelta::FromMicroseconds(1),
+            current_end_time + base::Microseconds(1),
             /*user_initiated*/ true);
       }
       current_start_time = directive_start_time;
@@ -307,7 +307,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
   if (!current_start_time.is_null()) {
     history_backend->ExpireHistoryBetween(
         std::set<GURL>(), current_start_time,
-        current_end_time + base::TimeDelta::FromMicroseconds(1),
+        current_end_time + base::Microseconds(1),
         /*user_initiated*/ true);
   }
 }

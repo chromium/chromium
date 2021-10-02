@@ -236,7 +236,7 @@ Tab::Tab(TabController* controller)
   tab_close_button_observer_ = std::make_unique<TabCloseButtonObserver>(
       this, close_button_, controller_);
 
-  title_animation_.SetDuration(base::TimeDelta::FromMilliseconds(100));
+  title_animation_.SetDuration(base::Milliseconds(100));
 
   // Enable keyboard focus.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);

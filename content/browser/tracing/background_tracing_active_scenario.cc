@@ -45,7 +45,7 @@ class BackgroundTracingActiveScenario::TracingTimer {
   ~TracingTimer() = default;
 
   void StartTimer(int seconds) {
-    tracing_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(seconds), this,
+    tracing_timer_.Start(FROM_HERE, base::Seconds(seconds), this,
                          &TracingTimer::TracingTimerFired);
   }
   void CancelTimer() { tracing_timer_.Stop(); }

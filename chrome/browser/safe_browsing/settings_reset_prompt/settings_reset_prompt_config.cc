@@ -159,8 +159,7 @@ bool SettingsResetPromptConfig::Init() {
         CONFIG_ERROR_BAD_DELAY_BEFORE_PROMPT_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
-  delay_before_prompt_ =
-      base::TimeDelta::FromSeconds(delay_before_prompt_seconds);
+  delay_before_prompt_ = base::Seconds(delay_before_prompt_seconds);
 
   // Get the prompt_wave feature paramter.
   prompt_wave_ = base::GetFieldTrialParamByFeatureAsInt(kSettingsResetPrompt,
@@ -181,8 +180,7 @@ bool SettingsResetPromptConfig::Init() {
         CONFIG_ERROR_BAD_TIME_BETWEEN_PROMPTS_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
-  time_between_prompts_ =
-      base::TimeDelta::FromSeconds(time_between_prompts_seconds);
+  time_between_prompts_ = base::Seconds(time_between_prompts_seconds);
 
   UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ConfigError", CONFIG_ERROR_OK,
                             CONFIG_ERROR_MAX);

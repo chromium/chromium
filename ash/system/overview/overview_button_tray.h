@@ -41,7 +41,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // overview enter animation time, once ux decides which one to match (both are
   // 300ms currently).
   static constexpr base::TimeDelta kDoubleTapThresholdMs =
-      base::TimeDelta::FromMilliseconds(300);
+      base::Milliseconds(300);
 
   explicit OverviewButtonTray(Shelf* shelf);
   OverviewButtonTray(const OverviewButtonTray&) = delete;

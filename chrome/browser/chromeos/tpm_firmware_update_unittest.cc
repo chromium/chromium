@@ -176,8 +176,7 @@ TEST_F(TPMFirmwareUpdateModesTest, Available) {
 
 TEST_F(TPMFirmwareUpdateModesTest, AvailableAfterWaiting) {
   SetUpdateAvailability(Availability::kPending);
-  GetAvailableUpdateModes(std::move(callback_),
-                          base::TimeDelta::FromSeconds(5));
+  GetAvailableUpdateModes(std::move(callback_), base::Seconds(5));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_received_);
 
@@ -197,7 +196,7 @@ TEST_F(TPMFirmwareUpdateModesTest, AvailableAfterWaiting) {
 
   // Trigger timeout and validate there are no further callbacks or crashes.
   callback_received_ = false;
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_received_);
 }
@@ -220,12 +219,11 @@ TEST_F(TPMFirmwareUpdateModesTest, NoUpdateNonVulnerableSRK) {
 
 TEST_F(TPMFirmwareUpdateModesTest, Timeout) {
   SetUpdateAvailability(Availability::kPending);
-  GetAvailableUpdateModes(std::move(callback_),
-                          base::TimeDelta::FromSeconds(5));
+  GetAvailableUpdateModes(std::move(callback_), base::Seconds(5));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_received_);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_received_);
   EXPECT_TRUE(callback_modes_.empty());

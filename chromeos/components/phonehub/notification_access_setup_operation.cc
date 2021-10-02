@@ -28,10 +28,8 @@ constexpr std::array<NotificationAccessSetupOperation::Status, 4>
 
 // Used for metrics; do not change.
 constexpr size_t kNumSetupDurationHistogramBuckets = 50;
-constexpr base::TimeDelta kSetupDurationHistogramMinTime =
-    base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kSetupDurationHistogramMaxTime =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kSetupDurationHistogramMinTime = base::Seconds(1);
+constexpr base::TimeDelta kSetupDurationHistogramMaxTime = base::Minutes(10);
 
 }  // namespace
 

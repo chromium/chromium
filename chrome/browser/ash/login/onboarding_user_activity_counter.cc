@@ -20,7 +20,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kExpireAfterOnboarding = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kExpireAfterOnboarding = base::Days(1);
 
 bool IsExpiredAfterOnboarding(PrefService* prefs) {
   return prefs->HasPrefPath(prefs::kOobeOnboardingTime) &&

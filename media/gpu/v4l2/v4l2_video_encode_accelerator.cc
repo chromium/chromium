@@ -1191,13 +1191,13 @@ void V4L2VideoEncodeAccelerator::PumpBitstreamBuffers() {
                 << ", key_frame=" << output_buf->IsKeyframe();
       child_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(&Client::BitstreamBufferReady, client_, buffer_id,
-                         BitstreamBufferMetadata(
-                             output_data_size, output_buf->IsKeyframe(),
-                             base::TimeDelta::FromMicroseconds(
-                                 output_buf->GetTimeStamp().tv_usec +
-                                 output_buf->GetTimeStamp().tv_sec *
-                                     base::Time::kMicrosecondsPerSecond))));
+          base::BindOnce(
+              &Client::BitstreamBufferReady, client_, buffer_id,
+              BitstreamBufferMetadata(
+                  output_data_size, output_buf->IsKeyframe(),
+                  base::Microseconds(output_buf->GetTimeStamp().tv_usec +
+                                     output_buf->GetTimeStamp().tv_sec *
+                                         base::Time::kMicrosecondsPerSecond))));
     }
 
     if ((encoder_state_ == kFlushing) && output_buf->IsLast()) {

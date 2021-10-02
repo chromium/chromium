@@ -473,7 +473,7 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
         base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
                            PushDummyFrameAndScheduleNextPush,
                        weak_factory_.GetWeakPtr(), device_exerciser),
-        base::TimeDelta::FromMilliseconds(1000 / kDummyFrameRate));
+        base::Milliseconds(1000 / kDummyFrameRate));
   }
 
   void ShutDownVirtualDeviceAndContinue(

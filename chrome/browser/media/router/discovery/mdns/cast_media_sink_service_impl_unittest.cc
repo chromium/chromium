@@ -310,7 +310,7 @@ TEST_F(CastMediaSinkServiceImplTest, TestOpenChannelRetryOnce) {
   socket.SetErrorState(cast_channel::ChannelError::NONE);
   ExpectOpenSocket(&socket);
   // Wait for 16 seconds.
-  mock_time_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(16));
+  mock_time_task_runner_->FastForwardBy(base::Seconds(16));
 }
 
 TEST_F(CastMediaSinkServiceImplTest, TestOpenChannelFails) {
@@ -357,7 +357,7 @@ TEST_F(CastMediaSinkServiceImplTest, TestMultipleOpenChannels) {
   socket2.set_id(2);
   socket2.SetErrorState(cast_channel::ChannelError::NONE);
 
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta delta = base::Seconds(2);
   clock.Advance(delta);
   base::HistogramTester tester;
 

@@ -123,7 +123,7 @@ void WifiDataProviderLacros::ScheduleNextScan(int interval_ms) {
   if (!IsGeolocationServiceAvailable() || !started_)
     return;
 
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(interval_ms);
+  base::TimeDelta interval = base::Milliseconds(interval_ms);
   if (!wifi_scan_timer_.IsRunning() ||
       interval < wifi_scan_timer_.GetCurrentDelay()) {
     wifi_scan_timer_.Start(
@@ -158,9 +158,9 @@ void WifiDataProviderLacros::DidWifiScanTask(
 
   // If the age is significantly longer than our long polling time, assume the
   // data is stale and trigger a faster update.
-  const bool is_data_stale = time_since_last_updated >
-                             base::TimeDelta::FromMilliseconds(
-                                 kTwoNoChangePollingIntervalMilliseconds * 2);
+  const bool is_data_stale =
+      time_since_last_updated >
+      base::Milliseconds(kTwoNoChangePollingIntervalMilliseconds * 2);
   if (!data_available || is_data_stale) {
     ScheduleNextScan(WifiPollingPolicy::Get()->NoWifiInterval());
     return;

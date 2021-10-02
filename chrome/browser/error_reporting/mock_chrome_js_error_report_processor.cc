@@ -31,8 +31,7 @@ const char MockChromeJsErrorReportProcessor::kDefaultExperimentListString[] =
 MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Shorten timeout or tests will time out.
-  set_maximium_wait_for_crash_reporter_for_test(
-      base::TimeDelta::FromSeconds(5));
+  set_maximium_wait_for_crash_reporter_for_test(base::Seconds(5));
 #endif
 }
 

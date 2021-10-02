@@ -11,8 +11,7 @@ namespace blink {
 
 // Maximum allowed time delta into the future for show triggers. Allow a bit
 // more than a year to account for leap years and seconds.
-constexpr base::TimeDelta kMaxNotificationShowTriggerDelay =
-    base::TimeDelta::FromDays(367);
+constexpr base::TimeDelta kMaxNotificationShowTriggerDelay = base::Days(367);
 
 // TODO(johnme): The maximum number of actions is platform-specific and should
 // be indicated by the embedder.

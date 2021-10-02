@@ -17,7 +17,7 @@ namespace {
 // the phone is connected. If the phone status model is still empty after this
 // period of time, ConnectionManager should call Disconnect().
 constexpr base::TimeDelta kEmptyPhoneStatusModelGracePeriodTimeDelta =
-    base::TimeDelta::FromSeconds(45);
+    base::Seconds(45);
 
 }  // namespace
 

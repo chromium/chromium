@@ -237,12 +237,12 @@ void ReadResourceFilePathAndLastModifiedTime(
   int64_t delta_seconds = (*last_modified_time - dir_creation_time).InSeconds();
   if (delta_seconds >= 0) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedDelta",
-                                delta_seconds, 1,
-                                base::TimeDelta::FromDays(30).InSeconds(), 50);
+                                delta_seconds, 1, base::Days(30).InSeconds(),
+                                50);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedNegativeDelta",
-                                -delta_seconds, 1,
-                                base::TimeDelta::FromDays(30).InSeconds(), 50);
+                                -delta_seconds, 1, base::Days(30).InSeconds(),
+                                50);
   }
 }
 

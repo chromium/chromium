@@ -68,9 +68,9 @@ class ScrollbarAnimationControllerAuraOverlayTest
   }
 
  protected:
-  const base::TimeDelta kFadeDelay = base::TimeDelta::FromSeconds(4);
-  const base::TimeDelta kFadeDuration = base::TimeDelta::FromSeconds(3);
-  const base::TimeDelta kThinningDuration = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kFadeDelay = base::Seconds(4);
+  const base::TimeDelta kFadeDuration = base::Seconds(3);
+  const base::TimeDelta kThinningDuration = base::Seconds(2);
 
   void SetUp() override {
     const int kTrackStart = 0;
@@ -163,7 +163,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, Idle) {
 // Check that scrollbar appears again when the layer becomes scrollable.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, AppearOnResize) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
   ExpectScrollbarsOpacity(1);
@@ -188,7 +188,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, AppearOnResize) {
 // Check that scrollbar disappears when the layer becomes non-scrollable.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, HideOnResize) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   EXPECT_EQ(gfx::Size(200, 200), scroll_layer_->bounds());
 
@@ -217,7 +217,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, HideOnResize) {
 // Scroll content. Confirm the scrollbar appears and fades out.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, BasicAppearAndFadeOut) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scrollbar should be invisible.
   ExpectScrollbarsOpacity(0);
@@ -252,7 +252,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, BasicAppearAndFadeOut) {
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        BasicAppearByWillUpdateScrollThenFadeOut) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scrollbar should be invisible.
   ExpectScrollbarsOpacity(0);
@@ -283,7 +283,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MoveNearTrackThenNearThumb) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -341,7 +341,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 // scrollbar.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveNearAndDontFadeOut) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -380,7 +380,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveNearAndDontFadeOut) {
 // thick. Ensure it remains visible as long as the mouse is over the scrollbar.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveOverAndDontFadeOut) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -420,7 +420,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveOverAndDontFadeOut) {
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        DontFadeWhileCapturedBeforeThick) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -446,7 +446,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        DontFadeWhileCapturedThenAway) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -480,7 +480,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 // fade out.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeWhileCaptured) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -516,7 +516,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeWhileCaptured) {
 // the scrollbar to fade out.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAfterReleasedFar) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -565,7 +565,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAfterReleasedFar) {
 // doesn't cause the scrollbar to fade out.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeAfterReleasedNear) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -602,7 +602,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeAfterReleasedNear) {
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MoveNearScrollbarWhileFading) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -640,7 +640,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 // Make sure we can't capture scrollbar that's completely faded out.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TestCantCaptureWhenFaded) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -705,7 +705,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TestCantCaptureWhenFaded) {
 // appear thick and remain thick.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, ScrollWithMouseNear) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(-1, 0));
   scrollbar_controller_->Animate(time);
@@ -758,7 +758,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 // Tests that the fade effect is animated.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAnimated) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scroll to make the scrollbars visible.
   scrollbar_controller_->DidScrollUpdate();
@@ -787,7 +787,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAnimated) {
 // Tests that the controller tells the client when the scrollbars hide/show.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, NotifyChangedVisibility) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   EXPECT_CALL(client_, DidChangeScrollbarVisibility()).Times(1);
   // Scroll to make the scrollbars visible.
@@ -833,7 +833,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, NotifyChangedVisibility) {
 // moved away.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearEach) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scroll to make the scrollbars visible.
   scrollbar_controller_->DidScrollUpdate();
@@ -858,7 +858,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearEach) {
   // Subsequent moves within the nearness threshold should not change anything.
   scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(-2, 0));
   scrollbar_controller_->Animate(time);
-  time += base::TimeDelta::FromSeconds(10);
+  time += base::Seconds(10);
   scrollbar_controller_->Animate(time);
   ExpectScrollbarsOpacity(1);
   EXPECT_FLOAT_EQ(1, v_scrollbar_layer_->thumb_thickness_scale_factor());
@@ -897,7 +897,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearEach) {
   // Subsequent moves within the nearness threshold should not change anything.
   scrollbar_controller_->DidMouseMove(NearHorizontalScrollbarBegin(0, -2));
   scrollbar_controller_->Animate(time);
-  time += base::TimeDelta::FromSeconds(10);
+  time += base::Seconds(10);
   scrollbar_controller_->Animate(time);
   ExpectScrollbarsOpacity(1);
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
@@ -924,7 +924,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearEach) {
 // Move mouse near both scrollbars at the same time.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearBoth) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scroll to make the scrollbars visible.
   scrollbar_controller_->DidScrollUpdate();
@@ -955,7 +955,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearBoth) {
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MouseNearOtherBeforeAnimationFinished) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scroll to make the scrollbars visible.
   scrollbar_controller_->DidScrollUpdate();
@@ -1014,7 +1014,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 // move.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseLeaveFadeOut) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse near scrollbar.
   scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(-1, 0));
@@ -1038,7 +1038,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseLeaveFadeOut) {
 // scrollbar region of a hidden scrollbar.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, BasicMouseHoverFadeIn) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse over the fade in region of scrollbar.
   scrollbar_controller_->DidMouseMove(
@@ -1071,7 +1071,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, BasicMouseHoverFadeIn) {
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MouseHoverScrollbarAndMoveInside) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse over the fade in region of scrollbar.
   scrollbar_controller_->DidMouseMove(
@@ -1096,7 +1096,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MouseHoverThenOutShouldCancelFadeIn) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse over the fade in region of scrollbar.
   scrollbar_controller_->DidMouseMove(
@@ -1120,7 +1120,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MouseHoverThenLeaveShouldCancelShowThenEnterShouldFadeIn) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse over the fade in region of scrollbar.
   scrollbar_controller_->DidMouseMove(
@@ -1161,7 +1161,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MouseHoverThenMouseDownShouldCancelFadeInThenReleaseNearShouldFadeIn) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse over the fade in region of scrollbar.
   scrollbar_controller_->DidMouseMove(
@@ -1209,7 +1209,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
        MouseReleaseFarShouldNotFadeIn) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Move mouse over the fade in region of scrollbar.
   scrollbar_controller_->DidMouseMove(
@@ -1246,7 +1246,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 // and fade out when tickmarks hide.
 TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TickmakrsShowHide) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Overlay Scrollbar hidden at beginnging.
   EXPECT_TRUE(scrollbar_controller_->ScrollbarsHidden());
@@ -1339,8 +1339,8 @@ class ScrollbarAnimationControllerAndroidTest
 
     scrollbar_controller_ =
         ScrollbarAnimationController::CreateScrollbarAnimationControllerAndroid(
-            scroll_layer_->element_id(), this, base::TimeDelta::FromSeconds(2),
-            base::TimeDelta::FromSeconds(3), 0.0f);
+            scroll_layer_->element_id(), this, base::Seconds(2),
+            base::Seconds(3), 0.0f);
   }
 
   virtual ScrollbarOrientation orientation() const {
@@ -1376,13 +1376,13 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(0.f);
 
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(100);
+  time += base::Seconds(100);
   scrollbar_controller_->Animate(time);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
 
   EXPECT_TRUE(start_fade_.is_null());
 
-  time += base::TimeDelta::FromSeconds(100);
+  time += base::Seconds(100);
   scrollbar_controller_->Animate(time);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
 }
@@ -1391,7 +1391,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
 TEST_F(ScrollbarAnimationControllerAndroidTest,
        WillUpdateScrollNotAppearScrollbar) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   // Scrollbar should be invisible.
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
@@ -1495,7 +1495,7 @@ TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByScrollingGesture) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   EXPECT_FALSE(did_request_animate_);
 
   scrollbar_controller_->DidScrollUpdate();
@@ -1504,7 +1504,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByScrollingGesture) {
 
   EXPECT_FALSE(start_fade_.is_null());
 
-  time += base::TimeDelta::FromSeconds(100);
+  time += base::Seconds(100);
 
   scrollbar_controller_->Animate(time);
   EXPECT_FALSE(did_request_animate_);
@@ -1514,25 +1514,25 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByScrollingGesture) {
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
 
-  time += base::TimeDelta::FromSeconds(2);
+  time += base::Seconds(2);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
 
   scrollbar_controller_->DidScrollUpdate();
 
@@ -1540,25 +1540,25 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByScrollingGesture) {
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
 
-  time += base::TimeDelta::FromSeconds(2);
+  time += base::Seconds(2);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
@@ -1566,7 +1566,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByScrollingGesture) {
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByProgrammaticScroll) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->DidScrollUpdate();
   EXPECT_FALSE(did_request_animate_);
 
@@ -1578,7 +1578,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByProgrammaticScroll) {
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
@@ -1589,46 +1589,46 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByProgrammaticScroll) {
   std::move(start_fade_).Run();
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
-  time += base::TimeDelta::FromSeconds(2);
+  time += base::Seconds(2);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->DidScrollUpdate();
   std::move(start_fade_).Run();
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
@@ -1637,7 +1637,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, AwakenByProgrammaticScroll) {
 TEST_F(ScrollbarAnimationControllerAndroidTest,
        AnimationPreservedByNonScrollingGesture) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->DidScrollUpdate();
   std::move(start_fade_).Run();
   EXPECT_TRUE(did_request_animate_);
@@ -1647,7 +1647,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
@@ -1656,7 +1656,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
@@ -1665,7 +1665,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
@@ -1674,7 +1674,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
 TEST_F(ScrollbarAnimationControllerAndroidTest,
        AnimationOverriddenByScrollingGesture) {
   base::TimeTicks time;
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->DidScrollUpdate();
   EXPECT_FALSE(did_request_animate_);
   std::move(start_fade_).Run();
@@ -1685,7 +1685,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
@@ -1693,18 +1693,18 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
 
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   scrollbar_controller_->DidScrollUpdate();
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(1, scrollbar_layer_->Opacity());
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(1, scrollbar_layer_->Opacity());
 }

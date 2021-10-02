@@ -271,8 +271,7 @@ void BufferFeeder::FeedBuffer() {
         new ::media::DecoderBuffer(size_bytes));
     memset(silence_buffer->writable_data(), 0, silence_buffer->data_size());
     pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
-    pending_buffer_->set_timestamp(
-        base::TimeDelta::FromMicroseconds(pushed_us_));
+    pending_buffer_->set_timestamp(base::Microseconds(pushed_us_));
   }
   BufferStatus status = decoder_->PushBuffer(pending_buffer_.get());
   ASSERT_NE(status, MediaPipelineBackend::kBufferFailed);

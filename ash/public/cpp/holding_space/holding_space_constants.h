@@ -72,7 +72,7 @@ constexpr int kHoldingSpaceTrayPreviewsIconId = 18;
 
 // The maximum allowed age for files restored into the holding space model.
 // Note that this is not enforced for pinned items.
-constexpr base::TimeDelta kMaxFileAge = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMaxFileAge = base::Days(1);
 
 // The maximum allowed number of downloads to display in holding space UI in the
 // default case or in the case in-progress downloads integration is enabled.

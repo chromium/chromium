@@ -99,7 +99,7 @@ void SyntheticTapGesture::ForwardTouchOrMouseInputEvents(
 }
 
 base::TimeDelta SyntheticTapGesture::GetDuration() const {
-  return base::TimeDelta::FromMilliseconds(params_.duration_ms);
+  return base::Milliseconds(params_.duration_ms);
 }
 
 }  // namespace content

@@ -455,7 +455,7 @@ TEST_F(ChromeLabsBubbleTest, ShowFeedbackPage) {
 TEST_F(ChromeLabsBubbleTest, NewBadgeTest) {
   EXPECT_TRUE(first_lab_item()->GetNewBadgeForTesting()->GetDisplayNewBadge());
   ChromeLabsBubbleView::Hide();
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromDays(8);
+  constexpr base::TimeDelta kDelay = base::Days(8);
   task_environment()->AdvanceClock(kDelay);
   ChromeLabsBubbleView::Show(chrome_labs_button(), browser_view()->browser(),
                              chrome_labs_model(),

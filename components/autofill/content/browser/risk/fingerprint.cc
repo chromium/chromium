@@ -489,7 +489,7 @@ void GetFingerprint(
   internal::GetFingerprintInternal(
       obfuscated_gaia_id, window_bounds, content_bounds, screen_info, version,
       charset, accept_languages, install_time, app_locale, user_agent,
-      base::TimeDelta::FromSeconds(kTimeoutSeconds), std::move(callback));
+      base::Seconds(kTimeoutSeconds), std::move(callback));
 }
 
 }  // namespace risk

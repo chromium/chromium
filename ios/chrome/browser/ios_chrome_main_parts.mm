@@ -302,7 +302,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   rlz::RLZTracker::SetRlzDelegate(base::WrapUnique(new RLZTrackerDelegateImpl));
   rlz::RLZTracker::InitRlzDelayed(
       FirstRun::IsChromeFirstRun(), ping_delay < 0,
-      base::TimeDelta::FromMilliseconds(abs(ping_delay)),
+      base::Milliseconds(abs(ping_delay)),
       RLZTrackerDelegateImpl::IsGoogleDefaultSearch(last_used_browser_state),
       RLZTrackerDelegateImpl::IsGoogleHomepage(last_used_browser_state),
       RLZTrackerDelegateImpl::IsGoogleInStartpages(last_used_browser_state));

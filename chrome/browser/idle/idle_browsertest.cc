@@ -87,11 +87,11 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
 
   EXPECT_CALL(*mock_time_provider, CalculateIdleTime())
       // Simulates a user going idle.
-      .WillOnce(testing::Return(base::TimeDelta::FromSeconds(60)))
+      .WillOnce(testing::Return(base::Seconds(60)))
       // Simulates a screen getting locked after the user goes idle.
-      .WillOnce(testing::Return(base::TimeDelta::FromSeconds(60)))
+      .WillOnce(testing::Return(base::Seconds(60)))
       // Simulates a user going back to active.
-      .WillRepeatedly(testing::Return(base::TimeDelta::FromSeconds(0)));
+      .WillRepeatedly(testing::Return(base::Seconds(0)));
 
   EXPECT_CALL(*mock_time_provider, CheckIdleStateIsLocked())
       // Simulates unlocked screen while user goes idle.

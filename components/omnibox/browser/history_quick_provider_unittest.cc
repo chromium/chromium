@@ -292,8 +292,7 @@ void HistoryQuickProviderTest::FillData() {
     row.set_title(base::UTF8ToUTF16(info.title));
     row.set_visit_count(info.visit_count);
     row.set_typed_count(info.typed_count);
-    row.set_last_visit(base::Time::Now() -
-                       base::TimeDelta::FromDays(info.days_from_now));
+    row.set_last_visit(base::Time::Now() - base::Days(info.days_from_now));
 
     AddFakeURLToHistoryDB(history_backend()->db(), row);
   }

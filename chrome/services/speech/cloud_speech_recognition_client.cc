@@ -24,13 +24,11 @@ namespace speech {
 
 // The maximum duration a stream can be open for. The Open Speech API supports 5
 // minutes of continuous recognition.
-constexpr base::TimeDelta kMaximumStreamDuration =
-    base::TimeDelta::FromSeconds(295);
+constexpr base::TimeDelta kMaximumStreamDuration = base::Seconds(295);
 
 // The Open Speech API will not return any recognition events if 30 seconds have
 // elapsed since the last audio upload.
-constexpr base::TimeDelta kMaximumPauseDuration =
-    base::TimeDelta::FromSeconds(28);
+constexpr base::TimeDelta kMaximumPauseDuration = base::Seconds(28);
 
 constexpr char kWebServiceBaseUrl[] =
     "https://www.google.com/speech-api/full-duplex/v1";

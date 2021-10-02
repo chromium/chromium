@@ -530,7 +530,7 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
     return base::TimeDelta::Max();
   }
 
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "TimeToLiveInBackForwardCacheInSeconds",
       kDefaultTimeToLiveInBackForwardCacheInSeconds));
 }

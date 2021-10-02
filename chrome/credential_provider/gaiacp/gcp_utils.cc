@@ -94,10 +94,8 @@ constexpr wchar_t kDefaultMdmUrl[] =
     L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
 constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
-const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
-    base::TimeDelta::FromDays(1);
-const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh = base::Days(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch = base::Days(1);
 
 // Path elements for the path where the experiments are stored on disk.
 const wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
@@ -1371,7 +1369,7 @@ base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
       last_fetch_millis_int64;
 
-  return base::TimeDelta::FromMilliseconds(time_delta_from_last_fetch_ms);
+  return base::Milliseconds(time_delta_from_last_fetch_ms);
 }
 
 }  // namespace credential_provider

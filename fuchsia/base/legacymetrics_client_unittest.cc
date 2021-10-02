@@ -28,8 +28,8 @@ namespace {
 using ::testing::Property;
 using ::testing::UnorderedElementsAreArray;
 
-constexpr base::TimeDelta kReportInterval = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kShortDuration = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kReportInterval = base::Minutes(1);
+constexpr base::TimeDelta kShortDuration = base::Seconds(1);
 
 class TestMetricsRecorder
     : public fuchsia::legacymetrics::testing::MetricsRecorder_TestBase {
@@ -158,11 +158,10 @@ class LegacyMetricsClientTest : public testing::Test {
 TEST_F(LegacyMetricsClientTest, ReportIntervalBoundary) {
   client_.Start(kReportInterval);
 
-  task_environment_.FastForwardBy(kReportInterval -
-                                  base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(kReportInterval - base::Seconds(1));
   EXPECT_FALSE(test_recorder_.IsRecordInFlight());
   UMA_HISTOGRAM_COUNTS_1M("foo", 20);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(test_recorder_.IsRecordInFlight());
 }
 

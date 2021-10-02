@@ -101,7 +101,7 @@ void WebrtcDummyVideoEncoder::OnRttUpdate(int64_t rtt_ms) {
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnRttUpdate,
                                 video_channel_state_observer_,
-                                base::TimeDelta::FromMilliseconds(rtt_ms)));
+                                base::Milliseconds(rtt_ms)));
 }
 
 webrtc::EncodedImageCallback::Result WebrtcDummyVideoEncoder::SendEncodedFrame(

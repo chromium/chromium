@@ -57,11 +57,11 @@ constexpr float kExitHeightScaleFactor = 1.5f;
 constexpr float kShowFullscreenExitControlHeight = 3.f;
 
 // Time to wait to hide the popup after it is triggered.
-constexpr base::TimeDelta kMousePopupTimeout = base::TimeDelta::FromSeconds(3);
-constexpr base::TimeDelta kTouchPopupTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMousePopupTimeout = base::Seconds(3);
+constexpr base::TimeDelta kTouchPopupTimeout = base::Seconds(10);
 
 // Time to wait before showing the popup when the escape key is held.
-constexpr base::TimeDelta kKeyPressPopupDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kKeyPressPopupDelay = base::Seconds(1);
 
 bool IsExitUiEnabled() {
 #if defined(OS_MAC)

@@ -181,7 +181,7 @@ void PasswordRequirementsSpecFetcherImpl::Fetch(GURL origin,
                      base::Unretained(this), hash_prefix));
 
   lookup->download_timer.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(timeout_),
+      FROM_HERE, base::Milliseconds(timeout_),
       base::BindOnce(&PasswordRequirementsSpecFetcherImpl::OnFetchTimeout,
                      base::Unretained(this), hash_prefix));
 

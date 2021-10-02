@@ -26,7 +26,7 @@ namespace {
 const int kSampleRate = 48000;
 const int kBytesPerSample = 2;
 const int kChannels = 2;
-constexpr auto kFrameDuration = base::TimeDelta::FromMilliseconds(10);
+constexpr auto kFrameDuration = base::Milliseconds(10);
 
 class FakeAudioSink : public webrtc::AudioTrackSinkInterface{
  public:

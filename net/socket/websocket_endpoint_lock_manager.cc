@@ -47,7 +47,7 @@ WebSocketEndpointLockManager::LockReleaser::~LockReleaser() {
 }
 
 WebSocketEndpointLockManager::WebSocketEndpointLockManager()
-    : unlock_delay_(base::TimeDelta::FromMilliseconds(kUnlockDelayInMs)),
+    : unlock_delay_(base::Milliseconds(kUnlockDelayInMs)),
       pending_unlock_count_(0) {}
 
 WebSocketEndpointLockManager::~WebSocketEndpointLockManager() {

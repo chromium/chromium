@@ -151,9 +151,9 @@ base::TimeDelta CheckTimeInterval() {
   const std::string param = variations::GetVariationParamValueByFeature(
       kNetworkTimeServiceQuerying, kVariationsServiceCheckTimeIntervalSeconds);
   if (!param.empty() && base::StringToInt64(param, &seconds) && seconds > 0) {
-    return base::TimeDelta::FromSeconds(seconds);
+    return base::Seconds(seconds);
   }
-  return base::TimeDelta::FromSeconds(kCheckTimeIntervalSeconds);
+  return base::Seconds(kCheckTimeIntervalSeconds);
 }
 
 double RandomQueryProbability() {
@@ -186,7 +186,7 @@ NetworkTimeTracker::NetworkTimeTracker(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : server_url_(kTimeServiceURL),
       max_response_size_(1024),
-      backoff_(base::TimeDelta::FromMinutes(kBackoffMinutes)),
+      backoff_(base::Minutes(kBackoffMinutes)),
       url_loader_factory_(std::move(url_loader_factory)),
       clock_(std::move(clock)),
       tick_clock_(std::move(tick_clock)),
@@ -212,8 +212,7 @@ NetworkTimeTracker::NetworkTimeTracker(
   base::Time now = clock_->Now();
   if (ticks_at_last_measurement_ > tick_clock_->NowTicks() ||
       time_at_last_measurement_ > now ||
-      now - time_at_last_measurement_ >
-          base::TimeDelta::FromDays(kSerializedDataMaxAgeDays)) {
+      now - time_at_last_measurement_ > base::Days(kSerializedDataMaxAgeDays)) {
     // Drop saved mapping if either clock has run backward, or the data are too
     // old.
     pref_service_->ClearPref(prefs::kNetworkTimeMapping);
@@ -225,7 +224,7 @@ NetworkTimeTracker::NetworkTimeTracker(
   query_signer_ =
       client_update_protocol::Ecdsa::Create(kKeyVersion, public_key);
 
-  QueueCheckTime(base::TimeDelta::FromSeconds(0));
+  QueueCheckTime(base::Seconds(0));
 }
 
 NetworkTimeTracker::~NetworkTimeTracker() {
@@ -263,8 +262,8 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
   // was posted, 4 and 5 are the Now() and NowTicks() above, and 6 and 7 will be
   // the Now() and NowTicks() in GetNetworkTime().
   network_time_uncertainty_ =
-      resolution + latency + kNumTimeMeasurements *
-      base::TimeDelta::FromMilliseconds(kTicksResolutionMs);
+      resolution + latency +
+      kNumTimeMeasurements * base::Milliseconds(kTicksResolutionMs);
 
   base::DictionaryValue time_mapping;
   time_mapping.SetDouble(kPrefTime, time_at_last_measurement_.ToJsTime());
@@ -358,16 +357,15 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
   base::TimeDelta time_delta = clock_->Now() - time_at_last_measurement_;
   if (time_delta.InMilliseconds() < 0) {  // Has wall clock run backward?
     DVLOG(1) << "Discarding network time due to wall clock running backward";
-    LOCAL_HISTOGRAM_CUSTOM_TIMES(
-        "NetworkTimeTracker.WallClockRanBackwards", time_delta.magnitude(),
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(7), 50);
+    LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.WallClockRanBackwards",
+                                 time_delta.magnitude(), base::Seconds(1),
+                                 base::Days(7), 50);
     network_time_at_last_measurement_ = base::Time();
     return NETWORK_TIME_SYNC_LOST;
   }
   // Now we know that both |tick_delta| and |time_delta| are positive.
   base::TimeDelta divergence = tick_delta - time_delta;
-  if (divergence.magnitude() >
-      base::TimeDelta::FromSeconds(kClockDivergenceSeconds)) {
+  if (divergence.magnitude() > base::Seconds(kClockDivergenceSeconds)) {
     // Most likely either the machine has suspended, or the wall clock has been
     // reset.
     DVLOG(1) << "Discarding network time due to clocks diverging";
@@ -379,11 +377,11 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
     if (divergence.InMilliseconds() < 0) {
       LOCAL_HISTOGRAM_CUSTOM_TIMES(
           "NetworkTimeTracker.ClockDivergence.Negative", divergence.magnitude(),
-          base::TimeDelta::FromSeconds(60), base::TimeDelta::FromDays(7), 50);
+          base::Seconds(60), base::Days(7), 50);
     } else {
       LOCAL_HISTOGRAM_CUSTOM_TIMES(
           "NetworkTimeTracker.ClockDivergence.Positive", divergence.magnitude(),
-          base::TimeDelta::FromSeconds(60), base::TimeDelta::FromDays(7), 50);
+          base::Seconds(60), base::Days(7), 50);
     }
     network_time_at_last_measurement_ = base::Time();
     return NETWORK_TIME_SYNC_LOST;
@@ -542,8 +540,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   // to make the server's response unpredictable.
   base::Time current_time = base::Time::FromJsTime(current_time_millis);
   base::TimeDelta resolution =
-      base::TimeDelta::FromMilliseconds(1) +
-      base::TimeDelta::FromSeconds(kTimeServerMaxSkewSeconds);
+      base::Milliseconds(1) + base::Seconds(kTimeServerMaxSkewSeconds);
 
   // Record histograms for the latency of the time query and the time delta
   // between time fetches.
@@ -552,8 +549,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   if (!last_fetched_time_.is_null()) {
     LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.TimeBetweenFetches",
                                  current_time - last_fetched_time_,
-                                 base::TimeDelta::FromHours(1),
-                                 base::TimeDelta::FromDays(7), 50);
+                                 base::Hours(1), base::Days(7), 50);
   }
   last_fetched_time_ = current_time;
 
@@ -572,11 +568,11 @@ void NetworkTimeTracker::OnURLLoaderComplete(
   // long time.
   if (!UpdateTimeFromResponse(
           std::move(response_body))) {  // On error, back off.
-    if (backoff_ < base::TimeDelta::FromDays(2)) {
+    if (backoff_ < base::Days(2)) {
       backoff_ *= 2;
     }
   } else {
-    backoff_ = base::TimeDelta::FromMinutes(kBackoffMinutes);
+    backoff_ = base::Minutes(kBackoffMinutes);
   }
   QueueCheckTime(backoff_);
   time_fetcher_.reset();

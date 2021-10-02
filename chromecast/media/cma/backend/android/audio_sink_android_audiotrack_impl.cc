@@ -254,8 +254,7 @@ void AudioSinkAndroidAudioTrackImpl::ScheduleWaitForEosTask() {
             << playout_time_left_us << "us";
   wait_for_eos_task_.Reset(base::BindOnce(
       &AudioSinkAndroidAudioTrackImpl::OnPlayoutDone, base::Unretained(this)));
-  base::TimeDelta delay =
-      base::TimeDelta::FromMicroseconds(playout_time_left_us);
+  base::TimeDelta delay = base::Microseconds(playout_time_left_us);
   feeder_task_runner_->PostDelayedTask(FROM_HERE, wait_for_eos_task_.callback(),
                                        delay);
 }

@@ -50,7 +50,7 @@ using chromeos::memory::userspace_swap::UserspaceSwapConfig;
 // preventing space from getting too low in times of heavy swap. Feel free to
 // change it if you find a better value.
 constexpr base::TimeDelta kSwapDeviceAvailableSpaceCheckInterval =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 base::TimeTicks g_last_swap_device_free_space_check;
 uint64_t g_swap_device_free_swap_bytes;
 

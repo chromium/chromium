@@ -64,8 +64,7 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
   }
 
   UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-                             retry_after, base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromDays(7), 100);
+                             retry_after, base::Seconds(1), base::Days(7), 100);
 
   // Cap values at a maximum per experiment.
   if (retry_after > PrefetchProxyMaxRetryAfterDelta()) {

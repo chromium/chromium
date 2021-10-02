@@ -1974,12 +1974,12 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ShutdownInProgress) {
   // message created by Shutdown and before the notification callback
   // created by the IO thread in canceling the request.
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&base::PlatformThread::Sleep,
-                                base::TimeDelta::FromMilliseconds(25)));
+      FROM_HERE,
+      base::BindOnce(&base::PlatformThread::Sleep, base::Milliseconds(25)));
   DownloadManagerForShell(shell())->Shutdown();
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&base::PlatformThread::Sleep,
-                                base::TimeDelta::FromMilliseconds(25)));
+      FROM_HERE,
+      base::BindOnce(&base::PlatformThread::Sleep, base::Milliseconds(25)));
 }
 
 // Try to shutdown just after we release the download file, by delaying

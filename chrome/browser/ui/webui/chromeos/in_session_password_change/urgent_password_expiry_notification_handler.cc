@@ -35,7 +35,7 @@ void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
   const int ms_until_expiry = params->GetList()[1].GetInt();
 
   const std::u16string title = PasswordExpiryNotification::GetTitleText(
-      base::TimeDelta::FromMilliseconds(ms_until_expiry));
+      base::Milliseconds(ms_until_expiry));
 
   AllowJavascript();
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(title));

@@ -74,7 +74,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
   }
 
   void UpdateScore(MediaEngagementScore* score) {
-    test_clock.SetNow(test_clock.Now() + base::TimeDelta::FromHours(1));
+    test_clock.SetNow(test_clock.Now() + base::Hours(1));
 
     score->IncrementVisits();
     score->IncrementMediaPlaybacks();

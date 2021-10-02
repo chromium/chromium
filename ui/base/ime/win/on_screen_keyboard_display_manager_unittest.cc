@@ -131,8 +131,7 @@ class OnScreenKeyboardTest : public ::testing::Test {
   void WaitForEventsWithTimeDelay(int64_t time_delta_ms = 10) {
     base::RunLoop run_loop;
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(time_delta_ms));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(time_delta_ms));
     run_loop.Run();
   }
 

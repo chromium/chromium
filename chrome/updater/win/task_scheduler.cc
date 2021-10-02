@@ -191,8 +191,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     SYSTEMTIME start_system_time = {};
     GetLocalTime(&start_system_time);
 
-    base::Time tomorrow(base::Time::NowFromSystemTime() +
-                        base::TimeDelta::FromDays(1));
+    base::Time tomorrow(base::Time::NowFromSystemTime() + base::Days(1));
     SYSTEMTIME end_system_time = {};
     if (!UTCFileTimeToLocalSystemTime(tomorrow.ToFileTime(), &end_system_time))
       return false;
@@ -581,7 +580,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     // None of the triggers should go beyond kNumDaysBeforeExpiry.
     base::Time expiry_date(base::Time::NowFromSystemTime() +
-                           base::TimeDelta::FromDays(kNumDaysBeforeExpiry));
+                           base::Days(kNumDaysBeforeExpiry));
     base::win::ScopedBstr end_boundary(GetTimestampString(expiry_date));
     hr = trigger->put_EndBoundary(end_boundary.Get());
     if (FAILED(hr)) {

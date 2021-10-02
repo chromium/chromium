@@ -119,7 +119,7 @@ class TestDownloadFileImpl : public DownloadFileImpl {
 
  protected:
   base::TimeDelta GetRetryDelayForFailedRename(int attempt_count) override {
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
   }
 
 #if !defined(OS_WIN)

@@ -363,7 +363,7 @@ void CrashCallback() {
 }
 
 void RunSoon(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  const base::TimeDelta kTaskDelay = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTaskDelay = base::Seconds(10);
   task_runner->PostDelayedTask(FROM_HERE, base::BindOnce(&CrashCallback),
                                kTaskDelay);
 }
@@ -416,7 +416,7 @@ int main(int argc, const char* argv[]) {
 #endif
 
   // Some time for the memory manager to flush stuff.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(3));
+  base::PlatformThread::Sleep(base::Seconds(3));
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   char* end;

@@ -66,8 +66,7 @@ void SiteEngagementService::Helper::PeriodicTracker::Start(
 
 void SiteEngagementService::Helper::PeriodicTracker::Pause() {
   TrackingStopped();
-  StartTimer(
-      base::TimeDelta::FromSeconds(g_seconds_to_pause_engagement_detection));
+  StartTimer(base::Seconds(g_seconds_to_pause_engagement_detection));
 }
 
 void SiteEngagementService::Helper::PeriodicTracker::Stop() {
@@ -173,7 +172,7 @@ void SiteEngagementService::Helper::MediaTracker::MediaStartedPlaying(
   // Only begin engagement detection when media actually starts playing.
   active_media_players_.push_back(id);
   if (!IsTimerRunning())
-    Start(base::TimeDelta::FromSeconds(g_seconds_delay_after_media_starts));
+    Start(base::Seconds(g_seconds_delay_after_media_starts));
 }
 
 void SiteEngagementService::Helper::MediaTracker::MediaStoppedPlaying(
@@ -235,8 +234,7 @@ void SiteEngagementService::Helper::DidFinishNavigation(
 
   service_->HandleNavigation(web_contents(), handle->GetPageTransition());
 
-  input_tracker_.Start(
-      base::TimeDelta::FromSeconds(g_seconds_delay_after_navigation));
+  input_tracker_.Start(base::Seconds(g_seconds_delay_after_navigation));
 }
 
 void SiteEngagementService::Helper::OnVisibilityChanged(
@@ -251,8 +249,7 @@ void SiteEngagementService::Helper::OnVisibilityChanged(
     // Start a timer to track input if it isn't already running and input isn't
     // already being tracked.
     if (!input_tracker_.IsTimerRunning() && !input_tracker_.is_tracking()) {
-      input_tracker_.Start(
-          base::TimeDelta::FromSeconds(g_seconds_delay_after_show));
+      input_tracker_.Start(base::Seconds(g_seconds_delay_after_show));
     }
   }
 }

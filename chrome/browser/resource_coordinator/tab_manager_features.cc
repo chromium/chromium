@@ -37,7 +37,7 @@ base::TimeDelta GetTabLoadTimeout(const base::TimeDelta& default_timeout) {
   if (timeout_in_ms <= 0)
     return default_timeout;
 
-  return base::TimeDelta::FromMilliseconds(timeout_in_ms);
+  return base::Milliseconds(timeout_in_ms);
 }
 
 int GetNumOldestTabsToScoreWithTabRanker() {

@@ -318,9 +318,7 @@ class DroppedFrameCounterTest : public testing::Test {
     return dropped_frame_counter_.SlidingWindow95PercentilePercentDropped();
   }
 
-  double GetTotalFramesInWindow() {
-    return base::TimeDelta::FromSeconds(1) / interval_;
-  }
+  double GetTotalFramesInWindow() { return base::Seconds(1) / interval_; }
 
   void SetInterval(base::TimeDelta interval) { interval_ = interval; }
 
@@ -361,8 +359,7 @@ class DroppedFrameCounterTest : public testing::Test {
   uint64_t source_id_ = 1;
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
   base::TimeTicks frame_time_ = tick_clock_->NowTicks();
-  base::TimeDelta interval_ =
-      base::TimeDelta::FromMicroseconds(16667);  // 16.667 ms
+  base::TimeDelta interval_ = base::Microseconds(16667);  // 16.667 ms
 
   viz::BeginFrameArgs SimulateBeginFrameArgs() {
     viz::BeginFrameId current_id_(source_id_, sequence_number_);
@@ -454,7 +451,7 @@ TEST_F(DroppedFrameCounterTest, MaxPercentDroppedWithIdleFrames) {
 }
 
 TEST_F(DroppedFrameCounterTest, NoCrashForIntervalLargerThanWindow) {
-  SetInterval(base::TimeDelta::FromMilliseconds(1000));
+  SetInterval(base::Milliseconds(1000));
   SimulateFrameSequence({false, false}, 1);
 }
 
@@ -465,8 +462,8 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFrames) {
   // The 96%ile dropped-frame metric should be 0.
 
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   static_assert(
       kFps % 5 == 0,
       "kFps must be a multiple of 5 because this test depends on it.");
@@ -499,8 +496,8 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesWhileHidden) {
   // contribute to the sliding window.
 
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   static_assert(
       kFps % 5 == 0,
       "kFps must be a multiple of 5 because this test depends on it.");
@@ -532,8 +529,8 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesThenHide) {
   // contribute to the sliding window.
 
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   static_assert(
       kFps % 5 == 0,
       "kFps must be a multiple of 5 because this test depends on it.");
@@ -573,8 +570,8 @@ TEST_F(DroppedFrameCounterTest,
   // a new GPU Process. (https://crbug.com/1164647)
 
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   SetInterval(kInterval);
 
   // One good frame
@@ -603,8 +600,8 @@ TEST_F(DroppedFrameCounterTest,
 
 TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   SetInterval(kInterval);
 
   // First 2 seconds with 20% dropped frames.
@@ -627,8 +624,8 @@ TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
 
 TEST_F(DroppedFrameCounterTest, Reset) {
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   SetInterval(kInterval);
 
   // First 2 seconds with 20% dropped frames.
@@ -651,8 +648,8 @@ TEST_F(DroppedFrameCounterTest, Reset) {
 
 TEST_F(DroppedFrameCounterTest, ConsistentSmoothnessRatings) {
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   static_assert(kFps == 100,
                 "kFps must be 100 because this test depends on it.");
   SetInterval(kInterval);
@@ -700,8 +697,8 @@ TEST_F(DroppedFrameCounterTest, ConsistentSmoothnessRatings) {
 
 TEST_F(DroppedFrameCounterTest, MovingSmoothnessRatings) {
   // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
-  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
   static_assert(kFps == 100,
                 "kFps must be 100 because this test depends on it.");
   SetInterval(kInterval);

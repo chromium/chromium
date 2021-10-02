@@ -336,13 +336,13 @@ TEST_F(MetadataUtilsTest, HasFreshResults) {
 
   // Stale results.
   auto* prediction_result = segment_info.mutable_prediction_result();
-  base::Time result_time = now - base::TimeDelta::FromDays(3);
+  base::Time result_time = now - base::Days(3);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_FALSE(metadata_utils::HasFreshResults(segment_info, now));
 
   // Fresh results.
-  result_time = now - base::TimeDelta::FromHours(2);
+  result_time = now - base::Hours(2);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_TRUE(metadata_utils::HasFreshResults(segment_info, now));
@@ -360,14 +360,14 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
 
   // Unexpired result.
   auto* prediction_result = segment_info.mutable_prediction_result();
-  base::Time result_time = base::Time::Now() - base::TimeDelta::FromDays(3);
+  base::Time result_time = base::Time::Now() - base::Days(3);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_FALSE(
       metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
 
   // Expired result.
-  result_time = base::Time::Now() - base::TimeDelta::FromDays(30);
+  result_time = base::Time::Now() - base::Days(30);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
@@ -376,32 +376,25 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
 TEST_F(MetadataUtilsTest, GetTimeUnit) {
   proto::SegmentationModelMetadata metadata;
   metadata.set_time_unit(proto::TimeUnit::DAY);
-  EXPECT_EQ(base::TimeDelta::FromDays(1),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Days(1), metadata_utils::GetTimeUnit(metadata));
 
   metadata.set_time_unit(proto::TimeUnit::HOUR);
-  EXPECT_EQ(base::TimeDelta::FromHours(1),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Hours(1), metadata_utils::GetTimeUnit(metadata));
 
   metadata.set_time_unit(proto::TimeUnit::MINUTE);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Minutes(1), metadata_utils::GetTimeUnit(metadata));
 
   metadata.set_time_unit(proto::TimeUnit::SECOND);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Seconds(1), metadata_utils::GetTimeUnit(metadata));
 
   metadata.set_time_unit(proto::TimeUnit::WEEK);
-  EXPECT_EQ(base::TimeDelta::FromDays(7),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Days(7), metadata_utils::GetTimeUnit(metadata));
 
   metadata.set_time_unit(proto::TimeUnit::MONTH);
-  EXPECT_EQ(base::TimeDelta::FromDays(30),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Days(30), metadata_utils::GetTimeUnit(metadata));
 
   metadata.set_time_unit(proto::TimeUnit::YEAR);
-  EXPECT_EQ(base::TimeDelta::FromDays(365),
-            metadata_utils::GetTimeUnit(metadata));
+  EXPECT_EQ(base::Days(365), metadata_utils::GetTimeUnit(metadata));
 }
 
 TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {

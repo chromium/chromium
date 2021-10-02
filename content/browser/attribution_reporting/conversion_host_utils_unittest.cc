@@ -23,7 +23,7 @@ TEST(ConversionHostUtilsTest, AppImpression_Valid) {
   EXPECT_EQ(9223372036854775807ull, impression->impression_data);
   EXPECT_EQ("example.com", impression->conversion_destination.host());
   EXPECT_EQ("example2.com", impression->reporting_origin->host());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1234), impression->expiry);
+  EXPECT_EQ(base::Milliseconds(1234), impression->expiry);
 }
 
 TEST(ConversionHostUtilsTest, AppImpression_Valid_NoOptionals) {

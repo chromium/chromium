@@ -40,10 +40,9 @@ void ContentCaptureTaskHistogramReporter::OnTaskScheduled(
 
 void ContentCaptureTaskHistogramReporter::OnTaskRun() {
   if (!task_scheduled_time_.is_null()) {
-    base::UmaHistogramCustomTimes(kTaskDelayInMs,
-                                  base::TimeTicks::Now() - task_scheduled_time_,
-                                  base::TimeDelta::FromMilliseconds(1),
-                                  base::TimeDelta::FromSeconds(128), 100);
+    base::UmaHistogramCustomTimes(
+        kTaskDelayInMs, base::TimeTicks::Now() - task_scheduled_time_,
+        base::Milliseconds(1), base::Seconds(128), 100);
   }
   task_runs_per_capture_++;
 }
@@ -77,10 +76,9 @@ void ContentCaptureTaskHistogramReporter::OnSendContentEnded(
   if (captured_content_change_time_) {
     base::TimeTicks content_change_time = captured_content_change_time_.value();
     captured_content_change_time_.reset();
-    base::UmaHistogramCustomTimes(kCaptureContentDelayTime,
-                                  now - content_change_time,
-                                  base::TimeDelta::FromMilliseconds(500),
-                                  base::TimeDelta::FromSeconds(30), 50);
+    base::UmaHistogramCustomTimes(
+        kCaptureContentDelayTime, now - content_change_time,
+        base::Milliseconds(500), base::Seconds(30), 50);
   }
   if (!sent_content_count)
     return;

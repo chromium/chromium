@@ -171,7 +171,7 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
 
 std::string FormatElapsedTime(base::Time time) {
   const base::TimeDelta elapsed_time = base::Time::Now() - time;
-  if (elapsed_time < base::TimeDelta::FromMinutes(1))
+  if (elapsed_time < base::Minutes(1))
     return l10n_util::GetStringUTF8(IDS_SETTINGS_PASSWORDS_JUST_NOW);
 
   return base::UTF16ToUTF8(TimeFormat::SimpleWithMonthAndYear(
@@ -521,7 +521,7 @@ void PasswordCheckDelegate::
       FROM_HERE,
       base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck() {

@@ -339,11 +339,9 @@ bool ClientSideDetectionService::GetValidCachedResult(const GURL& url,
   const CacheState& cache_state = *it->second;
   if (cache_state.is_phishing
           ? cache_state.timestamp >
-                base::Time::Now() -
-                    base::TimeDelta::FromMinutes(kPositiveCacheIntervalMinutes)
+                base::Time::Now() - base::Minutes(kPositiveCacheIntervalMinutes)
           : cache_state.timestamp >
-                base::Time::Now() -
-                    base::TimeDelta::FromDays(kNegativeCacheIntervalDays)) {
+                base::Time::Now() - base::Days(kNegativeCacheIntervalDays)) {
     *is_phishing = cache_state.is_phishing;
     return true;
   }
@@ -356,11 +354,10 @@ void ClientSideDetectionService::UpdateCache() {
   // could be used for this purpose even if we will not use the entry to
   // satisfy the request from the cache.
   base::TimeDelta positive_cache_interval =
-      std::max(base::TimeDelta::FromMinutes(kPositiveCacheIntervalMinutes),
-               base::TimeDelta::FromDays(kReportsIntervalDays));
-  base::TimeDelta negative_cache_interval =
-      std::max(base::TimeDelta::FromDays(kNegativeCacheIntervalDays),
-               base::TimeDelta::FromDays(kReportsIntervalDays));
+      std::max(base::Minutes(kPositiveCacheIntervalMinutes),
+               base::Days(kReportsIntervalDays));
+  base::TimeDelta negative_cache_interval = std::max(
+      base::Days(kNegativeCacheIntervalDays), base::Days(kReportsIntervalDays));
 
   // Remove elements from the cache that will no longer be used.
   for (auto it = cache_.begin(); it != cache_.end();) {
@@ -388,8 +385,7 @@ int ClientSideDetectionService::GetPhishingNumReports() {
 void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
   phishing_report_times_.push_back(timestamp);
 
-  base::Time cutoff =
-      base::Time::Now() - base::TimeDelta::FromDays(kReportsIntervalDays);
+  base::Time cutoff = base::Time::Now() - base::Days(kReportsIntervalDays);
 
   // Erase items older than cutoff because we will never care about them again.
   while (!phishing_report_times_.empty() &&

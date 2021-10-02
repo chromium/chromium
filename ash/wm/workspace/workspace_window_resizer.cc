@@ -114,8 +114,7 @@ constexpr char kDragMaximizeSmoothness[] =
 
 // Duration of the cross fade animation used when dragging to unmaximize or
 // dragging to snap maximize.
-constexpr base::TimeDelta kCrossFadeDuration =
-    base::TimeDelta::FromMilliseconds(120);
+constexpr base::TimeDelta kCrossFadeDuration = base::Milliseconds(120);
 
 // The amount of pixels that needs to be moved during a top screen drag to reset
 // dwell time.
@@ -123,12 +122,11 @@ constexpr int kSnapDragDwellTimeResetThreshold = 8;
 
 // Dwell time before snap to maximize. The countdown starts when window dragged
 // into snap region.
-constexpr base::TimeDelta kDwellTime = base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kDwellTime = base::Milliseconds(400);
 
 // Dwell time before turning snap top to snap to maximize. The countdown starts
 // when window dragged into snap region.
-constexpr base::TimeDelta kDwellLongTime =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDwellLongTime = base::Milliseconds(1000);
 
 // The min amount of vertical movement needed for to trigger a snap to
 // maximize.

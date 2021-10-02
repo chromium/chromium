@@ -29,16 +29,13 @@ enum class AmbientUiMode {
 };
 
 // The default time before starting Ambient mode on lock screen.
-constexpr base::TimeDelta kLockScreenInactivityTimeout =
-    base::TimeDelta::FromSeconds(7);
+constexpr base::TimeDelta kLockScreenInactivityTimeout = base::Seconds(7);
 
 // The default time to lock screen in the background after Ambient mode begins.
-constexpr base::TimeDelta kLockScreenBackgroundTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kLockScreenBackgroundTimeout = base::Seconds(5);
 
 // The default interval to refresh photos.
-constexpr base::TimeDelta kPhotoRefreshInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kPhotoRefreshInterval = base::Seconds(60);
 
 // A checked observer which receives notification of changes to the Ambient Mode
 // UI model.

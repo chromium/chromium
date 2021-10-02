@@ -91,13 +91,13 @@ TEST_F(UrlIndexTest, UrlDataTest) {
   EXPECT_TRUE(a->cacheable());
 
   base::Time now = base::Time::Now();
-  base::Time valid_until = now + base::TimeDelta::FromSeconds(500);
+  base::Time valid_until = now + base::Seconds(500);
   a->set_valid_until(valid_until);
   a->set_range_supported();
   EXPECT_EQ(valid_until, a->valid_until());
   EXPECT_TRUE(a->Valid());
 
-  base::Time last_modified = now - base::TimeDelta::FromSeconds(500);
+  base::Time last_modified = now - base::Seconds(500);
   a->set_last_modified(last_modified);
   EXPECT_EQ(last_modified, a->last_modified());
 }
@@ -118,8 +118,8 @@ TEST_F(UrlIndexTest, TryInsert) {
   EXPECT_NE(a, c);
   EXPECT_FALSE(a->Valid());
   base::Time now = base::Time::Now();
-  base::Time last_modified = now - base::TimeDelta::FromSeconds(500);
-  base::Time valid_until = now + base::TimeDelta::FromSeconds(500);
+  base::Time last_modified = now - base::Seconds(500);
+  base::Time valid_until = now + base::Seconds(500);
 
   // Not sharable yet. (no ranges)
   EXPECT_EQ(a, url_index_.TryInsert(a));
@@ -138,7 +138,7 @@ TEST_F(UrlIndexTest, TryInsert) {
   EXPECT_EQ(a, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
 
   // |a| becomes expired...
-  a->set_valid_until(now - base::TimeDelta::FromSeconds(100));
+  a->set_valid_until(now - base::Seconds(100));
   EXPECT_FALSE(a->Valid());
   scoped_refptr<UrlData> b = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   EXPECT_NE(a, b);

@@ -12,8 +12,8 @@ namespace resource_coordinator {
 TEST(LifecycleUnitTest, SortKeyComparison) {
   constexpr base::TimeTicks kBaseTime;
   LifecycleUnit::SortKey a(kBaseTime);
-  LifecycleUnit::SortKey b(kBaseTime + base::TimeDelta::FromHours(1));
-  LifecycleUnit::SortKey c(kBaseTime + base::TimeDelta::FromHours(2));
+  LifecycleUnit::SortKey b(kBaseTime + base::Hours(1));
+  LifecycleUnit::SortKey c(kBaseTime + base::Hours(2));
 
   EXPECT_FALSE(a < a);
   EXPECT_TRUE(a < b);

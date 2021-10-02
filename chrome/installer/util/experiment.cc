@@ -102,8 +102,7 @@ void Experiment::SetDisplayTime(base::Time time) {
     first_display_time_ = time;
     metrics_.first_toast_offset_days =
         (time - base::Time::UnixEpoch() -
-         base::TimeDelta::FromSeconds(
-             ExperimentMetrics::kExperimentStartSeconds))
+         base::Seconds(ExperimentMetrics::kExperimentStartSeconds))
             .InDays();
     // If display time is outside the experiment range (possible due to
     // invalid local time), then set it to be kMaxFirstToastOffsetDays.
@@ -130,8 +129,8 @@ void Experiment::SetUserSessionUptime(base::TimeDelta time_delta) {
                                   ExperimentMetrics::kSessionLengthBucketBits);
   if (time_delta.InMinutes() < 0 ||
       time_delta.InMinutes() > ExperimentMetrics::kMaxSessionLength) {
-    time_delta = base::TimeDelta::FromMinutes(
-        ExperimentMetrics::ExperimentMetrics::kMaxSessionLength);
+    time_delta =
+        base::Minutes(ExperimentMetrics::ExperimentMetrics::kMaxSessionLength);
   }
   metrics_.session_length_bucket =
       LogFloor(1 + time_delta.InMinutes(), log_base);
@@ -143,8 +142,7 @@ void Experiment::SetActionDelay(base::TimeDelta time_delta) {
   action_delay_ = time_delta;
   if (time_delta.InSeconds() < 0 ||
       time_delta.InSeconds() > ExperimentMetrics::kMaxActionDelay) {
-    time_delta =
-        base::TimeDelta::FromSeconds(ExperimentMetrics::kMaxActionDelay);
+    time_delta = base::Seconds(ExperimentMetrics::kMaxActionDelay);
   }
   double log_base = ExpBucketBase(ExperimentMetrics::kMaxActionDelay,
                                   ExperimentMetrics::kActionDelayBucketBits);

@@ -657,8 +657,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
 
   // Update average frame duration.
   base::TimeDelta frame_duration = algorithm_->average_frame_duration();
-  if (frame_duration != kNoTimestamp &&
-      frame_duration != base::TimeDelta::FromSeconds(0)) {
+  if (frame_duration != kNoTimestamp && frame_duration != base::Seconds(0)) {
     fps_estimator_.AddSample(frame_duration);
   } else {
     fps_estimator_.Reset();

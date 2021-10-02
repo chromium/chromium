@@ -26,8 +26,7 @@ class EncryptionModule : public EncryptionModuleInterface {
 
   // Factory method creates |EncryptionModule| object.
   static scoped_refptr<EncryptionModuleInterface> Create(
-      base::TimeDelta renew_encryption_key_period =
-          base::TimeDelta::FromDays(1));
+      base::TimeDelta renew_encryption_key_period = base::Days(1));
 
  protected:
   // Constructor can only be called by |Create| factory method.

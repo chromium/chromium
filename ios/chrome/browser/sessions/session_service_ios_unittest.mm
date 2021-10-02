@@ -187,7 +187,7 @@ TEST_F(SessionServiceTest, SaveExpiredSession) {
   factory = nil;
   // Make sure that the delay for saving a session has passed (at least 2.5
   // seconds)
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(2.5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2.5));
   base::RunLoop().RunUntilIdle();
 
   SessionIOS* session =

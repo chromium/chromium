@@ -192,7 +192,7 @@ class SyncManagerImplTest : public testing::Test {
         std::make_unique<ComponentsFactory>(std::move(scheduler));
     args.encryption_handler = &encryption_handler_;
     args.cancelation_signal = &cancelation_signal_;
-    args.poll_interval = base::TimeDelta::FromMinutes(60);
+    args.poll_interval = base::Minutes(60);
     sync_manager_.Init(&args);
 
     base::RunLoop().RunUntilIdle();

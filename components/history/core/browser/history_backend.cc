@@ -176,8 +176,8 @@ std::u16string FormatUrlForRedirectComparison(const GURL& url) {
 }
 
 base::Time MidnightNDaysLater(base::Time time, int days) {
-  return (time.LocalMidnight() + base::TimeDelta::FromDays(days) +
-          base::TimeDelta::FromHours(kDSTRoundingOffsetHours))
+  return (time.LocalMidnight() + base::Days(days) +
+          base::Hours(kDSTRoundingOffsetHours))
       .LocalMidnight();
 }
 
@@ -1899,8 +1899,7 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count,
                                 base::Unretained(backend_client_.get()))
           : base::NullCallback();
   std::vector<std::unique_ptr<PageUsageData>> data = db_->QuerySegmentUsage(
-      base::Time::Now() - base::TimeDelta::FromDays(days_back), result_count,
-      url_filter);
+      base::Time::Now() - base::Days(days_back), result_count, url_filter);
 
   MostVisitedURLList result;
   for (const std::unique_ptr<PageUsageData>& current_data : data)
@@ -2259,9 +2258,8 @@ void HistoryBackend::ScheduleCommit() {
   scheduled_commit_.Reset(
       base::BindOnce(&HistoryBackend::Commit, base::Unretained(this)));
 
-  task_runner_->PostDelayedTask(
-      FROM_HERE, scheduled_commit_.callback(),
-      base::TimeDelta::FromSeconds(kCommitIntervalSeconds));
+  task_runner_->PostDelayedTask(FROM_HERE, scheduled_commit_.callback(),
+                                base::Seconds(kCommitIntervalSeconds));
 }
 
 void HistoryBackend::CancelScheduledCommit() {

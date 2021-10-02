@@ -124,8 +124,7 @@ class CastNonce {
 
   void EnsureNonceTimely() {
     if (base::Time::Now() >
-        (nonce_generation_time_ +
-         base::TimeDelta::FromHours(kNonceExpirationTimeInHours))) {
+        (nonce_generation_time_ + base::Hours(kNonceExpirationTimeInHours))) {
       GenerateNonce();
     }
   }
@@ -331,8 +330,7 @@ AuthResult VerifyTLSCertificate(const net::X509Certificate& peer_cert,
   // is repurposed as this signature's expiration.
   base::Time expiry = peer_cert.valid_expiry();
   base::Time lifetime_limit =
-      verification_time +
-      base::TimeDelta::FromDays(kMaxSelfSignedCertLifetimeInDays);
+      verification_time + base::Days(kMaxSelfSignedCertLifetimeInDays);
   if (peer_cert.valid_start().is_null() ||
       peer_cert.valid_start() > verification_time) {
     return AuthResult::CreateWithParseError(

@@ -52,8 +52,7 @@ TEST_F(DnsUdpTrackerTest, ReusedMismatches_Expired) {
   static const uint16_t kOldId = 786;
   tracker_.RecordQuery(123 /* port */, kOldId);
 
-  test_tick_clock_.Advance(DnsUdpTracker::kMaxAge +
-                           base::TimeDelta::FromMilliseconds(1));
+  test_tick_clock_.Advance(DnsUdpTracker::kMaxAge + base::Milliseconds(1));
 
   uint16_t port = 3889;
   uint16_t id = 3456;
@@ -76,7 +75,7 @@ TEST_F(DnsUdpTrackerTest, ReusedMismatches_Old) {
   tracker_.RecordQuery(123 /* port */, kOldId);
 
   test_tick_clock_.Advance(DnsUdpTracker::kMaxRecognizedIdAge +
-                           base::TimeDelta::FromMilliseconds(1));
+                           base::Milliseconds(1));
 
   uint16_t port = 3889;
   uint16_t id = 3456;
@@ -140,8 +139,7 @@ TEST_F(DnsUdpTrackerTest, ReusedPort_Expired) {
   static const uint16_t kPort = 2135;
   tracker_.RecordQuery(kPort, 579 /* query_id */);
 
-  test_tick_clock_.Advance(DnsUdpTracker::kMaxAge +
-                           base::TimeDelta::FromMilliseconds(1));
+  test_tick_clock_.Advance(DnsUdpTracker::kMaxAge + base::Milliseconds(1));
 
   EXPECT_FALSE(tracker_.low_entropy());
 

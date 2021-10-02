@@ -44,9 +44,9 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
         timeout =
             kBaseAttemptTimeoutSec * (delegate_->NoResponseResultCount() + 1);
       }
-      return base::TimeDelta::FromSeconds(timeout);
+      return base::Seconds(timeout);
     }
-    return base::TimeDelta::FromSeconds(kBaseAttemptTimeoutSec);
+    return base::Seconds(kBaseAttemptTimeoutSec);
   }
 };
 
@@ -66,7 +66,7 @@ class ErrorScreenStrategy : public PortalDetectorStrategy {
   // PortalDetectorStrategy overrides:
   StrategyId Id() const override { return STRATEGY_ID_ERROR_SCREEN; }
   base::TimeDelta GetNextAttemptTimeoutImpl() override {
-    return base::TimeDelta::FromSeconds(kAttemptTimeoutSec);
+    return base::Seconds(kAttemptTimeoutSec);
   }
 };
 
@@ -92,7 +92,7 @@ class SessionStrategy : public PortalDetectorStrategy {
       timeout = kFastAttemptTimeoutSec;
     else
       timeout = kSlowAttemptTimeoutSec;
-    return base::TimeDelta::FromSeconds(timeout);
+    return base::Seconds(timeout);
   }
 };
 

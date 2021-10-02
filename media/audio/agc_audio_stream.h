@@ -101,9 +101,8 @@ class MEDIA_EXPORT AgcAudioStream : public AudioInterface {
     // volume from 0.
     QueryAndStoreNewMicrophoneVolume();
 
-    timer_.Start(FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kIntervalBetweenVolumeUpdatesMs),
-        this, &AgcAudioStream::QueryAndStoreNewMicrophoneVolume);
+    timer_.Start(FROM_HERE, base::Milliseconds(kIntervalBetweenVolumeUpdatesMs),
+                 this, &AgcAudioStream::QueryAndStoreNewMicrophoneVolume);
   }
 
   // Stops the periodic timer which periodically checks and updates the

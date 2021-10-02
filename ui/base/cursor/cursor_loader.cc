@@ -26,8 +26,7 @@ namespace {
 constexpr mojom::CursorType kAnimatedCursorTypes[] = {
     mojom::CursorType::kWait, mojom::CursorType::kProgress};
 
-constexpr base::TimeDelta kAnimatedCursorFrameDelay =
-    base::TimeDelta::FromMilliseconds(25);
+constexpr base::TimeDelta kAnimatedCursorFrameDelay = base::Milliseconds(25);
 
 }  // namespace
 

@@ -168,7 +168,7 @@ TEST_F(AuctionV8HelperTest, Timeout) {
        true}};
 
   // Use a sorter timeout so test runs faster.
-  const base::TimeDelta kScriptTimeout = base::TimeDelta::FromMilliseconds(20);
+  const base::TimeDelta kScriptTimeout = base::Milliseconds(20);
   helper_->set_script_timeout_for_testing(kScriptTimeout);
 
   for (const HangingScript& hanging_script : kHangingScripts) {
@@ -201,7 +201,7 @@ TEST_F(AuctionV8HelperTest, Timeout) {
     // mostly serves to make sure the script timed out, instead of immediately
     // terminating.
     EXPECT_GE(base::TimeTicks::Now() - start_time,
-              kScriptTimeout - base::TimeDelta::FromMilliseconds(10));
+              kScriptTimeout - base::Milliseconds(10));
   }
 
   // Make sure it's still possible to run a script with the isolate after the

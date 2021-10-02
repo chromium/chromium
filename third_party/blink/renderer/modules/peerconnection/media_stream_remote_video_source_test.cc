@@ -399,7 +399,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
       kCaptureTime + webrtc::TimeDelta::Millis(ntp_offset);
   // Expected capture time.
   base::TimeTicks kExpectedCaptureTime =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kCaptureTime.ms());
+      base::TimeTicks() + base::Milliseconds(kCaptureTime.ms());
 
   webrtc::RtpPacketInfos::vector_type packet_infos;
   for (int i = 0; i < 4; ++i) {
@@ -409,8 +409,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   }
   // Expected receive time should be the same as the last arrival time.
   base::TimeTicks kExpectedReceiveTime =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                              kProcessingStart.us() - (10000 - 3 * 30));
+      base::TimeTicks() +
+      base::Microseconds(kProcessingStart.us() - (10000 - 3 * 30));
 
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder()
@@ -479,18 +479,17 @@ TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
   scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
   EXPECT_TRUE(output_frame);
 
-  EXPECT_FLOAT_EQ(
-      (*output_frame->metadata().reference_time -
-       (base::TimeTicks() + base::TimeDelta::FromMicroseconds(kTimestampUs)))
-          .InMillisecondsF(),
-      0.0f);
+  EXPECT_FLOAT_EQ((*output_frame->metadata().reference_time -
+                   (base::TimeTicks() + base::Microseconds(kTimestampUs)))
+                      .InMillisecondsF(),
+                  0.0f);
   track->RemoveSink(&sink);
 }
 
 TEST_F(MediaStreamRemoteVideoSourceTest, BaseTimeTicksAndRtcMicrosAreTheSame) {
   base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
   base::TimeTicks webrtc_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(rtc::TimeMicros());
+      base::TimeTicks() + base::Microseconds(rtc::TimeMicros());
   base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
 
   // Test that the timestamps are correctly ordered, which they can only be if

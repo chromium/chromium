@@ -62,9 +62,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   ASSERT_TRUE(SetupSync());
   const UserEventSpecifics specifics1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics specifics2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
@@ -91,9 +91,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
   ASSERT_TRUE(SetupSync());
 
   const UserEventSpecifics specifics1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics specifics2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
 
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
@@ -131,11 +131,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   const UserEventSpecifics test_event1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics test_event2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
   const UserEventSpecifics test_event3 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(3));
+      CreateTestEvent(base::Time() + base::Microseconds(3));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
   const UserEventSpecifics specifics =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
@@ -176,9 +176,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
   const UserEventSpecifics test_event1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics test_event2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
                        ShouldNotUploadInSyncPausedState) {
   const UserEventSpecifics test_event =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());

@@ -120,7 +120,7 @@ Status FocusToElement(
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
       return Status(kElementNotVisible);
     }
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
   }
 
   bool is_enabled = false;
@@ -421,7 +421,7 @@ Status ExecuteFlick(Session* session,
     if (status.IsError())
       return status;
     base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(1000 / kFlickTouchEventsPerSecond));
+        base::Milliseconds(1000 / kFlickTouchEventsPerSecond));
   }
   return web_view->DispatchTouchEvent(
       TouchEvent(kTouchEnd, location.x + xoffset, location.y + yoffset), false);
@@ -499,7 +499,7 @@ Status ExecuteClearElement(Session* session,
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
       return Status(kElementNotVisible);
     }
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
   static bool isClearWarningNotified = false;
   if (!isClearWarningNotified) {

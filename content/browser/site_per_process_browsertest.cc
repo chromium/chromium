@@ -10221,7 +10221,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     SendTouch(main_view, ui::MotionEvent::Action::DOWN, point);
     // action_timeout() is far longer than needed for a LongPress, so we use
     // a custom timeout here.
-    DelayBy(base::TimeDelta::FromMilliseconds(2000));
+    DelayBy(base::Milliseconds(2000));
     SendTouch(main_view, ui::MotionEvent::Action::UP, point);
   }
 
@@ -10232,7 +10232,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     SendTouch(main_view, ui::MotionEvent::Action::DOWN, point);
     // tiny_timeout() is way shorter than a reasonable user-created tap gesture,
     // so we use a custom timeout here.
-    DelayBy(base::TimeDelta::FromMilliseconds(300));
+    DelayBy(base::Milliseconds(300));
     SendTouch(main_view, ui::MotionEvent::Action::UP, point);
   }
 
@@ -10344,7 +10344,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
                            end_in_x_range && has_end_handle;
       }
       if (!handles_in_place)
-        DelayBy(base::TimeDelta::FromMilliseconds(100));
+        DelayBy(base::Milliseconds(100));
     }
   }
 
@@ -10446,7 +10446,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
 
   // Let's wait for the previous events to clear the round-trip to the renders
   // and back.
-  DelayBy(base::TimeDelta::FromMilliseconds(2000));
+  DelayBy(base::Milliseconds(2000));
 
   // Initiate selection with a sequence of events that go through the targeting
   // system. Repeat of above but this time we'l cancel the selection by
@@ -13689,8 +13689,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Attempt to navigate the second tab to a.com.  This will attempt to reuse
   // the hung process.
-  NavigationRequest::SetCommitTimeoutForTesting(
-      base::TimeDelta::FromMilliseconds(100));
+  NavigationRequest::SetCommitTimeoutForTesting(base::Milliseconds(100));
   GURL hung_url(embedded_test_server()->GetURL("a.com", "/title3.html"));
   UnresponsiveRendererObserver unresponsive_renderer_observer(new_contents);
   EXPECT_TRUE(
@@ -13747,7 +13746,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Attempt to navigate the second tab to a.com.  This will attempt to reuse
   // the hung process.
-  base::TimeDelta kTimeout = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta kTimeout = base::Milliseconds(100);
   NavigationRequest::SetCommitTimeoutForTesting(kTimeout);
   GURL hung_url(embedded_test_server()->GetURL("a.com", "/title3.html"));
   UnresponsiveRendererObserver unresponsive_renderer_observer(new_contents);
@@ -14062,8 +14061,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   auto allow_time_for_rafs = []() {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(1000));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
     run_loop.Run();
   };
 

@@ -145,7 +145,7 @@ void PrefetchProxyProxyConfigurator::OnTunnelProxyConnectionError(
     // Pick a random value between 1-5 mins if the proxy didn't give us a
     // Retry-After value. The randomness will help ensure there is no sudden
     // wave of requests following a proxy error.
-    retry_proxy_at = clock_->Now() + base::TimeDelta::FromSeconds(base::RandInt(
+    retry_proxy_at = clock_->Now() + base::Seconds(base::RandInt(
                                          base::Time::kSecondsPerMinute,
                                          5 * base::Time::kSecondsPerMinute));
   }

@@ -24,7 +24,7 @@ namespace {
 static const char kMaxDailyQuotaBytesParamName[] =
     "offline_pages_max_daily_quota_bytes";
 
-constexpr base::TimeDelta kQuotaPeriod = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kQuotaPeriod = base::Days(1);
 
 // Normalize quota to [0, GetMaxDailyQuotaBytes()].
 int64_t NormalizeQuota(int64_t quota) {

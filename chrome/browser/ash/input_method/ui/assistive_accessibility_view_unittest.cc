@@ -39,7 +39,7 @@ TEST_F(AssistiveAccessiblityViewTest, MakesAnnouncement) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
   assistive_accessibility_view_->Announce(u"test");
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
 }
 

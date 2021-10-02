@@ -418,7 +418,7 @@ TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
   EXPECT_EQ(2u, cache.GetPendingReportersForTesting()->size());
 
   // High-water-mark metrics are recorded once an hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   // The bucket for a HWM of 2 should have a single sample in each of the HWM
   // histograms.

@@ -29,16 +29,16 @@ const int kMaxSuggestionsTotal = 50;
 // Maximum time to wait before declaring a load operation failed.
 // For both ContentSuggestions.Feed.UserJourney.OpenFeed
 // and ContentSuggestions.Feed.UserJourney.GetMore.
-constexpr base::TimeDelta kLoadTimeout = base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kLoadTimeout = base::Seconds(15);
 // Maximum time to wait before declaring opening a card a failure.
 // For ContentSuggestions.Feed.UserJourney.OpenCard.
-constexpr base::TimeDelta kOpenTimeout = base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kOpenTimeout = base::Seconds(20);
 // For ContentSuggestions.Feed.TimeSpentInFeed, we want to get a measure
 // of how much time the user is spending with the Feed. If the user stops
 // interacting with the Feed, we stop counting it as time spent after this
 // timeout.
 constexpr base::TimeDelta kTimeSpentInFeedInteractionTimeout =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 
 void ReportEngagementTypeHistogram(const StreamType& stream_type,
                                    FeedEngagementType engagement_type) {
@@ -104,10 +104,10 @@ base::StringPiece ContentOrderToString(ContentOrder content_order) {
 void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   for (const LoadLatencyTimes::Step& step : latencies->steps()) {
     // TODO(crbug/1152592): Add a WebFeed-specific histogram for this.
-    base::UmaHistogramCustomTimes(
-        "ContentSuggestions.Feed.LoadStepLatency." +
-            LoadLatencyStepName(step.kind),
-        step.latency, base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
+    base::UmaHistogramCustomTimes("ContentSuggestions.Feed.LoadStepLatency." +
+                                      LoadLatencyStepName(step.kind),
+                                  step.latency, base::Milliseconds(50),
+                                  kLoadTimeout, 50);
   }
 }
 
@@ -241,7 +241,7 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
   scroll_distance_dp = std::abs(scroll_distance_dp);
   // Determine if this interaction is part of a new 'session'.
   base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta kVisitTimeout = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kVisitTimeout = base::Minutes(5);
   if (now - visit_start_time_ > kVisitTimeout) {
     FinalizeVisit();
   }
@@ -536,7 +536,7 @@ void MetricsReporter::ReportOpenFeedIfNeeded(SurfaceId surface_id,
                     surface_waiting.stream_type.IsWebFeed() ? ".WebFeed" : "",
                     success ? ".SuccessDuration" : ".FailureDuration"}),
       base::TimeTicks::Now() - surface_waiting.wait_start,
-      base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
+      base::Milliseconds(50), kLoadTimeout, 50);
 }
 
 void MetricsReporter::ReportGetMoreIfNeeded(SurfaceId surface_id,
@@ -551,7 +551,7 @@ void MetricsReporter::ReportGetMoreIfNeeded(SurfaceId surface_id,
       base::StrCat({"ContentSuggestions.Feed.UserJourney.GetMore.",
                     success ? "SuccessDuration" : "FailureDuration"}),
       base::TimeTicks::Now() - surface_waiting.wait_start,
-      base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
+      base::Milliseconds(50), kLoadTimeout, 50);
 }
 
 void MetricsReporter::CardOpenBegin(const StreamType& stream_type) {
@@ -581,8 +581,7 @@ void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
 
   if (success) {
     base::UmaHistogramCustomTimes(histogram_name, latency,
-                                  base::TimeDelta::FromMilliseconds(100),
-                                  kOpenTimeout, 50);
+                                  base::Milliseconds(100), kOpenTimeout, 50);
   } else {
     base::UmaHistogramBoolean(histogram_name, true);
   }
@@ -653,14 +652,12 @@ void MetricsReporter::OnLoadStream(
     if (loaded_new_content_from_network) {
       base::UmaHistogramCustomTimes(
           "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh",
-          stored_content_age, base::TimeDelta::FromMinutes(5),
-          base::TimeDelta::FromDays(7),
+          stored_content_age, base::Minutes(5), base::Days(7),
           /*buckets=*/50);
     } else {
       base::UmaHistogramCustomTimes(
           "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed",
-          stored_content_age, base::TimeDelta::FromSeconds(5),
-          base::TimeDelta::FromDays(7),
+          stored_content_age, base::Seconds(5), base::Days(7),
           /*buckets=*/50);
     }
   }
@@ -756,8 +753,7 @@ void MetricsReporter::SurfaceReceivedContent(SurfaceId surface_id) {
 void MetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
   base::UmaHistogramCustomTimes(
       "ContentSuggestions.Feed.Scheduler.TimeSinceLastFetchOnClear",
-      time_since_last_clear, base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromDays(7),
+      time_since_last_clear, base::Seconds(1), base::Days(7),
       /*bucket_count=*/50);
 }
 
@@ -771,9 +767,9 @@ void MetricsReporter::ReportPersistentDataIfDayIsDone() {
     // Report metrics if 24 hours have passed since the day started.
     const base::TimeDelta since_day_start =
         (base::Time::Now() - persistent_data_.current_day_start);
-    if (since_day_start > base::TimeDelta::FromDays(1)
+    if (since_day_start > base::Days(1)
         // Allow up to 1 hour of negative delta, for expected clock changes.
-        || since_day_start < -base::TimeDelta::FromHours(1)) {
+        || since_day_start < -base::Hours(1)) {
       if (persistent_data_.accumulated_time_spent_in_feed > base::TimeDelta()) {
         base::UmaHistogramLongTimes(
             "ContentSuggestions.Feed.TimeSpentInFeed",

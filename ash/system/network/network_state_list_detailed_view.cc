@@ -499,7 +499,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
 void NetworkStateListDetailedView::ScanAndStartTimer() {
   CallRequestScan();
   network_scan_repeating_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kRequestScanDelaySeconds), this,
+      FROM_HERE, base::Seconds(kRequestScanDelaySeconds), this,
       &NetworkStateListDetailedView::CallRequestScan);
 }
 

@@ -317,7 +317,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   net::ProxyRetryInfoMap retry_map;
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
-  info.bad_until = base::TimeTicks::Now() + base::TimeDelta::FromDays(2);
+  info.bad_until = base::TimeTicks::Now() + base::Days(2);
   delegate->OnResolveProxy(GURL(kHttpUrl), "GET", retry_map, &result);
 
   net::ProxyList expected_proxy_list;
@@ -336,7 +336,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   net::ProxyRetryInfoMap retry_map;
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
-  info.bad_until = base::TimeTicks::Now() + base::TimeDelta::FromDays(2);
+  info.bad_until = base::TimeTicks::Now() + base::Days(2);
   delegate->OnResolveProxy(GURL(kHttpUrl), "GET", retry_map, &result);
 
   EXPECT_TRUE(result.is_direct());

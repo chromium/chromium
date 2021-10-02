@@ -786,11 +786,10 @@ const int kLowQualityMatchVisitLimit = 4;
 const int kLowQualityMatchAgeLimitInDays = 3;
 
 const base::TimeDelta kAutocompleteDuplicateVisitIntervalThreshold =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 base::Time AutocompleteAgeThreshold() {
-  return (base::Time::Now() -
-          base::TimeDelta::FromDays(kLowQualityMatchAgeLimitInDays));
+  return (base::Time::Now() - base::Days(kLowQualityMatchAgeLimitInDays));
 }
 
 bool RowQualifiesAsSignificant(const URLRow& row,

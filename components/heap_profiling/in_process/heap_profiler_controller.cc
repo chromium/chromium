@@ -73,7 +73,7 @@ void HeapProfilerController::Start() {
   base::SamplingHeapProfiler::Get()->Start();
   const int interval = GetCollectionIntervalInMinutes();
   DCHECK_GT(interval, 0);
-  ScheduleNextSnapshot(stopped_, base::TimeDelta::FromMinutes(interval));
+  ScheduleNextSnapshot(stopped_, base::Minutes(interval));
 }
 
 // static

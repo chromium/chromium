@@ -60,7 +60,7 @@ void CompositorFloatAnimationCurve::SetScaledDuration(double scaled_duration) {
 }
 
 float CompositorFloatAnimationCurve::GetValue(double time) const {
-  return curve_->GetValue(base::TimeDelta::FromSecondsD(time));
+  return curve_->GetValue(base::Seconds(time));
 }
 
 std::unique_ptr<gfx::AnimationCurve>

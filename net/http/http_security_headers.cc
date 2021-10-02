@@ -162,7 +162,7 @@ bool ParseHSTSHeader(const std::string& value,
     case AFTER_MAX_AGE:
     case AFTER_INCLUDE_SUBDOMAINS:
     case AFTER_UNKNOWN_LABEL:
-      *max_age = base::TimeDelta::FromSeconds(max_age_candidate);
+      *max_age = base::Seconds(max_age_candidate);
       *include_subdomains = include_subdomains_candidate;
       return true;
     case START:
@@ -237,7 +237,7 @@ bool ParseExpectCTHeader(const std::string& value,
   if (!parsed_max_age)
     return false;
 
-  *max_age = base::TimeDelta::FromSeconds(max_age_candidate);
+  *max_age = base::Seconds(max_age_candidate);
   *enforce = enforce_candidate;
   *report_uri = parsed_report_uri;
   return true;

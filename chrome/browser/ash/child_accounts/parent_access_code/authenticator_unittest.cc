@@ -19,7 +19,7 @@ namespace parent_access {
 
 AccessCodeConfig GetZeroClockDriftConfig() {
   return AccessCodeConfig(kTestSharedSecret, kDefaultCodeValidity,
-                          base::TimeDelta::FromMinutes(0));
+                          base::Minutes(0));
 }
 
 class ParentAccessCodeAuthenticatorTest : public testing::Test {
@@ -143,13 +143,13 @@ TEST_F(ParentAccessCodeAuthenticatorTest, GenerateWithDifferentCodeValidity) {
   // Test that codes generated with the different validity are not the same.
   const base::Time timestamp = base::Time::Now();
 
-  Authenticator gen1(AccessCodeConfig(
-      kTestSharedSecret, base::TimeDelta::FromMinutes(1), kDefaultClockDrift));
+  Authenticator gen1(AccessCodeConfig(kTestSharedSecret, base::Minutes(1),
+                                      kDefaultClockDrift));
   absl::optional<AccessCode> code1 = gen1.Generate(timestamp);
   ASSERT_NO_FATAL_FAILURE(Verify(code1, timestamp));
 
-  Authenticator gen2(AccessCodeConfig(
-      kTestSharedSecret, base::TimeDelta::FromMinutes(3), kDefaultClockDrift));
+  Authenticator gen2(AccessCodeConfig(kTestSharedSecret, base::Minutes(3),
+                                      kDefaultClockDrift));
   absl::optional<AccessCode> code2 = gen2.Generate(timestamp);
   ASSERT_NO_FATAL_FAILURE(Verify(code2, timestamp));
 
@@ -162,12 +162,12 @@ TEST_F(ParentAccessCodeAuthenticatorTest,
   const base::Time timestamp = base::Time::Now();
 
   Authenticator gen1(AccessCodeConfig(kTestSharedSecret, kDefaultCodeValidity,
-                                      base::TimeDelta::FromMinutes(1)));
+                                      base::Minutes(1)));
   absl::optional<AccessCode> code1 = gen1.Generate(timestamp);
   ASSERT_NO_FATAL_FAILURE(Verify(code1, timestamp));
 
   Authenticator gen2(AccessCodeConfig(kTestSharedSecret, kDefaultCodeValidity,
-                                      base::TimeDelta::FromMinutes(10)));
+                                      base::Minutes(10)));
   absl::optional<AccessCode> code2 = gen2.Generate(timestamp);
   ASSERT_NO_FATAL_FAILURE(Verify(code2, timestamp));
 
@@ -181,7 +181,7 @@ TEST_F(ParentAccessCodeAuthenticatorTest, ValidateHardcodedCodeValues) {
   ASSERT_NO_FATAL_FAILURE(GetTestAccessCodeValues(&test_values));
 
   Authenticator gen(AccessCodeConfig(kTestSharedSecret, kDefaultCodeValidity,
-                                     base::TimeDelta::FromMinutes(0)));
+                                     base::Minutes(0)));
   for (const auto& it : test_values) {
     absl::optional<AccessCode> code = gen.Validate(it.second, it.first);
     ASSERT_NO_FATAL_FAILURE(Verify(code, it.first));
@@ -208,8 +208,7 @@ TEST_F(ParentAccessCodeAuthenticatorTest,
 
   // Before valid period.
   absl::optional<AccessCode> validated_code = validator.Validate(
-      generated_code->code(),
-      generation_timestamp - base::TimeDelta::FromSeconds(1));
+      generated_code->code(), generation_timestamp - base::Seconds(1));
   EXPECT_FALSE(validated_code);
 
   // In valid period.
@@ -246,8 +245,7 @@ TEST_F(ParentAccessCodeAuthenticatorTest,
 
   // Before valid period.
   absl::optional<AccessCode> validated_code = authenticator.Validate(
-      generated_code->code(),
-      generation_timestamp - base::TimeDelta::FromSeconds(1));
+      generated_code->code(), generation_timestamp - base::Seconds(1));
   EXPECT_FALSE(validated_code);
 
   // In valid period.
@@ -271,9 +269,8 @@ TEST_F(ParentAccessCodeAuthenticatorTest, ValidationWithClockDriftTolerance) {
   // Test validation with clock drift tolerance.
   Authenticator generator(GetDefaultTestConfig());
   Authenticator validator_with_tolerance(GetDefaultTestConfig());
-  Authenticator validator_no_tolerance(
-      AccessCodeConfig(kTestSharedSecret, kDefaultCodeValidity,
-                       base::TimeDelta::FromMinutes(0)));
+  Authenticator validator_no_tolerance(AccessCodeConfig(
+      kTestSharedSecret, kDefaultCodeValidity, base::Minutes(0)));
 
   // By default code will be valid [15:30:00-15:40:00).
   // With clock drift tolerance code will be valid [15:25:00-15:45:00).
@@ -317,8 +314,7 @@ TEST_F(ParentAccessCodeAuthenticatorTest, ValidationWithClockDriftTolerance) {
   EXPECT_TRUE(validated_code_with_tolerance);
 
   // Validator's device clock late outside of tolerated drift.
-  timestamp = generation_timestamp - kDefaultClockDrift -
-              base::TimeDelta::FromSeconds(1);
+  timestamp = generation_timestamp - kDefaultClockDrift - base::Seconds(1);
   validated_code_no_tolerance =
       validator_no_tolerance.Validate(generated_code->code(), timestamp);
   EXPECT_FALSE(validated_code_no_tolerance);

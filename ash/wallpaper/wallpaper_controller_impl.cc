@@ -93,20 +93,18 @@ constexpr char kPolicyWallpaperFile[] = "policy-controlled.jpeg";
 constexpr char kSmallWallpaperSuffix[] = "_small";
 
 // How long to wait reloading the wallpaper after the display size has changed.
-constexpr base::TimeDelta kWallpaperReloadDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kWallpaperReloadDelay = base::Milliseconds(100);
 
 // How long to wait for resizing of the the wallpaper.
-constexpr base::TimeDelta kCompositorLockTimeout =
-    base::TimeDelta::FromMilliseconds(750);
+constexpr base::TimeDelta kCompositorLockTimeout = base::Milliseconds(750);
 
 // Duration of the lock animation performed when pressing a lock button.
 constexpr base::TimeDelta kLockAnimationBlurAnimationDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 // Duration of the cross fade animation when loading wallpaper.
 constexpr base::TimeDelta kWallpaperLoadAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // Default quality for encoding wallpaper.
 constexpr int kDefaultEncodingQuality = 90;
@@ -2612,7 +2610,7 @@ void WallpaperControllerImpl::StartDailyRefreshTimer() {
 }
 
 void WallpaperControllerImpl::OnFetchDailyWallpaperFailed() {
-  StartDailyRefreshTimer(base::TimeDelta::FromHours(1));
+  StartDailyRefreshTimer(base::Hours(1));
 }
 
 void WallpaperControllerImpl::StartDailyRefreshTimer(base::TimeDelta delay) {
@@ -2629,8 +2627,7 @@ base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
   if (!GetUserWallpaperInfo(GetActiveAccountId(), &info))
     return base::TimeDelta();
   return info.date.ToDeltaSinceWindowsEpoch() -
-         base::Time::Now().ToDeltaSinceWindowsEpoch() +
-         base::TimeDelta::FromDays(1);
+         base::Time::Now().ToDeltaSinceWindowsEpoch() + base::Days(1);
 }
 
 void WallpaperControllerImpl::SaveWallpaperToDriveFs(

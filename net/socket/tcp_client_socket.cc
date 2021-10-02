@@ -567,8 +567,7 @@ void TCPClientSocket::EmitTCPMetricsHistogramsOnDisconnect() {
   base::TimeDelta rtt;
   if (socket_->GetEstimatedRoundTripTime(&rtt)) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.TcpRtt.AtDisconnect", rtt,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(10), 100);
+                               base::Milliseconds(1), base::Minutes(10), 100);
   }
 }
 

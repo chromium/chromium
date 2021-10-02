@@ -93,10 +93,10 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     // detect the failure case when a drag drop lasts more than one second, and
     // QueryContinueDrag was not called more than once.
     // See crbug.com/1126230.
-    UMA_HISTOGRAM_BOOLEAN("Windows.TouchDrag.Success",
-                          drag_source_->num_query_continues() > 1 ||
-                              (base::TimeTicks::Now() - start_time <
-                               base::TimeDelta::FromSeconds(1)));
+    UMA_HISTOGRAM_BOOLEAN(
+        "Windows.TouchDrag.Success",
+        drag_source_->num_query_continues() > 1 ||
+            (base::TimeTicks::Now() - start_time < base::Seconds(1)));
     desktop_host_->FinishTouchDrag(touch_screen_point);
     // Move the mouse cursor to where the drag drop started, to avoid issues
     // when the drop is outside of the Chrome window.

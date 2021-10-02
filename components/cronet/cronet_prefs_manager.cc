@@ -175,7 +175,7 @@ class NetworkQualitiesPrefDelegateImpl
         base::BindOnce(
             &NetworkQualitiesPrefDelegateImpl::SchedulePendingLossyWrites,
             weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(kUpdatePrefsDelaySeconds));
+        base::Seconds(kUpdatePrefsDelaySeconds));
   }
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -286,8 +286,7 @@ void CronetPrefsManager::SetupHostCachePersistence(
   host_cache_persistence_manager_ =
       std::make_unique<HostCachePersistenceManager>(
           host_cache, pref_service_.get(), kHostCachePref,
-          base::TimeDelta::FromMilliseconds(host_cache_persistence_delay_ms),
-          net_log);
+          base::Milliseconds(host_cache_persistence_delay_ms), net_log);
 }
 
 void CronetPrefsManager::PrepareForShutdown() {

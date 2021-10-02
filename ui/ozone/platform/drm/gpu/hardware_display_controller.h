@@ -33,8 +33,7 @@ namespace ui {
 
 // The maximum amount of time we will wait for a new modeset attempt before we
 // crash the GPU process.
-constexpr base::TimeDelta kWaitForModesetTimeout =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kWaitForModesetTimeout = base::Seconds(15);
 
 class CrtcController;
 class DrmFramebuffer;

@@ -84,7 +84,7 @@ class AudioDecoderStreamTest : public testing::Test {
   void ProduceDecoderOutput(scoped_refptr<DecoderBuffer> buffer,
                             AudioDecoder::DecodeCB decode_cb) {
     // Make sure successive AudioBuffers have increasing timestamps.
-    last_timestamp_ += base::TimeDelta::FromMilliseconds(27);
+    last_timestamp_ += base::Milliseconds(27);
     const auto& config = demuxer_stream_.audio_decoder_config();
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

@@ -10,7 +10,7 @@ namespace content {
 
 namespace {
 // Timeout for waiting for a response to a ping.
-constexpr base::TimeDelta kPingTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kPingTimeout = base::Seconds(30);
 }  // namespace
 
 ServiceWorkerPingController::ServiceWorkerPingController(

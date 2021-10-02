@@ -67,8 +67,7 @@ Av1Encoder::Av1Encoder(const FrameSenderConfig& video_config)
       key_frame_requested_(true),
       bitrate_kbit_(cast_config_.start_bitrate / 1000),
       next_frame_id_(FrameId::first()),
-      encoding_speed_acc_(
-          base::TimeDelta::FromMicroseconds(kEncodingSpeedAccHalfLife)),
+      encoding_speed_acc_(base::Microseconds(kEncodingSpeedAccHalfLife)),
       encoding_speed_(kHighestEncodingSpeed) {
   config_.g_timebase.den = 0;  // Not initialized.
   DCHECK_LE(cast_config_.video_codec_params.min_qp,
@@ -214,8 +213,8 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // intervals.  Bound the prediction to account for the fact that the frame
   // rate can be highly variable, including long pauses in the video stream.
   const base::TimeDelta minimum_frame_duration =
-      base::TimeDelta::FromSecondsD(1.0 / cast_config_.max_frame_rate);
-  const base::TimeDelta maximum_frame_duration = base::TimeDelta::FromSecondsD(
+      base::Seconds(1.0 / cast_config_.max_frame_rate);
+  const base::TimeDelta maximum_frame_duration = base::Seconds(
       static_cast<double>(kRestartFramePeriods) / cast_config_.max_frame_rate);
   base::TimeDelta predicted_frame_duration =
       video_frame->metadata().frame_duration.value_or(base::TimeDelta());

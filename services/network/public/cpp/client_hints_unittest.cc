@@ -68,7 +68,7 @@ TEST(ClientHintsTest, ParseAcceptCHLifetime) {
   EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("-1000"));
   EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("1000s"));
   EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("1000.5"));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1000), ParseAcceptCHLifetime("1000"));
+  EXPECT_EQ(base::Seconds(1000), ParseAcceptCHLifetime("1000"));
 }
 
 }  // namespace network

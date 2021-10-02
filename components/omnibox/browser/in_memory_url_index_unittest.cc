@@ -259,7 +259,7 @@ void InMemoryURLIndexTest::SetUp() {
   // Update [urls.last_visit_time] and [visits.visit_time] to represent a time
   // relative to 'now'.
   base::Time time_right_now = base::Time::NowFromSystemTime();
-  base::TimeDelta day_delta = base::TimeDelta::FromDays(1);
+  base::TimeDelta day_delta = base::Days(1);
   {
     sql::Statement s(db.GetUniqueStatement(
         "UPDATE urls SET last_visit_time = ? - ? * last_visit_time"));
@@ -699,8 +699,8 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
   constexpr int kLowVisitCount = 20;
   constexpr int kHighVisitCount = 200;
 
-  constexpr base::TimeDelta kOld = base::TimeDelta::FromDays(15);
-  constexpr base::TimeDelta kNew = base::TimeDelta::FromDays(2);
+  constexpr base::TimeDelta kOld = base::Days(15);
+  constexpr base::TimeDelta kNew = base::Days(2);
 
   constexpr int kMinRowId = 5000;
 
@@ -1244,8 +1244,7 @@ TEST_F(InMemoryURLIndexTest, RebuildFromHistoryIfCacheOld) {
   // Overwrite the build time so that we'll think the data is too old
   // and rebuild the cache from history.
   const base::Time fake_rebuild_time =
-      private_data.last_time_rebuilt_from_history_ -
-      base::TimeDelta::FromDays(30);
+      private_data.last_time_rebuilt_from_history_ - base::Days(30);
   private_data.last_time_rebuilt_from_history_ = fake_rebuild_time;
 
   // Capture the current private data for later comparison to restored data.

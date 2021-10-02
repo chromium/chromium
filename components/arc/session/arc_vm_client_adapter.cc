@@ -85,9 +85,9 @@ constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
 
 constexpr base::TimeDelta kArcBugReportBackupTimeMetricMinTime =
-    base::TimeDelta::FromMilliseconds(1);
+    base::Milliseconds(1);
 constexpr base::TimeDelta kArcBugReportBackupTimeMetricMaxTime =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 constexpr int kArcBugReportBackupTimeMetricBuckets = 50;
 constexpr const char kArcBugReportBackupTimeMetric[] =
     "Login.ArcBugReportBackupTime";
@@ -98,10 +98,9 @@ constexpr const char kArcVmDefaultOwner[] = "ARCVM_DEFAULT_OWNER";
 
 constexpr int64_t kInvalidCid = -1;
 
-constexpr base::TimeDelta kConnectTimeoutLimit =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kConnectTimeoutLimit = base::Seconds(20);
 constexpr base::TimeDelta kConnectSleepDurationInitial =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 absl::optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
 absl::optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;

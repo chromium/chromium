@@ -47,10 +47,8 @@ const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
 const int64_t kPayloadId = 612721831;
 const char kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
 const uint8_t kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
-const base::TimeDelta kKeepAliveInterval =
-    base::TimeDelta::FromMilliseconds(5123);
-const base::TimeDelta kKeepAliveTimeout =
-    base::TimeDelta::FromMilliseconds(31234);
+const base::TimeDelta kKeepAliveInterval = base::Milliseconds(5123);
+const base::TimeDelta kKeepAliveTimeout = base::Milliseconds(31234);
 
 mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
   bool use_ble = false;

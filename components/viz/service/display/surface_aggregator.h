@@ -62,10 +62,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   // These constants are used for all time related metrics recorded in
   // SurfaceAggregator.
-  static constexpr base::TimeDelta kHistogramMinTime =
-      base::TimeDelta::FromMicroseconds(5);
-  static constexpr base::TimeDelta kHistogramMaxTime =
-      base::TimeDelta::FromMilliseconds(10);
+  static constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+  static constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(10);
   static constexpr int kHistogramTimeBuckets = 50;
 
   // |target_damage| represents an area on the output surface that might have

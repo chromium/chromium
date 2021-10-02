@@ -709,7 +709,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -80));
-  const base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta time_delta = base::Milliseconds(100);
   const int num_scroll_steps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
                                              num_scroll_steps);
@@ -764,7 +764,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -80));
-  const base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta time_delta = base::Milliseconds(100);
   const int num_scroll_steps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
                                              num_scroll_steps);

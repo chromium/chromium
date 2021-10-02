@@ -31,8 +31,7 @@ namespace syncer {
 namespace {
 
 // Time to backoff syncing after receiving a throttled response.
-constexpr base::TimeDelta kSyncDelayAfterThrottled =
-    base::TimeDelta::FromHours(2);
+constexpr base::TimeDelta kSyncDelayAfterThrottled = base::Hours(2);
 
 void LogResponseProfilingData(const ClientToServerResponse& response) {
   if (response.has_profiling_data()) {
@@ -383,8 +382,7 @@ base::TimeDelta SyncerProtoUtil::GetThrottleDelay(
   if (response.has_client_command()) {
     const sync_pb::ClientCommand& command = response.client_command();
     if (command.has_throttle_delay_seconds()) {
-      throttle_delay =
-          base::TimeDelta::FromSeconds(command.throttle_delay_seconds());
+      throttle_delay = base::Seconds(command.throttle_delay_seconds());
     }
   }
   return throttle_delay;
@@ -457,7 +455,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
 
     if (command.has_set_sync_poll_interval()) {
       base::TimeDelta interval =
-          base::TimeDelta::FromSeconds(command.set_sync_poll_interval());
+          base::Seconds(command.set_sync_poll_interval());
       if (interval.is_zero()) {
         DLOG(WARNING) << "Received zero poll interval from server. Ignoring.";
       } else {
@@ -469,7 +467,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
     if (command.has_sessions_commit_delay_seconds()) {
       std::map<ModelType, base::TimeDelta> delay_map;
       delay_map[SESSIONS] =
-          base::TimeDelta::FromSeconds(command.sessions_commit_delay_seconds());
+          base::Seconds(command.sessions_commit_delay_seconds());
       cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
     }
 
@@ -480,7 +478,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
 
     if (command.has_gu_retry_delay_seconds()) {
       cycle->delegate()->OnReceivedGuRetryDelay(
-          base::TimeDelta::FromSeconds(command.gu_retry_delay_seconds()));
+          base::Seconds(command.gu_retry_delay_seconds()));
     }
 
     if (command.custom_nudge_delays_size() > 0) {
@@ -492,8 +490,8 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
         ModelType type = GetModelTypeFromSpecificsFieldNumber(
             command.custom_nudge_delays(i).datatype_id());
         if (type != UNSPECIFIED) {
-          delay_map[type] = base::TimeDelta::FromMilliseconds(
-              command.custom_nudge_delays(i).delay_ms());
+          delay_map[type] =
+              base::Milliseconds(command.custom_nudge_delays(i).delay_ms());
         }
       }
       cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);

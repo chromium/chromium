@@ -130,7 +130,7 @@ def _to_disqualified_loginfo_struct(log):
   s += ",\n"
   s += _to_loginfo_struct(log)
   s += ",\n"
-  s += '     base::TimeDelta::FromSeconds(%d)' % (
+  s += '     base::Seconds(%d)' % (
       _timestamp_to_timedelta_since_unixepoch(
           log["state"]["retired"]["timestamp"]))
   s += '}'
@@ -162,7 +162,7 @@ def _generate_log_list_timestamp(timestamp):
   s = ""
   s += "// The time at which this log list was last updated.\n";
   s += "const base::TimeDelta kLogListTimestamp = "
-  s += 'base::TimeDelta::FromSeconds(%d);\n\n' % (
+  s += 'base::Seconds(%d);\n\n' % (
       _timestamp_to_timedelta_since_unixepoch(timestamp))
   return s
 

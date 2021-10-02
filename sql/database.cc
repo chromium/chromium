@@ -1630,8 +1630,7 @@ bool Database::OpenInternal(const std::string& file_name,
     }
   }
 
-  const base::TimeDelta kBusyTimeout =
-      base::TimeDelta::FromSeconds(kBusyTimeoutSeconds);
+  const base::TimeDelta kBusyTimeout = base::Seconds(kBusyTimeoutSeconds);
 
   // Needs to happen before entering WAL mode. Will only work if this the first
   // time the database is being opened in WAL mode.

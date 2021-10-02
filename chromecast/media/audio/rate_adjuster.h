@@ -24,10 +24,10 @@ class RateAdjuster {
  public:
   struct Config {
     // The minimum interval between clock rate changes.
-    base::TimeDelta rate_change_interval = base::TimeDelta::FromSeconds(1);
+    base::TimeDelta rate_change_interval = base::Seconds(1);
 
     // How long to make the linear regression window for smoothing errors.
-    base::TimeDelta linear_regression_window = base::TimeDelta::FromSeconds(10);
+    base::TimeDelta linear_regression_window = base::Seconds(10);
 
     // The maximum current error to ignore, in microseconds.
     int64_t max_ignored_current_error = 0;

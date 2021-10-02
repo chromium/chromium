@@ -88,11 +88,11 @@ TEST_F(UserRemovalManagerTest, TestFailsafeTimer) {
   user_removal_manager::InitiateUserRemoval(base::OnceClosure());
 
   // After 55s the timer is not run yet.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(55));
+  task_runner_->FastForwardBy(base::Seconds(55));
   EXPECT_FALSE(log_out_called);
 
   // After 60s the timer is run.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_runner_->FastForwardBy(base::Seconds(5));
   EXPECT_TRUE(log_out_called);
 }
 

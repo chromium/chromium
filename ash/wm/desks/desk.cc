@@ -50,8 +50,7 @@ constexpr char kDeskLifetimeHistogramNamePrefix[] = "Ash.Desks.DeskLifetime_";
 
 // The amount of time a user has to stay on a recently activated desk for it to
 // be considered interacted with. Used for tracking weekly active desks metric.
-constexpr base::TimeDelta kDeskInteractedWithTime =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDeskInteractedWithTime = base::Seconds(3);
 
 // A counter for tracking the number of desks interacted with this week. A
 // desk is considered interacted with if a window is moved to it, it is

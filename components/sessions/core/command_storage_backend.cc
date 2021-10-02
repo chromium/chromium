@@ -523,8 +523,8 @@ bool CommandStorageBackend::TimestampFromPath(const base::FilePath& path,
   if (!base::StringToInt64(parts[1], &result))
     return false;
 
-  timestamp_result = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(result));
+  timestamp_result =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(result));
   return true;
 }
 
@@ -653,13 +653,12 @@ void CommandStorageBackend::TruncateOrOpenFile() {
   // Ensure we don't reuse the current file (this is extremely unlikely to
   // ever be true).
   if (new_timestamp == timestamp_)
-    new_timestamp += base::TimeDelta::FromMicroseconds(1);
+    new_timestamp += base::Microseconds(1);
   if (last_session_info_) {
     // Ensure that the last session's timestamp is before the current file's.
     // This might not be true if the system clock has changed.
     if (last_session_info_->timestamp > new_timestamp) {
-      new_timestamp =
-          last_session_info_->timestamp + base::TimeDelta::FromMicroseconds(1);
+      new_timestamp = last_session_info_->timestamp + base::Microseconds(1);
     }
   }
   timestamp_ = new_timestamp;

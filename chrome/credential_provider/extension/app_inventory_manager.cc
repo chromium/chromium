@@ -19,7 +19,7 @@
 namespace credential_provider {
 
 const base::TimeDelta kDefaultUploadAppInventoryRequestTimeout =
-    base::TimeDelta::FromMilliseconds(12000);
+    base::Milliseconds(12000);
 
 namespace {
 
@@ -52,8 +52,7 @@ const wchar_t kUploadAppInventoryFromEsaEnabledRegKey[] =
     L"upload_app_inventory_from_esa";
 
 // The period of uploading app inventory to the backend.
-const base::TimeDelta kUploadAppInventoryExecutionPeriod =
-    base::TimeDelta::FromHours(3);
+const base::TimeDelta kUploadAppInventoryExecutionPeriod = base::Hours(3);
 
 // True when upload device details from ESA feature is enabled.
 bool g_upload_app_inventory_from_esa_enabled = false;

@@ -303,7 +303,7 @@ Status ChromeImpl::SetWindowBounds(
 
     if (status.IsError())
       return status;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
 
     status = GetWindowBounds(window->id, window);
     if (status.IsError())
@@ -360,7 +360,7 @@ Status ChromeImpl::SetWindowBounds(
   if (status.IsError())
     return status;
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+  base::PlatformThread::Sleep(base::Milliseconds(100));
 
   if (!desired_state || desired_state->empty())
     return Status(kOk);
@@ -414,7 +414,7 @@ Status ChromeImpl::SetWindowBounds(
     status = devtools_websocket_client_->SendCommand("Browser.setWindowBounds",
                                                      params);
 
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
 
     status = GetWindowBounds(window->id, window);
     if (status.IsError())

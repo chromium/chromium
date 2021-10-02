@@ -65,7 +65,7 @@ class FrameSequenceTrackerTest : public testing::Test {
       uint64_t source_id,
       uint64_t sequence_number,
       base::TimeTicks now = base::TimeTicks::Now()) {
-    auto interval = base::TimeDelta::FromMilliseconds(16);
+    auto interval = base::Milliseconds(16);
     auto deadline = now + interval;
     return viz::BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id,
                                        sequence_number, now, deadline, interval,
@@ -361,7 +361,7 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   uint64_t frame_token = sequence;
   const char* histogram_name =
       "Graphics.Smoothness.Jank.Compositor.TouchScroll";
-  const base::TimeDelta zero_interval = base::TimeDelta::FromMilliseconds(0);
+  const base::TimeDelta zero_interval = base::Milliseconds(0);
   base::HistogramTester histogram_tester;
 
   CreateNewTracker();
@@ -381,7 +381,7 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   // Frame 2
   ++sequence;
   ++frame_token;
-  args_timestamp += base::TimeDelta::FromMillisecondsD(16.67);
+  args_timestamp += base::Milliseconds(16.67);
   args = CreateBeginFrameArgs(source, sequence, args_timestamp);
   collection_.NotifyBeginImplFrame(args);
   collection_.NotifySubmitFrame(sequence, false, viz::BeginFrameAck(args, true),
@@ -395,7 +395,7 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   // to 30.0ms)
   ++sequence;
   ++frame_token;
-  args_timestamp += base::TimeDelta::FromMillisecondsD(30.0);
+  args_timestamp += base::Milliseconds(30.0);
   args = CreateBeginFrameArgs(source, sequence, args_timestamp);
   collection_.NotifyBeginImplFrame(args);
   collection_.NotifySubmitFrame(sequence, false, viz::BeginFrameAck(args, true),
@@ -410,7 +410,7 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   // situation when the frame interval reported in presentation feedback is 0.
   ++sequence;
   ++frame_token;
-  args_timestamp += base::TimeDelta::FromMillisecondsD(31.0);
+  args_timestamp += base::Milliseconds(31.0);
   args = CreateBeginFrameArgs(source, sequence, args_timestamp);
   collection_.NotifyBeginImplFrame(args);
   collection_.NotifySubmitFrame(sequence, false, viz::BeginFrameAck(args, true),
@@ -582,7 +582,7 @@ TEST_F(FrameSequenceTrackerTest, ReportMetrics) {
 TEST_F(FrameSequenceTrackerTest, ReportMetricsAtFixedInterval) {
   const uint64_t source = 1;
   uint64_t sequence = 0;
-  base::TimeDelta first_time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta first_time_delta = base::Seconds(1);
   auto args = CreateBeginFrameArgs(source, ++sequence,
                                    base::TimeTicks::Now() + first_time_delta);
 

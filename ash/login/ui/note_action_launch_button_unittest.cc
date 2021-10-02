@@ -66,8 +66,7 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
 
   void GestureFling(const gfx::Point& start, const gfx::Point& end) {
     ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->GestureScrollSequence(start, end,
-                                     base::TimeDelta::FromMilliseconds(10), 2);
+    generator->GestureScrollSequence(start, end, base::Milliseconds(10), 2);
 
     Shell::Get()->tray_action()->FlushMojoForTesting();
   }

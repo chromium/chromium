@@ -75,8 +75,7 @@ void InitializeDirectWrite() {
     // Windows (win7_rtm) may fail to map the service sections
     // (crbug.com/956064).
     constexpr int kMaxRetries = 5;
-    constexpr base::TimeDelta kRetrySleepTime =
-        base::TimeDelta::FromMicroseconds(500);
+    constexpr base::TimeDelta kRetrySleepTime = base::Microseconds(500);
     while (iteration < kMaxRetries) {
       base::PlatformThread::Sleep(kRetrySleepTime);
       direct_write_font_mgr = SkFontMgr_New_DirectWrite(factory.Get());

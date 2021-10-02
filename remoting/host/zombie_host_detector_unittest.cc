@@ -15,8 +15,7 @@
 namespace {
 
 // Extra time to fast forward to make sure the task gets run.
-static constexpr base::TimeDelta kFastForwardDelta =
-    base::TimeDelta::FromSeconds(1);
+static constexpr base::TimeDelta kFastForwardDelta = base::Seconds(1);
 
 }  // namespace
 
@@ -60,18 +59,18 @@ class ZombieHostDetectorTest : public testing::Test {
 };
 
 TEST_F(ZombieHostDetectorTest, NoEvent_Noop) {
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 }
 
 TEST_F(ZombieHostDetectorTest, AllEventsAreCurrent_Noop) {
   // Fast forward to 5s before detection.
   task_environment_.FastForwardBy(GetNextDetectionDurationSinceNow() -
-                                  base::TimeDelta::FromSeconds(5));
+                                  base::Seconds(5));
 
   zombie_host_detector_.OnHeartbeatSent();
   zombie_host_detector_.OnSignalingActive();
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment_.FastForwardBy(base::Seconds(6));
 }
 
 TEST_F(ZombieHostDetectorTest, HeartbeatNotCurrent_CallbackCalled) {
@@ -102,7 +101,7 @@ TEST_F(ZombieHostDetectorTest, NeitherIsCurrent_CallbackCalled) {
   zombie_host_detector_.OnHeartbeatSent();
   zombie_host_detector_.OnSignalingActive();
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 }
 
 TEST_F(ZombieHostDetectorTest, NeitherIsCurrentWhileNoConnection_Noop) {
@@ -112,20 +111,20 @@ TEST_F(ZombieHostDetectorTest, NeitherIsCurrentWhileNoConnection_Noop) {
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_NONE);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 }
 
 TEST_F(ZombieHostDetectorTest, NoEventAfterComingBackOnline_Noop) {
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_NONE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_ETHERNET);
   task_environment_.FastForwardBy(GetNextDetectionDurationSinceNow() +
                                   kFastForwardDelta);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 }
 
 TEST_F(ZombieHostDetectorTest, NeitherIsCurrentWhenJustComeBackOnline_Noop) {
@@ -134,7 +133,7 @@ TEST_F(ZombieHostDetectorTest, NeitherIsCurrentWhenJustComeBackOnline_Noop) {
 
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_NONE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_ETHERNET);
@@ -148,7 +147,7 @@ TEST_F(ZombieHostDetectorTest, NotCurrentAfterComingBackOnline_CallbackCalled) {
 
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_NONE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
 
   network_change_notifier_->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_ETHERNET);

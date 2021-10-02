@@ -27,10 +27,9 @@ namespace {
 
 int g_custom_event_types = ET_LAST;
 
-#define UMA_HISTOGRAM_EVENT_LATENCY_TIMES(name, sample)            \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                         \
-                             base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromMinutes(1), 50)
+#define UMA_HISTOGRAM_EVENT_LATENCY_TIMES(name, sample)           \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Minutes(1), 50)
 
 }  // namespace
 

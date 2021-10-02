@@ -132,11 +132,11 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
 #if defined(OS_MAC)
 const int kDragThresholdX = 3;
 const int kDragThresholdY = 3;
-constexpr base::TimeDelta kTextDragDelay = base::TimeDelta::FromSecondsD(0.15);
+constexpr base::TimeDelta kTextDragDelay = base::Seconds(0.15);
 #else
 const int kDragThresholdX = 4;
 const int kDragThresholdY = 4;
-constexpr base::TimeDelta kTextDragDelay = base::TimeDelta::FromSecondsD(0.0);
+constexpr base::TimeDelta kTextDragDelay = base::Seconds(0.0);
 #endif
 
 }  // namespace

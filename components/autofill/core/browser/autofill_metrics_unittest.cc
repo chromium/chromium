@@ -581,9 +581,9 @@ void AutofillMetricsTest::AddMaskedServerCreditCardWithOffer(
   offer_data.offer_id = id;
   offer_data.offer_reward_amount = offer_reward_amount;
   if (offer_expired) {
-    offer_data.expiry = AutofillClock::Now() - base::TimeDelta::FromDays(2);
+    offer_data.expiry = AutofillClock::Now() - base::Days(2);
   } else {
-    offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
+    offer_data.expiry = AutofillClock::Now() + base::Days(2);
   }
   offer_data.merchant_origins = {url};
   offer_data.eligible_instrument_id = {
@@ -4059,7 +4059,7 @@ TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
 TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
   // Helper timestamps for setting up the test data.
   base::Time now = AutofillClock::Now();
-  base::Time one_month_ago = now - base::TimeDelta::FromDays(30);
+  base::Time one_month_ago = now - base::Days(30);
   base::Time::Exploded now_exploded;
   base::Time::Exploded one_month_ago_exploded;
   now.LocalExplode(&now_exploded);
@@ -4081,14 +4081,14 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
     for (int i = 0; i < num_cards_of_type; ++i) {
       // Create a card that's still in active use.
       CreditCard card_in_use = test::GetRandomCreditCard(record_type);
-      card_in_use.set_use_date(now - base::TimeDelta::FromDays(30));
+      card_in_use.set_use_date(now - base::Days(30));
       card_in_use.set_use_count(10);
 
       // Create a card that's not in active use.
       CreditCard card_in_disuse = test::GetRandomCreditCard(record_type);
       card_in_disuse.SetExpirationYear(one_month_ago_exploded.year);
       card_in_disuse.SetExpirationMonth(one_month_ago_exploded.month);
-      card_in_disuse.set_use_date(now - base::TimeDelta::FromDays(200));
+      card_in_disuse.set_use_date(now - base::Days(200));
       card_in_disuse.set_use_count(10);
 
       // Add the cards to the personal data manager in the appropriate way.
@@ -4102,7 +4102,7 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_cards, server_cards, /*server_card_count_with_card_art_image=*/2,
-      base::TimeDelta::FromDays(180));
+      base::Days(180));
 
   // Validate the basic count metrics.
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);
@@ -4215,7 +4215,7 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_cards, server_cards, /*server_card_count_with_card_art_image=*/0,
-      base::TimeDelta::FromDays(180));
+      base::Days(180));
 
   // Validate the count metrics.
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);
@@ -8887,8 +8887,7 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtPageLoad) {
 TEST_F(AutofillMetricsTest, DaysSinceLastUse_CreditCard) {
   base::HistogramTester histogram_tester;
   CreditCard credit_card;
-  credit_card.set_use_date(AutofillClock::Now() -
-                           base::TimeDelta::FromDays(21));
+  credit_card.set_use_date(AutofillClock::Now() - base::Days(21));
   credit_card.RecordAndLogUse();
   histogram_tester.ExpectBucketCount("Autofill.DaysSinceLastUse.CreditCard", 21,
                                      1);
@@ -8898,7 +8897,7 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_CreditCard) {
 TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
   base::HistogramTester histogram_tester;
   AutofillProfile profile;
-  profile.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(13));
+  profile.set_use_date(AutofillClock::Now() - base::Days(13));
   profile.RecordAndLogUse();
   histogram_tester.ExpectBucketCount("Autofill.DaysSinceLastUse.Profile", 13,
                                      1);
@@ -9905,7 +9904,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     base::TimeTicks parse_time = browser_autofill_manager_->form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 
@@ -9931,8 +9930,8 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                      ->second->form_parsed_timestamp();
     browser_autofill_manager_->OnTextFieldDidChange(
         form, form.fields.front(), gfx::RectF(),
-        parse_time + base::TimeDelta::FromMicroseconds(3));
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+        parse_time + base::Microseconds(3));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 
@@ -9959,8 +9958,8 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     browser_autofill_manager_->OnDidFillAutofillFormData(
-        form, parse_time + base::TimeDelta::FromMicroseconds(5));
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+        form, parse_time + base::Microseconds(5));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 
@@ -9989,12 +9988,12 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     browser_autofill_manager_->OnDidFillAutofillFormData(
-        form, parse_time + base::TimeDelta::FromMicroseconds(5));
+        form, parse_time + base::Microseconds(5));
 
     browser_autofill_manager_->OnTextFieldDidChange(
         form, form.fields.front(), gfx::RectF(),
-        parse_time + base::TimeDelta::FromMicroseconds(3));
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+        parse_time + base::Microseconds(3));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 
@@ -10022,11 +10021,11 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                      ->second->form_parsed_timestamp();
     browser_autofill_manager_->OnFormsSeen(second_forms);
     browser_autofill_manager_->OnDidFillAutofillFormData(
-        form, parse_time + base::TimeDelta::FromMicroseconds(5));
+        form, parse_time + base::Microseconds(5));
     browser_autofill_manager_->OnTextFieldDidChange(
         form, form.fields.front(), gfx::RectF(),
-        parse_time + base::TimeDelta::FromMicroseconds(3));
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+        parse_time + base::Microseconds(3));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 
@@ -10055,7 +10054,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
       if (kv.second->form_parsed_timestamp() > parse_time)
         parse_time = kv.second->form_parsed_timestamp();
     }
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         second_form, /*known_success=*/false,
         SubmissionSource::FORM_SUBMISSION);
@@ -10079,10 +10078,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_CreditCardForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kCreditCardForm}, true /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.CreditCard", 0);
   }
@@ -10092,10 +10091,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_CreditCardForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kCreditCardForm}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.CreditCard",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard", 0);
   }
@@ -10106,7 +10105,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_CreditCardForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kUnknownFormType}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard", 0);
     histogram_tester.ExpectTotalCount(
@@ -10120,10 +10119,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_AddressForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kAddressForm}, true /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Address",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Address", 0);
   }
@@ -10133,10 +10132,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_AddressForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kAddressForm}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Address",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Address", 0);
   }
@@ -10147,7 +10146,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_AddressForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kUnknownFormType}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Address", 0);
     histogram_tester.ExpectTotalCount(
@@ -10161,10 +10160,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_PasswordForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kPasswordForm}, true /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Password",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Password", 0);
   }
@@ -10174,10 +10173,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_PasswordForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kPasswordForm}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Password",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Password", 0);
   }
@@ -10188,7 +10187,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_PasswordForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kUnknownFormType}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Password", 0);
     histogram_tester.ExpectTotalCount(
@@ -10202,10 +10201,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_UnknownForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kUnknownFormType}, true /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Unknown",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Unknown", 0);
   }
@@ -10215,10 +10214,10 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_UnknownForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kUnknownFormType}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Unknown",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Unknown", 0);
   }
@@ -10229,7 +10228,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_UnknownForm) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kAddressForm}, false /* used_autofill */,
-        base::TimeDelta::FromMilliseconds(2000));
+        base::Milliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Unknown", 0);
     histogram_tester.ExpectTotalCount(
@@ -10244,19 +10243,19 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_MultipleForms) {
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kCreditCardForm, FormType::kAddressForm,
          FormType::kPasswordForm, FormType::kUnknownFormType},
-        true /* used_autofill */, base::TimeDelta::FromMilliseconds(2000));
+        true /* used_autofill */, base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Address",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Password",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Unknown",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
   }
 
   // Should log time duration without autofill for all forms.
@@ -10265,19 +10264,19 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_MultipleForms) {
     AutofillMetrics::LogFormFillDurationFromInteraction(
         {FormType::kCreditCardForm, FormType::kAddressForm,
          FormType::kPasswordForm, FormType::kUnknownFormType},
-        false /* used_autofill */, base::TimeDelta::FromMilliseconds(2000));
+        false /* used_autofill */, base::Milliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.CreditCard",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Address",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Password",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Unknown",
-        base::TimeDelta::FromMilliseconds(2000), 1);
+        base::Milliseconds(2000), 1);
   }
 }
 
@@ -11619,7 +11618,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
     base::TimeTicks parse_time = browser_autofill_manager_->form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 
@@ -11637,11 +11636,11 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     browser_autofill_manager_->OnDidFillAutofillFormData(
-        form, parse_time + base::TimeDelta::FromMicroseconds(5));
+        form, parse_time + base::Microseconds(5));
     browser_autofill_manager_->OnTextFieldDidChange(
         form, form.fields.front(), gfx::RectF(),
-        parse_time + base::TimeDelta::FromMicroseconds(3));
-    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+        parse_time + base::Microseconds(3));
+    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
 

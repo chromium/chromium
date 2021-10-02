@@ -564,8 +564,8 @@ void FrameProcessor::OnPossibleAudioConfigUpdate(
     return;
 
   current_audio_config_ = config;
-  sample_duration_ = base::TimeDelta::FromSecondsD(
-      1.0 / current_audio_config_.samples_per_second());
+  sample_duration_ =
+      base::Seconds(1.0 / current_audio_config_.samples_per_second());
   has_dependent_audio_frames_ =
       current_audio_config_.profile() == AudioCodecProfile::kXHE_AAC;
   last_audio_pts_for_nonkeyframe_monotonicity_check_ = kNoTimestamp;

@@ -730,7 +730,7 @@ struct VisitContextAnnotations {
   // respond. Any duration that exceeds 30 days will be recorded as 30 days, so
   // in practice, if this duration indicates 30 days, it can be anything from 30
   // to the maximum duration that local history is stored.
-  base::TimeDelta duration_since_last_visit = base::TimeDelta::FromSeconds(-1);
+  base::TimeDelta duration_since_last_visit = base::Seconds(-1);
 
   // ---------------------------------------------------------------------------
   // The below metrics are all already recorded by UKM for non-memories reasons.
@@ -744,7 +744,7 @@ struct VisitContextAnnotations {
 
   // The total duration that this visit was in the foreground. Recorded as -1 if
   // not recorded.
-  base::TimeDelta total_foreground_duration = base::TimeDelta::FromSeconds(-1);
+  base::TimeDelta total_foreground_duration = base::Seconds(-1);
 };
 
 // A `VisitRow` along with its corresponding `URLRow`,

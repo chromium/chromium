@@ -38,7 +38,7 @@ constexpr size_t kMaxConcurrentInstances = 8;
 // Convert the specified |bitstream_id| to a timestamp, which we can use to
 // identify which bitstream buffer a decoded video frame belongs to.
 base::TimeDelta BitstreamIdToFakeTimestamp(int32_t bitstream_id) {
-  return base::TimeDelta::FromMilliseconds(bitstream_id);
+  return base::Milliseconds(bitstream_id);
 }
 
 // Convert the specified |timestamp| to a bitstream id, so we can map between

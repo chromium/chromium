@@ -196,7 +196,7 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     power_prefs_ = ShellTestApi().power_prefs();
 
     // Advance the clock an arbitrary amount of time so it won't report zero.
-    tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    tick_clock_.Advance(base::Seconds(1));
     power_prefs_->set_tick_clock_for_test(&tick_clock_);
 
     // Get to Login screen.
@@ -344,19 +344,19 @@ TEST_F(PowerPrefsTest, AvoidLockDelaysAfterInactivity) {
   // If the screen was already off due to inactivity when it was locked, we
   // should continue using the unlocked delays.
   NotifyScreenIdleOffChanged(true);
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(5));
+  tick_clock_.Advance(base::Seconds(5));
   SetLockedState(ScreenLockState::LOCKED);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
             GetCurrentPowerPolicy());
 
   // If the screen turns on while still locked, we should switch to the locked
   // delays.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(5));
+  tick_clock_.Advance(base::Seconds(5));
   NotifyScreenIdleOffChanged(false);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::LOCKED),
             GetCurrentPowerPolicy());
 
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(5));
+  tick_clock_.Advance(base::Seconds(5));
   SetLockedState(ScreenLockState::UNLOCKED);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
             GetCurrentPowerPolicy());

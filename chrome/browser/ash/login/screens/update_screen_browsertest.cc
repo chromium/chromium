@@ -78,12 +78,9 @@ const int kUpdateCompleteProgress = 100;
 // Defines what part of update progress does download part takes.
 const int kDownloadProgressIncrement = 60;
 
-constexpr base::TimeDelta kTimeAdvanceSeconds10 =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kTimeAdvanceSeconds60 =
-    base::TimeDelta::FromSeconds(60);
-constexpr base::TimeDelta kTimeDefaultWaiting =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTimeAdvanceSeconds10 = base::Seconds(10);
+constexpr base::TimeDelta kTimeAdvanceSeconds60 = base::Seconds(60);
+constexpr base::TimeDelta kTimeDefaultWaiting = base::Seconds(10);
 
 std::string GetDownloadingString(int status_resource_id) {
   // TODO(https://crbug.com/1161276) Adapt for BetterUpdate version.

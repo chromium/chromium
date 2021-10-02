@@ -33,12 +33,11 @@ namespace {
 // Time during which non visible pages are protected from urgent discarding
 // (not on ChromeOS).
 constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
-    base::TimeDelta::FromMinutes(10);
+    base::Minutes(10);
 #endif
 
 // Time during which a tab cannot be discarded after having played audio.
-constexpr base::TimeDelta kTabAudioProtectionTime =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 
 // NodeAttachedData used to indicate that there's already been an attempt to
 // discard a PageNode.

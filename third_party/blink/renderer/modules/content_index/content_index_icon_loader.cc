@@ -21,7 +21,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kIconFetchTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kIconFetchTimeout = base::Seconds(30);
 
 void FetchIcon(ExecutionContext* execution_context,
                const KURL& icon_url,

@@ -38,9 +38,8 @@ NSArray* MakeTestCertChain(const std::string& subject) {
   std::unique_ptr<crypto::RSAPrivateKey> private_key;
   std::string der_cert;
   net::x509_util::CreateKeyAndSelfSignedCert(
-      "CN=" + subject, 1, base::Time::Now(),
-      base::Time::Now() + base::TimeDelta::FromDays(1), &private_key,
-      &der_cert);
+      "CN=" + subject, 1, base::Time::Now(), base::Time::Now() + base::Days(1),
+      &private_key, &der_cert);
 
   base::ScopedCFTypeRef<SecCertificateRef> cert(
       net::x509_util::CreateSecCertificateFromBytes(

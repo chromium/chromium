@@ -10,7 +10,7 @@
 namespace apps {
 namespace {
 
-constexpr base::TimeDelta kUpdateInterval = base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kUpdateInterval = base::Hours(24);
 
 }  // namespace
 

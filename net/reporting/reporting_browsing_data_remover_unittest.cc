@@ -53,7 +53,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   void SetEndpoint(const url::Origin& origin) {
     SetEndpointInCache(
         ReportingEndpointGroupKey(NetworkIsolationKey(), origin, kGroup_),
-        kEndpoint_, base::Time::Now() + base::TimeDelta::FromDays(7));
+        kEndpoint_, base::Time::Now() + base::Days(7));
   }
 
   static bool HostIs(std::string host, const GURL& url) {

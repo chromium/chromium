@@ -52,7 +52,7 @@ void AnalyzeRarFile(base::File rar_file,
   bool timeout = false;
   while (reader.ExtractNextEntry()) {
     if (base::Time::Now() - start_time >
-        base::TimeDelta::FromMilliseconds(kRarAnalysisTimeoutMs)) {
+        base::Milliseconds(kRarAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

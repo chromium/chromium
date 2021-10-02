@@ -421,8 +421,7 @@ class End2EndTest : public ::testing::Test {
         sender_to_receiver_(new LoopBackTransport(cast_environment_sender_)),
         test_receiver_audio_callback_(new TestReceiverAudioCallback()),
         test_receiver_video_callback_(new TestReceiverVideoCallback()) {
-    testing_clock_.Advance(
-        base::TimeDelta::FromMilliseconds(kStartMillisecond));
+    testing_clock_.Advance(base::Milliseconds(kStartMillisecond));
     cast_environment_sender_->logger()->Subscribe(&event_subscriber_sender_);
   }
 
@@ -430,7 +429,7 @@ class End2EndTest : public ::testing::Test {
     audio_sender_config_.sender_ssrc = 1;
     audio_sender_config_.receiver_ssrc = 2;
     audio_sender_config_.max_playout_delay =
-        base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs);
+        base::Milliseconds(kTargetPlayoutDelayMs);
     audio_sender_config_.rtp_payload_type = RtpPayloadType::AUDIO_OPUS;
     audio_sender_config_.use_external_encoder = false;
     audio_sender_config_.rtp_timebase = kDefaultAudioSamplingRate;
@@ -460,7 +459,7 @@ class End2EndTest : public ::testing::Test {
     video_sender_config_.sender_ssrc = 3;
     video_sender_config_.receiver_ssrc = 4;
     video_sender_config_.max_playout_delay =
-        base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs);
+        base::Milliseconds(kTargetPlayoutDelayMs);
     video_sender_config_.rtp_payload_type = RtpPayloadType::VIDEO_VP8;
     video_sender_config_.use_external_encoder = false;
     video_sender_config_.rtp_timebase = kVideoFrequency;
@@ -509,14 +508,14 @@ class End2EndTest : public ::testing::Test {
   void FeedAudioFrames(int count, bool will_be_checked) {
     for (int i = 0; i < count; ++i) {
       std::unique_ptr<AudioBus> audio_bus(audio_bus_factory_->NextAudioBus(
-          base::TimeDelta::FromMilliseconds(kAudioFrameDurationMs)));
+          base::Milliseconds(kAudioFrameDurationMs)));
       const base::TimeTicks reference_time =
           testing_clock_sender_.NowTicks() +
-          i * base::TimeDelta::FromMilliseconds(kAudioFrameDurationMs);
+          i * base::Milliseconds(kAudioFrameDurationMs);
       if (will_be_checked) {
         test_receiver_audio_callback_->AddExpectedResult(
-            *audio_bus, reference_time + base::TimeDelta::FromMilliseconds(
-                                             kTargetPlayoutDelayMs));
+            *audio_bus,
+            reference_time + base::Milliseconds(kTargetPlayoutDelayMs));
       }
       audio_frame_input_->InsertAudio(std::move(audio_bus), reference_time);
     }
@@ -525,14 +524,13 @@ class End2EndTest : public ::testing::Test {
   void FeedAudioFramesWithExpectedDelay(int count, base::TimeDelta delay) {
     for (int i = 0; i < count; ++i) {
       std::unique_ptr<AudioBus> audio_bus(audio_bus_factory_->NextAudioBus(
-          base::TimeDelta::FromMilliseconds(kAudioFrameDurationMs)));
+          base::Milliseconds(kAudioFrameDurationMs)));
       const base::TimeTicks reference_time =
           testing_clock_sender_.NowTicks() +
-          i * base::TimeDelta::FromMilliseconds(kAudioFrameDurationMs);
+          i * base::Milliseconds(kAudioFrameDurationMs);
       test_receiver_audio_callback_->AddExpectedResult(
           *audio_bus,
-          reference_time + delay +
-              base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs));
+          reference_time + delay + base::Milliseconds(kTargetPlayoutDelayMs));
       audio_frame_input_->InsertAudio(std::move(audio_bus), reference_time);
     }
   }
@@ -583,9 +581,7 @@ class End2EndTest : public ::testing::Test {
     video_frame_input_->InsertRawVideoFrame(video_frame, reference_time);
   }
 
-  void RunTasks(int ms) {
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(ms));
-  }
+  void RunTasks(int ms) { task_runner_->Sleep(base::Milliseconds(ms)); }
 
   // Send and receive audio and video frames for the given |duration|.  Returns
   // the total number of audio and video frames sent.
@@ -608,11 +604,11 @@ class End2EndTest : public ::testing::Test {
           testing_clock_.NowTicks() >= next_video_frame_at;
       if (send_and_receive_a_video_frame) {
         video_reference_time = next_video_frame_at;
-        next_video_frame_at += base::TimeDelta::FromMilliseconds(kFrameTimerMs);
+        next_video_frame_at += base::Milliseconds(kFrameTimerMs);
         test_receiver_video_callback_->AddExpectedResult(
             video_frames_sent, GetTestVideoFrameSize(),
             testing_clock_.NowTicks() +
-                base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs),
+                base::Milliseconds(kTargetPlayoutDelayMs),
             true);
         SendVideoFrame(video_frames_sent, video_reference_time);
         ++video_frames_sent;
@@ -910,13 +906,13 @@ class TransportClient : public CastTransport::Client {
 
 void End2EndTest::Create() {
   transport_sender_ = std::make_unique<CastTransportImpl>(
-      &testing_clock_sender_, base::TimeDelta::FromMilliseconds(1),
+      &testing_clock_sender_, base::Milliseconds(1),
       std::make_unique<TransportClient>(cast_environment_sender_->logger(),
                                         nullptr),
       base::WrapUnique(sender_to_receiver_), task_runner_sender_);
 
   transport_receiver_ = std::make_unique<CastTransportImpl>(
-      &testing_clock_sender_, base::TimeDelta::FromMilliseconds(1),
+      &testing_clock_sender_, base::Milliseconds(1),
       std::make_unique<TransportClient>(cast_environment_receiver_->logger(),
                                         this),
       base::WrapUnique(receiver_to_sender_), task_runner_sender_);
@@ -955,7 +951,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(LoopWithLosslessEncoding)) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
 
-  const auto frames_sent = RunAudioVideoLoop(base::TimeDelta::FromSeconds(3));
+  const auto frames_sent = RunAudioVideoLoop(base::Seconds(3));
 
   // Make sure that we send a RTCP message containing receiver log data, then
   // verify the accumulated logging data.
@@ -967,7 +963,7 @@ TEST_F(End2EndTest, LoopWithLossyEncoding) {
   Configure(CODEC_VIDEO_VP8, CODEC_AUDIO_OPUS);
   Create();
 
-  const auto frames_sent = RunAudioVideoLoop(base::TimeDelta::FromSeconds(1));
+  const auto frames_sent = RunAudioVideoLoop(base::Seconds(1));
 
   // Run tasks for 750 ms to ensure RTCP messages containing log data from the
   // receiver are sent and processed by the sender.  Then, verify the expected
@@ -998,7 +994,7 @@ TEST_F(End2EndTest, DISABLED_StartSenderBeforeReceiver) {
   const int kNumVideoFramesBeforeReceiverStarted = 2;
   const base::TimeTicks initial_send_time = testing_clock_sender_.NowTicks();
   const base::TimeDelta expected_delay =
-      base::TimeDelta::FromMilliseconds(test_delay_ms + kFrameTimerMs);
+      base::Milliseconds(test_delay_ms + kFrameTimerMs);
   for (int i = 0; i < kNumVideoFramesBeforeReceiverStarted; ++i) {
     const int num_audio_frames = audio_diff / kAudioFrameDurationMs;
     audio_diff -= num_audio_frames * kAudioFrameDurationMs;
@@ -1012,7 +1008,7 @@ TEST_F(End2EndTest, DISABLED_StartSenderBeforeReceiver) {
     test_receiver_video_callback_->AddExpectedResult(
         frame_number, GetTestVideoFrameSize(),
         initial_send_time + expected_delay +
-            base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs),
+            base::Milliseconds(kTargetPlayoutDelayMs),
         true);
     SendVideoFrame(frame_number++, testing_clock_sender_.NowTicks());
 
@@ -1039,7 +1035,7 @@ TEST_F(End2EndTest, DISABLED_StartSenderBeforeReceiver) {
     test_receiver_video_callback_->AddExpectedResult(
         frame_number, GetTestVideoFrameSize(),
         testing_clock_sender_.NowTicks() +
-            base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs),
+            base::Milliseconds(kTargetPlayoutDelayMs),
         true);
     SendVideoFrame(frame_number++, testing_clock_sender_.NowTicks());
 
@@ -1069,13 +1065,13 @@ TEST_F(End2EndTest, CAST_E2E_TEST(BasicFakeSoftwareVideo)) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
-  SetReceiverSkew(1.0, base::TimeDelta::FromMilliseconds(1));
+  SetReceiverSkew(1.0, base::Milliseconds(1));
 
   // Expect very smooth playout when there is no clock skew.
   SetExpectedVideoPlayoutSmoothness(
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) * 99 / 100,
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) * 101 / 100,
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) / 100);
+      base::Milliseconds(kFrameTimerMs) * 99 / 100,
+      base::Milliseconds(kFrameTimerMs) * 101 / 100,
+      base::Milliseconds(kFrameTimerMs) / 100);
 
   int frames_counter = 0;
   for (; frames_counter < 30; ++frames_counter) {
@@ -1104,7 +1100,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(ReceiverClockFast)) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
-  SetReceiverSkew(2.0, base::TimeDelta::FromMicroseconds(1234567));
+  SetReceiverSkew(2.0, base::Microseconds(1234567));
 
   for (int frames_counter = 0; frames_counter < kLongTestIterations;
        ++frames_counter) {
@@ -1119,7 +1115,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(ReceiverClockSlow)) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
-  SetReceiverSkew(0.5, base::TimeDelta::FromMicroseconds(-765432));
+  SetReceiverSkew(0.5, base::Microseconds(-765432));
 
   for (int frames_counter = 0; frames_counter < kLongTestIterations;
        ++frames_counter) {
@@ -1134,13 +1130,13 @@ TEST_F(End2EndTest, CAST_E2E_TEST(SmoothPlayoutWithFivePercentClockRateSkew)) {
   Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
   Create();
   StartBasicPlayer();
-  SetReceiverSkew(1.05, base::TimeDelta::FromMilliseconds(-42));
+  SetReceiverSkew(1.05, base::Milliseconds(-42));
 
   // Expect smooth playout when there is 5% skew.
   SetExpectedVideoPlayoutSmoothness(
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) * 90 / 100,
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) * 110 / 100,
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) / 10);
+      base::Milliseconds(kFrameTimerMs) * 90 / 100,
+      base::Milliseconds(kFrameTimerMs) * 110 / 100,
+      base::Milliseconds(kFrameTimerMs) / 10);
 
   for (int frames_counter = 0; frames_counter < kLongTestIterations;
        ++frames_counter) {
@@ -1220,9 +1216,9 @@ TEST_F(End2EndTest, CAST_E2E_TEST(OldPacketNetwork)) {
   StartBasicPlayer();
 
   SetExpectedVideoPlayoutSmoothness(
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) * 90 / 100,
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) * 110 / 100,
-      base::TimeDelta::FromMilliseconds(kFrameTimerMs) / 10);
+      base::Milliseconds(kFrameTimerMs) * 90 / 100,
+      base::Milliseconds(kFrameTimerMs) * 110 / 100,
+      base::Milliseconds(kFrameTimerMs) / 10);
 
   for (int frames_counter = 0; frames_counter < kLongTestIterations;
        ++frames_counter) {
@@ -1240,8 +1236,8 @@ TEST_F(End2EndTest, CAST_E2E_TEST(TestSetPlayoutDelay)) {
       video_sender_config_.max_playout_delay;
   audio_sender_config_.min_playout_delay =
       audio_sender_config_.max_playout_delay;
-  video_sender_config_.max_playout_delay = base::TimeDelta::FromSeconds(1);
-  audio_sender_config_.max_playout_delay = base::TimeDelta::FromSeconds(1);
+  video_sender_config_.max_playout_delay = base::Seconds(1);
+  audio_sender_config_.max_playout_delay = base::Seconds(1);
   Create();
   StartBasicPlayer();
   const int kNewDelay = 600;
@@ -1251,8 +1247,7 @@ TEST_F(End2EndTest, CAST_E2E_TEST(TestSetPlayoutDelay)) {
     SendVideoFrame(frames_counter, testing_clock_sender_.NowTicks());
     RunTasks(kFrameTimerMs);
   }
-  cast_sender_->SetTargetPlayoutDelay(
-      base::TimeDelta::FromMilliseconds(kNewDelay));
+  cast_sender_->SetTargetPlayoutDelay(base::Milliseconds(kNewDelay));
   for (; frames_counter < 100; ++frames_counter) {
     SendVideoFrame(frames_counter, testing_clock_sender_.NowTicks());
     RunTasks(kFrameTimerMs);

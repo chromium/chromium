@@ -139,13 +139,13 @@ TEST_F(DatabaseMaintenanceImplTest, ExecuteMaintenanceTasks) {
   std::vector<SignalData> signal_datas = {
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
        SignalType::HISTOGRAM_VALUE, "Foo", base::HashMetricName("Foo"), 44, 1,
-       Aggregation::COUNT, clock_.Now() - base::TimeDelta::FromDays(10), true},
+       Aggregation::COUNT, clock_.Now() - base::Days(10), true},
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
        SignalType::HISTOGRAM_ENUM, "Bar", base::HashMetricName("Bar"), 33, 1,
-       Aggregation::COUNT, clock_.Now() - base::TimeDelta::FromDays(5), true},
+       Aggregation::COUNT, clock_.Now() - base::Days(5), true},
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
        SignalType::USER_ACTION, "Failed", base::HashMetricName("Failed"), 22, 1,
-       Aggregation::COUNT, clock_.Now() - base::TimeDelta::FromDays(1), false},
+       Aggregation::COUNT, clock_.Now() - base::Days(1), false},
   };
 
   // Prepare test setup.
@@ -182,9 +182,8 @@ TEST_F(DatabaseMaintenanceImplTest, ExecuteMaintenanceTasks) {
     for (uint64_t days_ago = kLatestCompactionDaysAgo;
          days_ago <= kEarliestCompactionDaysAgo; ++days_ago) {
       EXPECT_CALL(*signal_database_,
-                  CompactSamplesForDay(
-                      sd.signal_type, sd.name_hash,
-                      clock_.Now() - base::TimeDelta::FromDays(days_ago), _))
+                  CompactSamplesForDay(sd.signal_type, sd.name_hash,
+                                       clock_.Now() - base::Days(days_ago), _))
           .WillOnce(RunOnceCallback<3>(/*success=*/sd.success));
     }
   }

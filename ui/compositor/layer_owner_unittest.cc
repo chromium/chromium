@@ -135,7 +135,7 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerDuringAnimation) {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     animation.AddObserver(observer.get());
     gfx::Transform transform;
     transform.Scale(0.5f, 0.5f);
@@ -169,7 +169,7 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateNonRootLayerDuringAnimation) {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     animation.AddObserver(observer.get());
     gfx::Transform transform;
     transform.Scale(0.5f, 0.5f);

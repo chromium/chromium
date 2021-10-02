@@ -23,7 +23,7 @@ namespace audio_output_service {
 
 namespace {
 
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Seconds(5);
 
 enum MessageTypes : int {
   kUpdateMediaTime = 1,

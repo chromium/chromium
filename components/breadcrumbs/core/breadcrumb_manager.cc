@@ -97,8 +97,7 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
 }
 
 void BreadcrumbManager::DropOldEvents() {
-  static const base::TimeDelta kMessageExpirationTime =
-      base::TimeDelta::FromMinutes(20);
+  static const base::TimeDelta kMessageExpirationTime = base::Minutes(20);
 
   bool old_buckets_dropped = false;
   const base::Time now = base::Time::Now();

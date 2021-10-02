@@ -53,8 +53,7 @@ CaptivePortalTabReloader::CaptivePortalTabReloader(
       state_(STATE_NONE),
       provisional_main_frame_load_(false),
       ssl_url_in_redirect_chain_(false),
-      slow_ssl_load_time_(
-          base::TimeDelta::FromSeconds(kDefaultSlowSSLTimeSeconds)),
+      slow_ssl_load_time_(base::Seconds(kDefaultSlowSSLTimeSeconds)),
       open_login_tab_callback_(open_login_tab_callback) {}
 
 CaptivePortalTabReloader::~CaptivePortalTabReloader() {}

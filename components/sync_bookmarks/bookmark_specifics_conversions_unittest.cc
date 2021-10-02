@@ -95,10 +95,9 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
   EXPECT_THAT(bm_specifics.type(), Eq(sync_pb::BookmarkSpecifics::URL));
   EXPECT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
   EXPECT_THAT(GURL(bm_specifics.url()), Eq(kUrl));
-  EXPECT_THAT(
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(bm_specifics.creation_time_us())),
-      Eq(kTime));
+  EXPECT_THAT(base::Time::FromDeltaSinceWindowsEpoch(
+                  base::Microseconds(bm_specifics.creation_time_us())),
+              Eq(kTime));
   EXPECT_TRUE(syncer::UniquePosition::FromProto(bm_specifics.unique_position())
                   .Equals(kUniquePosition));
   for (const sync_pb::MetaInfo& meta_info : bm_specifics.meta_info()) {

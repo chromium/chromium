@@ -41,8 +41,7 @@ class SubKeyRequest : public SubKeyRequester::Request {
         on_timeout_(base::BindOnce(&SubKeyRequest::OnRulesLoaded,
                                    base::Unretained(this))) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, on_timeout_.callback(),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        FROM_HERE, on_timeout_.callback(), base::Seconds(timeout_seconds));
   }
 
   SubKeyRequest(const SubKeyRequest&) = delete;

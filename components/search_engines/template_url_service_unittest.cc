@@ -33,7 +33,7 @@ TEST_F(TemplateURLServiceUnitTest, SessionToken) {
 
   // ... unless the token has expired.
   template_url_service().current_token_.clear();
-  const base::TimeDelta kSmallDelta = base::TimeDelta::FromMilliseconds(1);
+  const base::TimeDelta kSmallDelta = base::Milliseconds(1);
   template_url_service().token_expiration_time_ =
       base::TimeTicks::Now() - kSmallDelta;
   token = template_url_service().GetSessionToken();

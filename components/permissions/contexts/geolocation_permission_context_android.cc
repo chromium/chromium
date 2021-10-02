@@ -45,8 +45,7 @@ const char kLocationSettingsMetricDSESuffix[] = "DSE";
 const char kLocationSettingsMetricNonDSESuffix[] = "NonDSE";
 
 base::Time GetTimeNow() {
-  return base::Time::Now() +
-         base::TimeDelta::FromDays(g_day_offset_for_testing);
+  return base::Time::Now() + base::Days(g_day_offset_for_testing);
 }
 
 void LogLocationSettingsMetric(
@@ -300,17 +299,17 @@ void GeolocationPermissionContextAndroid::UpdateLocationSettingsBackOff(
   switch (backoff_level) {
     case LocationSettingsDialogBackOff::kNoBackOff:
       backoff_level = LocationSettingsDialogBackOff::kOneWeek;
-      next_show += base::TimeDelta::FromDays(7);
+      next_show += base::Days(7);
       break;
     case LocationSettingsDialogBackOff::kOneWeek:
       backoff_level = LocationSettingsDialogBackOff::kOneMonth;
-      next_show += base::TimeDelta::FromDays(30);
+      next_show += base::Days(30);
       break;
     case LocationSettingsDialogBackOff::kOneMonth:
       backoff_level = LocationSettingsDialogBackOff::kThreeMonths;
       FALLTHROUGH;
     case LocationSettingsDialogBackOff::kThreeMonths:
-      next_show += base::TimeDelta::FromDays(90);
+      next_show += base::Days(90);
       break;
     default:
       NOTREACHED();

@@ -16,8 +16,7 @@ namespace {
 // The minimum time to wait before checking whether the phone has responded to
 // status messages sent by CrosStateSender, and re-sending the status messages
 // if there was no response (no phone status model exists).
-constexpr base::TimeDelta kMinimumRetryDelay =
-    base::TimeDelta::FromSeconds(15u);
+constexpr base::TimeDelta kMinimumRetryDelay = base::Seconds(15u);
 
 // The amount the previous delay is multiplied by to determine the new amount
 // of time to wait before determining whether CrosStateSender should resend the

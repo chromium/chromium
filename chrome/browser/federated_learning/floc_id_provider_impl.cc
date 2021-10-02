@@ -379,7 +379,7 @@ void FlocIdProviderImpl::GetRecentlyVisitedURLs(
   history::QueryOptions options;
   options.begin_time =
       std::max(privacy_sandbox_settings_->FlocDataAccessibleSince(),
-               now - base::TimeDelta::FromDays(kQueryHistoryWindowInDays));
+               now - base::Days(kQueryHistoryWindowInDays));
   options.end_time = now;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 

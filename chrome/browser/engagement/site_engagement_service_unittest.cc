@@ -476,7 +476,7 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   base::HistogramTester histograms;
 
   base::Time current_day = GetReferenceTime();
-  clock_.SetNow(current_day - base::TimeDelta::FromDays(5));
+  clock_.SetNow(current_day - base::Days(5));
 
   // The https and http versions of www.google.com should be separate. But
   // different paths on the same origin should be treated the same.
@@ -511,20 +511,20 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(7.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(1));
+  clock_.SetNow(GetReferenceTime() + base::Days(1));
   EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(7.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(7));
+  clock_.SetNow(GetReferenceTime() + base::Days(7));
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(5.0, service_->GetScore(url2));
 
   service_->AddPointsForTesting(url1, 1.0);
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(10));
+  clock_.SetNow(GetReferenceTime() + base::Days(10));
   EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(5.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(11));
+  clock_.SetNow(GetReferenceTime() + base::Days(11));
   EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url2));
 }
@@ -584,7 +584,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
   for (const std::string& histogram_name : engagement_bucket_histogram_names)
     histograms.ExpectTotalCount(histogram_name, 0);
 
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(60));
+  clock_.SetNow(clock_.Now() + base::Minutes(60));
 
   // The https and http versions of www.google.com should be separate.
   GURL url1("https://www.google.com/");
@@ -633,7 +633,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                                EngagementType::kFirstDailyEngagement, 2);
 
   // Navigations are still logged within the 1 hour refresh period
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(59));
+  clock_.SetNow(clock_.Now() + base::Minutes(59));
 
   NavigateAndCommit(url2);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
@@ -653,7 +653,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                                EngagementType::kFirstDailyEngagement, 2);
 
   // Update the hourly histograms again.
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(1));
+  clock_.SetNow(clock_.Now() + base::Minutes(1));
 
   NavigateAndCommit(url3);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
@@ -731,7 +731,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
   for (int i = 0; i < 6; ++i)
     service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
 
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(60));
+  clock_.SetNow(clock_.Now() + base::Minutes(60));
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
 
   // Wait until the background metrics recording happens.
@@ -780,10 +780,10 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
 TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
   // Set the base time to be 3 weeks past the stale period in the past.
   // Use a 1 second offset to make sure scores don't yet decay.
-  base::TimeDelta one_second = base::TimeDelta::FromSeconds(1);
-  base::TimeDelta one_day = base::TimeDelta::FromDays(1);
+  base::TimeDelta one_second = base::Seconds(1);
+  base::TimeDelta one_day = base::Days(1);
   base::TimeDelta decay_period =
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours());
+      base::Hours(SiteEngagementScore::GetDecayPeriodInHours());
   base::TimeDelta shorter_than_decay_period = decay_period - one_second;
 
   base::Time max_decay_time =
@@ -1004,7 +1004,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresProportional) {
   service_->AddPointsForTesting(url1, 1.0);
   service_->AddPointsForTesting(url2, 1.2);
 
-  current_day += base::TimeDelta::FromDays(7);
+  current_day += base::Days(7);
   clock_.SetNow(current_day);
   std::map<GURL, double> score_map = GetScoreMap(service_);
   EXPECT_EQ(2u, score_map.size());
@@ -1060,7 +1060,7 @@ TEST_F(SiteEngagementServiceTest, IsBootstrapped) {
   service_->AddPointsForTesting(url2, 5.0);
   EXPECT_TRUE(service_->IsBootstrapped());
 
-  clock_.SetNow(current_day + base::TimeDelta::FromDays(8));
+  clock_.SetNow(current_day + base::Days(8));
   EXPECT_FALSE(service_->IsBootstrapped());
 }
 
@@ -1091,11 +1091,10 @@ TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
   GURL origin4a("http://decayed.com/index.html");
 
   base::Time today = GetReferenceTime();
-  base::Time yesterday = GetReferenceTime() - base::TimeDelta::FromDays(1);
-  base::Time yesterday_afternoon = GetReferenceTime() -
-                                   base::TimeDelta::FromDays(1) +
-                                   base::TimeDelta::FromHours(4);
-  base::Time yesterday_week = GetReferenceTime() - base::TimeDelta::FromDays(8);
+  base::Time yesterday = GetReferenceTime() - base::Days(1);
+  base::Time yesterday_afternoon =
+      GetReferenceTime() - base::Days(1) + base::Hours(4);
+  base::Time yesterday_week = GetReferenceTime() - base::Days(8);
   clock_.SetNow(today);
 
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
@@ -1290,7 +1289,7 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
 
   // Bring url2 to HIGH engagement.
   for (int i = 0; i < 9; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
+    current_day += base::Days(1);
     clock_.SetNow(current_day);
     service_->AddPointsForTesting(url2, 5.0);
   }
@@ -1312,7 +1311,7 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
 
   // Bring url2 to MAX engagement.
   for (int i = 0; i < 10; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
+    current_day += base::Days(1);
     clock_.SetNow(current_day);
     service_->AddPointsForTesting(url2, 5.0);
   }
@@ -1463,7 +1462,7 @@ TEST_F(SiteEngagementServiceTest, LastEngagementTime) {
   EXPECT_EQ(rebased_time, service_->GetLastEngagementTime());
 
   // Adding 0 points shouldn't update the last engagement time.
-  base::Time later_in_day = current_day + base::TimeDelta::FromSeconds(30);
+  base::Time later_in_day = current_day + base::Seconds(30);
   clock_.SetNow(later_in_day);
   service_->AddPointsForTesting(origin, 0);
 
@@ -1509,8 +1508,8 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
 
   // Advance within a decay period and add points.
   base::TimeDelta less_than_decay_period =
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours()) -
-      base::TimeDelta::FromSeconds(30);
+      base::Hours(SiteEngagementScore::GetDecayPeriodInHours()) -
+      base::Seconds(30);
   base::Time origin1_last_updated = clock_.Now() + less_than_decay_period;
   clock_.SetNow(origin1_last_updated);
   service_->AddPointsForTesting(origin, 1);
@@ -1537,7 +1536,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
   // triggers a cleanup. Ensure that |last_engagement_time| is moved back
   // appropriately, while origin1 is decayed correctly (once).
   clock_.SetNow(origin1_last_updated + less_than_decay_period +
-                base::TimeDelta::FromSeconds(30));
+                base::Seconds(30));
   service_->AddPointsForTesting(origin1, 1);
 
   EXPECT_EQ(clock_.Now(),
@@ -1571,8 +1570,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToRebase) {
   // Set the clock such that |origin|'s last engagement time is between
   // last_engagement_time and rebase_time.
   clock_.SetNow(current_day + service_->GetStalePeriod() +
-                service_->GetMaxDecayPeriod() -
-                base::TimeDelta::FromSeconds((30)));
+                service_->GetMaxDecayPeriod() - base::Seconds((30)));
   base::Time rebased_time = clock_.Now() - service_->GetMaxDecayPeriod();
   service_->CleanupEngagementScores(true);
 

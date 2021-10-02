@@ -453,7 +453,7 @@ TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
   EXPECT_EQ(kImageUrl1, custom_background->custom_background_url);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 
-  clock_.Advance(base::TimeDelta::FromHours(25));
+  clock_.Advance(base::Hours(25));
 
   // Should refresh background after >24 hours.
   custom_background_service_->RefreshBackgroundIfNeeded();

@@ -208,13 +208,11 @@ bool FacetManager::IsCachedDataNearStale() const {
 }
 
 base::Time FacetManager::GetCacheSoftExpiryTime() const {
-  return last_update_time_ +
-         base::TimeDelta::FromHours(kCacheSoftExpiryInHours);
+  return last_update_time_ + base::Hours(kCacheSoftExpiryInHours);
 }
 
 base::Time FacetManager::GetCacheHardExpiryTime() const {
-  return last_update_time_ +
-         base::TimeDelta::FromHours(kCacheHardExpiryInHours);
+  return last_update_time_ + base::Hours(kCacheHardExpiryInHours);
 }
 
 base::Time FacetManager::GetMaximumKeepFreshUntilThreshold() const {

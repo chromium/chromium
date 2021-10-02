@@ -23,8 +23,7 @@ namespace ash {
 class ElementAnimator {
  public:
   // Fade out duration used in the default implementation of |FadeOut|.
-  constexpr static base::TimeDelta kFadeOutDuration =
-      base::TimeDelta::FromMilliseconds(150);
+  constexpr static base::TimeDelta kFadeOutDuration = base::Milliseconds(150);
   // Fade out opacity used in the default implementation of |FadeOut|.
   constexpr static float kFadeOutOpacity = 0.26f;
   // Minimum allowed opacity as a target when fading out.

@@ -26,7 +26,7 @@ namespace blink {
 namespace {
 
 // Simulate a 16ms frame signal.
-const base::TimeDelta kFrameInterval = base::TimeDelta::FromMilliseconds(16);
+const base::TimeDelta kFrameInterval = base::Milliseconds(16);
 
 bool Equal(const WebTouchEvent& lhs, const WebTouchEvent& rhs) {
   auto tie = [](const WebTouchEvent& e) {

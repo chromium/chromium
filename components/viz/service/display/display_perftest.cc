@@ -58,7 +58,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
  public:
   RemoveOverdrawQuadPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval),
         task_runner_(base::MakeRefCounted<base::NullTaskRunner>()) {}
 

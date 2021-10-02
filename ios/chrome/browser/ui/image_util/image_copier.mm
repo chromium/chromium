@@ -152,7 +152,7 @@ const int kNoActiveCopy = 0;
           [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kAlertPopUp];
         }
       }),
-      base::TimeDelta::FromMilliseconds(kAlertDelayInMs));
+      base::Milliseconds(kAlertDelayInMs));
 
   [self recordCopyImageUMA:ContextMenuCopyImage::kInvoked];
 }

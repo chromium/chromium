@@ -8,8 +8,8 @@ namespace scheduling_metrics {
 
 namespace {
 
-constexpr base::TimeDelta kMinimalValue = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kMaximalValue = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kMinimalValue = base::Seconds(1);
+constexpr base::TimeDelta kMaximalValue = base::Hours(1);
 constexpr int kBucketCount = 50;
 
 }  // namespace

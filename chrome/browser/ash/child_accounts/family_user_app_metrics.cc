@@ -25,7 +25,7 @@ namespace ash {
 
 namespace {
 // Recently launched apps this many days ago in the past will be recorded.
-constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kOneDay = base::Days(1);
 
 // UMA metrics for a snapshot count of installed and enabled extensions for a
 // given family user.

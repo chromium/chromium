@@ -23,8 +23,7 @@ using metrics::SystemProfileProto;
 
 namespace {
 
-constexpr base::TimeDelta kServiceDiscoveryTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kServiceDiscoveryTimeout = base::Seconds(5);
 
 }  // namespace
 

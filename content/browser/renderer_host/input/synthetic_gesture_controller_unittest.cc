@@ -167,7 +167,7 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
   }
 
   base::TimeDelta PointerAssumedStoppedTime() const override {
-    return base::TimeDelta::FromMilliseconds(pointer_assumed_stopped_time_ms_);
+    return base::Milliseconds(pointer_assumed_stopped_time_ms_);
   }
 
   void set_pointer_assumed_stopped_time_ms(int time_ms) {
@@ -789,10 +789,10 @@ class SyntheticGestureControllerTestBase {
   void FlushInputUntilComplete() {
     // Start and stop the timer explicitly here, since the test does not need to
     // wait for begin-frame to start the timer.
-    controller_->dispatch_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(1), base::DoNothing());
+    controller_->dispatch_timer_.Start(FROM_HERE, base::Seconds(1),
+                                       base::DoNothing());
     do
-      time_ += base::TimeDelta::FromMilliseconds(kFlushInputRateInMs);
+      time_ += base::Milliseconds(kFlushInputRateInMs);
     while (controller_->DispatchNextEvent(time_));
     controller_->dispatch_timer_.Stop();
   }
@@ -1756,8 +1756,7 @@ TEST_F(SyntheticGestureControllerTest, TapGestureTouch) {
   EXPECT_TRUE(tap_target->GestureFinished());
   EXPECT_EQ(tap_target->position(), params.position);
   EXPECT_EQ(tap_target->GetDuration().InMilliseconds(), params.duration_ms);
-  EXPECT_GE(GetTotalTime(),
-            base::TimeDelta::FromMilliseconds(params.duration_ms));
+  EXPECT_GE(GetTotalTime(), base::Milliseconds(params.duration_ms));
 }
 
 TEST_F(SyntheticGestureControllerTest, TapGestureMouse) {
@@ -1779,8 +1778,7 @@ TEST_F(SyntheticGestureControllerTest, TapGestureMouse) {
   EXPECT_TRUE(tap_target->GestureFinished());
   EXPECT_EQ(tap_target->position(), params.position);
   EXPECT_EQ(tap_target->GetDuration().InMilliseconds(), params.duration_ms);
-  EXPECT_GE(GetTotalTime(),
-            base::TimeDelta::FromMilliseconds(params.duration_ms));
+  EXPECT_GE(GetTotalTime(), base::Milliseconds(params.duration_ms));
 }
 
 TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {

@@ -177,8 +177,7 @@ void FCMHandler::ScheduleNextTokenValidation() {
   DCHECK(IsListening());
 
   token_validation_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMinutes(kTokenValidationPeriodMinutesDefault),
+      FROM_HERE, base::Minutes(kTokenValidationPeriodMinutesDefault),
       base::BindOnce(&FCMHandler::StartTokenValidation,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -214,7 +213,7 @@ void FCMHandler::StartTokenFetch(
     instance_id::InstanceID::GetTokenCallback callback) {
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, instance_id::kGCMScope,
-      /*time_to_live=*/base::TimeDelta::FromSeconds(kInstanceIDTokenTTLSeconds),
+      /*time_to_live=*/base::Seconds(kInstanceIDTokenTTLSeconds),
       /*flags=*/{instance_id::InstanceID::Flags::kIsLazy}, std::move(callback));
 }
 

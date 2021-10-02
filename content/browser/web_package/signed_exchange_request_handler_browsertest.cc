@@ -521,8 +521,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Expired) {
   signed_exchange_utils::SetVerificationTimeForTesting(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(
-          SignedExchangeBrowserTestHelper::kSignatureHeaderExpires + 1));
+      base::Seconds(SignedExchangeBrowserTestHelper::kSignatureHeaderExpires +
+                    1));
 
   InstallMockCertChainInterceptor();
   InstallUrlInterceptor(GURL("https://test.example.org/test/"),
@@ -1446,7 +1446,7 @@ class SignedExchangeExpectCTReportBrowserTest
             ->GetDefaultStoragePartition()
             ->GetNetworkContext();
     network_context->AddExpectCT(
-        domain, base::Time::Now() + base::TimeDelta::FromDays(1) /* expiry */,
+        domain, base::Time::Now() + base::Days(1) /* expiry */,
         true /* enforce */, report_uri, network_isolation_key,
         base::BindLambdaForTesting([&](bool success) {
           EXPECT_TRUE(success);

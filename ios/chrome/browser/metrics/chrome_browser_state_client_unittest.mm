@@ -39,8 +39,8 @@ class ChromeBrowserStateClientTest : public PlatformTest {
 
 TEST_F(ChromeBrowserStateClientTest, GetNetworkTime) {
   // Set initial time of the network clock.
-  base::TimeDelta resolution = base::TimeDelta::FromMilliseconds(17);
-  base::TimeDelta latency = base::TimeDelta::FromMilliseconds(50);
+  base::TimeDelta resolution = base::Milliseconds(17);
+  base::TimeDelta latency = base::Milliseconds(50);
   base::DefaultClock clock;
   base::DefaultTickClock tick_clock;
   GetApplicationContext()->GetNetworkTimeTracker()->UpdateNetworkTime(

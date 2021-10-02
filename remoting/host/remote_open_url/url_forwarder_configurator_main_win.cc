@@ -41,9 +41,8 @@ namespace {
 
 constexpr wchar_t kProtocolToTestSetup[] = L"http";
 
-constexpr base::TimeDelta kPollingInterval =
-    base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kPollingTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kPollingInterval = base::Milliseconds(500);
+constexpr base::TimeDelta kPollingTimeout = base::Minutes(1);
 
 // Returns the current default browser's ProgID, or an empty string if failed.
 std::wstring GetDefaultBrowserProgId() {

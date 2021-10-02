@@ -32,8 +32,7 @@ static const constexpr char* const kMultizoneMemberAppIds[] = {
     "705D30C6"  // MultizoneFollower
 };
 
-static constexpr base::TimeDelta kDefaultLaunchTimeout =
-    base::TimeDelta::FromSeconds(60);
+static constexpr base::TimeDelta kDefaultLaunchTimeout = base::Seconds(60);
 
 // Class for storing a bitwise OR of enum values.
 //

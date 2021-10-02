@@ -134,8 +134,7 @@ void SkiaOutputSurfaceDependencyImpl::ScheduleGrContextCleanup() {
 
 void SkiaOutputSurfaceDependencyImpl::ScheduleDelayedGPUTaskFromGPUThread(
     base::OnceClosure task) {
-  constexpr base::TimeDelta kDelayForDelayedWork =
-      base::TimeDelta::FromMilliseconds(2);
+  constexpr base::TimeDelta kDelayForDelayedWork = base::Milliseconds(2);
   gpu_service_impl_->gpu_task_runner()->PostDelayedTask(
       FROM_HERE, std::move(task), kDelayForDelayedWork);
 }

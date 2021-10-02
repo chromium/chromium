@@ -205,7 +205,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
 
   void FastForwardProfileRefreshDelay() {
     const base::TimeDelta kProfileRefreshCallbackDelay =
-        base::TimeDelta::FromMilliseconds(150);
+        base::Milliseconds(150);
     task_environment_.FastForwardBy(kProfileRefreshCallbackDelay);
   }
 

@@ -91,7 +91,7 @@ class DmServerUploaderTest : public ::testing::TestWithParam<
   std::unique_ptr<TestRecordHandler> handler_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
 
-  const base::TimeDelta kMaxDelay_ = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kMaxDelay_ = base::Seconds(1);
 };
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;

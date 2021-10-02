@@ -180,7 +180,7 @@ void TextInputTestHelper::WaitForSurroundingTextChanged(
 void TextInputTestHelper::WaitForPassageOfTimeMillis(const int milliseconds) {
   CHECK_EQ(NO_WAIT, waiting_type_);
   waiting_type_ = WAIT_ON_PASSAGE_OF_TIME;
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(milliseconds));
+  base::PlatformThread::Sleep(base::Milliseconds(milliseconds));
   waiting_type_ = NO_WAIT;
 }
 

@@ -150,8 +150,7 @@ void DownloadDBCache::AddOrReplaceEntry(const DownloadDBEntry& entry) {
     return;
   if (!update_timer_.IsRunning() &&
       result == ShouldUpdateDownloadDBResult::UPDATE) {
-    update_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(kUpdateDBIntervalMs),
+    update_timer_.Start(FROM_HERE, base::Milliseconds(kUpdateDBIntervalMs),
                         this, &DownloadDBCache::UpdateDownloadDB);
   }
 

@@ -223,7 +223,7 @@ void LoginFeedback::EnsureFeedbackUI() {
         FROM_HERE,
         base::BindOnce(&LoginFeedback::EnsureFeedbackUI,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 }
 

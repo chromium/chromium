@@ -137,8 +137,7 @@ TEST(UrlLanguageHistogramTest, ShouldNotClearHistoryIfNotAllTimes) {
   EXPECT_THAT(hist.GetLanguageFrequency(kLang1), FloatEq(1.0));
 
   // Clearing only the last hour of the history has no effect.
-  hist.ClearHistory(base::Time::Now() - base::TimeDelta::FromHours(2),
-                    base::Time::Max());
+  hist.ClearHistory(base::Time::Now() - base::Hours(2), base::Time::Max());
 
   EXPECT_THAT(hist.GetTopLanguages(), SizeIs(1));
   EXPECT_THAT(hist.GetLanguageFrequency(kLang1), FloatEq(1.0));

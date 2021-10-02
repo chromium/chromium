@@ -308,9 +308,8 @@ const size_t kMaxURLLogChars = 1024;
 // content state is modified and not sent to session restore, but this is
 // better than having to wake up all renderers during shutdown.
 constexpr base::TimeDelta kDelaySecondsForContentStateSyncHidden =
-    base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kDelaySecondsForContentStateSync =
-    base::TimeDelta::FromSeconds(1);
+    base::Seconds(5);
+constexpr base::TimeDelta kDelaySecondsForContentStateSync = base::Seconds(1);
 
 const blink::PreviewsState kDisabledPreviewsBits =
     blink::PreviewsTypes::PREVIEWS_OFF |

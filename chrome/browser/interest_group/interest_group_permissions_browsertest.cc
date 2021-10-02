@@ -170,7 +170,7 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     base::RetainingOneShotTimer check_done;
     check_done.Start(
-        FROM_HERE, base::TimeDelta::FromMicroseconds(10),
+        FROM_HERE, base::Microseconds(10),
         base::BindLambdaForTesting([&adapter, &check_done, &run_loop, this]() {
           if (!CanRunAuction(adapter)) {
             check_done.Reset();

@@ -42,7 +42,7 @@ void HeartbeatEvent::StartHeartbeatEvent() const {
   }
 
   Start<ReportQueueManualTestContext>(
-      /*frequency=*/base::TimeDelta::FromSeconds(1),
+      /*frequency=*/base::Seconds(1),
       /*number_of_messages_to_enqueue=*/10,
       /*destination=*/HEARTBEAT_EVENTS,
       /*priority=*/FAST_BATCH, base::BindOnce([](Status status) {

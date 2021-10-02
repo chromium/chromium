@@ -456,7 +456,7 @@ DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DeviceManagementService::JobImpl::Start, GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(GetRetryDelay(retry_method)));
+        base::Milliseconds(GetRetryDelay(retry_method)));
   }
   return retry_method;
 }
@@ -623,7 +623,7 @@ void DeviceManagementService::ScheduleInitialization(
       FROM_HERE,
       base::BindOnce(&DeviceManagementService::Initialize,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(delay_milliseconds));
+      base::Milliseconds(delay_milliseconds));
 }
 
 void DeviceManagementService::Initialize() {

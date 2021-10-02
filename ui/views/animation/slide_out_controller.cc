@@ -18,8 +18,7 @@ namespace views {
 
 namespace {
 
-constexpr base::TimeDelta kSwipeRestoreDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kSwipeRestoreDuration = base::Milliseconds(150);
 constexpr int kSwipeOutTotalDurationMs = 150;
 gfx::Tween::Type kSwipeTweenType = gfx::Tween::EASE_IN;
 
@@ -165,8 +164,8 @@ void SlideOutController::SlideOutAndClose(int direction) {
 
   int swipe_out_duration = kSwipeOutTotalDurationMs * opacity_;
   SetOpacityIfNecessary(0.f);
-  SetTransformWithAnimationIfNecessary(
-      transform, base::TimeDelta::FromMilliseconds(swipe_out_duration));
+  SetTransformWithAnimationIfNecessary(transform,
+                                       base::Milliseconds(swipe_out_duration));
 }
 
 void SlideOutController::SetOpacityIfNecessary(float opacity) {

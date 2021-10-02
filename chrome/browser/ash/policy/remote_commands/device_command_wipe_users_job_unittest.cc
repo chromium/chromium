@@ -33,8 +33,8 @@
 
 namespace policy {
 
-constexpr base::TimeDelta kCommandAge = base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kVeryoldCommandAge = base::TimeDelta::FromDays(175);
+constexpr base::TimeDelta kCommandAge = base::Minutes(10);
+constexpr base::TimeDelta kVeryoldCommandAge = base::Days(175);
 
 class TestingRemoteCommandsService : public RemoteCommandsService {
  public:

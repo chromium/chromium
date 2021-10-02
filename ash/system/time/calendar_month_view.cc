@@ -35,7 +35,7 @@ constexpr int kFocusCirclePadding = 4;
 void MoveToNextDay(int& column_set_id,
                    base::Time& current_date,
                    base::Time::Exploded& current_date_exploded) {
-  current_date += base::TimeDelta::FromDays(1);
+  current_date += base::Days(1);
   current_date.LocalExplode(&current_date_exploded);
   column_set_id = (column_set_id + 1) % calendar_utils::kDateInOneWeek;
 }
@@ -161,8 +161,7 @@ CalendarMonthView::CalendarMonthView(
 
   // Calculates the start date.
   base::Time current_date =
-      first_day_of_month -
-      base::TimeDelta::FromDays(first_day_of_month_exploded.day_of_week);
+      first_day_of_month - base::Days(first_day_of_month_exploded.day_of_week);
   base::Time::Exploded current_date_exploded =
       calendar_utils::GetExploded(current_date);
 
@@ -208,8 +207,7 @@ CalendarMonthView::CalendarMonthView(
   // Adds the first several days from the next month if the last day is not the
   // end day of this week.
   const base::Time end_of_the_last_row =
-      current_date +
-      base::TimeDelta::FromDays(6 - current_date_exploded.day_of_week);
+      current_date + base::Days(6 - current_date_exploded.day_of_week);
   base::Time::Exploded end_of_row_exploded =
       calendar_utils::GetExploded(end_of_the_last_row);
 

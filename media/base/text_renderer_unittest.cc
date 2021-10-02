@@ -146,7 +146,7 @@ class TextRendererTest : public testing::Test {
     FakeTextTrackStream* const text_stream = text_track_streams_[idx].get();
 
     const base::TimeDelta start;
-    const base::TimeDelta duration = base::TimeDelta::FromSeconds(42);
+    const base::TimeDelta duration = base::Seconds(42);
     const std::string id = "id";
     const std::string content = "subtitle";
     const std::string settings;

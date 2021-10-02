@@ -43,7 +43,7 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
 
   void WaitForAccessibilityStatusChanged() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    clock_.Advance(base::TimeDelta::FromMilliseconds(5000));
+    clock_.Advance(base::Milliseconds(5000));
     run_loop_->Run();
   }
 

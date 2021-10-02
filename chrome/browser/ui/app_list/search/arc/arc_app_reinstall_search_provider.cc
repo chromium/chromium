@@ -33,7 +33,7 @@
 
 namespace {
 // Seconds in between refreshes;
-constexpr base::TimeDelta kRefresh = base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kRefresh = base::Minutes(30);
 
 constexpr char kAppListLatency[] = "Apps.AppListRecommendedResponse.Latency";
 constexpr char kAppListCounts[] = "Apps.AppListRecommendedResponse.Count";
@@ -154,7 +154,7 @@ bool GetStateTime(Profile* profile,
   if (!GetStateInt64(profile, package_name, key, &value))
     return false;
 
-  *time_delta = base::TimeDelta::FromMilliseconds(value);
+  *time_delta = base::Milliseconds(value);
   return true;
 }
 
@@ -431,8 +431,7 @@ void ArcAppReinstallSearchProvider::MaybeyResetOldImpressionCounts() {
                       &latest_impression)) {
       continue;
     }
-    if (now - latest_impression >
-        base::TimeDelta::FromHours(kResetImpressionGrace.Get())) {
+    if (now - latest_impression > base::Hours(kResetImpressionGrace.Get())) {
       SetStateInt64(profile_, package_name, kImpressionCount, 0);
       UpdateStateRemoveKey(profile_, package_name, kImpressionTime);
     }
@@ -536,8 +535,7 @@ void ArcAppReinstallSearchProvider::OnVisibilityChanged(
   if (!GetStateTime(profile_, package_name, kImpressionTime,
                     &latest_impression) ||
       impression_count == 0 ||
-      (now - latest_impression >
-       base::TimeDelta::FromSeconds(kNewImpressionTime.Get()))) {
+      (now - latest_impression > base::Seconds(kNewImpressionTime.Get()))) {
     UpdateStateTime(profile_, package_name, kImpressionTime);
     SetStateInt64(profile_, package_name, kImpressionCount,
                   impression_count + 1);
@@ -577,14 +575,14 @@ bool ArcAppReinstallSearchProvider::ShouldShowPackage(
   const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
   if (GetStateTime(profile_, package_id, kUninstallTime, &timestamp)) {
     const auto delta = now - timestamp;
-    if (delta < base::TimeDelta::FromHours(kUninstallGrace.Get())) {
+    if (delta < base::Hours(kUninstallGrace.Get())) {
       // We uninstalled this recently, don't show.
       return false;
     }
   }
   if (GetStateTime(profile_, package_id, kInstallStartTime, &timestamp)) {
     const auto delta = now - timestamp;
-    if (delta < base::TimeDelta::FromHours(kInstallStartGrace.Get())) {
+    if (delta < base::Hours(kInstallStartGrace.Get())) {
       // We started install on this recently, don't show.
       return false;
     }
@@ -603,8 +601,7 @@ bool ArcAppReinstallSearchProvider::ShouldShowAnything() const {
   if (!kInteractionGrace.Get()) {
     return true;
   }
-  const base::TimeDelta grace_period =
-      base::TimeDelta::FromHours(kInteractionGrace.Get());
+  const base::TimeDelta grace_period = base::Hours(kInteractionGrace.Get());
   const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
   std::unordered_set<std::string> package_names;
   GetKnownPackageNames(profile_, &package_names);

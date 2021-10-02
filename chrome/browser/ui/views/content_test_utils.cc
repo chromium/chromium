@@ -51,7 +51,7 @@ void TestTextInputViaKeyEvent(content::WebContents* contents) {
   // Verify text input is updated.
   std::string result;
   while (result != "a") {
-    GiveItSomeTime(base::TimeDelta::FromMilliseconds(100));
+    GiveItSomeTime(base::Milliseconds(100));
 
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, R"(
       window.domAutomationController.send(

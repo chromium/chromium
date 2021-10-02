@@ -17,8 +17,7 @@ namespace remoting {
 namespace {
 
 constexpr AudioStreamFormat kStreamFormat = {2, 2, 44100};
-constexpr base::TimeDelta kBufferPlaybackTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kBufferPlaybackTimeout = base::Milliseconds(500);
 
 }  // namespace
 

@@ -440,7 +440,7 @@ class CancelRequestDelegate : public TestDelegate {
   void OnResponseStarted(URLRequest* request, int net_error) override {
     TestDelegate::OnResponseStarted(request, net_error);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop_.QuitClosure(), base::TimeDelta::FromSeconds(1));
+        FROM_HERE, run_loop_.QuitClosure(), base::Seconds(1));
   }
 
   void WaitUntilDone() { run_loop_.Run(); }

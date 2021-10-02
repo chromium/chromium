@@ -13,9 +13,9 @@ base::TimeDelta GetTimeDeltaFromDuration(
     const optimization_guide::proto::Duration& duration) {
   base::TimeDelta delta;
   if (duration.has_seconds())
-    delta += base::TimeDelta::FromSeconds(duration.seconds());
+    delta += base::Seconds(duration.seconds());
   if (duration.has_nanos())
-    delta += base::TimeDelta::FromNanoseconds(duration.nanos());
+    delta += base::Nanoseconds(duration.nanos());
   return delta;
 }
 

@@ -44,8 +44,7 @@ const double kMaxVolume = 1.0;
 
 // InputController will poll once every second, so wait at most a bit
 // more than that for the callbacks.
-constexpr base::TimeDelta kOnMutePollInterval =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kOnMutePollInterval = base::Milliseconds(1000);
 
 }  // namespace
 

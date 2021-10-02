@@ -80,15 +80,13 @@ void RecordJankMetrics(
   }
 
   for (const int64_t frame_duration_ns : durations_ns) {
-    base::UmaHistogramTimes(
-        frame_duration_histogram_name,
-        base::TimeDelta::FromNanoseconds(frame_duration_ns));
+    base::UmaHistogramTimes(frame_duration_histogram_name,
+                            base::Nanoseconds(frame_duration_ns));
   }
 
   for (const int64_t jank_burst_duration_ns : jank_bursts_ns) {
-    base::UmaHistogramTimes(
-        jank_burst_histogram_name,
-        base::TimeDelta::FromNanoseconds(jank_burst_duration_ns));
+    base::UmaHistogramTimes(jank_burst_histogram_name,
+                            base::Nanoseconds(jank_burst_duration_ns));
   }
 
   base::UmaHistogramCounts1000(missed_frames_histogram_name,

@@ -174,7 +174,7 @@ bool AudioOutputStreamFuchsia::InitializePayloadBuffer() {
 void AudioOutputStreamFuchsia::OnMinLeadTimeChanged(int64_t min_lead_time) {
   bool min_lead_time_was_unknown = !min_lead_time_.has_value();
 
-  min_lead_time_ = base::TimeDelta::FromNanoseconds(min_lead_time);
+  min_lead_time_ = base::Nanoseconds(min_lead_time);
 
   // When min_lead_time_ increases we may need to reallocate |payload_buffer_|.
   // Code below just unmaps the current buffer. The new buffer will be allocated

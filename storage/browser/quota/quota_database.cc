@@ -726,8 +726,8 @@ void QuotaDatabase::ScheduleCommit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (timer_.IsRunning())
     return;
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kCommitIntervalMs),
-               this, &QuotaDatabase::Commit);
+  timer_.Start(FROM_HERE, base::Milliseconds(kCommitIntervalMs), this,
+               &QuotaDatabase::Commit);
 }
 
 QuotaError QuotaDatabase::EnsureOpened(EnsureOpenedMode mode) {

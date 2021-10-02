@@ -241,7 +241,7 @@ TEST_F(SurfaceChooserHelperTest, PromotionHintsUpdateChooserStatePeriodically) {
   helper_->NotifyPromotionHintAndUpdateChooser(hint, false);
 
   // Advancing the time and using an overlay should not send a hint.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(10));
+  tick_clock_.Advance(base::Seconds(10));
   EXPECT_CALL(*chooser_, MockUpdateState()).Times(0);
   helper_->NotifyPromotionHintAndUpdateChooser(hint, true);
 

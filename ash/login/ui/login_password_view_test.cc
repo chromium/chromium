@@ -24,14 +24,11 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kClearPasswordAfterDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kClearPasswordAfterDelay = base::Seconds(30);
 
-constexpr base::TimeDelta kHidePasswordAfterDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
 
-constexpr base::TimeDelta kLeftIconDisplayTime =
-    base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kLeftIconDisplayTime = base::Seconds(4);
 
 class LoginPasswordViewTest : public LoginTestBase {
  public:

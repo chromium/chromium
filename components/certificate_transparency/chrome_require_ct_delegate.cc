@@ -184,7 +184,7 @@ ChromeRequireCTDelegate::IsCTRequiredForHost(
   // Compute >= 2018-05-01, rather than deal with possible fractional
   // seconds.
   const base::Time kMay_1_2018 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1525132800);
+      base::Time::UnixEpoch() + base::Seconds(1525132800);
   if (chain->valid_start() >= kMay_1_2018)
     return CTRequirementLevel::REQUIRED;
 

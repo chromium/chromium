@@ -33,7 +33,7 @@ namespace {
 // this time ago, or the outgoing worker has had no controllees for a continuous
 // period of time exceeding this time, the outgoing worker will be removed even
 // if it has ongoing requests.
-constexpr base::TimeDelta kMaxLameDuckTime = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMaxLameDuckTime = base::Minutes(5);
 
 ServiceWorkerVersionInfo GetVersionInfo(ServiceWorkerVersion* version) {
   if (!version)
@@ -528,7 +528,7 @@ void ServiceWorkerRegistration::ActivateWaitingVersion(bool delay) {
         FROM_HERE,
         base::BindOnce(&ServiceWorkerRegistration::ContinueActivation, this,
                        activating_version),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   } else {
     ContinueActivation(std::move(activating_version));
   }

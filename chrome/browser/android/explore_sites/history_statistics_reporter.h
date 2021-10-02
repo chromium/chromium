@@ -18,8 +18,7 @@ namespace explore_sites {
 class HistoryStatisticsReporter : public history::HistoryServiceObserver {
  public:
   // Delay between the scheduling and actual computing/reporting of stats.
-  static constexpr base::TimeDelta kComputeStatisticsDelay =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kComputeStatisticsDelay = base::Seconds(5);
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

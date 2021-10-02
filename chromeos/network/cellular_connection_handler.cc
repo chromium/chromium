@@ -23,8 +23,7 @@
 namespace chromeos {
 namespace {
 
-constexpr base::TimeDelta kWaitingForConnectableTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
 
 bool CanInitiateShillConnection(const NetworkState* network) {
   // The network must be part of a Shill profile (i.e., it cannot be a "stub"

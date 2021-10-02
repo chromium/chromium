@@ -4420,16 +4420,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Advance the clock to capture a timestamp after when the first request was
   // made.
-  clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock_.Advance(base::Milliseconds(100));
   base::Time timestamp_1 = clock_.Now();
-  clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock_.Advance(base::Milliseconds(100));
 
   // Navigate to example.com again. This should cause |rule| to be matched.
   NavigateFrame(kFrameName1, sub_frame_url);
 
   // Advance the clock to capture a timestamp after when the second request was
   // made.
-  clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock_.Advance(base::Milliseconds(100));
   base::Time timestamp_2 = clock_.Now();
 
   int first_tab_id = ExtensionTabUtil::GetTabId(web_contents());

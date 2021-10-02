@@ -135,8 +135,7 @@ class ViewportAwareRootTest : public testing::Test {
   bool AnimateWithForwardVector(base::TimeDelta delta,
                                 const gfx::Vector3dF& forward_vector) {
     base::TimeTicks target_time = current_time_ + delta;
-    base::TimeDelta frame_duration =
-        base::TimeDelta::FromSecondsD(1.0 / kFramesPerSecond);
+    base::TimeDelta frame_duration = base::Seconds(1.0 / kFramesPerSecond);
     bool changed = false;
     gfx::Quaternion head_movement_quat(forward_vector, {0.f, 0.f, -1.f});
     gfx::Transform head_pose(head_movement_quat);

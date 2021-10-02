@@ -123,7 +123,7 @@ CastAudioDeviceFactory::CreateSwitchableAudioRendererSink(
     const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params) {
   return base::MakeRefCounted<NonSwitchableAudioRendererSink>(
-      NewOutputDevice(frame_token, params, base::TimeDelta::FromSeconds(100)));
+      NewOutputDevice(frame_token, params, base::Seconds(100)));
 }
 
 scoped_refptr<::media::AudioCapturerSource>

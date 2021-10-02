@@ -142,8 +142,7 @@ class RemotingSenderTest : public ::testing::Test {
 
     // Give CastRemotingSender a small RTT measurement to prevent kickstart
     // testing from taking too long.
-    remoting_sender_->OnMeasuredRoundTripTime(
-        base::TimeDelta::FromMilliseconds(1));
+    remoting_sender_->OnMeasuredRoundTripTime(base::Milliseconds(1));
     RunPendingTasks();
   }
 

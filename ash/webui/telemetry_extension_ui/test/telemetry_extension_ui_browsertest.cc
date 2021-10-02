@@ -526,5 +526,5 @@ void TelemetryExtensionUiBrowserTest::RunCallbackPeriodically(
       FROM_HERE,
       base::BindOnce(&TelemetryExtensionUiBrowserTest::RunCallbackPeriodically,
                      system_events_weak_ptr_factory_.GetWeakPtr(), callback),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }

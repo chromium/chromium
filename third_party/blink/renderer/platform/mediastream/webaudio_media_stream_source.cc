@@ -115,7 +115,7 @@ void WebAudioMediaStreamSource::DeliverRebufferedAudio(
                audio_bus.frames());
   const base::TimeTicks reference_time =
       current_reference_time_ +
-      base::TimeDelta::FromMicroseconds(
+      base::Microseconds(
           frame_delay * base::Time::kMicrosecondsPerSecond /
           MediaStreamAudioSource::GetAudioParameters().sample_rate());
   MediaStreamAudioSource::DeliverDataToTracks(audio_bus, reference_time);

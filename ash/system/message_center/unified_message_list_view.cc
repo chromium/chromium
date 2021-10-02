@@ -40,12 +40,11 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kClosingAnimationDuration =
-    base::TimeDelta::FromMilliseconds(320);
+constexpr base::TimeDelta kClosingAnimationDuration = base::Milliseconds(320);
 constexpr base::TimeDelta kClearAllStackedAnimationDuration =
-    base::TimeDelta::FromMilliseconds(40);
+    base::Milliseconds(40);
 constexpr base::TimeDelta kClearAllVisibleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(160);
+    base::Milliseconds(160);
 
 constexpr char kMessageViewContainerClassName[] = "MessageViewContainer";
 constexpr char kMoveDownAnimationSmoothnessHistogramName[] =

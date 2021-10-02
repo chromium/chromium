@@ -594,8 +594,8 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(
     elevated_host_ = std::make_unique<ElevatedNativeMessagingHost>(
         base::CommandLine::ForCurrentProcess()->GetProgram(),
         parent_window_handle_,
-        /*elevate_process=*/true,
-        base::TimeDelta::FromSeconds(kElevatedHostTimeoutSeconds), client_);
+        /*elevate_process=*/true, base::Seconds(kElevatedHostTimeoutSeconds),
+        client_);
   }
 
   ProcessLaunchResult result = elevated_host_->EnsureElevatedHostCreated();

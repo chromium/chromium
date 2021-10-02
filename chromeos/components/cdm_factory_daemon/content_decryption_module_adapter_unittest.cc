@@ -117,8 +117,8 @@ scoped_refptr<media::DecoderBuffer> CreateDecoderBuffer(
     const std::vector<uint8_t> data) {
   scoped_refptr<media::DecoderBuffer> buffer = media::DecoderBuffer::CopyFrom(
       data.data(), data.size(), kFakeSideData.data(), kFakeSideData.size());
-  buffer->set_timestamp(base::TimeDelta::FromSeconds(kFakeTimestampSec));
-  buffer->set_duration(base::TimeDelta::FromSeconds(kFakeDurationSec));
+  buffer->set_timestamp(base::Seconds(kFakeTimestampSec));
+  buffer->set_duration(base::Seconds(kFakeDurationSec));
   return buffer;
 }
 

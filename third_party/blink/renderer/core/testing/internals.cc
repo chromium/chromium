@@ -3671,8 +3671,8 @@ double Internals::monotonicTimeToZeroBasedDocumentTime(
     ExceptionState& exception_state) {
   return document_->Loader()
       ->GetTiming()
-      .MonotonicTimeToZeroBasedDocumentTime(
-          base::TimeTicks() + base::TimeDelta::FromSecondsD(platform_time))
+      .MonotonicTimeToZeroBasedDocumentTime(base::TimeTicks() +
+                                            base::Seconds(platform_time))
       .InSecondsF();
 }
 

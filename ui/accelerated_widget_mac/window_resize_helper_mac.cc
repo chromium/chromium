@@ -234,7 +234,7 @@ bool PumpableTaskRunner::WaitForSingleWrappedTaskToRun(
     // Calculate how much time we have left before we have to stop waiting or
     // until a currently-enqueued task will be ready to run.
     base::TimeDelta max_sleep_time = next_task_time - current_time;
-    if (max_sleep_time <= base::TimeDelta::FromMilliseconds(0))
+    if (max_sleep_time <= base::Milliseconds(0))
       break;
 
     event_timed_wait_callback_.Run(&event_, max_sleep_time);

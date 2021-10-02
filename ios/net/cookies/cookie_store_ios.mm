@@ -551,7 +551,7 @@ void CookieStoreIOS::OnSystemCookiesChanged() {
                                       weak_factory_.GetWeakPtr(),
                                       base::OnceClosure()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, flush_closure_.callback(), base::TimeDelta::FromSeconds(10));
+      FROM_HERE, flush_closure_.callback(), base::Seconds(10));
 }
 
 CookieChangeDispatcher& CookieStoreIOS::GetChangeDispatcher() {

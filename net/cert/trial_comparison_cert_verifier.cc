@@ -432,9 +432,8 @@ void TrialComparisonCertVerifier::Job::OnPrimaryJobCompleted(int result) {
   // that TrialSecondary histograms will be recorded for, in order to get a
   // direct comparison.
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier_Job_Latency_TrialPrimary",
-                             primary_latency,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             primary_latency, base::Milliseconds(1),
+                             base::Minutes(10), 100);
 
   trial_start_ = base::TimeTicks::Now();
   int rv = parent_->trial_verifier()->Verify(
@@ -453,8 +452,8 @@ void TrialComparisonCertVerifier::Job::OnTrialJobCompleted(int result) {
   trial_error_ = result;
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier_Job_Latency_TrialSecondary",
-                             latency, base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             latency, base::Milliseconds(1), base::Minutes(10),
+                             100);
 
   bool errors_equal = trial_error_ == primary_error_;
   bool details_equal = CertVerifyResultEqual(trial_result_, primary_result_);

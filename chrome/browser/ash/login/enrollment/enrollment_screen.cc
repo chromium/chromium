@@ -47,10 +47,10 @@ using ::policy::EnrollmentConfig;
 // Do not change the UMA histogram parameters without renaming the histograms!
 #define UMA_ENROLLMENT_TIME(histogram_name, elapsed_timer)                   \
   do {                                                                       \
-    UMA_HISTOGRAM_CUSTOM_TIMES(                                              \
-        (histogram_name), (elapsed_timer)->Elapsed(),                        \
-        base::TimeDelta::FromMilliseconds(100) /* min */,                    \
-        base::TimeDelta::FromMinutes(15) /* max */, 100 /* bucket_count */); \
+    UMA_HISTOGRAM_CUSTOM_TIMES((histogram_name), (elapsed_timer)->Elapsed(), \
+                               base::Milliseconds(100) /* min */,            \
+                               base::Minutes(15) /* max */,                  \
+                               100 /* bucket_count */);                      \
   } while (0)
 
 const char* const kMetricEnrollmentTimeCancel =

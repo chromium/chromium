@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest, CheckIsThrottled) {
-  constexpr base::TimeDelta kDelayBetweenChecks = base::TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kDelayBetweenChecks = base::Days(1);
   base::Time time_override = base::Time::UnixEpoch();
   SetTimeOverride(time_override);
 
@@ -2024,7 +2024,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   // Update manifest, but keep same file handlers. Permission should be left on
   // ALLOW.
-  time_override += base::TimeDelta::FromDays(10);
+  time_override += base::Days(10);
   SetTimeOverride(time_override);
   OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "blue"});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
@@ -2037,7 +2037,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   // Update manifest, asking for /fewer/ file types. Permission should be left
   // on ALLOW.
-  time_override += base::TimeDelta::FromDays(10);
+  time_override += base::Days(10);
   SetTimeOverride(time_override);
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "blue"});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
@@ -2063,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                                      ContentSettingsType::FILE_HANDLING,
                                      CONTENT_SETTING_BLOCK);
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
-  time_override += base::TimeDelta::FromDays(10);
+  time_override += base::Days(10);
   SetTimeOverride(time_override);
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,

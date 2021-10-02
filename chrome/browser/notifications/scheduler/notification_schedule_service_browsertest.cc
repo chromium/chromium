@@ -167,8 +167,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   void ScheduleNotification() {
     ScheduleParams schedule_params;
     schedule_params.deliver_time_start = base::Time::Now();
-    schedule_params.deliver_time_end =
-        base::Time::Now() + base::TimeDelta::FromMinutes(5);
+    schedule_params.deliver_time_end = base::Time::Now() + base::Minutes(5);
     NotificationData data;
     data.title = u"title";
     data.message = u"message";

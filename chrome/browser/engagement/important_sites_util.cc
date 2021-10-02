@@ -117,7 +117,7 @@ bool ShouldSuppressItem(base::Value* dict) {
   if (last_ignored_time) {
     base::TimeDelta diff =
         base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
-    if (diff >= base::TimeDelta::FromDays(kSuppressionExpirationTimeDays)) {
+    if (diff >= base::Days(kSuppressionExpirationTimeDays)) {
       dict->SetIntKey(kNumTimesIgnoredName, 0);
       dict->RemoveKey(kTimeLastIgnored);
       return false;

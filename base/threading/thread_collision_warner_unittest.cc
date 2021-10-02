@@ -190,7 +190,7 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
 
     void push(int value) {
       DFAKE_SCOPED_LOCK(push_pop_);
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(5));
+      base::PlatformThread::Sleep(base::Seconds(5));
     }
 
     int pop() {
@@ -248,7 +248,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
 
     void push(int value) {
       DFAKE_SCOPED_LOCK(push_pop_);
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+      base::PlatformThread::Sleep(base::Seconds(2));
     }
 
     int pop() {
@@ -318,7 +318,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
     void push(int) {
       DFAKE_SCOPED_RECURSIVE_LOCK(push_pop_);
       bar();
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+      base::PlatformThread::Sleep(base::Seconds(2));
     }
 
     int pop() {

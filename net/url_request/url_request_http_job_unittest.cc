@@ -1242,8 +1242,7 @@ TEST_F(URLRequestHttpJobTest, SetTransactionPriority) {
 TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
   // Setup HSTS state.
   context_.transport_security_state()->AddHSTS(
-      "upgrade.test", base::Time::Now() + base::TimeDelta::FromSeconds(10),
-      true);
+      "upgrade.test", base::Time::Now() + base::Seconds(10), true);
   ASSERT_TRUE(
       context_.transport_security_state()->ShouldUpgradeToSSL("upgrade.test"));
   ASSERT_FALSE(context_.transport_security_state()->ShouldUpgradeToSSL(
@@ -1309,7 +1308,7 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
 
   TestURLRequestContext context;
   context.transport_security_state()->AddHSTS(
-      "127.0.0.1", base::Time::Now() + base::TimeDelta::FromSeconds(10), true);
+      "127.0.0.1", base::Time::Now() + base::Seconds(10), true);
   ASSERT_TRUE(
       context.transport_security_state()->ShouldUpgradeToSSL("127.0.0.1"));
 

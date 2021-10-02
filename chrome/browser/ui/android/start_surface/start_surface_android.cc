@@ -39,5 +39,5 @@ static void JNI_StartSurfaceConfiguration_WarmupRenderer(
 
   base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
                         base::BindOnce(&WarmUpRenderProcess, profile),
-                        base::TimeDelta::FromMilliseconds(renderer_delay_ms));
+                        base::Milliseconds(renderer_delay_ms));
 }

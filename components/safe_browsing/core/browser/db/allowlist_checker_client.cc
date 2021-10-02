@@ -89,7 +89,7 @@ AllowlistCheckerClient::AllowlistCheckerClient(
   // check takes too long.
   auto timeout_callback = base::BindOnce(&AllowlistCheckerClient::OnTimeout,
                                          weak_factory_.GetWeakPtr());
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kLookupTimeoutMS),
+  timer_.Start(FROM_HERE, base::Milliseconds(kLookupTimeoutMS),
                std::move(timeout_callback));
 }
 

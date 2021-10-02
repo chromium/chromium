@@ -200,7 +200,7 @@ void HandleBadMessage(const std::string& error) {
 
 // static
 const base::TimeDelta NetworkService::kInitialDohProbeTimeout =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // Handler of delaying calls to NetworkContext::ActivateDohProbes() until after
 // an initial service startup delay.

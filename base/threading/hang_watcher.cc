@@ -114,7 +114,7 @@ constexpr base::FeatureParam<int> kThreadPoolLogLevel{
 
 // static
 const base::TimeDelta WatchHangsInScope::kDefaultHangWatchTime =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 constexpr const char* kThreadName = "HangWatcher";
 
@@ -126,7 +126,7 @@ constexpr const char* kThreadName = "HangWatcher";
 // hangs but present unacceptable overhead. NOTE: If this period is ever changed
 // then all metrics that depend on it like
 // HangWatcher.IsThreadHung need to be updated.
-constexpr auto kMonitoringPeriod = base::TimeDelta::FromSeconds(10);
+constexpr auto kMonitoringPeriod = base::Seconds(10);
 
 WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   internal::HangWatchState* current_hang_watch_state =
@@ -397,8 +397,7 @@ void HangWatcher::Wait() {
   while (true) {
     // Amount by which the actual time spent sleeping can deviate from
     // the target time and still be considered timely.
-    constexpr base::TimeDelta kWaitDriftTolerance =
-        base::TimeDelta::FromMilliseconds(100);
+    constexpr base::TimeDelta kWaitDriftTolerance = base::Milliseconds(100);
 
     const base::TimeTicks time_before_wait = tick_clock_->NowTicks();
 

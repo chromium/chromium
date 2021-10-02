@@ -18,8 +18,7 @@
 
 namespace policy {
 
-const base::TimeDelta LookupKeyUploader::kRetryFrequency =
-    base::TimeDelta::FromHours(10);
+const base::TimeDelta LookupKeyUploader::kRetryFrequency = base::Hours(10);
 
 LookupKeyUploader::LookupKeyUploader(
     DeviceCloudPolicyStoreAsh* policy_store,

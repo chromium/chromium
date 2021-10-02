@@ -29,8 +29,7 @@ namespace ash {
 namespace {
 
 constexpr char kMarkedKeyIdeaToastId[] = "projector_marked_key_idea";
-constexpr base::TimeDelta kToastDuration =
-    base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kToastDuration = base::Milliseconds(2500);
 
 void ShowToast(const std::string& id,
                int message_id,

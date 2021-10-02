@@ -13,8 +13,7 @@
 #include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 
 namespace {
-constexpr base::TimeDelta kBackForwardCacheTimeoutInSeconds =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kBackForwardCacheTimeoutInSeconds = base::Seconds(3);
 }
 
 namespace content {

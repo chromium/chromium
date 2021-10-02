@@ -39,8 +39,7 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
       "segment_selection_ttl_days", kDefaultSegmentSelectionTTLDays);
-  config->segment_selection_ttl =
-      base::TimeDelta::FromDays(segment_selection_ttl_days);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
 #endif
 
   // A hardcoded list of segment IDs known to the segmentation platform.

@@ -118,8 +118,8 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
       usage.swap_bytes = 0;
       usage.vm_size_bytes = 0;
       mock_memory_usage_monitor->SetMockMemoryUsage(usage);
-      AdvanceClock(base::TimeDelta::FromSeconds(1));
-      test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+      AdvanceClock(base::Seconds(1));
+      test::RunDelayedTasks(base::Seconds(1));
     }
     {
       EXPECT_CALL(generator, Generate(_)).Times(1);
@@ -131,8 +131,8 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
       usage.swap_bytes = 0;
       usage.vm_size_bytes = 0;
       mock_memory_usage_monitor->SetMockMemoryUsage(usage);
-      AdvanceClock(base::TimeDelta::FromMinutes(10));
-      test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+      AdvanceClock(base::Minutes(10));
+      test::RunDelayedTasks(base::Seconds(1));
     }
   }
 }
@@ -162,33 +162,33 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, MAYBE_GenerationPauses) {
       usage.swap_bytes = 0;
       usage.vm_size_bytes = 0;
       mock_memory_usage_monitor->SetMockMemoryUsage(usage);
-      AdvanceClock(base::TimeDelta::FromMinutes(10));
+      AdvanceClock(base::Minutes(10));
       // Generated
       {
         EXPECT_CALL(generator, Generate(_)).Times(1);
-        test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+        test::RunDelayedTasks(base::Seconds(1));
       }
 
-      AdvanceClock(base::TimeDelta::FromMinutes(1));
+      AdvanceClock(base::Minutes(1));
       // Not generated because too soon
       {
         EXPECT_CALL(generator, Generate(_)).Times(0);
-        test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+        test::RunDelayedTasks(base::Seconds(1));
       }
 
-      AdvanceClock(base::TimeDelta::FromMinutes(10));
+      AdvanceClock(base::Minutes(10));
       generator.OnRAILModeChanged(RAILMode::kLoad);
       // Not generated because loading
       {
         EXPECT_CALL(generator, Generate(_)).Times(0);
-        test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+        test::RunDelayedTasks(base::Seconds(1));
       }
 
       generator.OnRAILModeChanged(RAILMode::kAnimation);
       // Generated
       {
         EXPECT_CALL(generator, Generate(_)).Times(1);
-        test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+        test::RunDelayedTasks(base::Seconds(1));
       }
     }
   }

@@ -72,7 +72,7 @@ class VirtualTimeTest : public SimTest {
         FROM_HERE,
         WTF::Bind(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
                   WTF::Unretained(this)),
-        base::TimeDelta::FromMillisecondsD(delay_ms));
+        base::Milliseconds(delay_ms));
     test::EnterRunLoop();
   }
 };

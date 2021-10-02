@@ -54,16 +54,16 @@ base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
   base::Time delete_begin_time = base::Time::Now();
   switch (time_period) {
     case TimePeriod::LAST_HOUR:
-      diff = base::TimeDelta::FromHours(1);
+      diff = base::Hours(1);
       break;
     case TimePeriod::LAST_DAY:
-      diff = base::TimeDelta::FromHours(24);
+      diff = base::Hours(24);
       break;
     case TimePeriod::LAST_WEEK:
-      diff = base::TimeDelta::FromHours(7 * 24);
+      diff = base::Hours(7 * 24);
       break;
     case TimePeriod::FOUR_WEEKS:
-      diff = base::TimeDelta::FromHours(4 * 7 * 24);
+      diff = base::Hours(4 * 7 * 24);
       break;
     case TimePeriod::ALL_TIME:
     case TimePeriod::OLDER_THAN_30_DAYS:
@@ -75,7 +75,7 @@ base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
 
 base::Time CalculateEndDeleteTime(TimePeriod time_period) {
   if (time_period == TimePeriod::OLDER_THAN_30_DAYS) {
-    return base::Time::Now() - base::TimeDelta::FromDays(30);
+    return base::Time::Now() - base::Days(30);
   }
   return base::Time::Max();
 }

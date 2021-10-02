@@ -44,7 +44,7 @@ ESimTestBase::~ESimTestBase() = default;
 void ESimTestBase::SetUp() {
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
   HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      base::TimeDelta::FromSeconds(0));
+      base::Seconds(0));
 
   network_state_handler_ = NetworkStateHandler::InitializeForTest();
   network_device_handler_ =
@@ -132,8 +132,7 @@ mojo::Remote<mojom::Euicc> ESimTestBase::GetEuiccForEid(
 }
 
 void ESimTestBase::FastForwardProfileRefreshDelay() {
-  const base::TimeDelta kProfileRefreshCallbackDelay =
-      base::TimeDelta::FromMilliseconds(150);
+  const base::TimeDelta kProfileRefreshCallbackDelay = base::Milliseconds(150);
 
   // Connect can result in two profile refresh calls before and after
   // enabling profile. Fast forward by delay after refresh.

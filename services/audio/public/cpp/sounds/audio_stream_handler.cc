@@ -129,9 +129,8 @@ class AudioStreamHandler::AudioStreamContainer
       if (delayed_stop_posted_)
         return 0;
       delayed_stop_posted_ = true;
-      task_runner_->PostDelayedTask(
-          FROM_HERE, stop_closure_.callback(),
-          base::TimeDelta::FromMilliseconds(kKeepAliveMs));
+      task_runner_->PostDelayedTask(FROM_HERE, stop_closure_.callback(),
+                                    base::Milliseconds(kKeepAliveMs));
       return 0;
     }
     cursor_ += bytes_written;

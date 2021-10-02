@@ -276,13 +276,13 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
 }
 
 base::TimeDelta GetRegularIPHTimeout() {
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       feature_engagement::kIPHPasswordsAccountStorageFeature,
       "account_storage_iph_timeout_seconds_regular", 30));
 }
 
 base::TimeDelta GetShortIPHTimeout() {
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       feature_engagement::kIPHPasswordsAccountStorageFeature,
       "account_storage_iph_timeout_seconds_short", 10));
 }

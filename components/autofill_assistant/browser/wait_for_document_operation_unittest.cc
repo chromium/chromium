@@ -34,8 +34,8 @@ class WaitForDocumentOperationTest : public testing::Test {
     fake_script_executor_delegate_.SetWebController(&mock_web_controller_);
 
     wait_for_document_operation_ = std::make_unique<WaitForDocumentOperation>(
-        &fake_script_executor_delegate_, base::TimeDelta::FromSeconds(1),
-        DOCUMENT_COMPLETE, ElementFinder::Result(), mock_callback_.Get());
+        &fake_script_executor_delegate_, base::Seconds(1), DOCUMENT_COMPLETE,
+        ElementFinder::Result(), mock_callback_.Get());
   }
 
  protected:
@@ -53,7 +53,7 @@ TEST_F(WaitForDocumentOperationTest, ReportsSuccess) {
   EXPECT_CALL(mock_web_controller_,
               WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::Seconds(0)));
   EXPECT_CALL(mock_callback_,
               Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
 
@@ -65,7 +65,7 @@ TEST_F(WaitForDocumentOperationTest, ReportsFailure) {
               WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(RunOnceCallback<2>(ClientStatus(TIMED_OUT),
                                    DOCUMENT_UNKNOWN_READY_STATE,
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::Seconds(0)));
   EXPECT_CALL(mock_callback_,
               Run(Property(&ClientStatus::proto_status, TIMED_OUT), _, _));
 
@@ -88,20 +88,19 @@ TEST_F(WaitForDocumentOperationTest, TimesOutAfterWaiting) {
               Run(Property(&ClientStatus::proto_status, TIMED_OUT), _, _));
 
   wait_for_document_operation_->Run();
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_env_.FastForwardBy(base::Seconds(2));
 
   // This callback should be ignored, it's too late. This should not report a
   // success or crash.
   std::move(captured_callback)
-      .Run(OkClientStatus(), DOCUMENT_COMPLETE,
-           base::TimeDelta::FromSeconds(2));
+      .Run(OkClientStatus(), DOCUMENT_COMPLETE, base::Seconds(2));
 }
 
 TEST_F(WaitForDocumentOperationTest, TimeoutIsIgnoredAfterSuccess) {
   EXPECT_CALL(mock_web_controller_,
               WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::Seconds(0)));
   EXPECT_CALL(mock_callback_, Run(_, _, _)).Times(0);
   EXPECT_CALL(mock_callback_,
               Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
@@ -110,7 +109,7 @@ TEST_F(WaitForDocumentOperationTest, TimeoutIsIgnoredAfterSuccess) {
 
   // Moving forward in time causes the timer to expire. This should not report
   // a failure or crash.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_env_.FastForwardBy(base::Seconds(2));
 }
 
 }  // namespace

@@ -354,8 +354,8 @@ base::TimeDelta DeferredImageDecoder::FrameDurationAtIndex(
   // possible. We follow Firefox's behavior and use a duration of 100 ms for any
   // frames that specify a duration of <= 10 ms. See <rdar://problem/7689300>
   // and <http://webkit.org/b/36082> for more information.
-  if (duration <= base::TimeDelta::FromMilliseconds(10))
-    duration = base::TimeDelta::FromMilliseconds(100);
+  if (duration <= base::Milliseconds(10))
+    duration = base::Milliseconds(100);
 
   return duration;
 }

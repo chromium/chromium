@@ -50,7 +50,7 @@ TEST_F(EsParserMpeg1AudioTest, SinglePts) {
   LoadStream("sfx.mp3");
 
   std::vector<Packet> pes_packets = GenerateFixedSizePesPacket(512);
-  pes_packets.front().pts = base::TimeDelta::FromSeconds(10);
+  pes_packets.front().pts = base::Seconds(10);
 
   // Note: there is no parsing of metadata as part of Mpeg2 TS,
   // so the tag starting at 0x80d with 0x54 0x41 0x47 (ascii for "TAG")

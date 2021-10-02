@@ -19,7 +19,7 @@ const int kDelayBetweenUpdatesMs = 1000;
 ThrottledOfflineContentProvider::ThrottledOfflineContentProvider(
     OfflineContentProvider* provider)
     : ThrottledOfflineContentProvider(
-          base::TimeDelta::FromMilliseconds(kDelayBetweenUpdatesMs),
+          base::Milliseconds(kDelayBetweenUpdatesMs),
           provider) {}
 
 ThrottledOfflineContentProvider::ThrottledOfflineContentProvider(

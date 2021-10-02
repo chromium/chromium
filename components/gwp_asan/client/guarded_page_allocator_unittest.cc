@@ -270,7 +270,7 @@ class ThreadedHighContentionDelegate
   void Run() override {
     char* buf;
     while ((buf = reinterpret_cast<char*>(gpa_->Allocate(1))) == nullptr) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromNanoseconds(5000));
+      base::PlatformThread::Sleep(base::Nanoseconds(5000));
     }
 
     // Verify that no other thread has access to this page.
@@ -279,7 +279,7 @@ class ThreadedHighContentionDelegate
     // Mark this page and allow some time for another thread to potentially
     // gain access to this page.
     buf[0] = 'A';
-    base::PlatformThread::Sleep(base::TimeDelta::FromNanoseconds(10000));
+    base::PlatformThread::Sleep(base::Nanoseconds(10000));
     EXPECT_EQ(buf[0], 'A');
 
     // Unmark this page and deallocate.

@@ -453,11 +453,10 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NotExpired) {
       {.days = 30, .binary_build_time = now},
       // Verify that when the binary is older than the most recent seed, the
       // seed is applied even though it was downloaded more than 30 days ago.
-      {.days = 31, .binary_build_time = now - base::TimeDelta::FromDays(32)}};
+      {.days = 31, .binary_build_time = now - base::Days(32)}};
 
   for (const TestParams& test_case : test_cases) {
-    const base::Time seed_fetch_time =
-        now - base::TimeDelta::FromDays(test_case.days);
+    const base::Time seed_fetch_time = now - base::Days(test_case.days);
     // The seed should be used, so the safe seed manager should be informed of
     // the active seed state.
     NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
@@ -555,7 +554,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
 
   // Simulate an expired seed. For a seed to be expired, it must be older than
   // 30 days and be older than the binary.
-  const base::Time seed_date = now - base::TimeDelta::FromDays(31);
+  const base::Time seed_date = now - base::Days(31);
   prefs_.SetTime(prefs::kVariationsLastFetchTime, seed_date);
 
   // Check that field trials are not created from the expired seed.
@@ -586,7 +585,7 @@ TEST_F(FieldTrialCreatorTest,
       // Verify that when (i) safe mode is triggered and (ii) the binary is
       // older than the safe seed, the safe seed is applied even though it was
       // downloaded more than 30 days ago.
-      {.days = 31, .binary_build_time = now - base::TimeDelta::FromDays(32)}};
+      {.days = 31, .binary_build_time = now - base::Days(32)}};
 
   for (const TestParams& test_case : test_cases) {
     // With a valid safe seed, the safe seed manager should not be informed of
@@ -603,8 +602,7 @@ TEST_F(FieldTrialCreatorTest,
     field_trial_creator.SetBuildTime(test_case.binary_build_time);
 
     // Simulate the safe seed being stored.
-    const base::Time seed_fetch_time =
-        now - base::TimeDelta::FromDays(test_case.days);
+    const base::Time seed_fetch_time = now - base::Days(test_case.days);
     prefs_.SetTime(prefs::kVariationsSafeSeedFetchTime, seed_fetch_time);
 
     // Check that field trials are created from the safe seed. Since the test
@@ -637,8 +635,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_EmptySafeSeed_UsesRegularSeed) {
   NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
 
-  const base::Time recent_time =
-      base::Time::Now() - base::TimeDelta::FromMinutes(17);
+  const base::Time recent_time = base::Time::Now() - base::Minutes(17);
   prefs_.SetTime(prefs::kVariationsLastFetchTime, recent_time);
   // When using the regular seed, the safe seed manager should be informed of
   // the active seed state.
@@ -754,7 +751,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSafeSeed) {
 
   // Simulate an expired seed. For a seed to be expired, it must be older than
   // 30 days and be older than the binary.
-  const base::Time seed_date = now - base::TimeDelta::FromDays(31);
+  const base::Time seed_date = now - base::Days(31);
   prefs_.SetTime(prefs::kVariationsSafeSeedFetchTime, seed_date);
 
   // Check that field trials are not created from the expired seed.
@@ -778,8 +775,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   DisableTestingConfig();
 
   // Simulate having received a seed in Java during First Run.
-  const base::Time one_day_ago =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  const base::Time one_day_ago = base::Time::Now() - base::Days(1);
   auto initial_seed = std::make_unique<SeedResponse>();
   initial_seed->data = SerializeSeed(CreateTestSeedWithCountryFilter());
   initial_seed->signature = kTestSeedSignature;

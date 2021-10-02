@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const CGFloat kTableViewSeparatorLeadingInset = 56;
 const int kFaviconDesiredSizeInPoint = 32;
 const int kFaviconMinSizeInPoint = 16;
-constexpr base::TimeDelta kMaxVisitAge = base::TimeDelta::FromDays(2);
+constexpr base::TimeDelta kMaxVisitAge = base::Days(2);
 const size_t kMaxcustomSearchEngines = 3;
 const char kUmaSelectDefaultSearchEngine[] =
     "Search.iOS.SelectDefaultSearchEngine";

@@ -27,14 +27,13 @@
 
 namespace metrics {
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 // Use a 2-sec collection duration.
-const base::TimeDelta kCollectionDuration = base::TimeDelta::FromSeconds(2);
+const base::TimeDelta kCollectionDuration = base::Seconds(2);
 // The timeout in waiting until collection done. 20 seconds is a safe value far
 // beyond the collection duration used.
-const base::TimeDelta kCollectionDoneTimeout = base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kCollectionDoneTimeout = base::Seconds(20);
 
 CollectionParams GetTestCollectionParams() {
   CollectionParams test_params;
@@ -223,8 +222,8 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   void StartSpinningCPU() {
     spin_cpu_ = true;
     spin_cpu_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
-    static constexpr auto spin_duration = base::TimeDelta::FromMilliseconds(1);
-    static constexpr auto sleep_duration = base::TimeDelta::FromMilliseconds(9);
+    static constexpr auto spin_duration = base::Milliseconds(1);
+    static constexpr auto sleep_duration = base::Milliseconds(9);
     spin_cpu_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(
                        [](ProfileProviderRealCollectionTest* self) {
@@ -271,7 +270,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
 // Flaky on chromeos: crbug.com/1184119
 TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
   // Trigger a resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
 
   profile_provider_->WaitUntilCollectionDone();
   EXPECT_TRUE(profile_provider_->collection_done());

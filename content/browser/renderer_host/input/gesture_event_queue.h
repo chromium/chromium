@@ -123,7 +123,7 @@ class CONTENT_EXPORT GestureEventQueue {
   gfx::Vector2dF CurrentFlingVelocity() const;
 
   void set_debounce_interval_time_ms_for_testing(int interval_ms) {
-    debounce_interval_ = base::TimeDelta::FromMilliseconds(interval_ms);
+    debounce_interval_ = base::Milliseconds(interval_ms);
   }
 
   // TODO(nburris): Wheel event acks shouldn't really go through the gesture

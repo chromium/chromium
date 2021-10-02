@@ -345,7 +345,7 @@ void FidoCableDiscovery::AdapterPoweredChanged(BluetoothAdapter* adapter,
       FROM_HERE,
       base::BindOnce(&FidoCableDiscovery::StartCableDiscovery,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 #else
   StartCableDiscovery();
 #endif  // defined(OS_WIN)
@@ -405,7 +405,7 @@ void FidoCableDiscovery::OnStartDiscoverySession(
       FROM_HERE,
       base::BindOnce(&FidoCableDiscovery::StartAdvertisement,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void FidoCableDiscovery::OnStartDiscoverySessionError() {

@@ -163,7 +163,7 @@ id<GREYMatcher> PopupBlocker() {
   [ChromeEarlGrey
       tapWebStateElementWithID:@"webScenarioWindowOpenWithDelayedClose"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 

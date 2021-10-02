@@ -62,18 +62,18 @@ class ASH_EXPORT PowerButtonController
   // Amount of time since last screen state change that power button event needs
   // to be ignored.
   static constexpr base::TimeDelta kScreenStateChangeDelay =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
 
   // Ignore button-up events occurring within this many milliseconds of the
   // previous button-up event. This prevents us from falling behind if the power
   // button is pressed repeatedly.
   static constexpr base::TimeDelta kIgnoreRepeatedButtonUpDelay =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
 
   // Amount of time since last SuspendDone() that power button event needs to be
   // ignored.
   static constexpr base::TimeDelta kIgnorePowerButtonAfterResumeDelay =
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 
   // Value of switches::kAshPowerButtonPosition stored in JSON format. These
   // are the field names of the flag.

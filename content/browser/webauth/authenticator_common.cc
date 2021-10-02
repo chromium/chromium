@@ -317,10 +317,8 @@ enum class AttestationErasureOption {
 base::TimeDelta AdjustTimeout(absl::optional<base::TimeDelta> timeout,
                               RenderFrameHost* render_frame_host) {
   // Time to wait for an authenticator to successfully complete an operation.
-  static constexpr base::TimeDelta kAdjustedTimeoutLower =
-      base::TimeDelta::FromSeconds(10);
-  static constexpr base::TimeDelta kAdjustedTimeoutUpper =
-      base::TimeDelta::FromMinutes(10);
+  static constexpr base::TimeDelta kAdjustedTimeoutLower = base::Seconds(10);
+  static constexpr base::TimeDelta kAdjustedTimeoutUpper = base::Minutes(10);
 
   if (!timeout) {
     return kAdjustedTimeoutUpper;

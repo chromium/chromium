@@ -402,8 +402,7 @@ TEST_F(VariationsSeedSimulatorTest, NoDefaultGroup) {
   Study study;
   study.set_consistency(Study::PERMANENT);
   study.set_name("Study1");
-  const base::Time year_ago =
-      base::Time::Now() - base::TimeDelta::FromDays(365);
+  const base::Time year_ago = base::Time::Now() - base::Days(365);
   study.set_expiry_date(TimeToProtoTime(year_ago));
   auto* exp1 = AddExperiment("A", 1, &study);
   study.clear_default_experiment_name();

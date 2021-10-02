@@ -255,8 +255,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   Color custom_focus_ring_color_;
   bool has_custom_focus_ring_color_;
-  base::TimeDelta caret_blink_interval_ =
-      base::TimeDelta::FromMilliseconds(500);
+  base::TimeDelta caret_blink_interval_ = base::Milliseconds(500);
 
   bool delegates_menu_list_rendering_ = false;
   bool in_forced_colors_mode_ = false;

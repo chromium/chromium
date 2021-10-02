@@ -128,7 +128,7 @@ TEST(OptimizationGuideNavigationDataTest,
       std::make_unique<OptimizationGuideNavigationData>(
           /*navigation_id=*/3, /*navigation_start=*/now);
   data->set_hints_fetch_start(now);
-  data->set_hints_fetch_end(now + base::TimeDelta::FromMilliseconds(123));
+  data->set_hints_fetch_end(now + base::Milliseconds(123));
   data.reset();
 
   auto entries = ukm_recorder.GetEntriesByName(
@@ -199,7 +199,7 @@ TEST(OptimizationGuideNavigationDataTest,
       std::make_unique<OptimizationGuideNavigationData>(
           /*navigation_id=*/3, /*navigation_start=*/now);
   data->set_hints_fetch_start(now);
-  data->set_hints_fetch_end(now - base::TimeDelta::FromMilliseconds(123));
+  data->set_hints_fetch_end(now - base::Milliseconds(123));
   data.reset();
 
   auto entries = ukm_recorder.GetEntriesByName(

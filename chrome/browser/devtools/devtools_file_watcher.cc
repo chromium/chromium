@@ -66,8 +66,7 @@ class DevToolsFileWatcher::SharedFileWatcher
 };
 
 DevToolsFileWatcher::SharedFileWatcher::SharedFileWatcher()
-    : last_dispatch_cost_(
-          base::TimeDelta::FromMilliseconds(kDefaultThrottleTimeout)) {
+    : last_dispatch_cost_(base::Milliseconds(kDefaultThrottleTimeout)) {
   DevToolsFileWatcher::s_shared_watcher_ = this;
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
@@ -171,10 +170,9 @@ void DevToolsFileWatcher::SharedFileWatcher::DirectoryChanged(
 
   base::Time now = base::Time::Now();
   // Quickly dispatch first chunk.
-  base::TimeDelta shedule_for =
-      now - last_event_time_ > last_dispatch_cost_ ?
-          base::TimeDelta::FromMilliseconds(kFirstThrottleTimeout) :
-          last_dispatch_cost_ * 2;
+  base::TimeDelta shedule_for = now - last_event_time_ > last_dispatch_cost_
+                                    ? base::Milliseconds(kFirstThrottleTimeout)
+                                    : last_dispatch_cost_ * 2;
 
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

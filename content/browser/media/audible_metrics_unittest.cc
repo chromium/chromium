@@ -36,7 +36,7 @@ class AudibleMetricsTest : public RenderViewHostTestHarness {
 
     // Set the clock to a value different than 0 so the time it gives is
     // recognized as initialized.
-    clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    clock_.Advance(base::Milliseconds(1));
     audible_metrics_->SetClockForTest(&clock_);
   }
 
@@ -348,7 +348,7 @@ TEST_F(AudibleMetricsTest, ConcurrentTabsTimeRequiresTwoAudibleTabs) {
   audible_metrics()->UpdateAudibleWebContentsState(web_contents_0.get(), true);
   audible_metrics()->UpdateAudibleWebContentsState(web_contents_1.get(), true);
 
-  clock()->Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock()->Advance(base::Milliseconds(1000));
 
   // No record because concurrent audible tabs still running.
   EXPECT_EQ(0, GetHistogramSamplesSinceTestStart(
@@ -381,11 +381,11 @@ TEST_F(AudibleMetricsTest, ConcurrentTabsTimeRunsAsLongAsTwoAudibleTabs) {
   audible_metrics()->UpdateAudibleWebContentsState(web_contents_0.get(), true);
   audible_metrics()->UpdateAudibleWebContentsState(web_contents_1.get(), true);
 
-  clock()->Advance(base::TimeDelta::FromMilliseconds(1000));
+  clock()->Advance(base::Milliseconds(1000));
 
   audible_metrics()->UpdateAudibleWebContentsState(web_contents_2.get(), true);
 
-  clock()->Advance(base::TimeDelta::FromMilliseconds(500));
+  clock()->Advance(base::Milliseconds(500));
 
   // Mutes one of the three audible tabs.
   audible_metrics()->UpdateAudibleWebContentsState(web_contents_1.get(), false);

@@ -121,19 +121,19 @@ base::TimeDelta GetAnimationDuration(InkDropSubAnimations state) {
   // Duration constants for InkDropStateSubAnimations. See the
   // InkDropStateSubAnimations enum documentation for more info.
   constexpr base::TimeDelta kAnimationDuration[] = {
-      base::TimeDelta::FromMilliseconds(150),  // HIDDEN_FADE_OUT
-      base::TimeDelta::FromMilliseconds(200),  // HIDDEN_TRANSFORM
-      base::TimeDelta(),                       // ACTION_PENDING_FADE_IN
-      base::TimeDelta::FromMilliseconds(160),  // ACTION_PENDING_TRANSFORM
-      base::TimeDelta::FromMilliseconds(150),  // ACTION_TRIGGERED_FADE_OUT
-      base::TimeDelta::FromMilliseconds(160),  // ACTION_TRIGGERED_TRANSFORM
-      base::TimeDelta::FromMilliseconds(200),  // ALTERNATE_ACTION_PENDING
-      base::TimeDelta::FromMilliseconds(150),  // ALTERNAT..._TRIGGERED_FADE_OUT
-      base::TimeDelta::FromMilliseconds(200),  // ALTERNA..._TRIGGERED_TRANSFORM
-      base::TimeDelta::FromMilliseconds(200),  // ACTIVATED_CIRCLE_TRANSFORM
-      base::TimeDelta::FromMilliseconds(160),  // ACTIVATED_RECT_TRANSFORM
-      base::TimeDelta::FromMilliseconds(150),  // DEACTIVATED_FADE_OUT
-      base::TimeDelta::FromMilliseconds(200),  // DEACTIVATED_TRANSFORM
+      base::Milliseconds(150),  // HIDDEN_FADE_OUT
+      base::Milliseconds(200),  // HIDDEN_TRANSFORM
+      base::TimeDelta(),        // ACTION_PENDING_FADE_IN
+      base::Milliseconds(160),  // ACTION_PENDING_TRANSFORM
+      base::Milliseconds(150),  // ACTION_TRIGGERED_FADE_OUT
+      base::Milliseconds(160),  // ACTION_TRIGGERED_TRANSFORM
+      base::Milliseconds(200),  // ALTERNATE_ACTION_PENDING
+      base::Milliseconds(150),  // ALTERNAT..._TRIGGERED_FADE_OUT
+      base::Milliseconds(200),  // ALTERNA..._TRIGGERED_TRANSFORM
+      base::Milliseconds(200),  // ACTIVATED_CIRCLE_TRANSFORM
+      base::Milliseconds(160),  // ACTIVATED_RECT_TRANSFORM
+      base::Milliseconds(150),  // DEACTIVATED_FADE_OUT
+      base::Milliseconds(200),  // DEACTIVATED_TRANSFORM
   };
   return kAnimationDuration[state];
 }

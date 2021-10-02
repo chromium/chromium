@@ -41,10 +41,8 @@ const std::string kTestDigest(
     "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
     32);
 
-constexpr base::TimeDelta kTimeToSaveMhtml =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kTimeToComputeDigest =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kTimeToSaveMhtml = base::Milliseconds(1000);
+constexpr base::TimeDelta kTimeToComputeDigest = base::Milliseconds(10);
 
 class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
  public:

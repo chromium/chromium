@@ -166,7 +166,7 @@ TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
   // Drag the item at page 1 slot 0 to the next page and hold it there.
   StartDragOnItemViewAtVisualIndex(1, 0);
   GetEventGenerator()->MoveMouseTo(next_page_point);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   GetEventGenerator()->ReleaseLeftButton();
 
   // With the drag complete, check that page 1 is still selected, because a new

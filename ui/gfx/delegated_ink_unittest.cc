@@ -74,7 +74,7 @@ TEST(DelegatedInkTest, PointAndMetadataDoNotMatch) {
 
   DelegatedInkMetadata metadata_different_timestamp(
       point_location, /*diameter=*/10, SK_ColorGREEN,
-      timestamp + base::TimeDelta::FromMilliseconds(10), gfx::RectF(0, 0, 0, 0),
+      timestamp + base::Milliseconds(10), gfx::RectF(0, 0, 0, 0),
       /*hovering*/ true);
   EXPECT_FALSE(
       ink_point.MatchesDelegatedInkMetadata(&metadata_different_timestamp));

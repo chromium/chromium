@@ -276,8 +276,7 @@ void FrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
 bool FrameView::RectInParentIsStable(
     const base::TimeTicks& event_timestamp) const {
   if (event_timestamp - rect_in_parent_stable_since_ <
-      base::TimeDelta::FromMilliseconds(
-          mojom::blink::kMinScreenRectStableTimeMs)) {
+      base::Milliseconds(mojom::blink::kMinScreenRectStableTimeMs)) {
     return false;
   }
   LocalFrameView* parent = ParentFrameView();

@@ -91,9 +91,9 @@ const char kCWSScope[] = "https://www.googleapis.com/auth/chromewebstore";
 
 // Thresholds for mountCrostini() API.
 constexpr base::TimeDelta kMountCrostiniSlowOperationThreshold =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 constexpr base::TimeDelta kMountCrostiniVerySlowOperationThreshold =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 
 // Obtains the current app window.
 AppWindow* GetCurrentAppWindow(ExtensionFunction* function) {

@@ -169,7 +169,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
         host_(nullptr),
         router_(nullptr),
         last_simulated_event_time_(ui::EventTimeForNow()),
-        simulated_event_time_delta_(base::TimeDelta::FromMilliseconds(100)) {}
+        simulated_event_time_delta_(base::Milliseconds(100)) {}
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();

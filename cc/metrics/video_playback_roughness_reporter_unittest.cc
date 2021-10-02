@@ -64,8 +64,8 @@ class VideoPlaybackRoughnessReporterTest : public ::testing::Test {
                  std::vector<int> cadence,
                  int frames,
                  int frame_size = 100) {
-    base::TimeDelta vsync = base::TimeDelta::FromSecondsD(1 / hz);
-    base::TimeDelta ideal_duration = base::TimeDelta::FromSecondsD(1 / fps);
+    base::TimeDelta vsync = base::Seconds(1 / hz);
+    base::TimeDelta ideal_duration = base::Seconds(1 / fps);
     for (int idx = 0; idx < frames; idx++) {
       int frame_cadence = cadence[idx % cadence.size()];
       base::TimeDelta duration = vsync * frame_cadence;
@@ -81,8 +81,8 @@ class VideoPlaybackRoughnessReporterTest : public ::testing::Test {
                             double hz,
                             std::vector<int> cadence,
                             int frames) {
-    base::TimeDelta vsync = base::TimeDelta::FromSecondsD(1 / hz);
-    base::TimeDelta ideal_duration = base::TimeDelta::FromSecondsD(1 / fps);
+    base::TimeDelta vsync = base::Seconds(1 / hz);
+    base::TimeDelta ideal_duration = base::Seconds(1 / fps);
     constexpr int batch_size = 3;
     for (int idx = 0; idx < frames; idx++) {
       auto frame = MakeFrame(ideal_duration);
@@ -108,8 +108,8 @@ class VideoPlaybackRoughnessReporterTest : public ::testing::Test {
                    int frame_size = 100,
                    int freeze_on_frame = 50,
                    int frozen_vsyncs = 10) {
-    base::TimeDelta vsync = base::TimeDelta::FromSecondsD(1 / hz);
-    base::TimeDelta ideal_duration = base::TimeDelta::FromSecondsD(1 / fps);
+    base::TimeDelta vsync = base::Seconds(1 / hz);
+    base::TimeDelta ideal_duration = base::Seconds(1 / fps);
     for (int idx = 0; idx < frames; idx++) {
       int frame_cadence = cadence[idx % cadence.size()];
       base::TimeDelta duration = vsync * frame_cadence;
@@ -283,10 +283,10 @@ TEST_F(VideoPlaybackRoughnessReporterTest, PredictableRoughnessValue) {
   int frames_in_window = fps;
   int call_count = 0;
   double intended_roughness = 4.2;
-  base::TimeDelta vsync = base::TimeDelta::FromSecondsD(1.0 / fps);
+  base::TimeDelta vsync = base::Seconds(1.0 / fps);
   // Calculating the error value that needs to be injected into one frame
   // in order to get desired roughness.
-  base::TimeDelta error = base::TimeDelta::FromMillisecondsD(
+  base::TimeDelta error = base::Milliseconds(
       std::sqrt(intended_roughness * intended_roughness * frames_in_window));
 
   auto callback =
@@ -323,7 +323,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, TakingPercentile) {
   int frames_in_window = fps;
   int call_count = 0;
   int win_count = 100;
-  base::TimeDelta vsync = base::TimeDelta::FromSecondsD(1.0 / fps);
+  base::TimeDelta vsync = base::Seconds(1.0 / fps);
   std::vector<double> targets;
   targets.reserve(win_count);
   for (int i = 0; i < win_count; i++)
@@ -345,8 +345,8 @@ TEST_F(VideoPlaybackRoughnessReporterTest, TakingPercentile) {
     double roughness = targets[win_idx];
     // Calculating the error value that needs to be injected into one frame
     // in order to get desired roughness.
-    base::TimeDelta error = base::TimeDelta::FromMillisecondsD(
-        std::sqrt(roughness * roughness * frames_in_window));
+    base::TimeDelta error =
+        base::Milliseconds(std::sqrt(roughness * roughness * frames_in_window));
 
     for (int frame_idx = 0; frame_idx < frames_in_window; frame_idx++) {
       base::TimeTicks time;
@@ -368,7 +368,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, TakingPercentile) {
 // feedback, the reporter still doesn't run out of memory.
 TEST_F(VideoPlaybackRoughnessReporterTest, LongRunWithoutWindows) {
   int call_count = 0;
-  base::TimeDelta vsync = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta vsync = base::Milliseconds(1);
   SetReportingCallabck(
       [&](const VideoPlaybackRoughnessReporter::Measurement& measurement) {
         call_count++;
@@ -388,7 +388,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, LongRunWithoutWindows) {
 // tokens.
 TEST_F(VideoPlaybackRoughnessReporterTest, PresentingUnknownFrames) {
   int call_count = 0;
-  base::TimeDelta vsync = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta vsync = base::Milliseconds(1);
   SetReportingCallabck(
       [&](const VideoPlaybackRoughnessReporter::Measurement& measurement) {
         call_count++;
@@ -407,7 +407,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, PresentingUnknownFrames) {
 // presentation timestamp.
 TEST_F(VideoPlaybackRoughnessReporterTest, IgnoringUnreliableTimings) {
   int call_count = 0;
-  base::TimeDelta vsync = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta vsync = base::Milliseconds(1);
   SetReportingCallabck(
       [&](const VideoPlaybackRoughnessReporter::Measurement& measurement) {
         call_count++;

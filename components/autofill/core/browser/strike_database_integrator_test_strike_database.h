@@ -43,8 +43,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
 
  private:
   bool unique_ids_required_ = false;
-  absl::optional<base::TimeDelta> expiry_time_delta_ =
-      base::TimeDelta::FromDays(365);
+  absl::optional<base::TimeDelta> expiry_time_delta_ = base::Days(365);
 
   absl::optional<size_t> maximum_entries_ = 10;
   absl::optional<size_t> maximum_entries_after_cleanup_ = 5;

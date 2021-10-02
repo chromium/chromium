@@ -108,7 +108,7 @@ void DispatchCopyResult(CopyOutputRequest& request, gfx::Size size) {
 class SurfaceAnimationManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    current_time_ = base::TimeTicks() + base::TimeDelta::FromDays(1);
+    current_time_ = base::TimeTicks() + base::Days(1);
     surface_manager_ = frame_sink_manager_.surface_manager();
     support_ = std::make_unique<CompositorFrameSinkSupport>(
         nullptr, &frame_sink_manager_, kArbitraryFrameSinkId, /*is_root=*/true);
@@ -300,17 +300,16 @@ TEST_F(SurfaceAnimationManagerTest, SaveAnimateNeedsBeginFrame) {
 
   EXPECT_TRUE(manager().NeedsBeginFrame());
 
-  manager().UpdateFrameTime(AdvanceTime(base::TimeDelta::FromMilliseconds(50)));
+  manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(50)));
   manager().NotifyFrameAdvanced();
   EXPECT_TRUE(manager().NeedsBeginFrame());
 
-  manager().UpdateFrameTime(
-      AdvanceTime(base::TimeDelta::FromMilliseconds(500)));
+  manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(500)));
   manager().NotifyFrameAdvanced();
   // We should be at the done state, but still need a frame.
   EXPECT_TRUE(manager().NeedsBeginFrame());
 
-  manager().UpdateFrameTime(AdvanceTime(base::TimeDelta::FromMilliseconds(1)));
+  manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(1)));
   manager().NotifyFrameAdvanced();
   EXPECT_FALSE(manager().NeedsBeginFrame());
 }
@@ -332,7 +331,7 @@ TEST_F(SurfaceAnimationManagerTest, SaveTimesOut) {
 
   storage()->ExpireForTesting();
 
-  AdvanceTime(base::TimeDelta::FromSeconds(6));
+  AdvanceTime(base::Seconds(6));
   manager().ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(2),
                                         storage());
   EXPECT_FALSE(manager().NeedsBeginFrame());
@@ -349,8 +348,7 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
     EXPECT_FALSE(manager().NeedsBeginFrame());
 
     ++sequence_id;
-    manager().UpdateFrameTime(
-        AdvanceTime(base::TimeDelta::FromMilliseconds(50)));
+    manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(50)));
   }
 
   storage()->CompleteForTesting();
@@ -364,13 +362,12 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
 
   EXPECT_TRUE(manager().NeedsBeginFrame());
 
-  manager().UpdateFrameTime(
-      AdvanceTime(base::TimeDelta::FromMilliseconds(500)));
+  manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(500)));
   manager().NotifyFrameAdvanced();
   // We're at the done state now.
   EXPECT_TRUE(manager().NeedsBeginFrame());
 
-  manager().UpdateFrameTime(AdvanceTime(base::TimeDelta::FromMilliseconds(1)));
+  manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(1)));
   manager().NotifyFrameAdvanced();
   // Now we're idle.
   EXPECT_FALSE(manager().NeedsBeginFrame());
@@ -411,19 +408,16 @@ TEST_F(SurfaceAnimationManagerTest, CheckStartEndStates) {
 
     EXPECT_TRUE(manager().NeedsBeginFrame());
 
-    manager().UpdateFrameTime(
-        AdvanceTime(base::TimeDelta::FromMilliseconds(200)));
+    manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(200)));
     manager().NotifyFrameAdvanced();
     EXPECT_TRUE(manager().NeedsBeginFrame());
 
-    manager().UpdateFrameTime(
-        AdvanceTime(base::TimeDelta::FromMilliseconds(200)));
+    manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(200)));
     manager().NotifyFrameAdvanced();
     // We should be at the done state, but still need a frame.
     EXPECT_TRUE(manager().NeedsBeginFrame());
 
-    manager().UpdateFrameTime(
-        AdvanceTime(base::TimeDelta::FromMilliseconds(1)));
+    manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(1)));
     manager().NotifyFrameAdvanced();
     EXPECT_FALSE(manager().NeedsBeginFrame());
 
@@ -476,8 +470,8 @@ TEST_F(SurfaceAnimationManagerTest, CustomRootConfig) {
   EXPECT_FALSE(manager().NeedsBeginFrame());
 
   CompositorFrameTransitionDirective::TransitionConfig root_config;
-  root_config.duration = base::TimeDelta::FromSeconds(1);
-  root_config.delay = base::TimeDelta::FromSeconds(1);
+  root_config.duration = base::Seconds(1);
+  root_config.delay = base::Seconds(1);
 
   CompositorFrameTransitionDirective save(
       1, CompositorFrameTransitionDirective::Type::kSave,
@@ -519,7 +513,7 @@ TEST_F(SurfaceAnimationManagerTest, CustomRootConfig) {
   EXPECT_TRUE(manager().root_animation_.dst_transform().Apply().IsIdentity());
 
   // Tick a small value to start the transform animation but not opacity.
-  auto only_transform_delay = base::TimeDelta::FromMilliseconds(100);
+  auto only_transform_delay = base::Milliseconds(100);
   EXPECT_TRUE(manager().NeedsBeginFrame());
   manager().UpdateFrameTime(AdvanceTime(only_transform_delay));
   manager().NotifyFrameAdvanced();
@@ -574,8 +568,8 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
   zero_config.duration = zero_config.delay = base::TimeDelta();
 
   CompositorFrameTransitionDirective::TransitionConfig shared_config;
-  shared_config.duration = base::TimeDelta::FromSeconds(1);
-  shared_config.delay = base::TimeDelta::FromSeconds(1);
+  shared_config.duration = base::Seconds(1);
+  shared_config.delay = base::Seconds(1);
 
   CompositorFrameTransitionDirective save(
       1, CompositorFrameTransitionDirective::Type::kSave,
@@ -699,7 +693,7 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
 
   // Trigger the last frame to end the animation.
   EXPECT_TRUE(manager().NeedsBeginFrame());
-  manager().UpdateFrameTime(AdvanceTime(base::TimeDelta::FromMilliseconds(16)));
+  manager().UpdateFrameTime(AdvanceTime(base::Milliseconds(16)));
   manager().NotifyFrameAdvanced();
   manager().UpdateFrameTime(AdvanceTime(base::TimeDelta()));
   manager().NotifyFrameAdvanced();

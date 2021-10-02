@@ -637,7 +637,7 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale() {
   base::TimeDelta staleness =
       base::Time::Now() - index_.GetRecommendedFeedsUpdateTime();
   if (staleness > GetFeedConfig().recommended_feeds_staleness_threshold ||
-      staleness < -base::TimeDelta::FromHours(1)) {
+      staleness < -base::Hours(1)) {
     RefreshRecommendedFeeds();
   }
 }
@@ -682,7 +682,7 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale(
   base::TimeDelta staleness =
       base::Time::Now() - index_.GetSubscribedFeedsUpdateTime();
   if (staleness > GetFeedConfig().subscribed_feeds_staleness_threshold ||
-      staleness < -base::TimeDelta::FromHours(1)) {
+      staleness < -base::Hours(1)) {
     fetching_subscribed_web_feeds_because_stale_ = true;
     auto callback_adaptor = [](base::OnceClosure callback, RefreshResult) {
       std::move(callback).Run();

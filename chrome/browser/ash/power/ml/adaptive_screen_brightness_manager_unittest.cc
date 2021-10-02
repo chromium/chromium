@@ -169,7 +169,7 @@ class AdaptiveScreenBrightnessManagerTest
   }
 
   void FastForwardTimeBySecs(const int seconds) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(seconds));
+    task_environment()->FastForwardBy(base::Seconds(seconds));
   }
 
   // Creates a test browser window and sets its visibility, activity and

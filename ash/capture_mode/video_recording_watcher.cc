@@ -47,14 +47,13 @@ namespace {
 // events that are too frequent will be throttled. We use the frame duration as
 // the minimum delay between any two successive such events that we use to
 // update the cursor overlay.
-constexpr base::TimeDelta kCursorEventsThrottleDelay =
-    base::TimeDelta::FromHz(30);
+constexpr base::TimeDelta kCursorEventsThrottleDelay = base::Hertz(30);
 
 // Window resizes can be done on many intermediate steps. This delay is used to
 // throttle these resize events so that we send the final size of the window to
 // the recording service when it stabilizes.
 constexpr base::TimeDelta kWindowSizeChangeThrottleDelay =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // Returns true if |window_1| and |window_2| are both windows that belong to
 // the same Desk. Note that it will return false for windows that don't belong

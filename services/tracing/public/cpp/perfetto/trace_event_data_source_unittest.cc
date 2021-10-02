@@ -1046,7 +1046,7 @@ TEST_F(TraceEventDataSourceTest, TimestampedTraceEvent) {
 
   TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(
       kCategoryGroup, "bar", 42, 4242,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(424242));
+      base::TimeTicks() + base::Microseconds(424242));
 
   size_t packet_index = ExpectStandardPreamble();
 
@@ -1087,8 +1087,7 @@ TEST_F(TraceEventDataSourceTest, InstantTraceEventOnOtherThread) {
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(
       TRACE_EVENT_PHASE_INSTANT, kCategoryGroup, "bar",
       static_cast<uint64_t>(trace_event_internal::kNoId),
-      /*thread_id=*/1,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(10),
+      /*thread_id=*/1, base::TimeTicks() + base::Microseconds(10),
       /*/flags=*/TRACE_EVENT_SCOPE_THREAD);
   size_t packet_index = ExpectStandardPreamble();
 
@@ -1431,8 +1430,7 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
   auto handle = trace_event_internal::AddTraceEventWithThreadIdAndTimestamp(
       TRACE_EVENT_PHASE_COMPLETE, category_group_enabled, kEventName,
       trace_event_trace_id.scope(), trace_event_trace_id.raw_id(),
-      /*thread_id=*/1,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(10),
+      /*thread_id=*/1, base::TimeTicks() + base::Microseconds(10),
       trace_event_trace_id.id_flags() | TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP,
       trace_event_internal::kNoId);
 
@@ -1441,8 +1439,7 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
   // event names or categories in the proto format.
   base::trace_event::TraceLog::GetInstance()->UpdateTraceEventDurationExplicit(
       category_group_enabled, kEventName, handle, /*thread_id=*/1,
-      /*explicit_timestamps=*/true,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(30),
+      /*explicit_timestamps=*/true, base::TimeTicks() + base::Microseconds(30),
       base::ThreadTicks(), base::trace_event::ThreadInstructionCount());
 
   // Updating the duration of an event that wasn't added before tracing begun
@@ -1450,8 +1447,7 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
   handle.event_index = 0;
   base::trace_event::TraceLog::GetInstance()->UpdateTraceEventDurationExplicit(
       category_group_enabled, "other_event_name", handle, /*thread_id=*/1,
-      /*explicit_timestamps=*/true,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(40),
+      /*explicit_timestamps=*/true, base::TimeTicks() + base::Microseconds(40),
       base::ThreadTicks(), base::trace_event::ThreadInstructionCount());
 
   // Complete event for the current thread emits thread time, too.
@@ -1459,7 +1455,7 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
       TRACE_EVENT_PHASE_COMPLETE, category_group_enabled, kEventName,
       trace_event_trace_id.scope(), trace_event_trace_id.raw_id(),
       base::PlatformThread::CurrentId(),
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(10),
+      base::TimeTicks() + base::Microseconds(10),
       trace_event_trace_id.id_flags() | TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP,
       trace_event_internal::kNoId);
 
@@ -1523,9 +1519,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_ExplicitThreadTimeForDifferentThread) {
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_BEGIN, category_group_enabled, kEventName,
       trace_event_trace_id.scope(), trace_event_trace_id.raw_id(),
-      /*thread_id=*/1,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(10),
-      base::ThreadTicks() + base::TimeDelta::FromMicroseconds(20),
+      /*thread_id=*/1, base::TimeTicks() + base::Microseconds(10),
+      base::ThreadTicks() + base::Microseconds(20),
       trace_event_trace_id.id_flags() | TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP);
 
   size_t packet_index = ExpectStandardPreamble();
@@ -1628,8 +1623,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEnd) {
 TEST_F(TraceEventDataSourceTest, TrackSupportWithTimestamp) {
   StartTraceEventDataSource();
 
-  auto timestamp =
-      TRACE_TIME_TICKS_NOW() - base::TimeDelta::FromMicroseconds(100);
+  auto timestamp = TRACE_TIME_TICKS_NOW() - base::Microseconds(100);
   auto track = perfetto::Track(1);
 
   TRACE_EVENT_BEGIN("browser", "bar", track, timestamp);
@@ -1656,8 +1650,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportWithTimestamp) {
 TEST_F(TraceEventDataSourceTest, TrackSupportWithTimestampAndLambda) {
   StartTraceEventDataSource();
 
-  auto timestamp =
-      TRACE_TIME_TICKS_NOW() - base::TimeDelta::FromMicroseconds(100);
+  auto timestamp = TRACE_TIME_TICKS_NOW() - base::Microseconds(100);
   auto track = perfetto::Track(1);
   bool lambda_called = false;
 

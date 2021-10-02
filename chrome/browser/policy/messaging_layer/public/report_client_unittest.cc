@@ -324,7 +324,7 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   }
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 // Creates speculative queue, enqueues message and verifies it is uploaded
@@ -364,7 +364,7 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
   }
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(ReportClientTestSuite,

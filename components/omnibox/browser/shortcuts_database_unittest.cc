@@ -180,8 +180,7 @@ ShortcutsDatabase::Shortcut ShortcutsDatabaseTest::ShortcutFromTestInfo(
           info.document_type, ASCIIToUTF16(info.contents), info.contents_class,
           ASCIIToUTF16(info.description), info.description_class,
           info.transition, info.type, ASCIIToUTF16(info.keyword)),
-      base::Time::Now() - base::TimeDelta::FromDays(info.days_from_now),
-      info.number_of_hits);
+      base::Time::Now() - base::Days(info.days_from_now), info.number_of_hits);
 }
 
 void ShortcutsDatabaseTest::AddAll() {

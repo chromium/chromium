@@ -52,7 +52,7 @@ class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
         nullptr, &pref_service_, &certificate_uploader_);
     lookup_key_uploader_->SetClock(&clock_);
     // We initialize clock to imitate real time.
-    clock_.Advance(base::TimeDelta::FromDays(50));
+    clock_.Advance(base::Days(50));
   }
 
   void TearDown() override { ash::DeviceSettingsTestBase::TearDown(); }

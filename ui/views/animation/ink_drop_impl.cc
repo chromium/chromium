@@ -22,10 +22,8 @@ namespace {
 
 // The duration for the highlight state fade in/out animations when they are
 // triggered by a hover changed event.
-constexpr auto kHighlightFadeInOnHoverChangeDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr auto kHighlightFadeOutOnHoverChangeDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kHighlightFadeInOnHoverChangeDuration = base::Milliseconds(250);
+constexpr auto kHighlightFadeOutOnHoverChangeDuration = base::Milliseconds(250);
 
 // The duration for the highlight state fade in/out animations when they are
 // triggered by a focus changed event.
@@ -34,22 +32,20 @@ constexpr auto kHighlightFadeOutOnFocusChangeDuration = base::TimeDelta();
 
 // The duration for showing/hiding the highlight when triggered by ripple
 // visibility changes for the HIDE_ON_RIPPLE AutoHighlightMode.
-constexpr auto kHighlightFadeInOnRippleHidingDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kHighlightFadeInOnRippleHidingDuration = base::Milliseconds(250);
 constexpr auto kHighlightFadeOutOnRippleShowingDuration =
-    base::TimeDelta::FromMilliseconds(120);
+    base::Milliseconds(120);
 
 // The duration for showing/hiding the highlight when triggered by ripple
 // visibility changes for the SHOW_ON_RIPPLE AutoHighlightMode.
 constexpr auto kHighlightFadeInOnRippleShowingDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 constexpr auto kHighlightFadeOutOnRippleHidingDuration =
-    base::TimeDelta::FromMilliseconds(120);
+    base::Milliseconds(120);
 
 // The amount of time that |highlight_| should delay after a ripple animation
 // before fading in, for highlight due to mouse hover.
-constexpr auto kHoverFadeInAfterRippleDelay =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr auto kHoverFadeInAfterRippleDelay = base::Milliseconds(1000);
 
 // Returns true if an ink drop with the given |ink_drop_state| should
 // automatically transition to the InkDropState::HIDDEN state.

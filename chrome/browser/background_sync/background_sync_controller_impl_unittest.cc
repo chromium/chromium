@@ -38,10 +38,9 @@ const char kFieldTrialGroup[] = "GroupA";
 const char kExampleUrl[] = "https://www.example.com/foo/";
 const char kTag[] = "test_tag";
 
-constexpr base::TimeDelta kSmallerThanMinGap = base::TimeDelta::FromHours(11);
-constexpr base::TimeDelta kLargerThanMinGap = base::TimeDelta::FromHours(13);
-constexpr base::TimeDelta kLargerThanMinGapExpectedDelay =
-    base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kSmallerThanMinGap = base::Hours(11);
+constexpr base::TimeDelta kLargerThanMinGap = base::Hours(13);
+constexpr base::TimeDelta kLargerThanMinGapExpectedDelay = base::Hours(24);
 
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     const base::FilePath& file_path,
@@ -129,8 +128,7 @@ TEST_F(BackgroundSyncControllerImplTest, SomeParamsSet) {
   content::BackgroundSyncParameters sync_parameters;
   controller_->GetParameterOverrides(&sync_parameters);
   EXPECT_TRUE(sync_parameters.disable);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(100),
-            sync_parameters.initial_retry_delay);
+  EXPECT_EQ(base::Seconds(100), sync_parameters.initial_retry_delay);
 
   EXPECT_EQ(original.max_sync_attempts, sync_parameters.max_sync_attempts);
   EXPECT_EQ(original.retry_delay_factor, sync_parameters.retry_delay_factor);
@@ -169,17 +167,14 @@ TEST_F(BackgroundSyncControllerImplTest, AllParamsSet) {
   controller_->GetParameterOverrides(&sync_parameters);
 
   EXPECT_FALSE(sync_parameters.disable);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(100),
-            sync_parameters.initial_retry_delay);
+  EXPECT_EQ(base::Seconds(100), sync_parameters.initial_retry_delay);
   EXPECT_EQ(200, sync_parameters.max_sync_attempts);
   EXPECT_EQ(250,
             sync_parameters.max_sync_attempts_with_notification_permission);
   EXPECT_EQ(300, sync_parameters.retry_delay_factor);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(400),
-            sync_parameters.min_sync_recovery_time);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(500),
-            sync_parameters.max_sync_event_duration);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(43200),
+  EXPECT_EQ(base::Seconds(400), sync_parameters.min_sync_recovery_time);
+  EXPECT_EQ(base::Seconds(500), sync_parameters.max_sync_event_duration);
+  EXPECT_EQ(base::Seconds(43200),
             sync_parameters.min_periodic_sync_events_interval);
 }
 
@@ -263,7 +258,7 @@ TEST_F(BackgroundSyncControllerImplTest,
       registration, &sync_parameters, base::TimeDelta::Max());
   EXPECT_EQ(
       delay,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           min_gap_between_periodic_sync_events_ms *
           BackgroundSyncDelegateImpl::kEngagementLevelLowOrMediumPenalty));
 
@@ -275,7 +270,7 @@ TEST_F(BackgroundSyncControllerImplTest,
                                          base::TimeDelta::Max());
   EXPECT_EQ(
       delay,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           min_gap_between_periodic_sync_events_ms *
           BackgroundSyncDelegateImpl::kEngagementLevelLowOrMediumPenalty));
 
@@ -285,7 +280,7 @@ TEST_F(BackgroundSyncControllerImplTest,
   delay = controller_->GetNextEventDelay(registration, &sync_parameters,
                                          base::TimeDelta::Max());
   EXPECT_EQ(delay,
-            base::TimeDelta::FromMilliseconds(
+            base::Milliseconds(
                 min_gap_between_periodic_sync_events_ms *
                 BackgroundSyncDelegateImpl::kEngagementLevelMinimalPenalty));
 
@@ -388,7 +383,7 @@ TEST_F(BackgroundSyncControllerImplTest, CrossRegistrationLimitsForOrigin) {
       MakeBackgroundSyncRegistration(
           /* min_interval= */ kSmallerThanMinGap.InMilliseconds(),
           /* num_attempts= */ 0, blink::mojom::BackgroundSyncType::PERIODIC),
-      &sync_parameters, base::TimeDelta::FromHours(24));
+      &sync_parameters, base::Hours(24));
   EXPECT_EQ(delay, sync_parameters.min_periodic_sync_events_interval);
 
   // Periodic Sync: zero attempts.
@@ -399,9 +394,9 @@ TEST_F(BackgroundSyncControllerImplTest, CrossRegistrationLimitsForOrigin) {
       MakeBackgroundSyncRegistration(
           /* min_interval= */ kSmallerThanMinGap.InMilliseconds(),
           /* num_attempts= */ 0, blink::mojom::BackgroundSyncType::PERIODIC),
-      &sync_parameters, base::TimeDelta::FromHours(1));
-  EXPECT_EQ(delay, sync_parameters.min_periodic_sync_events_interval +
-                       base::TimeDelta::FromHours(1));
+      &sync_parameters, base::Hours(1));
+  EXPECT_EQ(delay,
+            sync_parameters.min_periodic_sync_events_interval + base::Hours(1));
 
   // Periodic Sync: zero attempts.
   // |min_interval| < kMinGapBetweenPeriodicSyncEvents.
@@ -410,7 +405,7 @@ TEST_F(BackgroundSyncControllerImplTest, CrossRegistrationLimitsForOrigin) {
       MakeBackgroundSyncRegistration(
           /* min_interval= */ kLargerThanMinGap.InMilliseconds(),
           /* num_attempts= */ 0, blink::mojom::BackgroundSyncType::PERIODIC),
-      &sync_parameters, base::TimeDelta::FromHours(1));
+      &sync_parameters, base::Hours(1));
   EXPECT_EQ(delay, kLargerThanMinGapExpectedDelay);
 }
 

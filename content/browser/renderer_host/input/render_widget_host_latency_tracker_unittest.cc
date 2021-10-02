@@ -171,27 +171,26 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, TestValidEventTiming) {
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
-      now + base::TimeDelta::FromMilliseconds(60));
+      now + base::Milliseconds(60));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
-      now + base::TimeDelta::FromMilliseconds(50));
+      now + base::Milliseconds(50));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
-      now + base::TimeDelta::FromMilliseconds(40));
+      now + base::Milliseconds(40));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::DISPLAY_COMPOSITOR_RECEIVED_FRAME_COMPONENT,
-      now + base::TimeDelta::FromMilliseconds(30));
+      now + base::Milliseconds(30));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      now + base::TimeDelta::FromMilliseconds(20));
+      now + base::Milliseconds(20));
 
   latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT,
-      now + base::TimeDelta::FromMilliseconds(10));
+      ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, now + base::Milliseconds(10));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, now);
@@ -969,23 +968,19 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, KeyEndToEndLatency) {
   latency_info.set_source_event_type(ui::SourceEventType::KEY_PRESS);
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-      base::TimeTicks() +
-          base::TimeDelta::FromMicroseconds(event_timestamps_microseconds[0]));
+      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[0]));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      base::TimeTicks() +
-          base::TimeDelta::FromMicroseconds(event_timestamps_microseconds[0]));
+      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[0]));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT,
-      base::TimeTicks() +
-          base::TimeDelta::FromMicroseconds(event_timestamps_microseconds[1]));
+      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[1]));
 
   latency_info.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
-      base::TimeTicks() +
-          base::TimeDelta::FromMicroseconds(event_timestamps_microseconds[1]));
+      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[1]));
 
   viz_tracker()->OnGpuSwapBuffersCompleted({latency_info});
 
@@ -1002,13 +997,12 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, TouchpadPinchEvents) {
   latency.set_source_event_type(ui::SourceEventType::TOUCHPAD);
   latency.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1));
+      base::TimeTicks() + base::Milliseconds(1));
   latency.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(3));
-  AddFakeComponentsWithTimeStamp(
-      *tracker(), &latency,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(5));
+      base::TimeTicks() + base::Milliseconds(3));
+  AddFakeComponentsWithTimeStamp(*tracker(), &latency,
+                                 base::TimeTicks() + base::Milliseconds(5));
   viz_tracker()->OnGpuSwapBuffersCompleted({latency});
 
   EXPECT_TRUE(HistogramSizeEq("Event.Latency.EventToRender.TouchpadPinch", 1));

@@ -409,9 +409,8 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
         error = GoogleServiceAuthError(
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
       }
-      OnGetAccessTokenComplete(
-          access_token, base::Time::Now() + base::TimeDelta::FromHours(1LL),
-          error);
+      OnGetAccessTokenComplete(access_token,
+                               base::Time::Now() + base::Hours(1LL), error);
     } else {
       // Make a request to the IdentityManager. The test now must tell the
       // service to issue an access token (or an error).
@@ -864,8 +863,7 @@ class GetAuthTokenFunctionTest
     std::string access_token = "access_token-" + account_id.ToString();
     identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-            account_id, access_token,
-            base::Time::Now() + base::TimeDelta::FromSeconds(3600));
+            account_id, access_token, base::Time::Now() + base::Seconds(3600));
     return access_token;
   }
 
@@ -1795,7 +1793,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NonInteractiveCacheHit) {
 
   // Pre-populate the cache with a token.
   IdentityTokenCacheValue token =
-      CreateToken(kAccessToken, base::TimeDelta::FromSeconds(3600));
+      CreateToken(kAccessToken, base::Seconds(3600));
   SetCachedToken(token);
 
   // Get a token. Should not require a GAIA request.
@@ -1835,7 +1833,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
   // Pre-populate the cache with a token.
   IdentityTokenCacheValue token =
-      CreateToken(kAccessToken, base::TimeDelta::FromSeconds(3600));
+      CreateToken(kAccessToken, base::Seconds(3600));
   SetCachedTokenForAccount(account_info, token);
 
   if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
@@ -1936,7 +1934,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveCacheHit) {
 
   // Populate the cache with a token while the request is blocked.
   IdentityTokenCacheValue token =
-      CreateToken(kAccessToken, base::TimeDelta::FromSeconds(3600));
+      CreateToken(kAccessToken, base::Seconds(3600));
   SetCachedToken(token);
 
   // When we wake up the request, it returns the cached token without
@@ -1966,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, LoginInvalidatesTokenCache) {
 
   // Pre-populate the cache with a token.
   IdentityTokenCacheValue token =
-      CreateToken(kAccessToken, base::TimeDelta::FromSeconds(3600));
+      CreateToken(kAccessToken, base::Seconds(3600));
   SetCachedToken(token);
 
   // Because the user is not signed in, the token will be removed,
@@ -2733,7 +2731,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SubsetMatchCacheHit) {
 
   std::set<std::string> scopes = {"email", "foo", "bar"};
   IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
-      kAccessToken, scopes, base::TimeDelta::FromSeconds(3600));
+      kAccessToken, scopes, base::Seconds(3600));
   SetCachedToken(token);
 
   std::string access_token;
@@ -3228,7 +3226,7 @@ IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, RemoteConsent) {
 
 IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, NonMatchingToken) {
   IdentityTokenCacheValue token =
-      CreateToken("non_matching_token", base::TimeDelta::FromSeconds(3600));
+      CreateToken("non_matching_token", base::Seconds(3600));
   SetCachedToken(token);
   EXPECT_TRUE(InvalidateDefaultToken());
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
@@ -3238,7 +3236,7 @@ IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, NonMatchingToken) {
 
 IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, MatchingToken) {
   IdentityTokenCacheValue token =
-      CreateToken(kAccessToken, base::TimeDelta::FromSeconds(3600));
+      CreateToken(kAccessToken, base::Seconds(3600));
   SetCachedToken(token);
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
             GetCachedToken().status());
@@ -3427,9 +3425,8 @@ IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
                        EraseCachedTokens) {
   ExtensionTokenKey token_key(extension()->id(), CoreAccountInfo(), {"foo"});
   id_api()->token_cache()->SetToken(
-      token_key,
-      IdentityTokenCacheValue::CreateToken("access_token", {"foo"},
-                                           base::TimeDelta::FromSeconds(3600)));
+      token_key, IdentityTokenCacheValue::CreateToken("access_token", {"foo"},
+                                                      base::Seconds(3600)));
   EXPECT_NE(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
             id_api()->token_cache()->GetToken(token_key).status());
   ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());

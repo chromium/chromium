@@ -675,7 +675,7 @@ void BluetoothPrivateRecordPairingFunction::DoWork(
     device::RecordPairingResult(
         success ? absl::nullopt : GetConnectionFailureReason(result),
         GetBluetoothTransport(params_->transport),
-        base::TimeDelta::FromMilliseconds(params_->pairing_duration_ms));
+        base::Milliseconds(params_->pairing_duration_ms));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -729,7 +729,7 @@ void BluetoothPrivateRecordDeviceSelectionFunction::DoWork(
     scoped_refptr<device::BluetoothAdapter> adapter) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   device::RecordDeviceSelectionDuration(
-      base::TimeDelta::FromMilliseconds(params_->selection_duration_ms),
+      base::Milliseconds(params_->selection_duration_ms),
       device::DeviceSelectionUISurfaces::kSettings, params_->was_paired,
       GetBluetoothTransport(params_->transport));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

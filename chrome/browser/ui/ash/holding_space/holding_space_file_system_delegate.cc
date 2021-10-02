@@ -268,7 +268,7 @@ void HoldingSpaceFileSystemDelegate::Init() {
   // delayed volume mount is to support volumes that are mounted asynchronously
   // during the startup.
   clear_non_initialized_items_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(1),
+      FROM_HERE, base::Minutes(1),
       base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonInitializedItems,
                      base::Unretained(this)));
 }

@@ -237,8 +237,7 @@ class MediaRouterUI::WebContentsFullscreenOnLoadedObserver final
       delete this;
       return;
     }
-    if (base::TimeTicks::Now() - fullscreen_request_time_ >
-        base::TimeDelta::FromSeconds(10)) {
+    if (base::TimeTicks::Now() - fullscreen_request_time_ > base::Seconds(10)) {
       // If content capture hasn't started within the timeout skip fullscreen.
       DLOG(WARNING) << "Capture of local content did not start within timeout";
       delete this;
@@ -246,7 +245,7 @@ class MediaRouterUI::WebContentsFullscreenOnLoadedObserver final
     }
 
     capture_poll_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(1),
+        FROM_HERE, base::Seconds(1),
         base::BindOnce(
             &WebContentsFullscreenOnLoadedObserver::FullscreenIfContentCaptured,
             base::Unretained(this), web_contents));

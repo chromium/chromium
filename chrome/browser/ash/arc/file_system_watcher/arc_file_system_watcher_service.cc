@@ -66,8 +66,7 @@ constexpr base::FilePath::CharType kAndroidMyFilesDownloadsDir[] =
 
 // How long to wait for new inotify events before building the updated timestamp
 // map.
-const base::TimeDelta kBuildTimestampMapDelay =
-    base::TimeDelta::FromMilliseconds(1000);
+const base::TimeDelta kBuildTimestampMapDelay = base::Milliseconds(1000);
 
 // Providing the similar guarantee as
 // /proc/sys/fs/inotify/max_queued_events

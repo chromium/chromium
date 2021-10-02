@@ -88,13 +88,12 @@ const DrawQuad::Material kNonSplittableMaterials[] = {
     DrawQuad::Material::kYuvVideoContent,
 };
 
-constexpr base::TimeDelta kAllowedDeltaFromFuture =
-    base::TimeDelta::FromMilliseconds(16);
+constexpr base::TimeDelta kAllowedDeltaFromFuture = base::Milliseconds(16);
 
 // A lower bounds for GetEstimatedDisplayDrawTime, influenced by
 // Compositing.Display.DrawToSwapUs.
 constexpr base::TimeDelta kMinEstimatedDisplayDrawTime =
-    base::TimeDelta::FromMicroseconds(250);
+    base::Microseconds(250);
 
 // Assign each Display instance a starting value for the the display-trace id,
 // so that multiple Displays all don't start at 0, because that makes it
@@ -147,7 +146,7 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
   if (difference.InMinutes() > 3) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Graphics.PresentationTimestamp.LargePresentationDelta", difference,
-        base::TimeDelta::FromMinutes(3), base::TimeDelta::FromHours(1), 50);
+        base::Minutes(3), base::Hours(1), 50);
   }
   return feedback;
 }
@@ -308,7 +307,7 @@ void Display::PresentationGroupTiming::OnPresent(
   auto gpu_latency = feedback.ready_timestamp - swap_timings_.swap_start;
   // TODO(crbug.com/1157620): Move this check to SanitizePresentationFeedback
   // to handle all incorrect feedback cases.
-  if (gpu_latency < base::TimeDelta::FromSeconds(0)) {
+  if (gpu_latency < base::Seconds(0)) {
     DVLOG(1) << "GPU latency is negative: " << gpu_latency.InMillisecondsF()
              << " ms";
     return;

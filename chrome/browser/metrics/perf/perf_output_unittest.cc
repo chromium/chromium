@@ -54,7 +54,7 @@ PerfDataProto GetExamplePerfDataProto() {
 // Perf session ID returned by the GetPerfOutputFd DBus method call.
 const uint64_t kFakePerfSssionId = 101;
 // Profile collection duration is 4 seconds.
-const base::TimeDelta kProfileDuration = base::TimeDelta::FromSeconds(4);
+const base::TimeDelta kProfileDuration = base::Seconds(4);
 // Perf command line arguments.
 const std::vector<std::string> kPerfArgs{"perf",   "record", "-a", "-e",
                                          "cycles", "-g",     "-c", "4000037"};

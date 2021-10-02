@@ -1272,8 +1272,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksClose) {
   test::ButtonTestApi(frame->close_)
       .NotifyClick(ui::MouseEvent(
           ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow() +
-              base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+          ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsClosed());
 }
@@ -1299,8 +1298,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
   test::ButtonTestApi(frame->minimize_)
       .NotifyClick(ui::MouseEvent(
           ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow() +
-              base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+          ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsMinimized());
 }

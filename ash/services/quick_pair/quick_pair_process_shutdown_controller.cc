@@ -9,8 +9,7 @@
 namespace ash {
 namespace quick_pair {
 
-constexpr base::TimeDelta kProcessShutdownTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kProcessShutdownTimeout = base::Seconds(5);
 
 QuickPairProcessShutdownController::QuickPairProcessShutdownController() =
     default;

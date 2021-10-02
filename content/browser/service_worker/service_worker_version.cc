@@ -61,11 +61,10 @@ namespace content {
 namespace {
 
 // Timeout for an installed worker to start.
-constexpr base::TimeDelta kStartInstalledWorkerTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kStartInstalledWorkerTimeout = base::Seconds(60);
 
 // Timeout for a request to be handled.
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
 const base::FeatureParam<int> kUpdateDelayParam{
     &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
@@ -196,7 +195,7 @@ void DidNavigateClient(
 }
 
 base::TimeDelta GetUpdateDelay() {
-  return base::TimeDelta::FromMilliseconds(kUpdateDelayParam.Get());
+  return base::Milliseconds(kUpdateDelayParam.Get());
 }
 
 }  // namespace
@@ -511,7 +510,7 @@ void ServiceWorkerVersion::StopWorker(base::OnceClosure callback) {
 
 void ServiceWorkerVersion::TriggerIdleTerminationAsap() {
   needs_to_be_terminated_asap_ = true;
-  endpoint()->SetIdleDelay(base::TimeDelta::FromSeconds(0));
+  endpoint()->SetIdleDelay(base::Seconds(0));
 }
 
 bool ServiceWorkerVersion::OnRequestTermination() {
@@ -538,8 +537,8 @@ bool ServiceWorkerVersion::OnRequestTermination() {
       // necessarily being kept alive due to an inflight request, and will only
       // send a RequestTermination() once that request settles (which is the
       // intended behavior).
-      endpoint()->SetIdleDelay(base::TimeDelta::FromSeconds(
-          blink::mojom::kServiceWorkerDefaultIdleDelayInSeconds));
+      endpoint()->SetIdleDelay(
+          base::Seconds(blink::mojom::kServiceWorkerDefaultIdleDelayInSeconds));
     }
   }
 
@@ -773,8 +772,8 @@ void ServiceWorkerVersion::AddControllee(
   // Set the idle timeout to the default value if there's no controllee and the
   // worker is running because the worker's idle delay has been set to a shorter
   // value when all controllee are gone.
-  MaybeUpdateIdleDelayForTerminationOnNoControllee(base::TimeDelta::FromSeconds(
-      blink::mojom::kServiceWorkerDefaultIdleDelayInSeconds));
+  MaybeUpdateIdleDelayForTerminationOnNoControllee(
+      base::Seconds(blink::mojom::kServiceWorkerDefaultIdleDelayInSeconds));
 
   controllee_map_[uuid] = container_host;
   embedded_worker_->UpdateForegroundPriority();
@@ -821,7 +820,7 @@ void ServiceWorkerVersion::RemoveControllee(const std::string& client_uuid) {
   // When a new controllee checks in before the delay passes, the idle delay
   // is set to the default in AddControllee().
   MaybeUpdateIdleDelayForTerminationOnNoControllee(
-      base::TimeDelta::FromMilliseconds(kTerminationDelayParam.Get()));
+      base::Milliseconds(kTerminationDelayParam.Get()));
 }
 
 void ServiceWorkerVersion::OnControlleeNavigationCommitted(
@@ -1228,7 +1227,7 @@ void ServiceWorkerVersion::OnStarted(
   }
 
   MaybeUpdateIdleDelayForTerminationOnNoControllee(
-      base::TimeDelta::FromMilliseconds(kTerminationDelayParam.Get()));
+      base::Milliseconds(kTerminationDelayParam.Get()));
 }
 
 void ServiceWorkerVersion::OnStopping() {

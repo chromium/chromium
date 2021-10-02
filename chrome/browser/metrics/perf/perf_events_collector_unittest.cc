@@ -220,9 +220,8 @@ class TestPerfCollector : public PerfCollector {
   bool collection_stopped_ = false;
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kCollectionDuration = base::TimeDelta::FromSeconds(2);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kCollectionDuration = base::Seconds(2);
 
 // A wrapper around internal::CommandSamplesCPUCycles, to test if a perf command
 // samples the cycles event. The wrapper takes a command as a string, while the
@@ -1008,18 +1007,18 @@ TEST_F(PerfCollectorTest, CommandMatching_SpecificModel_LongestMatch) {
 TEST_F(PerfCollectorTest, StopCollection_AnotherTrigger) {
   const int kRestoredTabs = 1;
 
-  perf_collector_->CollectPerfDataAfterSessionRestore(
-      base::TimeDelta::FromSeconds(1), kRestoredTabs);
+  perf_collector_->CollectPerfDataAfterSessionRestore(base::Seconds(1),
+                                                      kRestoredTabs);
   // Timer is active after the OnSessionRestoreDone call.
   EXPECT_TRUE(perf_collector_->IsRunning());
   // A collection in action: should reject another collection request.
   EXPECT_FALSE(perf_collector_->ShouldCollect());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   // A collection is ongoing. Triggering a jankiness collection should have no
   // effect on the existing collection.
   perf_collector_->OnJankStarted();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   // This doesn't stop the existing collection.
   perf_collector_->OnJankStopped();
   task_environment_.RunUntilIdle();
@@ -1053,7 +1052,7 @@ TEST_F(PerfCollectorTest, JankinessCollectionStopped) {
   // A collection in action: should reject another collection request.
   EXPECT_FALSE(perf_collector_->ShouldCollect());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 
   perf_collector_->OnJankStopped();
   task_environment_.RunUntilIdle();
@@ -1221,26 +1220,24 @@ TEST_F(PerfCollectorCollectionParamsTest, Parameters_Override) {
   const auto& parsed_params = perf_collector->collection_params();
 
   // Not initialized yet:
-  EXPECT_NE(base::TimeDelta::FromSeconds(15),
-            parsed_params.collection_duration);
-  EXPECT_NE(base::TimeDelta::FromHours(1), parsed_params.periodic_interval);
+  EXPECT_NE(base::Seconds(15), parsed_params.collection_duration);
+  EXPECT_NE(base::Hours(1), parsed_params.periodic_interval);
   EXPECT_NE(1, parsed_params.resume_from_suspend.sampling_factor);
-  EXPECT_NE(base::TimeDelta::FromSeconds(10),
+  EXPECT_NE(base::Seconds(10),
             parsed_params.resume_from_suspend.max_collection_delay);
   EXPECT_NE(2, parsed_params.restore_session.sampling_factor);
-  EXPECT_NE(base::TimeDelta::FromSeconds(20),
+  EXPECT_NE(base::Seconds(20),
             parsed_params.restore_session.max_collection_delay);
 
   perf_collector->Init();
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(15),
-            parsed_params.collection_duration);
-  EXPECT_EQ(base::TimeDelta::FromHours(1), parsed_params.periodic_interval);
+  EXPECT_EQ(base::Seconds(15), parsed_params.collection_duration);
+  EXPECT_EQ(base::Hours(1), parsed_params.periodic_interval);
   EXPECT_EQ(1, parsed_params.resume_from_suspend.sampling_factor);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10),
+  EXPECT_EQ(base::Seconds(10),
             parsed_params.resume_from_suspend.max_collection_delay);
   EXPECT_EQ(2, parsed_params.restore_session.sampling_factor);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(20),
+  EXPECT_EQ(base::Seconds(20),
             parsed_params.restore_session.max_collection_delay);
 }
 

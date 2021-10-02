@@ -659,9 +659,8 @@ void SplitViewMetricsController::StopRecordClamshellSplitView() {
   if (MaybePauseRecordBothSnappedClamshellSplitView())
     return;
 
-  base::UmaHistogramLongTimes(
-      kTimeInSplitScreenClamshellHistogram,
-      base::TimeDelta::FromMilliseconds(clamshell_split_view_time_));
+  base::UmaHistogramLongTimes(kTimeInSplitScreenClamshellHistogram,
+                              base::Milliseconds(clamshell_split_view_time_));
   base::UmaHistogramCounts100(kSplitViewResizeWindowCountClamshellHistogram,
                               clamshell_resize_count_);
   clamshell_split_view_time_ = 0;
@@ -706,8 +705,7 @@ void SplitViewMetricsController::StopRecordClamshellMultiDisplaySplitView() {
 
   base::UmaHistogramLongTimes(
       kTimeInMultiDisplaySplitScreenClamshellHistogram,
-      base::TimeDelta::FromMilliseconds(
-          g_clamshell_multi_display_split_view_time_ms));
+      base::Milliseconds(g_clamshell_multi_display_split_view_time_ms));
   g_clamshell_multi_display_split_view_time_ms = 0;
 }
 

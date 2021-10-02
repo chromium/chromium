@@ -777,10 +777,9 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
     UseCounter::Count(execution_context, WebFeature::kLongTaskBufferFull);
   }
   if ((++long_task_counter_ % kLongTaskUkmSampleInterval) == 0) {
-    RecordLongTaskUkm(
-        execution_context,
-        base::TimeDelta::FromMillisecondsD(dom_high_res_start_time),
-        end_time - start_time);
+    RecordLongTaskUkm(execution_context,
+                      base::Milliseconds(dom_high_res_start_time),
+                      end_time - start_time);
   }
   NotifyObserversOfEntry(*entry);
 }
@@ -817,8 +816,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             ->Loader()
             .GetDocumentLoader()
             ->GetTiming()
-            .SetUserTimingMarkFullyLoaded(base::TimeDelta::FromMillisecondsD(
-                performance_mark->startTime()));
+            .SetUserTimingMarkFullyLoaded(
+                base::Milliseconds(performance_mark->startTime()));
       }
     } else if (mark_name == mark_fully_visible) {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
@@ -826,8 +825,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             ->Loader()
             .GetDocumentLoader()
             ->GetTiming()
-            .SetUserTimingMarkFullyVisible(base::TimeDelta::FromMillisecondsD(
-                performance_mark->startTime()));
+            .SetUserTimingMarkFullyVisible(
+                base::Milliseconds(performance_mark->startTime()));
       }
     } else if (mark_name == mark_interactive) {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
@@ -835,8 +834,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             ->Loader()
             .GetDocumentLoader()
             ->GetTiming()
-            .SetUserTimingMarkInteractive(base::TimeDelta::FromMillisecondsD(
-                performance_mark->startTime()));
+            .SetUserTimingMarkInteractive(
+                base::Milliseconds(performance_mark->startTime()));
       }
     }
     NotifyObserversOfEntry(*performance_mark);
@@ -1086,7 +1085,7 @@ base::TimeDelta Performance::MonotonicTimeToTimeDelta(
     base::TimeTicks monotonic_time,
     bool allow_negative_value,
     bool cross_origin_isolated_capability) {
-  return base::TimeDelta::FromMillisecondsD(MonotonicTimeToDOMHighResTimeStamp(
+  return base::Milliseconds(MonotonicTimeToDOMHighResTimeStamp(
       time_origin, monotonic_time, allow_negative_value,
       cross_origin_isolated_capability));
 }

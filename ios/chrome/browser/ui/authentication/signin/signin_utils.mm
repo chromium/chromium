@@ -42,7 +42,7 @@ namespace {
 // than the delay, then the promo is suppressed - it may be shown on the next
 // start-up.
 constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
 // Converts an array of identities to a set of gaia ids.
 NSSet<NSString*>* GaiaIdSetWithIdentities(
@@ -88,7 +88,7 @@ base::TimeDelta GetWaitThresholdForCapabilities() {
         signin::kWaitThresholdMillisecondsForCapabilitiesApi);
     int commandLineDelay = 0;
     if (base::StringToInt(delayString, &commandLineDelay)) {
-      return base::TimeDelta::FromMilliseconds(commandLineDelay);
+      return base::Milliseconds(commandLineDelay);
     }
   }
   return kShowSigninUpgradePromoMaxDelay;

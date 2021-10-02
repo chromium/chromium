@@ -216,8 +216,8 @@ class CertVerifierServiceTest : public PlatformTest {
       request_infos.emplace_back(
           std::move(dummy_params),
           static_cast<uint32_t>(net::NetLogSourceType::CERT_VERIFIER_JOB),
-          1234 + i, time_zero + base::TimeDelta::FromSeconds(i),
-          std::move(cv_service_req), std::move(cv_request_receiver));
+          1234 + i, time_zero + base::Seconds(i), std::move(cv_service_req),
+          std::move(cv_request_receiver));
     }
 
     for (RequestInfo& info : request_infos) {

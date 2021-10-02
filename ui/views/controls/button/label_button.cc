@@ -54,7 +54,7 @@ LabelButton::LabelButton(PressedCallback callback,
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
 
-  SetAnimationDuration(base::TimeDelta::FromMilliseconds(170));
+  SetAnimationDuration(base::Milliseconds(170));
   SetTextInternal(text);
 }
 

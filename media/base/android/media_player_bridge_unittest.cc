@@ -63,7 +63,7 @@ class MediaPlayerBridgeTest : public testing::Test {
 };
 
 TEST_F(MediaPlayerBridgeTest, Client_OnMediaMetadataChanged) {
-  const base::TimeDelta kDuration = base::TimeDelta::FromSeconds(20);
+  const base::TimeDelta kDuration = base::Seconds(20);
 
   EXPECT_CALL(client_, OnMediaDurationChanged(kDuration));
 

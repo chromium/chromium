@@ -14,7 +14,7 @@ namespace cart_features {
 constexpr base::FeatureParam<base::TimeDelta> kDiscountFetchDelayParam(
     &ntp_features::kNtpChromeCartModule,
     "discount-fetch-delay",
-    base::TimeDelta::FromHours(6));
+    base::Hours(6));
 
 // Check if a URL belongs to a partner merchant of rule discount.
 bool IsRuleDiscountPartnerMerchant(const GURL& url);

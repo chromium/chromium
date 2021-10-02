@@ -3467,7 +3467,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   const GURL kPrerenderingUrl = GetUrl("/simple_page.html");
 
   web_contents_impl()->set_minimum_delay_between_loading_updates_for_testing(
-      base::TimeDelta::FromMilliseconds(0));
+      base::Milliseconds(0));
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));

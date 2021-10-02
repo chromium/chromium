@@ -1281,7 +1281,7 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
       extension_loader_->ResponseInfo()->headers) {
     response_code = extension_loader_->ResponseInfo()->headers->response_code();
   }
-  const base::TimeDelta& backoff_delay = base::TimeDelta::FromMilliseconds(0);
+  const base::TimeDelta& backoff_delay = base::Milliseconds(0);
 
   ExtensionFetch& active_request = *extensions_queue_.active_request();
   const ExtensionId& id = active_request.id;

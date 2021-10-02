@@ -780,7 +780,7 @@ TEST_F(MediaSessionImplDurationThrottleTest, ThrottleDurationUpdate) {
        ++duration) {
     pos = media_session::MediaPosition(
         /*playback_rate=*/0.0,
-        /*duration=*/base::TimeDelta::FromSeconds(duration),
+        /*duration=*/base::Seconds(duration),
         /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     player_observer_->SetPosition(player_id, pos);
@@ -818,7 +818,7 @@ TEST_F(MediaSessionImplDurationThrottleTest, ThrottleResetOnPlayerChange) {
 
     pos = media_session::MediaPosition(
         /*playback_rate=*/0.0,
-        /*duration=*/base::TimeDelta::FromSeconds(duration),
+        /*duration=*/base::Seconds(duration),
         /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     player_observer_->SetPosition(player_id, pos);

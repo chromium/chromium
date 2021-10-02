@@ -35,7 +35,7 @@ void AppResult::UpdateFromLastLaunchedOrInstalledTime(
     return;
   }
 
-  const double weeks = (current_time - old_time) / base::TimeDelta::FromDays(7);
+  const double weeks = (current_time - old_time) / base::Days(7);
 
   // Set the relevance to a value between 0 and 1. This function decays as the
   // time delta increases and reaches a value of 0.5 at 1 week.

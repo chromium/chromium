@@ -570,7 +570,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
     // Set the mouse_wheel_phase_handler_ timer timeout to 100ms.
     view_->event_handler()->set_mouse_wheel_wheel_phase_handler_timeout(
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
   }
 
   void InitViewForPopup(RenderWidgetHostViewAura* parent_view,
@@ -1780,7 +1780,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
 
   // Let the MouseWheelPhaseHandler::mouse_wheel_end_dispatch_timer_ fire. A
   // synthetic wheel event with zero deltas and kPhaseEnded will be sent.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+  base::PlatformThread::Sleep(base::Milliseconds(100));
   base::RunLoop().RunUntilIdle();
 
   events = GetAndResetDispatchedMessages();
@@ -2090,8 +2090,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchpadFlingStartResetsWheelPhaseState) {
   // the user hasn't lifted their fingers, yet.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(200));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
   run_loop.Run();
   ui::ScrollEvent scroll1(ui::ET_SCROLL, gfx::Point(2, 2),
                           ui::EventTimeForNow(), 0, 0, 15, 0, 15, 2);
@@ -3797,11 +3796,11 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
   }
 
   base::TimeTicks progress_time =
-      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(17);
+      base::TimeTicks::Now() + base::Milliseconds(17);
   // Overscroll mode will get reset at the end of the fling progress.
   while (overscroll_mode() != OVERSCROLL_NONE) {
     widget_host_->ProgressFlingIfNeeded(progress_time);
-    progress_time += base::TimeDelta::FromMilliseconds(17);
+    progress_time += base::Milliseconds(17);
   }
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
 }
@@ -3961,7 +3960,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
     // The overscrolling mode will reset after the first GSU from fling
     // progress.
     base::TimeTicks progress_time =
-        base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(17);
+        base::TimeTicks::Now() + base::Milliseconds(17);
     widget_host_->ProgressFlingIfNeeded(progress_time);
     EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
     ReleaseAndResetDispatchedMessages();
@@ -4257,7 +4256,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
   // enough overscroll to complete the gesture, the overscroll controller
   // will reset the state. The scroll-end should therefore be dispatched to the
   // renderer, and the gesture-event-filter should await an ACK for it.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
   base::RunLoop().RunUntilIdle();
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
@@ -4382,7 +4381,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollWithTouchEvents) {
 
   SimulateGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd,
                        blink::WebGestureDevice::kTouchscreen);
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
   base::RunLoop().RunUntilIdle();
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ("GestureScrollEnd", GetMessageNames(events));
@@ -4439,7 +4438,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
                        blink::WebGestureDevice::kTouchscreen);
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(0U, events.size());
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
@@ -4483,7 +4482,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
                        blink::WebGestureDevice::kTouchscreen);
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(0U, events.size());
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+  base::PlatformThread::Sleep(base::Milliseconds(10));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
@@ -5244,11 +5243,11 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, ScrollDeltasResetOnEnd) {
   EXPECT_EQ(0U, events.size());
 
   base::TimeTicks progress_time =
-      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(17);
+      base::TimeTicks::Now() + base::Milliseconds(17);
   // Overscroll delta will get reset at the end of the fling progress.
   while (overscroll_delta_y() != 0.f) {
     widget_host_->ProgressFlingIfNeeded(progress_time);
-    progress_time += base::TimeDelta::FromMilliseconds(17);
+    progress_time += base::Milliseconds(17);
   }
 }
 
@@ -5584,7 +5583,7 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 #define MAYBE_NewContentRenderingTimeout NewContentRenderingTimeout
 #endif
 TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
-  constexpr base::TimeDelta kTimeout = base::TimeDelta::FromMicroseconds(10);
+  constexpr base::TimeDelta kTimeout = base::Microseconds(10);
 
   InitViewForFrame(nullptr);
   aura::client::ParentWindowWithContext(

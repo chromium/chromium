@@ -18,8 +18,8 @@ namespace internal {
 // getting passed to the pertinent //base libraries.
 
 TEST(TrustTokenTypes, TimeToStringRoundtrip) {
-  auto my_time = base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(
-                                               373849174829374);  // arbitrary
+  auto my_time = base::Time::UnixEpoch() +
+                 base::Milliseconds(373849174829374);  // arbitrary
   EXPECT_THAT(StringToTime(TimeToString(my_time)), Optional(my_time));
 }
 

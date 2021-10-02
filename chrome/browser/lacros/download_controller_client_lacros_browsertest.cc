@@ -87,10 +87,10 @@ IN_PROC_BROWSER_TEST_F(DownloadControllerClientLacrosBrowserTest,
                        GetAllDownloads) {
   // Create a few `downloads`.
   std::vector<std::unique_ptr<download::DownloadItem>> downloads;
-  downloads.push_back(CreateDownloadItemWithStartTimeOffset(
-      profile(), base::TimeDelta::FromMinutes(10)));
-  downloads.push_back(CreateDownloadItemWithStartTimeOffset(
-      profile(), -base::TimeDelta::FromMinutes(10)));
+  downloads.push_back(
+      CreateDownloadItemWithStartTimeOffset(profile(), base::Minutes(10)));
+  downloads.push_back(
+      CreateDownloadItemWithStartTimeOffset(profile(), -base::Minutes(10)));
 
   // Mock `download_manager()` response for `GetAllDownloads()`.
   EXPECT_CALL(*download_manager(), GetAllDownloads)

@@ -168,7 +168,7 @@ TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
 
   // Make sure an access token is available.
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Sign out of the account.
@@ -312,7 +312,7 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
   // Once an access token is available, the callback should get run.
   EXPECT_CALL(credentials_changed, Run());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now the refresh token gets updated. The access token will get dropped, so
@@ -324,7 +324,7 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
   // Once a new token is available, there's another notification.
   EXPECT_CALL(credentials_changed, Run());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token_2", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token_2", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 
   // Revoking the refresh token should also cause the access token to get
@@ -348,7 +348,7 @@ TEST_F(SyncAuthManagerTest, RequestsAccessTokenOnSyncStartup) {
   auth_manager->ConnectionOpened();
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
 
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 }
@@ -453,7 +453,7 @@ TEST_F(SyncAuthManagerTest,
 
   // Retry is a success.
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
 
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
   // Don't expect any backoff when the retry is a success.
@@ -498,7 +498,7 @@ TEST_F(SyncAuthManagerTest, FetchesNewAccessTokenWithBackoffOnServerError) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // The server is returning AUTH_ERROR - maybe something's wrong with the
@@ -525,7 +525,7 @@ TEST_F(SyncAuthManagerTest, ExposesServerError) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now a server error happens.
@@ -552,7 +552,7 @@ TEST_F(SyncAuthManagerTest, ClearsServerErrorOnSyncDisable) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // A server error happens.
@@ -582,7 +582,7 @@ TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnExpiry) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now everything is okay for a while.
@@ -598,7 +598,7 @@ TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnExpiry) {
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token_2", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token_2", base::Time::Now() + base::Hours(1));
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 }
 
@@ -615,7 +615,7 @@ TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnRefreshTokenUpdate) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now everything is okay for a while.
@@ -631,7 +631,7 @@ TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnRefreshTokenUpdate) {
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token_2", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token_2", base::Time::Now() + base::Hours(1));
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 }
 
@@ -678,7 +678,7 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnRefreshTokenRemoval) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now everything is okay for a while.
@@ -718,7 +718,7 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
 
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now everything is okay for a while.
@@ -764,7 +764,7 @@ TEST_F(SyncAuthManagerTest,
   // Sync starts up normally.
   auth_manager->ConnectionOpened();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
   auth_manager->ConnectionStatusChanged(syncer::CONNECTION_OK);
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
@@ -781,7 +781,7 @@ TEST_F(SyncAuthManagerTest,
   // also request a new access token.
   identity_env()->SetRefreshTokenForPrimaryAccount();
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token_2", base::Time::Now() + base::TimeDelta::FromHours(1));
+      "access_token_2", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 }
 

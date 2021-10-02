@@ -24,8 +24,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kUpdatePeriodMs =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kUpdatePeriodMs = base::Milliseconds(1000);
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   const gfx::Rect scaled_rect = media::ComputeLetterboxRegion(

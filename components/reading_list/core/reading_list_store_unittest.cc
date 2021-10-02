@@ -71,7 +71,7 @@ void ExpectAB(const sync_pb::ReadingListSpecifics& entryA,
 }
 
 base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
-  clock->Advance(base::TimeDelta::FromMilliseconds(10));
+  clock->Advance(base::Milliseconds(10));
   return clock->Now();
 }
 

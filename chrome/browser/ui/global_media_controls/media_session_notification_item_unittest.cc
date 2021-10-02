@@ -72,8 +72,7 @@ class MediaSessionNotificationItemTest : public testing::Test {
   MediaSessionNotificationItem& item() { return *item_; }
 
   void AdvanceClockMilliseconds(int milliseconds) {
-    task_environment_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(milliseconds));
+    task_environment_.FastForwardBy(base::Milliseconds(milliseconds));
   }
 
  private:

@@ -19,7 +19,7 @@ TEST(URLLoaderCompletionStatusMojomTraitsTest, MojoRoundTrip) {
   original.error_code = 1;
   original.extended_error_code = 2;
   original.exists_in_cache = true;
-  original.completion_time += base::TimeDelta::FromMinutes(3);
+  original.completion_time += base::Minutes(3);
   original.encoded_data_length = 4;
   original.encoded_body_length = 5;
   original.decoded_body_length = 6;

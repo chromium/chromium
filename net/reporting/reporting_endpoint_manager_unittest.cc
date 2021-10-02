@@ -301,8 +301,8 @@ TEST_F(ReportingEndpointManagerTest, Endpoint) {
 TEST_F(ReportingEndpointManagerTest, BackedOffEndpoint) {
   ASSERT_EQ(2.0, policy_.endpoint_backoff_policy.multiply_factor);
 
-  base::TimeDelta initial_delay = base::TimeDelta::FromMilliseconds(
-      policy_.endpoint_backoff_policy.initial_delay_ms);
+  base::TimeDelta initial_delay =
+      base::Milliseconds(policy_.endpoint_backoff_policy.initial_delay_ms);
 
   SetEndpoint(kEndpoint);
 
@@ -425,7 +425,7 @@ TEST_F(ReportingEndpointManagerTest, Priority) {
 
   // Advance the current time far enough to clear out the primary endpoint's
   // backoff clock.  This should bring the primary endpoint back into play.
-  clock_.Advance(base::TimeDelta::FromMinutes(2));
+  clock_.Advance(base::Minutes(2));
   ReportingEndpoint endpoint3 =
       endpoint_manager_->FindEndpointForDelivery(kGroupKey);
   ASSERT_TRUE(endpoint3);

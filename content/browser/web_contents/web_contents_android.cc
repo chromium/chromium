@@ -734,7 +734,7 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
           ui::AXMode(ui::kAXModeComplete.mode() | ui::AXMode::kHTMLMetadata),
           /* exclude_offscreen= */ false,
           /* max_nodes= */ 5000,
-          /* timeout= */ base::TimeDelta::FromSeconds(2));
+          /* timeout= */ base::Seconds(2));
 }
 
 ScopedJavaLocalRef<jstring> WebContentsAndroid::GetEncoding(

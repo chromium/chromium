@@ -334,7 +334,7 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
   NOTIMPLEMENTED_LOG_ONCE();
 
   // No providers.  Return 0 which means the system never gets idle.
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 void WaylandScreen::AddObserver(display::DisplayObserver* observer) {

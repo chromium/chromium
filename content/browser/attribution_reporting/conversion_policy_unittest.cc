@@ -107,18 +107,18 @@ TEST_F(ConversionPolicyTest, NoExpiryForImpression_DefaultUsed) {
 
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(
-        impression_time + base::TimeDelta::FromDays(30),
+        impression_time + base::Days(30),
         ConversionPolicy().GetExpiryTimeForImpression(
             /*declared_expiry=*/absl::nullopt, impression_time, source_type));
   }
 }
 
 TEST_F(ConversionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
-  constexpr base::TimeDelta declared_expiry = base::TimeDelta::FromDays(60);
+  constexpr base::TimeDelta declared_expiry = base::Days(60);
   const base::Time impression_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(impression_time + base::TimeDelta::FromDays(30),
+    EXPECT_EQ(impression_time + base::Days(30),
               ConversionPolicy().GetExpiryTimeForImpression(
                   declared_expiry, impression_time, source_type));
   }
@@ -129,10 +129,9 @@ TEST_F(ConversionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
   } kTestCases[] = {
-      {base::TimeDelta::FromDays(-1), base::TimeDelta::FromDays(1)},
-      {base::TimeDelta::FromDays(0), base::TimeDelta::FromDays(1)},
-      {base::TimeDelta::FromDays(1) - base::TimeDelta::FromMilliseconds(1),
-       base::TimeDelta::FromDays(1)},
+      {base::Days(-1), base::Days(1)},
+      {base::Days(0), base::Days(1)},
+      {base::Days(1) - base::Milliseconds(1), base::Days(1)},
   };
 
   const base::Time impression_time = base::Time::Now();
@@ -152,17 +151,15 @@ TEST_F(ConversionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
   } kTestCases[] = {
-      {StorableSource::SourceType::kNavigation, base::TimeDelta::FromHours(36),
-       base::TimeDelta::FromHours(36)},
-      {StorableSource::SourceType::kEvent, base::TimeDelta::FromHours(36),
-       base::TimeDelta::FromDays(2)},
+      {StorableSource::SourceType::kNavigation, base::Hours(36),
+       base::Hours(36)},
+      {StorableSource::SourceType::kEvent, base::Hours(36), base::Days(2)},
 
       {StorableSource::SourceType::kNavigation,
-       base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
-       base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1)},
+       base::Days(1) + base::Milliseconds(1),
+       base::Days(1) + base::Milliseconds(1)},
       {StorableSource::SourceType::kEvent,
-       base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
-       base::TimeDelta::FromDays(1)},
+       base::Days(1) + base::Milliseconds(1), base::Days(1)},
   };
 
   const base::Time impression_time = base::Time::Now();
@@ -176,11 +173,11 @@ TEST_F(ConversionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
 }
 
 TEST_F(ConversionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
-  constexpr base::TimeDelta declared_expiry = base::TimeDelta::FromDays(10);
+  constexpr base::TimeDelta declared_expiry = base::Days(10);
   const base::Time impression_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(impression_time + base::TimeDelta::FromDays(10),
+    EXPECT_EQ(impression_time + base::Days(10),
               ConversionPolicy().GetExpiryTimeForImpression(
                   declared_expiry, impression_time, source_type));
   }
@@ -191,8 +188,8 @@ TEST_F(ConversionPolicyTest, GetFailedReportDelay) {
     int failed_send_attempts;
     absl::optional<base::TimeDelta> expected;
   } kTestCases[] = {
-      {1, base::TimeDelta::FromMinutes(5)},
-      {2, base::TimeDelta::FromMinutes(15)},
+      {1, base::Minutes(5)},
+      {2, base::Minutes(15)},
       {3, absl::nullopt},
   };
 

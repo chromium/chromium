@@ -61,19 +61,19 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
       chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
   // Each scheduled removal is called once the prefs are set.
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
+      base::Time::Min(), base::Time::Now() - base::Hours(1),
       remove_mask_1_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
+      base::Time::Min(), base::Time::Now() - base::Hours(1),
       remove_mask_1_unfilterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(2),
-      remove_mask_2, origin_mask_2);
+      base::Time::Min(), base::Time::Now() - base::Hours(2), remove_mask_2,
+      origin_mask_2);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(3),
+      base::Time::Min(), base::Time::Now() - base::Hours(3),
       remove_mask_3_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(3),
+      base::Time::Min(), base::Time::Now() - base::Hours(3),
       remove_mask_3_unfilterable, 0);
 
   testing_profile->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
@@ -86,15 +86,15 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now(), remove_mask_1_unfilterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
-      remove_mask_2, origin_mask_2);
+      base::Time::Min(), base::Time::Now() - base::Hours(1), remove_mask_2,
+      origin_mask_2);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(2),
+      base::Time::Min(), base::Time::Now() - base::Hours(2),
       remove_mask_3_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(2),
+      base::Time::Min(), base::Time::Now() - base::Hours(2),
       remove_mask_3_unfilterable, 0);
-  browser_task_environment.FastForwardBy(base::TimeDelta::FromHours(1));
+  browser_task_environment.FastForwardBy(base::Hours(1));
   delegate.VerifyAndClearExpectations();
 }
 
@@ -141,8 +141,8 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now(), remove_mask_1_unfilterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
-      remove_mask_2, origin_mask_2);
-  browser_task_environment.FastForwardBy(base::TimeDelta::FromHours(1));
+      base::Time::Min(), base::Time::Now() - base::Hours(1), remove_mask_2,
+      origin_mask_2);
+  browser_task_environment.FastForwardBy(base::Hours(1));
   delegate.VerifyAndClearExpectations();
 }

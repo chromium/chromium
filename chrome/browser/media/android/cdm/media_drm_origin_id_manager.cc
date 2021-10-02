@@ -59,13 +59,13 @@ constexpr int kMaxPreProvisionedOriginIds = 2;
 constexpr int kUMAMaxPreProvisionedOriginIds = 10;
 
 // "expirable_token" is only good for 24 hours.
-constexpr base::TimeDelta kExpirationDelta = base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kExpirationDelta = base::Hours(24);
 
 // Time to wait before attempting pre-provisioning at startup (if enabled).
-constexpr base::TimeDelta kStartupDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kStartupDelay = base::Minutes(1);
 
 // Time to wait before logging number of pre-provisioned origin IDs at startup
-constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kCheckDelay = base::Minutes(5);
 static_assert(kCheckDelay > kStartupDelay,
               "Must allow time for pre-provisioning to run first");
 

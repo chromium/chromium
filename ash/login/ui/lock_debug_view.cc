@@ -437,12 +437,10 @@ class LockDebugView::DebugDataDispatcherTransformer
       case DebugAuthEnabledState::kTimeWindowLimit:
         debug_dispatcher_.DisableAuthForUser(
             debug_user->account_id,
-            AuthDisabledData(reason,
-                             base::Time::Now() +
-                                 base::TimeDelta::FromHours(user_index) +
-                                 base::TimeDelta::FromHours(8),
-                             base::TimeDelta::FromMinutes(15),
-                             true /*bool disable_lock_screen_media*/));
+            AuthDisabledData(
+                reason,
+                base::Time::Now() + base::Hours(user_index) + base::Hours(8),
+                base::Minutes(15), true /*bool disable_lock_screen_media*/));
         break;
       case DebugAuthEnabledState::kMultiProfilePrimaryOnly:
       case DebugAuthEnabledState::kMultiProfileNotAllowed:

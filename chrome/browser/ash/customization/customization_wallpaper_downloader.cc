@@ -73,7 +73,7 @@ CustomizationWallpaperDownloader::CustomizationWallpaperDownloader(
       wallpaper_temporary_file_(wallpaper_downloaded_file.value() +
                                 kTemporarySuffix),
       retries_(0),
-      retry_delay_(base::TimeDelta::FromSeconds(kRetrySleepSeconds)),
+      retry_delay_(base::Seconds(kRetrySleepSeconds)),
       on_wallpaper_fetch_completed_(std::move(on_wallpaper_fetch_completed)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
@@ -118,7 +118,7 @@ void CustomizationWallpaperDownloader::Retry() {
   const double delay_seconds = std::min(
       kMaxRetrySleepSeconds,
       static_cast<double>(retries_) * retries_ * retry_delay_.InSecondsF());
-  const base::TimeDelta delay = base::TimeDelta::FromSecondsD(delay_seconds);
+  const base::TimeDelta delay = base::Seconds(delay_seconds);
 
   VLOG(1) << "Schedule Customized Wallpaper download in " << delay.InSecondsF()
           << " seconds (retry = " << retries_ << ").";

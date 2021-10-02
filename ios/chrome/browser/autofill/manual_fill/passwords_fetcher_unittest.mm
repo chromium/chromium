@@ -162,7 +162,7 @@ TEST_F(PasswordFetcherTest, ReturnsPassword) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -185,7 +185,7 @@ TEST_F(PasswordFetcherTest, ReturnsTwoPasswords) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 2u);
   EXPECT_TRUE(passwordFetcher);
@@ -208,7 +208,7 @@ TEST_F(PasswordFetcherTest, IgnoresBlocked) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -233,7 +233,7 @@ TEST_F(PasswordFetcherTest, IgnoresDuplicated) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -255,7 +255,7 @@ TEST_F(PasswordFetcherTest, ReceivesZeroPasswords) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
 
   GetPasswordStore()->RemoveLogin(Form1());
@@ -264,7 +264,7 @@ TEST_F(PasswordFetcherTest, ReceivesZeroPasswords) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber == 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 0u);
   EXPECT_TRUE(passwordFetcher);
 }
@@ -286,7 +286,7 @@ TEST_F(PasswordFetcherTest, FilterPassword) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::TimeDelta::FromSeconds(1000));
+      true, base::Seconds(1000));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);

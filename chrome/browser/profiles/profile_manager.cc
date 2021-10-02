@@ -324,7 +324,7 @@ void NukeProfileFromDiskImpl(const base::FilePath& profile_path,
   // LockTable, and/or fire events when locks are released. That way we could
   // wait for all the locks in |profile_path| to be released, rather than having
   // this retry logic.
-  const base::TimeDelta kRetryDelay = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kRetryDelay = base::Seconds(1);
 
   // Delete both the profile directory and its corresponding cache.
   base::FilePath cache_path;
@@ -1608,7 +1608,7 @@ void ProfileManager::DoFinalInitLogging(Profile* profile) {
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ProfileSizeTask, profile->GetPath(), enabled_app_count),
-      base::TimeDelta::FromSeconds(112));
+      base::Seconds(112));
 }
 
 ProfileManager::ProfileInfo::ProfileInfo() {
@@ -2261,9 +2261,9 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
 
   if (profile->IsGuestSession()) {
     auto duration = base::Time::Now() - profile->GetCreationTime();
-    base::UmaHistogramCustomCounts(
-        "Profile.Guest.OTR.Lifetime", duration.InMinutes(), 1,
-        base::TimeDelta::FromDays(28).InMinutes(), 100);
+    base::UmaHistogramCustomCounts("Profile.Guest.OTR.Lifetime",
+                                   duration.InMinutes(), 1,
+                                   base::Days(28).InMinutes(), 100);
 
     CleanUpGuestProfile();
   }

@@ -205,8 +205,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     // Report the memory impact of intervention after 10, 20, 30 seconds.
     metrics_at_intervention_ = current_memory;
     number_of_report_needed_ = 3;
-    delayed_report_timer_.StartRepeating(base::TimeDelta::FromSeconds(10),
-                                         FROM_HERE);
+    delayed_report_timer_.StartRepeating(base::Seconds(10), FROM_HERE);
   }
 }
 

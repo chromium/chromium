@@ -13,20 +13,20 @@ namespace net {
 
 namespace {
 
-constexpr base::TimeDelta kOneWeek = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kOneWeek = base::Days(7);
 
 }  // namespace
 
 TEST(CheckRevocationDateTest, Valid) {
   base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromHours(1);
+  base::Time this_update = now - base::Hours(1);
   der::GeneralizedTime encoded_this_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(this_update, &encoded_this_update));
   EXPECT_TRUE(
       CheckRevocationDateValid(encoded_this_update, nullptr, now, kOneWeek));
 
-  base::Time next_update = this_update + base::TimeDelta::FromDays(7);
+  base::Time next_update = this_update + base::Days(7);
   der::GeneralizedTime encoded_next_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(next_update, &encoded_next_update));
@@ -36,14 +36,14 @@ TEST(CheckRevocationDateTest, Valid) {
 
 TEST(CheckRevocationDateTest, ThisUpdateInTheFuture) {
   base::Time now = base::Time::Now();
-  base::Time this_update = now + base::TimeDelta::FromHours(1);
+  base::Time this_update = now + base::Hours(1);
   der::GeneralizedTime encoded_this_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(this_update, &encoded_this_update));
   EXPECT_FALSE(
       CheckRevocationDateValid(encoded_this_update, nullptr, now, kOneWeek));
 
-  base::Time next_update = this_update + base::TimeDelta::FromDays(7);
+  base::Time next_update = this_update + base::Days(7);
   der::GeneralizedTime encoded_next_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(next_update, &encoded_next_update));
@@ -53,14 +53,14 @@ TEST(CheckRevocationDateTest, ThisUpdateInTheFuture) {
 
 TEST(CheckRevocationDateTest, NextUpdatePassed) {
   base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromDays(6);
+  base::Time this_update = now - base::Days(6);
   der::GeneralizedTime encoded_this_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(this_update, &encoded_this_update));
   EXPECT_TRUE(
       CheckRevocationDateValid(encoded_this_update, nullptr, now, kOneWeek));
 
-  base::Time next_update = now - base::TimeDelta::FromHours(1);
+  base::Time next_update = now - base::Hours(1);
   der::GeneralizedTime encoded_next_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(next_update, &encoded_next_update));
@@ -70,14 +70,14 @@ TEST(CheckRevocationDateTest, NextUpdatePassed) {
 
 TEST(CheckRevocationDateTest, NextUpdateBeforeThisUpdate) {
   base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromDays(1);
+  base::Time this_update = now - base::Days(1);
   der::GeneralizedTime encoded_this_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(this_update, &encoded_this_update));
   EXPECT_TRUE(
       CheckRevocationDateValid(encoded_this_update, nullptr, now, kOneWeek));
 
-  base::Time next_update = this_update - base::TimeDelta::FromDays(1);
+  base::Time next_update = this_update - base::Days(1);
   der::GeneralizedTime encoded_next_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(next_update, &encoded_next_update));
@@ -94,15 +94,15 @@ TEST(CheckRevocationDateTest, ThisUpdateOlderThanMaxAge) {
   EXPECT_TRUE(
       CheckRevocationDateValid(encoded_this_update, nullptr, now, kOneWeek));
 
-  base::Time next_update = now + base::TimeDelta::FromHours(1);
+  base::Time next_update = now + base::Hours(1);
   der::GeneralizedTime encoded_next_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(next_update, &encoded_next_update));
   EXPECT_TRUE(CheckRevocationDateValid(encoded_this_update,
                                        &encoded_next_update, now, kOneWeek));
 
-  ASSERT_TRUE(der::EncodeTimeAsGeneralizedTime(
-      this_update - base::TimeDelta::FromSeconds(1), &encoded_this_update));
+  ASSERT_TRUE(der::EncodeTimeAsGeneralizedTime(this_update - base::Seconds(1),
+                                               &encoded_this_update));
   EXPECT_FALSE(
       CheckRevocationDateValid(encoded_this_update, nullptr, now, kOneWeek));
   EXPECT_FALSE(CheckRevocationDateValid(encoded_this_update,
@@ -111,10 +111,10 @@ TEST(CheckRevocationDateTest, ThisUpdateOlderThanMaxAge) {
 
 TEST(CheckRevocationDateTest, VerifyTimeFromBeforeWindowsEpoch) {
   base::Time windows_epoch;
-  base::Time verify_time = windows_epoch - base::TimeDelta::FromDays(1);
+  base::Time verify_time = windows_epoch - base::Days(1);
 
   base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromHours(1);
+  base::Time this_update = now - base::Hours(1);
   der::GeneralizedTime encoded_this_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(this_update, &encoded_this_update));
@@ -131,7 +131,7 @@ TEST(CheckRevocationDateTest, VerifyTimeFromBeforeWindowsEpoch) {
 
 TEST(CheckRevocationDateTest, VerifyTimeMinusAgeFromBeforeWindowsEpoch) {
   base::Time windows_epoch;
-  base::Time verify_time = windows_epoch + base::TimeDelta::FromDays(1);
+  base::Time verify_time = windows_epoch + base::Days(1);
 
   base::Time this_update = windows_epoch;
   der::GeneralizedTime encoded_this_update;

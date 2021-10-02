@@ -460,7 +460,7 @@ void RealboxHandler::OpenAutocompleteMatch(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
 
-  base::TimeDelta default_time_delta = base::TimeDelta::FromMilliseconds(-1);
+  base::TimeDelta default_time_delta = base::Milliseconds(-1);
 
   if (time_user_first_modified_realbox_.is_null())
     elapsed_time_since_first_autocomplete_query = default_time_delta;

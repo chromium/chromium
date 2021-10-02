@@ -155,8 +155,7 @@ TEST_F(ThreadWrapperTest, PostDelayed) {
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(kMaxTestDelay));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kMaxTestDelay));
   run_loop.Run();
 }
 
@@ -211,8 +210,7 @@ TEST_F(ThreadWrapperTest, ClearDelayed) {
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(kMaxTestDelay));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kMaxTestDelay));
   run_loop.Run();
 }
 

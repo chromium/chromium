@@ -33,8 +33,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kEngagedSiteUpdateInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kEngagedSiteUpdateInterval = base::Seconds(60);
 
 class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -115,7 +114,7 @@ const base::FeatureParam<base::TimeDelta>
     LookalikeUrlService::kManifestFetchDelay{
         &lookalikes::features::kLookalikeDigitalAssetLinks,
         lookalikes::features::kLookalikeDigitalAssetLinksTimeoutParameter,
-        base::TimeDelta::FromSeconds(5)};
+        base::Seconds(5)};
 
 LookalikeUrlService::LookalikeUrlService(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}

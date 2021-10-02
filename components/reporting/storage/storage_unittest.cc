@@ -734,8 +734,7 @@ class StorageTest
       const StorageOptions& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
-              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
-                  30))) {
+              /*renew_encryption_key_period=*/base::Minutes(30))) {
     ASSERT_FALSE(storage_) << "TestStorage already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
         CreateTestStorage(options, encryption_module);
@@ -770,8 +769,7 @@ class StorageTest
       const StorageOptions& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
-              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
-                  30))) {
+              /*renew_encryption_key_period=*/base::Minutes(30))) {
     // Initialize Storage with no key.
     test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     test_compression_module_ =
@@ -991,7 +989,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
@@ -1000,7 +998,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
     return;
   }
 
-  static constexpr auto kKeyRenewalTime = base::TimeDelta::FromSeconds(5);
+  static constexpr auto kKeyRenewalTime = base::Seconds(5);
   CreateTestStorageOrDie(BuildTestStorageOptions(),
                          EncryptionModule::Create(kKeyRenewalTime));
   WriteStringOrDie(MANUAL_BATCH, kData[0]);
@@ -1045,8 +1043,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
 
   // Wait to trigger encryption key request on the next upload
-  task_environment_.FastForwardBy(kKeyRenewalTime +
-                                  base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(kKeyRenewalTime + base::Seconds(1));
 
   // Set uploader expectations with encryption key request.
   test::TestCallbackAutoWaiter waiter;
@@ -1095,7 +1092,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
@@ -1176,7 +1173,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #0 and forward time again, removing data #0
@@ -1194,7 +1191,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
         })))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing data #1
@@ -1211,7 +1208,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
         })))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Add more records and verify that #2 and new records are returned.
@@ -1233,7 +1230,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
           return Status::StatusOK();
         })))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing data #2
@@ -1251,7 +1248,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
           return Status::StatusOK();
         })))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1510,7 +1507,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
           return Status::StatusOK();
         })))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+    task_environment_.FastForwardBy(base::Seconds(20));
   }
 
   // Confirm #0 SLOW_BATCH, removing data #0
@@ -1546,7 +1543,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
           return Status::StatusOK();
         })))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+    task_environment_.FastForwardBy(base::Seconds(20));
   }
 }
 
@@ -1575,7 +1572,7 @@ TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
                      kData[0]);  // Immediately uploads and fails.
 
     // Let it retry upload and verify.
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1624,7 +1621,7 @@ TEST_P(StorageTest, ForceConfirm) {
         })))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, possibly removing records #0 and #1
@@ -1641,7 +1638,7 @@ TEST_P(StorageTest, ForceConfirm) {
         })))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Now force confirm #0 and forward time again.
@@ -1667,7 +1664,7 @@ TEST_P(StorageTest, ForceConfirm) {
         })))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Force confirm #0 and forward time again.
@@ -1690,7 +1687,7 @@ TEST_P(StorageTest, ForceConfirm) {
         })))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
@@ -1720,7 +1717,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
         << write_result;
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // This time key delivery is to succeed.
@@ -1736,7 +1733,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
       .RetiresOnSaturation();
 
   // Forward time to trigger upload
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // Successfully write data
   WriteStringOrDie(FAST_BATCH, kData[0]);
@@ -1758,7 +1755,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
         .RetiresOnSaturation();
 
     // Trigger successful upload.
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   ResetTestStorage();
@@ -1787,7 +1784,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
         .RetiresOnSaturation();
 
     // Trigger upload.
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 

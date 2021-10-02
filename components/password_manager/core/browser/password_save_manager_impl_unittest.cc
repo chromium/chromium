@@ -1424,7 +1424,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
       parsed_submitted_form_.password_value;
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   saved_match_in_profile_store.date_created =
-      base::Time::Now() - base::TimeDelta::FromDays(10);
+      base::Time::Now() - base::Days(10);
   saved_match_in_profile_store.times_used = 10;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
       autofill::GaiaIdHash::FromGaiaId("email@gmail.com"));

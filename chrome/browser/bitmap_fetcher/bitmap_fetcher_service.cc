@@ -124,8 +124,8 @@ BitmapFetcherService::CacheEntry::~CacheEntry() {
 }
 
 BitmapFetcherService::BitmapFetcherService(content::BrowserContext* context)
-    : shared_data_decoder_(std::make_unique<data_decoder::DataDecoder>(
-          base::TimeDelta::FromSeconds(405))),
+    : shared_data_decoder_(
+          std::make_unique<data_decoder::DataDecoder>(base::Seconds(405))),
       cache_(kMaxCacheEntries),
       current_request_id_(1),
       context_(context) {}

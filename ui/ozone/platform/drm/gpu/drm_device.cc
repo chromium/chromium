@@ -105,10 +105,10 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
         DCHECK_EQ(base::TimeTicks::GetClock(),
                   base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
         const base::TimeTicks timestamp =
-            base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                    static_cast<int64_t>(vblank.tv_sec) *
-                                        base::Time::kMicrosecondsPerSecond +
-                                    vblank.tv_usec);
+            base::TimeTicks() +
+            base::Microseconds(static_cast<int64_t>(vblank.tv_sec) *
+                                   base::Time::kMicrosecondsPerSecond +
+                               vblank.tv_usec);
         callback.Run(vblank.sequence, timestamp, vblank.user_data);
       } break;
       case DRM_EVENT_VBLANK:

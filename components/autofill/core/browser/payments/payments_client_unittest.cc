@@ -372,8 +372,7 @@ class PaymentsClientTest : public testing::Test {
   // start the Payments Request which requires the authentication.
   void IssueOAuthToken() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-        "totally_real_token",
-        AutofillClock::Now() + base::TimeDelta::FromDays(10));
+        "totally_real_token", AutofillClock::Now() + base::Days(10));
 
     // Verify the auth header.
     std::string auth_header_value;
@@ -1102,7 +1101,7 @@ TEST_F(PaymentsClientTest, GetUploadAccountFromSyncTest) {
   // Issue a token for the secondary account.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       secondary_account_info.account_id, "secondary_account_token",
-      AutofillClock::Now() + base::TimeDelta::FromDays(10));
+      AutofillClock::Now() + base::Days(10));
 
   // Verify the auth header.
   std::string auth_header_value;

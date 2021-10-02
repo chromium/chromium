@@ -51,9 +51,9 @@ std::unique_ptr<base::Value> BuildTestManifest() {
   auto manifest = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   manifest->SetKey(kBloomFilterNumHashKey, base::Value(kNumHash));
   manifest->SetKey(kBloomFilterNumBitsKey, base::Value(3 * kNumBitsPerEntry));
-  manifest->SetKey(kExpiryDateKey,
-                   base::Value(MillisFromUnixEpoch(
-                       base::Time::Now() + base::TimeDelta::FromDays(1))));
+  manifest->SetKey(
+      kExpiryDateKey,
+      base::Value(MillisFromUnixEpoch(base::Time::Now() + base::Days(1))));
 
   return manifest;
 }
@@ -116,8 +116,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
   std::unique_ptr<base::Value> manifest = BuildTestManifest();
-  base::Time one_day_from_now =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time one_day_from_now = base::Time::Now() + base::Days(1);
   manifest->SetDoubleKey(kExpiryDateKey, MillisFromUnixEpoch(one_day_from_now));
   base::Version new_version(kTestAllowlistVersion);
 
@@ -148,8 +147,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestSameVersionAsCache) {
   base::flat_map<std::string, base::ScopedFD> fd_map;
   std::unique_ptr<base::Value> manifest = BuildTestManifest();
-  base::Time one_day_from_now =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time one_day_from_now = base::Time::Now() + base::Days(1);
   base::Version version(kTestAllowlistVersion);
 
   AppPackageNameLoggingRule expected_record(version, one_day_from_now);
@@ -304,9 +302,9 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
   std::unique_ptr<base::Value> manifest = BuildTestManifest();
-  manifest->SetKey(kExpiryDateKey,
-                   base::Value(MillisFromUnixEpoch(
-                       base::Time::Now() - base::TimeDelta::FromDays(1))));
+  manifest->SetKey(
+      kExpiryDateKey,
+      base::Value(MillisFromUnixEpoch(base::Time::Now() - base::Days(1))));
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(

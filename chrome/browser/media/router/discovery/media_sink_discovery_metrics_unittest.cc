@@ -41,7 +41,7 @@ TEST(DialDeviceCountMetricsTest, RecordDeviceCountsIfNeeded) {
       DialDeviceCountMetrics::kHistogramDialKnownDeviceCount, 10, 1);
 
   // Record another count.
-  clock.Advance(base::TimeDelta::FromHours(2));
+  clock.Advance(base::Hours(2));
   metrics.RecordDeviceCountsIfNeeded(7, 10);
   tester.ExpectTotalCount(
       DialDeviceCountMetrics::kHistogramDialAvailableDeviceCount, 2);
@@ -79,7 +79,7 @@ TEST(CastDeviceCountMetricsTest, RecordDeviceCountsIfNeeded) {
       CastDeviceCountMetrics::kHistogramCastKnownDeviceCount, 10, 1);
 
   // Record another count.
-  clock.Advance(base::TimeDelta::FromHours(2));
+  clock.Advance(base::Hours(2));
   metrics.RecordDeviceCountsIfNeeded(7, 10);
   tester.ExpectTotalCount(
       CastDeviceCountMetrics::kHistogramCastConnectedDeviceCount, 2);
@@ -133,7 +133,7 @@ TEST(CastAnalyticsTest, RecordDeviceChannelError) {
 
 TEST(CastAnalyticsTest, RecordDeviceChannelOpenDuration) {
   base::HistogramTester tester;
-  const base::TimeDelta delta = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta delta = base::Milliseconds(10);
 
   tester.ExpectTotalCount(CastAnalytics::kHistogramCastMdnsChannelOpenSuccess,
                           0);

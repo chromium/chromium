@@ -403,7 +403,7 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
   bool is_signaled;
   {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    is_signaled = event->TimedWait(base::TimeDelta::FromMinutes(5));
+    is_signaled = event->TimedWait(base::Minutes(5));
   }
 
   event_ref.reset();

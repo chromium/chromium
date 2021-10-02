@@ -297,8 +297,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   ::wm::SetWindowVisibilityAnimationType(
       overlay_window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL);
   ::wm::SetWindowVisibilityAnimationDuration(
-      overlay_window,
-      base::TimeDelta::FromMilliseconds(kSlideAnimationDurationMs));
+      overlay_window, base::Milliseconds(kSlideAnimationDurationMs));
 
   keyboard::KeyboardUIController::Get()->AddObserver(this);
 }

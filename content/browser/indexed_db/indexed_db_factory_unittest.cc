@@ -335,7 +335,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_EQ(IndexedDBStorageKeyState::ClosingState::kPreCloseGracePeriod,
             factory()->GetStorageKeyFactory(storage_key)->closing_stage());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   // The factory should be closed, as the pre close tasks are delayed.
   EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));

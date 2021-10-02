@@ -55,9 +55,8 @@ constexpr size_t kMaxUserDenylistedCacheSize = 100;
 // The duration for which cache entries are considered fresh. Stale entries in
 // the cache are ignored.
 constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
-    base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kMaxUserDenylistedCacheDuration =
-    base::TimeDelta::FromHours(1);
+    base::Hours(1);
+constexpr base::TimeDelta kMaxUserDenylistedCacheDuration = base::Hours(1);
 
 // Creates a service request sender that serves the pre-specified response.
 // Creation may fail (return null) if the parameter fails to decode.

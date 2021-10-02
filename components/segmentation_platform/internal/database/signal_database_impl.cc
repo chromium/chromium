@@ -169,8 +169,7 @@ void SignalDatabaseImpl::OnGetSamples(
     base::Time midnight = key.range_start().UTCMidnight();
     for (int i = 0; i < signal_data.samples_size(); ++i) {
       const auto& sample = signal_data.samples(i);
-      base::Time timestamp =
-          midnight + base::TimeDelta::FromSeconds(sample.time_sec_delta());
+      base::Time timestamp = midnight + base::Seconds(sample.time_sec_delta());
       if (timestamp < start_time || timestamp > end_time)
         continue;
 
@@ -233,8 +232,7 @@ void SignalDatabaseImpl::CompactSamplesForDay(proto::SignalType signal_type,
   DCHECK(initialized_);
   // Compact the signals between 00:00:00AM to 23:59:59PM.
   day_start_time = day_start_time.UTCMidnight();
-  base::Time day_end_time = day_start_time + base::TimeDelta::FromDays(1) -
-                            base::TimeDelta::FromSeconds(1);
+  base::Time day_end_time = day_start_time + base::Days(1) - base::Seconds(1);
   SignalKey compact_key(metadata_utils::SignalTypeToSignalKind(signal_type),
                         name_hash, day_end_time, day_start_time);
   database_->LoadKeysAndEntriesWithFilter(
@@ -290,7 +288,7 @@ void SignalDatabaseImpl::OnDatabaseInitialized(
 
 void SignalDatabaseImpl::CleanupStaleCachedEntries(
     base::Time current_timestamp) {
-  base::Time prev_second = current_timestamp - base::TimeDelta::FromSeconds(1);
+  base::Time prev_second = current_timestamp - base::Seconds(1);
   std::vector<SignalKey> keys_to_delete;
   for (const auto& entry : recently_added_signals_) {
     if (entry.first.range_end() < prev_second)

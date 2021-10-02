@@ -51,14 +51,11 @@ constexpr int kPaddingHorizontalDip = 16;
 constexpr int kPaddingTopDip = 12;
 
 // Animation.
-constexpr base::TimeDelta kAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(83);
-constexpr base::TimeDelta kAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kAnimationFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(83);
+constexpr base::TimeDelta kAnimationFadeInDelay = base::Milliseconds(83);
+constexpr base::TimeDelta kAnimationFadeInDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kAnimationFadeOutDuration = base::Milliseconds(83);
 constexpr base::TimeDelta kAnimationTransformInDuration =
-    base::TimeDelta::FromMilliseconds(333);
+    base::Milliseconds(333);
 constexpr int kAnimationTranslationDip = 30;
 
 using keyboard::KeyboardUIController;

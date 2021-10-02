@@ -77,7 +77,7 @@ class WaitForDomActionTest : public testing::Test {
     ASSERT_TRUE(
         has_check_elements_result_);  // OnCheckElementsDone() not called
     std::move(callback).Run(check_elements_result_,
-                            base::TimeDelta::FromMilliseconds(fake_wait_time_));
+                            base::Milliseconds(fake_wait_time_));
   }
 
   // Runs the action defined in |proto_| and reports the result to |callback_|.

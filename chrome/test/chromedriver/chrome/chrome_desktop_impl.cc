@@ -41,8 +41,7 @@ bool KillProcess(const base::Process& process, bool kill_gracefully) {
 #if defined(OS_POSIX)
   if (!kill_gracefully) {
     kill(process.Pid(), SIGKILL);
-    base::TimeTicks deadline =
-        base::TimeTicks::Now() + base::TimeDelta::FromSeconds(30);
+    base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(30);
     while (base::TimeTicks::Now() < deadline) {
       pid_t pid = HANDLE_EINTR(waitpid(process.Pid(), NULL, WNOHANG));
       if (pid == process.Pid())
@@ -55,7 +54,7 @@ bool KillProcess(const base::Process& process, bool kill_gracefully) {
         }
         LOG(WARNING) << "Error waiting for process " << process.Pid();
       }
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+      base::PlatformThread::Sleep(base::Milliseconds(50));
     }
     return false;
   }
@@ -137,7 +136,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
     }
     if (!id.empty())
       break;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
   }
   if (id.empty())
     return Status(kUnknownError, "page could not be found: " + url);
@@ -203,8 +202,8 @@ Status ChromeDesktopImpl::QuitImpl() {
       status = devtools_websocket_client_->SendCommandAndIgnoreResponse(
           "Browser.close", base::DictionaryValue());
       // If status is not okay, we will try the old method of KillProcess
-      if (status.IsOk() && process_.WaitForExitWithTimeout(
-                               base::TimeDelta::FromSeconds(10), nullptr))
+      if (status.IsOk() &&
+          process_.WaitForExitWithTimeout(base::Seconds(10), nullptr))
         return status;
     }
   }

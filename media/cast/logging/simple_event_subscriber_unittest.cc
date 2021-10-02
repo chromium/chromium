@@ -60,7 +60,7 @@ TEST_F(SimpleEventSubscriberTest, GetAndResetEvents) {
   playout_event->media_type = AUDIO_EVENT;
   playout_event->rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(100));
   playout_event->frame_id = FrameId::first();
-  playout_event->delay_delta = base::TimeDelta::FromMilliseconds(100);
+  playout_event->delay_delta = base::Milliseconds(100);
   cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
   std::unique_ptr<FrameEvent> decode_event(new FrameEvent());

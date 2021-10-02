@@ -44,9 +44,9 @@ class ResolutionNotificationControllerTest
                                              float new_refresh_rate) {
     const std::u16string display_name =
         base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(display_id));
-    const std::u16string countdown = ui::TimeFormat::Simple(
-        ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
-        base::TimeDelta::FromSeconds(15));
+    const std::u16string countdown =
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_LONG, base::Seconds(15));
     if (::display::features::IsListAllDisplayModesEnabled()) {
       return l10n_util::GetStringFUTF16(
           IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED, display_name,
@@ -66,9 +66,9 @@ class ResolutionNotificationControllerTest
       float fallback_refresh_rate) {
     const std::u16string display_name =
         base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(display_id));
-    const std::u16string countdown = ui::TimeFormat::Simple(
-        ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
-        base::TimeDelta::FromSeconds(15));
+    const std::u16string countdown =
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_LONG, base::Seconds(15));
     if (::display::features::IsListAllDisplayModesEnabled()) {
       return l10n_util::GetStringFUTF16(
           IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,

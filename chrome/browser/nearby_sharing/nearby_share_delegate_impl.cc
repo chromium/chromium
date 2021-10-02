@@ -20,7 +20,7 @@ namespace {
 const char kStartOnboardingQueryParam[] = "onboarding";
 const char kStartReceivingQueryParam[] = "receive";
 
-constexpr base::TimeDelta kShutoffTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kShutoffTimeout = base::Minutes(5);
 
 std::string GetTimestampString() {
   return base::NumberToString(

@@ -37,7 +37,7 @@ constexpr remoting::ftl::FtlCapability::Feature kFtlCapabilities[] = {
 constexpr size_t kFtlCapabilityCount =
     sizeof(kFtlCapabilities) / sizeof(ftl::FtlCapability::Feature);
 
-constexpr base::TimeDelta kRefreshBufferTime = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRefreshBufferTime = base::Hours(1);
 
 constexpr char kSignInGaiaPath[] = "/v1/registration:signingaia";
 
@@ -216,7 +216,7 @@ void FtlRegistrationManager::OnSignInGaiaResponse(
   ftl_auth_token_ = response->auth_token().payload();
   VLOG(1) << "Auth token set on FtlClient";
   base::TimeDelta refresh_delay =
-      base::TimeDelta::FromMicroseconds(response->auth_token().expires_in());
+      base::Microseconds(response->auth_token().expires_in());
   if (refresh_delay > kRefreshBufferTime) {
     refresh_delay -= kRefreshBufferTime;
   } else {

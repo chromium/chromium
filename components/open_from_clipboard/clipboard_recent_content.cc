@@ -34,5 +34,5 @@ void ClipboardRecentContent::SetInstance(
 
 // static
 base::TimeDelta ClipboardRecentContent::MaximumAgeOfClipboard() {
-  return base::TimeDelta::FromMinutes(10);
+  return base::Minutes(10);
 }

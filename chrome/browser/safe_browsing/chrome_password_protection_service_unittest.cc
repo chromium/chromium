@@ -852,7 +852,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordCaptureEventScheduledFromPref) {
   // Pick a delay and store the deadline in the pref
-  base::TimeDelta delay = base::TimeDelta::FromDays(13);
+  base::TimeDelta delay = base::Days(13);
   SetDelayInPref(profile()->GetPrefs(),
                  prefs::kSafeBrowsingNextPasswordCaptureEventLogTime, delay);
 

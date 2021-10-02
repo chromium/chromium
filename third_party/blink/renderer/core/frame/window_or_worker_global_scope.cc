@@ -152,7 +152,7 @@ int WindowOrWorkerGlobalScope::setTimeout(
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler, arguments);
   return DOMTimer::Install(execution_context, action,
-                           base::TimeDelta::FromMilliseconds(timeout), true);
+                           base::Milliseconds(timeout), true);
 }
 
 int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
@@ -170,7 +170,7 @@ int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);
   return DOMTimer::Install(execution_context, action,
-                           base::TimeDelta::FromMilliseconds(timeout), true);
+                           base::Milliseconds(timeout), true);
 }
 
 int WindowOrWorkerGlobalScope::setInterval(
@@ -185,7 +185,7 @@ int WindowOrWorkerGlobalScope::setInterval(
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler, arguments);
   return DOMTimer::Install(execution_context, action,
-                           base::TimeDelta::FromMilliseconds(timeout), false);
+                           base::Milliseconds(timeout), false);
 }
 
 int WindowOrWorkerGlobalScope::setInterval(ScriptState* script_state,
@@ -203,7 +203,7 @@ int WindowOrWorkerGlobalScope::setInterval(ScriptState* script_state,
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);
   return DOMTimer::Install(execution_context, action,
-                           base::TimeDelta::FromMilliseconds(timeout), false);
+                           base::Milliseconds(timeout), false);
 }
 
 void WindowOrWorkerGlobalScope::clearTimeout(EventTarget& event_target,

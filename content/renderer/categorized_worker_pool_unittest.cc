@@ -138,7 +138,7 @@ TEST_F(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
           // shouldn't if only one background task runs at a time.
           EXPECT_FALSE(is_running_task);
           is_running_task = true;
-          base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+          base::PlatformThread::Sleep(base::Milliseconds(10));
           is_running_task = false;
         })));
 

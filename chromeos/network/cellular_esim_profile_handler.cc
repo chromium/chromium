@@ -13,7 +13,7 @@ namespace {
 // Delay before profile refresh callback is called. This ensures that eSIM
 // profiles are updated before callback returns.
 constexpr base::TimeDelta kProfileRefreshCallbackDelay =
-    base::TimeDelta::FromMilliseconds(150);
+    base::Milliseconds(150);
 
 }  // namespace
 

@@ -512,7 +512,7 @@ void UpdateCheckDriver::BeginUpdateCheck() {
           FROM_HERE,
           base::BindOnce(&UpdateCheckDriver::BeginUpdateCheck,
                          base::Unretained(this)),
-          base::TimeDelta::FromSeconds(kGoogleRetryIntervalSeconds));
+          base::Seconds(kGoogleRetryIntervalSeconds));
       return;
     }
   }
@@ -851,7 +851,7 @@ void UpdateCheckDriver::PollGoogleUpdate() {
         FROM_HERE,
         base::BindOnce(&UpdateCheckDriver::PollGoogleUpdate,
                        base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(kGoogleUpdatePollIntervalMs));
+        base::Milliseconds(kGoogleUpdatePollIntervalMs));
     // Early return for this non-terminal state.
     return;
   }

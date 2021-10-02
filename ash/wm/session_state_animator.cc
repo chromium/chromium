@@ -78,16 +78,16 @@ base::TimeDelta SessionStateAnimator::GetDuration(
     case ANIMATION_SPEED_IMMEDIATE:
       return base::TimeDelta();
     case ANIMATION_SPEED_UNDOABLE:
-      return base::TimeDelta::FromMilliseconds(400);
+      return base::Milliseconds(400);
     case ANIMATION_SPEED_MOVE_WINDOWS:
-      return base::TimeDelta::FromMilliseconds(350);
+      return base::Milliseconds(350);
     case ANIMATION_SPEED_UNDO_MOVE_WINDOWS:
-      return base::TimeDelta::FromMilliseconds(350);
+      return base::Milliseconds(350);
     case ANIMATION_SPEED_SHUTDOWN:
-      return IsTabletModeEnabled() ? base::TimeDelta::FromMilliseconds(1500)
-                                   : base::TimeDelta::FromMilliseconds(1000);
+      return IsTabletModeEnabled() ? base::Milliseconds(1500)
+                                   : base::Milliseconds(1000);
     case ANIMATION_SPEED_REVERT_SHUTDOWN:
-      return base::TimeDelta::FromMilliseconds(500);
+      return base::Milliseconds(500);
   }
   // Satisfy compilers that do not understand that we will return from switch
   // above anyway.

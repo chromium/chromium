@@ -56,8 +56,8 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
   entity.mutable_specifics()->CopyFrom(specifics);
 
   // Unimportant fields, set for completeness only.
-  base::Time ctime = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time mtime = ctime + base::TimeDelta::FromSeconds(version);
+  base::Time ctime = base::Time::UnixEpoch() + base::Days(1);
+  base::Time mtime = ctime + base::Seconds(version);
   entity.set_ctime(TimeToProtoTime(ctime));
   entity.set_mtime(TimeToProtoTime(mtime));
   entity.set_name("Name: " + tag_hash.value());
@@ -84,8 +84,8 @@ sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
   AddDefaultFieldValue(type_, entity.mutable_specifics());
 
   // Unimportant fields, set for completeness only.
-  base::Time ctime = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time mtime = ctime + base::TimeDelta::FromSeconds(version);
+  base::Time ctime = base::Time::UnixEpoch() + base::Days(1);
+  base::Time mtime = ctime + base::Seconds(version);
   entity.set_ctime(TimeToProtoTime(ctime));
   entity.set_mtime(TimeToProtoTime(mtime));
   entity.set_name("Tombstone");

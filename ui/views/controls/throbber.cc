@@ -39,7 +39,7 @@ void Throbber::Start() {
 
   start_time_ = base::TimeTicks::Now();
   timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(30),
+      FROM_HERE, base::Milliseconds(30),
       base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
   SchedulePaint();  // paint right away
 }
@@ -96,8 +96,8 @@ END_METADATA
 // Smoothed throbber ---------------------------------------------------------
 
 SmoothedThrobber::SmoothedThrobber()
-    : start_delay_(base::TimeDelta::FromMilliseconds(200)),
-      stop_delay_(base::TimeDelta::FromMilliseconds(50)) {}
+    : start_delay_(base::Milliseconds(200)),
+      stop_delay_(base::Milliseconds(50)) {}
 
 SmoothedThrobber::~SmoothedThrobber() = default;
 

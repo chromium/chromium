@@ -14,8 +14,7 @@ namespace media {
 
 namespace {
 
-base::TimeDelta kZeroTime = base::TimeDelta::FromSeconds(0);
-
+base::TimeDelta kZeroTime = base::Seconds(0);
 }
 
 TEST(SpeechRecognitionResultStructTraitsTest, NoTimingInformation) {
@@ -32,8 +31,7 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithTimingInformation) {
   media::SpeechRecognitionResult invalid_result("hello world", true);
   invalid_result.timing_information = media::TimingInformation();
   invalid_result.timing_information->audio_start_time = kZeroTime;
-  invalid_result.timing_information->audio_end_time =
-      base::TimeDelta::FromSeconds(-1);
+  invalid_result.timing_information->audio_end_time = base::Seconds(-1);
   std::vector<uint8_t> data =
       media::mojom::SpeechRecognitionResult::Serialize(&invalid_result);
   media::SpeechRecognitionResult output;
@@ -43,8 +41,7 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithTimingInformation) {
   media::SpeechRecognitionResult valid_result("hello world", true);
   valid_result.timing_information = media::TimingInformation();
   valid_result.timing_information->audio_start_time = kZeroTime;
-  valid_result.timing_information->audio_end_time =
-      base::TimeDelta::FromSeconds(1);
+  valid_result.timing_information->audio_end_time = base::Seconds(1);
   std::vector<uint8_t> valid_data =
       media::mojom::SpeechRecognitionResult::Serialize(&valid_result);
   media::SpeechRecognitionResult valid_output;
@@ -58,8 +55,7 @@ TEST(SpeechRecognitionResultStructTraitsTest,
   media::SpeechRecognitionResult invalid_result("hello world", false);
   invalid_result.timing_information = media::TimingInformation();
   invalid_result.timing_information->audio_start_time = kZeroTime;
-  invalid_result.timing_information->audio_end_time =
-      base::TimeDelta::FromSeconds(1);
+  invalid_result.timing_information->audio_end_time = base::Seconds(1);
   std::vector<uint8_t> invalid_data =
       media::mojom::SpeechRecognitionResult::Serialize(&invalid_result);
   media::SpeechRecognitionResult invalid_output;
@@ -73,16 +69,15 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithInvalidHypothesisParts) {
   media::SpeechRecognitionResult invalid_result("hello world", true);
   invalid_result.timing_information = media::TimingInformation();
   invalid_result.timing_information->audio_start_time = kZeroTime;
-  invalid_result.timing_information->audio_end_time =
-      base::TimeDelta::FromSeconds(1);
+  invalid_result.timing_information->audio_end_time = base::Seconds(1);
   invalid_result.timing_information->hypothesis_parts =
       std::vector<media::HypothesisParts>();
   auto& hypothesis_parts =
       invalid_result.timing_information->hypothesis_parts.value();
   hypothesis_parts.emplace_back(std::vector<std::string>({"hello"}),
-                                base::TimeDelta::FromSeconds(-1));
+                                base::Seconds(-1));
   hypothesis_parts.emplace_back(std::vector<std::string>({"world"}),
-                                base::TimeDelta::FromSeconds(1));
+                                base::Seconds(1));
   std::vector<uint8_t> data =
       media::mojom::SpeechRecognitionResult::Serialize(&invalid_result);
   media::SpeechRecognitionResult output;
@@ -94,16 +89,15 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithValidHypothesisParts) {
   media::SpeechRecognitionResult valid_result("hello world", true);
   valid_result.timing_information = media::TimingInformation();
   valid_result.timing_information->audio_start_time = kZeroTime;
-  valid_result.timing_information->audio_end_time =
-      base::TimeDelta::FromSeconds(2);
+  valid_result.timing_information->audio_end_time = base::Seconds(2);
   valid_result.timing_information->hypothesis_parts =
       std::vector<media::HypothesisParts>();
   auto& hypothesis_parts =
       valid_result.timing_information->hypothesis_parts.value();
   hypothesis_parts.emplace_back(std::vector<std::string>({"hello"}),
-                                base::TimeDelta::FromSeconds(0));
+                                base::Seconds(0));
   hypothesis_parts.emplace_back(std::vector<std::string>({"world"}),
-                                base::TimeDelta::FromSeconds(1));
+                                base::Seconds(1));
   std::vector<uint8_t> data =
       media::mojom::SpeechRecognitionResult::Serialize(&valid_result);
   media::SpeechRecognitionResult output;

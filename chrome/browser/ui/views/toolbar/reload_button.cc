@@ -37,8 +37,8 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
                     nullptr),
       command_updater_(command_updater),
       double_click_timer_delay_(
-          base::TimeDelta::FromMilliseconds(views::GetDoubleClickInterval())),
-      mode_switch_timer_delay_(base::TimeDelta::FromMilliseconds(1350)) {
+          base::Milliseconds(views::GetDoubleClickInterval())),
+      mode_switch_timer_delay_(base::Milliseconds(1350)) {
   SetVisibleMode(Mode::kReload);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);

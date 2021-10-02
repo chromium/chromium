@@ -21,7 +21,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kTimerInterval = base::Minutes(10);
 
 // Returns the number of days since the origin.
 int GetDayId(base::Time time) {

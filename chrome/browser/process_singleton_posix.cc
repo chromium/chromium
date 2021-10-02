@@ -483,8 +483,8 @@ class ProcessSingleton::LinuxWatcher
           fd, base::BindRepeating(&SocketReader::OnSocketCanReadWithoutBlocking,
                                   base::Unretained(this)));
       // If we haven't completed in a reasonable amount of time, give up.
-      timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(kTimeoutInSeconds),
-                   this, &SocketReader::CleanupAndDeleteSelf);
+      timer_.Start(FROM_HERE, base::Seconds(kTimeoutInSeconds), this,
+                   &SocketReader::CleanupAndDeleteSelf);
     }
 
     SocketReader(const SocketReader&) = delete;
@@ -732,9 +732,9 @@ ProcessSingleton::~ProcessSingleton() {
 }
 
 ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
-  return NotifyOtherProcessWithTimeout(
-      *base::CommandLine::ForCurrentProcess(), kRetryAttempts,
-      base::TimeDelta::FromSeconds(kTimeoutInSeconds), true);
+  return NotifyOtherProcessWithTimeout(*base::CommandLine::ForCurrentProcess(),
+                                       kRetryAttempts,
+                                       base::Seconds(kTimeoutInSeconds), true);
 }
 
 ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
@@ -894,7 +894,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
 ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessOrCreate() {
   return NotifyOtherProcessWithTimeoutOrCreate(
       *base::CommandLine::ForCurrentProcess(), kRetryAttempts,
-      base::TimeDelta::FromSeconds(kTimeoutInSeconds));
+      base::Seconds(kTimeoutInSeconds));
 }
 
 ProcessSingleton::NotifyResult

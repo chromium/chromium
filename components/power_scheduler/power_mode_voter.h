@@ -34,33 +34,29 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   };
 
   // Consider an initial response to a single input to last 100ms.
-  static constexpr base::TimeDelta kResponseTimeout =
-      base::TimeDelta::FromMilliseconds(100);
+  static constexpr base::TimeDelta kResponseTimeout = base::Milliseconds(100);
 
   // Animations often have brief idle periods where no frames are produced. This
   // timeout is applied before resetting animation votes to avoid frequent vote
   // reversals.
-  static constexpr base::TimeDelta kAnimationTimeout =
-      base::TimeDelta::FromMilliseconds(100);
+  static constexpr base::TimeDelta kAnimationTimeout = base::Milliseconds(100);
   static constexpr base::TimeDelta kVideoTimeout = kAnimationTimeout;
 
   // Software draws can take longer than the rest of animations. We use a
   // different timeout constant for them to allow individual tweaking.
   static constexpr base::TimeDelta kSoftwareDrawTimeout =
-      base::TimeDelta::FromMilliseconds(100);
+      base::Milliseconds(100);
 
   // Give frames an extra second to draw & settle after load completion.
-  static constexpr base::TimeDelta kLoadingTimeout =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kLoadingTimeout = base::Seconds(1);
   // Avoid getting stuck in loading stage forever. More than 99.9% of
   // navigations load (to largest contentful paint) in less than a minute.
-  static constexpr base::TimeDelta kStuckLoadingTimeout =
-      base::TimeDelta::FromSeconds(60);
+  static constexpr base::TimeDelta kStuckLoadingTimeout = base::Seconds(60);
 
   // This timeout is applied before resetting script execution votes to avoid
   // frequent vote reversals.
   static constexpr base::TimeDelta kScriptExecutionTimeout =
-      base::TimeDelta::FromMilliseconds(50);
+      base::Milliseconds(50);
 
   ~PowerModeVoter();
 

@@ -27,8 +27,7 @@ namespace chromecast {
 namespace external_service_support {
 
 namespace {
-constexpr base::TimeDelta kConnectRetryDelay =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kConnectRetryDelay = base::Milliseconds(500);
 }  // namespace
 
 // Since we are only allowed to make a single underlying connection to the

@@ -64,8 +64,7 @@ void LoaderLockSamplingThread::StopSampling() {
 }
 
 void LoaderLockSamplingThread::LoaderLockTracker::StartSampling() {
-  sample_timer_.Start(FROM_HERE,
-                      base::TimeDelta::FromMilliseconds(kSamplingIntervalMsec),
+  sample_timer_.Start(FROM_HERE, base::Milliseconds(kSamplingIntervalMsec),
                       this, &LoaderLockTracker::SampleLoaderLock);
 }
 

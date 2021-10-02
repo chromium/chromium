@@ -183,8 +183,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     return GetPaintTimingDetector().experimental_largest_image_paint_size_;
   }
 
-  static constexpr base::TimeDelta kQuantumOfTime =
-      base::TimeDelta::FromMilliseconds(10);
+  static constexpr base::TimeDelta kQuantumOfTime = base::Milliseconds(10);
 
   void SimulatePassOfTime() {
     test_task_runner_->FastForwardBy(kQuantumOfTime);
@@ -895,34 +894,32 @@ TEST_P(ImagePaintTimingDetectorTest,
   image->setAttribute("id", "target");
   GetDocument().getElementById("parent")->AppendChild(image);
   SetImageAndPaint("target", 5, 5);
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSecondsD(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record;
   record = FindLargestPaintCandidate();
   EXPECT_TRUE(record);
   // UpdateAllLifecyclePhasesAndInvokeCallbackIfAny() moves time forward
   // kQuantumOfTime so we should take that into account.
-  EXPECT_EQ(
-      record->paint_time,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1) + kQuantumOfTime);
+  EXPECT_EQ(record->paint_time,
+            base::TimeTicks() + base::Seconds(1) + kQuantumOfTime);
 
   GetDocument().getElementById("parent")->RemoveChild(image);
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSecondsD(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = FindLargestPaintCandidate();
   EXPECT_FALSE(record);
 
   GetDocument().getElementById("parent")->AppendChild(image);
   SetImageAndPaint("target", 5, 5);
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSecondsD(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = FindLargestPaintCandidate();
   EXPECT_TRUE(record);
   // UpdateAllLifecyclePhasesAndInvokeCallbackIfAny() moves time forward
   // kQuantumOfTime so we should take that into account.
-  EXPECT_EQ(record->paint_time, base::TimeTicks() +
-                                    base::TimeDelta::FromSecondsD(3) +
-                                    3 * kQuantumOfTime);
+  EXPECT_EQ(record->paint_time,
+            base::TimeTicks() + base::Seconds(3) + 3 * kQuantumOfTime);
 }
 
 // This is to prove that a presentation time is assigned only to nodes of the

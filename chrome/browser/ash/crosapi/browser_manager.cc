@@ -188,8 +188,7 @@ void TerminateLacrosChrome(base::Process process) {
   // Here, lacros-chrome process may crashed, or be in the shutdown procedure.
   // Give some amount of time for the collection. In most cases,
   // this wait captures the process termination.
-  constexpr base::TimeDelta kGracefulShutdownTimeout =
-      base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kGracefulShutdownTimeout = base::Seconds(5);
   if (process.WaitForExitWithTimeout(kGracefulShutdownTimeout, nullptr))
     return;
 

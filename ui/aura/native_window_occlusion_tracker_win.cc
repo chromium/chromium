@@ -34,8 +34,7 @@ namespace aura {
 namespace {
 
 // ~16 ms = time between frames when frame rate is 60 FPS.
-const base::TimeDelta kUpdateOcclusionDelay =
-    base::TimeDelta::FromMilliseconds(16);
+const base::TimeDelta kUpdateOcclusionDelay = base::Milliseconds(16);
 
 // This global variable can be accessed only on main thread.
 NativeWindowOcclusionTrackerWin* g_tracker = nullptr;

@@ -198,9 +198,9 @@ bool DeviceCommandRunRoutineJobTest::RunJob(
     base::Value params_dict,
     base::RepeatingCallback<void(RemoteCommandJob*)> callback) {
   auto job = std::make_unique<DeviceCommandRunRoutineJob>();
-  InitializeJob(
-      job.get(), kUniqueID, test_start_time_, base::TimeDelta::FromSeconds(30),
-      /*terminate_upon_input=*/false, routine, std::move(params_dict));
+  InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
+                /*terminate_upon_input=*/false, routine,
+                std::move(params_dict));
   base::RunLoop run_loop;
   bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
                           base::BindLambdaForTesting([&]() {
@@ -221,7 +221,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, InvalidRoutineEnumInCommandPayload) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false, kInvalidRoutineEnum,
                            std::move(params_dict)),
       nullptr));
@@ -237,7 +237,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingRoutine) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false,
                            /*routine=*/absl::nullopt, std::move(params_dict)),
       nullptr));
@@ -255,7 +255,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingParamDict) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false, kValidRoutineEnum,
                            /*params=*/absl::nullopt),
       nullptr));

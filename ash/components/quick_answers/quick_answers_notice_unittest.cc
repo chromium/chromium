@@ -74,7 +74,7 @@ TEST_F(QuickAnswersNoticeTest, AcceptNotice) {
   notice_->StartNotice();
 
   // Notice is accepted after 6 seconds.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment_.FastForwardBy(base::Seconds(6));
   notice_->AcceptNotice(NoticeInteractionType::kAccept);
 
   // Verify that the notice has been accepted.
@@ -91,7 +91,7 @@ TEST_F(QuickAnswersNoticeTest, DismissNotice) {
   notice_->StartNotice();
 
   // Dismiss the notice after reaching the impression cap.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(8));
+  task_environment_.FastForwardBy(base::Seconds(8));
   notice_->DismissNotice();
 
   // Verify that the impression count is recorded.

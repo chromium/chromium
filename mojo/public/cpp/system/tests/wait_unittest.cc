@@ -130,7 +130,7 @@ TEST_F(WaitTest, DelayedWrite) {
   ThreadedRunner write_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then write a message.
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+        base::PlatformThread::Sleep(base::Milliseconds(200));
         WriteMessage(*handle, "wakey wakey");
       },
       &p.handle0));
@@ -150,7 +150,7 @@ TEST_F(WaitTest, DelayedPeerClosure) {
   ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then close the handle.
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+        base::PlatformThread::Sleep(base::Milliseconds(200));
         handle->reset();
       },
       &p.handle0));
@@ -168,7 +168,7 @@ TEST_F(WaitTest, CloseWhileWaiting) {
   MessagePipe p;
   ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+        base::PlatformThread::Sleep(base::Milliseconds(200));
         handle->reset();
       },
       &p.handle0));
@@ -238,7 +238,7 @@ TEST_F(WaitManyTest, CloseWhileWaiting) {
 
   ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+        base::PlatformThread::Sleep(base::Milliseconds(200));
         handle->reset();
       },
       &p.handle1));
@@ -256,7 +256,7 @@ TEST_F(WaitManyTest, DelayedWrite) {
   ThreadedRunner write_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then write a message.
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+        base::PlatformThread::Sleep(base::Milliseconds(200));
         WriteMessage(*handle, "wakey wakey");
       },
       &p.handle0));
@@ -283,7 +283,7 @@ TEST_F(WaitManyTest, DelayedPeerClosure) {
   ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then close the handle.
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+        base::PlatformThread::Sleep(base::Milliseconds(200));
         handle->reset();
       },
       &p.handle0));

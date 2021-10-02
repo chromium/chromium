@@ -252,7 +252,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
       CastMessage{mojom::kWebRtcNamespace, kFakeOffer};
   message_dispatcher_->RequestReply(
       offer_message.Clone(), ResponseType::ANSWER, 45623,
-      base::TimeDelta::FromMilliseconds(100),
+      base::Milliseconds(100),
       base::BindRepeating(&MessageDispatcherTest::OnAnswerResponse,
                           base::Unretained(this)));
   task_environment_.RunUntilIdle();
@@ -304,7 +304,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
       mojom::kWebRtcNamespace, "{\"type\":\"OFFER\",\"seqNum\":12345}"};
   message_dispatcher_->RequestReply(
       fake_message.Clone(), ResponseType::ANSWER, 12345,
-      base::TimeDelta::FromMilliseconds(100),
+      base::Milliseconds(100),
       base::BindRepeating(&MessageDispatcherTest::OnAnswerResponse,
                           base::Unretained(this)));
   task_environment_.RunUntilIdle();

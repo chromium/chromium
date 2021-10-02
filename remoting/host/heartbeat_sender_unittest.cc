@@ -50,11 +50,9 @@ constexpr char kFtlId[] = "fake_user@domain.com/chromoting_ftl_abc123";
 constexpr int32_t kGoodIntervalSeconds = 300;
 
 constexpr base::TimeDelta kWaitForAllStrategiesConnectedTimeout =
-    base::TimeDelta::FromSecondsD(5.5);
-constexpr base::TimeDelta kOfflineReasonTimeout =
-    base::TimeDelta::FromSeconds(123);
-constexpr base::TimeDelta kTestHeartbeatDelay =
-    base::TimeDelta::FromSeconds(350);
+    base::Seconds(5.5);
+constexpr base::TimeDelta kOfflineReasonTimeout = base::Seconds(123);
+constexpr base::TimeDelta kTestHeartbeatDelay = base::Seconds(350);
 
 void ValidateHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
                        bool expected_is_initial_heartbeat = false,

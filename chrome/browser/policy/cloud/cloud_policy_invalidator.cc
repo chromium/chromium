@@ -405,7 +405,7 @@ void CloudPolicyInvalidator::HandleInvalidation(
   // invalidations are received in quick succession, only one fetch will be
   // performed.
   base::TimeDelta delay =
-      base::TimeDelta::FromMilliseconds(base::RandInt(20, max_fetch_delay_));
+      base::Milliseconds(base::RandInt(20, max_fetch_delay_));
 
   // If there is a payload, the policy can be refreshed at any time, so set
   // the version and payload on the client immediately. Otherwise, the refresh
@@ -413,7 +413,7 @@ void CloudPolicyInvalidator::HandleInvalidation(
   if (!payload.empty())
     core_->client()->SetInvalidationInfo(version, payload);
   else
-    delay += base::TimeDelta::FromMinutes(kMissingPayloadDelay);
+    delay += base::Minutes(kMissingPayloadDelay);
 
   // Schedule the policy to be refreshed.
   task_runner_->PostDelayedTask(

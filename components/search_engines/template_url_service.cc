@@ -1306,7 +1306,7 @@ std::string TemplateURLService::GetSessionToken() {
   }
 
   // Extend expiration time another 60 seconds.
-  token_expiration_time_ = current_time + base::TimeDelta::FromSeconds(60);
+  token_expiration_time_ = current_time + base::Seconds(60);
   return current_token_;
 }
 

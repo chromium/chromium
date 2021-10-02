@@ -998,7 +998,7 @@ TEST_P(TextFragmentAnchorScrollMetricsTest, TimeToScrollToTop) {
       "TextFragmentAnchor.Unknown.TimeToScrollToTop", 0);
 
   const int64_t time_to_scroll_to_top = 500;
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(time_to_scroll_to_top));
+  tick_clock.Advance(base::Milliseconds(time_to_scroll_to_top));
 
   ASSERT_GT(GetDocument().View()->LayoutViewport()->GetScrollOffset().Height(),
             100);

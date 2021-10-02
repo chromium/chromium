@@ -231,8 +231,7 @@ void PnaclHost::GetNexeFd(int render_process_id,
         base::BindOnce(&PnaclHost::GetNexeFd, base::Unretained(this),
                        render_process_id, pp_instance, is_incognito, cache_info,
                        cb),
-        base::TimeDelta::FromMilliseconds(
-            kTranslationCacheInitializationDelayMs));
+        base::Milliseconds(kTranslationCacheInitializationDelayMs));
     return;
   }
 
@@ -592,8 +591,7 @@ void PnaclHost::ClearTranslationCacheEntriesBetween(
         base::BindOnce(&PnaclHost::ClearTranslationCacheEntriesBetween,
                        base::Unretained(this), initial_time, end_time,
                        std::move(callback)),
-        base::TimeDelta::FromMilliseconds(
-            kTranslationCacheInitializationDelayMs));
+        base::Milliseconds(kTranslationCacheInitializationDelayMs));
     return;
   }
   pending_backend_operations_++;

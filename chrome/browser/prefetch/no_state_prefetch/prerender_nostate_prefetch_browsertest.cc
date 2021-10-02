@@ -289,7 +289,7 @@ class NoStatePrefetchBrowserTest
 
   void OverrideNoStatePrefetchManagerTimeTicks() {
     // The default zero time causes the prerender manager to do strange things.
-    clock_.Advance(base::TimeDelta::FromSeconds(1));
+    clock_.Advance(base::Seconds(1));
     GetNoStatePrefetchManager()->SetTickClockForTesting(&clock_);
   }
 
@@ -1749,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
       content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   UseHttpsSrcServer();
   GetNoStatePrefetchManager()->mutable_config().abandon_time_to_live =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       current_browser(), src_server()->GetURL("/defaultresponse?landing")));
   InsertSpeculation(src_server()->GetURL("/hung"), FINAL_STATUS_TIMED_OUT,

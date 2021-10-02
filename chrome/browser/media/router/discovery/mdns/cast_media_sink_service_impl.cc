@@ -302,8 +302,7 @@ void CastMediaSinkServiceImpl::OpenChannelsWithRandomizedDelay(
   // Add a random backoff between 0s to 5s before opening channels to prevent
   // different browser instances connecting to the same receiver at the same
   // time.
-  base::TimeDelta delay =
-      base::TimeDelta::FromMilliseconds(base::RandInt(0, 50) * 100);
+  base::TimeDelta delay = base::Milliseconds(base::RandInt(0, 50) * 100);
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::OpenChannels, GetWeakPtr(),
@@ -444,10 +443,9 @@ CastMediaSinkServiceImpl::CreateCastSocketOpenParams(
   // TODO(crbug.com/814419): Switching cast socket implementation to use network
   // service will allow us to get back NetLog.
   return cast_channel::CastSocketOpenParams(
-      sink.cast_data().ip_endpoint,
-      base::TimeDelta::FromSeconds(connect_timeout_in_seconds),
-      base::TimeDelta::FromSeconds(liveness_timeout_in_seconds),
-      base::TimeDelta::FromSeconds(open_params_.ping_interval_in_seconds),
+      sink.cast_data().ip_endpoint, base::Seconds(connect_timeout_in_seconds),
+      base::Seconds(liveness_timeout_in_seconds),
+      base::Seconds(open_params_.ping_interval_in_seconds),
       cast_channel::CastDeviceCapability::NONE);
 }
 

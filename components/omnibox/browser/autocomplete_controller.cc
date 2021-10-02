@@ -963,9 +963,8 @@ void AutocompleteController::StartExpireTimer() {
   const int kExpireTimeMS = 500;
 
   if (result_.HasCopiedMatches())
-    expire_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(kExpireTimeMS),
-                        this, &AutocompleteController::ExpireCopiedEntries);
+    expire_timer_.Start(FROM_HERE, base::Milliseconds(kExpireTimeMS), this,
+                        &AutocompleteController::ExpireCopiedEntries);
 }
 
 void AutocompleteController::StartStopTimer() {

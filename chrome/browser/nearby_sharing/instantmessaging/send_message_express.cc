@@ -26,7 +26,7 @@ namespace {
 constexpr int kMaxSendResponseSize = 256;
 
 // Timeout for network calls to instantmessaging servers.
-const base::TimeDelta kNetworkTimeout = base::TimeDelta::FromMilliseconds(2500);
+const base::TimeDelta kNetworkTimeout = base::Milliseconds(2500);
 
 // TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =

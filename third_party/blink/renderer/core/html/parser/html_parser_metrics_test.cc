@@ -386,14 +386,14 @@ TEST_F(HTMLForceSynchronousParserMetricsTest, UkmStoresValuesCorrectly) {
   EXPECT_EQ(entries.size(), 0u);
 
   // Run a fictional sequence of calls
-  base::TimeDelta first_parse_time = base::TimeDelta::FromMicroseconds(20);
-  base::TimeDelta second_parse_time = base::TimeDelta::FromMicroseconds(10);
-  base::TimeDelta third_parse_time = base::TimeDelta::FromMicroseconds(30);
+  base::TimeDelta first_parse_time = base::Microseconds(20);
+  base::TimeDelta second_parse_time = base::Microseconds(10);
+  base::TimeDelta third_parse_time = base::Microseconds(30);
   unsigned first_tokens_parsed = 50u;
   unsigned second_tokens_parsed = 40u;
   unsigned third_tokens_parsed = 60u;
-  base::TimeDelta first_yield_time = base::TimeDelta::FromMicroseconds(80);
-  base::TimeDelta second_yield_time = base::TimeDelta::FromMicroseconds(70);
+  base::TimeDelta first_yield_time = base::Microseconds(80);
+  base::TimeDelta second_yield_time = base::Microseconds(70);
 
   reporter.AddChunk(first_parse_time, first_tokens_parsed);
   reporter.AddYieldInterval(first_yield_time);

@@ -28,7 +28,7 @@ namespace {
 constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
 
 // Indicates how long context menu should wait for link generation result.
-constexpr base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(500);
 }  // namespace
 
 // static
@@ -179,7 +179,7 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
 
   base::TimeDelta timeout_length_ms =
       ShouldPreemptivelyGenerateLink()
-          ? base::TimeDelta::FromMilliseconds(
+          ? base::Milliseconds(
                 shared_highlighting::GetPreemptiveLinkGenTimeoutLengthMs())
           : kTimeoutMs;
 

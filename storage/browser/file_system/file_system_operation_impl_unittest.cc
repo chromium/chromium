@@ -1128,8 +1128,7 @@ TEST_F(FileSystemOperationImplTest, TestTouchFile) {
   const base::Time last_accessed = info.last_accessed;
 
   const base::Time new_modified_time = base::Time::UnixEpoch();
-  const base::Time new_accessed_time =
-      new_modified_time + base::TimeDelta::FromHours(77);
+  const base::Time new_accessed_time = new_modified_time + base::Hours(77);
   ASSERT_NE(last_modified, new_modified_time);
   ASSERT_NE(last_accessed, new_accessed_time);
 

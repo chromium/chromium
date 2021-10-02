@@ -201,8 +201,7 @@ void MachineCertificateUploaderImpl::CheckCertificateExpiry(
       LOG(WARNING) << "Failed to parse certificate, cannot check expiry.";
       continue;
     }
-    const base::TimeDelta threshold =
-        base::TimeDelta::FromDays(kExpiryThresholdInDays);
+    const base::TimeDelta threshold = base::Days(kExpiryThresholdInDays);
     if ((base::Time::Now() + threshold) > x509->valid_expiry()) {
       // The certificate has expired or will soon, replace it.
       GetNewCertificate();
@@ -308,7 +307,7 @@ void MachineCertificateUploaderImpl::Reschedule() {
         FROM_HERE,
         base::BindOnce(&MachineCertificateUploaderImpl::Start,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(retry_delay_));
+        base::Seconds(retry_delay_));
   } else {
     LOG(WARNING) << "MachineCertificateUploaderImpl: Retry limit exceeded.";
     certificate_uploaded_ = false;

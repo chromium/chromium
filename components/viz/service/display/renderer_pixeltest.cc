@@ -5606,25 +5606,21 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTrailsWithDifferentPointerIds) {
   const base::TimeTicks kPointerId1StartTime = kTimestamp;
   const gfx::PointF kPointerId2StartPoint(160, 190);
   const base::TimeTicks kPointerId2StartTime =
-      kTimestamp + base::TimeDelta::FromMilliseconds(15);
+      kTimestamp + base::Milliseconds(15);
 
   // Send four points for pointer ID 1 and two points for pointer ID 2 in mixed
   // order to confirm that they get put in the right buckets. Some timestamps
   // match intentionally to make sure that point is considered when matching
   // DelegatedInkMetadata to DelegatedInkPoints
   CreateAndSendPoint(kPointerId1StartPoint, kPointerId1StartTime, kPointerId1);
-  CreateAndSendPoint(gfx::PointF(24, 80),
-                     kTimestamp + base::TimeDelta::FromMilliseconds(15),
+  CreateAndSendPoint(gfx::PointF(24, 80), kTimestamp + base::Milliseconds(15),
                      kPointerId1);
   CreateAndSendPoint(kPointerId2StartPoint, kPointerId2StartTime, kPointerId2);
-  CreateAndSendPoint(gfx::PointF(60, 130),
-                     kTimestamp + base::TimeDelta::FromMilliseconds(24),
+  CreateAndSendPoint(gfx::PointF(60, 130), kTimestamp + base::Milliseconds(24),
                      kPointerId1);
-  CreateAndSendPoint(gfx::PointF(80, 118),
-                     kTimestamp + base::TimeDelta::FromMilliseconds(20),
+  CreateAndSendPoint(gfx::PointF(80, 118), kTimestamp + base::Milliseconds(20),
                      kPointerId2);
-  CreateAndSendPoint(gfx::PointF(100, 190),
-                     kTimestamp + base::TimeDelta::FromMilliseconds(30),
+  CreateAndSendPoint(gfx::PointF(100, 190), kTimestamp + base::Milliseconds(30),
                      kPointerId1);
 
   const gfx::RectF kPresentationArea(200, 200);

@@ -64,7 +64,7 @@ class TranslatePrefsTest : public testing::Test {
     accept_languages_tester_ =
         std::make_unique<language::test::LanguagePrefTester>(&prefs_);
     now_ = base::Time::Now();
-    two_days_ago_ = now_ - base::TimeDelta::FromDays(2);
+    two_days_ago_ = now_ - base::Days(2);
   }
 
   void SetUp() override {
@@ -950,10 +950,9 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
 
   // Now migrate and fix the prefs.
   translate_prefs_->MigrateNeverPromptSites();
-  EXPECT_THAT(
-      translate_prefs_->GetNeverPromptSitesBetween(
-          base::Time::Now() - base::TimeDelta::FromDays(1), base::Time::Max()),
-      ElementsAre("migratedWrong.com", "unmigrated.com"));
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
+                  base::Time::Now() - base::Days(1), base::Time::Max()),
+              ElementsAre("migratedWrong.com", "unmigrated.com"));
   EXPECT_EQ(prefs_.Get(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
                 ->GetList()
                 .size(),

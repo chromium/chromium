@@ -40,7 +40,7 @@ class TranslateScript {
   // Delay after which the translate script is fetched again from the
   // translation server.
   void set_expiration_delay(int delay_ms) {
-    expiration_delay_ = base::TimeDelta::FromMilliseconds(delay_ms);
+    expiration_delay_ = base::Milliseconds(delay_ms);
   }
 
   // Clears the translate script, so it will be fetched next time we translate.

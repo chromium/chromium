@@ -136,8 +136,8 @@ TEST_F(SiteDataCountingHelperTest, CheckEmptyResult) {
 
 TEST_F(SiteDataCountingHelperTest, CountCookies) {
   base::Time now = base::Time::Now();
-  base::Time last_hour = now - base::TimeDelta::FromHours(1);
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time last_hour = now - base::Hours(1);
+  base::Time yesterday = now - base::Days(1);
 
   CreateCookies(last_hour, {"https://example.com"});
   CreateCookies(yesterday, {"https://google.com", "https://bing.com"});
@@ -157,12 +157,12 @@ TEST_F(SiteDataCountingHelperTest, LocalStorage) {
   CreateLocalStorage({"https://example.com"});
 
   // Advance time and set more data "now".
-  task_environment_.AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment_.AdvanceClock(base::Days(1));
   CreateLocalStorage({"https://bing.com"});
 
   base::Time now = base::Time::Now();
-  base::Time last_hour = now - base::TimeDelta::FromHours(1);
-  base::Time two_days_ago = now - base::TimeDelta::FromDays(2);
+  base::Time last_hour = now - base::Hours(1);
+  base::Time two_days_ago = now - base::Days(2);
 
   EXPECT_EQ(1, CountEntries(base::Time(), last_hour));
   EXPECT_EQ(1, CountEntries(last_hour, base::Time::Max()));

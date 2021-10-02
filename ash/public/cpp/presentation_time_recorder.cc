@@ -226,8 +226,7 @@ namespace {
 
 base::HistogramBase* CreateTimesHistogram(const char* name) {
   return base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMilliseconds(200), 50,
+      name, base::Milliseconds(1), base::Milliseconds(200), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
@@ -258,7 +257,7 @@ class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
     if (success_count() > 0 && !max_latency_histogram_name_.empty()) {
       CreateTimesHistogram(max_latency_histogram_name_.c_str())
           ->AddTimeMillisecondsGranularity(
-              base::TimeDelta::FromMilliseconds(max_latency_ms()));
+              base::Milliseconds(max_latency_ms()));
     }
   }
 

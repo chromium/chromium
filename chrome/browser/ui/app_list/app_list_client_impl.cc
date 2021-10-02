@@ -55,8 +55,8 @@ namespace {
 AppListClientImpl* g_app_list_client_instance = nullptr;
 
 // Parameters used by the time duration metrics.
-constexpr base::TimeDelta kTimeMetricsMin = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kTimeMetricsMax = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
+constexpr base::TimeDelta kTimeMetricsMax = base::Days(7);
 constexpr int kTimeMetricsBucketCount = 100;
 
 bool IsTabletMode() {

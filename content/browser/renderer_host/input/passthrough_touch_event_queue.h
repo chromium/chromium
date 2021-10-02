@@ -61,10 +61,8 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
  public:
   struct CONTENT_EXPORT Config {
     Config()
-        : desktop_touch_ack_timeout_delay(
-              base::TimeDelta::FromMilliseconds(200)),
-          mobile_touch_ack_timeout_delay(
-              base::TimeDelta::FromMilliseconds(1000)),
+        : desktop_touch_ack_timeout_delay(base::Milliseconds(200)),
+          mobile_touch_ack_timeout_delay(base::Milliseconds(1000)),
           touch_ack_timeout_supported(false),
           skip_touch_filter(base::FeatureList::IsEnabled(
               blink::features::kSkipTouchEventFilter)),

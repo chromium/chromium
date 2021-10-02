@@ -473,7 +473,7 @@ void OutputPresenterFuchsia::PresentNextFrame() {
         frame.ordinal - presentation_state_->presented_frame_ordinal;
     present_time = presentation_state_->presentation_time +
                    presentation_state_->interval * relative_position -
-                   base::TimeDelta::FromMilliseconds(1);
+                   base::Milliseconds(1);
     present_time = std::max(present_time, now);
   }
 
