@@ -498,6 +498,9 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature
     kClientHintsViewportWidth_DEPRECATED;
 
+// https://drafts.csswg.org/css-cascade-5/#layering
+BLINK_COMMON_EXPORT extern const base::Feature kCSSCascadeLayers;
+
 }  // namespace features
 }  // namespace blink
 

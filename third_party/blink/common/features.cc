@@ -1081,5 +1081,9 @@ const base::Feature kClientHintsResourceWidth_DEPRECATED{
 const base::Feature kClientHintsViewportWidth_DEPRECATED{
     "ClientHintsViewportWidth_DEPRECATED", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// https://drafts.csswg.org/css-cascade-5/#layering
+const base::Feature kCSSCascadeLayers{"CSSCascadeLayers",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

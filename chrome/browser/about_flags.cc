@@ -7560,6 +7560,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableDesksTrackpadSwipeImprovements)},
 #endif
 
+    {"enable-cascade-layers", flag_descriptions::kCSSCascadeLayersName,
+     flag_descriptions::kCSSCascadeLayersDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCSSCascadeLayers)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

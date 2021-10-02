@@ -397,6 +397,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kWebAuthAuthenticatorAttachment},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"SyncLoadDataUrlFonts", blink::features::kSyncLoadDataUrlFonts},
+          {"CSSCascadeLayers", blink::features::kCSSCascadeLayers},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

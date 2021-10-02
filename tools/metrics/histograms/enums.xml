@@ -51517,6 +51517,7 @@ from previous Chrome versions.
   <int value="882893584" label="UseOfHashAffiliationFetcher:disabled"/>
   <int value="883190338" label="PrintWithReducedRasterization:disabled"/>
   <int value="884106779" label="supervised-user-safesites"/>
+  <int value="884892326" label="CSSCascadeLayers:enabled"/>
   <int value="885186849" label="finch-seed-expiration-age"/>
   <int value="885971656" label="EnablePlayStoreAppSearch:enabled"/>
   <int value="886907524" label="autoplay-policy"/>
@@ -52598,6 +52599,7 @@ from previous Chrome versions.
   <int value="1731522433" label="enable-offer-store-unmasked-wallet-cards"/>
   <int value="1731612996" label="CrostiniFiles:disabled"/>
   <int value="1733390925" label="force-enable-stylus-tools"/>
+  <int value="1733784338" label="CSSCascadeLayers:disabled"/>
   <int value="1734685331" label="NtpShoppingTasksModule:enabled"/>
   <int value="1735934914" label="OverlayScrollbarFlashWhenMouseEnter:disabled"/>
   <int value="1736698988" label="FsNosymfollow:disabled"/>
