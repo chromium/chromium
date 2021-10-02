@@ -399,12 +399,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const ScrollOffset&,
       mojom::blink::ScrollType = mojom::blink::ScrollType::kProgrammatic);
 
-  // This will set the scroll position without clamping, and it will do all
-  // post-update work even if the scroll position didn't change.
-  void SetScrollPositionUnconditionally(
-      const DoublePoint&,
-      mojom::blink::ScrollType = mojom::blink::ScrollType::kProgrammatic);
-
   // TODO(szager): Actually run these after all of layout is finished.
   // Currently, they run at the end of box()'es layout (or after all flexbox
   // layout has finished) but while document layout is still happening.
@@ -451,10 +445,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
                                  kIgnoreOverlayScrollbarSize) const override;
   int HorizontalScrollbarHeight(OverlayScrollbarClipBehavior =
                                     kIgnoreOverlayScrollbarSize) const override;
-
-  DoubleSize AdjustedScrollOffset() const {
-    return ToDoubleSize(DoublePoint(ScrollOrigin()) + scroll_offset_);
-  }
 
   void PositionOverflowControls();
 
