@@ -2765,6 +2765,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/autofill/autofill_popup_base_view_browsertest.cc",
         "../browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_browsertest.cc",
+        "../browser/ui/views/autofill/payments/card_unmask_otp_input_dialog_browsertest.cc",
         "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",
         "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h",
         "../browser/ui/views/autofill/payments/credit_card_access_manager_browsertest.cc",
