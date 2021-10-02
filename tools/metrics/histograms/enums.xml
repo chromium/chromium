@@ -37702,12 +37702,27 @@ Called by update_permissions_policy_enum.py.-->
   <summary>
     Integer values encoding the vendor and product IDs for known gamepads.
   </summary>
+  <int value="-2004352248" label="Vendor8888Product0308"/>
+  <int value="-144310271" label="Vendorf766Product0001"/>
+  <int value="65280" label="PowerALicPro"/>
   <int value="7929862" label="DragonRiseProduct0006"/>
   <int value="7929873" label="DragonRiseProduct0011"/>
+  <int value="7936000" label="DragonRiseProduct1800"/>
+  <int value="7936067" label="DragonRiseProduct1843"/>
+  <int value="7936068" label="DragonRiseProduct1844"/>
   <int value="17896473" label="SteelSeriesBtProduct1419"/>
+  <int value="17896480" label="SteelSeriesBtProduct1420"/>
+  <int value="17896497" label="SteelSeriesBtProduct1431"/>
+  <int value="72332053" label="ThrustMasterProductb315"/>
+  <int value="72332067" label="ThrustMasterProductb323"/>
+  <int value="72332070" label="ThrustMasterProductb326"/>
+  <int value="72332919" label="ThrustMasterProductb677"/>
+  <int value="73269287" label="MicrosoftProduct0027"/>
+  <int value="73269893" label="MicrosoftProduct0285"/>
   <int value="73269902" label="MicrosoftProduct028e"/>
   <int value="73269903" label="MicrosoftProduct028f"/>
   <int value="73269905" label="MicrosoftProduct0291"/>
+  <int value="73269920" label="MicrosoftProduct02a0"/>
   <int value="73269921" label="MicrosoftProduct02a1"/>
   <int value="73269969" label="MicrosoftProduct02d1"/>
   <int value="73269981" label="MicrosoftProduct02dd"/>
@@ -37715,42 +37730,182 @@ Called by update_permissions_policy_enum.py.-->
   <int value="73269987" label="MicrosoftProduct02e3"/>
   <int value="73269994" label="MicrosoftProduct02ea"/>
   <int value="73270013" label="MicrosoftProduct02fd"/>
+  <int value="73270015" label="MicrosoftProduct02ff"/>
   <int value="73271065" label="MicrosoftProduct0719"/>
+  <int value="73272064" label="MicrosoftProduct0b00"/>
+  <int value="73272069" label="MicrosoftProduct0b05"/>
+  <int value="73272082" label="MicrosoftProduct0b12"/>
+  <int value="73272083" label="MicrosoftProduct0b13"/>
+  <int value="74301961" label="LogitechProductc209"/>
+  <int value="74301973" label="LogitechProductc215"/>
   <int value="74301974" label="LogitechProductc216"/>
   <int value="74301976" label="LogitechProductc218"/>
   <int value="74301977" label="LogitechProductc219"/>
+  <int value="74301978" label="LogitechProductc21a"/>
   <int value="74301981" label="LogitechProductc21d"/>
   <int value="74301982" label="LogitechProductc21e"/>
   <int value="74301983" label="LogitechProductc21f"/>
+  <int value="74302018" label="LogitechProductc242"/>
+  <int value="74302031" label="LogitechProductc24f"/>
+  <int value="74302048" label="LogitechProductc260"/>
+  <int value="74302050" label="LogitechProductc262"/>
+  <int value="74302104" label="LogitechProductc298"/>
+  <int value="74302105" label="LogitechProductc299"/>
+  <int value="74302106" label="LogitechProductc29a"/>
+  <int value="74302107" label="LogitechProductc29b"/>
+  <int value="78905610" label="CypressProduct010a"/>
   <int value="82354176" label="SamsungElectronicsProducta000"/>
   <int value="88867432" label="SonyProduct0268"/>
   <int value="88868292" label="SonyProduct05c4"/>
+  <int value="88868293" label="SonyProduct05c5"/>
   <int value="88869324" label="SonyProduct09cc"/>
   <int value="88869792" label="SonyProduct0ba0"/>
+  <int value="88870118" label="SonyProduct0ce6"/>
+  <int value="91103235" label="ElecomProduct2003"/>
+  <int value="91103236" label="ElecomProduct2004"/>
+  <int value="91103247" label="ElecomProduct200f"/>
+  <int value="91103248" label="ElecomProduct2010"/>
+  <int value="91103251" label="ElecomProduct2013"/>
+  <int value="92144390" label="NintendoProduct0306"/>
+  <int value="92144432" label="NintendoProduct0330"/>
+  <int value="92151814" label="NintendoProduct2006"/>
+  <int value="92151815" label="NintendoProduct2007"/>
   <int value="92151817" label="NintendoProduct2009"/>
+  <int value="92151822" label="NintendoProduct200e"/>
   <int value="92479584" label="PadixProduct2060"/>
+  <int value="92512256" label="PadixProducta000"/>
+  <int value="92516401" label="PadixProductb031"/>
+  <int value="94384690" label="VetronixProduct3232"/>
+  <int value="98764182" label="GenesysLogicProduct0596"/>
+  <int value="111345929" label="LogitechEuropeProduct0109"/>
+  <int value="111346699" label="LogitechEuropeProduct040b"/>
+  <int value="111410956" label="LogitechEuropeProductff0c"/>
+  <int value="114688037" label="AashimaProduct0025"/>
+  <int value="121128726" label="MadCatzProduct4716"/>
+  <int value="121128760" label="MadCatzProduct4738"/>
+  <int value="121145400" label="MadCatzProduct8838"/>
+  <int value="129303059" label="MegaWorldProduct0213"/>
+  <int value="129303314" label="MegaWorldProduct0312"/>
+  <int value="129303316" label="MegaWorldProduct0314"/>
+  <int value="135266305" label="PersonalCommunicationSystemsProduct0001"/>
+  <int value="135266307" label="PersonalCommunicationSystemsProduct0003"/>
+  <int value="135324929" label="PersonalCommunicationSystemsProducte501"/>
   <int value="153419781" label="LakeviewResearchProduct0005"/>
+  <int value="153425664" label="LakeviewResearchProduct1700"/>
+  <int value="153430017" label="LakeviewResearchProduct2801"/>
   <int value="153454694" label="LakeviewResearchProduct8866"/>
   <int value="156594704" label="NvidiaProduct7210"/>
   <int value="156594708" label="NvidiaProduct7214"/>
+  <int value="173835522" label="BroadcomProduct8502"/>
   <int value="184894720" label="AsusTekProduct4500"/>
   <int value="188940293" label="PlayComProduct0005"/>
+  <int value="202506245" label="ZeroplusProduct0005"/>
+  <int value="202510070" label="ZeroplusProduct0ef6"/>
+  <int value="205865760" label="SonixProduct4320"/>
   <int value="242155523" label="PdpProduct0003"/>
+  <int value="242155795" label="PdpProduct0113"/>
+  <int value="242155806" label="PdpProduct011e"/>
+  <int value="242155807" label="PdpProduct011f"/>
+  <int value="242156033" label="PdpProduct0201"/>
+  <int value="242156051" label="PdpProduct0213"/>
+  <int value="242156063" label="PdpProduct021f"/>
+  <int value="242156192" label="PdpProduct02a0"/>
+  <int value="242156289" label="PdpProduct0301"/>
+  <int value="242156545" label="PdpProduct0401"/>
+  <int value="242156563" label="PdpProduct0413"/>
+  <int value="242156801" label="PdpProduct0501"/>
+  <int value="242218241" label="PdpProductf501"/>
   <int value="244252675" label="GreenAsiaProduct0003"/>
+  <int value="244252680" label="GreenAsiaProduct0008"/>
+  <int value="244252690" label="GreenAsiaProduct0012"/>
+  <int value="244256774" label="GreenAsiaProduct1006"/>
+  <int value="244264976" label="GreenAsiaProduct3010"/>
+  <int value="244265077" label="GreenAsiaProduct3075"/>
+  <int value="244265229" label="GreenAsiaProduct310d"/>
+  <int value="252510220" label="HoriProduct000c"/>
+  <int value="252510242" label="HoriProduct0022"/>
+  <int value="252510285" label="HoriProduct004d"/>
+  <int value="252510310" label="HoriProduct0066"/>
+  <int value="252510315" label="HoriProduct006b"/>
+  <int value="252510318" label="HoriProduct006e"/>
+  <int value="252510344" label="HoriProduct0088"/>
+  <int value="252510346" label="HoriProduct008a"/>
+  <int value="252510352" label="HoriProduct0090"/>
+  <int value="252510401" label="HoriProduct00c1"/>
+  <int value="252510446" label="HoriProduct00ee"/>
+  <int value="254804240" label="JessProduct0110"/>
+  <int value="254804242" label="JessProduct0112"/>
   <int value="272110610" label="SteelSeriesProduct1412"/>
   <int value="272110616" label="SteelSeriesProduct1418"/>
   <int value="272110624" label="SteelSeriesProduct1420"/>
+  <int value="272110640" label="SteelSeriesProduct1430"/>
+  <int value="272110641" label="SteelSeriesProduct1431"/>
+  <int value="298407408" label="MonsterProduct55f0"/>
+  <int value="301937457" label="LiteStarProduct3331"/>
+  <int value="301937473" label="LiteStarProduct3341"/>
+  <int value="306924801" label="NykoProduct4d01"/>
+  <int value="313197313" label="HoneyBeeProduct0301"/>
+  <int value="314429461" label="SunLightProductd015"/>
+  <int value="323293184" label="SinoLiteProduct1000"/>
+  <int value="323301384" label="SinoLiteProduct3008"/>
+  <int value="338690720" label="ActivisionProduct02a0"/>
+  <int value="338708296" label="ActivisionProduct4748"/>
+  <int value="338753537" label="ActivisionProductf801"/>
+  <int value="342560001" label="BigBenProduct0d01"/>
+  <int value="355599361" label="Razer1532Product0401"/>
   <int value="355600640" label="Razer1532Product0900"/>
+  <int value="355602432" label="Razer1532Product1000"/>
+  <int value="378142208" label="GriffinProductfe00"/>
+  <int value="381682823" label="VanOoijenProduct0487"/>
+  <int value="381683169" label="VanOoijenProduct05e1"/>
   <int value="416361536" label="GoogleProduct2c40"/>
   <int value="416370734" label="GoogleProduct502e"/>
   <int value="416388096" label="GoogleProduct9400"/>
-  <int value="550920817" label="Vendor20d6Product6271"/>
-  <int value="550930917" label="Vendor20d6Product89e5"/>
+  <int value="424215554" label="AmazonProduct0402"/>
+  <int value="424215578" label="AmazonProduct041a"/>
+  <int value="435815943" label="GamewareProduct0607"/>
+  <int value="439616003" label="KingChuangProduct0203"/>
+  <int value="439678725" label="KingChuangProductf705"/>
+  <int value="464323214" label="HarmonixProduct028e"/>
+  <int value="464384022" label="HarmonixProductf016"/>
+  <int value="464384037" label="HarmonixProductf025"/>
+  <int value="464384046" label="HarmonixProductf02e"/>
+  <int value="464384048" label="HarmonixProductf030"/>
+  <int value="464384056" label="HarmonixProductf038"/>
+  <int value="464385281" label="HarmonixProductf501"/>
+  <int value="464386304" label="HarmonixProductf900"/>
+  <int value="464386305" label="HarmonixProductf901"/>
+  <int value="464386561" label="HarmonixProductfa01"/>
+  <int value="500695051" label="BuffaloKokuyoProduct000b"/>
+  <int value="500695055" label="BuffaloKokuyoProduct000f"/>
+  <int value="500695056" label="BuffaloKokuyoProduct0010"/>
+  <int value="550920817" label="BdaProduct6271"/>
+  <int value="550930917" label="BdaProduct89e5"/>
+  <int value="550947437" label="BdaProductca6d"/>
   <int value="572653664" label="MacAllyProduct0060"/>
   <int value="572669968" label="MacAllyProduct4010"/>
-  <int value="595070984" label="Vendor2378Product1008"/>
-  <int value="595070986" label="Vendor2378Product100a"/>
-  <int value="674627585" label="Vendor2836Product0001"/>
+  <int value="595070984" label="OnLiveProduct1008"/>
+  <int value="595070986" label="OnLiveProduct100a"/>
+  <int value="616976384" label="XboxThirdPartyProduct5000"/>
+  <int value="616977152" label="XboxThirdPartyProduct5300"/>
+  <int value="616977155" label="XboxThirdPartyProduct5303"/>
+  <int value="616977162" label="XboxThirdPartyProduct530a"/>
+  <int value="616977178" label="XboxThirdPartyProduct531a"/>
+  <int value="616977664" label="XboxThirdPartyProduct5500"/>
+  <int value="616979200" label="XboxThirdPartyProduct5b00"/>
+  <int value="616979202" label="XboxThirdPartyProduct5b02"/>
+  <int value="616979716" label="XboxThirdPartyProduct5d04"/>
+  <int value="617020156" label="XboxThirdPartyProductfafc"/>
+  <int value="617020157" label="XboxThirdPartyProductfafd"/>
+  <int value="617020158" label="XboxThirdPartyProductfafe"/>
+  <int value="627246371" label="ShanWanProduct0523"/>
+  <int value="636535073" label="GoodBetterBestProductc121"/>
+  <int value="655831364" label="XiaomiProduct3144"/>
+  <int value="674627585" label="OuyaProduct0001"/>
+  <int value="685641986" label="ValveProduct1102"/>
+  <int value="740433920" label="QanbaProduct2000"/>
+  <int value="768096288" label="8BitdoProduct3820"/>
+  <int value="781547301" label="ScufProduct7725"/>
   <int value="1717962343" label="PrototypeVendorProduct0667"/>
   <int value="1717998593" label="PrototypeVendorProduct9401"/>
 </enum>

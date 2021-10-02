@@ -31,6 +31,10 @@ enum XInputType {
 // Enumeration of gamepads recognized by data fetchers. GamepadId values are
 // composed of the USB or Bluetooth vendor ID in the high 16 bits and product ID
 // in the low 16 bits.
+//
+// Enum labels used here should match the GamepadVendorProduct enum defined in
+// enums.xml. New labels can be generated using the gamepad_vendor_product_id
+// tool.
 enum class GamepadId : uint32_t {
   // ID value representing an unknown gamepad or non-gamepad.
   kUnknownGamepad = 0,
@@ -39,6 +43,8 @@ enum class GamepadId : uint32_t {
   // ID values for supported devices.
   kAmazonProduct041a = 0x1949041a,
   kAsusTekProduct4500 = 0x0b054500,
+  kBdaProduct6271 = 0x20d66271,
+  kBdaProduct89e5 = 0x20d689e5,
   kBroadcomProduct8502 = 0x0a5c8502,
   kDragonRiseProduct0006 = 0x00790006,
   kDragonRiseProduct0011 = 0x00790011,
@@ -81,6 +87,9 @@ enum class GamepadId : uint32_t {
   kNintendoProduct200e = 0x057e200e,
   kNvidiaProduct7210 = 0x09557210,
   kNvidiaProduct7214 = 0x09557214,
+  kOnLiveProduct1008 = 0x23781008,
+  kOnLiveProduct100a = 0x2378100a,
+  kOuyaProduct0001 = 0x28360001,
   kPadixProduct2060 = 0x05832060,
   kPdpProduct0003 = 0x0e6f0003,
   kPlayComProduct0005 = 0x0b430005,
@@ -88,6 +97,7 @@ enum class GamepadId : uint32_t {
   kPrototypeVendorProduct9401 = 0x66669401,
   kRazer1532Product0900 = 0x15320900,
   kSamsungElectronicsProducta000 = 0x04e8a000,
+  kScufProduct7725 = 0x2e957725,
   kSonyProduct0268 = 0x054c0268,
   kSonyProduct05c4 = 0x054c05c4,
   kSonyProduct09cc = 0x054c09cc,
@@ -98,12 +108,6 @@ enum class GamepadId : uint32_t {
   kSteelSeriesProduct1412 = 0x10381412,
   kSteelSeriesProduct1418 = 0x10381418,
   kSteelSeriesProduct1420 = 0x10381420,
-  kVendor20d6Product6271 = 0x20d66271,
-  kVendor20d6Product89e5 = 0x20d689e5,
-  kVendor2378Product1008 = 0x23781008,
-  kVendor2378Product100a = 0x2378100a,
-  kVendor2836Product0001 = 0x28360001,
-  kVendor2e95Product7725 = 0x2e957725,
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadIdList {
