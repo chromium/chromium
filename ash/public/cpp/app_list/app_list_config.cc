@@ -128,30 +128,6 @@ int GridFocusCornerRadiusForType(ash::AppListConfigType type) {
   }
 }
 
-int GridFadeoutMaskHeightForType(ash::AppListConfigType type) {
-  // The fadeout mask layer is shown only if background blur is enabled - if
-  // fadeout mask is not shown, return 0 here so the apps grid respects is not
-  // shown in the fadeout zone during drag.
-  if (!ash::features::IsBackgroundBlurEnabled())
-    return 0;
-
-  switch (type) {
-    case ash::AppListConfigType::kLarge:
-    case ash::AppListConfigType::kMedium:
-    case ash::AppListConfigType::kSmall:
-      return 16;
-  }
-}
-
-int PageSwitcherEndMarginForType(AppListConfigType type) {
-  switch (type) {
-    case ash::AppListConfigType::kLarge:
-    case ash::AppListConfigType::kMedium:
-    case ash::AppListConfigType::kSmall:
-      return 16;
-  }
-}
-
 int AppTitleMaxLineHeightForType(ash::AppListConfigType type) {
   switch (type) {
     case ash::AppListConfigType::kLarge:
@@ -215,15 +191,6 @@ int ItemIconInFolderIconMarginForType(ash::AppListConfigType type) {
   }
 }
 
-int SuggestionChipContainerTopMarginForType(ash::AppListConfigType type) {
-  switch (type) {
-    case ash::AppListConfigType::kSmall:
-    case ash::AppListConfigType::kMedium:
-    case ash::AppListConfigType::kLarge:
-      return 16;
-  }
-}
-
 }  // namespace
 
 SharedAppListConfig& SharedAppListConfig::instance() {
@@ -271,25 +238,8 @@ AppListConfig::AppListConfig(AppListConfigType type)
       grid_title_width_(grid_tile_width_),
       grid_focus_dimension_(GridFocusDimensionForType(type)),
       grid_focus_corner_radius_(GridFocusCornerRadiusForType(type)),
-      grid_fadeout_zone_height_(24),
-      grid_fadeout_mask_height_(GridFadeoutMaskHeightForType(type)),
-      grid_to_page_switcher_margin_(8),
-      page_switcher_end_margin_(PageSwitcherEndMarginForType(type)),
-      suggestion_chip_container_top_margin_(
-          SuggestionChipContainerTopMarginForType(type)),
-      suggestion_chip_container_height_(32),
       app_title_max_line_height_(AppTitleMaxLineHeightForType(type)),
       app_title_font_(AppTitleFontForType(type)),
-      peeking_app_list_height_(284),
-      search_box_closed_top_padding_(0),
-      search_box_peeking_top_padding_(84),
-      search_box_fullscreen_top_padding_(24),
-      search_box_height_(48),
-      search_box_height_for_dense_layout_(40),
-      preferred_cols_(5),
-      preferred_rows_(4),
-      page_spacing_(48),
-      expand_arrow_tile_height_(72),
       folder_bubble_radius_(FolderUnclippedIconDimensionForType(type) / 2),
       folder_icon_dimension_(FolderClippedIconDimensionForType(type)),
       folder_unclipped_icon_dimension_(
@@ -299,11 +249,7 @@ AppListConfig::AppListConfig(AppListConfigType type)
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
       item_icon_in_folder_icon_margin_(ItemIconInFolderIconMarginForType(type)),
-      folder_dropping_circle_radius_(folder_bubble_radius_),
-      page_flip_zone_size_(20) {
-  DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
-            preferred_cols_ * preferred_rows_);
-}
+      folder_dropping_circle_radius_(folder_bubble_radius_) {}
 
 AppListConfig::AppListConfig(const AppListConfig& base_config,
                              float scale_x,
@@ -345,37 +291,9 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
       grid_focus_corner_radius_(MinScale(base_config.grid_focus_corner_radius_,
                                          scale_x,
                                          inner_tile_scale_y)),
-      grid_fadeout_zone_height_(
-          min_y_scale
-              ? 8
-              : MinScale(base_config.grid_fadeout_zone_height_, scale_y, 1)),
-      grid_fadeout_mask_height_(
-          min_y_scale
-              ? 8
-              : MinScale(base_config.grid_fadeout_mask_height_, scale_y, 1)),
-      grid_to_page_switcher_margin_(base_config.grid_to_page_switcher_margin_),
-      page_switcher_end_margin_(base_config.page_switcher_end_margin_),
-      suggestion_chip_container_top_margin_(
-          base_config.suggestion_chip_container_top_margin_),
-      suggestion_chip_container_height_(
-          base_config.suggestion_chip_container_height_),
       app_title_max_line_height_(base_config.app_title_max_line_height_),
       app_title_font_(base_config.app_title_font_.DeriveWithSizeDelta(
           min_y_scale ? -2 : (scale_y < 0.66 ? -1 : 0))),
-      peeking_app_list_height_(base_config.peeking_app_list_height_),
-      search_box_closed_top_padding_(
-          base_config.search_box_closed_top_padding_),
-      search_box_peeking_top_padding_(
-          base_config.search_box_peeking_top_padding_),
-      search_box_fullscreen_top_padding_(
-          base_config.search_box_fullscreen_top_padding_),
-      search_box_height_(base_config.search_box_height_),
-      search_box_height_for_dense_layout_(
-          base_config.search_box_height_for_dense_layout_),
-      preferred_cols_(base_config.preferred_cols_),
-      preferred_rows_(base_config.preferred_rows_),
-      page_spacing_(base_config.page_spacing_),
-      expand_arrow_tile_height_(base_config.expand_arrow_tile_height_),
       folder_bubble_radius_(MinScale(base_config.folder_bubble_radius_,
                                      scale_x,
                                      inner_tile_scale_y)),
@@ -402,16 +320,12 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
       folder_dropping_circle_radius_(
           MinScale(base_config.folder_dropping_circle_radius_,
                    scale_x,
-                   inner_tile_scale_y)),
-      page_flip_zone_size_(base_config.page_flip_zone_size_) {
-  DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
-            preferred_cols_ * preferred_rows_);
-}
+                   inner_tile_scale_y)) {}
 
 AppListConfig::~AppListConfig() = default;
 
 int AppListConfig::GetMinGridHorizontalPadding() const {
-  return page_switcher_end_margin_ + grid_to_page_switcher_margin_ +
+  return 16 /*page switcher end margin*/ + 8 /*grid to page switcher margin*/ +
          kPageSwitcherWidth;
 }
 

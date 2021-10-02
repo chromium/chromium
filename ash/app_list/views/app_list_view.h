@@ -334,6 +334,10 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   //     initial animation transform.
   float GetAppListTransitionProgress(int flags) const;
 
+  // Returns the expected app list view height (measured from the screen bottom)
+  // in the provided state.
+  int GetHeightForState(AppListViewState state) const;
+
   // Returns the height of app list in fullscreen state.
   int GetFullscreenStateHeight() const;
 

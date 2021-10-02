@@ -32,7 +32,8 @@ namespace ash {
 
 namespace {
 
-// The width of this view.
+// The dimensions of this view.
+constexpr int kTileHeight = 72;
 constexpr int kTileWidth = 60;
 
 // The arrow dimension of expand arrow.
@@ -259,9 +260,7 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 gfx::Size ExpandArrowView::CalculatePreferredSize() const {
-  return gfx::Size(
-      kTileWidth,
-      app_list_view_->GetAppListConfig().expand_arrow_tile_height());
+  return gfx::Size(kTileWidth, kTileHeight);
 }
 
 bool ExpandArrowView::OnKeyPressed(const ui::KeyEvent& event) {

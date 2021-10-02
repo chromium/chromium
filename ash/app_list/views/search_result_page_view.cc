@@ -667,19 +667,6 @@ gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
   return size;
 }
 
-absl::optional<int> SearchResultPageView::GetSearchBoxTop(
-    AppListViewState view_state) const {
-  if (view_state == AppListViewState::kPeeking ||
-      view_state == AppListViewState::kHalf) {
-    return AppListPage::contents_view()
-        ->GetAppListConfig()
-        .search_box_fullscreen_top_padding();
-  }
-  // For other view states, return absl::nullopt so the ContentsView
-  // sets the default search box widget origin.
-  return absl::nullopt;
-}
-
 void SearchResultPageView::OnAnchoredDialogClosed() {
   anchored_dialog_.reset();
 }

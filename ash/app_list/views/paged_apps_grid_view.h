@@ -53,7 +53,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
     // Returns whether |point| is in the bottom drag buffer, and not over the
     // shelf.
     virtual bool IsPointWithinBottomDragBuffer(
-        const gfx::Point& point) const = 0;
+        const gfx::Point& point,
+        int page_flip_zone_size) const = 0;
   };
 
   PagedAppsGridView(ContentsView* contents_view,

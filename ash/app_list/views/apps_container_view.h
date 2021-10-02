@@ -127,7 +127,8 @@ class ASH_EXPORT AppsContainerView
 
   // PagedAppsGridView::ContainerDelegate:
   bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const override;
-  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const override;
+  bool IsPointWithinBottomDragBuffer(const gfx::Point& point,
+                                     int page_flip_zone_size) const override;
 
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;

@@ -1028,7 +1028,7 @@ class AppListAnimationTest : public AshTestBase,
   // The app list view y coordinate in peeking state.
   int PeekingHeightTop() const {
     return shown_shelf_bounds_.bottom() -
-           GetAppListView()->GetAppListConfig().peeking_app_list_height();
+           GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
   }
 
  private:

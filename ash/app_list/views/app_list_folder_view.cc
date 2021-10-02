@@ -1041,7 +1041,8 @@ bool AppListFolderView::IsPointWithinPageFlipBuffer(
 }
 
 bool AppListFolderView::IsPointWithinBottomDragBuffer(
-    const gfx::Point& point) const {
+    const gfx::Point& point,
+    int page_flip_zone_size) const {
   // Folders page horizontally and do not have a bottom drag buffer.
   return false;
 }

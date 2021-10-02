@@ -50,8 +50,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void OnAnimationStarted(AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
-  absl::optional<int> GetSearchBoxTop(
-      AppListViewState view_state) const override;
   void UpdatePageOpacityForState(AppListState state,
                                  float search_box_opacity,
                                  bool restore_opacity) override;

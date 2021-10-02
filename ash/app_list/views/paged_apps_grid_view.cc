@@ -73,9 +73,19 @@ constexpr base::TimeDelta kPageFlipDelay =
 constexpr base::TimeDelta kPageTransitionDuration =
     base::TimeDelta::FromMilliseconds(250);
 
+// The size of the zone within which app list item drag events will trigger a
+// page flip.
+constexpr int kPageFlipZoneSize = 20;
+
+// The height of the fadeout mask at vertical edges of the apps grid view.
+constexpr int kDefaultFadeoutMaskHeight = 16;
+
 // Duration for overscroll page transition.
 constexpr base::TimeDelta kOverscrollPageTransitionDuration =
     base::TimeDelta::FromMilliseconds(50);
+
+// Vertical padding between the apps grid pages.
+constexpr int kPaddingBetweenPages = 48;
 
 // Vertical padding between the apps grid pages in cardified state.
 constexpr int kCardifiedPaddingBetweenPages = 12;
@@ -92,6 +102,13 @@ constexpr float kBackgroundCardOpacityHide = 0.0f;
 // Animation curve used for entering and exiting cardified state.
 constexpr gfx::Tween::Type kCardifiedStateTweenType =
     gfx::Tween::LINEAR_OUT_SLOW_IN;
+
+int GetFadeoutMaskHeight() {
+  // The fadeout mask layer is shown only if background blur is enabled - if
+  // fadeout mask is not shown, return 0 here so the apps grid is not shown in
+  // the fadeout zone during drag.
+  return features::IsBackgroundBlurEnabled() ? kDefaultFadeoutMaskHeight : 0;
+}
 
 // CardifiedAnimationObserver is used to observe the animation for toggling the
 // cardified state of the apps grid view. We used this to ensure app icons are
@@ -529,7 +546,7 @@ int PagedAppsGridView::GetPaddingBetweenPages() const {
   // include background card padding.
   return cardified_state_
              ? kCardifiedPaddingBetweenPages + 2 * vertical_tile_padding_
-             : GetAppListConfig().page_spacing();
+             : kPaddingBetweenPages;
 }
 
 int PagedAppsGridView::GetTotalPages() const {
@@ -549,8 +566,7 @@ void PagedAppsGridView::UpdateBorder() {
   if (IsInFolder())
     return;
 
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(GetAppListConfig().grid_fadeout_mask_height(), 0)));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(GetFadeoutMaskHeight(), 0)));
 }
 
 void PagedAppsGridView::MaybeStartCardifiedView() {
@@ -962,8 +978,8 @@ void PagedAppsGridView::MaybeCreateGradientMask() {
       // and using the mask layer used by the detached layer can lead to
       // crash. b/118822974.
       if (!fadeout_layer_delegate_) {
-        fadeout_layer_delegate_ = std::make_unique<FadeoutLayerDelegate>(
-            GetAppListConfig().grid_fadeout_mask_height());
+        fadeout_layer_delegate_ =
+            std::make_unique<FadeoutLayerDelegate>(GetFadeoutMaskHeight());
         fadeout_layer_delegate_->layer()->SetBounds(layer()->bounds());
       }
       layer()->SetMaskLayer(fadeout_layer_delegate_->layer());
@@ -987,21 +1003,20 @@ int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
 
   // Drag zones are at the edges of the scroll axis.
   if (IsScrollAxisVertical()) {
-    if (drag_point.y() <
-        GetAppListConfig().page_flip_zone_size() + GetInsets().top()) {
+    if (drag_point.y() < kPageFlipZoneSize + GetInsets().top()) {
       new_page_flip_target = pagination_model_.selected_page() - 1;
-    } else if (container_delegate_->IsPointWithinBottomDragBuffer(drag_point)) {
+    } else if (container_delegate_->IsPointWithinBottomDragBuffer(
+                   drag_point, kPageFlipZoneSize)) {
       // If the drag point is within the drag buffer, but not over the shelf.
       new_page_flip_target = pagination_model_.selected_page() + 1;
     }
   } else {
     // TODO(xiyuan): Fix this for RTL.
-    if (new_page_flip_target == -1 &&
-        drag_point.x() < GetAppListConfig().page_flip_zone_size())
+    if (new_page_flip_target == -1 && drag_point.x() < kPageFlipZoneSize)
       new_page_flip_target = pagination_model_.selected_page() - 1;
 
     if (new_page_flip_target == -1 &&
-        drag_point.x() > width() - GetAppListConfig().page_flip_zone_size()) {
+        drag_point.x() > width() - kPageFlipZoneSize) {
       new_page_flip_target = pagination_model_.selected_page() + 1;
     }
   }
@@ -1239,8 +1254,7 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
                                (GetContentsBounds().height() - y_offset -
                                 background_card_size.height()) /
                                    2 +
-                               GetAppListConfig().grid_fadeout_mask_height();
-
+                               GetFadeoutMaskHeight();
   const int padding_between_pages = GetPaddingBetweenPages();
   // The space that each page occupies in the items container. This is the size
   // of the grid without outer padding plus the padding between pages.

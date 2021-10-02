@@ -488,7 +488,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     // Add suggestion apps, a folder with apps and other app list items.
     const int kSuggestionAppNum = 3;
     const int kItemNumInFolder = 25;
-    const int kAppListItemNum = test_api_->TilesPerPage(0) + 1;
+    const int kAppListItemNum =
+        SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
     AppListTestModel* model = delegate_->GetTestModel();
     SearchModel* search_model = delegate_->GetSearchModel();
     for (size_t i = 0; i < kSuggestionAppNum; i++) {
@@ -524,10 +525,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   void Show(bool is_side_shelf = false) {
     view_->Show(AppListViewState::kPeeking, is_side_shelf);
-  }
-
-  const AppListConfig& GetAppListConfig() const {
-    return view_->GetAppListConfig();
   }
 
   SearchResultTileItemListView* GetSearchResultTileItemListView() {
@@ -2034,8 +2031,8 @@ TEST_P(AppListViewTest, OpenInPeekingCorrectHeight) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
-  view_->SetState(ash::AppListViewState::kPeeking);
-  ASSERT_EQ(view_->GetAppListConfig().peeking_app_list_height(),
+  view_->SetState(AppListViewState::kPeeking);
+  ASSERT_EQ(view_->GetHeightForState(AppListViewState::kPeeking),
             view_->GetCurrentAppListHeight());
 }
 
@@ -2493,7 +2490,8 @@ TEST_F(AppListViewTest, BackAction) {
   // Populate apps to fill up the first page and add a folder in the second
   // page.
   AppListTestModel* model = delegate_->GetTestModel();
-  const int kAppListItemNum = test_api_->TilesPerPage(0);
+  const int kAppListItemNum =
+      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   const int kItemNumInFolder = 5;
   model->PopulateApps(kAppListItemNum);
   model->CreateAndPopulateFolderWithApps(kItemNumInFolder);
@@ -2569,7 +2567,8 @@ TEST_F(AppListViewTest, InitialPageResetClamshellModeTest) {
   Initialize(false /*is_tablet_mode*/);
 
   AppListTestModel* model = delegate_->GetTestModel();
-  const int kAppListItemNum = test_api_->TilesPerPage(0) + 1;
+  const int kAppListItemNum =
+      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
   model->PopulateApps(kAppListItemNum);
 
   Show();
@@ -2591,7 +2590,8 @@ TEST_F(AppListViewTest, PagePersistanceTabletModeTest) {
   Initialize(true /*is_tablet_mode*/);
 
   AppListTestModel* model = delegate_->GetTestModel();
-  const int kAppListItemNum = test_api_->TilesPerPage(0) + 1;
+  const int kAppListItemNum =
+      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
   model->PopulateApps(kAppListItemNum);
 
   Show();

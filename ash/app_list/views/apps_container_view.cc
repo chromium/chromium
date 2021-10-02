@@ -58,6 +58,19 @@ namespace ash {
 
 namespace {
 
+// The number of columns in the tablet mode productivity apps grid.
+constexpr int kPreferredGridColumnsForProductivityLauncher = 5;
+
+// The long apps grid dimension when productivity launcher is not enabled:
+// * number of columns in landscape mode
+// * number of rows in portrait mode
+constexpr int kPreferredGridColumns = 5;
+
+// The short apps grid dimension when productivity launcher is not enabled:
+// * number of rows in landscape mode
+// * number of columns in portrait mode
+constexpr int kPreferredGridRows = 4;
+
 // The range of app list transition progress in which the suggestion chips'
 // opacity changes from 0 to 1.
 constexpr float kSuggestionChipOpacityStartProgress = 0.66;
@@ -81,6 +94,19 @@ constexpr float kNonAppsStateOpacity = 0.1;
 
 // The margins within the apps container for app list folder view.
 constexpr int kFolderMargin = 8;
+
+// The suggestion chip container height.
+constexpr int kSuggestionChipContainerHeight = 32;
+
+// The suggestion chip container top margin.
+constexpr int kSuggestionChipContainerTopMargin = 16;
+
+// The horizontal margin between the apps grid view and the page switcher.
+constexpr int kGridToPageSwitcherMargin = 8;
+
+// The apps grid view's fadeout zone height, that contains a fadeout mask, and
+// which is used as a margin for the `AppsGridView` contents.
+constexpr int kGridFadeoutZoneHeight = 24;
 
 // The space between sort buttons.
 constexpr int kSortButtonSpacing = 10;
@@ -265,16 +291,17 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
                                           /*folder_controller=*/this,
                                           /*container_delegate=*/this));
 
-  apps_grid_view_->SetMaxColumns(GetAppListConfig().preferred_cols());
-
-  const int preferred_rows = GetAppListConfig().preferred_rows();
-  if (!features::IsProductivityLauncherEnabled()) {
-    apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/preferred_rows,
-                                /*max_row=*/preferred_rows);
-  } else {
+  const int preferred_rows = kPreferredGridRows;
+  if (features::IsProductivityLauncherEnabled()) {
+    apps_grid_view_->SetMaxColumns(
+        kPreferredGridColumnsForProductivityLauncher);
     apps_grid_view_->SetMaxRows(
         /*max_rows_in_first_page=*/preferred_rows - 1,
         /*max_row=*/preferred_rows);
+  } else {
+    apps_grid_view_->SetMaxColumns(kPreferredGridColumns);
+    apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/preferred_rows,
+                                /*max_row=*/preferred_rows);
   }
 
   apps_grid_view_->Init();
@@ -447,7 +474,8 @@ bool AppsContainerView::IsPointWithinPageFlipBuffer(
 }
 
 bool AppsContainerView::IsPointWithinBottomDragBuffer(
-    const gfx::Point& point) const {
+    const gfx::Point& point,
+    int page_flip_zone_size) const {
   // The bottom drag buffer is between the bottom of apps grid and top of shelf.
   gfx::Point point_in_parent = point;
   ConvertPointToTarget(apps_grid_view_, this, &point_in_parent);
@@ -455,7 +483,7 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
   const int kBottomDragBufferMax = parent_rect.bottom();
   const int kBottomDragBufferMin = scrollable_container_->bounds().bottom() -
                                    apps_grid_view_->GetInsets().bottom() -
-                                   GetAppListConfig().page_flip_zone_size();
+                                   page_flip_zone_size;
   return point_in_parent.y() > kBottomDragBufferMin &&
          point_in_parent.y() < kBottomDragBufferMax;
 }
@@ -588,8 +616,7 @@ void AppsContainerView::Layout() {
           AppListView::kProgressFlagNone)));
 
   if (suggestion_chip_container_view_) {
-    chip_container_rect.set_height(
-        GetAppListConfig().suggestion_chip_container_height());
+    chip_container_rect.set_height(kSuggestionChipContainerHeight);
     chip_container_rect.Inset(GetAppListConfig().GetIdealHorizontalMargin(rect),
                               0);
     suggestion_chip_container_view_->SetBoundsRect(chip_container_rect);
@@ -628,10 +655,8 @@ void AppsContainerView::Layout() {
       GetContentsBounds(),
       contents_view_->GetSearchBoxSize(AppListState::kStateApps));
   gfx::Rect grid_rect = rect;
-  grid_rect.Inset(
-      margins.left(),
-      GetAppListConfig().grid_fadeout_zone_height() - grid_insets.top(),
-      margins.right(), margins.bottom());
+  grid_rect.Inset(margins.left(), kGridFadeoutZoneHeight - grid_insets.top(),
+                  margins.right(), margins.bottom());
   // The grid rect insets are added to calculated margins. Given that the
   // grid bounds rect should include insets, they have to be removed from
   // added margins.
@@ -658,8 +683,8 @@ void AppsContainerView::Layout() {
   // Layout page switcher.
   const int page_switcher_width = page_switcher_->GetPreferredSize().width();
   const gfx::Rect page_switcher_bounds(
-      grid_rect.right() + GetAppListConfig().grid_to_page_switcher_margin(),
-      grid_rect.y(), page_switcher_width, grid_rect.height());
+      grid_rect.right() + kGridToPageSwitcherMargin, grid_rect.y(),
+      page_switcher_width, grid_rect.height());
   page_switcher_->SetBoundsRect(page_switcher_bounds);
 
   if (features::IsLauncherAppSortEnabled()) {
@@ -852,10 +877,9 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   // search box and apps grid) to non apps grid size.
   // NOTE: Not removing bottom apps grid inset because they are included into
   // the total margin values.
-  available_height -= search_box_size.height() +
-                      GetAppListConfig().grid_fadeout_zone_height() +
-                      GetAppListConfig().suggestion_chip_container_height() +
-                      GetAppListConfig().suggestion_chip_container_top_margin();
+  available_height -= search_box_size.height() + kGridFadeoutZoneHeight +
+                      kSuggestionChipContainerHeight +
+                      kSuggestionChipContainerTopMargin;
 
   // Calculates margin value to ensure the apps grid size is within required
   // bounds.
@@ -892,11 +916,11 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   const int min_horizontal_margin =
       GetAppListConfig().GetMinGridHorizontalPadding();
 
-  cached_container_margins_.margins = gfx::Insets(
-      std::max(vertical_margin, GetAppListConfig().grid_fadeout_zone_height()),
-      std::max(horizontal_margin, min_horizontal_margin),
-      std::max(vertical_margin, GetAppListConfig().grid_fadeout_zone_height()),
-      std::max(horizontal_margin, min_horizontal_margin));
+  cached_container_margins_.margins =
+      gfx::Insets(std::max(vertical_margin, kGridFadeoutZoneHeight),
+                  std::max(horizontal_margin, min_horizontal_margin),
+                  std::max(vertical_margin, kGridFadeoutZoneHeight),
+                  std::max(horizontal_margin, min_horizontal_margin));
   cached_container_margins_.bounds_size = available_bounds.size();
   cached_container_margins_.search_box_size = search_box_size;
 
@@ -1058,8 +1082,7 @@ int AppsContainerView::GetExpectedSuggestionChipY(float progress) {
   if (!suggestion_chip_container_view_)
     return search_box_bounds.bottom();
 
-  return search_box_bounds.bottom() +
-         GetAppListConfig().suggestion_chip_container_top_margin();
+  return search_box_bounds.bottom() + kSuggestionChipContainerTopMargin;
 }
 
 AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
@@ -1071,14 +1094,13 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
           .size();
 
   GridLayout result;
-  const AppListConfig& config = GetAppListConfig();
   // Switch columns and rows for portrait mode.
   if (size.width() < size.height()) {
-    result.columns = config.preferred_rows();
-    result.rows = config.preferred_cols();
+    result.columns = kPreferredGridRows;
+    result.rows = kPreferredGridColumns;
   } else {
-    result.columns = config.preferred_cols();
-    result.rows = config.preferred_rows();
+    result.columns = kPreferredGridColumns;
+    result.rows = kPreferredGridRows;
   }
   return result;
 }

@@ -17,6 +17,20 @@ namespace ash {
 
 namespace {
 
+// Returns expected number of rows in the fullscreen app list apps grid
+// depending on the display work area (when ProductivityLauncher is not
+// enabled).
+int GetPreferredGridRowsForWorkArea(const gfx::Size& work_area_size) {
+  return work_area_size.width() > work_area_size.height() ? 4 : 5;
+}
+
+// Returns expected number of columns in the fullscreen app list apps grid
+// depending on the display work area (when ProductivityLauncher is not
+// enabled).
+int GetPreferredGridColumnsForWorkArea(const gfx::Size& work_area_size) {
+  return work_area_size.width() > work_area_size.height() ? 5 : 4;
+}
+
 // Does sanity check on apps grid item tile dimensions in config. On error, it
 // causes test failure with additional |scoped_trace| message.
 // |error_margin|: Allowed error margin when comparing vertical dimensions. Used
@@ -267,27 +281,27 @@ TEST_F(AppListConfigProviderTest,
 TEST_F(AppListConfigProviderTest,
        CreateScaledConfigByDisplayWorkAreaLargeLandscape) {
   // The available grid size fits the grid - created config is not scaled.
+  const gfx::Size work_area = gfx::Size(1200, 768);
   std::unique_ptr<AppListConfig> base_config =
       AppListConfigProvider::Get().CreateForAppListWidget(
-          gfx::Size(1200, 768) /*display_work_area_size*/,
-          gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
+          work_area, gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
 
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kLarge, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
   ASSERT_EQ(1, base_config->scale_y());
 
-  const int kMinGridWidth =
-      base_config->grid_tile_width() * base_config->preferred_cols();
-  const int kMinGridHeight =
-      base_config->grid_tile_height() * base_config->preferred_rows();
+  const int kMinGridWidth = base_config->grid_tile_width() *
+                            GetPreferredGridColumnsForWorkArea(work_area);
+  const int kMinGridHeight = base_config->grid_tile_height() *
+                             GetPreferredGridRowsForWorkArea(work_area);
 
   {
     SCOPED_TRACE("Horizontal scaling");
     std::unique_ptr<AppListConfig> config =
         AppListConfigProvider::Get().CreateForAppListWidget(
-            gfx::Size(1200, 768) /*display_work_area_size*/,
-            gfx::Insets(0, 304, 56, 304) /*shelf_insets*/, base_config.get());
+            work_area, gfx::Insets(0, 304, 56, 304) /*shelf_insets*/,
+            base_config.get());
     VerifyScaledConfig(*base_config, config.get(), 480.0f / kMinGridWidth, 1);
   }
 
@@ -314,28 +328,28 @@ TEST_F(AppListConfigProviderTest,
 TEST_F(AppListConfigProviderTest,
        CreateScaledConfigByDisplayWorkAreaMediumLandscape) {
   // The available grid size fits the grid - created config is not scaled.
+  const gfx::Size work_area = gfx::Size(960, 600);
   std::unique_ptr<AppListConfig> base_config =
       AppListConfigProvider::Get().CreateForAppListWidget(
-          gfx::Size(960, 600) /*display_work_area_size*/,
-          gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
+          work_area, gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
 
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kMedium, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
   ASSERT_EQ(1, base_config->scale_y());
 
-  const int kMinGridWidth =
-      base_config->grid_tile_width() * base_config->preferred_cols();
-  const int kMinGridHeight =
-      base_config->grid_tile_height() * base_config->preferred_rows();
+  const int kMinGridWidth = base_config->grid_tile_width() *
+                            GetPreferredGridColumnsForWorkArea(work_area);
+  const int kMinGridHeight = base_config->grid_tile_height() *
+                             GetPreferredGridRowsForWorkArea(work_area);
 
   {
     SCOPED_TRACE("Horizontal scaling");
 
     std::unique_ptr<AppListConfig> config =
         AppListConfigProvider::Get().CreateForAppListWidget(
-            gfx::Size(960, 600) /*display_work_area_size*/,
-            gfx::Insets(0, 224, 56, 224) /*shelf_insets*/, base_config.get());
+            work_area, gfx::Insets(0, 224, 56, 224) /*shelf_insets*/,
+            base_config.get());
     VerifyScaledConfig(*base_config, config.get(), 400.0f / kMinGridWidth, 1);
   }
 
@@ -362,20 +376,20 @@ TEST_F(AppListConfigProviderTest,
 TEST_F(AppListConfigProviderTest,
        CreateScaledConfigByDisplayWorkAreaSmallLandscape) {
   // The available grid size fits the grid - created config is not scaled.
+  const gfx::Size work_area = gfx::Size(900, 500);
   std::unique_ptr<AppListConfig> base_config =
       AppListConfigProvider::Get().CreateForAppListWidget(
-          gfx::Size(900, 500) /*display_work_area_size*/,
-          gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
+          work_area, gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
 
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kSmall, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
   ASSERT_EQ(1, base_config->scale_y());
 
-  const int kMinGridWidth =
-      base_config->grid_tile_width() * base_config->preferred_cols();
-  const int kMinGridHeight =
-      base_config->grid_tile_height() * base_config->preferred_rows();
+  const int kMinGridWidth = base_config->grid_tile_width() *
+                            GetPreferredGridColumnsForWorkArea(work_area);
+  const int kMinGridHeight = base_config->grid_tile_height() *
+                             GetPreferredGridRowsForWorkArea(work_area);
 
   {
     SCOPED_TRACE("Horizontal scaling");
@@ -410,27 +424,27 @@ TEST_F(AppListConfigProviderTest,
 TEST_F(AppListConfigProviderTest,
        CreateScaledConfigByDisplayWorkAreaLargePortrait) {
   // The available grid size fits the grid - created config is not scaled.
+  const gfx::Size work_area = gfx::Size(768, 1200);
   std::unique_ptr<AppListConfig> base_config =
       AppListConfigProvider::Get().CreateForAppListWidget(
-          gfx::Size(768, 1200) /*display_work_area_size*/,
-          gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
+          work_area, gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
 
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kLarge, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
   ASSERT_EQ(1, base_config->scale_y());
 
-  const int kMinGridWidth =
-      base_config->grid_tile_width() * base_config->preferred_rows();
-  const int kMinGridHeight =
-      base_config->grid_tile_height() * base_config->preferred_cols();
+  const int kMinGridWidth = base_config->grid_tile_width() *
+                            GetPreferredGridColumnsForWorkArea(work_area);
+  const int kMinGridHeight = base_config->grid_tile_height() *
+                             GetPreferredGridRowsForWorkArea(work_area);
 
   {
     SCOPED_TRACE("Horizontal scaling");
     std::unique_ptr<AppListConfig> config =
         AppListConfigProvider::Get().CreateForAppListWidget(
-            gfx::Size(768, 1200) /*display_work_area_size*/,
-            gfx::Insets(0, 108, 56, 108) /*shelf_insets*/, base_config.get());
+            work_area, gfx::Insets(0, 108, 56, 108) /*shelf_insets*/,
+            base_config.get());
     VerifyScaledConfig(*base_config, config.get(), 440.0f / kMinGridWidth, 1);
   }
 
@@ -457,27 +471,27 @@ TEST_F(AppListConfigProviderTest,
 TEST_F(AppListConfigProviderTest,
        CreateScaledConfigByDisplayWorkAreaMediumPortrait) {
   // The available grid size fits the grid - created config is not scaled.
+  const gfx::Size work_area = gfx::Size(600, 960);
   std::unique_ptr<AppListConfig> base_config =
       AppListConfigProvider::Get().CreateForAppListWidget(
-          gfx::Size(600, 960) /*display_work_area_size*/,
-          gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
+          work_area, gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
 
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kMedium, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
   ASSERT_EQ(1, base_config->scale_y());
 
-  const int kMinGridWidth =
-      base_config->grid_tile_width() * base_config->preferred_rows();
-  const int kMinGridHeight =
-      base_config->grid_tile_height() * base_config->preferred_cols();
+  const int kMinGridWidth = base_config->grid_tile_width() *
+                            GetPreferredGridColumnsForWorkArea(work_area);
+  const int kMinGridHeight = base_config->grid_tile_height() *
+                             GetPreferredGridRowsForWorkArea(work_area);
 
   {
     SCOPED_TRACE("Horizontal scaling");
     std::unique_ptr<AppListConfig> config =
         AppListConfigProvider::Get().CreateForAppListWidget(
-            gfx::Size(600, 960) /*display_work_area_size*/,
-            gfx::Insets(0, 94, 0, 94) /*shelf_insets*/, base_config.get());
+            work_area, gfx::Insets(0, 94, 0, 94) /*shelf_insets*/,
+            base_config.get());
     VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth, 1);
   }
 
@@ -504,20 +518,20 @@ TEST_F(AppListConfigProviderTest,
 TEST_F(AppListConfigProviderTest,
        CreateScaledConfigByDisplayWorkAreaSmallPortrait) {
   // The available grid size fits the grid - created config is not scaled.
+  const gfx::Size work_area = gfx::Size(500, 900);
   std::unique_ptr<AppListConfig> base_config =
       AppListConfigProvider::Get().CreateForAppListWidget(
-          gfx::Size(500, 900) /*display_work_area_size*/,
-          gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
+          work_area, gfx::Insets(0, 0, 56, 0) /*shelf_insets*/, nullptr);
 
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kSmall, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
   ASSERT_EQ(1, base_config->scale_y());
 
-  const int kMinGridWidth =
-      base_config->grid_tile_width() * base_config->preferred_rows();
-  const int kMinGridHeight =
-      base_config->grid_tile_height() * base_config->preferred_cols();
+  const int kMinGridWidth = base_config->grid_tile_width() *
+                            GetPreferredGridColumnsForWorkArea(work_area);
+  const int kMinGridHeight = base_config->grid_tile_height() *
+                             GetPreferredGridRowsForWorkArea(work_area);
 
   {
     SCOPED_TRACE("Horizontal scaling");

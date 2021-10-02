@@ -89,8 +89,6 @@ class ASH_EXPORT SearchResultPageView
                           AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
-  absl::optional<int> GetSearchBoxTop(
-      AppListViewState view_state) const override;
 
   // Overridden from SearchResultContainerView::Delegate:
   void OnSearchResultContainerResultsChanging() override;

@@ -234,6 +234,10 @@ class AppListPresenterTest
         ->apps_grid_view();
   }
 
+  int GetPeekingHeight() {
+    return GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
+  }
+
   void ShowZeroStateSearchInHalfState() {
     GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
     GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
@@ -1842,11 +1846,7 @@ TEST_P(AppListPresenterTest, AppListWindowBounds) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
   const gfx::Rect primary_display_rect(
-      gfx::Point(
-          0,
-          display_size.height() -
-              GetAppListView()->GetAppListConfig().peeking_app_list_height()),
-      display_size);
+      gfx::Point(0, display_size.height() - GetPeekingHeight()), display_size);
   EXPECT_EQ(
       primary_display_rect,
       GetAppListView()->GetWidget()->GetNativeView()->GetBoundsInScreen());
@@ -1859,10 +1859,8 @@ TEST_P(AppListPresenterTest, AppListWindowBounds) {
   GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
   GetAppListTestHelper()->CheckVisibility(true);
   const gfx::Rect secondary_display_rect(
-      gfx::Point(
-          display_size.width(),
-          display_size.height() -
-              GetAppListView()->GetAppListConfig().peeking_app_list_height()),
+      gfx::Point(display_size.width(),
+                 display_size.height() - GetPeekingHeight()),
       display_size);
   EXPECT_EQ(
       secondary_display_rect,
@@ -3446,9 +3444,7 @@ TEST_P(AppListPresenterTest, DragAppListViewFromPeeking) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Calculate |threshold| in the same way with AppListView::EndDrag.
-  const int threshold =
-      GetAppListView()->GetAppListConfig().peeking_app_list_height() /
-      kAppListThresholdDenominator;
+  const int threshold = GetPeekingHeight() / kAppListThresholdDenominator;
 
   // Drag AppListView downward by |threshold| then release the gesture.
   // Check the final state should be Peeking.
@@ -3721,22 +3717,18 @@ class AppListPresenterLayoutTest : public AppListPresenterTest {
   // NOTE: This assumes that the display size is such that the preferred apps
   // grid size is within min and max apps grid height (in which case the margin
   // when scalable app list is not enabled is 1 / 16 of the available height).
-  int ExpectedAppsGridTop(const AppListConfig& config,
-                          int display_height,
+  int ExpectedAppsGridTop(int display_height,
                           const gfx::Rect& search_box_bounds) {
     return ExpectedSuggestionChipContainerTop(search_box_bounds) +
            32 /*suggestion chip container height*/ +
-           config.grid_fadeout_zone_height() -
-           config.grid_fadeout_mask_height();
+           24 /*grid fadeout zone height*/ - 16 /*grid fadeout mask height*/;
   }
 
   // Calculates expected apps grid position on the search results page based on
   // the display height and the search box in-screen bounds.
-  int ExpectedAppsGridTopForSearchResults(const AppListConfig& config,
-                                          int display_height,
+  int ExpectedAppsGridTopForSearchResults(int display_height,
                                           const gfx::Rect& search_box_bounds) {
-    const int top =
-        ExpectedAppsGridTop(config, display_height, search_box_bounds);
+    const int top = ExpectedAppsGridTop(display_height, search_box_bounds);
     // In the search results page, the apps grid is shown 24 dip below where
     // they'd be shown in the apps page. The |top| was calculated relative to
     // search box bounds in the search results page, so it has to be further
@@ -3769,7 +3761,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests that the app list contents top margin is gradually updated during drag
 // between peeking and fullscreen view state while showing apps page.
 TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
-  const AppListConfig& config = GetAppListView()->GetAppListConfig();
   const int shelf_height = ShelfConfig::Get()->shelf_size();
   const int fullscreen_y = 0;
   const int closed_y = 900 - shelf_height;
@@ -3799,11 +3790,13 @@ TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
 
   EXPECT_EQ((peeking_top.y() + fullscreen_y) / 2 +
                 gfx::Tween::IntValueBetween(
-                    progress - 1, config.search_box_peeking_top_padding(),
+                    progress - 1,
+                    ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                        AppListState::kStateApps),
                     fullscreen_search_box_padding),
             search_box_bounds.y());
 
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   // In apps state, search results page should be hidden behind the search
@@ -3822,7 +3815,7 @@ TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
   search_box_bounds.Inset(GetAppListView()->search_box_view()->GetInsets());
 
   EXPECT_EQ(fullscreen_search_box_padding, search_box_bounds.y());
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   EXPECT_EQ(search_box_bounds, search_result_page()->GetBoundsInScreen());
@@ -3842,10 +3835,12 @@ TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
 
   EXPECT_EQ((peeking_top.y() + closed_y) / 2 +
                 gfx::Tween::IntValueBetween(
-                    progress, config.search_box_peeking_top_padding(),
-                    config.search_box_closed_top_padding()),
+                    progress,
+                    ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                        AppListState::kStateApps),
+                    0),
             search_box_bounds.y());
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   EXPECT_EQ(search_box_bounds, search_result_page()->GetBoundsInScreen());
@@ -3860,9 +3855,8 @@ TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
   search_box_bounds = GetAppListView()->search_box_view()->GetBoundsInScreen();
   search_box_bounds.Inset(GetAppListView()->search_box_view()->GetInsets());
 
-  EXPECT_EQ(closed_y + config.search_box_closed_top_padding(),
-            search_box_bounds.y());
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(closed_y, search_box_bounds.y());
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   EXPECT_EQ(search_box_bounds, search_result_page()->GetBoundsInScreen());
@@ -3877,7 +3871,6 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
-  const AppListConfig& config = GetAppListView()->GetAppListConfig();
   const int shelf_height = ShelfConfig::Get()->shelf_size();
   const int search_results_height = 440;
   const int fullscreen_y = 0;
@@ -3907,14 +3900,16 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
 
   EXPECT_EQ((half_top.y() + fullscreen_y) / 2 +
                 gfx::Tween::IntValueBetween(
-                    progress - 1, config.search_box_fullscreen_top_padding(),
+                    progress - 1,
+                    ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                        AppListState::kStateSearchResults),
                     fullscreen_search_box_padding),
             search_box_bounds.y());
   EXPECT_EQ(search_box_bounds.y(),
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
 
@@ -3933,7 +3928,7 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
 
@@ -3951,14 +3946,16 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
 
   EXPECT_EQ((half_top.y() + closed_y) / 2 +
                 gfx::Tween::IntValueBetween(
-                    progress, config.search_box_fullscreen_top_padding(),
-                    config.search_box_closed_top_padding()),
+                    progress,
+                    ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                        AppListState::kStateSearchResults),
+                    0),
             search_box_bounds.y());
   EXPECT_EQ(search_box_bounds.y(),
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
 
@@ -3972,13 +3969,12 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
   search_box_bounds = GetAppListView()->search_box_view()->GetBoundsInScreen();
   search_box_bounds.Inset(GetAppListView()->search_box_view()->GetInsets());
 
-  EXPECT_EQ(closed_y + config.search_box_closed_top_padding(),
-            search_box_bounds.y());
+  EXPECT_EQ(closed_y, search_box_bounds.y());
   EXPECT_EQ(search_box_bounds.y(),
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
 }
@@ -3996,7 +3992,6 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   const gfx::Point half_top =
       GetAppListView()->GetBoundsInScreen().top_center();
 
-  const AppListConfig& config = GetAppListView()->GetAppListConfig();
   const int shelf_height = ShelfConfig::Get()->shelf_size();
   const int search_results_height = 440;
   const int fullscreen_y = 0;
@@ -4021,14 +4016,16 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   EXPECT_LE(std::abs(progress - 1.5f), 0.01f);
   EXPECT_EQ((half_top.y() + fullscreen_y) / 2 +
                 gfx::Tween::IntValueBetween(
-                    progress - 1, config.search_box_fullscreen_top_padding(),
+                    progress - 1,
+                    ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                        AppListState::kStateSearchResults),
                     fullscreen_search_box_padding),
             search_box_bounds.y());
   EXPECT_EQ(search_box_bounds.y(),
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
 
@@ -4049,13 +4046,14 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   int expected_search_box_top =
       new_progress * peeking_top.y() +
       (1 - new_progress) * fullscreen_search_box_padding +
-      new_progress * config.search_box_peeking_top_padding();
+      new_progress * ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                         AppListState::kStateApps);
 
   search_box_bounds = GetAppListView()->search_box_view()->GetBoundsInScreen();
   search_box_bounds.Inset(GetAppListView()->search_box_view()->GetInsets());
 
   EXPECT_EQ(expected_search_box_top, search_box_bounds.y());
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   EXPECT_EQ(apps_grid_bounds_in_results_page.y() - 24,
@@ -4076,14 +4074,16 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   EXPECT_LE(std::abs(progress - 1.5f), 0.01f);
   EXPECT_EQ((half_top.y() + fullscreen_y) / 2 +
                 gfx::Tween::IntValueBetween(
-                    progress - 1, config.search_box_fullscreen_top_padding(),
+                    progress - 1,
+                    ContentsView::GetPeekingSearchBoxTopMarginOnPage(
+                        AppListState::kStateSearchResults),
                     fullscreen_search_box_padding),
             search_box_bounds.y());
   EXPECT_EQ(search_box_bounds.y(),
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
 }
@@ -4094,7 +4094,6 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
   FlingUpOrDown(GetEventGenerator(), GetAppListView(), true);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
-  const AppListConfig& config = GetAppListView()->GetAppListConfig();
   const int shelf_height = ShelfConfig::Get()->shelf_size();
   const int search_results_height = 440;
   const int fullscreen_y = 0;
@@ -4106,7 +4105,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
 
   EXPECT_EQ(fullscreen_y + fullscreen_search_box_padding,
             search_box_bounds.y());
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   EXPECT_EQ(search_box_bounds, search_result_page()->GetBoundsInScreen());
@@ -4127,7 +4126,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
             search_result_page()->GetBoundsInScreen().y());
   EXPECT_EQ(search_results_height,
             search_result_page()->GetBoundsInScreen().height());
-  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTopForSearchResults(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   const gfx::Rect apps_grid_bounds_in_results_page =
@@ -4143,7 +4142,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
   EXPECT_EQ(app_list_bounds, GetAppListView()->GetBoundsInScreen());
   EXPECT_EQ(fullscreen_y + fullscreen_search_box_padding,
             search_box_bounds.y());
-  EXPECT_EQ(ExpectedAppsGridTop(config, 900, search_box_bounds),
+  EXPECT_EQ(ExpectedAppsGridTop(900, search_box_bounds),
             apps_grid_view()->GetBoundsInScreen().y());
   EXPECT_TRUE(apps_grid_view()->GetVisible());
   EXPECT_EQ(apps_grid_bounds_in_results_page.y() - 24,
@@ -4998,7 +4997,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   ui::test::EventGenerator* generator = GetEventGenerator();
   const int x = 540;
   const int peeking_height =
-      900 - GetAppListView()->GetAppListConfig().peeking_app_list_height();
+      900 - GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
   const int closed_y = 890;
   generator->MoveTouch(gfx::Point(x, peeking_height));
   generator->PressTouch();

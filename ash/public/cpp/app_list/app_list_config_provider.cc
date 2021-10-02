@@ -94,34 +94,33 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
 
   const int min_grid_height =
       (display_work_area_size.width() < display_work_area_size.height()
-           ? base_config.preferred_cols()
-           : base_config.preferred_rows()) *
+           ? 5 /*preferred columns*/
+           : 4 /*preferred rows*/) *
       base_config.grid_tile_height();
   const int min_grid_width =
       (display_work_area_size.width() < display_work_area_size.height()
-           ? base_config.preferred_rows()
-           : base_config.preferred_cols()) *
+           ? 4 /*preferred rows*/
+           : 5 /*preferred columns*/) *
       base_config.grid_tile_width();
 
   // Note that minimum top margin matches the grid fadeout zone height.
-  int non_grid_height = base_config.grid_fadeout_zone_height() +
-                        base_config.suggestion_chip_container_top_margin() +
-                        base_config.suggestion_chip_container_height();
+  int non_grid_height = 24 /*grid fadeout zone height*/ +
+                        16 /*suggestion chip container top margin*/ +
+                        32 /*suggestion chip container height*/;
   // Add search box height.
   non_grid_height +=
       display_work_area_size.height() - shelf_insets.height() >= 600
-          ? base_config.search_box_height()
-          : base_config.search_box_height_for_dense_layout();
+          ? 48 /*search box height*/
+          : 40 /*search box height for dense layout()*/;
 
   const int available_grid_height =
       display_work_area_size.height() - shelf_insets.height() - non_grid_height;
 
   if (available_grid_height < min_grid_height) {
-    scale_y = std::max(
-        min_config_scale,
-        static_cast<float>(available_grid_height -
-                           2 * base_config.grid_fadeout_zone_height()) /
-            min_grid_height);
+    scale_y = std::max(min_config_scale,
+                       static_cast<float>(available_grid_height -
+                                          2 * 24 /*grid fadeout zone height*/) /
+                           min_grid_height);
     // Adjust scale to reflect the fact the app list item title height does not
     // get scaled. The adjustment is derived from:
     // s * x + c = S * (x + c) and t = x + c

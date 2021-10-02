@@ -910,7 +910,7 @@ void AppsGridView::Update() {
 void AppsGridView::UpdatePulsingBlockViews() {
   const int existing_items = item_list_ ? item_list_->item_count() : 0;
   const int tablet_page_size =
-      GetAppListConfig().preferred_cols() * GetAppListConfig().preferred_rows();
+      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   // For scrolling app list, the "page size" is very large, so cap the number of
   // pulsing blocks to the size of the tablet mode page (~20 items).
   const int tiles_per_page = std::min(TilesPerPage(0), tablet_page_size);

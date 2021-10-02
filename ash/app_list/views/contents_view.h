@@ -79,6 +79,10 @@ class ASH_EXPORT ContentsView : public views::View,
 
   ~ContentsView() override;
 
+  // Returns the search box top margin when app list view is in peeking/half
+  // state, and showing the provided `page`.
+  static int GetPeekingSearchBoxTopMarginOnPage(AppListState page);
+
   // Initialize the pages of the launcher. Should be called after
   // set_contents_switcher_view().
   void Init(AppListModel* model);

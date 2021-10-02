@@ -332,19 +332,6 @@ gfx::Size AssistantPageView::GetPreferredSearchBoxSize() const {
   return gfx::Size(kPreferredWidthDip, kSearchBoxHeightDip);
 }
 
-absl::optional<int> AssistantPageView::GetSearchBoxTop(
-    AppListViewState view_state) const {
-  if (view_state == AppListViewState::kPeeking ||
-      view_state == AppListViewState::kHalf) {
-    return contents_view()
-        ->GetAppListConfig()
-        .search_box_fullscreen_top_padding();
-  }
-  // For other view states, return absl::nullopt so the ContentsView
-  // sets the default search box widget origin.
-  return absl::nullopt;
-}
-
 void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,
                                          const TransformAnimator& animator,
                                          float default_offset) {
