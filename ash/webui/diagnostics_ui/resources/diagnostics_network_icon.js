@@ -8,7 +8,7 @@ import './diagnostics_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Network, NetworkState, NetworkType} from './diagnostics_types.js';
+import {Network, NetworkState, NetworkType, SecurityType} from './diagnostics_types.js';
 
 /**
  * Type alias for network_config NetworkStateProperties struct.
@@ -29,6 +29,12 @@ export let ConnectionStateType =
  * @typedef {chromeos.networkConfig.mojom.NetworkType}
  */
 export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
+
+/**
+ * Type alias for network_config SecurityType enum.
+ * @typedef {chromeos.networkConfig.mojom.SecurityType}
+ */
+export let CrosSecurityType = chromeos.networkConfig.mojom.SecurityType;
 
 /**
  * Struct for minimal required network state required to display network-icon
@@ -52,6 +58,15 @@ export let NetworkIconNetworkState;
  *  }}
  */
 export let RequiredCellularProperties;
+
+/**
+ * Required WiFi type properties to display network-icon.
+ * @typedef {{
+ *    security: !CrosSecurityType,
+ *    signalStrength: number,
+ *  }}
+ */
+export let RequiredWiFiProperties;
 
 /**
  * @param {!NetworkState} state
@@ -130,6 +145,76 @@ function getCellularTypeState(network) {
 }
 
 /**
+ * Helper function to get the required properties to display a wifi network
+ * icon.
+ * @param {!Network} network
+ * @returns
+ */
+function getWifiTypeState(network) {
+  /** @type {!RequiredWiFiProperties} */
+  const defaultWifiTypeStateProperties = {
+    security: CrosSecurityType.kNone,
+    signalStrength: 0,
+  };
+  let typeState = /** @type {!CrosNetworkStateProperties} */ (
+    {wifi: defaultWifiTypeStateProperties});
+
+  if (!network.typeProperties) {
+    return typeState;
+  }
+
+  // Override type properties if data is available.
+  const signalStrength = network.typeProperties.wifi.signalStrength;
+  const security = convertSecurityTypeToCrosSecurityType(
+      network.typeProperties.wifi.security);
+  typeState = /** @type {CrosNetworkStateProperties} */ (
+      {wifi: {security, signalStrength}});
+
+  return typeState;
+}
+
+/**
+ * Helper function to get the typeState required for a given `network.type`
+ * to display `network-icon` correctly.
+ * @param {!Network} network
+ * @return {?CrosNetworkStateProperties}
+ */
+function getTypeState(network) {
+  switch(network.type) {
+    case NetworkType.kEthernet:
+      return null;
+    case NetworkType.kCellular:
+      return getCellularTypeState(network);
+    case NetworkType.kWiFi:
+      return getWifiTypeState(network);
+    default:
+      assertNotReached();
+  }
+  return null;
+}
+
+/*
+ * @param {!SecurityType} type
+ * @return {!CrosSecurityType}
+ */
+function convertSecurityTypeToCrosSecurityType(type) {
+  switch (type) {
+    case SecurityType.kNone:
+      return CrosSecurityType.kNone;
+    case SecurityType.kWep8021x:
+      return CrosSecurityType.kWep8021x;
+    case SecurityType.kWepPsk:
+      return CrosSecurityType.kWepPsk;
+    case SecurityType.kWpaEap:
+      return CrosSecurityType.kWpaEap;
+    case SecurityType.kWpaPsk:
+      return CrosSecurityType.kWpaPsk;
+    default:
+      assertNotReached();
+  }
+}
+
+/**
  * Adapter to convert network data to fit data required for network-icon.
  * @param {!Network} network
  * @return {!NetworkIconNetworkState}
@@ -138,13 +223,7 @@ export function networkToNetworkStateAdapter(network) {
   const type = convertNetworkTypeToCrosNetworkType(network.type);
   const connectionState = convertNetworkStateToCrosNetworkState(network.state);
   const guid = network.observerGuid;
-
-  /** @type {?CrosNetworkStateProperties} */
-  let typeState = null;
-  // Add required cellular properties.
-  if (network.type === NetworkType.kCellular) {
-    typeState = getCellularTypeState(network);
-  }
+  const typeState = getTypeState(network);
 
   return {guid, connectionState, type, typeState};
 }

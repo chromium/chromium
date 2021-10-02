@@ -53,6 +53,13 @@ export function diagnosticsNetworkIconTestSuite() {
     return getNetworkIcon().shadowRoot.querySelector('#roaming');
   }
 
+  /** @return {HTMLElement} */
+  function getSecureIcon() {
+    assertTrue(!!diagnosticsNetworkIconElement);
+
+    return getNetworkIcon().shadowRoot.querySelector('#secure');
+  }
+
   /**
    * @param {!Network} network
    * @return {!Promise}
@@ -162,5 +169,24 @@ export function diagnosticsNetworkIconTestSuite() {
           assertFalse(isVisible(getNetworkTechnologyIcon()));
           assertFalse(isVisible(getRoamingIcon()));
         });
+  });
+
+  test('NetworkToNetworkStateAdapter_WifiNetworkTypeProperties', () => {
+    const networkState = networkToNetworkStateAdapter(fakeWifiNetwork);
+    assertEquals(
+        fakeWifiNetwork.typeProperties.wifi.signalStrength,
+        networkState.typeState.wifi.signalStrength);
+  });
+
+  test('DiagnosticsNetworkIconWifi', () => {
+    return initializeDiagnosticsNetworkIcon(fakePortalWifiNetwork).then(() => {
+      assertTrue(isVisible(getPrimaryIcon()));
+      // Class name for wifi will reflect signal strength.
+      assertTextContains(getPrimaryIcon().className, 'wifi-3');
+      assertTrue(isVisible(getNetworkIcon()));
+      assertTrue(isVisible(getSecureIcon()));
+      assertFalse(isVisible(getNetworkTechnologyIcon()));
+      assertFalse(isVisible(getRoamingIcon()));
+    });
   });
 }
