@@ -96,6 +96,26 @@ COMPONENT_EXPORT(APP_RESTORE)
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
 
+// Invoked when the task is created for an ARC app.
+COMPONENT_EXPORT(APP_RESTORE)
+void OnTaskCreated(const std::string& app_id,
+                   int32_t task_id,
+                   int32_t session_id);
+
+// Invoked when the task is destroyed for an ARC app.
+COMPONENT_EXPORT(APP_RESTORE)
+void OnTaskDestroyed(int32_t task_id);
+
+// Invoked when the ARC instance connection is ready or closed.
+COMPONENT_EXPORT(APP_RESTORE)
+void SetArcConnection(bool is_connection_ready);
+
+// Invoked when the task theme colors are updated for an ARC app.
+COMPONENT_EXPORT(APP_RESTORE)
+void OnTaskThemeColorUpdated(int32_t task_id,
+                             uint32_t primary_color,
+                             uint32_t status_bar_color);
+
 COMPONENT_EXPORT(APP_RESTORE)
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 

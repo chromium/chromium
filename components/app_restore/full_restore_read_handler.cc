@@ -36,7 +36,6 @@ FullRestoreReadHandler* FullRestoreReadHandler::GetInstance() {
 FullRestoreReadHandler::FullRestoreReadHandler() {
   if (aura::Env::HasInstance())
     env_observer_.Observe(aura::Env::GetInstance());
-  arc_info_observer_.Observe(app_restore::AppRestoreArcInfo::GetInstance());
 }
 
 FullRestoreReadHandler::~FullRestoreReadHandler() = default;
@@ -149,6 +148,16 @@ void FullRestoreReadHandler::ApplyProperties(
   }
 }
 
+void FullRestoreReadHandler::SetActiveProfilePath(
+    const base::FilePath& profile_path) {
+  active_profile_path_ = profile_path;
+}
+
+void FullRestoreReadHandler::SetCheckRestoreData(
+    const base::FilePath& profile_path) {
+  should_check_restore_data_.insert(profile_path);
+}
+
 void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
                                            int32_t task_id,
                                            int32_t session_id) {
@@ -159,16 +168,6 @@ void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
 void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
   if (arc_read_handler_)
     arc_read_handler_->OnTaskDestroyed(task_id);
-}
-
-void FullRestoreReadHandler::SetActiveProfilePath(
-    const base::FilePath& profile_path) {
-  active_profile_path_ = profile_path;
-}
-
-void FullRestoreReadHandler::SetCheckRestoreData(
-    const base::FilePath& profile_path) {
-  should_check_restore_data_.insert(profile_path);
 }
 
 void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,

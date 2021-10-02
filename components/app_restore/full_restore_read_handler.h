@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/arc_read_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/env.h"
@@ -42,15 +41,14 @@ namespace full_restore {
 
 class FullRestoreFileHandler;
 
-// FullRestoreReadHandler is responsible for reading |RestoreData| from the full
-// restore data file. FullRestoreReadHandler runs on the main thread and creates
+// FullRestoreSaveHandler is responsible for reading |RestoreData| from the full
+// restore data file. RestoreHandler runs on the main thread and creates
 // FullRestoreFileHandler (which runs on a background task runner) for the
 // actual reading.
 class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
     : public aura::EnvObserver,
       public aura::WindowObserver,
-      public app_restore::ArcReadHandler::Delegate,
-      public app_restore::AppRestoreArcInfo::Observer {
+      public app_restore::ArcReadHandler::Delegate {
  public:
   // The callback function to get the restore data when the reading operation is
   // done.
@@ -85,18 +83,20 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void ApplyProperties(app_restore::WindowInfo* window_info,
                        ui::PropertyHandler* property_handler) override;
 
-  // app_restore::AppRestoreArcInfo::Observer:
-  void OnTaskCreated(const std::string& app_id,
-                     int32_t task_id,
-                     int32_t session_id) override;
-  void OnTaskDestroyed(int32_t task_id) override;
-
   void SetActiveProfilePath(const base::FilePath& profile_path);
 
   // Sets whether we should check the restore data for `profile_path`. If the
   // user selects `Restore`, then we should check the restore data for restored
   // windows. Otherwise, we don't need to to check the restore data.
   void SetCheckRestoreData(const base::FilePath& profile_path);
+
+  // Invoked when the task is created for an ARC app.
+  void OnTaskCreated(const std::string& app_id,
+                     int32_t task_id,
+                     int32_t session_id);
+
+  // Invoked when the task is destroyed for an ARC app.
+  void OnTaskDestroyed(int32_t task_id);
 
   // Reads the restore data from |profile_path| on a background task runner, and
   // calls |callback| when the reading operation is done.
@@ -211,10 +211,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
-
-  base::ScopedObservation<app_restore::AppRestoreArcInfo,
-                          app_restore::AppRestoreArcInfo::Observer>
-      arc_info_observer_{this};
 
   base::WeakPtrFactory<FullRestoreReadHandler> weak_factory_{this};
 };
