@@ -296,10 +296,17 @@ void HoldingSpaceItemView::OnThemeChanged() {
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
     uint32_t updated_fields) {
-  if (item_ == item) {
-    GetViewAccessibility().OverrideName(item->GetAccessibleName());
-    UpdatePrimaryAction();
+  if (item_ != item)
+    return;
+
+  // Accessibility.
+  if (updated_fields & UpdatedField::kAccessibleName) {
+    GetViewAccessibility().OverrideName(item_->GetAccessibleName());
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   }
+
+  // Primary action.
+  UpdatePrimaryAction();
 }
 
 void HoldingSpaceItemView::StartDrag(const ui::LocatedEvent& event,

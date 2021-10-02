@@ -201,11 +201,13 @@ std::u16string HoldingSpaceItem::GetAccessibleName() const {
   if (accessible_name_)
     return accessible_name_.value();
 
+  const std::u16string text = GetText();
+
   if (!secondary_text_)
-    return GetText();
+    return text;
 
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, GetText(),
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, text,
       secondary_text_.value());
 }
 

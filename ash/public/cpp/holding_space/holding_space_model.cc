@@ -19,6 +19,9 @@ namespace ash {
 HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   uint32_t updated_fields = 0u;
 
+  // Cache computed fields.
+  const std::u16string accessible_name = item_->GetAccessibleName();
+
   // Update accessible name.
   if (accessible_name_) {
     if (item_->SetAccessibleName(accessible_name_.value())) {
@@ -61,6 +64,10 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   // event as the image itself can be subscribed to independently for updates.
   if (invalidate_image_)
     item_->InvalidateImage();
+
+  // Calculate changes to computed fields.
+  if (accessible_name != item_->GetAccessibleName())
+    updated_fields |= HoldingSpaceModelObserver::UpdatedField::kAccessibleName;
 
   // Notify observers if and only if an update occurred.
   if (updated_fields != 0u) {
