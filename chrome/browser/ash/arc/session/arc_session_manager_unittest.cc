@@ -1360,12 +1360,14 @@ TEST_P(ArcSessionManagerPolicyTest, SkippingTerms) {
 
   // Assign test values to the prefs.
   if (backup_restore_pref_value().is_bool()) {
-    prefs->SetManagedPref(prefs::kArcBackupRestoreEnabled,
-                          backup_restore_pref_value().CreateDeepCopy());
+    prefs->SetManagedPref(
+        prefs::kArcBackupRestoreEnabled,
+        base::Value::ToUniquePtrValue(backup_restore_pref_value().Clone()));
   }
   if (location_service_pref_value().is_bool()) {
-    prefs->SetManagedPref(prefs::kArcLocationServiceEnabled,
-                          location_service_pref_value().CreateDeepCopy());
+    prefs->SetManagedPref(
+        prefs::kArcLocationServiceEnabled,
+        base::Value::ToUniquePtrValue(location_service_pref_value().Clone()));
   }
 
   arc_session_manager()->SetProfile(profile());

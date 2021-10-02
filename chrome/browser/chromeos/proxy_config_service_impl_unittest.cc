@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
@@ -453,10 +454,12 @@ TEST_F(ProxyConfigServiceImplTest, DynamicPrefsOverride) {
     // Managed proxy pref should take effect over recommended proxy and
     // non-existent network proxy.
     SetUserConfigInShill(nullptr);
-    pref_service_.SetManagedPref(::proxy_config::prefs::kProxy,
-                                 managed_config.CreateDeepCopy());
-    pref_service_.SetRecommendedPref(::proxy_config::prefs::kProxy,
-                                     recommended_config.CreateDeepCopy());
+    pref_service_.SetManagedPref(
+        ::proxy_config::prefs::kProxy,
+        base::Value::ToUniquePtrValue(managed_config.Clone()));
+    pref_service_.SetRecommendedPref(
+        ::proxy_config::prefs::kProxy,
+        base::Value::ToUniquePtrValue(recommended_config.Clone()));
     net::ProxyConfigWithAnnotation actual_config;
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
@@ -484,8 +487,9 @@ TEST_F(ProxyConfigServiceImplTest, DynamicPrefsOverride) {
         actual_config.value().proxy_rules()));
 
     // Managed proxy pref should take effect over network proxy.
-    pref_service_.SetManagedPref(::proxy_config::prefs::kProxy,
-                                 managed_config.CreateDeepCopy());
+    pref_service_.SetManagedPref(
+        ::proxy_config::prefs::kProxy,
+        base::Value::ToUniquePtrValue(managed_config.Clone()));
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
     EXPECT_EQ(GURL(managed_params.pac_url), actual_config.value().pac_url());
