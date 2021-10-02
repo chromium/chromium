@@ -1633,7 +1633,6 @@
         ],
       },
       'headless_unittests': {},
-      'http_service_tests': {},
       'ipc_tests': {},
       'jingle_unittests': {
         'args': [
