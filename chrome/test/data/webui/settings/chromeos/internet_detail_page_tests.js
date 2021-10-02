@@ -152,6 +152,8 @@ suite('InternetDetailPage', function() {
 
     browserProxy = new TestInternetPageBrowserProxy();
     settings.InternetPageBrowserProxyImpl.instance_ = browserProxy;
+
+    return flushAsync();
   });
 
   teardown(function() {
