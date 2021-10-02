@@ -95,6 +95,10 @@ void EventModelImpl::IncrementSnooze(const std::string& event_name,
                                      uint32_t current_day,
                                      base::Time current_time) {
   DCHECK(ready_);
+
+  DVLOG(2) << "Incrementing snooze for event  " << event_name << " on "
+           << current_day << " @ " << current_time;
+
   Event& event = GetNonConstEvent(event_name);
   for (int i = 0; i < event.events_size(); ++i) {
     Event_Count* event_count = event.mutable_events(i);
@@ -102,7 +106,8 @@ void EventModelImpl::IncrementSnooze(const std::string& event_name,
     DCHECK(event_count->has_count());
     if (event_count->day() != current_day)
       continue;
-    event_count->set_snooze_count(event_count->snooze_count() + 1);
+    event_count->set_snooze_count(
+        event_count->has_snooze_count() ? event_count->snooze_count() + 1 : 1u);
   }
   event.set_last_snooze_time_us(
       current_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -162,11 +167,13 @@ void EventModelImpl::OnStoreLoaded(OnModelInitializationFinished callback,
       Event_Count* new_event_count = new_event.add_events();
       new_event_count->set_day(event_count.day());
       new_event_count->set_count(event_count.count());
+      new_event_count->set_snooze_count(event_count.snooze_count());
     }
 
     // Only keep Event object that have days with activity.
     if (new_event.events_size() > 0) {
       new_event.set_name(event.name());
+      new_event.set_last_snooze_time_us(event.last_snooze_time_us());
       events_[event.name()] = new_event;
 
       // If the number of events is not the same, overwrite DB entry.

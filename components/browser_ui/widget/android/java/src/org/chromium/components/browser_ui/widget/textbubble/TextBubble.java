@@ -421,8 +421,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
     /**
      * @param dismiss Whether or not to dismiss this bubble when the screen is tapped.  This will
-     *                happen for both taps inside and outside the popup.  The default is
-     *                {@code false}.
+     *                happen for both taps inside and outside the popup except when a tap is handled
+     *                by child views. The default is {@code false}.
      */
     public void setDismissOnTouchInteraction(boolean dismiss) {
         // For accessibility mode, since there is no timeout value, the bubble can be dismissed
@@ -472,11 +472,17 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             if (mSnoozeRunnable != null) {
                 Button snoozeButton = (Button) view.findViewById(R.id.button_snooze);
                 snoozeButton.setVisibility(View.VISIBLE);
-                snoozeButton.setOnClickListener(v -> mSnoozeRunnable.run());
+                snoozeButton.setOnClickListener(v -> {
+                    mSnoozeRunnable.run();
+                    mDismissRunnable.run();
+                });
             } else if (mSnoozeDismissRunnable != null) {
                 Button dismissButton = (Button) view.findViewById(R.id.button_dismiss);
                 dismissButton.setVisibility(View.VISIBLE);
-                dismissButton.setOnClickListener(v -> mSnoozeDismissRunnable.run());
+                dismissButton.setOnClickListener(v -> {
+                    mSnoozeDismissRunnable.run();
+                    mDismissRunnable.run();
+                });
             }
             return view;
         }

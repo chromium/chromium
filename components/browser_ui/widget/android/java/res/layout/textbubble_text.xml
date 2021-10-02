@@ -24,6 +24,8 @@
           android:id="@+id/button_snooze"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:focusable="true"
+          android:clickable="true"
           android:visibility="gone"
           android:text="@string/iph_snooze" />
 
@@ -31,6 +33,8 @@
           android:id="@+id/button_dismiss"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:focusable="true"
+          android:clickable="true"
           android:visibility="gone"
           android:text="@string/got_it" />
 

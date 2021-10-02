@@ -184,6 +184,7 @@ public final class WebFeedFollowIntroControllerTest {
     public void meetsShowingRequirements_showsIntro_IPH() {
         mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
         FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 

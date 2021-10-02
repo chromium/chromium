@@ -247,8 +247,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
     /**
      * @param dismiss Whether or not to dismiss this popup when the screen is tapped.  This will
-     *                happen for both taps inside and outside the popup.  The default is
-     *                {@code false}.
+     *                happen for both taps inside and outside the popup except when a tap is handled
+     *                by child views. The default is {@code false}.
      */
     public void setDismissOnTouchInteraction(boolean dismiss) {
         mDismissOnTouchInteraction = dismiss;
@@ -578,9 +578,16 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        boolean returnValue = mTouchListener != null && mTouchListener.onTouch(v, event);
-        if (mDismissOnTouchInteraction) dismiss();
-        return returnValue;
+        boolean touchInterceptedByClient =
+                mTouchListener != null && mTouchListener.onTouch(v, event);
+
+        // Pass down the touch event to child views. If the content view has clickable children,
+        // make sure we give them the opportunity to trigger.
+        boolean touchInterceptedByChild = !touchInterceptedByClient
+                && mPopupWindow.getContentView().dispatchTouchEvent(event);
+        if (!touchInterceptedByChild && mDismissOnTouchInteraction) dismiss();
+
+        return touchInterceptedByClient;
     }
 
     private static int clamp(int value, int a, int b) {

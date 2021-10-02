@@ -279,10 +279,14 @@ void TrackerImpl::DismissedWithSnooze(
     const base::Feature& feature,
     absl::optional<SnoozeAction> snooze_action) {
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
-  DVLOG(2) << "Dismissing " << feature.name;
-  condition_validator_->NotifyDismissed(feature);
+  if (snooze_action == SnoozeAction::SNOOZED) {
+    event_model_->IncrementSnooze(feature_config.trigger.name,
+                                  time_provider_->GetCurrentDay(),
+                                  base::Time::Now());
+  } else if (snooze_action == SnoozeAction::DISMISSED) {
+    event_model_->DismissSnooze(feature_config.trigger.name);
+  }
   stats::RecordUserDismiss();
-  event_model_->DismissSnooze(feature_config.trigger.name);
 }
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {
