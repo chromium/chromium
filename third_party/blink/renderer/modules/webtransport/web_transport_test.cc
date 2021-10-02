@@ -27,11 +27,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -500,13 +501,18 @@ TEST_F(WebTransportTest, FailedConnect) {
 TEST_F(WebTransportTest, SendConnectWithFingerprint) {
   V8TestingScope scope;
   AddBinder(scope);
-  auto* fingerprints = MakeGarbageCollected<RTCDtlsFingerprint>();
-  fingerprints->setAlgorithm("sha-256");
-  fingerprints->setValue(
-      "ED:3D:D7:C3:67:10:94:68:D1:DC:D1:26:5C:B2:74:D7:1C:A2:63:3E:94:94:C0:84:"
-      "39:D6:64:FA:08:B9:77:37");
+  auto* hash = MakeGarbageCollected<WebTransportHash>();
+  hash->setAlgorithm("sha-256");
+  constexpr uint8_t kPattern[] = {
+      0xED, 0x3D, 0xD7, 0xC3, 0x67, 0x10, 0x94, 0x68, 0xD1, 0xDC, 0xD1,
+      0x26, 0x5C, 0xB2, 0x74, 0xD7, 0x1C, 0xA2, 0x63, 0x3E, 0x94, 0x94,
+      0xC0, 0x84, 0x39, 0xD6, 0x64, 0xFA, 0x08, 0xB9, 0x77, 0x37,
+  };
+  DOMUint8Array* hashValue = DOMUint8Array::Create(kPattern, sizeof(kPattern));
+  hash->setValue(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(hashValue)));
   auto* options = MakeGarbageCollected<WebTransportOptions>();
-  options->setServerCertificateFingerprints({fingerprints});
+  options->setServerCertificateHashes({hash});
   WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
                        options, ASSERT_NO_EXCEPTION);
 
@@ -521,17 +527,70 @@ TEST_F(WebTransportTest, SendConnectWithFingerprint) {
             "C0:84:39:D6:64:FA:08:B9:77:37");
 }
 
+TEST_F(WebTransportTest, SendConnectWithArrayBufferHash) {
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto* hash = MakeGarbageCollected<WebTransportHash>();
+  hash->setAlgorithm("sha-256");
+  constexpr uint8_t kPattern[] = {0x28, 0x24, 0xa8, 0xa2};
+  DOMArrayBuffer* hashValue =
+      DOMArrayBuffer::Create(kPattern, sizeof(kPattern));
+  hash->setValue(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(hashValue));
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setServerCertificateHashes({hash});
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  ASSERT_EQ(1u, args[0].fingerprints.size());
+  EXPECT_EQ(args[0].fingerprints[0]->algorithm, "sha-256");
+  EXPECT_EQ(args[0].fingerprints[0]->fingerprint, "28:24:A8:A2");
+}
+
+TEST_F(WebTransportTest, SendConnectWithOffsetArrayBufferViewHash) {
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto* hash = MakeGarbageCollected<WebTransportHash>();
+  hash->setAlgorithm("sha-256");
+  constexpr uint8_t kPattern[6] = {0x28, 0x24, 0xa8, 0xa2, 0x44, 0xee};
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kPattern, sizeof(kPattern));
+  DOMUint8Array* view = DOMUint8Array::Create(buffer, 2, 3);
+  hash->setValue(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(view)));
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setServerCertificateHashes({hash});
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  ASSERT_EQ(1u, args[0].fingerprints.size());
+  EXPECT_EQ(args[0].fingerprints[0]->algorithm, "sha-256");
+  EXPECT_EQ(args[0].fingerprints[0]->fingerprint, "A8:A2:44");
+}
+
 // Regression test for https://crbug.com/1242185.
 TEST_F(WebTransportTest, SendConnectWithInvalidFingerprint) {
   V8TestingScope scope;
   AddBinder(scope);
-  auto* fingerprints = MakeGarbageCollected<RTCDtlsFingerprint>();
+  auto* hash = MakeGarbageCollected<WebTransportHash>();
   // "algorithm" is unset.
-  fingerprints->setValue(
-      "ED:3D:D7:C3:67:10:94:68:D1:DC:D1:26:5C:B2:74:D7:1C:A2:63:3E:94:94:C0:84:"
-      "39:D6:64:FA:08:B9:77:37");
+  constexpr uint8_t kPattern[] = {
+      0xED, 0x3D, 0xD7, 0xC3, 0x67, 0x10, 0x94, 0x68, 0xD1, 0xDC, 0xD1,
+      0x26, 0x5C, 0xB2, 0x74, 0xD7, 0x1C, 0xA2, 0x63, 0x3E, 0x94, 0x94,
+      0xC0, 0x84, 0x39, 0xD6, 0x64, 0xFA, 0x08, 0xB9, 0x77, 0x37,
+  };
+  DOMUint8Array* hashValue = DOMUint8Array::Create(kPattern, sizeof(kPattern));
+  hash->setValue(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(hashValue)));
   auto* options = MakeGarbageCollected<WebTransportOptions>();
-  options->setServerCertificateFingerprints({fingerprints});
+  options->setServerCertificateHashes({hash});
   WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
                        options, ASSERT_NO_EXCEPTION);
 

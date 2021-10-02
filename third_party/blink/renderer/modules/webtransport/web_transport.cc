@@ -18,8 +18,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -1072,13 +1074,34 @@ void WebTransport::Init(const String& url,
 
   Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
       fingerprints;
-  if (options.hasServerCertificateFingerprints()) {
-    for (const auto& fingerprint : options.serverCertificateFingerprints()) {
-      if (!fingerprint->hasAlgorithm() || !fingerprint->hasValue())
+  if (options.hasServerCertificateHashes()) {
+    for (const auto& hash : options.serverCertificateHashes()) {
+      if (!hash->hasAlgorithm() || !hash->hasValue())
         continue;
+      StringBuilder value_builder;
+      const uint8_t* data;
+      size_t size;
+      if (hash->value()->IsArrayBuffer()) {
+        const auto* value = hash->value()->GetAsArrayBuffer();
+        data = static_cast<const uint8_t*>(value->Data());
+        size = value->ByteLength();
+      } else {
+        DCHECK(hash->value()->IsArrayBufferView());
+        const auto* value = hash->value()->GetAsArrayBufferView().Get();
+        data = static_cast<const uint8_t*>(value->BaseAddress());
+        size = value->byteLength();
+      }
+
+      for (size_t i = 0; i < size; ++i) {
+        if (i > 0) {
+          value_builder.Append(":");
+        }
+        value_builder.AppendFormat("%02X", data[i]);
+      }
+
       fingerprints.push_back(
           network::mojom::blink::WebTransportCertificateFingerprint::New(
-              fingerprint->algorithm(), fingerprint->value()));
+              hash->algorithm(), value_builder.ToString()));
     }
   }
 

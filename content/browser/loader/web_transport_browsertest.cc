@@ -308,14 +308,14 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CertificateFingerprint) {
   ASSERT_TRUE(
       ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
+      const hashValue = new Uint8Array(32);
       // The connection fails because the fingerprint does not match.
       const transport = new WebTransport(
           'https://localhost:%d/echo', {
-            serverCertificateFingerprints: [
+            serverCertificateHashes: [
               {
                 algorithm: "sha-256",
-                value: "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:" +
-                       "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00",
+                value: hashValue,
               },
             ],
           });

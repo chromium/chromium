@@ -1060,6 +1060,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webtransport/web_transport_close_info.idl",
           "//third_party/blink/renderer/modules/webtransport/web_transport_error.idl",
           "//third_party/blink/renderer/modules/webtransport/web_transport_error_init.idl",
+          "//third_party/blink/renderer/modules/webtransport/web_transport_hash.idl",
           "//third_party/blink/renderer/modules/webtransport/web_transport_options.idl",
           "//third_party/blink/renderer/modules/webusb/navigator_usb.idl",
           "//third_party/blink/renderer/modules/webusb/usb.idl",

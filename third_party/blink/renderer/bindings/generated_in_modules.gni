@@ -939,6 +939,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.cc",
