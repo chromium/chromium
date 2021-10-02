@@ -137,13 +137,6 @@ UrlInfo UrlInfo::CreateForTesting(
                      .WithStoragePartitionConfig(storage_partition_config));
 }
 
-UrlInfo UrlInfo::CreateCopyWithStoragePartitionConfig(
-    absl::optional<StoragePartitionConfig> storage_partition_config_in) const {
-  UrlInfo copy = *this;
-  copy.storage_partition_config = storage_partition_config_in;
-  return copy;
-}
-
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 
 UrlInfoInit::UrlInfoInit(const GURL& url)
@@ -151,6 +144,14 @@ UrlInfoInit::UrlInfoInit(const GURL& url)
       origin_(url::Origin::Create(url)),
       web_exposed_isolation_info_(
           WebExposedIsolationInfo::CreateNonIsolated()) {}
+
+UrlInfoInit::UrlInfoInit(const UrlInfo& base)
+    : url_(base.url),
+      origin_isolation_request_(base.origin_isolation_request),
+      origin_(base.origin),
+      storage_partition_config_(base.storage_partition_config),
+      web_exposed_isolation_info_(base.web_exposed_isolation_info),
+      is_pdf_(base.is_pdf) {}
 
 UrlInfoInit::~UrlInfoInit() = default;
 

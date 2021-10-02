@@ -195,8 +195,8 @@ SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
   UrlInfo url_info_with_partition =
       url_info.storage_partition_config.has_value()
           ? url_info
-          : url_info.CreateCopyWithStoragePartitionConfig(
-                storage_partition_config_);
+          : UrlInfo(UrlInfoInit(url_info).WithStoragePartitionConfig(
+                storage_partition_config_));
 
   url_info_with_partition.web_exposed_isolation_info =
       web_exposed_isolation_info_;

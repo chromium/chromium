@@ -103,11 +103,6 @@ struct CONTENT_EXPORT UrlInfo {
     return (origin_isolation_request & OriginIsolationRequest::kCOOP);
   }
 
-  // Creates a copy of this UrlInfo that has its |storage_partition_config|
-  // field set to |storage_partition_config_in|.
-  UrlInfo CreateCopyWithStoragePartitionConfig(
-      absl::optional<StoragePartitionConfig> storage_partition_config_in) const;
-
   GURL url;
 
   // This field indicates whether the URL is requesting additional process
@@ -154,6 +149,7 @@ class CONTENT_EXPORT UrlInfoInit {
  public:
   UrlInfoInit() = delete;
   explicit UrlInfoInit(const GURL& url);
+  explicit UrlInfoInit(const UrlInfo& base);
   ~UrlInfoInit();
 
   UrlInfoInit& operator=(const UrlInfoInit&) = delete;
@@ -179,6 +175,8 @@ class CONTENT_EXPORT UrlInfoInit {
   absl::optional<StoragePartitionConfig> storage_partition_config_;
   WebExposedIsolationInfo web_exposed_isolation_info_;
   bool is_pdf_ = false;
+
+  // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.
 };  // class UrlInfoInit
 
 // SiteInfo represents the principal of a SiteInstance. All documents and
