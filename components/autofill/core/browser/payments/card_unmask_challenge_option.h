@@ -19,7 +19,8 @@ enum class CardUnmaskChallengeOptionType {
 // The struct used by Autofill components to represent a card unmask challenge
 // option.
 struct CardUnmaskChallengeOption {
-  CardUnmaskChallengeOption() = default;
+  CardUnmaskChallengeOption()
+      : type(CardUnmaskChallengeOptionType::kUnknownType) {}
   CardUnmaskChallengeOption(const CardUnmaskChallengeOption&) = default;
   ~CardUnmaskChallengeOption() = default;
   CardUnmaskChallengeOption& operator=(const CardUnmaskChallengeOption&) =
