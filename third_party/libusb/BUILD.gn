@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# libusb is only used by //services/device/usb on Windows and macOS.
-assert(is_win || is_mac)
+# libusb is only used by //services/device/usb on macOS.
+assert(is_mac)
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
