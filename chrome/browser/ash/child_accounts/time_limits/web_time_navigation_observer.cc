@@ -85,7 +85,7 @@ WebTimeNavigationObserver::WebTimeNavigationObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver);
 
 }  // namespace app_time
 }  // namespace ash

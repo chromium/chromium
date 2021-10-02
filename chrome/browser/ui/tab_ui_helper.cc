@@ -152,4 +152,4 @@ void TabUIHelper::UpdateFavicon(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper);

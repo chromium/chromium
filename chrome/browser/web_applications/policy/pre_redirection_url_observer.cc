@@ -30,6 +30,6 @@ void PreRedirectionURLObserver::DidFinishNavigation(
   last_url_ = handle->GetRedirectChain()[0];
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PreRedirectionURLObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PreRedirectionURLObserver);
 
 }  // namespace webapps

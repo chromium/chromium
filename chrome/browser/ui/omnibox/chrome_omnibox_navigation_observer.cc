@@ -102,7 +102,7 @@ struct NavigationUserData
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationUserData)
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationUserData);
 
 }  // namespace
 

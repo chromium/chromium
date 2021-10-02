@@ -37,7 +37,7 @@ struct PermissionServiceContext::DocumentPermissionServiceContextHolder
 };
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(
-    PermissionServiceContext::DocumentPermissionServiceContextHolder)
+    PermissionServiceContext::DocumentPermissionServiceContextHolder);
 
 class PermissionServiceContext::PermissionSubscription {
  public:

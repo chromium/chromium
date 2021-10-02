@@ -14,7 +14,7 @@ namespace {
 bool g_is_download_manager_disabled_for_testing = false;
 }  // namespace
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillProvider)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillProvider);
 
 bool AutofillProvider::is_download_manager_disabled_for_testing() {
   return g_is_download_manager_disabled_for_testing;

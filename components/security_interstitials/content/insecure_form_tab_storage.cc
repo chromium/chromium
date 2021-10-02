@@ -25,6 +25,6 @@ InsecureFormTabStorage* InsecureFormTabStorage::GetOrCreate(
   return storage;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(InsecureFormTabStorage)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(InsecureFormTabStorage);
 
 }  // namespace security_interstitials

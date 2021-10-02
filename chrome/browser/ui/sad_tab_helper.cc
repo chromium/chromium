@@ -84,4 +84,4 @@ void SadTabHelper::InstallSadTab(base::TerminationStatus status) {
       SadTab::Create(web_contents(), SadTabKindFromTerminationStatus(status)));
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SadTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SadTabHelper);

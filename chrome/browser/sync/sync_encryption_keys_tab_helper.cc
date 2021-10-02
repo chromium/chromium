@@ -178,4 +178,4 @@ bool SyncEncryptionKeysTabHelper::IsEncryptionKeysApiBoundForTesting() {
   return encryption_key_api_ != nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncEncryptionKeysTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncEncryptionKeysTabHelper);

@@ -148,7 +148,7 @@ ShoppingDataProvider::GetCurrentMetadata() {
   return meta;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingDataProvider)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingDataProvider);
 
 void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
                base::Value& on_page_data_map) {

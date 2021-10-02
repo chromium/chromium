@@ -82,4 +82,4 @@ void ContextMenuHelper::SetPopulatorFactory(
                                              jpopulator_factory);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper);

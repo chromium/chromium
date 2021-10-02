@@ -59,6 +59,6 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   }
 }
 
-PAGE_USER_DATA_KEY_IMPL(HistoryClustersMetricsLogger)
+PAGE_USER_DATA_KEY_IMPL(HistoryClustersMetricsLogger);
 
 }  // namespace history_clusters

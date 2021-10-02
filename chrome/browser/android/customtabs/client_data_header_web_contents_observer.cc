@@ -38,6 +38,6 @@ void ClientDataHeaderWebContentsObserver::UpdateFrameCCTHeader(
   client->SetCCTClientHeader(header_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientDataHeaderWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientDataHeaderWebContentsObserver);
 
 }  // namespace customtabs

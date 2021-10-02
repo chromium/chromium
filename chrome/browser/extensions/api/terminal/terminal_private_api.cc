@@ -137,7 +137,7 @@ class TerminalTabHelper
   base::flat_set<std::string> terminal_ids_;
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TerminalTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TerminalTabHelper);
 
 // Copies the value of |switch_name| if present from |src| to |dst|.  If not
 // present, uses |default_value| if nonempty.  Returns the value set into |dst|.

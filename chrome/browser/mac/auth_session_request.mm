@@ -306,7 +306,7 @@ void AuthSessionRequest::WebContentsDestroyed() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AuthSessionRequest)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AuthSessionRequest);
 
 std::unique_ptr<content::NavigationThrottle> MaybeCreateAuthSessionThrottleFor(
     content::NavigationHandle* handle) API_AVAILABLE(macos(10.15)) {

@@ -58,6 +58,6 @@ void WebAppMetricsTabHelper::OnInstallableWebAppStatusUpdated() {
   metrics->NotifyInstallableWebAppStatusUpdated(contents);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper);
 
 }  // namespace web_app

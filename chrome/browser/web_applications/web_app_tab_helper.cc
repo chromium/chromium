@@ -206,6 +206,6 @@ AppId WebAppTabHelper::FindAppIdWithUrlInScope(const GURL& url) const {
   return provider_->registrar().FindAppWithUrlInScope(url).value_or(AppId());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);
 
 }  // namespace web_app

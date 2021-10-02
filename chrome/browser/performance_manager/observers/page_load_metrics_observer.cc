@@ -304,7 +304,7 @@ void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
     navigation_type_ = navigation_type;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageLoadMetricsWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageLoadMetricsWebContentsObserver);
 
 }  // namespace
 

@@ -360,6 +360,6 @@ void AwAutofillClient::ShowAutofillPopupImpl(
   Java_AwAutofillClient_showAutofillPopup(env, obj, view, is_rtl, data_array);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AwAutofillClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AwAutofillClient);
 
 }  // namespace android_webview

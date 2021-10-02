@@ -102,6 +102,6 @@ void SyncSessionsRouterTabHelper::OnFaviconUpdated(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncSessionsRouterTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncSessionsRouterTabHelper);
 
 }  // namespace sync_sessions

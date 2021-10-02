@@ -57,7 +57,7 @@ class ThrottleManagerInUserDataContainer : public base::SupportsUserData::Data {
 
 }  // namespace
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSubresourceFilterWebContentsHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSubresourceFilterWebContentsHelper);
 
 //  static
 void ContentSubresourceFilterWebContentsHelper::CreateForWebContents(

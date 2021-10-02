@@ -177,4 +177,4 @@ SideSearchSideContentsHelper::SideSearchSideContentsHelper(
   web_contents->SetDelegate(this);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchSideContentsHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchSideContentsHelper);

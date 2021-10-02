@@ -254,6 +254,6 @@ void SiteEngagementService::Helper::OnVisibilityChanged(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteEngagementService::Helper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteEngagementService::Helper);
 
 }  // namespace site_engagement

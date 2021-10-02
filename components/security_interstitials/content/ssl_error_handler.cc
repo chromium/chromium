@@ -148,7 +148,7 @@ class CommonNameMismatchRedirectObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CommonNameMismatchRedirectObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CommonNameMismatchRedirectObserver);
 
 void RecordUMA(SSLErrorHandler::UMAEvent event) {
   UMA_HISTOGRAM_ENUMERATION(kHistogram, event,
@@ -1012,4 +1012,4 @@ bool SSLErrorHandler::IsOnlyCertError(
          !net::IsCertStatusError(other_errors);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLErrorHandler)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLErrorHandler);

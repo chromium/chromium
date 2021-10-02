@@ -98,7 +98,7 @@ class NavigationData
   bool is_allowed_by_login_state_ = false;
 };
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationData)
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationData);
 
 }  // namespace
 
@@ -109,7 +109,7 @@ ImageCompressionAppliedDocument::ImageCompressionAppliedDocument(
 
 ImageCompressionAppliedDocument::~ImageCompressionAppliedDocument() = default;
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ImageCompressionAppliedDocument)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ImageCompressionAppliedDocument);
 
 // static
 ImageCompressionAppliedDocument::State
@@ -391,6 +391,6 @@ bool SubresourceRedirectObserver::IsAllowedForCurrentLoginState(
   return true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceRedirectObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceRedirectObserver);
 
 }  // namespace subresource_redirect

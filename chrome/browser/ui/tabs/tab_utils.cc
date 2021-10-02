@@ -197,4 +197,4 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
 
 }  // namespace chrome
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata);

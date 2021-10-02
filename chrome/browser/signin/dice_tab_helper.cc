@@ -113,4 +113,4 @@ bool DiceTabHelper::IsSigninPageNavigation(
              GaiaUrls::GetInstance()->gaia_url();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DiceTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DiceTabHelper);

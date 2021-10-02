@@ -515,4 +515,4 @@ void ReputationWebContentsObserver::FinalizeReputationCheckWhenTipNotShown(
   MaybeCallReputationCheckCallback(true);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReputationWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReputationWebContentsObserver);

@@ -28,6 +28,6 @@ void MetricsServicesWebContentsObserver::DidStopLoading() {
     manager->LoadingStateChanged(/*is_loading=*/false);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsServicesWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsServicesWebContentsObserver);
 
 }  // namespace metrics

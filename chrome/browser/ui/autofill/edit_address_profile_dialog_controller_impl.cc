@@ -104,6 +104,6 @@ void EditAddressProfileDialogControllerImpl::HideDialog() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(EditAddressProfileDialogControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(EditAddressProfileDialogControllerImpl);
 
 }  // namespace autofill

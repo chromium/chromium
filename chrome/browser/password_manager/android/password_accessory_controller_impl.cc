@@ -568,4 +568,4 @@ bool PasswordAccessoryControllerImpl::IsSecureSite() const {
   return helper && helper->GetSecurityLevel() == security_state::SECURE;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordAccessoryControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordAccessoryControllerImpl);

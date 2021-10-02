@@ -483,6 +483,6 @@ void PrintViewManager::PrintPreviewAllowedForTesting() {
   // Note: This is only used for testing.
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManager);
 
 }  // namespace printing

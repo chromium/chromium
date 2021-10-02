@@ -285,6 +285,6 @@ void SuspiciousSiteTrigger::SetTaskRunnerForTest(
   task_runner_ = task_runner;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SuspiciousSiteTrigger)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SuspiciousSiteTrigger);
 
 }  // namespace safe_browsing

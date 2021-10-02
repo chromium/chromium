@@ -179,6 +179,6 @@ void PopupTracker::OnSubresourceFilterGoingAway() {
   scoped_observation_.Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupTracker)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupTracker);
 
 }  // namespace blocked_content

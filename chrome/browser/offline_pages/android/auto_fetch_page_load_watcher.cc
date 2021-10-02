@@ -107,7 +107,7 @@ class AutoFetchPageLoadWatcher::NavigationObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoFetchPageLoadWatcher::NavigationObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoFetchPageLoadWatcher::NavigationObserver);
 
 // static
 void AutoFetchPageLoadWatcher::CreateForWebContents(

@@ -157,6 +157,6 @@ void AwPrintManager::OnDidPrintDocumentWritingDone(
   std::move(did_print_document_cb).Run(true);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AwPrintManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AwPrintManager);
 
 }  // namespace android_webview

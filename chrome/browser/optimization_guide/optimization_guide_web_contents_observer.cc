@@ -222,7 +222,7 @@ OptimizationGuideWebContentsObserver::NavigationHandleData::
 OptimizationGuideWebContentsObserver::NavigationHandleData::
     ~NavigationHandleData() = default;
 
-PAGE_USER_DATA_KEY_IMPL(OptimizationGuideWebContentsObserver::PageData)
+PAGE_USER_DATA_KEY_IMPL(OptimizationGuideWebContentsObserver::PageData);
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
-    OptimizationGuideWebContentsObserver::NavigationHandleData)
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OptimizationGuideWebContentsObserver)
+    OptimizationGuideWebContentsObserver::NavigationHandleData);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OptimizationGuideWebContentsObserver);

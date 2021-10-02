@@ -485,6 +485,6 @@ void ServiceWorkerPaymentAppFinder::
   test_downloader_ = std::move(downloader);
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ServiceWorkerPaymentAppFinder)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ServiceWorkerPaymentAppFinder);
 
 }  // namespace payments

@@ -469,6 +469,6 @@ void PageTextObserver::RemoveConsumer(Consumer* consumer) {
   consumers_.erase(consumer);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageTextObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageTextObserver);
 
 }  // namespace optimization_guide

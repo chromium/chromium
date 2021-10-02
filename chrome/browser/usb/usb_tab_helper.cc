@@ -75,4 +75,4 @@ bool UsbTabHelper::IsDeviceConnected() const {
   return device_connection_count_ > 0;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(UsbTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(UsbTabHelper);

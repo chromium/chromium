@@ -136,7 +136,7 @@ class TabLoadingFrameNavigationScheduler::Throttle
   TabLoadingFrameNavigationScheduler* scheduler_ = nullptr;
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabLoadingFrameNavigationScheduler)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabLoadingFrameNavigationScheduler);
 
 TabLoadingFrameNavigationScheduler::~TabLoadingFrameNavigationScheduler() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

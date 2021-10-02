@@ -83,6 +83,6 @@ PdfNupConverterClient::CreatePdfNupConverterRemote() {
   return pdf_nup_converter;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfNupConverterClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfNupConverterClient);
 
 }  // namespace printing

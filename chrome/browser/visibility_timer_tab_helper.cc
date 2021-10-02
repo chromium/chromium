@@ -12,7 +12,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VisibilityTimerTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VisibilityTimerTabHelper);
 
 struct VisibilityTimerTabHelper::Task {
   base::TimeDelta visible_delay;

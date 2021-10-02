@@ -69,7 +69,7 @@ class Data : public RenderDocumentHostUserData<Data> {
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Data)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Data);
 
 // Observer class to track creation of new popups. It is used
 // in subsequent tests.

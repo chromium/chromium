@@ -49,6 +49,6 @@ void PrintViewManagerBasic::PdfWritingDone(int page_count) {
 }
 #endif
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerBasic)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerBasic);
 
 }  // namespace printing

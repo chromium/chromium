@@ -24,15 +24,18 @@ namespace content {
 // Example usage of PageUserData:
 //
 // --- in foo_page_helper.h ---
-// class FooPageHelper : public
-// content::PageUserData<FooPageHelper> {
+// class FooPageHelper : public content::PageUserData<FooPageHelper> {
 //  public:
 //   ~FooPageHelper() override;
+//
 //   // ... more public stuff here ...
+//
 //  private:
 //   explicit FooPageHelper(content::Page& page);
-//   friend class content::PageUserData<FooPageHelper>;
+//
+//   friend PageUserData;
 //   PAGE_USER_DATA_KEY_DECL();
+//
 //   // ... more private stuff here ...
 // };
 //
@@ -90,7 +93,7 @@ class PageUserData : public base::SupportsUserData::Data {
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation
 // of the static variable.
-#define PAGE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
+#define PAGE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey
 
 }  // namespace content
 

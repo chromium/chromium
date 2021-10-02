@@ -161,4 +161,4 @@ void IntentPickerTabHelper::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper);

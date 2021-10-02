@@ -78,7 +78,7 @@ class TypedNavigationUpgradeLifetimeHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TypedNavigationUpgradeLifetimeHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TypedNavigationUpgradeLifetimeHelper);
 
 GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
   DCHECK_EQ(url::kHttpsScheme, url.scheme());

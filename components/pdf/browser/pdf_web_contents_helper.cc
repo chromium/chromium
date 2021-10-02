@@ -298,6 +298,6 @@ void PDFWebContentsHelper::UpdateContentRestrictions(
   client_->UpdateContentRestrictions(web_contents(), content_restrictions);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFWebContentsHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFWebContentsHelper);
 
 }  // namespace pdf

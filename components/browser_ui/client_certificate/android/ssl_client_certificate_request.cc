@@ -139,7 +139,7 @@ ui::WindowAndroid* GetWindowFromWebContents(
   return view->GetWindowAndroid();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLClientCertPendingRequests)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLClientCertPendingRequests);
 
 static void StartClientCertificateRequest(
     std::unique_ptr<ClientCertRequest> request,

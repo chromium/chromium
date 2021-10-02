@@ -28,4 +28,4 @@ bool BrowserSyncedTabDelegate::IsPlaceholderTab() const {
   return false;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BrowserSyncedTabDelegate)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BrowserSyncedTabDelegate);

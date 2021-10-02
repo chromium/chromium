@@ -314,6 +314,6 @@ void VirtualCardManualFallbackBubbleControllerImpl::SetEventObserverForTesting(
   observer_for_test_ = observer_for_test;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardManualFallbackBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardManualFallbackBubbleControllerImpl);
 
 }  // namespace autofill

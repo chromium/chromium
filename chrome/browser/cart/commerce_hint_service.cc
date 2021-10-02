@@ -261,6 +261,6 @@ void CommerceHintService::OnWillSendRequest(const GURL& navigation_url,
   base::UmaHistogramBoolean("Commerce.Carts.XHRIsAddToCart", reported);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService);
 
 }  // namespace cart

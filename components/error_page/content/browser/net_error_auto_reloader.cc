@@ -318,6 +318,6 @@ bool NetErrorAutoReloader::ShouldSuppressErrorPage(
   return true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NetErrorAutoReloader)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NetErrorAutoReloader);
 
 }  // namespace error_page

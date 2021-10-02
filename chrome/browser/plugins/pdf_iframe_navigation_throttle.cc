@@ -52,7 +52,7 @@ class PdfWebContentsLifetimeHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Returns true if the PDF plugin for |navigation_handle| is enabled. Optionally

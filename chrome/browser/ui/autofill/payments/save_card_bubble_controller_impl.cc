@@ -589,6 +589,6 @@ security_state::SecurityLevel SaveCardBubbleControllerImpl::GetSecurityLevel()
   return security_level_;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveCardBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveCardBubbleControllerImpl);
 
 }  // namespace autofill

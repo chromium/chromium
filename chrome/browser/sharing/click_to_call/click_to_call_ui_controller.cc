@@ -191,4 +191,4 @@ SharingDialogData ClickToCallUiController::CreateDialogData(
   return data;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ClickToCallUiController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ClickToCallUiController);

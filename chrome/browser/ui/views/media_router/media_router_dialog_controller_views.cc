@@ -182,6 +182,6 @@ MediaRouterDialogControllerViews::GetActionController() {
   return media_router_ui_service_->action_controller();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerViews)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerViews);
 
 }  // namespace media_router

@@ -249,4 +249,4 @@ void PasswordGenerationControllerImpl::ResetState() {
   manual_generation_requested_ = false;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl);

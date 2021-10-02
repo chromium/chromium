@@ -400,4 +400,4 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CoreTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CoreTabHelper);

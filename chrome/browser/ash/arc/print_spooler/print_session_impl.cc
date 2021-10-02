@@ -386,6 +386,6 @@ void PrintSessionImpl::StartPrintNow() {
                        false, false);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl);
 
 }  // namespace arc

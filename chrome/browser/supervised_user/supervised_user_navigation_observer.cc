@@ -371,4 +371,4 @@ void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SupervisedUserNavigationObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SupervisedUserNavigationObserver);

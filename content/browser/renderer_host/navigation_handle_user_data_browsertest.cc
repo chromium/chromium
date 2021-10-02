@@ -39,7 +39,7 @@ class Data : public NavigationHandleUserData<Data> {
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(Data)
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(Data);
 
 }  // namespace
 

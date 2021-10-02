@@ -85,5 +85,5 @@ void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
   accuracy_service_->MaybeShowAccuracyTip(web_contents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AccuracyWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AccuracyWebContentsObserver);
 }  // namespace accuracy_tips

@@ -191,4 +191,4 @@ void TranslateClientImpl::WebContentsDestroyed() {
 
 }  // namespace weblayer
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(weblayer::TranslateClientImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(weblayer::TranslateClientImpl);

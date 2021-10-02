@@ -118,6 +118,6 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
     : content::WebContentsObserver(web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
-    CardUnmaskAuthenticationSelectionDialogControllerImpl)
+    CardUnmaskAuthenticationSelectionDialogControllerImpl);
 
 }  // namespace autofill

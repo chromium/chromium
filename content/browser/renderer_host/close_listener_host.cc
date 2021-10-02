@@ -31,6 +31,6 @@ bool CloseListenerHost::SignalIfActive() {
   return true;
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(CloseListenerHost)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(CloseListenerHost);
 
 }  // namespace content

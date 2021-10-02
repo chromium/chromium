@@ -259,4 +259,4 @@ void PluginObserver::OpenPDF(const GURL& url) {
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PluginObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PluginObserver);

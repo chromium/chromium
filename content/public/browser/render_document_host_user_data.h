@@ -54,25 +54,29 @@ CONTENT_EXPORT void RemoveRenderDocumentHostUserData(RenderFrameHost* rfh,
 // Example usage of RenderDocumentHostUserData:
 //
 // --- in foo_document_helper.h ---
-// class FooDocumentHelper : public
-// content::RenderDocumentHostUserData<FooDocumentHelper> {
+// class FooDocumentHelper
+//     : public content::RenderDocumentHostUserData<FooDocumentHelper> {
 //  public:
 //   ~FooDocumentHelper() override;
+//
 //   // ... more public stuff here ...
+//
 //  private:
 //   // No public constructors to force going through static methods of
 //   // RenderDocumentHostUserData (e.g. CreateForCurrentDocument).
 //   explicit FooDocumentHelper(content::RenderFrameHost* rfh);
-//   friend class content::RenderDocumentHostUserData<FooDocumentHelper>;
+//
+//   friend RenderDocumentHostUserData;
 //   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+//
 //   // ... more private stuff here ...
 // };
 //
 // --- in foo_document_helper.cc ---
-// RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FooDocumentHelper)
+// RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FooDocumentHelper);
 //
 // FooDocumentHelper::FooDocumentHelper(content::RenderFrameHost* rfh)
-//     : content::RenderDocumentHostUserData<FooDocumentHelper>(rfh) { ... }
+//     : RenderDocumentHostUserData(rfh) { ... }
 template <typename T>
 class RenderDocumentHostUserData : public base::SupportsUserData::Data {
  public:
@@ -144,7 +148,7 @@ class RenderDocumentHostUserData : public base::SupportsUserData::Data {
 // It must live in a .cc file to ensure that there is only one instantiation
 // of the static variable.
 #define RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Type) \
-  const int Type::kUserDataKey;
+  const int Type::kUserDataKey
 
 }  // namespace content
 

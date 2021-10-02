@@ -590,6 +590,6 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
 }
 #endif  // defined(OS_CHROMEOS)
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MediaInterfaceProxy)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MediaInterfaceProxy);
 
 }  // namespace content

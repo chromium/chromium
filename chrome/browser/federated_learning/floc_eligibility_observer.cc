@@ -98,6 +98,6 @@ void FlocEligibilityObserver::OnOptInSignalObserved() {
   observed_opt_in_signal_ = true;
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FlocEligibilityObserver)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FlocEligibilityObserver);
 
 }  // namespace federated_learning

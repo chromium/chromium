@@ -464,4 +464,4 @@ history::HistoryService* HistoryClustersTabHelper::GetHistoryService() {
       profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryClustersTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryClustersTabHelper);

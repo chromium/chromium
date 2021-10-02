@@ -1668,4 +1668,4 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
           std::move(isolated_factory_remote)));
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrefetchProxyTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrefetchProxyTabHelper);

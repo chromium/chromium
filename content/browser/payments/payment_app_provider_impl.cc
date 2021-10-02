@@ -386,5 +386,5 @@ PaymentAppProviderImpl::PaymentAppProviderImpl(
 
 PaymentAppProviderImpl::~PaymentAppProviderImpl() = default;
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentAppProviderImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentAppProviderImpl);
 }  // namespace content

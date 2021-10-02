@@ -63,7 +63,7 @@ class Data : public PageUserData<Data> {
   PAGE_USER_DATA_KEY_DECL();
 };
 
-PAGE_USER_DATA_KEY_IMPL(Data)
+PAGE_USER_DATA_KEY_IMPL(Data);
 
 Data::~Data() {
   // Both Page and RenderFrameHost should be non-null and valid before Data

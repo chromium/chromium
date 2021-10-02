@@ -5995,7 +5995,7 @@ class DestructorLifetimeRenderDocumentHostUserData
 };
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(
-    DestructorLifetimeRenderDocumentHostUserData)
+    DestructorLifetimeRenderDocumentHostUserData);
 
 // Tests that when RenderFrameHostImpl is destroyed, destructors of
 // commonly-used extension points (currently DocumentService and

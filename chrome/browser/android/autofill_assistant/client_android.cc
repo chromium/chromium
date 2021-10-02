@@ -655,6 +655,6 @@ bool ClientAndroid::NeedsUI() {
   return !ui_controller_android_ && controller_ && controller_->NeedsUI();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientAndroid);
 
 }  // namespace autofill_assistant

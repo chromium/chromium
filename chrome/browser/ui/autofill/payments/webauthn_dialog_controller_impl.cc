@@ -100,6 +100,6 @@ void WebauthnDialogControllerImpl::OnCancelButtonClicked() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebauthnDialogControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebauthnDialogControllerImpl);
 
 }  // namespace autofill

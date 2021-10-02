@@ -86,7 +86,7 @@ class TestShellExtensionWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TestShellExtensionWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TestShellExtensionWebContentsObserver);
 
 class TestShellExtensionHostDelegate : public ShellExtensionHostDelegate {
  public:

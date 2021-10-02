@@ -399,4 +399,4 @@ bool HistoryTabHelper::IsEligibleTab(
 #endif
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

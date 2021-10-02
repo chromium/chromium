@@ -1028,6 +1028,6 @@ void PermissionRequestManager::PushQueuedRequest(PermissionRequest* request) {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager);
 
 }  // namespace permissions

@@ -260,9 +260,9 @@ void ContentFaviconDriver::DidFinishNavigation(
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
-    ContentFaviconDriver::NavigationManifestData)
+    ContentFaviconDriver::NavigationManifestData);
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(
-    ContentFaviconDriver::DocumentManifestData)
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentFaviconDriver)
+    ContentFaviconDriver::DocumentManifestData);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentFaviconDriver);
 
 }  // namespace favicon

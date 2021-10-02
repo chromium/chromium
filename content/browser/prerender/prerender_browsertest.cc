@@ -136,7 +136,7 @@ class DocumentData : public RenderDocumentHostUserData<DocumentData> {
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DocumentData)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DocumentData);
 
 class PrerenderBrowserTest : public ContentBrowserTest {
  public:

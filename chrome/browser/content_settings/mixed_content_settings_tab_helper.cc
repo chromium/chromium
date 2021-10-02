@@ -79,4 +79,4 @@ void MixedContentSettingsTabHelper::PageSettings::
   is_running_insecure_content_allowed_ = true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MixedContentSettingsTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MixedContentSettingsTabHelper);

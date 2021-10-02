@@ -94,5 +94,5 @@ void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
       .UpdateManifestUrl(manifest_url);
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ManifestManagerHost)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ManifestManagerHost);
 }  // namespace content

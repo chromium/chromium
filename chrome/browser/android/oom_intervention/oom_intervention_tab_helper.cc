@@ -330,4 +330,4 @@ void OomInterventionTabHelper::ResetInterfaces() {
   receiver_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OomInterventionTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OomInterventionTabHelper);

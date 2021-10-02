@@ -99,6 +99,6 @@ void PopupBlockedMessageDelegate::HandleClick() {
     std::move(on_show_popups_callback_).Run();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupBlockedMessageDelegate)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupBlockedMessageDelegate);
 
 }  // namespace blocked_content

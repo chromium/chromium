@@ -119,6 +119,6 @@ void PageContentAnnotationsWebContentsObserver::OnTextDumpReceived(
       visit, *result.GetMainFrameTextContent());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);
 
 }  // namespace optimization_guide

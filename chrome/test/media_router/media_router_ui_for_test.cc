@@ -434,6 +434,6 @@ void MediaRouterUiForTest::ObserveDialog(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterUiForTest)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterUiForTest);
 
 }  // namespace media_router

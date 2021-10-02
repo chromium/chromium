@@ -68,7 +68,7 @@ static void JNI_DistillablePageUtils_SetDelegate(
   AddObserver(web_contents, observer);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper);
 
 }  // namespace android
 }  // namespace dom_distiller

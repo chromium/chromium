@@ -73,6 +73,6 @@ void ResourceCoordinatorTabHelper::WebContentsDestroyed() {
   TabLoadTracker::Get()->StopTracking(web_contents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ResourceCoordinatorTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ResourceCoordinatorTabHelper);
 
 }  // namespace resource_coordinator

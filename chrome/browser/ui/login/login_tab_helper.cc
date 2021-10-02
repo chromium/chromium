@@ -267,4 +267,4 @@ void LoginTabHelper::Reload() {
                                          false /* check_for_repost */);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginTabHelper);

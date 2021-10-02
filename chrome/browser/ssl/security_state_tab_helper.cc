@@ -303,4 +303,4 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityStateTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityStateTabHelper);

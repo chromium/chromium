@@ -257,4 +257,4 @@ absl::optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
 bool NavigationPredictorPreconnectClient::
     enable_preconnects_for_local_ips_for_testing_ = false;
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient);

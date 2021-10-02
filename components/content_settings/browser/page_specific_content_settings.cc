@@ -278,9 +278,10 @@ PageSpecificContentSettings::InflightNavigationContentSettings::
     ~InflightNavigationContentSettings() = default;
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
-    PageSpecificContentSettings::InflightNavigationContentSettings)
+    PageSpecificContentSettings::InflightNavigationContentSettings);
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageSpecificContentSettings::WebContentsHandler)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(
+    PageSpecificContentSettings::WebContentsHandler);
 
 PageSpecificContentSettings::PendingUpdates::PendingUpdates() = default;
 
@@ -962,6 +963,6 @@ void PageSpecificContentSettings::MaybeUpdateLocationBar() {
   delegate_->UpdateLocationBar();
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PageSpecificContentSettings)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PageSpecificContentSettings);
 
 }  // namespace content_settings

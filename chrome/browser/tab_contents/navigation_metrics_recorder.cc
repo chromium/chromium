@@ -103,4 +103,4 @@ void NavigationMetricsRecorder::DidFinishNavigation(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationMetricsRecorder)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationMetricsRecorder);

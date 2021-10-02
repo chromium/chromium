@@ -80,6 +80,6 @@ void CrOSActionRecorderTabTracker::DidOpenRequestedURL(
        {url.spec(), -2}});
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CrOSActionRecorderTabTracker)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CrOSActionRecorderTabTracker);
 
 }  // namespace app_list

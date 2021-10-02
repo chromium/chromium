@@ -420,6 +420,6 @@ PrintCompositeClient::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
   return it->second;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintCompositeClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintCompositeClient);
 
 }  // namespace printing

@@ -54,6 +54,6 @@ AwSafeBrowsingSubresourceHelper::AwSafeBrowsingSubresourceHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AwSafeBrowsingSubresourceHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AwSafeBrowsingSubresourceHelper);
 
 }  // namespace android_webview

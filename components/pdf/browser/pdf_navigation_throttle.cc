@@ -62,7 +62,7 @@ class WebContentsLifetimeHelper
   base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_{this};
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper);
 
 }  // namespace
 

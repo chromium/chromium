@@ -1543,4 +1543,4 @@ void ChromePasswordManagerClient::OnStateChanged(
     password_manager_.ResetPendingCredentials();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromePasswordManagerClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromePasswordManagerClient);

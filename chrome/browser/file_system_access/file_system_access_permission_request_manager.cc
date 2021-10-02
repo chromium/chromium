@@ -151,4 +151,4 @@ void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(
     ScheduleShowRequest();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessPermissionRequestManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessPermissionRequestManager);

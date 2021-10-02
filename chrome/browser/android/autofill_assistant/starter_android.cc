@@ -293,6 +293,6 @@ bool StarterAndroid::IsRegularScriptVisible() const {
   return client_android->IsVisible();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterAndroid);
 
 }  // namespace autofill_assistant

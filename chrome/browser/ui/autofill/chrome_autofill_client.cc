@@ -942,6 +942,6 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
   return base::UTF8ToUTF16(primary_account_info.full_name);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillClient);
 
 }  // namespace autofill

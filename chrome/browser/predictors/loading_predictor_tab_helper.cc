@@ -541,9 +541,9 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
-    LoadingPredictorTabHelper::NavigationPageDataHolder)
+    LoadingPredictorTabHelper::NavigationPageDataHolder);
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(
-    LoadingPredictorTabHelper::DocumentPageDataHolder)
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LoadingPredictorTabHelper)
+    LoadingPredictorTabHelper::DocumentPageDataHolder);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LoadingPredictorTabHelper);
 
 }  // namespace predictors

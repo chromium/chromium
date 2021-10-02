@@ -160,6 +160,6 @@ void AdsBlockedMessageDelegate::ShowDialog() {
   ads_blocked_dialog_->Show();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AdsBlockedMessageDelegate)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AdsBlockedMessageDelegate);
 
 }  // namespace subresource_filter

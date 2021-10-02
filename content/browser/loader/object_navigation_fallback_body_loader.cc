@@ -189,7 +189,7 @@ std::string ExtractServerTimingValueIfNeeded(
 
 }  // namespace
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ObjectNavigationFallbackBodyLoader)
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ObjectNavigationFallbackBodyLoader);
 
 // static
 void ObjectNavigationFallbackBodyLoader::CreateAndStart(

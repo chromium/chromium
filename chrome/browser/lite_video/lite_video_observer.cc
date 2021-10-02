@@ -342,4 +342,4 @@ void LiteVideoObserver::NotifyThrottledDataUse(uint64_t response_bytes) {
   current_throttled_video_bytes_ += response_bytes;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LiteVideoObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LiteVideoObserver);

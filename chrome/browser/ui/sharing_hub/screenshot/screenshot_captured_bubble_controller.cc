@@ -79,6 +79,6 @@ ScreenshotCapturedBubbleController::ScreenshotCapturedBubbleController(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ScreenshotCapturedBubbleController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ScreenshotCapturedBubbleController);
 
 }  // namespace sharing_hub

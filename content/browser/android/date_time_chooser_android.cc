@@ -109,6 +109,6 @@ void DateTimeChooserAndroid::CancelDialog(JNIEnv* env,
   std::move(open_date_time_response_callback_).Run(false, 0.0);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DateTimeChooserAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DateTimeChooserAndroid);
 
 }  // namespace content

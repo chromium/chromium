@@ -353,4 +353,4 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   return capture_info;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper);

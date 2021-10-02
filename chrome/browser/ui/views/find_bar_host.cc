@@ -71,7 +71,7 @@ class FindBarHostHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper);
 
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                                     const gfx::Rect& dialog_bounds,

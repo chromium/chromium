@@ -202,4 +202,4 @@ void SideSearchTabContentsHelper::OnResponseLoaded(
     delegate_->SidePanelAvailabilityChanged();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchTabContentsHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchTabContentsHelper);

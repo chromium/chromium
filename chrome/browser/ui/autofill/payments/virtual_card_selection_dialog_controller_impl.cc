@@ -101,6 +101,6 @@ void VirtualCardSelectionDialogControllerImpl::OnDialogClosed() {
   callback_.Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardSelectionDialogControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardSelectionDialogControllerImpl);
 
 }  // namespace autofill

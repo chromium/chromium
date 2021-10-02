@@ -430,6 +430,6 @@ void ConversionHost::SetReceiverImplForTesting(ConversionHost* impl) {
   g_receiver_for_testing = impl;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ConversionHost)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ConversionHost);
 
 }  // namespace content

@@ -209,9 +209,9 @@ SafeBrowsingTriggeredPopupBlocker::GetPageData(content::Page& page) {
   return *PageData::GetOrCreateForPage(page);
 }
 
-PAGE_USER_DATA_KEY_IMPL(SafeBrowsingTriggeredPopupBlocker::PageData)
+PAGE_USER_DATA_KEY_IMPL(SafeBrowsingTriggeredPopupBlocker::PageData);
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
-    SafeBrowsingTriggeredPopupBlocker::NavigationHandleData)
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingTriggeredPopupBlocker)
+    SafeBrowsingTriggeredPopupBlocker::NavigationHandleData);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingTriggeredPopupBlocker);
 
 }  // namespace blocked_content

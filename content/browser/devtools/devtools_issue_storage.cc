@@ -15,7 +15,7 @@ namespace content {
 
 static const unsigned kMaxIssueCount = 1000;
 
-PAGE_USER_DATA_KEY_IMPL(DevToolsIssueStorage)
+PAGE_USER_DATA_KEY_IMPL(DevToolsIssueStorage);
 
 DevToolsIssueStorage::DevToolsIssueStorage(Page& page)
     : PageUserData<DevToolsIssueStorage>(page) {}

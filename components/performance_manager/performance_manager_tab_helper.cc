@@ -535,6 +535,6 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id,
   primary_page_->first_time_favicon_set = false;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper);
 
 }  // namespace performance_manager

@@ -112,6 +112,6 @@ void ContentInfoBarManager::OpenURL(const GURL& url,
                              ui::PAGE_TRANSITION_LINK, false));
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentInfoBarManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentInfoBarManager);
 
 }  // namespace infobars

@@ -80,4 +80,4 @@ void FrameUsbServices::CreateFrameUsbServices(
       ->InitializeWebUsbService(std::move(receiver));
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameUsbServices)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameUsbServices);

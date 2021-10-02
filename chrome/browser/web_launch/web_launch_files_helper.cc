@@ -36,7 +36,7 @@
 
 namespace web_launch {
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLaunchFilesHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLaunchFilesHelper);
 
 namespace {
 

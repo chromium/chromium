@@ -182,6 +182,6 @@ bool MediaRouterDialogControllerAndroid::IsShowingMediaRouterDialog() const {
       env, java_dialog_controller_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerAndroid);
 
 }  // namespace media_router

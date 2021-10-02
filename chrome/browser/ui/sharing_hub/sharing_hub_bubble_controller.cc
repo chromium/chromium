@@ -266,6 +266,6 @@ SharingHubBubbleController::SharingHubBubbleController(
   DCHECK(web_contents);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SharingHubBubbleController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SharingHubBubbleController);
 
 }  // namespace sharing_hub

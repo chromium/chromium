@@ -298,7 +298,7 @@ class AutomationWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver);
 
 ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   const AutomationInfo* automation_info = AutomationInfo::Get(extension());

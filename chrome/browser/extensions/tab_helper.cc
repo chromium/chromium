@@ -441,6 +441,6 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper);
 
 }  // namespace extensions

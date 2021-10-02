@@ -174,6 +174,6 @@ void AdSamplerTrigger::SetTaskRunnerForTest(
   task_runner_ = task_runner;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AdSamplerTrigger)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AdSamplerTrigger);
 
 }  // namespace safe_browsing

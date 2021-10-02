@@ -457,4 +457,4 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ManualFillingControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ManualFillingControllerImpl);

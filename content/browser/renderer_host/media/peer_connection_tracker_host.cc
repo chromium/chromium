@@ -215,5 +215,5 @@ void PeerConnectionTrackerHost::BindReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PeerConnectionTrackerHost)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PeerConnectionTrackerHost);
 }  // namespace content

@@ -50,7 +50,7 @@ class WebContentsIsolationInfo
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsIsolationInfo)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsIsolationInfo);
 
 absl::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
     const absl::optional<url::Origin>& origin) {

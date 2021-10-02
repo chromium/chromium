@@ -568,6 +568,6 @@ BookmarkManagerPrivateRedoFunction::RunOnReady() {
   return NoArguments();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkManagerPrivateDragEventRouter)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkManagerPrivateDragEventRouter);
 
 }  // namespace extensions

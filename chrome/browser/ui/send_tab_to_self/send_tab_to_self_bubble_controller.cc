@@ -187,6 +187,6 @@ SendTabToSelfBubbleController::SendTabToSelfBubbleController(
   DCHECK(web_contents);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SendTabToSelfBubbleController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SendTabToSelfBubbleController);
 
 }  // namespace send_tab_to_self

@@ -193,6 +193,6 @@ bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
          web_contents();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl);
 
 }  // namespace autofill

@@ -144,6 +144,6 @@ void LocalCardMigrationBubbleControllerImpl::AddStrikesForBubbleClose() {
       LocalCardMigrationStrikeDatabase::kStrikesToAddWhenBubbleClosed);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LocalCardMigrationBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LocalCardMigrationBubbleControllerImpl);
 
 }  // namespace autofill

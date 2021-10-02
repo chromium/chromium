@@ -144,4 +144,4 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SmsRemoteFetcherUiController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SmsRemoteFetcherUiController);

@@ -113,7 +113,7 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCloser)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCloser);
 
 // Removes all the infobars which are attached to |web_contents| and for
 // which ShouldExpire() returns true.

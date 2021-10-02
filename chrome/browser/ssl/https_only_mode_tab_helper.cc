@@ -28,4 +28,4 @@ HttpsOnlyModeTabHelper::HttpsOnlyModeTabHelper(
   factory_ = std::make_unique<ChromeSecurityBlockingPageFactory>();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HttpsOnlyModeTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HttpsOnlyModeTabHelper);

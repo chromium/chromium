@@ -58,6 +58,6 @@ void SaveUPIBubbleControllerImpl::ShowBubble() {
   DCHECK(save_upi_bubble_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUPIBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUPIBubbleControllerImpl);
 
 }  // namespace autofill

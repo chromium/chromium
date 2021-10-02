@@ -40,6 +40,6 @@ SafeBrowsingSubresourceTabHelper::SafeBrowsingSubresourceTabHelper(
     SafeBrowsingUIManager* manager)
     : WebContentsObserver(web_contents), manager_(manager) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingSubresourceTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingSubresourceTabHelper);
 
 }  // namespace safe_browsing

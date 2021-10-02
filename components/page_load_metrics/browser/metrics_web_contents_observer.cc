@@ -1155,6 +1155,6 @@ PageLoadMetricsMemoryTracker* MetricsWebContentsObserver::GetMemoryTracker()
       web_contents()->GetBrowserContext());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver);
 
 }  // namespace page_load_metrics

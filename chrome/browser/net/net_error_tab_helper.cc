@@ -310,6 +310,6 @@ void NetErrorTabHelper::ResetHighScore() {
   easter_egg_high_score_.SetValue(0);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NetErrorTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NetErrorTabHelper);
 
 }  // namespace chrome_browser_net

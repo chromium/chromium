@@ -162,4 +162,4 @@ void BookmarkTabHelper::DidFinishNavigation(
   UpdateStarredStateForCurrentURL();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkTabHelper);

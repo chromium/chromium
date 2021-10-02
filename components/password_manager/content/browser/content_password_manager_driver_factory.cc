@@ -105,6 +105,6 @@ void ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() {
     frame_and_driver.second.SendLoggingAvailability();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentPasswordManagerDriverFactory)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentPasswordManagerDriverFactory);
 
 }  // namespace password_manager

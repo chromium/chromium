@@ -445,6 +445,6 @@ void TabModalDialogManager::CloseDialog(DismissalCause cause,
   delegate_->DidCloseDialog();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabModalDialogManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabModalDialogManager);
 
 }  // namespace javascript_dialogs

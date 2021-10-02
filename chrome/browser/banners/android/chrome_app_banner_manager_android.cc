@@ -182,6 +182,6 @@ bool ChromeAppBannerManagerAndroid::MaybeShowInProductHelp() const {
   return true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAppBannerManagerAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAppBannerManagerAndroid);
 
 }  // namespace webapps

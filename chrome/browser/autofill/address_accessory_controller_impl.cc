@@ -212,6 +212,6 @@ AddressAccessoryControllerImpl::GetManualFillingController() {
   return mf_controller_;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressAccessoryControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressAccessoryControllerImpl);
 
 }  // namespace autofill

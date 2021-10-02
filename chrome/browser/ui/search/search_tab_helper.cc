@@ -388,4 +388,4 @@ bool SearchTabHelper::IsInputInProgress() const {
   return search::IsOmniboxInputInProgress(web_contents_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);

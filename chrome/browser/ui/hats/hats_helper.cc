@@ -77,4 +77,4 @@ Profile* HatsHelper::profile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HatsHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HatsHelper);

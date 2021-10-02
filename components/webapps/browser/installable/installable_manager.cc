@@ -1024,6 +1024,6 @@ bool InstallableManager::has_worker() {
   return worker_->has_worker;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager);
 
 }  // namespace webapps

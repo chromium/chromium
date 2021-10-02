@@ -274,4 +274,4 @@ void JNI_SearchGeolocationDisclosureTabHelper_SetDayOffsetForTesting(
   gDayOffsetForTesting = days;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchGeolocationDisclosureTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchGeolocationDisclosureTabHelper);

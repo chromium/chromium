@@ -264,6 +264,6 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerDesktop)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerDesktop);
 
 }  // namespace webapps

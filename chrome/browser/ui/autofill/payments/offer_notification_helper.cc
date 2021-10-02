@@ -44,6 +44,6 @@ void OfferNotificationHelper::DidFinishNavigation(
   origins_to_display_notification_.clear();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationHelper);
 
 }  // namespace autofill

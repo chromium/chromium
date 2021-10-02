@@ -98,6 +98,6 @@ QRCodeGeneratorBubbleController::QRCodeGeneratorBubbleController(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(QRCodeGeneratorBubbleController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(QRCodeGeneratorBubbleController);
 
 }  // namespace qrcode_generator

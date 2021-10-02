@@ -206,4 +206,4 @@ void SoundContentSettingObserver::UpdateAutoplayPolicy() {
 }
 #endif
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SoundContentSettingObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SoundContentSettingObserver);

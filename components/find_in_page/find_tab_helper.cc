@@ -181,6 +181,6 @@ void FindTabHelper::HandleFindReply(int request_id,
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FindTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindTabHelper);
 
 }  // namespace find_in_page

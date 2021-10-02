@@ -605,6 +605,6 @@ void PaintPreviewClient::OnFinished(
   all_document_data_.erase(guid);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PaintPreviewClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PaintPreviewClient);
 
 }  // namespace paint_preview

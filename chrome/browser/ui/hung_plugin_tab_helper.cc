@@ -179,4 +179,4 @@ void HungPluginTabHelper::ShowBar(int child_id, PluginState* state) {
                                                      child_id, state->name);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HungPluginTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HungPluginTabHelper);

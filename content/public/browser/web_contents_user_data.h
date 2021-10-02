@@ -19,11 +19,15 @@ namespace content {
 // class FooTabHelper : public content::WebContentsUserData<FooTabHelper> {
 //  public:
 //   ~FooTabHelper() override;
+//
 //   // ... more public stuff here ...
+//
 //  private:
 //   explicit FooTabHelper(content::WebContents* contents);
-//   friend class content::WebContentsUserData<FooTabHelper>;
+//
+//   friend WebContentsUserData;
 //   WEB_CONTENTS_USER_DATA_KEY_DECL();
+//
 //   // ... more private stuff here ...
 // };
 //
@@ -67,7 +71,7 @@ class WebContentsUserData : public base::SupportsUserData::Data {
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation
 // of the static variable.
-#define WEB_CONTENTS_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
+#define WEB_CONTENTS_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey
 
 // We tried using the address of a static local variable in UserDataKey() as a
 // key instead of the address of a member variable. That solution allowed us to

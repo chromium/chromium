@@ -120,6 +120,6 @@ arc::ArcDigitalGoodsBridge* DigitalGoodsImpl::GetArcDigitalGoodsBridge() {
       render_frame_host().GetBrowserContext());
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsImpl)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsImpl);
 
 }  // namespace apps

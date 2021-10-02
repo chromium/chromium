@@ -425,6 +425,6 @@ CreditCardAccessoryControllerImpl::GetManager() const {
   return driver ? driver->browser_autofill_manager() : nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CreditCardAccessoryControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CreditCardAccessoryControllerImpl);
 
 }  // namespace autofill

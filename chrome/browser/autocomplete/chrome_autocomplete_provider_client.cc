@@ -191,7 +191,7 @@ class AutocompleteClientWebContentsUserData
 AutocompleteClientWebContentsUserData::AutocompleteClientWebContentsUserData(
     content::WebContents*) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData);
 
 }  // namespace
 

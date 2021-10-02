@@ -260,6 +260,6 @@ void PdfPrintManager::ReleaseJob(PrintResult result) {
   Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfPrintManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfPrintManager);
 
 }  // namespace print_to_pdf

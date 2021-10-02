@@ -130,6 +130,6 @@ void PasswordManagerDriverFactory::RenderFrameDeleted(
   frame_driver_map_.erase(render_frame_host);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordManagerDriverFactory)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordManagerDriverFactory);
 
 }  // namespace weblayer

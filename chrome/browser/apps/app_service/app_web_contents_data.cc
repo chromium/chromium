@@ -20,6 +20,6 @@ void AppWebContentsData::WebContentsDestroyed() {
   client_ = nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AppWebContentsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AppWebContentsData);
 
 }  // namespace apps

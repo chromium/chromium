@@ -43,4 +43,4 @@ void DataReductionProxyTabHelper::UpdateWebkitPreferencesNow() {
   web_contents_->OnWebPreferencesChanged();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DataReductionProxyTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DataReductionProxyTabHelper);

@@ -420,4 +420,4 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
 }
 #endif
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeTranslateClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeTranslateClient);

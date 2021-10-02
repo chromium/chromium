@@ -570,6 +570,6 @@ void RecentTabHelper::CancelInFlightSnapshots() {
   last_n_ongoing_snapshot_info_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper);
 
 }  // namespace offline_pages

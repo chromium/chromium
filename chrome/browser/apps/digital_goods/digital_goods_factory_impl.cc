@@ -83,6 +83,6 @@ void DigitalGoodsFactoryImpl::BindRequest(
   receiver_.Bind(std::move(receiver));
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsFactoryImpl)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsFactoryImpl);
 
 }  // namespace apps

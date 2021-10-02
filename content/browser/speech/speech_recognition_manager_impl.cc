@@ -128,7 +128,7 @@ class FrameSessionTracker
   std::set<int> sessions_;
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameSessionTracker)
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameSessionTracker);
 
 SpeechRecognitionManager* SpeechRecognitionManager::GetInstance() {
   if (manager_for_tests_)
