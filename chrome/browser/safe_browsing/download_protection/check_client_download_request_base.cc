@@ -595,9 +595,19 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     MaybeStorePingsForDownload(result, upload_requested,
                                client_download_request_data_,
                                *response_body.get());
-    if (ShouldPromptForDeepScanning(response.request_deep_scan())) {
+
+    bool should_prompt =
+        ShouldPromptForDeepScanning(response.request_deep_scan());
+    if (should_prompt) {
       result = DownloadCheckResult::PROMPT_FOR_SCANNING;
       reason = DownloadCheckResultReason::REASON_ADVANCED_PROTECTION_PROMPT;
+    }
+
+    // Only record the UMA metric if we're in a population that potentially
+    // could prompt for deep scanning.
+    if (ShouldPromptForDeepScanning(/*server_requests_prompt=*/true)) {
+      base::UmaHistogramBoolean(
+          "SBClientDownload.ServerRequestsDeepScanningPrompt", should_prompt);
     }
   }
 

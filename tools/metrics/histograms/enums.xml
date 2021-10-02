@@ -73777,7 +73777,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="32" label="SENSITIVE_CONTENT_BLOCK"/>
   <int value="33" label="DEEP_SCANNED_SAFE"/>
   <int value="34" label="ADVANCED_PROTECTION_PROMPT"/>
-  <int value="35" label="BLOCKED_UNSUPPOTED_FILETYPE"/>
+  <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="36" label="ACCOUNT_COMPROMISE"/>
 </enum>
 
 <enum name="SBClientDownloadCheckResult">
