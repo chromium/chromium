@@ -47,6 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="CVC fallback from FIDO authentication"/>
   <variant name="CvcThenFido" summary="CVC followed by FIDO authentication"/>
   <variant name="Fido" summary="FIDO authentication only"/>
+  <variant name="Otp" summary="OTP auth only"/>
 </variants>
 
 <variants name="Autofill.OfferNotification.Type">

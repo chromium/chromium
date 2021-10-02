@@ -529,6 +529,8 @@ static_library("test_support") {
     "mock_autocomplete_history_manager.h",
     "mock_single_field_form_fill_router.cc",
     "mock_single_field_form_fill_router.h",
+    "payments/test/test_credit_card_otp_authenticator.cc",
+    "payments/test/test_credit_card_otp_authenticator.h",
     "payments/test_authentication_requester.cc",
     "payments/test_authentication_requester.h",
     "payments/test_credit_card_save_manager.cc",

@@ -110,9 +110,9 @@ class CreditCardFIDOAuthenticator
   ~CreditCardFIDOAuthenticator() override;
 
   // Invokes Authentication flow. Responds to |accessor_| with full pan.
-  void Authenticate(const CreditCard* card,
-                    base::WeakPtr<Requester> requester,
-                    base::Value request_options);
+  virtual void Authenticate(const CreditCard* card,
+                            base::WeakPtr<Requester> requester,
+                            base::Value request_options);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in

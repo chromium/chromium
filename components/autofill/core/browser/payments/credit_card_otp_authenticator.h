@@ -54,7 +54,7 @@ class CreditCardOtpAuthenticator {
   };
 
   explicit CreditCardOtpAuthenticator(AutofillClient* client);
-  ~CreditCardOtpAuthenticator();
+  virtual ~CreditCardOtpAuthenticator();
   CreditCardOtpAuthenticator(const CreditCardOtpAuthenticator&) = delete;
   CreditCardOtpAuthenticator& operator=(const CreditCardOtpAuthenticator&) =
       delete;
@@ -63,7 +63,7 @@ class CreditCardOtpAuthenticator {
   // |selected_challenge_option|. Will invoke
   // |SendSelectChallengeOptionRequest()| to send the selected challenge option
   // to server.
-  void OnChallengeOptionSelected(
+  virtual void OnChallengeOptionSelected(
       const CreditCard* card,
       const CardUnmaskChallengeOption& selected_challenge_option,
       base::WeakPtr<Requester> requester,
