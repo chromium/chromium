@@ -6942,7 +6942,7 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 crbug.com/1249176 [ Mac11-arm64 ] editing/text-iterator/beforematch-async.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/event-timing/click-interactionid.html [ Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/webappapis/update-rendering/child-document-raf-order.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/idle-detection/interceptor.https.html [ Timeout Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/idle-detection/interceptor.https.html [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/opened-document-security-origin-resets-on-navigation.html [ Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/runtime/runtime-install-binding.js [ Failure Pass ]
 
@@ -7063,5 +7063,5 @@ crbug.com/1254163 [ Mac ] virtual/scroll-unification/ietestcenter/css3/bordersba
 # Sheriff 2021-10-01
 crbug.com/1255014 [ Linux ] virtual/scroll-unification-overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure Pass ]
 crbug.com/1254963 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
-crbug.com/1255210 external/wpt/requestidlecallback/callback-exception.html [ Timeout Pass ]
-crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Pass Failure ]
+crbug.com/1255210 external/wpt/requestidlecallback/callback-exception.html [ Pass Timeout ]
+crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
