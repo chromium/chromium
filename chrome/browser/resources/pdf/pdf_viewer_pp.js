@@ -174,14 +174,16 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
   /** @override */
   handleScriptingMessage(message) {
-    super.handleScriptingMessage(message);
+    if (super.handleScriptingMessage(message)) {
+      return true;
+    }
 
     if (this.handlePrintPreviewScriptingMessage_(message)) {
-      return;
+      return true;
     }
 
     if (this.delayScriptingMessage(message)) {
-      return;
+      return true;
     }
 
     switch (message.data.type.toString()) {
@@ -192,7 +194,10 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
       case 'selectAll':
         this.pluginController_.selectAll();
         break;
+      default:
+        return false;
     }
+    return true;
   }
 
   /**

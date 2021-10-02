@@ -160,6 +160,9 @@ export class PluginController {
     /** @private {?UnseasonedPdfPluginElement} */
     this.unseasonedPlugin_ = null;
 
+    /** @private {?Array} */
+    this.unseasonedDelayedMessages_ = null;
+
     /** @private {!Viewport} */
     this.viewport_;
 
@@ -198,6 +201,20 @@ export class PluginController {
 
     this.plugin_.addEventListener(
         'message', e => this.handlePluginMessage_(e), false);
+    if (!this.plugin_.postMessage) {
+      this.unseasonedPlugin_ =
+          /** @type {!UnseasonedPdfPluginElement} */ (this.plugin_);
+      this.unseasonedDelayedMessages_ = [];
+
+      this.unseasonedPlugin_.postMessage =
+          /**
+           * @param {*} message
+           * @param {!Array<!Transferable>=} transfer
+           */
+          (message, transfer) => {
+            this.unseasonedDelayedMessages_.push({message, transfer});
+          };
+    }
   }
 
   /**
@@ -508,9 +525,16 @@ export class PluginController {
    * @param {!MessagePort} port The message port to bind to.
    */
   bindUnseasonedMessageHandler(port) {
+    assert(this.unseasonedDelayedMessages_ !== null);
+    const delayedMessages = this.unseasonedDelayedMessages_;
+    this.unseasonedDelayedMessages_ = null;
+
+    this.unseasonedPlugin_.postMessage = port.postMessage.bind(port);
     port.onmessage = e => this.handlePluginMessage_(e);
-    this.unseasonedPlugin_ =
-        /** @type {!UnseasonedPdfPluginElement} */ (this.plugin_);
+
+    for (const {message, transfer} of delayedMessages) {
+      this.unseasonedPlugin_.postMessage(message, transfer);
+    }
   }
 
   /**

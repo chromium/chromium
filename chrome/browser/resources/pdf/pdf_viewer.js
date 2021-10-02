@@ -732,10 +732,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @override */
   handleScriptingMessage(message) {
-    super.handleScriptingMessage(message);
+    if (super.handleScriptingMessage(message)) {
+      return true;
+    }
 
     if (this.delayScriptingMessage(message)) {
-      return;
+      return true;
     }
 
     switch (message.data.type.toString()) {
@@ -756,7 +758,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'selectAll':
         this.pluginController_.selectAll();
         break;
+      default:
+        return false;
     }
+    return true;
   }
 
   /** @override */

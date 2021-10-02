@@ -382,6 +382,7 @@ export class PDFViewerBaseElement extends PolymerElement {
    * PDFScriptingAPI in a page containing the extension) to interact with the
    * plugin.
    * @param {!MessageObject} message The message to handle.
+   * @return {boolean} Whether the message was handled.
    */
   handleScriptingMessage(message) {
     // TODO(crbug.com/1228987): Remove this message handler when a permanent
@@ -389,13 +390,12 @@ export class PDFViewerBaseElement extends PolymerElement {
     if (message.data.type === 'connect') {
       const token = /** @type {!{token: string}} */ (message.data).token;
       if (token === this.browserApi.getStreamInfo().streamUrl) {
-        const port = message.ports[0];
-        this.plugin_.postMessage = port.postMessage.bind(port);
-        PluginController.getInstance().bindUnseasonedMessageHandler(port);
+        PluginController.getInstance().bindUnseasonedMessageHandler(
+            message.ports[0]);
       } else {
         this.dispatchEvent(new CustomEvent('connection-denied-for-testing'));
       }
-      return;
+      return true;
     }
 
     if (this.parentWindow_ !== message.source) {
@@ -406,6 +406,7 @@ export class PDFViewerBaseElement extends PolymerElement {
         this.sendDocumentLoadedMessage();
       }
     }
+    return false;
   }
 
   /**
