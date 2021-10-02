@@ -347,3 +347,31 @@ TEST_F(PhotosServiceTest, OptInShown) {
   EXPECT_FALSE(service_->ShouldShowOptInScreen());
   EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 }
+
+class PhotosServiceFakeDataTest : public PhotosServiceTest {
+ public:
+  PhotosServiceFakeDataTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpPhotosModule, {{"NtpPhotosModuleDataParam", "1"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(PhotosServiceFakeDataTest, ReturnsFakeData) {
+  std::vector<photos::mojom::MemoryPtr> fake_memories;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            fake_memories = std::move(memories);
+          }));
+
+  service_->GetMemories(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(fake_memories.empty());
+}

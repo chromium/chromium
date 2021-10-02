@@ -7,8 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -62,6 +65,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
       })");
+constexpr char kMemoryTemplate[] = R"(
+  {
+    "memoryMediaKey": "key%d",
+    "title": {
+      "header": "%d years ago",
+      "subheader": ""
+    },
+    "coverMediaKey": "coverKey%d",
+    "coverDatUrl": "https://lh3.googleusercontent.com/proxy/CyeQrfWvSkJ-4wjGmm1zVIP4XZKL4oAjywWcPh8lhrwtizOY4kGsDtVa3nk984qJB5q2-r7aInfG25UFjfwyu7QEraqepTlbsDdKX1yeenhh7EGeAR2Hp1QcbO24C7WyU8bLPx8o_2HA-opm6cqZ8f4ehEXCxMEbR79A44jcWpacTLfYERPGeVrljo2vAl2LyFMHrA"
+  })";
 }  // namespace
 
 // static
@@ -104,6 +117,28 @@ void PhotosService::GetMemories(GetMemoriesCallback callback) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
     }
     callbacks_.clear();
+    return;
+  }
+
+  // Skip fetch and jump straight to data parsing when serving fake data.
+  std::string fake_data_choice = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpPhotosModule, ntp_features::kNtpPhotosModuleDataParam);
+  if (fake_data_choice != "") {
+    std::string fake_response = "{\"memory\": [";
+    int num_memory;
+    base::StringToInt(fake_data_choice, &num_memory);
+    for (int i = 0; i < num_memory; i++) {
+      std::string memory = base::StringPrintf(kMemoryTemplate, i, i + 2, i);
+      if (i + 1 < num_memory) {
+        memory += ", ";
+      }
+      fake_response += memory;
+    }
+    fake_response += "]}";
+
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        fake_response, base::BindOnce(&PhotosService::OnJsonParsed,
+                                      weak_factory_.GetWeakPtr(), ""));
     return;
   }
 
@@ -219,7 +254,8 @@ void PhotosService::OnJsonParsed(
     auto* memory_id = memory.FindStringPath("memoryMediaKey");
     auto* cover_id = memory.FindStringPath("coverMediaKey");
     auto* cover_url = memory.FindStringPath("coverUrl");
-    if (!title || !memory_id || !cover_id || !cover_url) {
+    auto* cover_dat_url = memory.FindStringPath("coverDatUrl");
+    if (!title || !memory_id || !cover_id || (!cover_url && !cover_dat_url)) {
       continue;
     }
     auto mojo_memory = photos::mojom::Memory::New();
@@ -228,7 +264,11 @@ void PhotosService::OnJsonParsed(
     mojo_memory->item_url =
         GURL("https://photos.google.com/memory/featured/" + *memory_id +
              "/photo/" + *cover_id + "?referrer=CHROME_NTP");
-    mojo_memory->cover_url = GURL(*cover_url + "?access_token=" + token);
+    if (cover_url) {
+      mojo_memory->cover_url = GURL(*cover_url + "?access_token=" + token);
+    } else if (cover_dat_url) {
+      mojo_memory->cover_url = GURL(*cover_dat_url);
+    }
 
     memory_list.push_back(std::move(mojo_memory));
   }

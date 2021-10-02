@@ -1394,6 +1394,29 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
      base::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData0[] = {
+    {ntp_features::kNtpPhotosModuleDataParam, "0"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData1[] = {
+    {ntp_features::kNtpPhotosModuleDataParam, "1"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData2[] = {
+    {ntp_features::kNtpPhotosModuleDataParam, "2"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData3[] = {
+    {ntp_features::kNtpPhotosModuleDataParam, "3"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData4[] = {
+    {ntp_features::kNtpPhotosModuleDataParam, "4"}};
+
+const FeatureEntry::FeatureVariation kNtpPhotosModuleVariations[] = {
+    {" - Fake memories: 0", kNtpPhotosModuleFakeData0,
+     base::size(kNtpPhotosModuleFakeData0), nullptr},
+    {" - Fake memories: 1", kNtpPhotosModuleFakeData1,
+     base::size(kNtpPhotosModuleFakeData1), nullptr},
+    {" - Fake memories: 2", kNtpPhotosModuleFakeData2,
+     base::size(kNtpPhotosModuleFakeData2), nullptr},
+    {" - Fake memories: 3", kNtpPhotosModuleFakeData3,
+     base::size(kNtpPhotosModuleFakeData3), nullptr},
+    {" - Fake memories: 4", kNtpPhotosModuleFakeData4,
+     base::size(kNtpPhotosModuleFakeData4), nullptr}};
+
 const FeatureEntry::FeatureParam kNtpSafeBrowsingModuleFastCooldown[] = {
     {ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam, "0.001"},
     {ntp_features::kNtpSafeBrowsingModuleCountMaxParam, "1"}};
@@ -4798,7 +4821,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-photos-module", flag_descriptions::kNtpPhotosModuleName,
      flag_descriptions::kNtpPhotosModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpPhotosModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpPhotosModule,
+                                    kNtpPhotosModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,

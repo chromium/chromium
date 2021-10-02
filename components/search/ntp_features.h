@@ -73,6 +73,8 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 // Parameter for communicating the experiment group of the Drive module
 // experiment.
 extern const char kNtpDriveModuleExperimentGroupParam[];
+// Parameter determining the type of Photos data to render.
+extern const char kNtpPhotosModuleDataParam[];
 // Parameter determining the number of times a module is shown to a user
 // before cooldown starts.
 extern const char kNtpSafeBrowsingModuleCountMaxParam[];
