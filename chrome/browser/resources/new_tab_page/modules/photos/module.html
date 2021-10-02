@@ -38,9 +38,11 @@
     display: flex;
     flex: 1;
     flex-direction: row;
-    flex-wrap: nowrap;
-    margin: 16px;
-    margin-inline-end: 4px;
+    flex-wrap: wrap;
+    height: 164px;
+    overflow: hidden;
+    padding: 16px;
+    padding-inline-end: 4px;
   }
 
   :host([show-opt-in-screen]) #memories {
@@ -60,6 +62,7 @@
     flex-basis: 0;
     flex-grow: 1;
     flex-shrink: 1;
+    margin-bottom: 16px;
     margin-inline-end: 12px;
     max-width: 258px;
     min-width: 123px;
@@ -111,6 +114,7 @@
   #exploreCard {
     align-items: center;
     border: 1px solid var(--ntp-border-color);
+    box-sizing: border-box;
     flex-direction: column;
     justify-content: center;
     text-decoration: none;
