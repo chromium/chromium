@@ -45,4 +45,17 @@ test_serialization(
     'calc(tan(0) + 0.5)',
     'calc(0.5)',
     '0.5');
+
+test_serialization(
+    'calc(sin(infinity))',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'calc(cos(infinity))',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'calc(tan(infinity))',
+    'calc(NaN)',
+    'NaN');
 </script>

@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+FAIL pow(1,1) should be used-value-equivalent to 1 assert_equals: pow(1,1) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL sqrt(1) should be used-value-equivalent to 1 assert_equals: sqrt(1) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL hypot(1) should be used-value-equivalent to 1 assert_equals: hypot(1) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+PASS sqrt(pow(1,1)) should be used-value-equivalent to 1
+PASS hypot(pow(1, sqrt(1))) should be used-value-equivalent to 1
+PASS calc(hypot(pow((1 + sqrt(1)) / 2, sqrt(1)))) should be used-value-equivalent to 1
+FAIL calc(100px * pow(2, pow(2, 2))) should be used-value-equivalent to 1600px assert_equals: calc(100px * pow(2, pow(2, 2))) and 1600px serialize to the same thing in used values. expected "1600px" but got "0px"
+FAIL calc(1px * pow(2, 3)) should be used-value-equivalent to 8px assert_equals: calc(1px * pow(2, 3)) and 8px serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL calc(100px * sqrt(100)) should be used-value-equivalent to 1000px assert_equals: calc(100px * sqrt(100)) and 1000px serialize to the same thing in used values. expected "1000px" but got "0px"
+FAIL calc(1px * pow(2, sqrt(100)) should be used-value-equivalent to 1024px assert_equals: calc(1px * pow(2, sqrt(100)) and 1024px serialize to the same thing in used values. expected "1024px" but got "0px"
+FAIL hypot(3px, 4px) should be used-value-equivalent to 5px assert_equals: hypot(3px, 4px) and 5px serialize to the same thing in used values. expected "5px" but got "0px"
+FAIL calc(100px * hypot(3, 4)) should be used-value-equivalent to 500px assert_equals: calc(100px * hypot(3, 4)) and 500px serialize to the same thing in used values. expected "500px" but got "0px"
+FAIL hypot(-5px) should be used-value-equivalent to 5px assert_equals: hypot(-5px) and 5px serialize to the same thing in used values. expected "5px" but got "0px"
+FAIL calc(1px * hypot(-5)) should be used-value-equivalent to 5px assert_equals: calc(1px * hypot(-5)) and 5px serialize to the same thing in used values. expected "5px" but got "0px"
+FAIL calc(1px * hypot(10000)) should be used-value-equivalent to 10000px assert_equals: calc(1px * hypot(10000)) and 10000px serialize to the same thing in used values. expected "10000px" but got "0px"
+FAIL calc(2px * sqrt(100000000)) should be used-value-equivalent to 20000px assert_equals: calc(2px * sqrt(100000000)) and 20000px serialize to the same thing in used values. expected "20000px" but got "0px"
+FAIL calc(3px * pow(200, 4)) should be used-value-equivalent to 33554428px assert_equals: calc(3px * pow(200, 4)) and 33554428px serialize to the same thing in used values. expected "3.35544e+07px" but got "0px"
+FAIL hypot(1px) should be used-value-equivalent to 1px assert_equals: hypot(1px) and 1px serialize to the same thing in used values. expected "1px" but got "0px"
+FAIL hypot(1cm) should be used-value-equivalent to 1cm assert_equals: hypot(1cm) and 1cm serialize to the same thing in used values. expected "37.7953px" but got "0px"
+FAIL hypot(1mm) should be used-value-equivalent to 1mm assert_equals: hypot(1mm) and 1mm serialize to the same thing in used values. expected "3.77953px" but got "0px"
+FAIL hypot(1Q) should be used-value-equivalent to 1Q assert_equals: hypot(1Q) and 1Q serialize to the same thing in used values. expected "0.944882px" but got "0px"
+FAIL hypot(1in) should be used-value-equivalent to 1in assert_equals: hypot(1in) and 1in serialize to the same thing in used values. expected "96px" but got "0px"
+FAIL hypot(1pc) should be used-value-equivalent to 1pc assert_equals: hypot(1pc) and 1pc serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL hypot(1pt) should be used-value-equivalent to 1pt assert_equals: hypot(1pt) and 1pt serialize to the same thing in used values. expected "1.33333px" but got "0px"
+FAIL hypot(1em) should be used-value-equivalent to 1em assert_equals: hypot(1em) and 1em serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL hypot(1ex) should be used-value-equivalent to 1ex assert_equals: hypot(1ex) and 1ex serialize to the same thing in used values. expected "7px" but got "0px"
+FAIL hypot(1ch) should be used-value-equivalent to 1ch assert_equals: hypot(1ch) and 1ch serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL hypot(1rem) should be used-value-equivalent to 1rem assert_equals: hypot(1rem) and 1rem serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL hypot(1vh) should be used-value-equivalent to 1vh assert_equals: hypot(1vh) and 1vh serialize to the same thing in used values. expected "6px" but got "0px"
+FAIL hypot(1vw) should be used-value-equivalent to 1vw assert_equals: hypot(1vw) and 1vw serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL hypot(1vmin) should be used-value-equivalent to 1vmin assert_equals: hypot(1vmin) and 1vmin serialize to the same thing in used values. expected "6px" but got "0px"
+FAIL hypot(1vmax) should be used-value-equivalent to 1vmax assert_equals: hypot(1vmax) and 1vmax serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL hypot(1s) should be used-value-equivalent to 1s assert_equals: hypot(1s) and 1s serialize to the same thing in used values. expected "1s" but got "0s"
+FAIL hypot(1ms) should be used-value-equivalent to 1ms assert_equals: hypot(1ms) and 1ms serialize to the same thing in used values. expected "0.001s" but got "0s"
+FAIL hypot(1deg) should be used-value-equivalent to 1deg Cannot read properties of undefined (reading 'split')
+FAIL hypot(1grad) should be used-value-equivalent to 1grad Cannot read properties of undefined (reading 'split')
+FAIL hypot(1rad) should be used-value-equivalent to 1rad Cannot read properties of undefined (reading 'split')
+FAIL hypot(1turn) should be used-value-equivalent to 1turn Cannot read properties of undefined (reading 'split')
+Harness: the test ran to completion.
+

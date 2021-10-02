@@ -54,6 +54,4 @@ function check_and_remove_standard_headers(headers) {
   delete headers[':protocol'];
   assert_equals(headers['origin'], `${get_host_info().ORIGIN}`);
   delete headers['origin'];
-  assert_equals(headers['datagram-flow-id'], '0');
-  delete headers['datagram-flow-id'];
 }

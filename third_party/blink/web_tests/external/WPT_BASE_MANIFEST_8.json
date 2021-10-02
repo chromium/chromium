@@ -12814,28 +12814,35 @@
    },
    "serial": {
     "serialPort_disconnect-manual.https.html": [
-     "3a2e13400c4570cfab7826a7ec7a2972e3596103",
+     "5386201e6c7d9eb6d98eafa8d965d59976bee04a",
      [
       null,
       {}
      ]
     ],
     "serialPort_loopback-manual.https.html": [
-     "201a2dedba82a30fc5450728a6d9bb6bcdc164a0",
+     "bf876b6610b77cc83170b8e97204c4aafc46058d",
      [
       null,
       {}
      ]
     ],
     "serialPort_loopback_BreakError-manual.https.html": [
-     "22b15316e266e7c69262b96937694c2e016859a6",
+     "369fac6155b7a1d7a4b72e0b255875732d28eada",
      [
       null,
       {}
      ]
     ],
     "serialPort_loopback_BufferOverrunError-manual.https.html": [
-     "e90a5b01613c8a145168cdc0ac5f2094909b2301",
+     "06f8271ac9af71655cb0bc89a8c63e9b7c34ef45",
+     [
+      null,
+      {}
+     ]
+    ],
+    "serialPort_readable-manual.https.html": [
+     "4e49ef4061774bf6d48f9fec7d7f09f45414fb11",
      [
       null,
       {}
@@ -42424,6 +42431,19 @@
         [
          [
           "/css/CSS2/normal-flow/block-in-inline-first-line-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-in-inline-first-line-002.html": [
+       "d0cf6071dd6f807836d5a7e7bab434dbabe88e42",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/normal-flow/block-in-inline-first-line-002-ref.html",
           "=="
          ]
         ],
@@ -141641,6 +141661,19 @@
         {}
        ]
       ],
+      "flex-aspect-ratio-031.html": [
+       "5bd4a9d58c2ca57b3f4ad701a4e8ddbc0ce49665",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-aspect-ratio-001.html": [
        "ce91fe4e4e8b2bb7f610fb230a292f59188ff95b",
        [
@@ -223263,6 +223296,10 @@
        "01fcf2a323a9246ada4a6b7628b61771a0db4f07",
        []
       ],
+      "block-in-inline-first-line-002-ref.html": [
+       "44bf6ee19b5eb0b1c77ba2eb71e04f37f0cd14d0",
+       []
+      ],
       "block-in-inline-float-between-001-ref.xht": [
        "bdb5963e8944bf23cab77b089626e098944bd35f",
        []
@@ -253313,10 +253350,6 @@
       []
      ],
      "animation": {
-      "list-interpolation-expected.txt": [
-       "c3140b465ef1b222b9fa1b8e9278b43caaefb025",
-       []
-      ],
       "rotate-composition-expected.txt": [
        "4982c0e1eae3185ad3d621fcb89cbc98aeb373bb",
        []
@@ -253332,7 +253365,7 @@
        ]
       },
       "transform-interpolation-001-expected.txt": [
-       "013b891d182045ff5a0ebe1edcb7ee5c5fd02720",
+       "6e2fa3c5825368155926037231f421e0008cb8f3",
        []
       ],
       "transform-interpolation-animated-ref.html": [
@@ -256547,7 +256580,7 @@
       []
      ],
      "acos-asin-atan-atan2-serialize-expected.txt": [
-      "e87d77c6e5d64110d94a0fa5447de2ad256427d4",
+      "4dca64224423e2360e3d98433bb725cf6e9219d7",
       []
      ],
      "calc-background-image-gradient-1-ref.html": [
@@ -256699,7 +256732,11 @@
       []
      ],
      "exp-log-serialize-expected.txt": [
-      "bac88b66be0f09636e63139c263996ad174807e4",
+      "4538042081cdc199458994b3e4d607970d94f58d",
+      []
+     ],
+     "hypot-pow-sqrt-serialize-expected.txt": [
+      "d34c7fc8cfac733e1b1372ec8a6c8a855df99d4f",
       []
      ],
      "minmax-angle-serialize-expected.txt": [
@@ -256835,11 +256872,11 @@
       []
      ],
      "round-mod-rem-serialize-expected.txt": [
-      "162be5e295a67ef0c12240a65387e8490f3221a9",
+      "f5c09a5539f1cb221d6827eed1ac0656775af532",
       []
      ],
      "signs-abs-serialize-expected.txt": [
-      "2dc9ef1833ebaf5354f62518f85f6b2c700d0802",
+      "39973d9c104b22ed4c2768388883428586c7c133",
       []
      ],
      "sin-cos-tan-computed-expected.txt": [
@@ -256847,7 +256884,7 @@
       []
      ],
      "sin-cos-tan-serialize-expected.txt": [
-      "b41096a855a5db8c2b8bfe2aee88983fd97ebcdc",
+      "7b5a5ff105487944a3ec85b476e67e73da8a2873",
       []
      ],
      "support": {
@@ -294235,7 +294272,7 @@
       []
      ],
      "manual.js": [
-      "4ac46b6decc7b6bf42bf4491b192714c55376ada",
+      "ac19136b35acc43e7290131fd082657c58f1387b",
       []
      ],
      "serial-allowed-by-feature-policy-worker.js": [
@@ -303835,7 +303872,7 @@
     },
     "resources": {
      "webtransport-test-helpers.sub.js": [
-      "3e1983b6b46bf22e52eb71688143d84255f5c81d",
+      "42c0b9be5deb9d10c647043454d493e9dfe8a575",
       []
      ]
     }
@@ -320536,7 +320573,7 @@
      ]
     ],
     "worklet-animation-local-time-null-1.https.html": [
-     "7db0a9721f67c59d6f453e32f3e2a65e064ff215",
+     "52727fa6ea49d9f6e8c09b0cbe21c9040438c183",
      [
       null,
       {}
@@ -343090,7 +343127,7 @@
        ]
       ],
       "flex-grow-computed.html": [
-       "f046a0ba8362f5dae2e3c19e551d77a1d9b70f5f",
+       "7e8c4c429ee40632880b443a13881ec31ce358ec",
        [
         null,
         {}
@@ -343125,7 +343162,7 @@
        ]
       ],
       "flex-shrink-computed.html": [
-       "69a6d8c52b61f162f9c7333f53ed44145e51913f",
+       "b2f21c07e55cb5de651853787395d074a38128c2",
        [
         null,
         {}
@@ -345438,6 +345475,13 @@
       ],
       "grid-content-alignment-second-pass-002.html": [
        "74a783bce2f62c1641c554e6f58470f4e3ffb644",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-content-alignment-with-abspos-001.html": [
+       "c9aa165e8052df0488e7affb33cc150aa14467fd",
        [
         null,
         {}
@@ -357124,7 +357168,7 @@
        ]
       ],
       "transform-interpolation-001.html": [
-       "cb5039e5079adbafac2bc7b93566b0a152ad7886",
+       "94bb87c6e74091fe35aee382c0f0591d18e876a6",
        [
         null,
         {
@@ -361054,7 +361098,7 @@
       ]
      ],
      "acos-asin-atan-atan2-serialize.html": [
-      "637667fcb821b4a3f822df603749c125e9cf521f",
+      "963450cd5b23cb430b0e97bd198fb8254e91638c",
       [
        null,
        {}
@@ -361287,7 +361331,7 @@
       ]
      ],
      "exp-log-serialize.html": [
-      "18f8f20b9c5e387de3be6908bbfdd8d2ef5c0b9d",
+      "9eca44e68290dc8b96a915db6da6a843bab75f43",
       [
        null,
        {}
@@ -361309,6 +361353,27 @@
      ],
      "getComputedStyle-border-radius-003.html": [
       "98d320bca287b869a752c97de1a1be0f706642a9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "hypot-pow-sqrt-computed.html": [
+      "a7d7dae72a5282f950fce5b42017755cc5f43116",
+      [
+       null,
+       {}
+      ]
+     ],
+     "hypot-pow-sqrt-invalid.html": [
+      "517acf57efd70e88d4f4b68a2206d1e3300fa658",
+      [
+       null,
+       {}
+      ]
+     ],
+     "hypot-pow-sqrt-serialize.html": [
+      "d3a0bc607399bf047cebfab46d74aeb4bbd429a2",
       [
        null,
        {}
@@ -361497,7 +361562,7 @@
       ]
      ],
      "round-mod-rem-serialize.html": [
-      "490249591947022e09c58b69f1c703483fad2e7d",
+      "39569995b3ab09d834796f94bea9605dae7846f6",
       [
        null,
        {}
@@ -361518,7 +361583,7 @@
       ]
      ],
      "signs-abs-serialize.html": [
-      "b7b5ad2b7529fd81cfc54909c333aed588632549",
+      "28d04b9695de213b7258c68e5ef1ca0aabbc0026",
       [
        null,
        {}
@@ -361539,7 +361604,7 @@
       ]
      ],
      "sin-cos-tan-serialize.html": [
-      "f7d3083187d0cd793d0f37c5a46cfccdd9685668",
+      "ce673cb9d8b9c9313924e3bdc62efea2515de118",
       [
        null,
        {}

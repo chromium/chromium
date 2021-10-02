@@ -28,4 +28,17 @@ test_serialization(
     'rem(1,1)',
     'calc(0)',
     '0');
+
+test_serialization(
+    'calc(round(1,0))',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'calc(mod(1,0))',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'calc(rem(1,0))',
+    'calc(NaN)',
+    'NaN');
 </script>

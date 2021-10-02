@@ -16,65 +16,28 @@ function test_serialization(t,s,c) {
 }
 
 test_serialization(
-    'abs(1)',
+    'pow(1,1)',
     'calc(1)',
     '1');
 test_serialization(
-    'sign(.1)',
+    'hypot(1)',
     'calc(1)',
     '1');
-
 test_serialization(
-    'abs(1 + 2 + 3)',
-    'calc(6)',
-    '6');
-test_serialization(
-    'sign(1 + 2 + 3)',
+    'sqrt(1)',
     'calc(1)',
     '1');
 
 test_serialization(
-    'calc(abs(1) + abs(2))',
-    'calc(3)',
-    '3');
-test_serialization(
-    'calc(sign(.1) + sign(.2))',
-    'calc(2)',
-    '2');
-
-test_serialization(
-    'calc(1 + abs(1))',
+    'calc(pow(1,1) + 1)',
     'calc(2)',
     '2');
 test_serialization(
-    'calc(sign(.1) + 1)',
+    'calc(hypot(1) * 2)',
     'calc(2)',
     '2');
-
 test_serialization(
-    'calc(abs(inFinity))',
-    'calc(inFinity)',
-    'infinity');
-
-test_serialization(
-    'calc(abs(infinity))',
-    'calc(infinity)',
-    'infinity');
-test_serialization(
-    'calc(sign(infinity))',
-    'calc(1)',
-    '1');
-test_serialization(
-    'abs(infinity)',
-    'calc(infinity)',
-    'infinity');
-
-test_serialization(
-    'calc(abs(-infinity))',
-    'calc(infinity)',
-    'infinity');
-test_serialization(
-    'calc(sign(-1 * infinity))',
-    'calc(-1)',
-    '-1');
+    'calc(sqrt(1) - 1)',
+    'calc(0)',
+    '0');
 </script>
