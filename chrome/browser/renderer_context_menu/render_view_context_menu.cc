@@ -2269,7 +2269,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       // Rotate commands should be disabled when in PDF Viewer's Presentation
       // mode.
       is_pdf_viewer_fullscreen =
-          IsPdfExtensionUrl(GetDocumentURL(params_)) && IsHTML5Fullscreen();
+          IsPdfExtensionOrigin(url::Origin::Create(GetDocumentURL(params_))) &&
+          IsHTML5Fullscreen();
 #endif
       return !is_pdf_viewer_fullscreen &&
              (params_.media_flags & ContextMenuData::kMediaCanRotate) != 0;
