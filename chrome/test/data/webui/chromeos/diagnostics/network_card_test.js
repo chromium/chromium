@@ -86,6 +86,13 @@ export function networkCardTestSuite() {
   }
 
   /** @return {!Element} */
+  function getNetworkIcon() {
+    assertTrue(!!networkCardElement);
+
+    return /** @type {!Element} */ (networkCardElement.$$('#icon'));
+  }
+
+  /** @return {!Element} */
   function getEthernetInfoElement() {
     const networkInfoElement = getNetworkInfoElement();
     assertTrue(!!networkInfoElement);
@@ -105,6 +112,7 @@ export function networkCardTestSuite() {
     return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Wi-Fi (Connected)');
+      assertTrue(isVisible(getNetworkIcon()));
       assertFalse(isVisible(getTroubleConnectingElement()));
       assertTrue(isVisible(getWifiInfoElement()));
       assertTrue(isVisible(getIpConfigDrawerElement()));
@@ -135,6 +143,7 @@ export function networkCardTestSuite() {
     return initializeNetworkCard('wifiPortalGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Wi-Fi (Portal)');
+      assertTrue(isVisible(getNetworkIcon()));
       assertTrue(isVisible(getTroubleConnectingElement()));
       assertTrue(isVisible(getNetworkInfoElement()));
       assertTrue(isVisible(getIpConfigDrawerElement()));
@@ -145,6 +154,7 @@ export function networkCardTestSuite() {
     return initializeNetworkCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Ethernet (Online)');
+      assertTrue(isVisible(getNetworkIcon()));
       assertFalse(isVisible(getTroubleConnectingElement()));
       assertTrue(isVisible(getEthernetInfoElement()));
     });
@@ -154,6 +164,7 @@ export function networkCardTestSuite() {
     return initializeNetworkCard('ethernetDisconnectedGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Ethernet (Not Connected)');
+      assertTrue(isVisible(getNetworkIcon()));
       assertTrue(isVisible(getTroubleConnectingElement()));
       assertFalse(isVisible(getNetworkInfoElement()));
       assertFalse(isVisible(getIpConfigDrawerElement()));
@@ -164,6 +175,7 @@ export function networkCardTestSuite() {
     return initializeNetworkCard('ethernetConnectingGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Ethernet (Connecting)');
+      assertTrue(isVisible(getNetworkIcon()));
       assertFalse(isVisible(getTroubleConnectingElement()));
       assertTrue(isVisible(getNetworkInfoElement()));
       assertTrue(isVisible(getIpConfigDrawerElement()));

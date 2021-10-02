@@ -272,6 +272,7 @@ js_library("mojo_utils") {
 js_library("network_card") {
   deps = [
     ":diagnostics_card",
+    ":diagnostics_network_icon",
     ":diagnostics_types",
     ":ip_config_info_drawer",
     ":network_info",
