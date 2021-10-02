@@ -296,6 +296,7 @@ ScriptPromise HIDDevice::close(ScriptState* script_state) {
     return promise;
 
   connection_.reset();
+  receiver_.reset();
   resolver->Resolve();
   return promise;
 }
@@ -444,6 +445,7 @@ void HIDDevice::FinishOpen(
     resolver->Resolve();
   } else {
     // If the connection is null, the open failed.
+    receiver_.reset();
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, kOpenFailed));
   }
@@ -455,12 +457,6 @@ void HIDDevice::OnServiceConnectionError() {
         DOMExceptionCode::kInvalidStateError, kUnexpectedClose));
   }
   device_requests_.clear();
-}
-
-void HIDDevice::FinishClose(ScriptPromiseResolver* resolver) {
-  MarkRequestComplete(resolver);
-  connection_.reset();
-  resolver->Resolve();
 }
 
 void HIDDevice::FinishSendReport(ScriptPromiseResolver* resolver,

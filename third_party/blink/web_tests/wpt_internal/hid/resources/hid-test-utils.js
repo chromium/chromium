@@ -146,6 +146,7 @@ class FakeHidService {
     this.interceptor_.oninterfacerequest = e => this.bind(e.handle);
     this.receiver_ = new HidServiceReceiver(this);
     this.nextGuidValue_ = 0;
+    this.simulateConnectFailure_ = false;
     this.reset();
   }
 
@@ -227,6 +228,11 @@ class FakeHidService {
     return key;
   }
 
+  // Sets a flag that causes the next call to connect() to fail.
+  simulateConnectFailure() {
+    this.simulateConnectFailure_ = true;
+  }
+
   // Sets the key of the device that will be returned as the selected item the
   // next time requestDevice is called. The device with this key must have been
   // previously added with addDevice.
@@ -267,8 +273,13 @@ class FakeHidService {
 
   // Returns a fake connection to the device with the specified GUID. If
   // |connectionClient| is not null, its onInputReport method will be called
-  // when input reports are received.
+  // when input reports are received. If simulateConnectFailure() was called
+  // then a null connection is returned instead, indicating failure.
   async connect(guid, connectionClient) {
+    if (this.simulateConnectFailure_) {
+      this.simulateConnectFailure_ = false;
+      return {connection: null};
+    }
     const fakeConnection = new FakeHidConnection(connectionClient);
     this.fakeConnections_.set(guid, fakeConnection);
     return {connection: fakeConnection.bindNewPipeAndPassRemote()};

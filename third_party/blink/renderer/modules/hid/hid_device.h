@@ -90,7 +90,6 @@ class MODULES_EXPORT HIDDevice
 
   void FinishOpen(ScriptPromiseResolver*,
                   mojo::PendingRemote<device::mojom::blink::HidConnection>);
-  void FinishClose(ScriptPromiseResolver*);
   void FinishSendReport(ScriptPromiseResolver*, bool success);
   void FinishReceiveReport(ScriptPromiseResolver*,
                            bool success,
