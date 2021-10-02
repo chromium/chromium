@@ -7,13 +7,14 @@
  * View displaying Bluetooth device battery information.
  */
 
-import '../../settings_shared_css.js';
-import '../os_icons.m.js';
+import '../../../cr_elements/shared_style_css.m.js';
+import './bluetooth_icons.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getBatteryPercentage} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {getBatteryPercentage} from './bluetooth_utils.js';
 
 /**
  * The threshold percentage where any battery percentage lower is considered
@@ -38,14 +39,14 @@ const BATTERY_ICONS_RANGES = [
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  */
-const SettingsBluetoothDeviceBatteryInfoElementBase =
+const BluetoothDeviceBatteryInfoElementBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-class SettingsBluetoothDeviceBatteryInfoElement extends
-    SettingsBluetoothDeviceBatteryInfoElementBase {
+export class BluetoothDeviceBatteryInfoElement extends
+    BluetoothDeviceBatteryInfoElementBase {
   static get is() {
-    return 'os-settings-bluetooth-device-battery-info';
+    return 'bluetooth-device-battery-info';
   }
 
   static get template() {
@@ -55,7 +56,7 @@ class SettingsBluetoothDeviceBatteryInfoElement extends
   static get properties() {
     return {
       /**
-       * @private {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @type {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -120,10 +121,14 @@ class SettingsBluetoothDeviceBatteryInfoElement extends
     assert(
         !!range && range.length === 2, 'Battery percentage range is invalid');
 
-    return 'os-settings:battery-' + range[0] + '-' + range[1];
+    return 'bluetooth:battery-' + range[0] + '-' + range[1];
+  }
+
+  /** @return {boolean} */
+  getIsLowBatteryForTest() {
+    return this.isLowBattery_;
   }
 }
 
 customElements.define(
-    SettingsBluetoothDeviceBatteryInfoElement.is,
-    SettingsBluetoothDeviceBatteryInfoElement);
+    BluetoothDeviceBatteryInfoElement.is, BluetoothDeviceBatteryInfoElement);

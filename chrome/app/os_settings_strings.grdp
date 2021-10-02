@@ -2103,9 +2103,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON" desc="Label for Bluetooth summary page, when Bluetooth is on but no devices are connected.">
     On
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_BATTERY_PERCENTAGE" desc="Label for a paired Bluetooth device in a list that indicates the battery level of the device.">
-    <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>%
-  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type
   </message>

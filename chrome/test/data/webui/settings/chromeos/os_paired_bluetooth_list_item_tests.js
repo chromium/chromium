@@ -61,7 +61,7 @@ suite('OsPairedBluetoothListItemTest', function() {
         };
         const getBatteryInfo = () => {
           return pairedBluetoothListItem.shadowRoot.querySelector(
-              'os-settings-bluetooth-device-battery-info');
+              'bluetooth-device-battery-info');
         };
         const getDeviceTypeIcon = () => {
           return pairedBluetoothListItem.shadowRoot.querySelector(
@@ -122,7 +122,7 @@ suite('OsPairedBluetoothListItemTest', function() {
 
     const getBatteryInfo = () => {
       return pairedBluetoothListItem.shadowRoot.querySelector(
-          'os-settings-bluetooth-device-battery-info');
+          'bluetooth-device-battery-info');
     };
 
     await setBatteryPercentage(-10);

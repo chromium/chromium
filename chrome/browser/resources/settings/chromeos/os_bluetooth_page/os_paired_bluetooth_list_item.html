@@ -1,5 +1,5 @@
 <style include="settings-shared">
-  os-settings-bluetooth-device-battery-info {
+  bluetooth-device-battery-info {
     padding-top: 3px;
   }
 </style>
@@ -17,9 +17,9 @@
       <div id="deviceName">[[getDeviceName_(device)]]</div>
       <template is="dom-if"
           if="[[shouldShowBatteryInfo_(device)]]" restamp>
-        <os-settings-bluetooth-device-battery-info
+        <bluetooth-device-battery-info
             device="[[device]]">
-        </os-settings-bluetooth-device-battery-info>
+        </bluetooth-device-battery-info>
       </template>
     </div>
     <div>

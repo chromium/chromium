@@ -3,28 +3,29 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://bluetooth-pairing/strings.m.js';
 
-// #import 'chrome://os-settings/strings.m.js';
-
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue} from '../../../chai_assert.js';
-// #import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {BluetoothDeviceBatteryInfoElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_device_battery_info.js';
+import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 // clang-format on
 
-suite('OsBluetoothDeviceBatteryInfoTest', function() {
-  /** @type {!SettingsOsBluetoothDeviceBatteryInfoElement|undefined} */
+suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
+  /** @type {?BluetoothDeviceBatteryInfoElement} */
   let bluetoothDeviceBatteryInfo;
 
   setup(function() {
-    bluetoothDeviceBatteryInfo =
-        document.createElement('os-settings-bluetooth-device-battery-info');
+    bluetoothDeviceBatteryInfo = /**
+                                    @type {?BluetoothDeviceBatteryInfoElement}
+                                  */
+        (document.createElement('bluetooth-device-battery-info'));
     document.body.appendChild(bluetoothDeviceBatteryInfo);
-    Polymer.dom.flush();
+    flush();
   });
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
@@ -35,14 +36,18 @@ suite('OsBluetoothDeviceBatteryInfoTest', function() {
     bluetoothDeviceBatteryInfo.device.deviceProperties.batteryInfo = {
       defaultProperties: {batteryPercentage: batteryPercentage}
     };
-    bluetoothDeviceBatteryInfo.device = {...bluetoothDeviceBatteryInfo.device};
+    bluetoothDeviceBatteryInfo.device =
+        /**
+          @type {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+        */
+        (Object.assign({}, bluetoothDeviceBatteryInfo.device));
     return flushAsync();
   }
 
   /**
    * @param {number} batteryPercentage
    * @param {boolean} isLowBattery
-   * @param {boolean} batteryIconRange
+   * @param {string} batteryIconRange
    */
   function assertBatteryUIState(
       batteryPercentage, isLowBattery, batteryIconRange) {
@@ -50,11 +55,12 @@ suite('OsBluetoothDeviceBatteryInfoTest', function() {
         bluetoothDeviceBatteryInfo.$.batteryPercentage.innerText.trim(),
         bluetoothDeviceBatteryInfo.i18n(
             'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage));
-    assertEquals(bluetoothDeviceBatteryInfo.isLowBattery_, isLowBattery);
+    assertEquals(
+        bluetoothDeviceBatteryInfo.getIsLowBatteryForTest(), isLowBattery);
     assertEquals(
         bluetoothDeviceBatteryInfo.shadowRoot.querySelector('#batteryIcon')
             .icon,
-        'os-settings:battery-' + batteryIconRange);
+        'bluetooth:battery-' + batteryIconRange);
   }
 
   test('Battery text, icon and color', async function() {

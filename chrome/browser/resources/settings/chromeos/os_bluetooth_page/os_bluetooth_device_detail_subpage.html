@@ -24,13 +24,13 @@
         [[getBluetoothStateTextLabel_(device_.*)]]
       </div>
       <template is="dom-if" if="[[shouldShowBatteryInfo_(device_.*)]]" restamp>
-        <os-settings-bluetooth-device-battery-info
+        <bluetooth-device-battery-info
             aria-label$="[[getBatteryInfoA11yLabel_(device_.*)]]"
             id="batteryInfo"
             class="secondary"
             device="[[device_]]"
             aria-live="polite">
-        </os-settings-bluetooth-device-battery-info>
+        </bluetooth-device-battery-info>
       </template>
     </div>
     <div id="buttonContainer" class="layout end">

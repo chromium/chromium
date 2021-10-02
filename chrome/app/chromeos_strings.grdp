@@ -857,6 +857,9 @@
   <message name="IDS_BLUETOOTH_PAIRING_ENTER_PIN" desc="Bluetooth pairing dialog: Message displayed informing the user to enter a PIN in other to complete device pairing.">
     Enter PIN to pair with <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
   </message>
+  <message name="IDS_BLUETOOTH_DEVICE_ITEM_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device in a list that indicates the battery level of the device.">
+    <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>%
+  </message>
 
   <!-- Strings for the OOBE packaged license screen -->
   <message name="IDS_OOBE_PACKAGED_LICENSE_TITLE" desc="Title of the screen which advertises use of packaged license.">
