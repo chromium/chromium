@@ -12,11 +12,12 @@
 namespace blink {
 
 void TransitionInterpolation::Interpolate(int iteration, double fraction) {
-  if (cached_fraction_ != fraction || cached_iteration_ != iteration) {
+  if (!cached_fraction_ || *cached_fraction_ != fraction ||
+      cached_iteration_ != iteration) {
     merge_.start_interpolable_value->Interpolate(
         *merge_.end_interpolable_value, fraction, *cached_interpolable_value_);
     cached_iteration_ = iteration;
-    cached_fraction_ = fraction;
+    cached_fraction_.emplace(fraction);
   }
 }
 
