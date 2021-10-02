@@ -161,6 +161,8 @@ void FastPairDiscoverableScanner::OnDeviceLost(
 void FastPairDiscoverableScanner::NotifyDeviceFound(
     const std::string model_id,
     device::BluetoothDevice* bluetooth_device) {
+  QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
+
   auto device = base::MakeRefCounted<Device>(
       model_id, bluetooth_device->GetAddress(), Protocol::kFastPair);
 
