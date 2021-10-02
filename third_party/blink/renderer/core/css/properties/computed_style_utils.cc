@@ -2025,7 +2025,7 @@ CSSValue* ComputedStyleUtils::ComputedTransformList(
 CSSValue* ComputedStyleUtils::ResolvedTransform(
     const LayoutObject* layout_object,
     const ComputedStyle& style) {
-  if (!layout_object || !style.HasTransform())
+  if (!layout_object || !style.HasTransformOperations())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
   FloatRect reference_box = ReferenceBoxForTransform(*layout_object);
