@@ -24,6 +24,14 @@ export function diagnosticsNetworkIconTestSuite() {
     diagnosticsNetworkIconElement = null;
   });
 
+  /** @return {!PaperSpinnerLiteElement} */
+  function getConnectingIcon() {
+    assertTrue(!!diagnosticsNetworkIconElement);
+
+    return diagnosticsNetworkIconElement.shadowRoot.querySelector(
+        '#connectingIcon');
+  }
+
   /** @return {!NetworkIconElement} */
   function getNetworkIcon() {
     assertTrue(!!diagnosticsNetworkIconElement);
@@ -81,6 +89,7 @@ export function diagnosticsNetworkIconTestSuite() {
       assertTrue(getPrimaryIcon().classList.contains('ethernet'));
       assertTrue(isVisible(getPrimaryIcon()));
       assertFalse(isVisible(getNetworkTechnologyIcon()));
+      assertFalse(isVisible(getConnectingIcon()));
     });
   });
 
@@ -156,6 +165,7 @@ export function diagnosticsNetworkIconTestSuite() {
       assertTrue(isVisible(getNetworkTechnologyIcon()));
       assertTrue(isVisible(getRoamingIcon()));
       assertEquals('network:badge-lte', getNetworkTechnologyIcon().icon);
+      assertFalse(isVisible(getConnectingIcon()));
     });
   });
 
@@ -168,6 +178,7 @@ export function diagnosticsNetworkIconTestSuite() {
           assertTrue(isVisible(getNetworkIcon()));
           assertFalse(isVisible(getNetworkTechnologyIcon()));
           assertFalse(isVisible(getRoamingIcon()));
+          assertFalse(isVisible(getConnectingIcon()));
         });
   });
 
@@ -187,6 +198,15 @@ export function diagnosticsNetworkIconTestSuite() {
       assertTrue(isVisible(getSecureIcon()));
       assertFalse(isVisible(getNetworkTechnologyIcon()));
       assertFalse(isVisible(getRoamingIcon()));
+      assertFalse(isVisible(getConnectingIcon()));
     });
+  });
+
+  test('DiagnosticsCustomConnectingIcon', () => {
+    return initializeDiagnosticsNetworkIcon(fakeConnectingEthernetNetwork)
+        .then(() => {
+          assertFalse(isVisible(getNetworkIcon()));
+          assertTrue(isVisible(getConnectingIcon()));
+        });
   });
 }

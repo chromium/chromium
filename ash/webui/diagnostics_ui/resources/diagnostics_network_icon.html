@@ -1,10 +1,19 @@
-<style include="cr-shared-style diagnostics-shared">
+<style include="diagnostics-shared">
   :host {
     --cros-icon-color-primary: var(--google-gray-700);
+  }
+
+  #connectingIcon {
+    height: 20px;
+    width: 20px;
   }
 </style>
 <div id="iconContainer" hidden$="[[!network]]">
   <network-icon id="networkIcon"
+      hidden$="[[computeShouldDisplaySpinner_(network.state)]]"
       network-state="[[computeNetworkState_(network.*)]]">
   </network-icon>
+  <paper-spinner-lite id="connectingIcon" active
+      hidden$="[[!computeShouldDisplaySpinner_(network.state)]]">
+  </paper-spinner-lite>
 </div>

@@ -4,6 +4,7 @@
 
 import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
 import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './diagnostics_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -263,6 +264,18 @@ export class DiagnosticsNetworkIconElement extends PolymerElement {
     }
 
     return networkToNetworkStateAdapter(this.network);
+  }
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  computeShouldDisplaySpinner_() {
+    if (!this.network) {
+      return false;
+    }
+
+    return this.network.state === NetworkState.kConnecting;
   }
 }
 
