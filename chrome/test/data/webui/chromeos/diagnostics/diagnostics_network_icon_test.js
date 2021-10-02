@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {ConnectionStateType, CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
-import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeEthernetNetwork, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularDisabledNetwork, fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeEthernetNetwork, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
+import {assertTextContains} from './diagnostics_test_utils.js';
 
 export function diagnosticsNetworkIconTestSuite() {
   /** @type {?DiagnosticsNetworkIconElement} */
@@ -31,11 +32,25 @@ export function diagnosticsNetworkIconTestSuite() {
         '#networkIcon');
   }
 
-  /** @return {!HTMLElement} */
+  /** @return {IronIconElement} */
+  function getNetworkTechnologyIcon() {
+    assertTrue(!!diagnosticsNetworkIconElement);
+
+    return getNetworkIcon().shadowRoot.querySelector('#technology');
+  }
+
+  /** @return {HTMLElement} */
   function getPrimaryIcon() {
     assertTrue(!!diagnosticsNetworkIconElement);
 
     return getNetworkIcon().shadowRoot.querySelector('#icon');
+  }
+
+  /** @return {HTMLElement} */
+  function getRoamingIcon() {
+    assertTrue(!!diagnosticsNetworkIconElement);
+
+    return getNetworkIcon().shadowRoot.querySelector('#roaming');
   }
 
   /**
@@ -58,6 +73,7 @@ export function diagnosticsNetworkIconTestSuite() {
     return initializeDiagnosticsNetworkIcon(fakeEthernetNetwork).then(() => {
       assertTrue(getPrimaryIcon().classList.contains('ethernet'));
       assertTrue(isVisible(getPrimaryIcon()));
+      assertFalse(isVisible(getNetworkTechnologyIcon()));
     });
   });
 
@@ -107,5 +123,44 @@ export function diagnosticsNetworkIconTestSuite() {
     assertEquals(
         fakeCellularNetwork.observerGuid,
         networkToNetworkStateAdapter(fakeCellularNetwork).guid);
+  });
+
+  test('NetworkToNetworkStateAdapter_CellularNetworkTypeProperties', () => {
+    const networkState = networkToNetworkStateAdapter(fakeCellularNetwork);
+    assertEquals(
+        fakeCellularNetwork.typeProperties.cellular.networkTechnology,
+        networkState.typeState.cellular.networkTechnology);
+    assertEquals(
+        fakeCellularNetwork.typeProperties.cellular.simLocked,
+        networkState.typeState.cellular.simLocked);
+    assertEquals(
+        fakeCellularNetwork.typeProperties.cellular.signalStrength,
+        networkState.typeState.cellular.signalStrength);
+    assertEquals(
+        fakeCellularNetwork.typeProperties.cellular.roaming,
+        networkState.typeState.cellular.roaming);
+  });
+
+  test('DiagnosticsNetworkIconCellular', () => {
+    return initializeDiagnosticsNetworkIcon(fakeCellularNetwork).then(() => {
+      assertTrue(isVisible(getPrimaryIcon()));
+      assertTextContains(getPrimaryIcon().className, 'cellular-locked');
+      assertTrue(isVisible(getNetworkIcon()));
+      assertTrue(isVisible(getNetworkTechnologyIcon()));
+      assertTrue(isVisible(getRoamingIcon()));
+      assertEquals('network:badge-lte', getNetworkTechnologyIcon().icon);
+    });
+  });
+
+  test('DiagnosticsNetworkIconCellularDisabled', () => {
+    return initializeDiagnosticsNetworkIcon(fakeCellularDisabledNetwork)
+        .then(() => {
+          assertTrue(isVisible(getPrimaryIcon()));
+          assertTextContains(
+              getPrimaryIcon().className, 'cellular-not-connected');
+          assertTrue(isVisible(getNetworkIcon()));
+          assertFalse(isVisible(getNetworkTechnologyIcon()));
+          assertFalse(isVisible(getRoamingIcon()));
+        });
   });
 }

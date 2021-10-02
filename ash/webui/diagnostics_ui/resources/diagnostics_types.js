@@ -346,6 +346,12 @@ export let NetworkStateObserverReceiver =
 export let NetworkGuidInfo;
 
 /**
+ * Type alias for NetworkTypeProperties.
+ * @typedef {ash.diagnostics.mojom.NetworkTypeProperties}
+ */
+export let NetworkTypeProperties = ash.diagnostics.mojom.NetworkTypeProperties;
+
+/**
  * Type alias for AuthenticationType.
  * @typedef {ash.diagnostics.mojom.AuthenticationType}
  */

@@ -6,9 +6,16 @@ import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/ne
 import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
 import './diagnostics_shared_css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Network, NetworkState, NetworkType} from './diagnostics_types.js';
+
+/**
+ * Type alias for network_config NetworkStateProperties struct.
+ * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
+ */
+export let CrosNetworkStateProperties =
+    chromeos.networkConfig.mojom.NetworkStateProperties;
 
 /**
  * Type alias for network_config ConnectionStateType enum.
@@ -30,9 +37,21 @@ export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
  *    connectionState: !ConnectionStateType,
  *    guid: string,
  *    type: !CrosNetworkType,
+ *    typeState: ?CrosNetworkStateProperties,
  *   }}
  */
 export let NetworkIconNetworkState;
+
+/**
+ * Required Cellular type properties to display network-icon.
+ * @typedef {{
+ *    networkTechnology: string,
+ *    roaming: boolean,
+ *    signalStrength: number,
+ *    simLocked: boolean
+ *  }}
+ */
+export let RequiredCellularProperties;
 
 /**
  * @param {!NetworkState} state
@@ -75,6 +94,42 @@ function convertNetworkTypeToCrosNetworkType(type) {
 }
 
 /**
+ * Helper function to get the required properties to display a cellular network
+ * icon.
+ * @param {!Network} network
+ * @return {!CrosNetworkStateProperties}
+ */
+function getCellularTypeState(network) {
+  assert(network.type === NetworkType.kCellular);
+  /**
+   * Default type properties for cellular.
+   * @type {!RequiredCellularProperties}
+   */
+  const defaultCellularTypeStateProperties = {
+    networkTechnology: '',
+    roaming: false,
+    signalStrength: 0,
+    simLocked: false,
+  };
+  let typeState = /** @type {!CrosNetworkStateProperties} */ (
+      {cellular: defaultCellularTypeStateProperties});
+
+  if (!network.typeProperties) {
+    return typeState;
+  }
+
+  // Override type properties if data is available.
+  const networkTechnology = network.typeProperties.cellular.networkTechnology;
+  const roaming = network.typeProperties.cellular.roaming;
+  const signalStrength = network.typeProperties.cellular.signalStrength;
+  const simLocked = network.typeProperties.cellular.simLocked;
+  typeState = /** @type {!CrosNetworkStateProperties} */ (
+      {cellular: {networkTechnology, roaming, signalStrength, simLocked}});
+
+  return typeState;
+}
+
+/**
  * Adapter to convert network data to fit data required for network-icon.
  * @param {!Network} network
  * @return {!NetworkIconNetworkState}
@@ -84,7 +139,14 @@ export function networkToNetworkStateAdapter(network) {
   const connectionState = convertNetworkStateToCrosNetworkState(network.state);
   const guid = network.observerGuid;
 
-  return {guid, connectionState, type};
+  /** @type {?CrosNetworkStateProperties} */
+  let typeState = null;
+  // Add required cellular properties.
+  if (network.type === NetworkType.kCellular) {
+    typeState = getCellularTypeState(network);
+  }
+
+  return {guid, connectionState, type, typeState};
 }
 
 /**
