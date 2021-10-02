@@ -1668,7 +1668,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645291930348198241">Acceder a las cookies y los datos de sitios</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu cuenta de Google)}other{De # sitios (no saldrás de tu cuenta de Google)}}</translation>
-<translation id="6647197322759179819">Reanudar búsqueda</translation>
+<translation id="6647197322759179819">Reanudar exploración</translation>
 <translation id="6648459603387803038">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.</translation>
 <translation id="6648524591329069940">Fuente Serif</translation>
 <translation id="6651270836885078973">Administrador:</translation>

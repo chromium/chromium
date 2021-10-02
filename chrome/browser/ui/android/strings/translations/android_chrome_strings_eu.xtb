@@ -146,7 +146,7 @@
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> botoia</translation>
 <translation id="2000419248597011803">Helbide-barrako zein bilaketa-koadroko bilaketak eta cookie batzuk bidaltzen ditu bilatzaile lehenetsira</translation>
-<translation id="200114059308480249">Inguruko testua gehitu nahi duzu Google-ko bilaketetan?</translation>
+<translation id="200114059308480249">Barne hartu nahi al duzu inguruko testua Google-ko bilaketetan?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxategi}other{# fitxategi}}</translation>
 <translation id="2021896219286479412">Webgunearen pantaila osoko aukerak</translation>
 <translation id="2038563949887743358">Aktibatu ordenagailuetarako webgunea eskatzeko aukera</translation>
@@ -244,7 +244,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2518590038762162553">Oinarrizko moduari esker, Chrome-k bizkorrago kargatzen ditu orriak, datuen % 60raino aurreztuta. Bisitatzen dituzun orriak optimizatzeko, Chrome-k Google-ra bidaltzen du sareko trafikoa. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri</translation>
-<translation id="2527209463677295330">Orriko testu gehiago gehituz gero, agian emaitza hobeak ikusiko dituzu</translation>
+<translation id="2527209463677295330">Orriko testu gehiago barne hartuz gero, agian emaitza hobeak ikusiko dituzu</translation>
 <translation id="2527497042232966453">Ezkutuko moduko fitxetara aldatu da</translation>
 <translation id="2527779675047087889">Ezkutatu arbeleko edukia</translation>
 <translation id="2532336938189706096">Web-ikuspegia</translation>
@@ -1047,7 +1047,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partekatu hautatutako elementua}other{Partekatu hautatutako # elementuak}}</translation>
 <translation id="7359002509206457351">Atzitu ordainketa-metodoak</translation>
 <translation id="7375125077091615385">Mota:</translation>
-<translation id="7376560087009844242">Orriko testu gehiago gehituz gero, agian emaitza hobeak ikusiko dituzu Sakatu bilatzeko erabiltzean. Aukera hori aldatzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />.</translation>
+<translation id="7376560087009844242">Orriko testu gehiago barne hartuz gero, agian emaitza hobeak ikusiko dituzu Sakatu bilatzeko erabiltzean. Aukera hori aldatzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="7386842512861524348">Webgunearen konexioa segurua da Chrome-k kontrakoa esan ezean.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URLa</translation>
@@ -1229,7 +1229,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8393700583063109961">Bidali mezua</translation>
 <translation id="8410695015584479363">Egin prezioen jarraipena</translation>
 <translation id="8413126021676339697">Erakutsi historia osoa</translation>
-<translation id="8419244640277402268">Gehitu</translation>
+<translation id="8419244640277402268">Barne hartu</translation>
 <translation id="8424781820952413435">Bidali da orria. Ikusteko, ireki Chrome <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Aurrebista-fitxa erdiirekita dago</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>

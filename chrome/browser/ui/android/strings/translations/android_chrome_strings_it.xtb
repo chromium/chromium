@@ -1047,7 +1047,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Condividi 1 elemento selezionato}other{Condividi # elementi selezionati}}</translation>
 <translation id="7359002509206457351">Accedi ai metodi di pagamento</translation>
 <translation id="7375125077091615385">Tipo:</translation>
-<translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi la funzionalità Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
+<translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
 <translation id="7386842512861524348">La connessione del sito è sicura, a meno che non ti venga data una comunicazione diversa in Chrome.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,7 +1062,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7444811645081526538">Altre categorie</translation>
 <translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
 <translation id="7454641608352164238">Spazio insufficiente</translation>
-<translation id="7474822150871987353">Scopri di più sugli argomenti dei siti web senza lasciare la pagina. Seleziona una o più parole nella pagina per cercarle.</translation>
+<translation id="7474822150871987353">Scopri gli argomenti dei siti web senza lasciare la pagina. Seleziona una o più parole nella pagina per cercarle.</translation>
 <translation id="7475192538862203634">Se il problema si verifica di frequente, prova questi <ph name="BEGIN_LINK" />suggerimenti<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Scheda SD non trovata. Potrebbero mancare alcuni dei tuoi file.</translation>
 <translation id="7479104141328977413">Gestione schede</translation>

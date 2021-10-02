@@ -344,7 +344,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7059230779847288458">Kargatzen; <ph name="TIME_VALUE" /> geratzen dira guztiz kargatu arte</translation>
 <translation id="708426984172631313">GELDITUTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{Izen-zerbitzaria}other{Izen-zerbitzariak}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>

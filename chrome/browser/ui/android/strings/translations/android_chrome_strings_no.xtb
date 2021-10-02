@@ -146,7 +146,7 @@
 <translation id="1986685561493779662">Navnet finnes allerede</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knapp</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
-<translation id="200114059308480249">Vil du ta med den omliggende teksten i Google-søk?</translation>
+<translation id="200114059308480249">Vil du inkludere omliggende tekst i Google-søk?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
@@ -1047,7 +1047,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Del 1 valgt element}other{Del # valgte elementer}}</translation>
 <translation id="7359002509206457351">Gå til betalingsmåter</translation>
 <translation id="7375125077091615385">Type:</translation>
-<translation id="7376560087009844242">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater når du bruker Trykk for å søke. Du kan alltid gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å endre dette.</translation>
+<translation id="7376560087009844242">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater når du bruker Trykk for å søke. Du kan når som helst gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å endre dette.</translation>
 <translation id="7386842512861524348">Tilkoblingen til nettstedet er sikker om ikke Chrome forteller deg noe annet.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
@@ -1229,7 +1229,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8410695015584479363">Spor priser</translation>
 <translation id="8413126021676339697">Vis fullstendig logg</translation>
-<translation id="8419244640277402268">Ta med</translation>
+<translation id="8419244640277402268">Inkluder</translation>
 <translation id="8424781820952413435">Siden er sendt. For å se den, åpne Chrome på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Fanen for forhåndsvisning er halvveis åpnet</translation>
 <translation id="8428213095426709021">Innstillinger</translation>

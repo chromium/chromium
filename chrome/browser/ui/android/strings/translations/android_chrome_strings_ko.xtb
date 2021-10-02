@@ -146,7 +146,7 @@
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> 버튼</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
-<translation id="200114059308480249">Google 검색결과에 주변 텍스트를 포함하시겠습니까?</translation>
+<translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
@@ -244,7 +244,7 @@
 <translation id="2517472476991765520">검색</translation>
 <translation id="2518590038762162553">Chrome의 라이트 모드를 사용하면 페이지가 더 빠르게 로드되고 데이터가 최대 60퍼센트 절약됩니다. Chrome에서는 사용자가 방문하는 페이지를 최적화하기 위해 웹 트래픽을 Google에 전송합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
-<translation id="2527209463677295330">페이지의 텍스트를 더 포함하면 더 나은 검색결과를 확인할 수 있습니다.</translation>
+<translation id="2527209463677295330">페이지 텍스트를 더 많이 포함하면 더 나은 검색결과를 확인할 수 있습니다.</translation>
 <translation id="2527497042232966453">시크릿 탭으로 전환됨</translation>
 <translation id="2527779675047087889">클립보드 내용 숨기기</translation>
 <translation id="2532336938189706096">웹 보기</translation>
@@ -321,7 +321,7 @@
 <translation id="2979448359891869301">스크린샷을 확장할 수 없습니다. 휴대전화 사용량이 적을 때 다시 시도하세요.</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981364137500752533">최대 5개의 창을 열 수 있습니다.</translation>
-<translation id="2984978667043170458">Google 검색결과에 주변 텍스트 포함</translation>
+<translation id="2984978667043170458">Google 검색어에 주변 텍스트 포함</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2989523299700148168">최근 방문</translation>
 <translation id="2992473221983447149">이미지 설명</translation>

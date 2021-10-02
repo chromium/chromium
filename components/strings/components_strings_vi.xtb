@@ -722,7 +722,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3417660076059365994">Tệp bạn tải lên hoặc đính kèm được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: các tệp đó có thể được quét tìm dữ liệu nhạy cảm hoặc phần mềm độc hại.</translation>
 <translation id="3422248202833853650">Thử thoát các chương trình khác để giải phóng bộ nhớ.</translation>
 <translation id="3422472998109090673">Hiện không thể truy cập <ph name="HOST_NAME" />.</translation>
-<translation id="3422654661304792373">Tùy chỉnh giao diện trình duyệt của bạn với các chủ đề</translation>
+<translation id="3422654661304792373">Tùy chỉnh diện mạo trình duyệt bằng các giao diện</translation>
 <translation id="3423742043356668186">Do hệ thống chỉ định</translation>
 <translation id="3427092606871434483">Cho phép (mặc định)</translation>
 <translation id="3427342743765426898">&amp;Làm lại chỉnh sửa</translation>
@@ -933,7 +933,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="413544239732274901">Tìm hiểu thêm</translation>
 <translation id="4142935452406587478">Khay 10</translation>
 <translation id="4148925816941278100">American Express</translation>
-<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để tùy chỉnh giao diện trình duyệt của bạn với các chủ đề.</translation>
+<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để tùy chỉnh diện mạo trình duyệt bằng các giao diện.</translation>
 <translation id="4151403195736952345">Sử dụng giá trị mặc định chung (Phát hiện)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Trang 1}other{Trang {COUNT}}}</translation>
 <translation id="4154664944169082762">Dấu vân tay</translation>
@@ -1049,7 +1049,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="4435702339979719576">Bưu thiếp)</translation>
 <translation id="443673843213245140">Đã tắt sử dụng proxy nhưng cấu hình proxy rõ ràng được chỉ định.</translation>
-<translation id="4448463448776780262">Nút quản lý chủ đề Chrome, hãy nhấn phím Enter để tùy chỉnh giao diện trình duyệt của bạn với các chủ đề.</translation>
+<translation id="4448463448776780262">Nút quản lý giao diện Chrome, hãy nhấn phím Enter để tùy chỉnh diện mạo trình duyệt bằng các giao diện.</translation>
 <translation id="4450893287417543264">Không hiện lại</translation>
 <translation id="4451135742916150903">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
 <translation id="4460315069258617173">Được phép cho đến khi bạn đóng các thẻ của trang web này</translation>

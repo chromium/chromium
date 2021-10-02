@@ -244,7 +244,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2517472476991765520">Escanear</translation>
 <translation id="2518590038762162553">En el modo básico, Chrome carga las páginas más rápido y reduce el uso de datos hasta un 60 %. Chrome también envía tu tráfico web a Google para optimizar las páginas que visitas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envía las URL de las páginas que visitas a Google</translation>
-<translation id="2527209463677295330">Al incluir más cantidad de texto de una página, podrías obtener mejores resultados</translation>
+<translation id="2527209463677295330">Al incluir más texto de una página, es posible que obtengas mejores resultados</translation>
 <translation id="2527497042232966453">Se ha cambiado a las pestañas de incógnito</translation>
 <translation id="2527779675047087889">Oculta el contenido del portapapeles</translation>
 <translation id="2532336938189706096">Vista web</translation>
@@ -1047,7 +1047,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
 <translation id="7359002509206457351">Acceder a métodos de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
-<translation id="7376560087009844242">Si incluyes más cantidad de texto de una página, es posible que obtengas mejores resultados cuando uses Tocar para buscar. Puedes cambiarlo en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" /> en cualquier momento.</translation>
+<translation id="7376560087009844242">Al incluir más texto de una página, es posible que obtengas mejores resultados cuando uses Tocar para buscar. Puedes cambiar esta opción en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" /> en cualquier momento.</translation>
 <translation id="7386842512861524348">La conexión del sitio es segura, a menos que Chrome te indique lo contrario.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,7 +1062,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7444811645081526538">Más categorías</translation>
 <translation id="7453467225369441013">Cierra tu sesión en la mayoría de los sitios. No se cerrará la sesión en tu cuenta de Google.</translation>
 <translation id="7454641608352164238">No hay espacio suficiente</translation>
-<translation id="7474822150871987353">Aprende sobre diferentes temas sin salir de una página web. Selecciona una o más palabras de la página para buscarlas.</translation>
+<translation id="7474822150871987353">Aprende sobre los temas de un sitio web sin salir de la página. Selecciona una o más palabras de la página para buscarlas.</translation>
 <translation id="7475192538862203634">Si este mensaje aparece con frecuencia, prueba estas <ph name="BEGIN_LINK" />sugerencias<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">No se ha encontrado la tarjeta SD. Es posible que falten algunos de tus archivos.</translation>
 <translation id="7479104141328977413">Gestión de pestañas</translation>
