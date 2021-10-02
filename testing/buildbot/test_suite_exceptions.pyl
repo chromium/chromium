@@ -1397,12 +1397,38 @@
       },
     },
   },
+  'context_lost_passthrough_tests': {
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
+  },
   'context_lost_validating_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
     'remove_from': [
       'Android FYI Release (Pixel 2)',
     ],
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
   },
   'crashpad_tests': {
     'remove_from': [
@@ -3166,6 +3192,16 @@
       'ChromeOS FYI Release (kevin)': {
         'experiment_percentage': 100,
       },
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
     },
   },
   'webgl_conformance_gl_passthrough_tests': {
@@ -3188,6 +3224,20 @@
       # constrained. crbug.com/950690
       'Mac FYI Retina Debug (NVIDIA)',
     ],
+  },
+  'webgl_conformance_validating_tests': {
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
   },
   'webgpu_blink_web_tests': {
     'modifications': {

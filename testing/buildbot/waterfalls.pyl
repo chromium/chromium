@@ -4217,6 +4217,7 @@
       'GPU FYI Linux Builder (dbg)' : {},
       'GPU FYI Linux dEQP Builder' : {},
       'GPU FYI Mac Builder' : {},
+      'GPU FYI Mac Builder (asan)' : {},
       'GPU FYI Mac Builder (dbg)' : {},
       'GPU FYI Win Builder' : {},
       'GPU FYI Win x64 Builder' : {},
@@ -4402,6 +4403,17 @@
           'gtest_tests': 'gpu_angle_deqp_linux_nvidia_gtests',
         },
       },
+      'Mac FYI ASAN (Intel)': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_mini_intel_gpu_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+        },
+      },
       'Mac FYI Debug (Intel)': {
         'os_type': 'mac',
         'browser_config': 'debug',
@@ -4489,6 +4501,17 @@
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
           'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+        },
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_retina_amd_gpu_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Retina Debug (AMD)': {
