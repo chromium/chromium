@@ -5515,7 +5515,7 @@
 <translation id="6945221475159498467">选择</translation>
 <translation id="694592694773692225">已在此网页上阻止重定向。</translation>
 <translation id="6949434160682548041">密码（选填）</translation>
-<translation id="6950627417367801484">恢复应用</translation>
+<translation id="6950627417367801484">还原应用</translation>
 <translation id="6950943362443484797">我们将为您安装这款应用</translation>
 <translation id="6952242901357037157">您还可在此处显示您 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中存储的密码</translation>
 <translation id="6955446738988643816">审查弹出内容</translation>
@@ -5976,7 +5976,7 @@
 <translation id="7457384018036134905">在 Chrome 操作系统设置中管理语言</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{1 个链接}other{# 个链接}}</translation>
 <translation id="7458168200501453431">使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。</translation>
-<translation id="7458715171471938198">恢复应用？</translation>
+<translation id="7458715171471938198">还原应用？</translation>
 <translation id="7460045493116006516">您已安装的当前主题背景</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
