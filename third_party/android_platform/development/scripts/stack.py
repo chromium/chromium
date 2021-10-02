@@ -16,6 +16,8 @@
 
 """stack symbolizes native crash dumps."""
 
+from __future__ import print_function
+
 import getopt
 import glob
 import logging
