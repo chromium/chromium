@@ -276,19 +276,17 @@
         "name": "getBatteryDescription",
         "type": "function",
         "description": "Called to request battery status from Chrome OS system.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns battery description as a string.",
-            "parameters": [
-              {
-                "name": "batteryDescription",
-                "type": "string"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns battery description as a string.",
+          "parameters": [
+            {
+              "name": "batteryDescription",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setNativeAccessibilityEnabled",
@@ -345,7 +343,6 @@
           },
           {
             "type": "boolean",
-
             "name": "capture",
             "description": "True if key events should be swallowed natively and not propagated if preventDefault() gets called by the extension's background page."
           }
@@ -556,19 +553,18 @@
           {
             "name": "feature",
             "$ref": "AccessibilityFeature"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns whether feature is enabled.",
-            "parameters": [
-              {
-                "name": "featureEnabled",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns whether feature is enabled.",
+          "parameters": [
+            {
+              "name": "featureEnabled",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "updateSelectToSpeakPanel",
@@ -614,20 +610,19 @@
             "name": "description",
             "type": "string",
             "description": "The description to show within the confirmation dialog."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the dialog is confirmed or cancelled.",
-            "parameters": [
-              {
-                "type": "boolean",
-                "name": "confirmed",
-                "description": "True if the dialog was confirmed, false if it was canceled or closed."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the dialog is confirmed or cancelled.",
+          "parameters": [
+            {
+              "type": "boolean",
+              "name": "confirmed",
+              "description": "True if the dialog was confirmed, false if it was canceled or closed."
+            }
+          ]
+        }
       },
       {
         "name": "getLocalizedDomKeyStringForKeyCode",
@@ -637,20 +632,19 @@
           {
             "name": "keyCode",
             "type": "integer"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called with the resulting Dom key string.",
-            "parameters": [
-              {
-                "type": "string",
-                "name": "domKeyString",
-                "description": "The dom key string localized for the current input method."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with the resulting Dom key string.",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "domKeyString",
+              "description": "The dom key string localized for the current input method."
+            }
+          ]
+        }
       }
     ],
     "events": [
