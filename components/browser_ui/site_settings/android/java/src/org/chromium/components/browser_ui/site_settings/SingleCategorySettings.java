@@ -86,6 +86,32 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      */
     public static final String EXTRA_SELECTED_DOMAINS = "selected_domains";
 
+    /**
+     * Observer that monitors changes for {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT}.
+     * Used to receive updates that //component/site_settings might not have access to.
+     *
+     * This is a temporary workaround until JNI content setting observer is available thus is not a
+     * recommended pattern to follow.
+     * TODO(https://crbug.com/1252504): Remove when java content_settings_observer is available.
+     */
+    public interface AutoDarkSiteSettingObserver {
+        /**
+         * Called when {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT} changed in its
+         * default value (by the toggle).
+         * @param isEnabled The new state of the default value.
+         */
+        void onDefaultValueChanged(boolean isEnabled);
+
+        /**
+         * Called when {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT} as a site exception
+         * is being added or removed.
+         * @param isAdded True if a site exception is being added; False otherwise.
+         */
+        void onSiteExceptionChanged(boolean isAdded);
+    }
+
+    private static @Nullable AutoDarkSiteSettingObserver sAutoDarkSiteSettingsObserver;
+
     // The list that contains preferences.
     private RecyclerView mListView;
     // The item for searching the list of items.
@@ -171,6 +197,15 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         public boolean isPreferenceControlledByCustodian(Preference preference) {
             return mCategory.isManagedByCustodian();
         }
+    }
+
+    /**
+     * Set the observer that looks at {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT}
+     * @param observer
+     */
+    public static void setAutoDarkSiteSettingsObserver(
+            @Nullable AutoDarkSiteSettingObserver observer) {
+        sAutoDarkSiteSettingsObserver = observer;
     }
 
     private void getInfoForOrigins() {
@@ -434,6 +469,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
                 if (type == SiteSettingsCategory.Type.NOTIFICATIONS) {
                     updateNotificationsSecondaryControls();
+                } else if (type == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
+                    sAutoDarkSiteSettingsObserver.onDefaultValueChanged((boolean) newValue);
                 }
                 break;
             }
@@ -608,6 +645,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             } else {
                 RecordUserAction.record("SoundContentSetting.UnmuteBy.PatternException");
             }
+        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
+            sAutoDarkSiteSettingsObserver.onSiteExceptionChanged(true);
         }
     }
 
@@ -1051,7 +1090,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     }
 
     /**
-     * Builds an alert dialog which can be used to change the preference value  or remove
+     * Builds an alert dialog which can be used to change the preference value or remove
      * for the exception for the current categories ContentSettingType on a Website.
      */
     private AlertDialog.Builder buildPreferenceDialog(Website site) {
@@ -1075,6 +1114,12 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         (dialog, which) -> {
                             site.setContentSetting(browserContextHandle, contentSettingsType,
                                     ContentSettingValues.DEFAULT);
+
+                            if (mCategory.showSites(
+                                        SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
+                                sAutoDarkSiteSettingsObserver.onSiteExceptionChanged(
+                                        /*isAdded=*/false);
+                            }
 
                             getInfoForOrigins();
                             dialog.dismiss();

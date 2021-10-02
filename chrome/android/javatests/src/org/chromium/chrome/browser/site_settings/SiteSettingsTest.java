@@ -56,6 +56,7 @@ import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsP
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.R;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.AutoDarkSiteSettingObserver;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
@@ -91,6 +92,17 @@ import java.util.concurrent.TimeoutException;
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 public class SiteSettingsTest {
     public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";
+
+    static class TestAutoDarkObserver implements AutoDarkSiteSettingObserver {
+        public boolean mDefaultValue;
+        @Override
+        public void onDefaultValueChanged(boolean isEnabled) {
+            mDefaultValue = isEnabled;
+        }
+
+        @Override
+        public void onSiteExceptionChanged(boolean isAdded) {}
+    }
 
     @ClassRule
     public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
@@ -1152,18 +1164,31 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowAutoDark() {
+        TestAutoDarkObserver observer = new TestAutoDarkObserver();
+        SingleCategorySettings.setAutoDarkSiteSettingsObserver(observer);
+
         doTestSiteSettingPermissions("AutoDarkWebContent",
                 SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, true);
+
+        Assert.assertTrue("Auto dark should be enabled.", observer.mDefaultValue);
+        SingleCategorySettings.setAutoDarkSiteSettingsObserver(null);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockAutoDark() {
+        TestAutoDarkObserver observer = new TestAutoDarkObserver();
+        observer.mDefaultValue = true;
+        SingleCategorySettings.setAutoDarkSiteSettingsObserver(observer);
+
         doTestSiteSettingPermissions("AutoDarkWebContent",
                 SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, false);
+
+        Assert.assertFalse("Auto dark should be disabled.", observer.mDefaultValue);
+        SingleCategorySettings.setAutoDarkSiteSettingsObserver(null);
     }
 
     @Test

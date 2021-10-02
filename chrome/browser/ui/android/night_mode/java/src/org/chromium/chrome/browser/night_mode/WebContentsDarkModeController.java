@@ -13,6 +13,7 @@ import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -28,7 +29,8 @@ import java.lang.annotation.RetentionPolicy;
  *
  * TODO(https://crbug.com/1249345): Rework and try removing Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED.
  */
-public class WebContentsDarkModeController implements ApplicationStateListener {
+public class WebContentsDarkModeController
+        implements ApplicationStateListener, SingleCategorySettings.AutoDarkSiteSettingObserver {
     /**
      * Source from which auto dark web content settings changed. This includes both changes to the
      * global user settings and the site exceptions.
@@ -141,6 +143,7 @@ public class WebContentsDarkModeController implements ApplicationStateListener {
 
         enableWebContentsDarkMode(shouldEnableWebContentsDarkMode());
         GlobalNightModeStateProviderHolder.getInstance().addObserver(mNightModeObserver);
+        SingleCategorySettings.setAutoDarkSiteSettingsObserver(this);
     }
 
     /**
@@ -150,6 +153,7 @@ public class WebContentsDarkModeController implements ApplicationStateListener {
         if (mNightModeObserver == null) return;
         GlobalNightModeStateProviderHolder.getInstance().removeObserver(mNightModeObserver);
         mNightModeObserver = null;
+        SingleCategorySettings.setAutoDarkSiteSettingsObserver(null);
     }
 
     @Override
@@ -160,6 +164,18 @@ public class WebContentsDarkModeController implements ApplicationStateListener {
         } else if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
             stop();
         }
+    }
+
+    // AutoDarkSiteSettingsObserver:
+    @Override
+    public void onDefaultValueChanged(boolean newState) {
+        // TODO(https://crbug.com/1250800): Add metrics.
+        enableWebContentsDarkMode(shouldEnableWebContentsDarkMode());
+    }
+
+    @Override
+    public void onSiteExceptionChanged(boolean isAdded) {
+        // TODO(https://crbug.com/1250800): Add metrics.
     }
 
     @VisibleForTesting
