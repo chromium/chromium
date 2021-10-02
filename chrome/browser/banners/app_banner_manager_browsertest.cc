@@ -32,6 +32,8 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
@@ -740,6 +742,65 @@ IN_PROC_BROWSER_TEST_F(
     histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                   SHOWING_WEB_APP_BANNER, 1);
   }
+}
+
+class AppBannerManagerPrerenderBrowserTest
+    : public AppBannerManagerBrowserTest {
+ public:
+  AppBannerManagerPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &AppBannerManagerPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~AppBannerManagerPrerenderBrowserTest() override = default;
+  AppBannerManagerPrerenderBrowserTest(
+      const AppBannerManagerPrerenderBrowserTest&) = delete;
+
+  AppBannerManagerPrerenderBrowserTest& operator=(
+      const AppBannerManagerPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    AppBannerManagerBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    AppBannerManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerPrerenderBrowserTest,
+                       PrerenderingShouldNotUpdateState) {
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  std::unique_ptr<AppBannerManagerTest> manager(
+      CreateAppBannerManager(browser()));
+  EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
+
+  // Load a page in the prerender.
+  GURL prerender_url = GetBannerURL();
+  const int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_EQ(manager->state(), AppBannerManager::State::FETCHING_MANIFEST);
 }
 
 }  // namespace
