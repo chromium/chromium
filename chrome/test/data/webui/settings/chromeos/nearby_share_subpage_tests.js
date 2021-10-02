@@ -56,6 +56,20 @@ suite('NearbyShare', function() {
   let fakeSettings = null;
 
   setup(function() {
+    setupFakes();
+    fakeSettings.setEnabled(true);
+
+    createSubpage(/*is_enabled=*/ true, /*is_onboarding_complete=*/ true);
+
+    featureToggleButton = subpage.$$('#featureToggleButton');
+  });
+
+  teardown(function() {
+    subpage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
+  });
+
+  function setupFakes() {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
     nearby_share.NearbyAccountManagerBrowserProxyImpl.instance_ =
         accountManagerBrowserProxy;
@@ -68,18 +82,8 @@ suite('NearbyShare', function() {
     fakeContactManager.setupContactRecords();
 
     fakeSettings = new nearby_share.FakeNearbyShareSettings();
-    fakeSettings.setEnabled(true);
     nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
-
-    createSubpage(/*is_enabled=*/ true, /*is_onboarding_complete=*/ true);
-
-    featureToggleButton = subpage.$$('#featureToggleButton');
-  });
-
-  teardown(function() {
-    subpage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
-  });
+  }
 
   function createSubpage(is_enabled, is_onboarding_complete) {
     PolymerTest.clearBody();
@@ -428,19 +432,34 @@ suite('NearbyShare', function() {
     subpage.remove();
     settings.Router.getInstance().resetRouteForTesting();
 
-    fakeContactManager = new nearby_share.FakeContactManager();
-    nearby_share.setContactManagerForTesting(fakeContactManager);
-    fakeContactManager.setupContactRecords();
-
-    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    setupFakes();
     fakeSettings.setEnabled(false);
-    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
-
     createSubpage(/*is_enabled=*/ false, /*is_onboarding_complete=*/ false);
 
     await flushAsync();
     // Ensure contacts download occurs when the subpage is attached.
     assertFalse(fakeContactManager.downloadContactsCalled);
+  });
+
+  test('Show setup button pre-onboarding', async () => {
+    await flushAsync();
+
+    subpage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
+
+    setupFakes();
+    createSubpage(/*is_enabled=*/ false, /*is_onboarding_complete=*/ false);
+
+    await flushAsync();
+    assertFalse(doesElementExist('#featureToggleButton'));
+    assertTrue(doesElementExist('#setupRow'));
+
+    // Clicking starts onboarding flow
+    subpage.$$('#setupRow').querySelector('cr-button').click();
+    await flushAsync();
+    assertTrue(doesElementExist('#receiveDialog'));
+    assertEquals(
+        'active', subpage.$$('#receiveDialog').$$('#onboarding').className);
   });
 
   test('feature toggle UI changes', function() {

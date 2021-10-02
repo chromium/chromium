@@ -394,9 +394,7 @@ Polymer({
     }
 
     if (queryParams.has('onboarding')) {
-      this.showReceiveDialog_ = true;
-      Polymer.dom.flush();
-      this.$$('#receiveDialog').showOnboarding();
+      this.showOnboarding_();
     }
 
     this.attemptDeepLink();
@@ -460,5 +458,12 @@ Polymer({
     }
     return isNearbySharingEnabled ||
         shouldShowFastInititationNotificationToggle;
+  },
+
+  /** @private */
+  showOnboarding_() {
+    this.showReceiveDialog_ = true;
+    Polymer.dom.flush();
+    this.$$('#receiveDialog').showOnboarding();
   },
 });

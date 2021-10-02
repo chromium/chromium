@@ -65,18 +65,41 @@
         color: var(--cr-toggle-color);
         font-weight: 500;
       }
+
+      #setupRow {
+        align-items: center;
+        display: flex;
+        min-height: var(--settings-row-two-line-min-height);
+        padding: 0 var(--cr-section-padding);
+      }
     </style>
     <!-- Use a template to work around visual glitch where the toggle flips
         on when the page first loads. -->
     <template is="dom-if" if="[[prefs]]" restamp>
-      <settings-toggle-button id="featureToggleButton"
-          label="[[getOnOffString_(prefs.nearby_sharing.enabled.value,
-              '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
-          pref="{{prefs.nearby_sharing.enabled}}"
-          deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]"
-          class$="[[getEnabledToggleClassName_(
-              prefs.nearby_sharing.enabled.value)]]">
-      </settings-toggle-button>
+      <template is="dom-if"
+          if="[[prefs.nearby_sharing.onboarding_complete.value]]" restamp>
+        <settings-toggle-button id="featureToggleButton"
+            label="[[getOnOffString_(prefs.nearby_sharing.enabled.value,
+                '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
+            pref="{{prefs.nearby_sharing.enabled}}"
+            deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]"
+            class$="[[getEnabledToggleClassName_(
+                prefs.nearby_sharing.enabled.value)]]">
+        </settings-toggle-button>
+      </template>
+      <template is="dom-if"
+          if="[[!prefs.nearby_sharing.onboarding_complete.value]]" restamp>
+        <div id="setupRow">
+          <div class="flex">
+            <div aria-hidden="true" class="enabled-toggle-off">
+              $i18n{deviceOff}
+            </div>
+          </div>
+          <cr-button on-click="showOnboarding_">
+            $i18n{nearbyShareSetUpButtonTitle}
+          </cr-button>
+        </div>
+      </template>
     </template>
     <template is="dom-if" id="subpageContent" if="[[shouldShowSubpageContent_(
         prefs.nearby_sharing.enabled.value,
