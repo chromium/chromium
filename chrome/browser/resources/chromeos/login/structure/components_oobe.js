@@ -16,4 +16,3 @@
 // <include src="../screens/oobe/demo_setup.js">
 // <include src="../screens/oobe/demo_preferences.js">
 // <include src="../enterprise_enrollment.js">
-// <include src="../screens/oobe/packaged_license.js">

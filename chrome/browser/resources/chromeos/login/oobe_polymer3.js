@@ -11,6 +11,7 @@ import 'chrome://oobe/screens/common/tpm_error.m.js';
 import 'chrome://oobe/screens/common/user_creation.m.js';
 import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
+import 'chrome://oobe/screens/oobe/packaged_license.m.js';
 
 import {Oobe} from './cr_ui.m.js';
 import {DebuggerUI} from './debug/debug.m.js';
