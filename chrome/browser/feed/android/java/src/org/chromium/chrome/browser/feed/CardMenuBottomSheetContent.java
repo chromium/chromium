@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /**

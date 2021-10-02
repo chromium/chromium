@@ -20,6 +20,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.GoogleAPIKeys;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.feed.FeedImageFetchClient;
+import org.chromium.chrome.browser.feed.FeedPersistentKeyValueCache;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;

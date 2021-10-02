@@ -183,12 +183,9 @@
     <dimen name="experimental_explore_sites_padding">8dp</dimen>
     <dimen name="experimental_explore_sites_margin">16dp</dimen>
     <dimen name="experimental_explore_sites_spacing">12dp</dimen>
-    <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">48dp</dimen>
     <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
-    <dimen name="content_suggestions_card_modern_margin">0dp</dimen>
-    <dimen name="content_suggestions_card_modern_padding">16dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>

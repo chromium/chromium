@@ -24,7 +24,6 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedLaunchReliabilityLoggingState.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayout.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedStreamViewResizer.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceLifecycleManager.java",
@@ -38,17 +37,11 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceProvider.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ScrollTracker.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Header.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/NonDismissibleHeader.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Stream.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/CardMenuBottomSheetContent.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedPersistentKeyValueCache.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProvider.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridgeDelegateImpl.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTracker.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStream.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/NativeViewListRenderer.java",
 ]
 
 feed_srcjar_deps = []
@@ -58,9 +51,7 @@ feed_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FakeLinearLayoutManager.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProviderTest.java",
-  "junit/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTrackerTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
-  "junit/src/org/chromium/chrome/browser/feed/v2/NativeViewListRendererTest.java",
 ]
 
 feed_test_java_sources = [

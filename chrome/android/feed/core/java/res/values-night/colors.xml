@@ -4,5 +4,4 @@
      found in the LICENSE file. -->
 
 <resources>
-    <color name="feed_placeholder_color">@color/default_bg_color_secondary</color>
 </resources>

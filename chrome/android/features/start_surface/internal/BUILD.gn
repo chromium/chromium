@@ -68,6 +68,7 @@ android_library("java") {
     "//chrome/android/feed:chrome_feed_java_resources",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/feed/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/preferences:java",

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -22,8 +22,6 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
-import com.google.common.collect.ImmutableList;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +31,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.feed.NtpListContentManager;
+
+import java.util.Arrays;
 
 /** Unit tests for {@link NativeViewListRenderer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,28 +69,30 @@ public class NativeViewListRendererTest {
     @Test
     @SmallTest
     public void testBind_ReturninhgRecyclerView() {
-        assertThat(mRenderer.bind(mManager)).isInstanceOf(RecyclerView.class);
+        assertThat(mRenderer.bind(mManager), instanceOf(RecyclerView.class));
     }
 
     @Test
     @SmallTest
     public void testOnCreateViewHolder() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
         NativeViewListRenderer.ViewHolder viewHolder = mRenderer.onCreateViewHolder(
                 new DummyViewGroup(mContext), mRenderer.getItemViewType(1));
-        assertThat(viewHolder.itemView).isInstanceOf(FrameLayout.class);
+        assertThat(viewHolder.itemView, instanceOf(FrameLayout.class));
         FrameLayout frameLayout = (FrameLayout) viewHolder.itemView;
-        assertThat(frameLayout.getChildAt(0)).isInstanceOf(TextView.class);
+        assertThat(frameLayout.getChildAt(0), instanceOf(TextView.class));
         assertEquals("2", ((TextView) frameLayout.getChildAt(0)).getText());
     }
 
     @Test
     @SmallTest
     public void testOnBindViewHolder() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
         NativeViewListRenderer.ViewHolder viewHolder = mRenderer.onCreateViewHolder(
                 new DummyViewGroup(mContext), mRenderer.getItemViewType(2));
@@ -102,8 +103,9 @@ public class NativeViewListRendererTest {
     @Test
     @SmallTest
     public void testUnbind() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         RecyclerView view = (RecyclerView) mRenderer.bind(mManager);
         assertNotNull(view.getAdapter());
         assertNotNull(view.getLayoutManager());
@@ -116,8 +118,9 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testObserver_itemsAddedOnBind() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
         verify(mRenderer, times(1)).notifyItemRangeInserted(0, 3);
     }
@@ -125,15 +128,17 @@ public class NativeViewListRendererTest {
     @Test
     public void testObserver_itemsAddedLater() {
         mRenderer.bind(mManager);
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         verify(mRenderer, times(1)).notifyItemRangeInserted(0, 3);
     }
 
     @Test
     public void testObserver_itemsRemoved() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
 
         mManager.removeContents(1, 2);
@@ -142,8 +147,9 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testObserver_itemsRemovedOnUnbind() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
 
         mRenderer.unbind();
@@ -152,18 +158,22 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testObserver_itemsUpdated() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
 
-        mManager.updateContents(1, ImmutableList.of(createContent("a"), createContent("b")));
+        mManager.updateContents(1,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("a"), createContent("b")}));
         verify(mRenderer, times(1)).notifyItemRangeChanged(1, 2);
     }
 
     @Test
     public void testObserver_itemMoved() {
-        mManager.addContents(
-                0, ImmutableList.of(createContent("1"), createContent("2"), createContent("3")));
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
 
         mManager.moveContent(2, 1);

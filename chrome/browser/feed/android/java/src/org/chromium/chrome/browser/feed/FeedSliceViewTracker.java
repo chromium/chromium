@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.chromium.chrome.browser.feed.NtpListContentManager;
 
 import java.util.HashSet;
 
@@ -45,7 +43,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         void feedContentVisible();
     }
 
-    FeedSliceViewTracker(@NonNull RecyclerView rootView,
+    public FeedSliceViewTracker(@NonNull RecyclerView rootView,
             @NonNull NtpListContentManager contentManager, @NonNull Observer observer) {
         mRootView = rootView;
         mContentManager = contentManager;
