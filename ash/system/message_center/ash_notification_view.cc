@@ -23,6 +23,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_elider.h"
@@ -100,7 +101,7 @@ using Orientation = views::BoxLayout::Orientation;
 
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
-BEGIN_METADATA(AshNotificationView, ExpandButton, views::ImageButton)
+BEGIN_METADATA(AshNotificationView, ExpandButton, views::Button)
 END_METADATA
 
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(
@@ -167,9 +168,33 @@ void AshNotificationView::NotificationTitleRow::UpdateVisibility(
 }
 
 AshNotificationView::ExpandButton::ExpandButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
-  views::InstallCircleHighlightPathGenerator(this);
+    : Button(std::move(callback)) {
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      kNotificationExpandButtonInsets, kNotificationExpandButtonChildSpacing));
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+
   TrayPopupUtils::ConfigureTrayPopupButton(this);
+
+  auto label = std::make_unique<views::Label>();
+  label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                   kNotificationExpandButtonLabelFontSize,
+                                   gfx::Font::Weight::MEDIUM));
+
+  label->SetPreferredSize(kNotificationExpandButtonLabelSize);
+  label->SetText(base::NumberToString16(total_grouped_notifications_));
+  label->SetVisible(ShouldShowLabel());
+  label_ = AddChildView(std::move(label));
+
+  UpdateIcons();
+
+  auto image = std::make_unique<views::ImageView>();
+  image->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
+  image_ = AddChildView(std::move(image));
+
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(), kNotificationExpandButtonCornerRadius);
 }
 
 AshNotificationView::ExpandButton::~ExpandButton() = default;
@@ -178,34 +203,55 @@ void AshNotificationView::ExpandButton::SetExpanded(bool expanded) {
   if (expanded_ == expanded)
     return;
   expanded_ = expanded;
+
+  label_->SetText(base::NumberToString16(total_grouped_notifications_));
+  label_->SetVisible(ShouldShowLabel());
+
+  image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
+
   SetTooltipText(l10n_util::GetStringUTF16(
       expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
                 : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
   SchedulePaint();
 }
 
-gfx::Size AshNotificationView::ExpandButton::CalculatePreferredSize() const {
-  return gfx::Size(kExpandButtonSize, kExpandButtonSize);
+bool AshNotificationView::ExpandButton::ShouldShowLabel() const {
+  return !expanded_ && total_grouped_notifications_;
 }
 
-void AshNotificationView::ExpandButton::PaintButtonContents(
-    gfx::Canvas* canvas) {
-  gfx::ScopedCanvas scoped(canvas);
-  canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
-  if (!expanded_)
-    canvas->sk_canvas()->rotate(180.);
-  gfx::ImageSkia image = GetImageToPaint();
-  canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
+void AshNotificationView::ExpandButton::UpdateGroupedNotificationsCount(
+    int count) {
+  total_grouped_notifications_ = count;
+  label_->SetText(base::NumberToString16(total_grouped_notifications_));
+  label_->SetVisible(ShouldShowLabel());
+}
+
+void AshNotificationView::ExpandButton::UpdateIcons() {
+  expanded_image_ = gfx::CreateVectorIcon(
+      kUnifiedMenuExpandIcon, kNotificationExpandButtonChevronIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
+
+  collapsed_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
+      gfx::CreateVectorIcon(
+          kUnifiedMenuExpandIcon, kNotificationExpandButtonChevronIconSize,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)),
+      SkBitmapOperations::ROTATION_180_CW);
+}
+
+gfx::Size AshNotificationView::ExpandButton::CalculatePreferredSize() const {
+  if (ShouldShowLabel())
+    return kNotificationExpandButtonWithLabelSize;
+
+  return kNotificationExpandButtonSize;
 }
 
 void AshNotificationView::ExpandButton::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
+  views::Button::OnThemeChanged();
 
-  const gfx::ImageSkia image = gfx::CreateVectorIcon(
-      kUnifiedMenuExpandIcon, kExpandButtonSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
-  SetImage(views::Button::STATE_NORMAL, image);
+  UpdateIcons();
+  image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
 
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
@@ -299,13 +345,6 @@ AshNotificationView::AshNotificationView(
   grouped_notifications_container_ =
       AddChildView(std::move(grouped_notifications_container));
 
-  auto collapsed_count_view = std::make_unique<views::Label>();
-  collapsed_count_view->SetFontList(views::Label::GetDefaultFontList().Derive(
-      1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  collapsed_count_view->SetBorder(views::CreateEmptyBorder(
-      message_center_style::kGroupedCollapsedCountViewInsets));
-  collapsed_count_view_ = AddChildView(std::move(collapsed_count_view));
-
   if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
@@ -343,7 +382,7 @@ void AshNotificationView::AddGroupNotification(
 
   total_grouped_notifications_++;
   left_content_->SetVisible(false);
-  UpdateCollapsedCountView();
+  expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
   PreferredSizeChanged();
 }
 
@@ -364,7 +403,7 @@ void AshNotificationView::PopulateGroupNotifications(
   }
   total_grouped_notifications_ = notifications.size();
   left_content_->SetVisible(total_grouped_notifications_ == 0);
-  UpdateCollapsedCountView();
+  expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
 }
 
 void AshNotificationView::RemoveGroupNotification(
@@ -383,7 +422,7 @@ void AshNotificationView::RemoveGroupNotification(
 
   total_grouped_notifications_--;
   left_content_->SetVisible(total_grouped_notifications_ == 0);
-  UpdateCollapsedCountView();
+  expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
   PreferredSizeChanged();
 }
 
@@ -411,17 +450,6 @@ std::unique_ptr<views::View> AshNotificationView::CreateCollapsedSummaryView(
   collapsed_summary_view->AddChildView(std::move(content_label));
 
   return collapsed_summary_view;
-}
-
-void AshNotificationView::UpdateCollapsedCountView() {
-  collapsed_count_view_->SetVisible(
-      is_grouped_parent_view_ && !IsExpanded() &&
-      total_grouped_notifications_ >
-          message_center_style::kMaxGroupedNotificationsInCollapsedState);
-  collapsed_count_view_->SetText(l10n_util::GetStringFUTF16Int(
-      IDS_ASH_MESSAGE_CENTER_HIDDEN_NOTIFICATION_COUNT_LABEL,
-      total_grouped_notifications_ -
-          message_center_style::kMaxGroupedNotificationsInCollapsedState));
 }
 
 void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
@@ -473,8 +501,6 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     }
   }
 
-  UpdateCollapsedCountView();
-
   NotificationViewBase::UpdateViewForExpandedState(expanded);
 }
 
@@ -484,7 +510,7 @@ void AshNotificationView::UpdateWithNotification(
   is_grouped_parent_view_ = notification.group_parent();
   grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
   header_row()->SetVisible(!is_grouped_child_view_);
-  UpdateCollapsedCountView();
+
   NotificationViewBase::UpdateWithNotification(notification);
 }
 

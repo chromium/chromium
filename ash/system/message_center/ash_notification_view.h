@@ -37,10 +37,6 @@ class ASH_EXPORT AshNotificationView
   std::unique_ptr<views::View> CreateCollapsedSummaryView(
       const message_center::Notification& notification);
 
-  // Update the counter shown for hidden grouped child notifications when the
-  // parent notification is collapsed.
-  void UpdateCollapsedCountView();
-
   // Update the expanded state for grouped child notification.
   void SetGroupedChildExpanded(bool expanded);
 
@@ -113,8 +109,9 @@ class ASH_EXPORT AshNotificationView
     absl::optional<base::Time> timestamp_;
   };
 
-  // Customized expand button for this notification view.
-  class ExpandButton : public views::ImageButton {
+  // Customized expand button for this notification view. Used for grouped as
+  // well as singular notifications.
+  class ExpandButton : public views::Button {
    public:
     METADATA_HEADER(ExpandButton);
     explicit ExpandButton(PressedCallback callback);
@@ -125,12 +122,35 @@ class ASH_EXPORT AshNotificationView
     // Change the expanded state. The icon will change.
     void SetExpanded(bool expanded);
 
-    // views::ImageButton:
+    // Whether the label displaying the number of notifications in a grouped
+    // notification needs to be displayed.
+    bool ShouldShowLabel() const;
+
+    // Update the count of total grouped notifications in the parent view and
+    // update the text for the label accordingly.
+    void UpdateGroupedNotificationsCount(int count);
+
+    // Generate the icons used for chevron in the expanded and collapsed state.
+    void UpdateIcons();
+
+    // views::Button:
     gfx::Size CalculatePreferredSize() const override;
-    void PaintButtonContents(gfx::Canvas* canvas) override;
     void OnThemeChanged() override;
 
+    views::Label* label_for_test() { return label_; }
+
    private:
+    // Owned by views hierarchy.
+    views::Label* label_;
+    views::ImageView* image_;
+
+    // Cached icons used to display the chevron in the button.
+    gfx::ImageSkia expanded_image_;
+    gfx::ImageSkia collapsed_image_;
+
+    // total number of grouped child notifications in this button's parent view.
+    int total_grouped_notifications_ = 0;
+
     // The expand state of the button.
     bool expanded_ = false;
   };
@@ -144,7 +164,6 @@ class ASH_EXPORT AshNotificationView
   views::View* left_content_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
   views::View* collapsed_summary_view_ = nullptr;
-  views::Label* collapsed_count_view_ = nullptr;
   views::View* control_buttons_view_ = nullptr;
   views::View* main_view_ = nullptr;
 
