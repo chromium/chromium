@@ -1705,8 +1705,21 @@ void ArcBluetoothBridge::ReadGattCharacteristic(
     ReadGattCharacteristicCallback callback) {
   BluetoothRemoteGattCharacteristic* characteristic = FindGattCharacteristic(
       std::move(remote_addr), std::move(service_id), std::move(char_id));
-  DCHECK(characteristic);
-  DCHECK(characteristic->GetPermissions() & kGattReadPermission);
+  if (!characteristic) {
+    // TODO(b/201737474): Investigate in what case this could happen.
+    LOG(ERROR) << "Requested GATT characteristic does not exist";
+    OnGattRead(std::move(callback),
+               device::BluetoothGattService::GATT_ERROR_FAILED, /*result=*/{});
+    return;
+  }
+  if (!(characteristic->GetPermissions() & kGattReadPermission)) {
+    // TODO(b/201737474): Investigate in what case this could happen.
+    LOG(ERROR) << "Requested GATT characteristic does not have read permission";
+    OnGattRead(std::move(callback),
+               device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
+               /*result=*/{});
+    return;
+  }
 
   characteristic->ReadRemoteCharacteristic(
       base::BindOnce(&OnGattRead, std::move(callback)));
