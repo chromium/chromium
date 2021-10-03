@@ -19,18 +19,12 @@
         display: inline-block;
       }
 
-      .feature-detail iron-icon {
-        --iron-icon-height: 20px;
-        --iron-icon-width: 20px;
-        min-width: 20px;
-      }
-
       #singleDeviceName {
-        color: var(--google-grey-900);
+        color: var(--cr-primary-text-color);
       }
 
       .offline-device-name {
-        color: var(--google-grey-700);
+        color: var(--cr-secondary-text-color);
       }
 
       #animation-container {
@@ -82,7 +76,7 @@
       }
 
       #feature-details-container {
-        color: var(--google-grey-900);
+        color: var(--cr-primary-text-color);
         padding-top: 40px;
       }
 
@@ -91,7 +85,17 @@
       }
 
       .feature-detail iron-icon {
+        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        min-width: 20px;
         padding: 0 20px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .feature-detail iron-icon {
+          --iron-icon-fill-color: var(--google-blue-300);
+        }
       }
 
       /* Hide the animation when not enough space in vertical mode. */
