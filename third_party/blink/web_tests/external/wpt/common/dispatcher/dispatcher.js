@@ -85,3 +85,105 @@ const showRequestHeaders = function(origin, uuid) {
 const cacheableShowRequestHeaders = function(origin, uuid) {
   return origin + dispatcher_path + `?uuid=${uuid}&cacheable&show-headers`;
 }
+
+// This script requires
+// - `/common/utils.js` for `token()`.
+
+// Represents a remote executor. For more detailed explanation see `README.md`.
+class RemoteContext {
+  // `uuid` is a UUID string that identifies the remote context and should
+  // match with the `uuid` parameter of the URL of the remote context.
+  constructor(uuid) {
+    this.context_id = uuid;
+  }
+
+  // Evaluates the script `expr` on the executor.
+  // - If `expr` is evaluated to a Promise that is resolved with a value:
+  //   `execute_script()` returns a Promise resolved with the value.
+  // - If `expr` is evaluated to a non-Promise value:
+  //   `execute_script()` returns a Promise resolved with the value.
+  // - If `expr` throws an error or is evaluated to a Promise that is rejected:
+  //   `execute_script()` returns a rejected Promise with the error's
+  //   `message`.
+  //   Note that currently the type of error (e.g. DOMException) is not
+  //   preserved.
+  // The values should be able to be serialized by JSON.stringify().
+  async execute_script(fn, args) {
+    const receiver = token();
+    await this.send({receiver: receiver, fn: fn.toString(), args: args});
+    const response = JSON.parse(await receive(receiver));
+    if (response.status === 'success') {
+      return response.value;
+    }
+
+    // exception
+    throw new Error(response.value);
+  }
+
+  async send(msg) {
+    return await send(this.context_id, JSON.stringify(msg));
+  }
+};
+
+class Executor {
+  constructor(uuid) {
+    this.uuid = uuid;
+
+    // If `suspend_callback` is not `null`, the executor should be suspended
+    // when there are no ongoing tasks.
+    this.suspend_callback = null;
+
+    this.execute();
+  }
+
+  // Wait until there are no ongoing tasks nor fetch requests for polling
+  // tasks, and then suspend the executor and call `callback()`.
+  // Navigation from the executor page should be triggered inside `callback()`,
+  // to avoid conflict with in-flight fetch requests.
+  suspend(callback) {
+    this.suspend_callback = callback;
+  }
+
+  resume() {
+  }
+
+  async execute() {
+    while(true) {
+      if (this.suspend_callback !== null) {
+        this.suspend_callback();
+        this.suspend_callback = null;
+        // Wait for `resume()` to be called.
+        await new Promise(resolve => this.resume = resolve);
+
+        // Workaround for https://crbug.com/1244230.
+        // Without this workaround, the executor is resumed and the fetch
+        // request to poll the next task is initiated synchronously from
+        // pageshow event after the page restored from BFCache, and the fetch
+        // request promise is never resolved (and thus the test results in
+        // timeout) due to https://crbug.com/1244230. The root cause is not yet
+        // known, but setTimeout() with 0ms causes the resume triggered on
+        // another task and seems to resolve the issue.
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        continue;
+      }
+
+      const task = JSON.parse(await receive(this.uuid));
+
+      let response;
+      try {
+        const value = await eval(task.fn).apply(null, task.args);
+        response = JSON.stringify({
+          status: 'success',
+          value: value
+        });
+      } catch(e) {
+        response = JSON.stringify({
+          status: 'exception',
+          value: e.message
+        });
+      }
+      await send(task.receiver, response);
+    }
+  }
+}
