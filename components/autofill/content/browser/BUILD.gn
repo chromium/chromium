@@ -18,6 +18,7 @@ static_library("browser") {
     "content_autofill_router.h",
     "form_forest.cc",
     "form_forest.h",
+    "form_forest_util_inl.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
   ]

@@ -310,7 +310,7 @@ class FormForest {
 
   // Returns the FrameData known for |frame|, or creates a new one and returns
   // it, in which case all members but FrameData::host_frame are uninitialized.
-  FrameData* GetOrCreateFrame(LocalFrameToken frame);
+  FrameData* GetOrCreateFrameData(LocalFrameToken frame);
 
   // Returns the FrameData known for |frame|, or null.
   // May be used in const qualified methods if the return value is not mutated.

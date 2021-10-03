@@ -9,6 +9,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -103,7 +104,7 @@ absl::optional<LocalFrameToken> FormForest::Resolve(const FrameData& reference,
   return LocalFrameToken(remote_rfh->GetFrameToken().value());
 }
 
-FormForest::FrameData* FormForest::GetOrCreateFrame(LocalFrameToken frame) {
+FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
   auto it = frame_datas_.find(frame);
   if (it == frame_datas_.end())
     it = frame_datas_.insert(it, std::make_unique<FrameData>(frame));
@@ -194,7 +195,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   AFCHECK(form->host_frame, return );
   some_rfh_for_debugging_ = driver->render_frame_host();
 
-  FrameData* frame = GetOrCreateFrame(form->host_frame);
+  FrameData* frame = GetOrCreateFrameData(form->host_frame);
   AFCHECK(frame, return );
   AFCHECK(!frame->driver || frame->driver == driver, return );
   frame->driver = driver;
@@ -206,15 +207,33 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
   // Moves |form| into its |frame|'s FrameData::child_forms, with a special
   // treatment of the fields: |form|'s fields are replaced with |old_form|'s
-  // fields if |form| had previously been known as |old_form|. Retaining the old
-  // fields is important because |old_form| may have been a root and therefore
-  // contained fields from other forms. The relevant old and new fields will be
-  // moved to |form|'s root later.
+  // fields if |form| had previously been known as |old_form|.
+  //
+  // Retaining the old fields is important because |old_form| may have been a
+  // root and therefore contained fields from other forms. The relevant old and
+  // new fields will be moved to |form|'s root later.
+  //
+  // Also unsets the FrameData::parent_form pointer for newly removed children.
+  // Usually, a removed child frame has been or will be destroyed. However, a
+  // child frame may also be removed because the frame became invisible. For
+  // simplicity, we do not move fields from |form|'s root back to the former
+  // children. Instead, we rely on the descendant frames being reparsed before
+  // they become visible again.
   std::vector<FormFieldData> form_fields = std::move(form->fields);
   bool child_frames_changed;
   if (FormData* old_form = GetFormData(form->global_id(), frame)) {
     form->fields = std::move(old_form->fields);
     child_frames_changed = old_form->child_frames != form->child_frames;
+    for_each_in_set_difference(
+        old_form->child_frames, form->child_frames,
+        [this, frame](FrameToken removed_child_token) {
+          absl::optional<LocalFrameToken> local_child =
+              Resolve(*frame, removed_child_token);
+          FrameData* child_frame;
+          if (local_child && (child_frame = GetFrameData(*local_child)))
+            child_frame->parent_form = absl::nullopt;
+        },
+        &FrameTokenWithPredecessor::token);
     *old_form = std::move(*form);
     form = old_form;
   } else {
@@ -252,6 +271,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   } else {
     FrameAndForm root = GetRoot(form->global_id());
     AFCHECK(root, return );
+
     // Moves the first |max_number_of_fields_to_be_moved| fields that originated
     // from the renderer form |source_form| from |source| to |target|.
     // Default-initializes each source field after its move to prevent it from
@@ -423,7 +443,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         // If the FrameData does not exist yet, creating it now and setting the
         // FrameData::parent_form avoids a reparse if and when a form is seen in
         // this child frame.
-        if (local_child && (child_frame = GetOrCreateFrame(*local_child))) {
+        if (local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
           child_frame->parent_form = n.form->global_id();
           for (size_t i = child_frame->child_forms.size(); i > 0; --i) {
             frontier.push({.frame = child_frame,

@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/content/browser/form_forest_test_api.h"
+#include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -95,7 +96,7 @@ auto Equals(const FrameData& exp) {
   return AllOf(Field("frame_token", &FrameData::frame_token, exp.frame_token),
                Field("child_forms", &FrameData::child_forms,
                      ArrayEquals(exp.child_forms)),
-               Field("parent_forms", &FrameData::parent_form, exp.parent_form),
+               Field("parent_form", &FrameData::parent_form, exp.parent_form),
                Field("driver", &FrameData::driver, exp.driver));
 }
 
@@ -274,7 +275,17 @@ class MockContentAutofillDriver : public ContentAutofillDriver {
 
   LocalFrameToken token() { return Token(render_frame_host()); }
 
+  // Fake whether a subframe is a root frame from the perspective of
+  // MockFlattening(). In the real world, this can happen, for example, because
+  // the frame's parent has not been seen yet, or because the frame itself
+  // became invisible and hence got cut off by its parent.
+  void set_sub_root(bool b) { is_sub_root_ = b; }
+  bool is_sub_root() const { return is_sub_root_; }
+
   MOCK_METHOD(void, TriggerReparse, (), (override));
+
+ private:
+  bool is_sub_root_ = false;
 };
 
 // Fundamental test fixtures.
@@ -450,6 +461,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
     return driver;
   }
 
+  using ForceReset = base::StrongAlias<struct ForceFlattenTag, bool>;
+
   // Mocks flattening of |form_fields| into their root form.
   //
   // Exactly one form mentioned in |form_fields| must be a root form in. The
@@ -459,7 +472,11 @@ class FormForestTestWithMockedTree : public FormForestTest {
   // MockFlattening() should be called only after MockFormForest(), as its first
   // call copies the forms without their fields from |mocked_forms_| to
   // |flattened_forms_|.
-  void MockFlattening(const std::vector<FormSpan>& form_fields) {
+  //
+  // To force such a copy in later calls (because the |flattened_forms_| may
+  // have changed in the meantime), set |force_flatten| to true.
+  void MockFlattening(const std::vector<FormSpan>& form_fields,
+                      ForceReset force_flatten = ForceReset(false)) {
     // Collect fields.
     std::vector<FormFieldData> fields;
     for (FormSpan f : form_fields) {
@@ -474,7 +491,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
     }
 
     // Copy |mocked_forms_| into |flattened_forms_|, without fields.
-    if (frame_datas(flattened_forms_).empty()) {
+    if (frame_datas(flattened_forms_).empty() || force_flatten) {
+      flattened_forms_.Reset();
       std::vector<std::unique_ptr<FrameData>> copy;
       for (const auto& frame : frame_datas(mocked_forms_)) {
         copy.push_back(std::make_unique<FrameData>(frame->frame_token));
@@ -489,7 +507,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
 
     // Copy fields to the root.
     auto IsRoot = [this](FormSpan fs) {
-      return driver(fs.form)->IsInMainFrame();
+      MockContentAutofillDriver* d = driver(fs.form);
+      return d->IsInMainFrame() || d->is_sub_root();
     };
     auto it = base::ranges::find_if(form_fields, IsRoot);
     DCHECK(it != form_fields.end());
@@ -523,6 +542,14 @@ class FormForestTestWithMockedTree : public FormForestTest {
     }
   }
 
+  FrameData& GetMockedFrame(base::StringPiece frame_or_form_name) {
+    MockContentAutofillDriver* d = driver(frame_or_form_name);
+    DCHECK(d) << frame_or_form_name;
+    FrameData* frame = TestApi(mocked_forms_).GetFrameData(d->token());
+    DCHECK(frame);
+    return *frame;
+  }
+
   FormData& GetMockedForm(base::StringPiece form_name) {
     auto it = forms_.find(form_name);
     DCHECK(it != forms_.end()) << form_name;
@@ -532,7 +559,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
   }
 
   FormData& GetFlattenedForm(base::StringPiece form_name) {
-    DCHECK(driver(form_name)->IsInMainFrame());
+    DCHECK(driver(form_name)->IsInMainFrame() ||
+           driver(form_name)->is_sub_root());
     auto it = forms_.find(form_name);
     DCHECK(it != forms_.end()) << form_name;
     FormData* form = TestApi(flattened_forms_).GetFormData(it->second);
@@ -1107,15 +1135,19 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
 
   // Remove the last frame of "child1", which contains "grandchild2" and
   // indirectly "greatgrandchild".
+  driver("grandchild2")->set_sub_root(true);
   GetMockedForm("child1").child_frames.pop_back();
-  TestApi(mocked_forms_)
-      .GetFrameData(GetMockedForm("grandchild2").host_frame)
-      ->parent_form.reset();
+  GetMockedFrame("grandchild2").parent_form.reset();
   GetMockedForm("grandchild2").fields.clear();
-  MockFlattening({{"main"}, {"child1"}, {"grandchild1"}, {"child2"}});
+  GetMockedForm("greatgrandchild").fields.clear();
+  MockFlattening({{"main"}, {"child1"}, {"grandchild1"}, {"child2"}},
+                 ForceReset(true));
+  MockFlattening({{"grandchild2"}, {"greatgrandchild"}});
   ASSERT_EQ(GetFlattenedForm("main").fields.size(), 4u * 6u);
+  ASSERT_EQ(GetFlattenedForm("grandchild2").fields.size(), 0u);
 
   UpdateTreeOfRendererForm(ff, "child1");
+
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
@@ -1373,6 +1405,71 @@ TEST(FormForestTest, FrameDataComparator) {
   EXPECT_TRUE(less(x, y));
   EXPECT_FALSE(less(y, x));
 }
+
+// Tests of utility functions.
+
+struct ForEachInSetDifferenceTestParam {
+  std::vector<size_t> lhs;
+  std::vector<size_t> rhs;
+  std::vector<size_t> diff;
+  size_t expected_comparisons;
+};
+
+class ForEachInSetDifferenceTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<ForEachInSetDifferenceTestParam> {
+ public:
+  // A wrapper of a size_t that counts its calls to operator==().
+  class Dummy {
+   public:
+    size_t val = 0;
+    size_t* num_equals_calls = nullptr;
+  };
+
+  std::vector<Dummy> ToDummies(const std::vector<size_t>& vec) {
+    std::vector<Dummy> out;
+    for (const size_t v : vec)
+      out.push_back({.val = v, .num_equals_calls = &num_equals_calls_});
+    return out;
+  }
+
+  size_t num_equals_calls_ = 0;
+};
+
+bool operator==(ForEachInSetDifferenceTest::Dummy x,
+                ForEachInSetDifferenceTest::Dummy y) {
+  CHECK(x.num_equals_calls && x.num_equals_calls == y.num_equals_calls);
+  ++*x.num_equals_calls;
+  return x.val == y.val;
+}
+
+// Tests that for_each_in_set_difference() calls the callback for the expected
+// elements and checks its number of comparisons.
+TEST_P(ForEachInSetDifferenceTest, Test) {
+  std::vector<size_t> diff;
+  for_each_in_set_difference(ToDummies(GetParam().lhs),
+                             ToDummies(GetParam().rhs),
+                             [&diff](Dummy d) { diff.push_back(d.val); });
+  EXPECT_THAT(diff, ElementsAreArray(GetParam().diff));
+  EXPECT_EQ(num_equals_calls_, GetParam().expected_comparisons);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FormForestTest,
+    ForEachInSetDifferenceTest,
+    testing::Values(
+        ForEachInSetDifferenceTestParam{{}, {}, {}, 0},
+        ForEachInSetDifferenceTestParam{{}, {1, 2, 3}, {}, 0},
+        ForEachInSetDifferenceTestParam{{1}, {1, 2, 3, 4}, {}, 1},
+        ForEachInSetDifferenceTestParam{{1, 2, 3}, {1, 2, 3}, {}, 3},
+        ForEachInSetDifferenceTestParam{{1, 2, 3}, {1, 2, 3, 4, 5}, {}, 3},
+        ForEachInSetDifferenceTestParam{{3, 4, 1, 2}, {1, 2, 3, 4}, {}, 6},
+        ForEachInSetDifferenceTestParam{{1, 2, 3, 4}, {1, 2, 3}, {4}, 6},
+        ForEachInSetDifferenceTestParam{{1, 2, 3, 4}, {1, 3, 4}, {2}, 6},
+        ForEachInSetDifferenceTestParam{{1, 2, 3, 4}, {4, 3, 2, 1}, {}, 13},
+        ForEachInSetDifferenceTestParam{{3, 4, 1, 2}, {1, 2, 3}, {4}, 8},
+        ForEachInSetDifferenceTestParam{{1, 2, 3, 4}, {1}, {2, 3, 4}, 4},
+        ForEachInSetDifferenceTestParam{{1, 2, 3, 4}, {}, {1, 2, 3, 4}, 0}));
 
 }  // namespace
 }  // namespace internal
