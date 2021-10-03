@@ -166,7 +166,7 @@ class GerritCL(object):
         # TODO(robertma): Consolidate with the related part in chromium_exportable_commits.py.
 
         try:
-            files = self.current_revision['files'].keys()
+            files = list(self.current_revision['files'].keys())
         except KeyError:
             # Empty (deleted) CL is not exportable.
             return False

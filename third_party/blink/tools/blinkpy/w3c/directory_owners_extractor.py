@@ -70,7 +70,7 @@ class DirectoryOwnersExtractor(object):
             email_map[tuple(owners)].add(owned_directory_relpath)
         return {
             owners: sorted(owned_directories)
-            for owners, owned_directories in email_map.iteritems()
+            for owners, owned_directories in email_map.items()
         }
 
     def find_owners_file(self, start_path):

@@ -31,20 +31,20 @@ class MonorailIssueTest(unittest.TestCase):
             'chromium',
             summary=u'test',
             status='Untriaged',
-            description=u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ',
+            description='ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ',
             cc=['foo@chromium.org', 'bar@chromium.org'],
             labels=['Flaky'],
             components=['Infra'])
-        self.assertEqual(type(unicode(issue)), unicode)
+        self.assertEqual(type(str(issue)), str)
         self.assertEqual(
-            unicode(issue),
-            (u'Monorail issue in project chromium\n'
-             u'Summary: test\n'
-             u'Status: Untriaged\n'
-             u'CC: foo@chromium.org, bar@chromium.org\n'
-             u'Components: Infra\n'
-             u'Labels: Flaky\n'
-             u'Description:\nABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\n'))
+            str(issue),
+            ('Monorail issue in project chromium\n'
+             'Summary: test\n'
+             'Status: Untriaged\n'
+             'CC: foo@chromium.org, bar@chromium.org\n'
+             'Components: Infra\n'
+             'Labels: Flaky\n'
+             'Description:\nABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\n'))
 
     def test_init_unknown_fields(self):
         with self.assertRaises(AssertionError):

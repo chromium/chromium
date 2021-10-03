@@ -51,7 +51,7 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
         # We need to put all the Android expectation files in
         # the _test_expectations member variable so that the
         # files get cleaned in cleanup_test_expectations_files()
-        return (PRODUCTS_TO_EXPECTATION_FILE_PATHS.values() +
+        return (list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()) +
                 [ANDROID_DISABLED_TESTS])
 
     def _get_web_test_results(self, build):
@@ -194,12 +194,12 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
 
         for path, test_exps in untriaged_exps.items():
             self._test_expectations.remove_expectations(
-                path, reduce(lambda x, y: x + y, test_exps.values()))
+                path, reduce(lambda x, y: x + y, list(test_exps.values())))
 
         if neverfix_tests:
             self._never_fix_expectations.remove_expectations(
                 ANDROID_DISABLED_TESTS,
-                reduce(lambda x, y: x + y, neverfix_tests.values()))
+                reduce(lambda x, y: x + y, list(neverfix_tests.values())))
 
         exp_lines_dict_by_product = defaultdict(dict)
         for results_test_name, platform_results in test_to_results.items():
@@ -258,7 +258,7 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
         if neverfix_tests:
             self._never_fix_expectations.add_expectations(
                 ANDROID_DISABLED_TESTS,
-                sorted(reduce(lambda x, y: x + y, neverfix_tests.values()),
+                sorted(reduce(lambda x, y: x + y, list(neverfix_tests.values())),
                        key=lambda e: e.test),
                 disabled_tests_marker_lineno)
 

@@ -30,7 +30,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
     def _write_files(self, files):
         # Use write_text_file instead of directly assigning to filesystem.files
         # so that intermediary directories are correctly created, too.
-        for path, contents in files.iteritems():
+        for path, contents in files.items():
             self.host.filesystem.write_text_file(path, contents)
 
     def test_list_owners_combines_same_owners(self):

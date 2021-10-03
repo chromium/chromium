@@ -82,8 +82,8 @@ class WPTExpectationsUpdater(object):
         for tests that were renamed. Also the files may have their expectations
         updated using builder results.
         """
-        return (self.port.all_expectations_dict().keys() +
-                PRODUCTS_TO_EXPECTATION_FILE_PATHS.values())
+        return (list(self.port.all_expectations_dict().keys()) +
+                list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()))
 
     def run(self):
         """Does required setup before calling update_expectations().
@@ -178,7 +178,7 @@ class WPTExpectationsUpdater(object):
 
         # Here we build up a dict of failing test results for all platforms.
         test_expectations = {}
-        for build, job_status in build_to_status.iteritems():
+        for build, job_status in build_to_status.items():
             if (job_status.result == 'SUCCESS' and
                     not self.options.include_unexpected_pass):
                 continue
@@ -229,7 +229,7 @@ class WPTExpectationsUpdater(object):
 
         # Here we build up a dict of failing test results for all platforms.
         test_expectations = {}
-        for build, job_status in build_to_status.iteritems():
+        for build, job_status in build_to_status.items():
             if (job_status.result == 'SUCCESS' and
                     not self.options.include_unexpected_pass):
                 continue
@@ -252,7 +252,7 @@ class WPTExpectationsUpdater(object):
             test_expectations, self.configs_with_no_results)
 
         # And then we merge results for different platforms that had the same results.
-        for test_name, platform_result in test_expectations.iteritems():
+        for test_name, platform_result in test_expectations.items():
             # platform_result is a dict mapping platforms to results.
             test_expectations[test_name] = self.merge_same_valued_keys(
                 platform_result)
@@ -640,7 +640,7 @@ class WPTExpectationsUpdater(object):
             configs_to_remove: An empty dictionary
         """
         line_dict = defaultdict(list)
-        for test_name, test_results in sorted(merged_results.iteritems()):
+        for test_name, test_results in sorted(merged_results.items()):
             if not self._is_wpt_test(test_name):
                 _log.warning(
                     'Non-WPT test "%s" unexpectedly passed to create_line_dict.',
@@ -648,7 +648,7 @@ class WPTExpectationsUpdater(object):
                 continue
             expectation_line = generic_expectations.get_expectations(test_name)
             expectations = expectation_line.results
-            for configs, result in sorted(test_results.iteritems()):
+            for configs, result in sorted(test_results.items()):
                 new_expectations = self.get_expectations(result, test_name)
                 if 'Failure' in new_expectations:
                     new_expectations.remove('Failure')
@@ -690,13 +690,13 @@ class WPTExpectationsUpdater(object):
         """
         line_dict = defaultdict(list)
         configs_to_remove = defaultdict(set)
-        for test_name, test_results in sorted(merged_results.iteritems()):
+        for test_name, test_results in sorted(merged_results.items()):
             if not self._is_wpt_test(test_name):
                 _log.warning(
                     'Non-WPT test "%s" unexpectedly passed to create_line_dict.',
                     test_name)
                 continue
-            for configs, result in sorted(test_results.iteritems()):
+            for configs, result in sorted(test_results.items()):
                 line_dict[test_name].extend(
                     self._create_lines(test_name, configs, result))
                 for config in configs:
@@ -818,7 +818,7 @@ class WPTExpectationsUpdater(object):
         """
         specifiers = {s.lower() for s in specifiers}
         covered_by_try_bots = self._platform_specifiers_covered_by_try_bots()
-        for macro, versions in specifier_macros.iteritems():
+        for macro, versions in specifier_macros.items():
             macro = macro.lower()
 
             # Only consider version specifiers that have corresponding try bots.
@@ -881,7 +881,7 @@ class WPTExpectationsUpdater(object):
         line_list = []
         wont_fix_list = []
         webdriver_list = []
-        for lines in line_dict.itervalues():
+        for lines in line_dict.values():
             for line in lines:
                 if 'Skip' in line and '-manual.' in line:
                     wont_fix_list.append(line)
@@ -899,7 +899,7 @@ class WPTExpectationsUpdater(object):
                 self.port.path_to_generic_test_expectations_file(): line_list,
                 self.port.path_to_webdriver_expectations_file(): webdriver_list
             }
-        for expectations_file_path, lines in list_to_expectation.iteritems():
+        for expectations_file_path, lines in list_to_expectation.items():
             if not lines:
                 continue
 
@@ -1233,7 +1233,7 @@ class WPTExpectationsUpdater(object):
         new_test_results = copy.deepcopy(test_results)
         tests_to_rebaseline = set()
         for test_name in test_results:
-            for platforms, result in test_results[test_name].iteritems():
+            for platforms, result in test_results[test_name].items():
                 if self.can_rebaseline(test_name, result):
                     del new_test_results[test_name][platforms]
                     tests_to_rebaseline.add(test_name)
