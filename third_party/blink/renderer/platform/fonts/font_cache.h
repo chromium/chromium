@@ -251,6 +251,13 @@ class PLATFORM_EXPORT FontCache {
   static AtomicString GetGenericFamilyNameForScript(
       const AtomicString& family_name,
       const FontDescription&);
+  // Locale-specific families can use different |SkTypeface| for a family name
+  // if locale is different.
+  static const char* GetLocaleSpecificFamilyName(
+      const AtomicString& family_name);
+  sk_sp<SkTypeface> CreateLocaleSpecificTypeface(
+      const FontDescription& font_description,
+      const char* locale_family_name);
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -406,6 +413,7 @@ class PLATFORM_EXPORT FontCache {
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
+  FRIEND_TEST_ALL_PREFIXES(FontCacheAndroidTest, LocaleSpecificTypeface);
 };
 
 class PLATFORM_EXPORT FontCachePurgePreventer {
@@ -419,6 +427,18 @@ class PLATFORM_EXPORT FontCachePurgePreventer {
 };
 
 AtomicString ToAtomicString(const SkString&);
+
+#if defined(OS_ANDROID)
+// TODO(crbug.com/1241875) Can this be simplified?
+// static
+inline const char* FontCache::GetLocaleSpecificFamilyName(
+    const AtomicString& family_name) {
+  // Only `serif` has `fallbackFor` according to the current `fonts.xml`.
+  if (family_name == font_family_names::kSerif)
+    return "serif";
+  return nullptr;
+}
+#endif
 
 }  // namespace blink
 
