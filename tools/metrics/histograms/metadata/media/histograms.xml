@@ -2891,12 +2891,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
-    expires_after="2021-10-31">
+    expires_after="2022-10-31">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
     Heuristically detects if the user has muted the microphone or not. Measured
-    approximately four times per minute.
+    approximately four times per minute while an audio input stream is active.
   </summary>
 </histogram>
 
