@@ -21,14 +21,12 @@
         android:paddingBottom="12dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:paddingTop="12dp">
+        android:paddingTop="16dp">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginStart="12dp">
+            android:layout_marginBottom="12dp">
 
             <include layout="@layout/personalized_signin_promo_view_header"/>
         </FrameLayout>
