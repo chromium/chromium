@@ -359,6 +359,10 @@ bool IsSigninForcedByPolicy() {
   return self.signinCoordinator != nil;
 }
 
+- (UIViewController*)activeViewController {
+  return self.mainCoordinator.activeViewController;
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState

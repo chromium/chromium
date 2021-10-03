@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -244,11 +245,8 @@
 
   id<ApplicationCommands> handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
-  // TODO(crbug.com/1241451): Use the command for forced sign-in when
-  // available.
   [handler showSignin:command
-      baseViewController:self.sceneState.interfaceProvider.currentInterface
-                             .viewController];
+      baseViewController:self.sceneState.controller.activeViewController];
 }
 
 // YES if the scene and the app are in a state where the UI of the scene is
