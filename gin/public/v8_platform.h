@@ -31,6 +31,7 @@ class GIN_EXPORT V8Platform : public v8::Platform {
   // verified in the tests for gin::PageAllocator.
   PageAllocator* GetPageAllocator() override;
   void OnCriticalMemoryPressure() override;
+  v8::ZoneBackingAllocator* GetZoneBackingAllocator() override;
 #endif
 
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(

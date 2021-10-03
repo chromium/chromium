@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/location.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
@@ -373,6 +374,16 @@ void V8Platform::OnCriticalMemoryPressure() {
 #if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
   base::ReleaseReservation();
 #endif
+}
+
+v8::ZoneBackingAllocator* V8Platform::GetZoneBackingAllocator() {
+  static struct Allocator final : v8::ZoneBackingAllocator {
+    MallocFn GetMallocFn() const override {
+      return &base::AllocNonQuarantinable;
+    }
+    FreeFn GetFreeFn() const override { return &base::FreeNonQuarantinable; }
+  } allocator;
+  return &allocator;
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
