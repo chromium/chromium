@@ -423,7 +423,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
 #if defined(OS_FUCHSIA)
   if (g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) {
-    GetScopedFxLogger() = base::ScopedFxLogger::CreateForProcessWithTag({});
+    GetScopedFxLogger() = base::ScopedFxLogger::CreateForProcess();
   }
 #endif
 

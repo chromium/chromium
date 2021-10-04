@@ -781,8 +781,8 @@ void FrameImpl::SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel level) {
 
 void FrameImpl::SetConsoleLogSink(fuchsia::logger::LogSinkHandle sink) {
   if (sink) {
-    console_logger_ = base::ScopedFxLogger::CreateFromLogSinkWithTag(
-        std::move(sink), console_log_tag_);
+    console_logger_ = base::ScopedFxLogger::CreateFromLogSink(
+        std::move(sink), {console_log_tag_});
   } else {
     console_logger_ = {};
   }
@@ -1040,11 +1040,11 @@ bool FrameImpl::DidAddMessageToConsole(
     // Log via the process' LogSink service if none was set on the Frame.
     // Connect on-demand, so that embedders need not provide a LogSink in the
     // CreateContextParams services, unless they actually enable logging.
-    console_logger_ = base::ScopedFxLogger::CreateFromLogSinkWithTag(
+    console_logger_ = base::ScopedFxLogger::CreateFromLogSink(
         base::ComponentContextForProcess()
             ->svc()
             ->Connect<fuchsia::logger::LogSink>(),
-        console_log_tag_);
+        {console_log_tag_});
 
     if (!console_logger_.is_valid())
       return false;
