@@ -18,9 +18,20 @@
 
 namespace autofill {
 
-OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase() {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableOfferNotification);
+OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
+    bool promo_code_flag_enabled) {
+  if (promo_code_flag_enabled) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kAutofillEnableOfferNotification,
+         features::kAutofillEnableOfferNotificationForPromoCodes},
+        /*disabled_features=*/{});
+  } else {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableOfferNotification},
+        /*disabled_features=*/{
+            features::kAutofillEnableOfferNotificationForPromoCodes});
+  }
 }
 
 OfferNotificationBubbleViewsTestBase::~OfferNotificationBubbleViewsTestBase() =
@@ -85,12 +96,41 @@ OfferNotificationBubbleViewsTestBase::CreatePromoCodeOfferDataWithDomains(
   return offer_data_entry;
 }
 
+void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
+    AutofillOfferData::OfferType offer_type,
+    const std::vector<GURL>& domains) {
+  switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+      SetUpCardLinkedOfferDataWithDomains(domains);
+      break;
+    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+      SetUpFreeListingCouponOfferDataWithDomains(domains);
+      break;
+    case AutofillOfferData::OfferType::UNKNOWN:
+      NOTREACHED();
+      break;
+  }
+}
+
 void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
     const std::vector<GURL>& domains) {
   personal_data_->ClearAllServerData();
   // CreateCardLinkedOfferDataWithDomains(~) will add the necessary card.
   personal_data_->AddOfferDataForTest(
       CreateCardLinkedOfferDataWithDomains(domains));
+  personal_data_->NotifyPersonalDataObserver();
+}
+
+void OfferNotificationBubbleViewsTestBase::
+    SetUpFreeListingCouponOfferDataWithDomains(
+        const std::vector<GURL>& domains) {
+  personal_data_->ClearAllServerData();
+  // TODO(crbug.com/1203811): Should distinguish between activated GPay promo
+  //     code offers and free-listing coupon offers separately. When that
+  //     separation is created in a followup CL, this class should probably
+  //     create a `SetUpGPayPromoCodeOfferDataWithDomains(~)` helper.
+  personal_data_->AddOfferDataForTest(
+      CreatePromoCodeOfferDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();
 }
 

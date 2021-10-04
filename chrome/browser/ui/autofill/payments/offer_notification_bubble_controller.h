@@ -15,6 +15,7 @@
 namespace autofill {
 
 class AutofillBubbleBase;
+struct AutofillOfferData;
 class CreditCard;
 
 // Interface that exposes controller functionality to offer notification related
@@ -51,6 +52,9 @@ class OfferNotificationBubbleController {
 
   // Returns the related card if the offer is a card linked offer.
   virtual const CreditCard* GetLinkedCard() const = 0;
+
+  // Returns the related offer, from which the UI can extract display strings.
+  virtual const AutofillOfferData* GetOffer() const = 0;
 
   // Returns whether the omnibox icon should be visible.
   virtual bool IsIconVisible() const = 0;

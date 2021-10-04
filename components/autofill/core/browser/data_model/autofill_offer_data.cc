@@ -103,8 +103,9 @@ AutofillOfferData::OfferType AutofillOfferData::GetOfferType() const {
 
   // Promo code offers have the promo code field populated.
   // TODO(crbug.com/1203811): When GPay-activated promo codes become available,
-  //     create a way to differentiate them from free-listing coupon codes.
-  //     They exist, but are not yet synced, and FLC syncing logic is ongoing.
+  //     save this OfferType as a class member variable (so as to differentiate
+  //     GPay and FLC promo codes) and simply return that value for this
+  //     function instead.
   if (!promo_code.empty())
     return OfferType::FREE_LISTING_COUPON_OFFER;
 

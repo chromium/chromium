@@ -12,6 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
@@ -22,20 +23,53 @@
 
 namespace autofill {
 
+typedef std::tuple<AutofillOfferData::OfferType>
+    OfferNotificationBubbleViewsInteractiveUiTestData;
+
 class OfferNotificationBubbleViewsInteractiveUiTest
-    : public OfferNotificationBubbleViewsTestBase {
+    : public OfferNotificationBubbleViewsTestBase,
+      public testing::WithParamInterface<
+          OfferNotificationBubbleViewsInteractiveUiTestData> {
  public:
-  OfferNotificationBubbleViewsInteractiveUiTest() = default;
+  OfferNotificationBubbleViewsInteractiveUiTest()
+      : test_offer_type_(std::get<0>(GetParam())) {}
+
   ~OfferNotificationBubbleViewsInteractiveUiTest() override = default;
   OfferNotificationBubbleViewsInteractiveUiTest(
       const OfferNotificationBubbleViewsInteractiveUiTest&) = delete;
   OfferNotificationBubbleViewsInteractiveUiTest& operator=(
       const OfferNotificationBubbleViewsInteractiveUiTest&) = delete;
 
-  void ShowBubbleAndVerify() {
+  void ShowBubbleForOfferAndVerify() {
+    switch (test_offer_type_) {
+      case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+        ShowBubbleForCardLinkedOfferAndVerify();
+        break;
+      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+        ShowBubbleForFreeListingCouponOfferAndVerify();
+        break;
+      case AutofillOfferData::OfferType::UNKNOWN:
+        NOTREACHED();
+        break;
+    }
+  }
+
+  void ShowBubbleForCardLinkedOfferAndVerify() {
     NavigateTo(chrome::kChromeUINewTabURL);
     // Set the initial origin that the bubble will be displayed on.
     SetUpCardLinkedOfferDataWithDomains(
+        {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+    NavigateTo("https://www.example.com/first");
+    WaitForObservedEvent();
+    EXPECT_TRUE(IsIconVisible());
+    EXPECT_TRUE(GetOfferNotificationBubbleViews());
+  }
+
+  void ShowBubbleForFreeListingCouponOfferAndVerify() {
+    NavigateTo(chrome::kChromeUINewTabURL);
+    // Set the initial origin that the bubble will be displayed on.
+    SetUpFreeListingCouponOfferDataWithDomains(
         {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.example.com/first");
@@ -78,7 +112,30 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         closure_loop.QuitClosure());
     closure_loop.Run();
   }
+
+  std::string GetSubhistogramNameForOfferType() const {
+    switch (test_offer_type_) {
+      case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+        return "CardLinkedOffer";
+      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+        return "FreeListingCouponOffer";
+      case AutofillOfferData::OfferType::UNKNOWN:
+        NOTREACHED();
+        return std::string();
+    }
+  }
+
+  const AutofillOfferData::OfferType test_offer_type_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    GpayCardLinked,
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    testing::Values(AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER));
+INSTANTIATE_TEST_SUITE_P(
+    FreeListingCoupon,
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    testing::Values(AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER));
 
 // Flaky on Linux. crbug.com/1182526
 #if defined(OS_LINUX)
@@ -86,7 +143,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
 #else
 #define MAYBE_Navigation Navigation
 #endif
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Navigation) {
   static const struct {
     std::string url_navigated_to;
@@ -105,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   };
 
   // Set the initial origin that the bubble will be displayed on.
-  SetUpCardLinkedOfferDataWithDomains(
-      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+  SetUpOfferDataWithDomains(test_offer_type_, {GURL("https://www.example.com/"),
+                                               GURL("https://www.test.com/")});
 
   for (const auto& test_case : test_cases) {
     NavigateTo(chrome::kChromeUINewTabURL);
@@ -136,9 +193,14 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
 }
 
 // Tests that bubble behaves correctly after user dismisses it.
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        DismissBubble) {
-  ShowBubbleAndVerify();
+  // Applies to card-linked offers only, as promo code offers do not have an OK
+  // button.
+  if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+    return;
+
+  ShowBubbleForOfferAndVerify();
 
   // Dismiss the bubble by clicking the ok button.
   auto* ok_button = GetOfferNotificationBubbleViews()->GetOkButton();
@@ -162,26 +224,28 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
 #else
 #define MAYBE_Logging_Shown Logging_Shown
 #endif
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Logging_Shown) {
   base::HistogramTester histogram_tester;
-  ShowBubbleAndVerify();
+  ShowBubbleForOfferAndVerify();
 
-  histogram_tester.ExpectBucketCount(
-      "Autofill.OfferNotificationBubbleOffer.CardLinkedOffer",
-      /*firstshow*/ false, 1);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubbleOffer." +
+                                         GetSubhistogramNameForOfferType(),
+                                     /*firstshow*/ false, 1);
 
-  // Dismiss the bubble by clicking the ok button.
-  auto* ok_button = GetOfferNotificationBubbleViews()->GetOkButton();
-  EXPECT_TRUE(ok_button);
-  ClickOnViewAndWaitForBubbleDismissal(ok_button);
+  // Dismiss the bubble by clicking the close button.
+  auto* close_button = GetOfferNotificationBubbleViews()
+                           ->GetBubbleFrameView()
+                           ->GetCloseButtonForTesting();
+  EXPECT_TRUE(close_button);
+  ClickOnViewAndWaitForBubbleDismissal(close_button);
 
   // Click on the omnibox icon to reshow the bubble.
   ClickOnIconAndReshowBubble();
 
-  histogram_tester.ExpectBucketCount(
-      "Autofill.OfferNotificationBubbleOffer.CardLinkedOffer", /*reshow*/ true,
-      1);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubbleOffer." +
+                                         GetSubhistogramNameForOfferType(),
+                                     /*reshow*/ true, 1);
 }
 
 #if defined(OS_LINUX) || defined(OS_MAC)
@@ -190,10 +254,15 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
 #else
 #define MAYBE_Logging_Acknowledged Logging_Acknowledged
 #endif
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Logging_Acknowledged) {
+  // Applies to card-linked offers only, as promo code offers do not have an OK
+  // button.
+  if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+    return;
+
   base::HistogramTester histogram_tester;
-  ShowBubbleAndVerify();
+  ShowBubbleForOfferAndVerify();
 
   // Dismiss the bubble by clicking the ok button.
   auto* ok_button = GetOfferNotificationBubbleViews()->GetOkButton();
@@ -201,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   ClickOnViewAndWaitForBubbleDismissal(ok_button);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.FirstShow",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".FirstShow",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED,
       1);
@@ -215,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   ClickOnViewAndWaitForBubbleDismissal(ok_button);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.Reshows",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".Reshows",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED,
       1);
@@ -227,10 +298,10 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
 #else
 #define MAYBE_Logging_Closed Logging_Closed
 #endif
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Logging_Closed) {
   base::HistogramTester histogram_tester;
-  ShowBubbleAndVerify();
+  ShowBubbleForOfferAndVerify();
 
   // Dismiss the bubble by clicking the close button.
   auto* close_button = GetOfferNotificationBubbleViews()
@@ -240,7 +311,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   ClickOnViewAndWaitForBubbleDismissal(close_button);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.FirstShow",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".FirstShow",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_CLOSED,
       1);
@@ -256,16 +328,17 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   ClickOnViewAndWaitForBubbleDismissal(close_button);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.Reshows",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".Reshows",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_CLOSED,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        Logging_NotInteracted) {
   base::HistogramTester histogram_tester;
-  ShowBubbleAndVerify();
+  ShowBubbleForOfferAndVerify();
 
   // Mock browser being closed.
   views::test::WidgetDestroyedWaiter destroyed_waiter(
@@ -274,7 +347,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   destroyed_waiter.Wait();
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.FirstShow",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".FirstShow",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED,
       1);
@@ -286,10 +360,10 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
 #else
 #define MAYBE_Logging_LostFocus Logging_LostFocus
 #endif
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Logging_LostFocus) {
   base::HistogramTester histogram_tester;
-  ShowBubbleAndVerify();
+  ShowBubbleForOfferAndVerify();
 
   // Mock deactivation due to lost focus.
   views::test::WidgetDestroyedWaiter destroyed_waiter1(
@@ -299,7 +373,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   destroyed_waiter1.Wait();
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.FirstShow",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".FirstShow",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
       1);
@@ -315,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   destroyed_waiter2.Wait();
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.Reshows",
+      "Autofill.OfferNotificationBubbleResult." +
+          GetSubhistogramNameForOfferType() + ".Reshows",
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
       1);

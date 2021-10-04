@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 
@@ -30,7 +31,8 @@ class OfferNotificationBubbleViewsTestBase
     BUBBLE_SHOWN,
   };
 
-  OfferNotificationBubbleViewsTestBase();
+  explicit OfferNotificationBubbleViewsTestBase(
+      bool promo_code_flag_enabled = true);
   ~OfferNotificationBubbleViewsTestBase() override;
   OfferNotificationBubbleViewsTestBase(
       const OfferNotificationBubbleViewsTestBase&) = delete;
@@ -50,8 +52,14 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<AutofillOfferData> CreatePromoCodeOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
+  void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
+                                 const std::vector<GURL>& domains);
+
   // Also creates a credit card for the offer.
   void SetUpCardLinkedOfferDataWithDomains(const std::vector<GURL>& domains);
+
+  void SetUpFreeListingCouponOfferDataWithDomains(
+      const std::vector<GURL>& domains);
 
   void NavigateTo(const std::string& file_path);
 

@@ -578,11 +578,11 @@
     No thanks
   </message>
 
-  <!-- Credit card offers and rewards related strings -->
+  <!-- Credit card and promo code offers and rewards-related strings -->
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
     Cashback linked
   </message>
-  <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when an offer is available to use.">
+  <message name="IDS_AUTOFILL_CARD_LINKED_OFFER_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when a GPay-activated card linked offer is available to use.">
     Reminder: saved offer available
   </message>
   <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
@@ -602,6 +602,11 @@
     </message>
     <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
       See details
+    </message>
+  </if>
+  <if expr="toolkit_views">
+    <message name="IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE" desc="Title of the bubble shown on the merchant website when a merchant promo code offer is available to use.">
+      Use this code at checkout
     </message>
   </if>
 

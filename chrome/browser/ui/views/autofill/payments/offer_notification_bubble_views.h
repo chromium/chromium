@@ -15,16 +15,10 @@ class WebContents;
 
 namespace autofill {
 
-// This class implements the Desktop bubble that displays any eligible credit
-// card offers or rewards linked to the current page domain.
-// The bubble has the following general layout.
-//  ------------------------------------------------
-// |  G Pay | Google Pay offer available         X |
-// |                                               |
-// |  Pay with Visa ****4545 at checkout           |
-// |                                               |
-// |                                   [Got it]    |
-//  ------------------------------------------------
+// This class implements the Desktop bubble that displays any eligible offers or
+// rewards linked to the current page domain. This can include card-linked
+// offers, for which "Pay with [card] at checkout" is shown, or merchant promo
+// code offers, which shows the code the user should apply at checkout.
 class OfferNotificationBubbleViews : public AutofillBubbleBase,
                                      public LocationBarBubbleDelegateView {
  public:
@@ -47,6 +41,13 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;
+
+  void InitWithCardLinkedOfferContent();
+  void InitWithPromoCodeOfferContent();
+
+  // Called when the promo code LabelButton is clicked for a promo code offer.
+  // Copies the promo code to the clipboard.
+  void CopyPromoCodeToClipboard();
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;

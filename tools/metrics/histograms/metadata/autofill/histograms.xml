@@ -54,6 +54,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="CardLinkedOffer"
       summary="The bubble/infobar for an offer that is linked to a credit
                card."/>
+  <variant name="FreeListingCouponOffer"
+      summary="The bubble/infobar for a merchant promo code offer sourced
+               from the FreeListingCouponService."/>
 </variants>
 
 <variants name="Autofill.PaymentBubble.Show">

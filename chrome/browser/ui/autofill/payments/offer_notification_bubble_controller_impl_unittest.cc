@@ -143,4 +143,13 @@ TEST_F(OfferNotificationBubbleControllerImplTest, OriginSticky) {
   }
 }
 
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       ShownOfferIsRetrievableFromController) {
+  AutofillOfferData offer = CreateTestOfferWithOrigins(
+      {GURL("https://www.example.com/first/").GetOrigin()});
+  ShowBubble(&offer);
+
+  EXPECT_EQ(&offer, controller()->GetOffer());
+}
+
 }  // namespace autofill

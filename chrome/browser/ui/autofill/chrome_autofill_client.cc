@@ -44,6 +44,7 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
@@ -712,9 +713,14 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
   if (offer->IsCardLinkedOffer() && !card)
     return;
 
-  // TODO(crbug.com/1203811): Promo code offers should eventually show offer
-  //                          details in their own format as well.
-  if (!offer->IsCardLinkedOffer())
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableOfferNotificationForPromoCodes) &&
+      offer->IsPromoCodeOffer()) {
+    return;
+  }
+
+  // Malformed offers should not be displayed.
+  if (offer->GetOfferType() == AutofillOfferData::OfferType::UNKNOWN)
     return;
 
 #if defined(OS_ANDROID)

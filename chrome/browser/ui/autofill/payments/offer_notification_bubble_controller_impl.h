@@ -43,6 +43,7 @@ class OfferNotificationBubbleControllerImpl
   std::u16string GetOkButtonLabel() const override;
   AutofillBubbleBase* GetOfferNotificationBubbleView() const override;
   const CreditCard* GetLinkedCard() const override;
+  const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
 
@@ -77,6 +78,10 @@ class OfferNotificationBubbleControllerImpl
   void SetEventObserverForTesting(ObserverForTest* observer) {
     observer_for_testing_ = observer;
   }
+
+  // The Autofill offer being displayed as a bubble. Set when the bubble is
+  // requested to be shown via ShowOfferNotificationIfApplicable(~).
+  const AutofillOfferData* offer_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.

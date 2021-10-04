@@ -26,6 +26,7 @@ aggregate_vector_icons("components_vector_icons") {
     "close_rounded.icon",
     "cloud_download.icon",
     "code.icon",
+    "content_copy.icon",
     "content_paste.icon",
     "cookie.icon",
     "description.icon",

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -1214,8 +1215,11 @@ class AutofillMetrics {
   static void LogLocalCardMigrationPromptMetric(
       LocalCardMigrationOrigin local_card_migration_origin,
       LocalCardMigrationPromptMetric metric);
-  static void LogOfferNotificationBubbleOfferMetric(bool is_reshow);
+  static void LogOfferNotificationBubbleOfferMetric(
+      AutofillOfferData::OfferType offer_type,
+      bool is_reshow);
   static void LogOfferNotificationBubbleResultMetric(
+      AutofillOfferData::OfferType offer_type,
       OfferNotificationBubbleResultMetric metric,
       bool is_reshow);
   static void LogOfferNotificationInfoBarDeepLinkClicked();

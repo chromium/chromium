@@ -1173,21 +1173,47 @@ void AutofillMetrics::LogLocalCardMigrationPromptMetric(
 }
 
 // static
-void AutofillMetrics::LogOfferNotificationBubbleOfferMetric(bool is_reshow) {
-  base::UmaHistogramBoolean(
-      "Autofill.OfferNotificationBubbleOffer.CardLinkedOffer", is_reshow);
+void AutofillMetrics::LogOfferNotificationBubbleOfferMetric(
+    AutofillOfferData::OfferType offer_type,
+    bool is_reshow) {
+  std::string histogram_name = "Autofill.OfferNotificationBubbleOffer.";
+  // Switch to different sub-histogram depending on offer type being displayed.
+  switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+      histogram_name += "CardLinkedOffer";
+      break;
+    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+      histogram_name += "FreeListingCouponOffer";
+      break;
+    case AutofillOfferData::OfferType::UNKNOWN:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramBoolean(histogram_name, is_reshow);
 }
 
 // static
 void AutofillMetrics::LogOfferNotificationBubbleResultMetric(
+    AutofillOfferData::OfferType offer_type,
     OfferNotificationBubbleResultMetric metric,
     bool is_reshow) {
   DCHECK_LE(metric, OfferNotificationBubbleResultMetric::kMaxValue);
-  static const char first_show[] =
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.FirstShow";
-  static const char reshows[] =
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.Reshows";
-  base::UmaHistogramEnumeration(is_reshow ? reshows : first_show, metric);
+  std::string histogram_name = "Autofill.OfferNotificationBubbleResult.";
+  // Switch to different sub-histogram depending on offer type being displayed.
+  switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+      histogram_name += "CardLinkedOffer.";
+      break;
+    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+      histogram_name += "FreeListingCouponOffer.";
+      break;
+    case AutofillOfferData::OfferType::UNKNOWN:
+      NOTREACHED();
+      return;
+  }
+  // Add subhistogram for |is_reshow| decision.
+  histogram_name += is_reshow ? "Reshows" : "FirstShow";
+  base::UmaHistogramEnumeration(histogram_name, metric);
 }
 
 // static
