@@ -51,6 +51,7 @@ import android.content.ClipboardManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.Spannable;
@@ -71,6 +72,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -447,6 +449,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O, message = "https://crbug.com/1255937")
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");
@@ -472,6 +475,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O, message = "https://crbug.com/1255937")
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");
