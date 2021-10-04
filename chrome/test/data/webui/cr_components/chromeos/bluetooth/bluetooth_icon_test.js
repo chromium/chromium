@@ -40,7 +40,7 @@ suite('CrComponentsBluetoothIconTest', function() {
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
         /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
-    bluetoothIcon.device = device;
+    bluetoothIcon.device = device.deviceProperties;
     await flushAsync();
 
     assertEquals(getDeviceIcon().icon, 'bluetooth:mouse');
@@ -49,9 +49,9 @@ suite('CrComponentsBluetoothIconTest', function() {
 
     bluetoothIcon.device =
         /**
-           @type {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+           @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
          */
-        (Object.assign({}, device));
+        (Object.assign({}, device.deviceProperties));
     await flushAsync();
 
     assertEquals(getDeviceIcon().icon, 'bluetooth:default');

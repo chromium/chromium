@@ -23,7 +23,7 @@
 <div id="container" class="cr-row continuation"
     on-click="onSelected_"
     on-keydown="onKeydown_">
-  <bluetooth-icon device="[[device]]"></bluetooth-icon>
+  <bluetooth-icon device="[[device.deviceProperties]]"></bluetooth-icon>
   <div id="deviceName" class="text-row">
     [[getDeviceName_(device.*)]]
     <!--TODO(crbug.com/1010321): Add secondary text for device pairing status.-->

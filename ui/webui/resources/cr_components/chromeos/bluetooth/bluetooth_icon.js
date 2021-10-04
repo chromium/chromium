@@ -24,7 +24,7 @@ export class SettingsBluetoothIconElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -37,12 +37,12 @@ export class SettingsBluetoothIconElement extends PolymerElement {
    * @private
    */
   getIcon_() {
-    if (!this.device || !this.device.deviceProperties) {
+    if (!this.device) {
       return 'default';
     }
 
     const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
-    switch (this.device.deviceProperties.deviceType) {
+    switch (this.device.deviceType) {
       case deviceType.kComputer:
         return 'computer';
       case deviceType.kPhone:
