@@ -20,6 +20,11 @@
         padding-bottom: 10px;
       }
 
+      #appIcon {
+        width: 16px;
+        height: 16px;
+      }
+
       settings-collapse-radio-button {
         --settings-collapse-toggle-min-height: var(--settings-row-min-height);
       }
@@ -134,7 +139,9 @@
       <div class="list-frame menu-content vertical-list">
         <template is="dom-repeat" items="[[appProtocol.handlers]]">
           <div class="list-item">
-            <site-favicon url="[[item.host]]"></site-favicon>
+            <div id="appIcon"
+                style="background-image: url('chrome://app-icon/[[item.app_id]]/16')">
+            </div>
             <div class="middle protocol-host">
               <span class="url-directionality">[[item.host]]</span>
             </div>
@@ -159,7 +166,9 @@
       <div class="list-frame menu-content vertical-list">
         <template is="dom-repeat" items="[[appProtocol.handlers]]">
           <div class="list-item">
-            <site-favicon url="[[item.host]]"></site-favicon>
+            <div id="appIcon"
+                style="background-image: url('chrome://app-icon/[[item.app_id]]/16')">
+            </div>
             <div class="middle protocol-host">
               <span class="url-directionality">[[item.host]]</span>
             </div>
