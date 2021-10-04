@@ -125,54 +125,29 @@ ScopedShortcutOverrideForTesting* GetShortcutOverrideForTesting() {
   return GetMutableShortcutOverrideForTesting().value_or(nullptr);  // IN-TEST
 }
 
-std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
-    const base::FilePath& base_path) {                          // IN-TEST
+std::unique_ptr<ScopedShortcutOverrideForTesting>
+OverrideShortcutsForTesting() {                                 // IN-TEST
   DCHECK(!GetMutableShortcutOverrideForTesting().has_value());  // IN-TEST
   auto scoped_override = std::make_unique<ScopedShortcutOverrideForTesting>();
 
   // Initialize all directories used. The success & the DCHECK are separated to
   // ensure that these function calls occur on release builds.
-  if (!base_path.empty()) {
 #if defined(OS_WIN)
-    bool success =
-        scoped_override->desktop.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
-    success = scoped_override->application_menu.CreateUniqueTempDirUnderPath(
-        base_path);
-    DCHECK(success);
-    success =
-        scoped_override->quick_launch.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
-    success = scoped_override->startup.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+  bool success = scoped_override->desktop.CreateUniqueTempDir();
+  DCHECK(success);
+  success = scoped_override->application_menu.CreateUniqueTempDir();
+  DCHECK(success);
+  success = scoped_override->quick_launch.CreateUniqueTempDir();
+  DCHECK(success);
+  success = scoped_override->startup.CreateUniqueTempDir();
+  DCHECK(success);
 #elif defined(OS_MAC)
-    bool success =
-        scoped_override->chrome_apps_folder.CreateUniqueTempDirUnderPath(
-            base_path);
-    DCHECK(success);
+  bool success = scoped_override->chrome_apps_folder.CreateUniqueTempDir();
+  DCHECK(success);
 #elif defined(OS_LINUX)
-    bool success =
-        scoped_override->desktop.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+  bool success = scoped_override->desktop.CreateUniqueTempDir();
+  DCHECK(success);
 #endif
-  } else {
-#if defined(OS_WIN)
-    bool success = scoped_override->desktop.CreateUniqueTempDir();
-    DCHECK(success);
-    success = scoped_override->application_menu.CreateUniqueTempDir();
-    DCHECK(success);
-    success = scoped_override->quick_launch.CreateUniqueTempDir();
-    DCHECK(success);
-    success = scoped_override->startup.CreateUniqueTempDir();
-    DCHECK(success);
-#elif defined(OS_MAC)
-    bool success = scoped_override->chrome_apps_folder.CreateUniqueTempDir();
-    DCHECK(success);
-#elif defined(OS_LINUX)
-    bool success = scoped_override->desktop.CreateUniqueTempDir();
-    DCHECK(success);
-#endif
-  }
 
   GetMutableShortcutOverrideForTesting() = scoped_override.get();  // IN-TEST
   return scoped_override;

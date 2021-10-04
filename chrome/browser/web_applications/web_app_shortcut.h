@@ -63,8 +63,7 @@ ScopedShortcutOverrideForTesting* GetShortcutOverrideForTesting();
 //    artifacts on them that can make future tests flaky.
 // All installs that occur during the lifetime of the
 // ScopedShortcutOverrideForTesting MUST be uninstalled before it is destroyed.
-std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
-    const base::FilePath& base_path = base::FilePath());
+std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting();
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {
