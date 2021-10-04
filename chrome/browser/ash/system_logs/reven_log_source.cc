@@ -275,9 +275,9 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     DVLOG(1) << "Null response from croshealthd::ProbeTelemetryInfo.";
     base::StrAppend(&log_val, {"<not available>"});
   } else {
+    PopulateSystemInfo(&log_val, info_ptr);
     PopulateCpuInfo(&log_val, info_ptr);
     PopulateMemoryInfo(&log_val, info_ptr);
-    PopulateSystemInfo(&log_val, info_ptr);
     PopulateBusDevicesInfo(&log_val, info_ptr);
     PopulateTpmInfo(&log_val, info_ptr);
   }
