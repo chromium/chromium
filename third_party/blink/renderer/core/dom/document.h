@@ -213,7 +213,6 @@ class TreeWalker;
 class TrustedHTML;
 class V8NodeFilter;
 class V8UnionElementCreationOptionsOrString;
-class V8UnionStringOrTrustedHTML;
 class ViewportData;
 class VisitedLinkState;
 class WebMouseEvent;
@@ -1160,14 +1159,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // See "core/editing/commands/document_exec_command.cc" for implementations.
   bool execCommand(const String& command,
                    bool show_ui,
-                   const V8UnionStringOrTrustedHTML* value,
-                   ExceptionState&);
-
-  bool execCommand(const String& command,
-                   bool show_ui,
                    const String& value,
                    ExceptionState&);
-
   bool IsRunningExecCommand() const { return is_running_exec_command_; }
   bool queryCommandEnabled(const String& command, ExceptionState&);
   bool queryCommandIndeterm(const String& command, ExceptionState&);

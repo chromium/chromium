@@ -127,10 +127,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute Window? defaultView;
     [Affects=Nothing] boolean hasFocus();
     [CEReactions, MeasureAs=DocumentDesignMode] attribute DOMString designMode;
-    // Only the execCommand("insertHTML",..) sub-command needs to be Trusted
-    // Types checked. Other sub-commands will string-ify its input. This, we
-    // pass in a type union instead of using a [StringContext=] annotation.
-    [CEReactions, RaisesException] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional (DOMString or TrustedHTML) value = "");
+    [CEReactions, RaisesException] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
     [RaisesException] boolean queryCommandEnabled(DOMString commandId);
     [RaisesException] boolean queryCommandIndeterm(DOMString commandId);
     [RaisesException] boolean queryCommandState(DOMString commandId);
