@@ -3,14 +3,19 @@
 // found in the LICENSE file.
 
 import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
 
 /**
  * Records metrics for mount events.
  */
 export class MountMetrics {
   constructor() {
-    chrome.fileManagerPrivate.onMountCompleted.addListener(
-        this.onMountCompleted_.bind(this));
+    // SWA version of Files app has no concept of background pages, avoid
+    // emitting UMA metrics if running in SWA.
+    if (!window.isSWA) {
+      chrome.fileManagerPrivate.onMountCompleted.addListener(
+          this.onMountCompleted_.bind(this));
+    }
   }
 
   /**
@@ -20,6 +25,12 @@ export class MountMetrics {
    * @private
    */
   onMountCompleted_(event) {
+    // The SWA and Chrome app currently co-exist so the FilesSwa flag may be
+    // enabled but the Chrome app is running, exit early in this case as the
+    // event_router will be sending these metrics instead.
+    if (util.isSwaEnabled()) {
+      return;
+    }
     if (event.eventType === 'mount') {
       if (event.status === 'success' && event.volumeMetadata) {
         if (event.volumeMetadata.volumeType === 'provided') {

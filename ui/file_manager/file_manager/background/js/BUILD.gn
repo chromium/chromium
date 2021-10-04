@@ -712,12 +712,16 @@ js_unittest("mount_metrics_unittest.m") {
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 
 js_library("mount_metrics") {
-  deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:util",
+  ]
 }
 
 js_library("volume_manager_impl") {
