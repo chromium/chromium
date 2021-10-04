@@ -266,8 +266,10 @@ void GetNonWindowClients(
       }
     }
   } else {
-    for (const auto& controllee : controller->controllee_map())
-      AddNonWindowClient(controllee.second, options->client_type, &clients);
+    for (const auto& controllee : controller->controllee_map()) {
+      AddNonWindowClient(controllee.second.get(), options->client_type,
+                         &clients);
+    }
   }
   DidGetClients(std::move(callback), std::move(clients));
 }
@@ -310,8 +312,9 @@ void GetWindowClients(
       }
     }
   } else {
-    for (const auto& controllee : controller->controllee_map())
-      AddWindowClient(controllee.second, &clients_info);
+    for (const auto& controllee : controller->controllee_map()) {
+      AddWindowClient(controllee.second.get(), &clients_info);
+    }
   }
 
   if (clients_info.empty()) {

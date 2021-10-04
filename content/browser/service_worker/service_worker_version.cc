@@ -387,7 +387,7 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
       embedded_worker()->process_id(), embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id());
   for (const auto& controllee : controllee_map_) {
-    ServiceWorkerContainerHost* container_host = controllee.second;
+    ServiceWorkerContainerHost* container_host = controllee.second.get();
     info.clients.emplace(container_host->client_uuid(),
                          container_host->GetServiceWorkerClientInfo());
   }
@@ -775,7 +775,7 @@ void ServiceWorkerVersion::AddControllee(
   MaybeUpdateIdleDelayForTerminationOnNoControllee(
       base::Seconds(blink::mojom::kServiceWorkerDefaultIdleDelayInSeconds));
 
-  controllee_map_[uuid] = container_host;
+  controllee_map_[uuid] = container_host->GetWeakPtr();
   embedded_worker_->UpdateForegroundPriority();
   ClearTick(&no_controllees_time_);
 
@@ -874,7 +874,7 @@ void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
     base::debug::DumpWithoutCrashing();
     return;
   }
-  AddControllee(bfcached_controllee_map_.at(client_uuid));
+  AddControllee(bfcached_controllee_map_.at(client_uuid).get());
   bfcached_controllee_map_.erase(client_uuid);
 }
 
@@ -912,7 +912,7 @@ void ServiceWorkerVersion::EvictBackForwardCachedControllees(
   DCHECK(IsBackForwardCacheEnabled());
   while (!bfcached_controllee_map_.empty()) {
     auto controllee = bfcached_controllee_map_.begin();
-    EvictBackForwardCachedControllee(controllee->second, reason);
+    EvictBackForwardCachedControllee(controllee->second.get(), reason);
   }
 }
 
@@ -962,7 +962,7 @@ void ServiceWorkerVersion::Doom() {
   // ServiceWorkerVersion::RemoveControllee(), so be careful with iterators.
   auto iter = controllee_map_.begin();
   while (iter != controllee_map_.end()) {
-    ServiceWorkerContainerHost* container_host = iter->second;
+    ServiceWorkerContainerHost* container_host = iter->second.get();
     ++iter;
     container_host->NotifyControllerLost();
   }
@@ -979,7 +979,7 @@ void ServiceWorkerVersion::Doom() {
   // count as true controllees for service worker lifecycle purposes.
   auto bf_iter = bfcached_controllee_map_.begin();
   while (bf_iter != bfcached_controllee_map_.end()) {
-    ServiceWorkerContainerHost* bf_container_host = bf_iter->second;
+    ServiceWorkerContainerHost* bf_container_host = bf_iter->second.get();
     ++bf_iter;
     bf_container_host->NotifyControllerLost();
   }
@@ -2429,7 +2429,7 @@ bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
   // service workers.  The impact of foreground service workers is further
   // limited by the automatic shutdown mechanism.
   for (const auto& controllee : controllee_map_) {
-    ServiceWorkerContainerHost* container_host = controllee.second;
+    ServiceWorkerContainerHost* container_host = controllee.second.get();
     if (container_host->GetProcessId() != worker_process_id)
       return true;
   }

@@ -407,8 +407,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Note regarding BackForwardCache:
   // Clients in back-forward cache don't count as controllees.
   bool HasControllee() const { return !controllee_map_.empty(); }
-  const std::map<std::string, ServiceWorkerContainerHost*>& controllee_map()
-      const {
+  const std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>&
+  controllee_map() const {
     return controllee_map_;
   }
 
@@ -1016,9 +1016,14 @@ class CONTENT_EXPORT ServiceWorkerVersion
   std::unique_ptr<content::ServiceWorkerHost> worker_host_;
 
   // |controllee_map_| and |bfcached_controllee_map_| should not share the same
-  // controllee.
-  std::map<std::string, ServiceWorkerContainerHost*> controllee_map_;
-  std::map<std::string, ServiceWorkerContainerHost*> bfcached_controllee_map_;
+  // controllee.  ServiceWorkerContainerHost in the controllee maps should be
+  // non-null.
+  // TODO(crbug.com/1253581): Fix cases where hosts can become nullptr while
+  //                          stored in the maps.
+  std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
+      controllee_map_;
+  std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
+      bfcached_controllee_map_;
 
   // Keeps track of the |client_uuid| of ContainerHost that is being evicted,
   // and the reason why it is evicted. Once eviction is complete, the entry will
