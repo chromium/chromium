@@ -31,7 +31,7 @@ constexpr char kClipboardWarnPluginVmToastId[] = "clipboard_dlp_warn_plugin_vm";
 constexpr int kClipboardDlpToastDurationMs = 2500;
 
 // The duration of the clipboard bubble shown on blocked paste.
-constexpr int kClipboardDlpBlockDurationMs = 2500;
+constexpr int kClipboardDlpBlockDurationMs = 6000;
 
 // The duration of the clipboard warning shown before paste.
 constexpr int kClipboardDlpWarnDurationMs = 16000;
