@@ -153,7 +153,6 @@ class XmlWrapper {
   BOOL _updateCheckIsParsed;
   BOOL _urlIsParsed;
   BOOL _manifestIsParsed;
-  BOOL _pingIsParsed;
   BOOL _eventIsParsed;
   BOOL _dayStartIsParsed;
   NSString* _appId;
@@ -188,9 +187,9 @@ class XmlWrapper {
 }
 
 - (BOOL)isCorrect {
-  // A response should have either a ping ACK or an event ACK, depending on the
-  // contents of the request.
-  return !_hasError && (_pingIsParsed || _eventIsParsed);
+  // A response should have either an updatecheck ACK or an event ACK,
+  // depending on the contents of the request.
+  return !_hasError && (_updateCheckIsParsed || _eventIsParsed);
 }
 
 - (UpgradeRecommendedDetails*)upgradeRecommendedDetails {
@@ -240,7 +239,7 @@ class XmlWrapper {
 
   // Array of uninteresting tags in the Omaha xml response.
   NSArray* ignoredTagNames =
-      @[ @"action", @"actions", @"package", @"packages", @"urls" ];
+      @[ @"action", @"actions", @"package", @"packages", @"ping", @"urls" ];
   if ([ignoredTagNames containsObject:elementName])
     return;
 
@@ -318,13 +317,6 @@ class XmlWrapper {
       DCHECK(_updateInformation);
       _updateInformation->next_version =
           base::SysNSStringToUTF8([attributeDict valueForKey:@"version"]);
-    } else {
-      _hasError = YES;
-    }
-  } else if (!_pingIsParsed) {
-    if ([elementName isEqualToString:@"ping"] &&
-        [[attributeDict valueForKey:@"status"] isEqualToString:@"ok"]) {
-      _pingIsParsed = YES;
     } else {
       _hasError = YES;
     }
