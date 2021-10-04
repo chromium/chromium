@@ -36,9 +36,8 @@ namespace ash {
 namespace tray {
 namespace {
 
-const std::string kDeviceId = "/device/id";
+const std::string kDeviceNickname = "mau5";
 
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
@@ -294,8 +293,7 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
 
   PairedBluetoothDevicePropertiesPtr paired_properties =
       PairedBluetoothDeviceProperties::New();
-  paired_properties->device_properties = BluetoothDeviceProperties::New();
-  paired_properties->device_properties->id = kDeviceId;
+  paired_properties->nickname = kDeviceNickname;
 
   BluetoothDeviceListItemView* device_list_item =
       bluetooth_detailed_view()->AddDeviceListItem();
@@ -308,9 +306,9 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
   SimulateMouseClickAt(GetEventGenerator(), device_list_item);
   EXPECT_TRUE(
       bluetooth_detailed_view_delegate()->last_device_list_item_selected());
-  EXPECT_EQ(kDeviceId, bluetooth_detailed_view_delegate()
-                           ->last_device_list_item_selected()
-                           ->device_properties->id);
+  EXPECT_EQ(kDeviceNickname, bluetooth_detailed_view_delegate()
+                                 ->last_device_list_item_selected()
+                                 ->nickname);
 }
 
 }  // namespace tray

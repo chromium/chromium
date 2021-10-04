@@ -49,10 +49,5 @@ views::View* FakeBluetoothDetailedView::device_list() {
   return device_list_.get();
 }
 
-void FakeBluetoothDetailedView::OnViewClicked(views::View* view) {
-  last_clicked_device_list_item_ =
-      static_cast<BluetoothDeviceListItemView*>(view);
-}
-
 }  // namespace tray
 }  // namespace ash
