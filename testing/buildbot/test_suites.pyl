@@ -2639,7 +2639,7 @@
       'dawn_end2end_skip_validation_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
-          '--enable-toggles=skip_validation,use_tint_generator',
+          '--enable-toggles=skip_validation',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2647,15 +2647,11 @@
       'dawn_end2end_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'linux_args': [ '--no-xvfb' ],
-        'args': [
-          '--enable-toggles=use_tint_generator',
-        ],
       },
       'dawn_end2end_wire_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--use-wire',
-          '--enable-toggles=use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2669,7 +2665,6 @@
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--enable-backend-validation=partial',
-          '--enable-toggles=use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2682,7 +2677,6 @@
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--enable-backend-validation',
-          '--enable-toggles=use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2692,7 +2686,6 @@
     'gpu_dawn_perf_smoke_isolated_scripts': {
       'dawn_perf_tests': {
         'args': [
-          '--enable-toggles=use_tint_generator',
           # Tell the tests to only run one step for faster iteration.
           '--override-steps=1',
           '--gtest-benchmark-name=dawn_perf_tests',

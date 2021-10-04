@@ -7,7 +7,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -33,7 +32,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -61,7 +60,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -89,7 +87,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -168,7 +165,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -265,7 +261,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -291,7 +286,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -319,7 +314,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -347,7 +341,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -426,7 +419,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -523,7 +515,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -549,7 +540,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -577,7 +568,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -605,7 +595,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -684,7 +673,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -781,7 +769,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -807,7 +794,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -835,7 +822,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -863,7 +849,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -942,7 +927,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -1041,7 +1025,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1069,7 +1052,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1099,7 +1082,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1129,7 +1111,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1214,7 +1195,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -1318,7 +1298,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1344,7 +1323,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1372,7 +1351,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1400,7 +1378,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1477,7 +1454,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -1613,7 +1589,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1640,7 +1615,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1669,7 +1644,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1698,7 +1672,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1778,7 +1751,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -1879,7 +1851,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1907,7 +1878,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1937,7 +1908,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1967,7 +1937,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2052,7 +2021,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -2156,7 +2124,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2182,7 +2149,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2210,7 +2177,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2238,7 +2204,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2315,7 +2280,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -2413,7 +2377,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2443,7 +2406,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2475,7 +2438,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2566,7 +2528,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -2642,7 +2603,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2667,7 +2627,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2694,7 +2654,6 @@
       {
         "args": [
           "--enable-backend-validation=partial",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2721,7 +2680,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2797,7 +2755,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -2892,7 +2849,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2917,7 +2873,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2944,7 +2900,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2971,7 +2926,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3047,7 +3001,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -3142,7 +3095,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3167,7 +3119,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3194,7 +3146,6 @@
       {
         "args": [
           "--enable-backend-validation=partial",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3221,7 +3172,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3297,7 +3247,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -3392,7 +3341,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3417,7 +3365,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3444,7 +3392,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3471,7 +3418,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3547,7 +3493,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -3644,7 +3589,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3669,7 +3613,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3696,7 +3640,6 @@
       {
         "args": [
           "--enable-backend-validation=partial",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3723,7 +3666,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3799,7 +3741,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -3892,7 +3833,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3917,7 +3857,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3944,7 +3884,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3971,7 +3910,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4047,7 +3985,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -4140,7 +4077,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4165,7 +4101,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4192,7 +4128,6 @@
       {
         "args": [
           "--enable-backend-validation=partial",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4219,7 +4154,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4295,7 +4229,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"
@@ -4388,7 +4321,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4413,7 +4345,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4440,7 +4372,6 @@
       {
         "args": [
           "--enable-backend-validation",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4467,7 +4398,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4543,7 +4473,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--override-steps=1",
           "--gtest-benchmark-name=dawn_perf_tests",
           "-v"

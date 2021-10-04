@@ -9202,7 +9202,6 @@
       },
       {
         "args": [
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -9230,7 +9229,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation,use_tint_generator",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -9260,7 +9259,6 @@
       {
         "args": [
           "--use-wire",
-          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
