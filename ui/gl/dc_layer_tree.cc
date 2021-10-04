@@ -332,6 +332,10 @@ void DCLayerTree::AddDelegatedInkVisualToTree() {
 
   root_surface_visual_->AddVisual(ink_renderer_->GetInkVisual(), FALSE,
                                   nullptr);
+
+  // Adding the ink visual to a new visual tree invalidates all previously set
+  // properties. Therefore, force update.
+  ink_renderer_->SetNeedsDcompPropertiesUpdate();
 }
 
 void DCLayerTree::SetDelegatedInkTrailStartPoint(
