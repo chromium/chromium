@@ -2165,7 +2165,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       layout_tree_rebuild_root_.Clear();
       layout_tree_rebuild_root_.Update(nullptr, &container);
     } else {
-      DCHECK(FlatTreeTraversal::Contains(
+      DCHECK(FlatTreeTraversal::ContainsIncludingPseudoElement(
           container, *layout_tree_rebuild_root_.GetRootNode()));
     }
     RebuildLayoutTree();

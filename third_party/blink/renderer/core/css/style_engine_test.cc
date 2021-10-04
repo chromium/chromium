@@ -3553,9 +3553,6 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
         width: 100px;
         height: 100px;
       }
-      /* TODO(crbug.com/1217976): For now we need to create the pseudo-
-         element #container outside of the container query. */
-      #container::before { content: " " }
       @container (min-width: 200px) {
         #container::before { content: " " }
         span::before { content: " " }
@@ -3577,9 +3574,8 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
       *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
 
-  // Two ::before elements, plus #span. (Originating elements are also
-  // marked as SetDependsOnContainerQueries).
-  EXPECT_EQ(3u, GetStyleEngine().StyleForElementCount() - start_count);
+  // The two ::before elements.
+  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
