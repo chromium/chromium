@@ -294,7 +294,7 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   // app defined draggable region so we can return htcaption.
   web_app::AppBrowserController* controller =
       browser_view_->browser()->app_controller();
-  if (controller && controller->IsWindowControlsOverlayEnabled() &&
+  if (browser_view_->IsWindowControlsOverlayEnabled() && controller &&
       controller->draggable_region().has_value() &&
       controller->draggable_region()->contains(
           point_in_browser_view_coords.x(), point_in_browser_view_coords.y())) {
