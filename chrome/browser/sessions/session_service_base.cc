@@ -333,7 +333,12 @@ bool SessionServiceBase::ShouldUseDelayedSave() {
 }
 
 void SessionServiceBase::OnWillSaveCommands() {
+  if (!is_saving_enabled_)
+    return;
+
   RebuildCommandsIfRequired();
+  did_save_commands_at_least_once_ |=
+      !command_storage_manager()->pending_commands().empty();
 }
 
 void SessionServiceBase::OnErrorWritingSessionCommands() {
@@ -629,6 +634,9 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
 
 void SessionServiceBase::ScheduleCommand(
     std::unique_ptr<sessions::SessionCommand> command) {
+  if (!is_saving_enabled_)
+    return;
+
   DCHECK(command);
   if (ReplacePendingCommand(command_storage_manager_.get(), &command))
     return;
@@ -687,4 +695,20 @@ bool SessionServiceBase::GetAvailableRangeForTest(const SessionID& tab_id,
 
   *range = i->second;
   return true;
+}
+
+void SessionServiceBase::SetSavingEnabled(bool enabled) {
+  if (is_saving_enabled_ == enabled)
+    return;
+  is_saving_enabled_ = enabled;
+  if (!is_saving_enabled_) {
+    // Transitioning from enabled to disabled should happen very early on,
+    // before any commands are actually written. If commands are written, then
+    // the purpose of disabling will have failed (because by writing some
+    // commands the previous session is going to be lost on exit).
+    DCHECK(!did_save_commands_at_least_once_);
+    command_storage_manager()->ClearPendingCommands();
+  } else {
+    ScheduleResetCommands();
+  }
 }

@@ -82,6 +82,7 @@ void CommandStorageManager::AppendRebuildCommand(
 
 void CommandStorageManager::AppendRebuildCommands(
     std::vector<std::unique_ptr<SessionCommand>> commands) {
+  commands_since_reset_ += commands.size();
   pending_commands_.insert(pending_commands_.end(),
                            std::make_move_iterator(commands.begin()),
                            std::make_move_iterator(commands.end()));
@@ -95,6 +96,8 @@ void CommandStorageManager::EraseCommand(SessionCommand* old_command) {
       });
   CHECK(it != pending_commands_.end());
   pending_commands_.erase(it);
+  DCHECK_GT(commands_since_reset_, 0);
+  --commands_since_reset_;
 }
 
 void CommandStorageManager::SwapCommand(
@@ -110,6 +113,8 @@ void CommandStorageManager::SwapCommand(
 }
 
 void CommandStorageManager::ClearPendingCommands() {
+  DCHECK_GE(commands_since_reset_, static_cast<int>(pending_commands_.size()));
+  commands_since_reset_ -= static_cast<int>(pending_commands_.size());
   pending_commands_.clear();
 }
 
