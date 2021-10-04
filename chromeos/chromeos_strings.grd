@@ -1803,35 +1803,34 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION" desc="Label for Network diagnostics `ARC DNS resolution` test. This test ensures that the Domain Name Server (DNS) can resolve network requests inside ARC.">
         (Android) DNS resolution
       </message>
-      <!-- TODO(ashleydp): Remove translateable false for all network technology when display text confirmed. -->
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_CDMA1XRTT" desc="Label for Cellular network technology `CDMA1XRTT`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_CDMA1XRTT" desc="Label for Cellular network technology `CDMA1XRTT`.">
         CDMA1XRTT
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_EDGE" desc="Label for Cellular network technology `EDGE`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_EDGE" desc="Label for Cellular network technology `EDGE`.">
         EDGE
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_EVDO" desc="Label for Cellular network technology `EVDO`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_EVDO" desc="Label for Cellular network technology `EVDO`.">
         EVDO
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_GPRS" desc="Label for Cellular network technology `GPRS`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_GPRS" desc="Label for Cellular network technology `GPRS`.">
         GPRS
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_GSM" desc="Label for Cellular network technology `GMS`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_GSM" desc="Label for Cellular network technology `GMS`.">
         GSM
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_HSPA" desc="Label for Cellular network technology `HSPA`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_HSPA" desc="Label for Cellular network technology `HSPA`.">
         HSPA
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_HSPA_PLUS" desc="Label for Cellular network technology `HSPAPlus`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_HSPA_PLUS" desc="Label for Cellular network technology `HSPAPlus`.">
         HSPAPlus
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE" desc="Label for Cellular network technology `LTE`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE" desc="Label for Cellular network technology `LTE`.">
         LTE
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE_ADVANCED" desc="Label for Cellular network technology `LTEAdvanced`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE_ADVANCED" desc="Label for Cellular network technology `LTEAdvanced`.">
         LTEAdvanced
       </message>
-      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_UMTS" desc="Label for Cellular network technology `UMTS`.">
+      <message name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_UMTS" desc="Label for Cellular network technology `UMTS`.">
         UMTS
       </message>
       <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_MAC_ADDRESS_LABEL" desc="Label for Mac Address.">
