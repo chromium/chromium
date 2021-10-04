@@ -439,8 +439,19 @@ Polymer({
   /** @private */
   onFastInitiationNotificationToggledByUser_() {
     this.set(
-        'settings.fastInitiationNotificationEnabled',
-        !this.get('settings.fastInitiationNotificationEnabled'));
+        'settings.fastInitiationNotificationState',
+        this.isFastInitiationNotificationEnabled_() ?
+            nearbyShare.mojom.FastInitiationNotificationState.kDisabledByUser :
+            nearbyShare.mojom.FastInitiationNotificationState.kEnabled);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isFastInitiationNotificationEnabled_() {
+    return this.get('settings.fastInitiationNotificationState') ===
+        nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
   },
 
   /**

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "components/prefs/testing_pref_service.h"
@@ -117,8 +118,9 @@ TEST_F(FastInitiationScannerFeatureUsageMetricsTest,
 }
 
 TEST_F(FastInitiationScannerFeatureUsageMetricsTest, NotEnabled_Pref) {
-  pref_service_.SetBoolean(
-      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName, false);
+  pref_service_.SetInteger(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
+      static_cast<int>(FastInitiationNotificationState::kDisabledByUser));
   FastInitiationScannerFeatureUsageMetrics feature_usage_metrics(
       &pref_service_);
   feature_usage_metrics.SetBluetoothAdapter(mock_bluetooth_adapter_);

@@ -44,13 +44,28 @@ enum DeviceNameValidationResult {
   kErrorNotValidUtf8 = 3
 };
 
+// Represents the Fast Initiation Notification feature state. This feature
+// shows a notification when a nearby device is trying to share. It can be
+// enabled/disabed independently from the Nearby Share feature.
+enum FastInitiationNotificationState {
+  kEnabled = 0,
+  // User manually disabled the Fast Initiation Notification feature. If
+  // Nearby Share feature is toggled the notification feature will remain
+  // disabled.
+  kDisabledByUser = 1,
+  // User turned off Nearby Share which disables the Fast Initiation
+  // Notification feature. If Nearby Share is enabled while Fast Initiation
+  // Notification is in this state then notifications will be re-enabled.
+  kDisabledByFeature = 2,
+};
+
 // This observer interface allows clients to be notified whenever key Nearby
 // Share settings are changed.
 interface NearbyShareSettingsObserver {
   // Called when the nearby feature is enabled or disabled.
   OnEnabledChanged(bool enabled);
-  // Called when Fast Initiation notifications are enabled or disabled.
-  OnFastInitiationNotificationEnabledChanged(bool enabled);
+  // Called when Fast Initiation notification feature state changes.
+  OnFastInitiationNotificationStateChanged(FastInitiationNotificationState state);
   // Called when the device name changes.
   OnDeviceNameChanged(string device_name);
   // Called when data usage changes.
@@ -77,10 +92,10 @@ interface NearbyShareSettings {
   // Get the onboarding completion state for the Nearby Share feature.
   IsOnboardingComplete() => (bool completed);
 
-  // Get the enabled state for Fast Initiation notification.
-  GetFastInitiationNotificationEnabled() => (bool enabled);
-  // Set the enabled state for Fast Initiation notification.
-  SetFastInitiationNotificationEnabled(bool enabled);
+  // Get the feature state for Fast Initiation notification.
+  GetFastInitiationNotificationState() => (FastInitiationNotificationState state);
+  // Set the feature state for Fast Initiation notification.
+  SetFastInitiationNotificationState(FastInitiationNotificationState state);
 
   // Get the device name shown to a sender when this device is available as
   // a share target. |device_name| is the new device name.

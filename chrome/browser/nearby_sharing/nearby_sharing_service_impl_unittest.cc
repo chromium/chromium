@@ -608,9 +608,10 @@ class NearbySharingServiceImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetIsFastInitiationNotificationEnabled(bool is_enabled) {
+  void SetFastInitiationNotificationState(
+      nearby_share::mojom::FastInitiationNotificationState state) {
     NearbyShareSettings settings(&prefs_, local_device_data_manager());
-    settings.SetFastInitiationNotificationEnabled(is_enabled);
+    settings.SetFastInitiationNotificationState(state);
 
     // This ensures that the change propagates through mojo and the observers
     // are called.
@@ -4671,7 +4672,7 @@ TEST_F(NearbySharingServiceImplTest,
 }
 
 TEST_F(NearbySharingServiceImplTest,
-       FastInitiationScanning_OnFastInitiationNotificationEnabledChanged) {
+       FastInitiationScanning_OnFastInitiationNotificationStateChanged) {
   // Fast init notifications are enabled by default so a scanner is created on
   // initialization of the service.
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
@@ -4679,11 +4680,12 @@ TEST_F(NearbySharingServiceImplTest,
 
   // The existing scanner is destroyed when fast init notifications are turned
   // off.
-  SetIsFastInitiationNotificationEnabled(false);
+  SetFastInitiationNotificationState(
+      FastInitiationNotificationState::kDisabledByUser);
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 
-  SetIsFastInitiationNotificationEnabled(true);
+  SetFastInitiationNotificationState(FastInitiationNotificationState::kEnabled);
   EXPECT_EQ(2u, fast_initiation_scanner_factory_->scanner_created_count());
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 }

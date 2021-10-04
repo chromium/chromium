@@ -540,12 +540,16 @@ suite('NearbyShare', function() {
       assertTrue(!!fastInitToggle);
       await flushAsync();
       assertTrue(fastInitToggle.checked);
-      assertTrue(subpage.settings.fastInitiationNotificationEnabled);
+      assertEquals(
+          nearbyShare.mojom.FastInitiationNotificationState.kEnabled,
+          subpage.settings.fastInitiationNotificationState);
 
       fastInitToggle.click();
       await flushAsync();
       assertFalse(fastInitToggle.checked);
-      assertFalse(subpage.settings.fastInitiationNotificationEnabled);
+      assertEquals(
+          nearbyShare.mojom.FastInitiationNotificationState.kDisabledByUser,
+          subpage.settings.fastInitiationNotificationState);
     });
 
     test('Subpage content visible but disabled when feature off', async () => {

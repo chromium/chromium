@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.h"
 
+#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
@@ -36,8 +37,9 @@ bool FastInitiationScannerFeatureUsageMetrics::IsEnabled() const {
   return IsEligible() &&
          GetNearbyShareEnabledState(pref_service_) !=
              NearbyShareEnabledState::kDisallowedByPolicy &&
-         pref_service_->GetBoolean(
-             prefs::kNearbySharingFastInitiationNotificationEnabledPrefName);
+         static_cast<FastInitiationNotificationState>(pref_service_->GetInteger(
+             prefs::kNearbySharingFastInitiationNotificationStatePrefName)) ==
+             FastInitiationNotificationState::kEnabled;
 }
 
 void FastInitiationScannerFeatureUsageMetrics::SetBluetoothAdapter(

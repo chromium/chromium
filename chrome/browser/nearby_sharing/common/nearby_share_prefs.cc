@@ -26,8 +26,8 @@ const char kNearbySharingDataUsageName[] = "nearby_sharing.data_usage";
 const char kNearbySharingDeviceIdPrefName[] = "nearby_sharing.device_id";
 const char kNearbySharingDeviceNamePrefName[] = "nearby_sharing.device_name";
 const char kNearbySharingEnabledPrefName[] = "nearby_sharing.enabled";
-const char kNearbySharingFastInitiationNotificationEnabledPrefName[] =
-    "nearby_sharing.fast_initiation_notification_enabled";
+const char kNearbySharingFastInitiationNotificationStatePrefName[] =
+    "nearby_sharing.fast_initiation_notification_state";
 const char kNearbySharingOnboardingCompletePrefName[] =
     "nearby_sharing.onboarding_complete";
 const char kNearbySharingFullNamePrefName[] = "nearby_sharing.full_name";
@@ -63,9 +63,10 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
                                 /*default_value=*/false);
-  registry->RegisterBooleanPref(
-      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName,
-      /*default_value=*/true);
+  registry->RegisterIntegerPref(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
+      /*default_value=*/static_cast<int>(
+          FastInitiationNotificationState::kEnabled));
   registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
                                 /*default_value=*/false);
   registry->RegisterIntegerPref(

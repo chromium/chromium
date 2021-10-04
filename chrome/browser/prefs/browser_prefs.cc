@@ -667,6 +667,12 @@ const char kPrivacyBudgetRetiredSurfaces[] = "privacy_budget.retired_surfaces";
 const char kPrivacyBudgetSeed[] = "privacy_budget.randomizer_seed";
 const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 09/2021.
+const char kNearbySharingFastInitiationNotificationEnabledPrefName[] =
+    "nearby_sharing.fast_initiation_notification_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -865,6 +871,11 @@ void RegisterProfilePrefsForMigration(
 #endif
 
   registry->RegisterIntegerPref(kAutofillAcceptSaveCreditCardPromptState, 0);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(
+      kNearbySharingFastInitiationNotificationEnabledPrefName, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1705,6 +1716,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 09/2021.
   profile_prefs->ClearPref(kDiceMigrationCompletePref);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 09/2021
+  profile_prefs->ClearPref(
+      kNearbySharingFastInitiationNotificationEnabledPrefName);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

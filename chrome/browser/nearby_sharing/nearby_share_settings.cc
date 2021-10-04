@@ -4,9 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "components/prefs/pref_service.h"
@@ -23,9 +25,9 @@ NearbyShareSettings::NearbyShareSettings(
       base::BindRepeating(&NearbyShareSettings::OnEnabledPrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName,
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
       base::BindRepeating(
-          &NearbyShareSettings::OnFastInitiationNotificationEnabledPrefChanged,
+          &NearbyShareSettings::OnFastInitiationNotificationStatePrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kNearbySharingBackgroundVisibilityName,
@@ -61,9 +63,10 @@ bool NearbyShareSettings::GetEnabled() const {
   return pref_service_->GetBoolean(prefs::kNearbySharingEnabledPrefName);
 }
 
-bool NearbyShareSettings::GetFastInitiationNotificationEnabled() const {
-  return pref_service_->GetBoolean(
-      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName);
+FastInitiationNotificationState
+NearbyShareSettings::GetFastInitiationNotificationState() const {
+  return static_cast<FastInitiationNotificationState>(pref_service_->GetInteger(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName));
 }
 
 std::string NearbyShareSettings::GetDeviceName() const {
@@ -113,9 +116,9 @@ void NearbyShareSettings::GetEnabled(base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetEnabled());
 }
 
-void NearbyShareSettings::GetFastInitiationNotificationEnabled(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(GetFastInitiationNotificationEnabled());
+void NearbyShareSettings::GetFastInitiationNotificationState(
+    base::OnceCallback<void(FastInitiationNotificationState)> callback) {
+  std::move(callback).Run(GetFastInitiationNotificationState());
 }
 
 void NearbyShareSettings::SetEnabled(bool enabled) {
@@ -134,9 +137,11 @@ void NearbyShareSettings::SetEnabled(bool enabled) {
   }
 }
 
-void NearbyShareSettings::SetFastInitiationNotificationEnabled(bool enabled) {
-  pref_service_->SetBoolean(
-      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName, enabled);
+void NearbyShareSettings::SetFastInitiationNotificationState(
+    FastInitiationNotificationState state) {
+  pref_service_->SetInteger(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
+      static_cast<int>(state));
 }
 
 void NearbyShareSettings::IsOnboardingComplete(
@@ -223,12 +228,18 @@ void NearbyShareSettings::OnEnabledPrefChanged() {
   for (auto& remote : observers_set_) {
     remote->OnEnabledChanged(enabled);
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kNearbySharingBackgroundScanning) &&
+      chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+    ProcessFastInitiationNotificationParentPrefChanged(enabled);
+  }
 }
 
-void NearbyShareSettings::OnFastInitiationNotificationEnabledPrefChanged() {
-  bool enabled = GetFastInitiationNotificationEnabled();
+void NearbyShareSettings::OnFastInitiationNotificationStatePrefChanged() {
+  FastInitiationNotificationState state = GetFastInitiationNotificationState();
   for (auto& remote : observers_set_) {
-    remote->OnFastInitiationNotificationEnabledChanged(enabled);
+    remote->OnFastInitiationNotificationStateChanged(state);
   }
 }
 
@@ -258,4 +269,23 @@ void NearbyShareSettings::OnIsOnboardingCompletePrefChanged() {
   for (auto& remote : observers_set_) {
     remote->OnIsOnboardingCompleteChanged(is_complete);
   }
+}
+
+void NearbyShareSettings::ProcessFastInitiationNotificationParentPrefChanged(
+    bool enabled) {
+  // If onboarding is not yet complete the Nearby feature should not be able to
+  // affect the enabled state.
+  if (!IsOnboardingComplete()) {
+    return;
+  }
+
+  // If the user explicitly disabled notifications, toggling the Nearby Share
+  // feature does not re-enable the notification sub-feature.
+  if (GetFastInitiationNotificationState() ==
+      FastInitiationNotificationState::kDisabledByUser) {
+    return;
+  }
+  SetFastInitiationNotificationState(
+      enabled ? FastInitiationNotificationState::kEnabled
+              : FastInitiationNotificationState::kDisabledByFeature);
 }

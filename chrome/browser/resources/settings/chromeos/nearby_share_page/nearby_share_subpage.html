@@ -225,7 +225,8 @@
             id="fastInitiationNotificationToggle"
             aria-labelledby="fastInitiationNotificationRowTitle"
             aria-describedby="fastInitiationNotificationRowDescription"
-            checked="[[settings.fastInitiationNotificationEnabled]]"
+            checked="[[isFastInitiationNotificationEnabled_(
+                settings.fastInitiationNotificationState)]]"
             on-change="onFastInitiationNotificationToggledByUser_">
         </cr-toggle>
       </div>

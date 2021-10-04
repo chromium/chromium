@@ -15,8 +15,9 @@ cr.define('nearby_share', function() {
     constructor() {
       /** @private {!boolean} */
       this.enabled_ = true;
-      /** @private {!boolean} */
-      this.fastInitiationNotificationEnabled_ = true;
+      /** @private {!nearbyShare.mojom.FastInitiationNotificationState} */
+      this.fastInitiationNotificationState_ =
+          nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
       /** @private {!string} */
       this.deviceName_ = 'testDevice';
       /** @private {!nearbyShare.mojom.DataUsage} */
@@ -64,10 +65,11 @@ cr.define('nearby_share', function() {
     }
 
     /**
-     * @return {!Promise<{enabled: !boolean}>}
+     * @return {!Promise<{state:
+     *     !nearbyShare.mojom.FastInitiationNotificationState}>}
      */
-    async getFastInitiationNotificationEnabled() {
-      return {enabled: this.fastInitiationNotificationEnabled_};
+    async getFastInitiationNotificationState() {
+      return {state: this.fastInitiationNotificationState_};
     }
 
     /**
@@ -84,12 +86,12 @@ cr.define('nearby_share', function() {
     }
 
     /**
-     * @param { !boolean } enabled
+     * @param { !nearbyShare.mojom.FastInitiationNotificationState } state
      */
-    setFastInitiationNotificationEnabled(enabled) {
-      this.fastInitiationNotificationEnabled_ = enabled;
+    setFastInitiationNotificationState(state) {
+      this.fastInitiationNotificationState_ = state;
       if (this.observer_) {
-        this.observer_.onFastInitiationNotificationEnabledChanged(enabled);
+        this.observer_.onFastInitiationNotificationStateChanged(state);
       }
     }
 

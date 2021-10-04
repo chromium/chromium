@@ -1213,19 +1213,20 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
     certificate_manager_->Stop();
     process_reference_.reset();
   }
+
   InvalidateSurfaceState();
 }
 
-void NearbySharingServiceImpl::OnFastInitiationNotificationEnabledChanged(
-    bool enabled) {
+void NearbySharingServiceImpl::OnFastInitiationNotificationStateChanged(
+    FastInitiationNotificationState state) {
   if (!IsBackgroundScanningFeatureEnabled()) {
     return;
   }
+  NS_LOG(VERBOSE) << __func__
+                  << ": Fast Initiation Notification state: " << state;
   // Runs through a series of checks to determine if background scanning should
   // be started or stopped.
   InvalidateReceiveSurfaceState();
-  NS_LOG(VERBOSE) << __func__ << ": Fast Initiation Notification "
-                  << (enabled ? "enabled" : "disabled");
 }
 
 void NearbySharingServiceImpl::OnDeviceNameChanged(
@@ -2113,9 +2114,10 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
   if (!profile_)
     return;
 
-  if (!settings_.GetFastInitiationNotificationEnabled()) {
+  if (settings_.GetFastInitiationNotificationState() !=
+      FastInitiationNotificationState::kEnabled) {
     NS_LOG(VERBOSE) << __func__
-                    << ": Stopping background scanning fast initiation "
+                    << ": Stopping background scanning; fast initiation "
                        "notification is disabled";
     StopFastInitiationScanning();
     return;
@@ -2151,16 +2153,6 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because bluetooth is powered down.";
-    StopFastInitiationScanning();
-    return;
-  }
-
-  // User has explicitly disabled Nearby Sharing after onboarding. Don't
-  // background scan.
-  if (settings_.IsOnboardingComplete() && !settings_.GetEnabled()) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Stopping background scanning because Nearby Sharing is disabled.";
     StopFastInitiationScanning();
     return;
   }

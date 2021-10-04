@@ -14,7 +14,8 @@ cr.define('nearby_share', function() {
   /**
    * @typedef {{
    *            enabled:boolean,
-   *            fastInitiationNotificationEnabled:boolean,
+   *            fastInitiationNotificationState:
+   *                nearbyShare.mojom.FastInitiationNotificationState,
    *            deviceName:string,
    *            dataUsage:nearbyShare.mojom.DataUsage,
    *            visibility:nearbyShare.mojom.Visibility,
@@ -58,7 +59,7 @@ cr.define('nearby_share', function() {
             this.nearbyShareSettings_.getVisibility(),
             this.nearbyShareSettings_.getAllowedContacts(),
             this.nearbyShareSettings_.isOnboardingComplete(),
-            this.nearbyShareSettings_.getFastInitiationNotificationEnabled(),
+            this.nearbyShareSettings_.getFastInitiationNotificationState(),
           ])
           .then((results) => {
             this.set('settings.enabled', results[0].enabled);
@@ -68,8 +69,7 @@ cr.define('nearby_share', function() {
             this.set('settings.allowedContacts', results[4].allowedContacts);
             this.set('settings.isOnboardingComplete', results[5].completed);
             this.set(
-                'settings.fastInitiationNotificationEnabled',
-                results[6].enabled);
+                'settings.fastInitiationNotificationState', results[6].state);
             this.onSettingsRetrieved();
           });
     },
@@ -92,10 +92,10 @@ cr.define('nearby_share', function() {
     },
 
     /**
-     * @param {!boolean} enabled
+     * @param {!nearbyShare.mojom.FastInitiationNotificationState} state
      */
-    onFastInitiationNotificationEnabledChanged(enabled) {
-      this.set('settings.fastInitiationNotificationEnabled', enabled);
+    onFastInitiationNotificationStateChanged(state) {
+      this.set('settings.fastInitiationNotificationState', state);
     },
 
     /**
@@ -145,8 +145,8 @@ cr.define('nearby_share', function() {
         case 'settings.enabled':
           this.nearbyShareSettings_.setEnabled(change.value);
           break;
-        case 'settings.fastInitiationNotificationEnabled':
-          this.nearbyShareSettings_.setFastInitiationNotificationEnabled(
+        case 'settings.fastInitiationNotificationState':
+          this.nearbyShareSettings_.setFastInitiationNotificationState(
               change.value);
           break;
         case 'settings.deviceName':
