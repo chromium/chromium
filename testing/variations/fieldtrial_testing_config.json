@@ -5011,8 +5011,6 @@
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "QuickActionSearchWidgetAndroid",
-                        "QuickActionSearchWidgetAndroidDinoVariant",
                         "SearchSuggestChips"
                     ]
                 }
@@ -5036,7 +5034,9 @@
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "QuickActionSearchWidgetAndroid",
+                        "QuickActionSearchWidgetAndroidDinoVariant"
                     ]
                 }
             ]
