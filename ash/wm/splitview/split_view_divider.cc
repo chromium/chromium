@@ -457,6 +457,10 @@ void SplitViewDivider::OnTransientChildRemoved(aura::Window* window,
   StopObservingTransientChild(transient);
 }
 
+bool SplitViewDivider::IsWindowObserved(const aura::Window* window) const {
+  return base::Contains(observed_windows_, window);
+}
+
 void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   DCHECK(!divider_widget_);
   // Native widget owns this widget.

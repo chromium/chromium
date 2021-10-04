@@ -2942,6 +2942,36 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
 }
 
+// Tests that the split view divider observers the snapped windows when the
+// tablet mode split view starts.
+TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  // Exit tablet mode.
+  tablet_mode_controller->SetEnabledForTest(false);
+  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> left_window(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> right_window(CreateWindow(bounds));
+
+  // Snap the left and right window.
+  split_view_controller()->SnapWindow(left_window.get(),
+                                      SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(right_window.get(),
+                                      SplitViewController::RIGHT);
+
+  // Entering tablet mode will start tablet mode split view and create the split
+  // view divider.
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(split_view_controller()->InTabletSplitViewMode());
+  EXPECT_TRUE(split_view_divider());
+
+  // The left and right windows are observed by split view divider.
+  EXPECT_TRUE(split_view_divider()->IsWindowObserved(left_window.get()));
+  EXPECT_TRUE(split_view_divider()->IsWindowObserved(right_window.get()));
+}
+
 TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
   UpdateDisplay("800x600");
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();

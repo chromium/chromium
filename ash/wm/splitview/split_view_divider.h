@@ -103,6 +103,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
 
+  // Checks if the `window` is observed.
+  bool IsWindowObserved(const aura::Window* window) const;
+
   views::Widget* divider_widget() { return divider_widget_; }
 
  private:
