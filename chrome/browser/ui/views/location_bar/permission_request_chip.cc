@@ -140,7 +140,9 @@ views::View* PermissionRequestChip::CreateBubble() {
 
 void PermissionRequestChip::Collapse(bool allow_restart) {
   PermissionChip::Collapse(allow_restart);
-  ShowBlockedBadge();
+  if (!IsBubbleShowing()) {
+    ShowBlockedBadge();
+  }
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {
