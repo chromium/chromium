@@ -71,6 +71,12 @@ void DecoderSupport_OnKnown(
     std::unique_ptr<VideoDecoder::MediaConfigType> media_config,
     ScriptPromiseResolver* resolver,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
+  if (!gpu_factories) {
+    support->setSupported(false);
+    resolver->Resolve(support);
+    return;
+  }
+
   DCHECK(gpu_factories->IsDecoderSupportKnown());
   support->setSupported(
       gpu_factories->IsDecoderConfigSupportedOrUnknown(*media_config) ==
