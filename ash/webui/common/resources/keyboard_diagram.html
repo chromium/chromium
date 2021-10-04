@@ -1,0 +1,179 @@
+<style>
+  :root {
+    --grid-gap: 3px;
+    --key-travel: 3px;
+  }
+
+  .keyboard {
+    display: inline-flex;
+    height: 200px;
+    width: 100%;
+  }
+
+  .main-cluster {
+    display: grid;
+    flex-grow: 1;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(29, 1fr);
+    grid-template-rows: 1fr repeat(5, 2fr);
+  }
+
+  keyboard-key {
+    --keyboard-key-travel: var(--key-travel);
+    grid-column: span 2;
+  }
+
+  .left {
+    --keyboard-key-glyph-alignment: left;
+  }
+
+  .right {
+    --keyboard-key-glyph-alignment: right;
+  }
+
+  #topRow {
+    display: flex;
+    grid-column: 1 / -1;
+  }
+
+  #topRow keyboard-key {
+    flex-basis: 0;
+    flex-grow: 1;
+    margin-right: var(--grid-gap);
+  }
+
+  #topRow keyboard-key:last-child {
+    margin-right: 0;
+  }
+
+  #arrowKeyCluster {
+    display: grid;
+    grid-column: span 6;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  #arrowKeyCluster keyboard-key {
+    grid-column: span 1;
+    grid-row: 2;
+  }
+
+  #arrowKeyCluster keyboard-key:first-child {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Default (ANSI) key sizes */
+
+  #backspaceKey,
+  #tabKey,
+  #enterKey {
+    grid-column: span 3;
+  }
+
+  #searchKey,
+  #rightShiftKey,
+  #leftAltKey {
+    grid-column: span 4;
+  }
+
+  #leftShiftKey,
+  #leftCtrlKey {
+    grid-column: span 5;
+  }
+
+  #spacebar {
+    grid-column: span 10;
+  }
+</style>
+<div class="keyboard">
+  <div class="main-cluster">
+    <div id="topRow">
+      <keyboard-key main-glyph="esc"></keyboard-key>
+      <!-- TODO(crbug.com/1207678): Use icons for the top row keys. -->
+      <keyboard-key main-glyph="[b]"></keyboard-key>
+      <keyboard-key main-glyph="[r]"></keyboard-key>
+      <keyboard-key main-glyph="[fs]"></keyboard-key>
+      <keyboard-key main-glyph="[o]"></keyboard-key>
+      <keyboard-key main-glyph="[s]"></keyboard-key>
+      <keyboard-key main-glyph="[bd]"></keyboard-key>
+      <keyboard-key main-glyph="[bu]"></keyboard-key>
+      <keyboard-key main-glyph="[m]"></keyboard-key>
+      <keyboard-key main-glyph="[vd]"></keyboard-key>
+      <keyboard-key main-glyph="[vu]"></keyboard-key>
+      <keyboard-key main-glyph="[p]"></keyboard-key>
+    </div>
+
+    <!-- TODO(crbug.com/1207678): Apply glyphs from the backend to the keys. -->
+    <keyboard-key main-glyph="\`"></keyboard-key>
+    <keyboard-key main-glyph="1"></keyboard-key>
+    <keyboard-key main-glyph="2"></keyboard-key>
+    <keyboard-key main-glyph="3"></keyboard-key>
+    <keyboard-key main-glyph="4"></keyboard-key>
+    <keyboard-key main-glyph="5"></keyboard-key>
+    <keyboard-key main-glyph="6"></keyboard-key>
+    <keyboard-key main-glyph="7"></keyboard-key>
+    <keyboard-key main-glyph="8"></keyboard-key>
+    <keyboard-key main-glyph="9"></keyboard-key>
+    <keyboard-key main-glyph="0"></keyboard-key>
+    <keyboard-key main-glyph="-"></keyboard-key>
+    <keyboard-key main-glyph="="></keyboard-key>
+    <keyboard-key id="backspaceKey" class="right" main-glyph="backspace"></keyboard-key>
+
+    <keyboard-key id="tabKey" class="left" main-glyph="tab"></keyboard-key>
+    <keyboard-key main-glyph="q"></keyboard-key>
+    <keyboard-key main-glyph="w"></keyboard-key>
+    <keyboard-key main-glyph="e"></keyboard-key>
+    <keyboard-key main-glyph="r"></keyboard-key>
+    <keyboard-key main-glyph="t"></keyboard-key>
+    <keyboard-key main-glyph="y"></keyboard-key>
+    <keyboard-key main-glyph="u"></keyboard-key>
+    <keyboard-key main-glyph="i"></keyboard-key>
+    <keyboard-key main-glyph="o"></keyboard-key>
+    <keyboard-key main-glyph="p"></keyboard-key>
+    <keyboard-key main-glyph="["></keyboard-key>
+    <keyboard-key main-glyph="]"></keyboard-key>
+    <keyboard-key id="backslashKey" main-glyph="\\"></keyboard-key>
+
+    <keyboard-key id="searchKey" class="left" main-glyph="search"></keyboard-key>
+    <keyboard-key main-glyph="a"></keyboard-key>
+    <keyboard-key main-glyph="s"></keyboard-key>
+    <keyboard-key main-glyph="d"></keyboard-key>
+    <keyboard-key main-glyph="f"></keyboard-key>
+    <keyboard-key main-glyph="g"></keyboard-key>
+    <keyboard-key main-glyph="h"></keyboard-key>
+    <keyboard-key main-glyph="j"></keyboard-key>
+    <keyboard-key main-glyph="k"></keyboard-key>
+    <keyboard-key main-glyph="l"></keyboard-key>
+    <keyboard-key main-glyph=";"></keyboard-key>
+    <keyboard-key main-glyph="'"></keyboard-key>
+    <keyboard-key id="enterKey" class="right" main-glyph="enter"></keyboard-key>
+
+    <keyboard-key id="leftShiftKey" class="left" main-glyph="shift"></keyboard-key>
+    <keyboard-key main-glyph="z"></keyboard-key>
+    <keyboard-key main-glyph="x"></keyboard-key>
+    <keyboard-key main-glyph="c"></keyboard-key>
+    <keyboard-key main-glyph="v"></keyboard-key>
+    <keyboard-key main-glyph="b"></keyboard-key>
+    <keyboard-key main-glyph="n"></keyboard-key>
+    <keyboard-key main-glyph="m"></keyboard-key>
+    <keyboard-key main-glyph=","></keyboard-key>
+    <keyboard-key main-glyph="."></keyboard-key>
+    <keyboard-key main-glyph="/"></keyboard-key>
+    <keyboard-key id="rightShiftKey" class="right" main-glyph="shift"></keyboard-key>
+
+    <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
+    <keyboard-key id="leftAltKey" class="left" main-glyph="alt"></keyboard-key>
+    <keyboard-key id="spacebar" main-glyph=""></keyboard-key>
+    <keyboard-key id="rightAltKey" main-glyph="alt"></keyboard-key>
+    <keyboard-key id="rightCtrlKey" main-glyph="ctrl"></keyboard-key>
+
+    <!-- TODO(crbug.com/1207678): Use proper icons for the arrow keys. -->
+    <div id="arrowKeyCluster">
+      <keyboard-key main-glyph="↑"></keyboard-key>
+      <keyboard-key main-glyph="←"></keyboard-key>
+      <keyboard-key main-glyph="↓"></keyboard-key>
+      <keyboard-key main-glyph="→"></keyboard-key>
+    </div>
+  </div>
+</div>

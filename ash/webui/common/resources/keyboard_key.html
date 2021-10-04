@@ -1,0 +1,58 @@
+<style>
+  :root {
+    --background-color-pressed: hsl(214deg 82% 51%);
+    --background-color-unpressed: hsl(218deg 92% 95%);
+    --border-color: hsl(214deg 82% 51%);
+    --border-radius: 3px;
+    --glyph-alignment: var(--keyboard-key-glyph-alignment, center);
+    --travel: var(--keyboard-key-travel, 3px);
+    --foreground-color-unpressed: hsl(214deg 82% 51%);
+    --foreground-color-pressed: hsl(213deg 23% 91%);
+  }
+
+  :host {
+    position: relative;
+  }
+
+  #foreground {
+    align-items: center;
+    background-color: var(--background-color-unpressed);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    bottom: var(--travel);
+    color: var(--foreground-color-unpressed);
+    display: flex;
+    font-family: sans-serif;
+    justify-content: var(--glyph-alignment);
+    left: 0;
+    padding: 0 5px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    transition: all 150ms ease-in-out;
+  }
+
+  /*
+   * TODO(crbug.com/1207678): Apply this styling when the key is pressed,
+   * instead of on hover.
+   */
+  :host(:hover) #foreground {
+    background-color: var(--background-color-pressed);
+    bottom: 0;
+    color: var(--foreground-color-pressed);
+    top: var(--travel);
+  }
+
+  #background {
+    background-color: var(--border-color);
+    border-radius: var(--border-radius);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: var(--travel);
+  }
+</style>
+<div id="background"></div>
+<div id="foreground">[[mainGlyph]]</div>

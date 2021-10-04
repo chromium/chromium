@@ -13,6 +13,8 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
+  "keyboard_diagram.js",
+  "keyboard_key.js",
   "navigation_icons.js",
   "navigation_selector.js",
   "navigation_shared_vars.js",
@@ -50,6 +52,18 @@ js_library("fake_observables") {
 
 js_library("fake_method_resolver") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("keyboard_diagram") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("keyboard_key") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("navigation_selector") {
