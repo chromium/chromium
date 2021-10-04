@@ -59,6 +59,7 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/font_access/font_access_manager_impl.h"
 #include "content/browser/gpu/shader_cache_factory.h"
+#include "content/browser/host_zoom_level_context.h"
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
@@ -121,8 +122,6 @@
 #include "content/public/browser/android/java_interfaces.h"
 #include "net/android/http_auth_negotiate_android.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#else
-#include "content/browser/host_zoom_level_context.h"
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1241,10 +1240,8 @@ void StoragePartitionImpl::Initialize(
   push_messaging_context_ = std::make_unique<PushMessagingContext>(
       browser_context_, service_worker_context_);
 
-#if !defined(OS_ANDROID)
   host_zoom_level_context_.reset(new HostZoomLevelContext(
       browser_context_->CreateZoomLevelDelegate(partition_path_)));
-#endif  // !defined(OS_ANDROID)
 
   platform_notification_context_ = new PlatformNotificationContextImpl(
       path, browser_context_, service_worker_context_);
@@ -1525,7 +1522,6 @@ SharedWorkerServiceImpl* StoragePartitionImpl::GetSharedWorkerService() {
   return shared_worker_service_.get();
 }
 
-#if !defined(OS_ANDROID)
 HostZoomMap* StoragePartitionImpl::GetHostZoomMap() {
   DCHECK(initialized_);
   DCHECK(host_zoom_level_context_.get());
@@ -1542,7 +1538,6 @@ ZoomLevelDelegate* StoragePartitionImpl::GetZoomLevelDelegate() {
   DCHECK(host_zoom_level_context_.get());
   return host_zoom_level_context_->GetZoomLevelDelegate();
 }
-#endif  // !defined(OS_ANDROID)
 
 PlatformNotificationContextImpl*
 StoragePartitionImpl::GetPlatformNotificationContext() {

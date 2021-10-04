@@ -192,6 +192,7 @@ source_set("browser_sources") {
     "hid_chooser.h",
     "hid_delegate.h",
     "histogram_fetcher.h",
+    "host_zoom_map.h",
     "identity_request_dialog_controller.cc",
     "identity_request_dialog_controller.h",
     "idle_time_provider.h",
@@ -419,6 +420,7 @@ source_set("browser_sources") {
     "webrtc_log.h",
     "websocket_handshake_request_info.h",
     "worker_type.h",
+    "zoom_level_delegate.h",
   ]
   configs += [
     "//build/config:precompiled_headers",
@@ -570,9 +572,6 @@ source_set("browser_sources") {
 
   if (!is_android) {
     sources += [
-      "host_zoom_map.h",
-      "zoom_level_delegate.h",
-
       # Some Web Authentication related targets only apply to desktop because
       # Android provides its own native implementation of that API.
       "authenticator_request_client_delegate.cc",

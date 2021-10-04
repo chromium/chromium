@@ -59,6 +59,7 @@
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -452,6 +453,12 @@ AwBrowserContext::RetriveInProgressDownloadManager() {
       base::BindRepeating(&IgnoreOriginSecurityCheck),
       base::BindRepeating(&content::DownloadRequestUtils::IsURLSafe),
       /*wake_lock_provider_binder*/ base::NullCallback());
+}
+
+std::unique_ptr<content::ZoomLevelDelegate>
+AwBrowserContext::CreateZoomLevelDelegate(
+    const base::FilePath& partition_path) {
+  return nullptr;
 }
 
 void AwBrowserContext::RebuildTable(

@@ -167,11 +167,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       override;
   ContentIndexContextImpl* GetContentIndexContext() override;
   NativeIOContext* GetNativeIOContext() override;
-#if !defined(OS_ANDROID)
   HostZoomMap* GetHostZoomMap() override;
   HostZoomLevelContext* GetHostZoomLevelContext() override;
   ZoomLevelDelegate* GetZoomLevelDelegate() override;
-#endif  // !defined(OS_ANDROID)
   PlatformNotificationContextImpl* GetPlatformNotificationContext() override;
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
   void SetProtoDatabaseProvider(
@@ -550,10 +548,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service_;
   std::unique_ptr<PushMessagingContext> push_messaging_context_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
-#if !defined(OS_ANDROID)
   std::unique_ptr<HostZoomLevelContext, BrowserThread::DeleteOnUIThread>
       host_zoom_level_context_;
-#endif  // !defined(OS_ANDROID)
   scoped_refptr<PlatformNotificationContextImpl> platform_notification_context_;
   scoped_refptr<BackgroundFetchContext> background_fetch_context_;
   scoped_refptr<BackgroundSyncContextImpl> background_sync_context_;

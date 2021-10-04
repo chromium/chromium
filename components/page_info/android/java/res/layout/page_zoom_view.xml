@@ -24,12 +24,10 @@
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/page_zoom_decrease_zoom_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/page_zoom_min_touch_target_size"
+        android:layout_height="@dimen/page_zoom_min_touch_target_size"
         android:src="@drawable/ic_remove"
         android:background="?attr/selectableItemBackground"
-        android:minWidth="@dimen/page_zoom_minimum_button_size"
-        android:minHeight="@dimen/page_zoom_minimum_button_size"
         android:layout_marginHorizontal="@dimen/page_zoom_control_spacing"
         android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
         android:tint="@color/default_icon_color_tint_list" />
@@ -43,12 +41,10 @@
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/page_zoom_increase_zoom_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/page_zoom_min_touch_target_size"
+        android:layout_height="@dimen/page_zoom_min_touch_target_size"
         android:src="@drawable/ic_add"
         android:background="?attr/selectableItemBackground"
-        android:minWidth="@dimen/page_zoom_minimum_button_size"
-        android:minHeight="@dimen/page_zoom_minimum_button_size"
         android:layout_marginHorizontal="@dimen/page_zoom_control_spacing"
         android:contentDescription="@string/page_zoom_increase_zoom_button_text"
         android:tint="@color/default_icon_color_tint_list" />

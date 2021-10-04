@@ -11,15 +11,30 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import java.util.Arrays;
+
 /**
  * View that allows a user to change the page zoom factor for web contents.
  */
 // TODO(mschillaci): This is a placeholder page visible only behind a flag, not finalized UI.
 public class PageInfoPageZoomView {
-    // Available zoom factors for any page.
-    private static final float[] AVAILABLE_ZOOM_FACTORS =
-            new float[] {0.10f, 0.25f, 0.33f, 0.50f, 0.67f, 0.75f, 0.90f, 1.00f, 1.10f, 1.25f,
-                    1.33f, 1.50f, 1.75f, 2.00f, 2.50f, 3.00f, 4.00f, 5.00f};
+    /**
+     * Available zoom levels as they would be presented to a user. These match the currently
+     * used levels on Chrome Desktop. See: components/zoom/page_zoom_constants.cc
+     */
+    private static final double[] AVAILABLE_ZOOM_LEVELS = new double[] {0.25, 0.33, 0.50, 0.67,
+            0.75, 0.80, 0.90, 1.00, 1.10, 1.25, 1.33, 1.50, 1.75, 2.00, 2.50, 3.00, 4.00, 5.00};
+
+    /**
+     * Available zoom factors that correspond to the zoom levels above. These numbers are used
+     * internally to give the above zoom levels and are not presented to the user. These become
+     * the exponent that |kTextSizeMultiplierRatio| = 1.2 is raised to for the above numbers,
+     * e.g. 1.2^-7.6 = 0.25, or 1.2^3.8 = 2.0. See: third_party/blink/common/page/page_zoom.cc
+     */
+    private static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-7.60, -6.08, -3.80, -2.20,
+            -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03, 7.60, 8.83};
 
     // Default index for zoom factor, set to be 100%.
     private static final int DEFAULT_ZOOM_FACTOR_INDEX = 7;
@@ -29,14 +44,24 @@ public class PageInfoPageZoomView {
 
     private final View mMainView;
     private final Context mContext;
+    private final PageZoomViewDelegate mDelegate;
 
     private final TextView mPageZoomText;
     private final ImageButton mDecreaseZoomButton;
     private final ImageButton mIncreaseZoomButton;
     private final Button mResetZoomButton;
 
-    public PageInfoPageZoomView(Context context) {
+    /**
+     * Interface to delegate control of this view to another class.
+     */
+    interface PageZoomViewDelegate {
+        void setZoomLevel(double newZoomLevel);
+        double getZoomLevel();
+    }
+
+    public PageInfoPageZoomView(@NonNull Context context, @NonNull PageZoomViewDelegate delegate) {
         mContext = context;
+        mDelegate = delegate;
         mMainView = LayoutInflater.from(mContext).inflate(R.layout.page_zoom_view, null);
 
         // Bind views and set click listeners.
@@ -50,21 +75,25 @@ public class PageInfoPageZoomView {
         mIncreaseZoomButton.setOnClickListener(view -> {
             assert canIncreaseZoom();
             ++mZoomIndex;
+            updateZoomFactor();
             updateTextAndButtonStates();
         });
 
         mDecreaseZoomButton.setOnClickListener(view -> {
             assert canDecreaseZoom();
             --mZoomIndex;
+            updateZoomFactor();
             updateTextAndButtonStates();
         });
 
         mResetZoomButton.setOnClickListener(view -> {
             mZoomIndex = DEFAULT_ZOOM_FACTOR_INDEX;
+            updateZoomFactor();
             updateTextAndButtonStates();
         });
 
         // Set text on first load.
+        mZoomIndex = Arrays.binarySearch(AVAILABLE_ZOOM_FACTORS, mDelegate.getZoomLevel());
         updateTextAndButtonStates();
     }
 
@@ -83,10 +112,16 @@ public class PageInfoPageZoomView {
         mDecreaseZoomButton.setEnabled(canDecreaseZoom());
     }
 
+    // Helper method to update the zoom factor after user actions.
+    private void updateZoomFactor() {
+        // Apply the new zoom factor to the web contents through JNI.
+        mDelegate.setZoomLevel(AVAILABLE_ZOOM_FACTORS[mZoomIndex]);
+    }
+
     // Helper method to construct text of the zoom factor after user actions.
     private String generateTextFromZoomFactor() {
         return mContext.getResources().getString(
-                R.string.page_zoom_factor, (int) (100 * AVAILABLE_ZOOM_FACTORS[mZoomIndex]));
+                R.string.page_zoom_factor, (int) (100 * AVAILABLE_ZOOM_LEVELS[mZoomIndex]));
     }
 
     // Helper method to determine if user can increase zoom.

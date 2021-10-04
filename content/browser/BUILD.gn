@@ -976,6 +976,10 @@ source_set("browser") {
     "handwriting/handwriting_recognizer_impl.h",
     "hid/hid_service.cc",
     "hid/hid_service.h",
+    "host_zoom_level_context.cc",
+    "host_zoom_level_context.h",
+    "host_zoom_map_impl.cc",
+    "host_zoom_map_impl.h",
     "idle/idle_manager_impl.cc",
     "idle/idle_manager_impl.h",
     "idle/idle_monitor.cc",
@@ -2836,10 +2840,6 @@ source_set("browser") {
       "devtools/devtools_frontend_host_impl.h",
       "devtools/protocol/webauthn_handler.cc",
       "devtools/protocol/webauthn_handler.h",
-      "host_zoom_level_context.cc",
-      "host_zoom_level_context.h",
-      "host_zoom_map_impl.cc",
-      "host_zoom_map_impl.h",
       "media/session/audio_focus_delegate_default.cc",
 
       # The Direct Sockets API is not implemented on Android.

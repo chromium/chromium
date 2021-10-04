@@ -400,10 +400,10 @@ extern const char kUseCustomChromeFrame[];
 #if BUILDFLAG(ENABLE_PLUGINS)
 extern const char kContentSettingsPluginWhitelist[];
 #endif
-#if !defined(OS_ANDROID)
 extern const char kPartitionDefaultZoomLevel[];
 extern const char kPartitionPerHostZoomLevels[];
 
+#if !defined(OS_ANDROID)
 extern const char kPinnedTabs[];
 #endif  // !defined(OS_ANDROID)
 

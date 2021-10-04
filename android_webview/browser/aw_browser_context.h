@@ -18,6 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/zoom_level_delegate.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 
 class GURL;
@@ -111,6 +112,8 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
+  std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
+      const base::FilePath& partition_path) override;
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;

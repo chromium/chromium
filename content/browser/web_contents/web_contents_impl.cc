@@ -66,6 +66,7 @@
 #include "content/browser/download/save_package.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_web_contents_observer.h"
@@ -179,8 +180,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/android/view_android.h"
 #include "ui/base/device_form_factor.h"
-#else  // !OS_ANDROID
-#include "content/browser/host_zoom_map_impl.h"
 #endif  // OS_ANDROID
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1638,7 +1637,6 @@ FindRequestManager* WebContentsImpl::GetFindRequestManagerForTesting() {
   return GetFindRequestManager();
 }
 
-#if !defined(OS_ANDROID)
 void WebContentsImpl::UpdateZoom() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdateZoom");
   RenderWidgetHostImpl* rwh = GetRenderViewHost()->GetWidget();
@@ -1662,7 +1660,6 @@ void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
 
   UpdateZoom();
 }
-#endif  // !defined(OS_ANDROID)
 
 std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
   std::vector<WebContentsImpl*> all_contents(1, this);
@@ -6824,8 +6821,14 @@ void WebContentsImpl::RunFileChooser(
     listener->FileSelectionCanceled();
 }
 
-#if !defined(OS_ANDROID)
 double WebContentsImpl::GetPendingPageZoomLevel() {
+#if defined(OS_ANDROID)
+  // On Android, use the default page zoom level when the AccessibilityPageZoom
+  // feature is not enabled.
+  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
+    return 0.0;
+  }
+#endif
   NavigationEntry* pending_entry = GetController().GetPendingEntry();
   if (!pending_entry)
     return HostZoomMap::GetZoomLevel(this);
@@ -6834,7 +6837,6 @@ double WebContentsImpl::GetPendingPageZoomLevel() {
   return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));
 }
-#endif  // !defined(OS_ANDROID)
 
 bool WebContentsImpl::IsPictureInPictureAllowedForFullscreenVideo() const {
   return media_web_contents_observer_

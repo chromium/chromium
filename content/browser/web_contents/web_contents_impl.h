@@ -281,7 +281,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // bitmap.
   void AddAccessibilityMode(ui::AXMode mode);
 
-#if !defined(OS_ANDROID)
   // Sets the zoom level for frames associated with this WebContents.
   void UpdateZoom();
 
@@ -290,8 +289,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // last committed entry.
   void UpdateZoomIfNecessary(const std::string& scheme,
                              const std::string& host);
-
-#endif  // !defined(OS_ANDROID)
 
   // Returns the focused WebContents.
   // If there are multiple inner/outer WebContents (when embedding <webview>,
@@ -899,9 +896,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnVerticalScrollDirectionChanged(
       viz::VerticalScrollDirection scroll_direction) override;
 
-#if !defined(OS_ANDROID)
   double GetPendingPageZoomLevel() override;
-#endif  // !defined(OS_ANDROID)
 
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const NativeWebKeyboardEvent& event) override;

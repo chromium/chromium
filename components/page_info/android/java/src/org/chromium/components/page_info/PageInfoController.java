@@ -264,8 +264,18 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         // Only create the controller for Page Zoom if feature flag is enabled.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
-            mPageZoomController = new PageInfoPageZoomController(
-                    this, mView.getPageZoomRowView(), mWebContents, mDelegate);
+            mPageZoomController = new PageInfoPageZoomController(this, mView.getPageZoomRowView(),
+                    mWebContents, new PageInfoPageZoomController.PageZoomControllerObserver() {
+                        @Override
+                        public void onSubpageCreated() {
+                            mDialog.reduceWindowDim();
+                        }
+
+                        @Override
+                        public void onSubpageRemoved() {
+                            mDialog.resetWindowDimToDefault();
+                        }
+                    });
         }
 
         mAdditionalControllers = mDelegate.createAdditionalRowViews(this, mView.getRowWrapper());

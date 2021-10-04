@@ -170,7 +170,6 @@ TestStoragePartition::GetProtoDatabaseProviderForTesting() {
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
 HostZoomMap* TestStoragePartition::GetHostZoomMap() {
   return host_zoom_map_;
 }
@@ -182,7 +181,6 @@ HostZoomLevelContext* TestStoragePartition::GetHostZoomLevelContext() {
 ZoomLevelDelegate* TestStoragePartition::GetZoomLevelDelegate() {
   return zoom_level_delegate_;
 }
-#endif  // !defined(OS_ANDROID)
 
 void TestStoragePartition::ClearDataForOrigin(
     uint32_t remove_mask,

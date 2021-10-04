@@ -137,10 +137,12 @@ double GetDeviceScaleFactor() {
 
 // Returns the zoom factor for a given |url|.
 double GetZoomFactor(BrowserContext* context, const GURL& url) {
-// Android does not have the concept of zooming in like desktop.
 #if defined(OS_ANDROID)
-  return 1.0;
-#else
+  // On Android, use the default value when the AccessibilityPageZoom
+  // feature is not enabled.
+  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom))
+    return 1.0;
+#endif
 
   double zoom_level = HostZoomMap::GetDefaultForBrowserContext(context)
                           ->GetZoomLevelForHostAndScheme(
@@ -153,7 +155,6 @@ double GetZoomFactor(BrowserContext* context, const GURL& url) {
   }
 
   return blink::PageZoomLevelToZoomFactor(zoom_level);
-#endif
 }
 
 // Returns a string corresponding to |value|. The returned string satisfies
@@ -257,14 +258,22 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   // https://cs.chromium.org/chromium/src/third_party/WebKit/Source/core/css/viewportAndroid.css.
   double viewport_width = 980;
 
-#if !defined(OS_ANDROID)
+#if defined(OS_ANDROID)
+  // On Android, use the default value when the AccessibilityPageZoom
+  // feature is not enabled.
+  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
+    SetHeaderToInt(headers, WebClientHintsType::kViewportWidth_DEPRECATED,
+                   viewport_width);
+    return;
+  }
+#endif
+
   double device_scale_factor = GetDeviceScaleFactor();
   viewport_width = (display::Screen::GetScreen()
                         ->GetPrimaryDisplay()
                         .GetSizeInPixel()
                         .width()) /
                    GetZoomFactor(context, url) / device_scale_factor;
-#endif  // !OS_ANDROID
   DCHECK_LT(0, viewport_width);
   // TODO(yoav): Find out why this 0 check is needed...
   if (viewport_width > 0) {

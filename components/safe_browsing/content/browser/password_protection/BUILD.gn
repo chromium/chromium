@@ -53,7 +53,10 @@ source_set("password_protection") {
     deps += [ "//components/zoom" ]
   }
   if (is_android && safe_browsing_mode == 2) {
-    deps += [ "//ui/android" ]
+    deps += [
+      "//components/zoom",
+      "//ui/android",
+    ]
   }
 }
 

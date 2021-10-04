@@ -67,19 +67,16 @@ class ContentIndexContext;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
+class FileSystemAccessEntryFactory;
 class FontAccessContext;
 class GeneratedCodeCacheContext;
-class FileSystemAccessEntryFactory;
+class HostZoomLevelContext;
+class HostZoomMap;
+class NativeIOContext;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
-class NativeIOContext;
-
-#if !defined(OS_ANDROID)
-class HostZoomLevelContext;
-class HostZoomMap;
 class ZoomLevelDelegate;
-#endif  // !defined(OS_ANDROID)
 
 // Defines what persistent state a child process can access.
 //
@@ -155,11 +152,9 @@ class CONTENT_EXPORT StoragePartition {
   GetDevToolsBackgroundServicesContext() = 0;
   virtual ContentIndexContext* GetContentIndexContext() = 0;
   virtual NativeIOContext* GetNativeIOContext() = 0;
-#if !defined(OS_ANDROID)
   virtual HostZoomMap* GetHostZoomMap() = 0;
   virtual HostZoomLevelContext* GetHostZoomLevelContext() = 0;
   virtual ZoomLevelDelegate* GetZoomLevelDelegate() = 0;
-#endif  // !defined(OS_ANDROID)
   virtual PlatformNotificationContext* GetPlatformNotificationContext() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;

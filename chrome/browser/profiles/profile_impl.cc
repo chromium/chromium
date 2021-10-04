@@ -157,6 +157,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/version_info/channel.h"
+#include "components/zoom/zoom_event_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -208,7 +209,6 @@
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #else
 #include "chrome/browser/first_run/first_run.h"
-#include "components/zoom/zoom_event_manager.h"
 #include "content/public/common/page_zoom.h"
 #endif
 
@@ -961,14 +961,12 @@ std::string ProfileImpl::GetProfileUserName() const {
   return std::string();
 }
 
-#if !defined(OS_ANDROID)
 std::unique_ptr<content::ZoomLevelDelegate>
 ProfileImpl::CreateZoomLevelDelegate(const base::FilePath& partition_path) {
   return std::make_unique<ChromeZoomLevelPrefs>(
       GetPrefs(), GetPath(), partition_path,
       zoom::ZoomEventManager::GetForBrowserContext(this)->GetWeakPtr());
 }
-#endif  // !defined(OS_ANDROID)
 
 base::FilePath ProfileImpl::GetPath() {
   return path_;
@@ -1241,12 +1239,10 @@ const PrefService* ProfileImpl::GetPrefs() const {
   return prefs_.get();
 }
 
-#if !defined(OS_ANDROID)
 ChromeZoomLevelPrefs* ProfileImpl::GetZoomLevelPrefs() {
   return static_cast<ChromeZoomLevelPrefs*>(
       GetDefaultStoragePartition()->GetZoomLevelDelegate());
 }
-#endif  // !defined(OS_ANDROID)
 
 // TODO(crbug.com/734484): Remove this function.
 PrefService* ProfileImpl::GetReadOnlyOffTheRecordPrefs() {
