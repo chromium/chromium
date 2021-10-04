@@ -2822,3 +2822,33 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
               ::testing::StartsWith(
                   "a JavaScript error:\nTypeError: Failed to fetch\n"));
 }
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
+  // Smoke test to make sure that `registerPreference` works from JavaScript.
+  OpenDevToolsWindow("about:blank", true);
+
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  ASSERT_TRUE(content::ExecJs(
+      wc, content::JsReplace(
+              R"(
+    Host.InspectorFrontendHost.setPreference($1, 'false');  // Disable sync.
+    Host.InspectorFrontendHost.registerPreference(
+        'synced_setting', {synced: true});
+    Host.InspectorFrontendHost.registerPreference(
+        'unsynced_setting', {synced: false});
+    Host.InspectorFrontendHost.setPreference('synced_setting', 'synced value');
+    Host.InspectorFrontendHost.setPreference(
+        'unsynced_setting', 'unsynced value');
+  )",
+              DevToolsSettings::kSyncDevToolsPreferencesFrontendName)));
+
+  const base::Value* synced_settings =
+      browser()->profile()->GetPrefs()->GetDictionary(
+          prefs::kDevToolsSyncedPreferencesSyncDisabled);
+  const base::Value* unsynced_settings =
+      browser()->profile()->GetPrefs()->GetDictionary(
+          prefs::kDevToolsPreferences);
+  EXPECT_EQ(*synced_settings->FindStringKey("synced_setting"), "synced value");
+  EXPECT_EQ(*unsynced_settings->FindStringKey("unsynced_setting"),
+            "unsynced value");
+}
