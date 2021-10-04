@@ -57,7 +57,14 @@
 
 // The text for the "More" button. Must be set before the view is loaded
 // for views with "scrollToMandatory = YES."
-@property(nonatomic, strong) NSString* readMoreString;
+@property(nonatomic, copy) NSString* readMoreString;
+
+// Controls if there is a help button in the view. Must be set before the
+// view is loaded. Defaults to NO.
+@property(nonatomic, assign) BOOL shouldShowLearnMoreButton;
+
+// The help button item in the top left of the view. Nil if not available.
+@property(nonatomic, readonly) UIButton* learnMoreButton;
 
 @end
 

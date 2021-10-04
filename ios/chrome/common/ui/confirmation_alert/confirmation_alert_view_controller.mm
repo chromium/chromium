@@ -426,11 +426,11 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   NSMutableArray* regularHeightItems = [[NSMutableArray alloc] init];
   NSMutableArray* compactHeightItems = [[NSMutableArray alloc] init];
   if (self.helpButtonAvailable) {
-    UIBarButtonItem* helpButton = [[UIBarButtonItem alloc]
-        initWithImage:[UIImage imageNamed:@"confirmation_alert_ic_help"]
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(didTapHelpButton)];
+    UIBarButtonItem* helpButton =
+        [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"help_icon"]
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(didTapHelpButton)];
     [regularHeightItems addObject:helpButton];
     [compactHeightItems addObject:helpButton];
 

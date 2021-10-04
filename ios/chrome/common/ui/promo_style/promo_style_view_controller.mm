@@ -28,6 +28,8 @@ NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
     @"kPromoStyleSecondaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
     @"kPromoStyleTertiaryActionAccessibilityIdentifier";
+NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
+    @"kPromoStyleLearnMoreActionAccessibilityIdentifier";
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
     @"kPromoStyleScrollViewAccessibilityIdentifier";
 
@@ -43,6 +45,7 @@ constexpr CGFloat kContentMaxWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 constexpr CGFloat kSeparatorHeight = 1;
+constexpr CGFloat kLearnMoreButtonSide = 40;
 
 }  // namespace
 
@@ -69,6 +72,8 @@ constexpr CGFloat kSeparatorHeight = 1;
 @end
 
 @implementation PromoStyleViewController
+
+@synthesize learnMoreButton = _learnMoreButton;
 
 #pragma mark - Public
 
@@ -100,6 +105,11 @@ constexpr CGFloat kSeparatorHeight = 1;
   // dynamic types.
   [self.scrollView addSubview:self.scrollContentView];
   [self.view addSubview:self.scrollView];
+
+  // Add learn more button to top left of the view, if requested
+  if (self.shouldShowLearnMoreButton) {
+    [self.view insertSubview:self.learnMoreButton aboveSubview:self.scrollView];
+  }
 
   UIStackView* actionStackView = [[UIStackView alloc] init];
   actionStackView.alignment = UIStackViewAlignmentFill;
@@ -251,6 +261,19 @@ constexpr CGFloat kSeparatorHeight = 1;
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
   actionBottomConstraint.priority = UILayoutPriorityDefaultLow;
   actionBottomConstraint.active = YES;
+
+  if (self.shouldShowLearnMoreButton) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.learnMoreButton.topAnchor
+          constraintEqualToAnchor:self.scrollContentView.topAnchor],
+      [self.learnMoreButton.leadingAnchor
+          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+      [self.learnMoreButton.widthAnchor
+          constraintEqualToConstant:kLearnMoreButtonSide],
+      [self.learnMoreButton.heightAnchor
+          constraintEqualToConstant:kLearnMoreButtonSide],
+    ]];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -591,6 +614,23 @@ constexpr CGFloat kSeparatorHeight = 1;
   return _tertiaryActionButton;
 }
 
+// Helper to create the learn more button
+- (UIButton*)learnMoreButton {
+  if (!_learnMoreButton) {
+    DCHECK(self.shouldShowLearnMoreButton);
+    _learnMoreButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_learnMoreButton setImage:[UIImage imageNamed:@"help_icon"]
+                      forState:UIControlStateNormal];
+    _learnMoreButton.accessibilityIdentifier =
+        kPromoStyleLearnMoreActionAccessibilityIdentifier;
+    _learnMoreButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [_learnMoreButton addTarget:self
+                         action:@selector(didTapLearnMoreButton)
+               forControlEvents:UIControlEventTouchUpInside];
+  }
+  return _learnMoreButton;
+}
+
 - (UIButton*)createButtonWithText:(NSString*)buttonText
           accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -685,6 +725,14 @@ constexpr CGFloat kSeparatorHeight = 1;
   if ([self.delegate
           respondsToSelector:@selector(didTapTertiaryActionButton)]) {
     [self.delegate didTapTertiaryActionButton];
+  }
+}
+
+// Handle taps on the help button.
+- (void)didTapLearnMoreButton {
+  DCHECK(self.shouldShowLearnMoreButton);
+  if ([self.delegate respondsToSelector:@selector(didTapLearnMoreButton)]) {
+    [self.delegate didTapLearnMoreButton];
   }
 }
 

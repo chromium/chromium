@@ -24,6 +24,9 @@
 // Invoked when the tertiary action button is tapped.
 - (void)didTapTertiaryActionButton;
 
+// Invoked when the top left question mark button is tapped.
+- (void)didTapLearnMoreButton;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_DELEGATE_H_
