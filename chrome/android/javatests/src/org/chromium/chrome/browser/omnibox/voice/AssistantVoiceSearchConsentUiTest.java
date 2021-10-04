@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -223,6 +224,7 @@ public class AssistantVoiceSearchConsentUiTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
     public void testDialogInteractivity_BackButton() {
         verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
                 /*expectConsentValueSet=*/true,
@@ -231,6 +233,7 @@ public class AssistantVoiceSearchConsentUiTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
     public void testDialogInteractivity_ScrimTap() {
         verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
                 /*expectConsentValueSet=*/true,

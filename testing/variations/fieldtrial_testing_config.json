@@ -1336,6 +1336,31 @@
             ]
         }
     ],
+    "BaseAssistantIntegration": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "colorful_mic": "false",
+                        "count": "2",
+                        "enable_multi_account_check": "false",
+                        "experiment_id": "48101548",
+                        "min_agsa_version": "12.37"
+                    },
+                    "enable_features": [
+                        "AssistantConsentV2",
+                        "AssistantIntentExperimentId",
+                        "OmniboxAssistantVoiceSearch",
+                        "VoiceSearchAudioCapturePolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "BentoBarAndOverviewButtonExperiment": [
         {
             "platforms": [
@@ -5349,259 +5374,6 @@
                     ],
                     "disable_features": [
                         "AdaptiveButtonInTopToolbarCustomizationV2"
-                    ]
-                },
-                {
-                    "name": "IPH_TrackingOnly_20210520",
-                    "params": {
-                        "availability": ">=10",
-                        "colorful_mic": "false",
-                        "event_trigger": "name:mic_toolbar_iph_would_have_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:successful_voice_search;comparator:==0;window:10;storage:90",
-                        "generic_message": "true",
-                        "min_agsa_version": "12.18",
-                        "session_rate": "<1",
-                        "tracking_only": "true"
-                    },
-                    "enable_features": [
-                        "IPH_MicToolbar",
-                        "OmniboxAssistantVoiceSearch",
-                        "ToolbarMicIphAndroid",
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
-                    ],
-                    "disable_features": [
-                        "AssistantIntentExperimentId",
-                        "AssistantIntentPageUrl",
-                        "AssistantIntentTranslateInfo",
-                        "TranslateIntent"
-                    ]
-                },
-                {
-                    "name": "IPH_GenericMessage_20210520",
-                    "params": {
-                        "availability": ">=10",
-                        "colorful_mic": "false",
-                        "event_trigger": "name:mic_toolbar_iph_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:successful_voice_search;comparator:==0;window:10;storage:90",
-                        "generic_message": "true",
-                        "min_agsa_version": "12.18",
-                        "session_rate": "<1",
-                        "tracking_only": "false"
-                    },
-                    "enable_features": [
-                        "IPH_MicToolbar",
-                        "OmniboxAssistantVoiceSearch",
-                        "ToolbarMicIphAndroid",
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
-                    ],
-                    "disable_features": [
-                        "AssistantIntentExperimentId",
-                        "AssistantIntentPageUrl",
-                        "AssistantIntentTranslateInfo",
-                        "TranslateIntent"
-                    ]
-                },
-                {
-                    "name": "IPH_ExampleQuery_20210520",
-                    "params": {
-                        "availability": ">=10",
-                        "colorful_mic": "false",
-                        "event_trigger": "name:mic_toolbar_iph_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:successful_voice_search;comparator:==0;window:10;storage:90",
-                        "generic_message": "false",
-                        "min_agsa_version": "12.18",
-                        "session_rate": "<1",
-                        "tracking_only": "false"
-                    },
-                    "enable_features": [
-                        "IPH_MicToolbar",
-                        "OmniboxAssistantVoiceSearch",
-                        "ToolbarMicIphAndroid",
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
-                    ],
-                    "disable_features": [
-                        "AssistantIntentExperimentId",
-                        "AssistantIntentPageUrl",
-                        "AssistantIntentTranslateInfo",
-                        "TranslateIntent"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_MicActions_20210625",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47457886",
-                        "min_agsa_version": "12.24"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "AssistantIntentPageUrl",
-                        "AssistantIntentTranslateInfo",
-                        "OmniboxAssistantVoiceSearch",
-                        "TranslateIntent",
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
-                    ],
-                    "disable_features": [
-                        "IPH_MicToolbar",
-                        "ToolbarMicIphAndroid"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_ToolbarMic_20210810",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47736814",
-                        "min_agsa_version": "12.27"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
-                    ],
-                    "disable_features": [
-                        "AssistantIntentPageUrl",
-                        "AssistantIntentTranslateInfo",
-                        "TranslateIntent"
-                    ]
-                },
-                {
-                    "name": "AssistantVoiceSearch_DefaultMic",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47457879",
-                        "min_agsa_version": "12.20"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantVoiceSearch_ColorfulMic",
-                    "params": {
-                        "colorful_mic": "true",
-                        "experiment_id": "47457880",
-                        "min_agsa_version": "12.20"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_Default_20210819",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47458844",
-                        "min_agsa_version": "12.27"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_IntentAPI_UI_20210625",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47458845",
-                        "min_agsa_version": "12.24"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_GreyScrim_20210625",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47458846",
-                        "min_agsa_version": "12.24"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_LongPlate_20210625",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47458847",
-                        "min_agsa_version": "12.24"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_HintText_20210625",
-                    "params": {
-                        "colorful_mic": "false",
-                        "experiment_id": "47458848",
-                        "min_agsa_version": "12.24"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_MultiUser_20210708",
-                    "params": {
-                        "colorful_mic": "false",
-                        "enable_multi_account_check": "false",
-                        "experiment_id": "47732038",
-                        "min_agsa_version": "12.26"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_ConsentLimitedReprompts_20210819",
-                    "params": {
-                        "colorful_mic": "false",
-                        "count": "2",
-                        "experiment_id": "47734278",
-                        "min_agsa_version": "12.27"
-                    },
-                    "enable_features": [
-                        "AssistantConsentV2",
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                },
-                {
-                    "name": "AssistantIntegration_ConsentReprompts_20210819",
-                    "params": {
-                        "colorful_mic": "false",
-                        "count": "-1",
-                        "experiment_id": "47734279",
-                        "min_agsa_version": "12.27"
-                    },
-                    "enable_features": [
-                        "AssistantConsentV2",
-                        "AssistantIntentExperimentId",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
                     ]
                 }
             ]
