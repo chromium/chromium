@@ -124,6 +124,14 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
               (mojom::CandidatesWindowPtr window),
               (override));
   MOCK_METHOD(void, RecordUkm, (mojom::UkmEntryPtr entry), (override));
+  MOCK_METHOD(void,
+              ReportKoreanAction,
+              (mojom::KoreanAction action),
+              (override));
+  MOCK_METHOD(void,
+              ReportKoreanSettings,
+              (mojom::KoreanSettingsPtr settings),
+              (override));
 };
 
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.

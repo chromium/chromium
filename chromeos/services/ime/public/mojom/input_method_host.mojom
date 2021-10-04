@@ -6,11 +6,12 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 2
+// Next MinVersion: 4
 
 module chromeos.ime.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "chromeos/services/ime/public/mojom/input_method.mojom";
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
 [Stable]
@@ -203,11 +204,25 @@ struct CandidatesWindow {
   uint32 highlighted_candidate@1;
 };
 
+// Metrics enum for various actions that can be performed on the Korean IME.
+//
+// Next ordinal: 4
+[Extensible, Stable, MinVersion=3]
+enum KoreanAction {
+  [Default] kUnknown = 0,
+  // The user pressed the Hanja key.
+  kHanjaKey = 1,
+  // The user pressed the Hangeul key.
+  kHangeulKey = 2,
+  // The user composed a Korean syllable out-of-order.
+  kComposeOutOfOrder = 3,
+};
+
 // Interface for InputMethod to interact with Chrome.
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
 //
-// Next ordinal: 9
+// Next ordinal: 12
 interface InputMethodHost {
   // ========================================================
   // The following methods operate on the focused text field.
@@ -281,6 +296,21 @@ interface InputMethodHost {
   RequestSuggestions@7(SuggestionsRequest request)
     => (SuggestionsResponse response);
 
+  // ============================================================
+  // The following methods are for metrics and not require focus.
+  // ============================================================
+
   // Record a Url-Keyed Metric (UKM).
   RecordUkm@8(UkmEntry entry);
+
+  // Reports an action performed on the Korean IME.
+  // Recorded in UMA as InputMethod.PhysicalKeyboard.Korean.Action.
+  [MinVersion=3] ReportKoreanAction@10(KoreanAction action);
+
+  // Reports the usage of certain settings on the Korean IME:
+  // - The input multiple syllables setting is recorded in UMA as
+  //   InputMethod.PhysicalKeyboard.Korean.MultipleSyllables.
+  // - The layout setting is recorded in UMA as
+  //   InputMethod.PhysicalKeyboard.Korean.Layout.
+  [MinVersion=3] ReportKoreanSettings@11(KoreanSettings settings);
 };

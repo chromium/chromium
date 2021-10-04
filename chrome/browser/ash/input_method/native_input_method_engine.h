@@ -151,6 +151,9 @@ class NativeInputMethodEngine
     void UpdateCandidatesWindow(
         chromeos::ime::mojom::CandidatesWindowPtr window) override;
     void RecordUkm(chromeos::ime::mojom::UkmEntryPtr entry) override;
+    void ReportKoreanAction(chromeos::ime::mojom::KoreanAction action) override;
+    void ReportKoreanSettings(
+        chromeos::ime::mojom::KoreanSettingsPtr settings) override;
 
     // Called when suggestions are collected from the system via
     // suggestions_collector_.

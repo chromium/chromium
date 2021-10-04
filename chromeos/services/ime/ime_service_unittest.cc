@@ -136,6 +136,8 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
       const std::vector<TextSuggestion>& suggestions) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
+  void ReportKoreanAction(mojom::KoreanAction action) override {}
+  void ReportKoreanSettings(mojom::KoreanSettingsPtr settings) override {}
 
   std::u16string last_commit;
   std::u16string last_composition;
@@ -165,6 +167,8 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
                               suggestions) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
+  void ReportKoreanAction(mojom::KoreanAction action) override {}
+  void ReportKoreanSettings(mojom::KoreanSettingsPtr settings) override {}
 
  protected:
   void SetUp() override {

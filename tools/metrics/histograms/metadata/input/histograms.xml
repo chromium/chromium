@@ -682,6 +682,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.PhysicalKeyboard.Korean.Action"
+    enum="KoreanAction" expires_after="2022-03-31">
+  <owner>shend@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Action performed on the Korean IME. Recorded whenever one of the actions is
+    performed.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.Korean.Layout"
+    enum="KoreanLayout" expires_after="2022-03-31">
+  <owner>shend@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The layout used by the Korean IME. Recorded when the user focuses on a new
+    input field.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.Korean.MultipleSyllables"
+    enum="Boolean" expires_after="2022-03-31">
+  <owner>shend@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether multiple syllables is enabled by the Korean IME. Recorded when the
+    user focuses on a new input field.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.PkCommit.Index" units="units"
     expires_after="2021-10-10">
   <owner>shend@chromium.org</owner>

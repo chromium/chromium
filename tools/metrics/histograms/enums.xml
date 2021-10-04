@@ -45385,6 +45385,27 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="BO"/>
 </enum>
 
+<enum name="KoreanAction">
+  <summary>Actions that are available on the Korean IME.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Press Hanja key"/>
+  <int value="2" label="Press Hangeul key"/>
+  <int value="3" label="Compose out of order"/>
+</enum>
+
+<enum name="KoreanLayout">
+  <summary>Layouts that are available on the Korean IME.</summary>
+  <int value="0" label="Dubeolsik"/>
+  <int value="1" label="Dubeolsik (Old Hangeul)"/>
+  <int value="2" label="Sebeolsik (390)"/>
+  <int value="3" label="Sebeolsik (Final)"/>
+  <int value="4" label="Sebeolsik (No Shift)"/>
+  <int value="5" label="Sebeolsik (Old Hangeul)"/>
+  <int value="6" label="Sebeolsik (Dubeol)"/>
+  <int value="7" label="Romaja"/>
+  <int value="8" label="Ahnmatae"/>
+</enum>
+
 <enum name="LacrosLaunchMode">
   <int value="0" label="Only Ash browser"/>
   <int value="1" label="Ash and Lacros browser available"/>

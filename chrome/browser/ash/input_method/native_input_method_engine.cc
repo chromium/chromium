@@ -1055,6 +1055,20 @@ void NativeInputMethodEngine::ImeObserver::RecordUkm(mojom::UkmEntryPtr entry) {
   }
 }
 
+void NativeInputMethodEngine::ImeObserver::ReportKoreanAction(
+    mojom::KoreanAction action) {
+  UMA_HISTOGRAM_ENUMERATION("InputMethod.PhysicalKeyboard.Korean.Action",
+                            action);
+}
+
+void NativeInputMethodEngine::ImeObserver::ReportKoreanSettings(
+    mojom::KoreanSettingsPtr settings) {
+  UMA_HISTOGRAM_BOOLEAN("InputMethod.PhysicalKeyboard.Korean.MultipleSyllables",
+                        settings->input_multiple_syllables);
+  UMA_HISTOGRAM_ENUMERATION("InputMethod.PhysicalKeyboard.Korean.Layout",
+                            settings->layout);
+}
+
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   remote_manager_.FlushForTesting();
   if (host_receiver_.is_bound())
