@@ -84436,8 +84436,8 @@ Full version information for the fingerprint enum values:
 
 <enum name="UnderlayDamageRect">
   <int value="0" label="Zero Damage Rect"/>
-  <int value="1" label="Non-Occluding Damage Only (deprecated)"/>
-  <int value="2" label="Occluding Damage Only"/>
+  <int value="1" label="Non-Occluding Damage Only"/>
+  <int value="2" label="Occluding Damage Only (Deprecated)"/>
   <int value="3" label="Occluding and Non-Occluding Damages"/>
 </enum>
 
