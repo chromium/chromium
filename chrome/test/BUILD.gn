@@ -1050,6 +1050,7 @@ if (!is_android && !is_fuchsia) {
       "//chrome/browser",
       "//chrome/browser:buildflags",
       "//chrome/browser:cart_db_content_proto",
+      "//chrome/browser:coupon_db_content_proto",
       "//chrome/browser:theme_properties",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/browsing_data:constants",
@@ -6019,6 +6020,7 @@ test("unit_tests") {
       "../browser/cart/cart_handler_unittest.cc",
       "../browser/cart/cart_service_unittest.cc",
       "../browser/cart/fetch_discount_worker_unittest.cc",
+      "../browser/commerce/coupons/coupon_service_unittest.cc",
       "../browser/new_tab_page/modules/drive/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/photos/photos_service_unittest.cc",
       "../browser/new_tab_page/modules/task_module/task_module_service_unittest.cc",
@@ -6087,6 +6089,7 @@ test("unit_tests") {
     deps += [
       "//chrome:packed_resources_integrity_hash",
       "//chrome/browser:cart_db_content_proto",
+      "//chrome/browser:coupon_db_content_proto",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/resource_coordinator:intervention_policy_database_proto",
       "//chrome/browser/resource_coordinator:tab_manager_features",

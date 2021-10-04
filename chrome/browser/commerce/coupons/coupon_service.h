@@ -5,27 +5,56 @@
 #ifndef CHROME_BROWSER_COMMERCE_COUPONS_COUPON_SERVICE_H_
 #define CHROME_BROWSER_COMMERCE_COUPONS_COUPON_SERVICE_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/commerce/coupons/coupon_db.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // Service to host coupon-related logics.
 class CouponService : public KeyedService {
  public:
+  using Coupons = std::vector<autofill::AutofillOfferData*>;
+  using CouponsMap =
+      base::flat_map<GURL,
+                     std::vector<std::unique_ptr<autofill::AutofillOfferData>>>;
+
   CouponService(const CouponService&) = delete;
   CouponService& operator=(const CouponService&) = delete;
   ~CouponService() override;
 
+  // Update coupon data both in cache layer and storage to make sure it reflects
+  // the latest status of fetching from server.
+  void UpdateFreeListingCoupons(const CouponsMap& coupons_map);
+
+  // Delete the FreeListing coupon for the given URL in the cache layer and
+  // storage.
+  void DeleteFreeListingCouponsForUrl(const GURL& url);
+
+  // Get FreeListing coupons for the given URL. Will return an empty
+  // list if there is no coupon data associated with this URL.
+  Coupons GetFreeListingCouponsForUrl(const GURL& url);
+
  private:
   friend class CouponServiceFactory;
+  friend class CouponServiceTest;
 
   // Use |CouponServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
   explicit CouponService(std::unique_ptr<CouponDB> coupon_db);
 
+  // Initialize the coupon map in cache layer from storage.
+  void InitializeCouponsMap();
+
+  // Callback to initialize the coupon map.
+  void OnInitializeCouponsMap(bool success,
+                              std::vector<CouponDB::KeyAndValue> proto_pairs);
+  CouponDB* GetDB();
+
   std::unique_ptr<CouponDB> coupon_db_;
+  CouponsMap coupon_map_;
   base::WeakPtrFactory<CouponService> weak_ptr_factory_{this};
 };
 

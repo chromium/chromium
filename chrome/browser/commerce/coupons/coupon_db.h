@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_COMMERCE_COUPONS_COUPON_DB_H_
 #define CHROME_BROWSER_COMMERCE_COUPONS_COUPON_DB_H_
 
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
@@ -20,10 +22,38 @@ class ProfileProtoDB;
 
 class CouponDB {
  public:
+  using KeyAndValue = std::pair<std::string, coupon_db::CouponContentProto>;
+
+  // Callback which is used when coupons are acquired.
+  using LoadCallback = base::OnceCallback<void(bool, std::vector<KeyAndValue>)>;
+
+  // Used for confirming an operation was completed successfully (e.g.
+  // insert, delete).
+  using OperationCallback = base::OnceCallback<void(bool)>;
+
   explicit CouponDB(content::BrowserContext* browser_context);
   CouponDB(const CouponDB&) = delete;
   CouponDB& operator=(const CouponDB&) = delete;
   ~CouponDB();
+
+  // Load the coupon entry for a URL origin.
+  void LoadCoupon(const GURL& origin, LoadCallback callback);
+
+  // Load all the coupon entries;
+  void LoadAllCoupons(LoadCallback callback);
+
+  // Add a coupon entry to the database.
+  void AddCoupon(const GURL& origin,
+                 const coupon_db::CouponContentProto& proto);
+
+  // Delete the coupon entry associated with certain origin in the database.
+  void DeleteCoupon(const GURL& origin);
+
+  // Delete all coupon entries in the database.
+  void DeleteAllCoupons();
+
+  // Callback when a database operation (e.g. insert or delete) is finished.
+  void OnOperationFinished(bool success);
 
  private:
   ProfileProtoDB<coupon_db::CouponContentProto>* proto_db_;
