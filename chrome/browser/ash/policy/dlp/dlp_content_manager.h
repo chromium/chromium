@@ -32,6 +32,8 @@ class WebContents;
 
 namespace policy {
 
+using OnDlpRestrictionChecked = base::OnceCallback<void(bool should_proceed)>;
+
 class DlpReportingManager;
 
 // System-wide class that tracks the set of currently known confidential
@@ -62,8 +64,20 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Returns whether screenshots should be restricted for extensions API.
   virtual bool IsScreenshotApiRestricted(const ScreenshotArea& area) const;
 
+  // Checks whether screenshots of |area| are restricted or not advised.
+  // Depending on the result, calls |callback| and passes an indicator whether
+  // to proceed or not.
+  void CheckScreenshotRestriction(const ScreenshotArea& area,
+                                  OnDlpRestrictionChecked callback);
+
   // Returns whether video capture should be restricted.
   bool IsVideoCaptureRestricted(const ScreenshotArea& area) const;
+
+  // Checks whether video capture of |area| is restricted or not advised.
+  // Depending on the result, calls |callback| and passes an indicator whether
+  // to proceed or not.
+  void CheckVideoCaptureRestriction(const ScreenshotArea& area,
+                                    OnDlpRestrictionChecked callback);
 
   // Returns whether printing should be restricted.
   bool IsPrintingRestricted(content::WebContents* web_contents) const;
@@ -85,6 +99,11 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // any restricted content is currently visible.
   bool IsCaptureModeInitRestricted() const;
 
+  // Checks whether initiation of capture mode is restricted or not advised
+  // based on the currently visible content. Depending on the result, calls
+  // |callback| and passes an indicator whether to proceed or not.
+  void CheckCaptureModeInitRestriction(OnDlpRestrictionChecked callback);
+
   // Called when screen capture is started.
   // |state_change_callback| will be called when restricted content will appear
   // or disappear in the captured area.
@@ -97,6 +116,10 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Called when screen capture is stopped.
   void OnScreenCaptureStopped(const std::string& label,
                               const content::DesktopMediaID& media_id);
+
+  // Called when a Capture Mode session is finished to reset the stored user's
+  // choice.
+  void ResetCaptureModeAllowance();
 
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
@@ -206,6 +229,21 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   RestrictionLevelAndUrl GetPrintingRestrictionInfo(
       content::WebContents* web_contents) const;
 
+  // Helper method for async to check the restriction level, based on which
+  // calls |callback| with an indicator whether to proceed or not.
+  void CheckScreenCaptureRestriction(RestrictionLevelAndUrl restriction_info,
+                                     OnDlpRestrictionChecked callback);
+
+  // Reports events if required by the |restriction_info| and
+  // `reporting_manager` is configured.
+  void MaybeReportEvent(const RestrictionLevelAndUrl& restriction_info,
+                        DlpRulesManager::Restriction restriction,
+                        const std::string& log_message) const;
+
+  // Called back as part of the warning dialogs "Accept" callback, to save the
+  // user's response.
+  void OnScreenCaptureUserAllowed();
+
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>
       confidential_web_contents_;
@@ -222,6 +260,11 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;
+
+  // Keeps track of user's selection after being shown a warning modal
+  // dialog, to avoid showing the dialog multiple times during the same capture
+  // mode session.
+  bool user_allowed_screen_capture_ = false;
 
   DlpReportingManager* reporting_manager_;
 };
