@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './icons.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -29,7 +29,7 @@ type BrowserReportingData = {
 };
 
 const ManagementUiElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    mixinBehaviors([WebUIListenerBehavior], I18nMixin(PolymerElement)) as
     {new (): PolymerElement & WebUIListenerBehavior};
 
 class ManagementUiElement extends ManagementUiElementBase {

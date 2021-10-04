@@ -97,7 +97,8 @@ suite('AppChooserTest', function() {
 
     // First three options are selected and action button should be enabled.
     assertDeepEquals(options.slice(0, 3), getSelected());
-    assertFalse(testElement.$$('.action-button').disabled);
+    assertFalse(
+        testElement.shadowRoot.querySelector('.action-button').disabled);
 
     // Click the first option to deselect it.
     testBookmarkBrowserProxy.reset();
@@ -106,7 +107,8 @@ suite('AppChooserTest', function() {
     assertEquals(
         1, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertDeepEquals(options.slice(1, 3), getSelected());
-    assertFalse(testElement.$$('.action-button').disabled);
+    assertFalse(
+        testElement.shadowRoot.querySelector('.action-button').disabled);
 
     // Click fourth option to select it.
     testBookmarkBrowserProxy.reset();
@@ -121,7 +123,8 @@ suite('AppChooserTest', function() {
         await testBookmarkBrowserProxy.whenCalled('addBookmark'));
 
     assertDeepEquals(options.slice(1, 4), getSelected());
-    assertFalse(testElement.$$('.action-button').disabled);
+    assertFalse(
+        testElement.shadowRoot.querySelector('.action-button').disabled);
 
     // Click fourth option again to deselect it.
     testBookmarkBrowserProxy.reset();
@@ -130,7 +133,8 @@ suite('AppChooserTest', function() {
     assertEquals(
         4, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertDeepEquals(options.slice(1, 3), getSelected());
-    assertFalse(testElement.$$('.action-button').disabled);
+    assertFalse(
+        testElement.shadowRoot.querySelector('.action-button').disabled);
 
     // Click second option to deselect it.
     testBookmarkBrowserProxy.reset();
@@ -139,7 +143,8 @@ suite('AppChooserTest', function() {
     assertEquals(
         2, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertDeepEquals(options.slice(2, 3), getSelected());
-    assertFalse(testElement.$$('.action-button').disabled);
+    assertFalse(
+        testElement.shadowRoot.querySelector('.action-button').disabled);
 
     // Click third option to deselect all options.
     testBookmarkBrowserProxy.reset();
@@ -148,7 +153,7 @@ suite('AppChooserTest', function() {
     assertEquals(
         3, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertEquals(0, getSelected().length);
-    assertTrue(testElement.$$('.action-button').disabled);
+    assertTrue(testElement.shadowRoot.querySelector('.action-button').disabled);
   });
 
   test('test app chooser skip button', async function() {
@@ -169,7 +174,7 @@ suite('AppChooserTest', function() {
     testElement.wasBookmarkBarShownOnInit_ = true;
 
     // First option should be selected and action button should be enabled.
-    testElement.$$('.action-button').click();
+    testElement.shadowRoot.querySelector('.action-button').click();
 
     await testAppMetricsProxy.whenCalled('recordDidNothingAndChoseNext');
 

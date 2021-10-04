@@ -110,7 +110,7 @@ suite('NuxNtpBackgroundTest', function() {
     // select the first non-default option and hit 'Next'
     const options = testElement.shadowRoot.querySelectorAll('.option');
     options[1].click();
-    testElement.$$('.action-button').click();
+    testElement.shadowRoot.querySelector('.action-button').click();
     return Promise
         .all([
           testMetricsProxy.whenCalled('recordChoseAnOptionAndChoseNext'),
@@ -173,7 +173,7 @@ suite('NuxNtpBackgroundTest', function() {
     // select the default option and hit 'Next'
     const options = testElement.shadowRoot.querySelectorAll('.option');
     options[0].click();
-    testElement.$$('.action-button').click();
+    testElement.shadowRoot.querySelector('.action-button').click();
     return testNtpBackgroundProxy.whenCalled('clearBackground');
   });
 });
