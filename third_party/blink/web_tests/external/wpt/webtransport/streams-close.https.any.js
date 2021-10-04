@@ -9,7 +9,8 @@
 
 promise_test(async t => {
   const id = token();
-  let wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
   await wt.ready;
 
   const bidi_stream = await wt.createBidirectionalStream();
@@ -22,16 +23,7 @@ promise_test(async t => {
       new WebTransportError({streamErrorCode: WT_CODE}));
 
   await wait(10);
-
-  wt = new WebTransport(webtransport_url(`query.py?token=${id}`));
-  await wt.ready;
-
-  const streams = await wt.incomingUnidirectionalStreams;
-  const streams_reader = streams.getReader();
-  const { value: readable }  = await streams_reader.read();
-  streams_reader.releaseLock();
-
-  const data = await read_stream_as_json(readable);
+  const data = await query(id);
 
   // Check that stream is aborted with RESET_STREAM with the code and reason
   assert_own_property(data, 'stream-close-info');
@@ -43,7 +35,8 @@ promise_test(async t => {
 
 promise_test(async t => {
   const id = token();
-  let wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
   await wt.ready;
 
   const stream_reader = wt.incomingBidirectionalStreams.getReader();
@@ -58,16 +51,7 @@ promise_test(async t => {
       new WebTransportError({streamErrorCode: WT_CODE}));
 
   await wait(10);
-
-  wt = new WebTransport(webtransport_url(`query.py?token=${id}`));
-  await wt.ready;
-
-  const streams = await wt.incomingUnidirectionalStreams;
-  const streams_reader = streams.getReader();
-  const { value: readable } = await streams_reader.read();
-  streams_reader.releaseLock();
-
-  const data = await read_stream_as_json(readable);
+  const data = await query(id);
 
   // Check that stream is aborted with RESET_STREAM with the code and reason
   assert_own_property(data, 'stream-close-info');

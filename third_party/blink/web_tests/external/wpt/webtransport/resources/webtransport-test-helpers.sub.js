@@ -55,3 +55,18 @@ function check_and_remove_standard_headers(headers) {
   assert_equals(headers['origin'], `${get_host_info().ORIGIN}`);
   delete headers['origin'];
 }
+
+async function query(token) {
+  const wt = new WebTransport(webtransport_url(`query.py?token=${token}`));
+  try {
+    await wt.ready;
+    const streams = await wt.incomingUnidirectionalStreams;
+    const streams_reader = streams.getReader();
+    const { value: readable } = await streams_reader.read();
+    streams_reader.releaseLock();
+
+    return await read_stream_as_json(readable);
+  } finally {
+    wt.close();
+  }
+}
