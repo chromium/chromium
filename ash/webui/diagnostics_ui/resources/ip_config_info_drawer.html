@@ -2,6 +2,11 @@
   :host {
     --divider-horizontal-height: 100%;
   }
+
+  #drawerTitle {
+    @apply --diagnostics-card-drawer-font;
+    line-height: 20px;
+  }
 </style>
 <cr-expand-button id="drawerToggle" expanded="{{expanded_}}"
     aria-labelledby="drawerTitle">

@@ -6,6 +6,7 @@
 
       --diagnostics-default-font-size: 14px;
       --diagnostics-header-font-size: 16px;
+      --diagnostics-card-drawer-font-size: 13px;
       --diagnostics-card-title-font-size: 14px;
       --diagnostics-data-point-title-font-size: 13px;
       --diagnostics-data-point-subtitle-font-size: 13px;
@@ -49,21 +50,29 @@
           font-weight: var(--diagnostics-medium-font-weight);
       };
 
+      --diagnostics-card-drawer-font: {
+          color: var(--diagnostics-header-text-color);
+          font-family: var(--diagnostics-roboto-font-family);
+          font-size: var(--diagnostics-card-drawer-font-size);
+          font-weight: var(--diagnostics-regular-font-weight);
+      };
+
       --diagnostics-card-title-font: {
           color: var(--diagnostics-card-title-text-color);
           font-family: var(--diagnostics-roboto-font-family);
           font-size: var(--diagnostics-card-title-font-size);
           font-weight: var(--diagnostics-medium-font-weight);
       };
+
       --diagnostics-data-point-title-font: {
           color: var(--diagnostics-data-point-title-color);
-          font-family: var(--diagnostics-roboto-font-family)
+          font-family: var(--diagnostics-roboto-font-family);
           font-size: var(--diagnostics-data-point-title-font-size);
           font-weight: var(--diagnostics-regular-font-weight);
       };
       --diagnostics-data-point-subtitle-font: {
           color: var(--diagnostics-data-point-subtitle-color);
-          font-family: var(--diagnostics-data-point-font-family);
+          font-family: var(--diagnostics-roboto-font-family);
           font-size: var(--diagnostics-data-point-subtitle-font-size);
           font-weight: var(--diagnostics-regular-font-weight);
       };
