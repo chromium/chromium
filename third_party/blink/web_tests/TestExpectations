@@ -2721,6 +2721,7 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-float-handling-001.html [ Failure
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-002.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-003.html [ Failure ]
+crbug.com/27659 external/wpt/css/css-ruby/ruby-justification-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-justification-002.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-lang-specific-style-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-line-break-suppression-001.html [ Failure ]
