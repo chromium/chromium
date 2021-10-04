@@ -34,6 +34,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -98,19 +99,19 @@ AtomicString GetFrameAttribute(HTMLFrameOwnerElement* frame_owner,
 
 AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
   switch (frame_owner->OwnerType()) {
-    case mojom::blink::FrameOwnerElementType::kNone:
+    case FrameOwnerElementType::kNone:
       return "window";
-    case mojom::blink::FrameOwnerElementType::kIframe:
+    case FrameOwnerElementType::kIframe:
       return "iframe";
-    case mojom::blink::FrameOwnerElementType::kObject:
+    case FrameOwnerElementType::kObject:
       return "object";
-    case mojom::blink::FrameOwnerElementType::kEmbed:
+    case FrameOwnerElementType::kEmbed:
       return "embed";
-    case mojom::blink::FrameOwnerElementType::kFrame:
+    case FrameOwnerElementType::kFrame:
       return "frame";
-    case mojom::blink::FrameOwnerElementType::kPortal:
+    case FrameOwnerElementType::kPortal:
       return "portal";
-    case mojom::blink::FrameOwnerElementType::kFencedframe:
+    case FrameOwnerElementType::kFencedframe:
       return "fencedframe";
   }
   NOTREACHED();
@@ -119,7 +120,7 @@ AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
 
 AtomicString GetFrameSrc(HTMLFrameOwnerElement* frame_owner) {
   switch (frame_owner->OwnerType()) {
-    case mojom::blink::FrameOwnerElementType::kObject:
+    case FrameOwnerElementType::kObject:
       return GetFrameAttribute(frame_owner, html_names::kDataAttr);
     default:
       return GetFrameAttribute(frame_owner, html_names::kSrcAttr);

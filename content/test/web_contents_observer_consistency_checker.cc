@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 
 namespace content {
 
@@ -164,11 +165,11 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
     // in the renderer process.
     bool is_render_frame_created_needed_for_child =
         (new_host->GetFrameOwnerElementType() !=
-             blink::mojom::FrameOwnerElementType::kPortal &&
+             blink::FrameOwnerElementType::kPortal &&
          new_host->GetFrameOwnerElementType() !=
-             blink::mojom::FrameOwnerElementType::kFencedframe) ||
+             blink::FrameOwnerElementType::kFencedframe) ||
         (new_host->GetFrameOwnerElementType() ==
-             blink::mojom::FrameOwnerElementType::kFencedframe &&
+             blink::FrameOwnerElementType::kFencedframe &&
          blink::features::kFencedFramesImplementationTypeParam.Get() ==
              blink::features::FencedFramesImplementationType::kShadowDOM);
     if (is_render_frame_created_needed_for_child) {

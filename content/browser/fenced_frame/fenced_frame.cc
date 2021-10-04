@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -118,13 +119,13 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
           owner_render_frame_host_->GetProcess()->GetID(),
           owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
           /*frame_remote=*/mojo::NullAssociatedRemote(),
-          mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
-              .InitWithNewPipeAndPassReceiver(),
+          /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
           /*policy_container_bind_params=*/nullptr,
           blink::mojom::TreeScopeType::kDocument, "", "", true,
           blink::LocalFrameToken(), base::UnguessableToken::Create(),
           blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
-          blink::mojom::FrameOwnerElementType::kFencedframe);
+          blink::FrameOwnerElementType::kFencedframe,
+          /*is_dummy_frame_for_inner_tree=*/true);
 
   // Connect the outer delegate RenderFrameHost with the inner main
   // FrameTreeNode. This allows us to traverse from the outer delegate RFH

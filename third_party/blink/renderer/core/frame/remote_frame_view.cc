@@ -7,7 +7,7 @@
 #include "base/cxx17_backports.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -46,10 +46,8 @@ LocalFrameView* RemoteFrameView::ParentFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner &&
-      (owner->OwnerType() == mojom::blink::FrameOwnerElementType::kPortal ||
-       owner->OwnerType() ==
-           mojom::blink::FrameOwnerElementType::kFencedframe)) {
+  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
+                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
     return owner->GetDocument().GetFrame()->View();
   }
 
@@ -67,8 +65,7 @@ LocalFrameView* RemoteFrameView::ParentLocalRootFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner &&
-      owner->OwnerType() == mojom::blink::FrameOwnerElementType::kPortal)
+  if (owner && owner->OwnerType() == FrameOwnerElementType::kPortal)
     return owner->GetDocument().GetFrame()->LocalFrameRoot().View();
 
   // |is_attached_| is only set from AttachToLayout(), which ensures that the

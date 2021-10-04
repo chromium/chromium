@@ -37,6 +37,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
@@ -392,7 +393,7 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
     }
     if (!skip_url && url != url::kAboutBlankURL && !url.empty() &&
         node->frame_owner_element_type() !=
-            blink::mojom::FrameOwnerElementType::kPortal) {
+            blink::FrameOwnerElementType::kPortal) {
       all_frame_urls.push_back(url);
     }
   }

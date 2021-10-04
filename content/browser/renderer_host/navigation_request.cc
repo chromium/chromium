@@ -134,6 +134,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -142,7 +143,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
@@ -685,29 +685,37 @@ void EnterChildTraceEvent(const char* name,
 network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     FrameTreeNode* frame_tree_node) {
   if (frame_tree_node->IsMainFrame()) {
-    return frame_tree_node->current_frame_host()->InsidePortal()
-               ? network::mojom::RequestDestination::kIframe
-               : network::mojom::RequestDestination::kDocument;
-  } else {
-    switch (frame_tree_node->frame_owner_element_type()) {
-      case blink::mojom::FrameOwnerElementType::kObject:
-        return network::mojom::RequestDestination::kObject;
-      case blink::mojom::FrameOwnerElementType::kEmbed:
-        return network::mojom::RequestDestination::kEmbed;
-      case blink::mojom::FrameOwnerElementType::kIframe:
-        return network::mojom::RequestDestination::kIframe;
-      case blink::mojom::FrameOwnerElementType::kFrame:
-        return network::mojom::RequestDestination::kFrame;
-      case blink::mojom::FrameOwnerElementType::kPortal:
+    if (frame_tree_node->current_frame_host()->InsidePortal()) {
+      return network::mojom::RequestDestination::kIframe;
+    }
+    if (frame_tree_node->IsFencedFrameRoot()) {
       // TODO(crbug.com/1223807): Introduce the `Sec-Fetch-Dest` header for
       // fenced frames.
-      case blink::mojom::FrameOwnerElementType::kFencedframe:
-      case blink::mojom::FrameOwnerElementType::kNone:
-        NOTREACHED();
-        return network::mojom::RequestDestination::kDocument;
+      NOTIMPLEMENTED_LOG_ONCE();
+      return network::mojom::RequestDestination::kIframe;
     }
-    NOTREACHED();
     return network::mojom::RequestDestination::kDocument;
+  }
+
+  switch (frame_tree_node->frame_owner_element_type()) {
+    case blink::FrameOwnerElementType::kObject:
+      return network::mojom::RequestDestination::kObject;
+    case blink::FrameOwnerElementType::kEmbed:
+      return network::mojom::RequestDestination::kEmbed;
+    case blink::FrameOwnerElementType::kIframe:
+      return network::mojom::RequestDestination::kIframe;
+    case blink::FrameOwnerElementType::kFrame:
+      return network::mojom::RequestDestination::kFrame;
+    // TODO(crbug.com/1223807): Introduce the `Sec-Fetch-Dest` header for
+    // fenced frames.
+    // Note that the Fenced Frame Shadow DOM case is NOTREACHED as the browser
+    // just considers it an iframe. See `FramePolicy::is_fenced`.
+    case blink::FrameOwnerElementType::kFencedframe:
+    // Main frames are handled above.
+    case blink::FrameOwnerElementType::kPortal:
+    case blink::FrameOwnerElementType::kNone:
+      NOTREACHED();
+      return network::mojom::RequestDestination::kDocument;
   }
 }
 
@@ -6795,7 +6803,7 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
   // This case handles navigation failure, e.g. due to the navigation being
   // blocked by WebRequest, DNS errors, et cetera.
   if (frame_tree_node()->frame_owner_element_type() ==
-      blink::mojom::FrameOwnerElementType::kObject) {
+      blink::FrameOwnerElementType::kObject) {
     RenderFallbackContentForObjectTag();
     frame_tree_node_->ResetNavigationRequest(false);
     return true;
@@ -6807,7 +6815,7 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
 bool NavigationRequest::ShouldRenderFallbackContentForResponse(
     const net::HttpResponseHeaders& http_headers) const {
   return frame_tree_node()->frame_owner_element_type() ==
-             blink::mojom::FrameOwnerElementType::kObject &&
+             blink::FrameOwnerElementType::kObject &&
          !network::cors::IsOkStatus(http_headers.response_code());
 }
 
@@ -6943,7 +6951,7 @@ void NavigationRequest::RenderFallbackContentForObjectTag() {
   // https://whatwg.org/C/iframe-embed-object.html#the-object-element:fallback-content-5:
   // Fallback content is represented by the children of the <object> tag, so it
   // will be rendered in the process of the parent's document.
-  DCHECK_EQ(blink::mojom::FrameOwnerElementType::kObject,
+  DCHECK_EQ(blink::FrameOwnerElementType::kObject,
             frame_tree_node_->frame_owner_element_type());
   if (RenderFrameProxyHost* proxy =
           frame_tree_node_->render_manager()->GetProxyToParent()) {

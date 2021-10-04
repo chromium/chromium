@@ -36,6 +36,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/debug_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -288,7 +289,7 @@ FrameTree::FrameTree(
                               false,
                               base::UnguessableToken::Create(),
                               blink::mojom::FrameOwnerProperties(),
-                              blink::mojom::FrameOwnerElementType::kNone,
+                              blink::FrameOwnerElementType::kNone,
                               blink::FramePolicy())),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0),
@@ -390,7 +391,8 @@ FrameTreeNode* FrameTree::AddFrame(
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     bool was_discarded,
-    blink::mojom::FrameOwnerElementType owner_type) {
+    blink::FrameOwnerElementType owner_type,
+    bool is_dummy_frame_for_inner_tree) {
   CHECK_NE(new_routing_id, MSG_ROUTING_NONE);
   // Normally this path is for blink adding a child local frame. But both
   // portals and fenced frames add a dummy child frame that never gets a
@@ -398,12 +400,9 @@ FrameTreeNode* FrameTree::AddFrame(
   // `frame_remote` is invalid. Also its RenderFrameHostImpl is exempt from
   // having `RenderFrameCreated()` called on it (see later in this method, as
   // well as `WebContentsObserverConsistencyChecker::RenderFrameHostChanged()`).
-  bool is_dummy_frame_for_portal_or_fenced_frame =
-      owner_type == blink::mojom::FrameOwnerElementType::kPortal ||
-      (owner_type == blink::mojom::FrameOwnerElementType::kFencedframe &&
-       blink::features::kFencedFramesImplementationTypeParam.Get() ==
-           blink::features::FencedFramesImplementationType::kMPArch);
-  DCHECK_NE(frame_remote.is_valid(), is_dummy_frame_for_portal_or_fenced_frame);
+  DCHECK_NE(frame_remote.is_valid(), is_dummy_frame_for_inner_tree);
+  DCHECK_NE(browser_interface_broker_receiver.is_valid(),
+            is_dummy_frame_for_inner_tree);
 
   // A child frame always starts with an initial empty document, which means
   // it is in the same SiteInstance as the parent frame. Ensure that the process
@@ -437,9 +436,10 @@ FrameTreeNode* FrameTree::AddFrame(
 
   added_node->SetFencedFrameNonceIfNeeded();
 
-  DCHECK(browser_interface_broker_receiver.is_valid());
-  added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(
-      std::move(browser_interface_broker_receiver));
+  if (browser_interface_broker_receiver.is_valid()) {
+    added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(
+        std::move(browser_interface_broker_receiver));
+  }
 
   if (policy_container_bind_params) {
     added_node->current_frame_host()->policy_container_host()->Bind(
@@ -462,7 +462,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // exists in the renderer process.
   // For consistency with navigating to a new RenderFrameHost case, we dispatch
   // RenderFrameCreated before RenderFrameHostChanged.
-  if (!is_dummy_frame_for_portal_or_fenced_frame) {
+  if (!is_dummy_frame_for_inner_tree) {
     // The outer dummy FrameTreeNode for both portals and fenced frames does not
     // have a live RenderFrame in the renderer process.
     added_node->current_frame_host()->RenderFrameCreated();

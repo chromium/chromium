@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 
 namespace content {
@@ -136,15 +137,15 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
       // The renderer frame doesn't exist yet and will be created later with the
       // CreateRenderView message.
       /*frame_remote=*/mojo::NullAssociatedRemote(),
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
-          .InitWithNewPipeAndPassReceiver(),
+      /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
       // The PolicyContainerHost remote is sent to Blink in the CreateRenderView
       // mojo message.
       /*policy_container_bind_params=*/nullptr,
       blink::mojom::TreeScopeType::kDocument, "", "", true,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
-      blink::mojom::FrameOwnerElementType::kPortal);
+      blink::FrameOwnerElementType::kPortal,
+      /*is_dummy_frame_for_inner_tree=*/true);
   outer_node->AddObserver(this);
 
   bool web_contents_created = false;

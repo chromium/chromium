@@ -904,7 +904,6 @@ mojom("mojom_core") {
     "frame/blocked_navigation_types.mojom",
     "frame/find_in_page.mojom",
     "frame/frame.mojom",
-    "frame/frame_owner_element_type.mojom",
     "frame/frame_owner_properties.mojom",
     "frame/frame_policy.mojom",
     "frame/frame_replication_state.mojom",

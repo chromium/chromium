@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -59,8 +59,6 @@ struct CrossThreadCopier<blink::V8ContextToken>
 }  // namespace WTF
 
 namespace blink {
-
-using mojom::blink::FrameOwnerElementType;
 
 namespace {
 

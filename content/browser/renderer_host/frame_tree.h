@@ -23,8 +23,8 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
 
 namespace blink {
@@ -263,7 +263,7 @@ class CONTENT_EXPORT FrameTree {
 
   // Adds a new child frame to the frame tree. |process_id| is required to
   // disambiguate |new_routing_id|, and it must match the process of the
-  // |parent| node. Otherwise no child is added and this method returns false.
+  // |parent| node. Otherwise no child is added and this method returns nullptr.
   // |interface_provider_receiver| is the receiver end of the InterfaceProvider
   // interface through which the child RenderFrame can access Mojo services
   // exposed by the corresponding RenderFrameHost. The caller takes care of
@@ -272,7 +272,10 @@ class CONTENT_EXPORT FrameTree {
   // binding Blink's policy container to the new RenderFrameHost's
   // PolicyContainerHost. This is only needed if this frame is the result of the
   // CreateChildFrame mojo call, which also delivers the
-  // |policy_container_bind_params|.
+  // |policy_container_bind_params|. |is_dummy_frame_for_inner_tree| is true if
+  // the added frame is only to serve as a placeholder for an inner frame tree
+  // (e.g. fenced frames, portals) and will not have a live RenderFrame of its
+  // own.
   FrameTreeNode* AddFrame(
       RenderFrameHostImpl* parent,
       int process_id,
@@ -290,7 +293,8 @@ class CONTENT_EXPORT FrameTree {
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       bool was_discarded,
-      blink::mojom::FrameOwnerElementType owner_type);
+      blink::FrameOwnerElementType owner_type,
+      bool is_dummy_frame_for_inner_tree);
 
   // Removes a frame from the frame tree. |child|, its children, and objects
   // owned by their RenderFrameHostManagers are immediately deleted. The root

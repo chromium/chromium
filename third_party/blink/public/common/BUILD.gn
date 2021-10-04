@@ -93,6 +93,7 @@ source_set("headers") {
     "forcedark/forcedark_switches.h",
     "frame/event_page_show_persisted.h",
     "frame/frame_ad_evidence.h",
+    "frame/frame_owner_element_type.h",
     "frame/frame_policy.h",
     "frame/frame_visual_properties.h",
     "frame/from_ad_state.h",

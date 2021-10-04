@@ -202,6 +202,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -3306,31 +3307,11 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     const base::UnguessableToken& devtools_frame_token,
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-    const blink::mojom::FrameOwnerElementType owner_type) {
+    blink::FrameOwnerElementType owner_type) {
   // TODO(lukasza): Call ReceivedBadMessage when |frame_unique_name| is empty.
   DCHECK(!frame_unique_name.empty());
   DCHECK(browser_interface_broker_receiver.is_valid());
   DCHECK(policy_container_bind_params->receiver.is_valid());
-  if (owner_type == blink::mojom::FrameOwnerElementType::kNone) {
-    // Any child frame must have a HTMLFrameOwnerElement in its parent document
-    // and therefore the corresponding type of kNone (specific to main frames)
-    // is invalid.
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE);
-    return;
-  }
-  if (owner_type == blink::mojom::FrameOwnerElementType::kPortal ||
-      (owner_type == blink::mojom::FrameOwnerElementType::kFencedframe &&
-       blink::features::kFencedFramesImplementationTypeParam.Get() ==
-           blink::features::FencedFramesImplementationType::kMPArch)) {
-    // Portals and MPArch based fenced frames are not created through this child
-    // frame code path.
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE);
-    return;
-  }
-
   DCHECK(devtools_frame_token);
 
   // The RenderFrame corresponding to this host sent an IPC message to create a
@@ -3468,7 +3449,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
                         std::move(policy_container_bind_params), scope,
                         frame_name, frame_unique_name, is_created_by_script,
                         frame_token, devtools_frame_token, frame_policy,
-                        frame_owner_properties, was_discarded_, owner_type);
+                        frame_owner_properties, was_discarded_, owner_type,
+                        /*is_dummy_frame_for_inner_tree=*/false);
 }
 
 void RenderFrameHostImpl::CreateChildFrame(
@@ -3483,7 +3465,7 @@ void RenderFrameHostImpl::CreateChildFrame(
     bool is_created_by_script,
     const blink::FramePolicy& frame_policy,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-    const blink::mojom::FrameOwnerElementType owner_type) {
+    blink::FrameOwnerElementType owner_type) {
   blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   if (!static_cast<RenderProcessHostImpl*>(GetProcess())
@@ -5172,8 +5154,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
       std::move(subresource_loader_factories));
 }
 
-blink::mojom::FrameOwnerElementType
-RenderFrameHostImpl::GetFrameOwnerElementType() {
+blink::FrameOwnerElementType RenderFrameHostImpl::GetFrameOwnerElementType() {
   return frame_tree_node_->frame_owner_element_type();
 }
 

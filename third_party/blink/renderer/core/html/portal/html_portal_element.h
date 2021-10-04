@@ -63,8 +63,8 @@ class CORE_EXPORT HTMLPortalElement : public HTMLFrameOwnerElement {
 
   const PortalToken& GetToken() const;
 
-  mojom::blink::FrameOwnerElementType OwnerType() const override {
-    return mojom::blink::FrameOwnerElementType::kPortal;
+  FrameOwnerElementType OwnerType() const override {
+    return FrameOwnerElementType::kPortal;
   }
 
   // Consumes the portal interface. When a Portal is activated, or if the

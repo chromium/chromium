@@ -22,9 +22,9 @@
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
@@ -86,7 +86,7 @@ class CONTENT_EXPORT FrameTreeNode {
       bool is_created_by_script,
       const base::UnguessableToken& devtools_frame_token,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-      blink::mojom::FrameOwnerElementType owner_type,
+      blink::FrameOwnerElementType owner_type,
       const blink::FramePolicy& frame_owner);
 
   FrameTreeNode(const FrameTreeNode&) = delete;
@@ -445,7 +445,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // will never be reused - this saves memory.
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
-  blink::mojom::FrameOwnerElementType frame_owner_element_type() const {
+  blink::FrameOwnerElementType frame_owner_element_type() const {
     return frame_owner_element_type_;
   }
 
@@ -630,8 +630,8 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // The type of frame owner for this frame. This is only relevant for non-main
   // frames.
-  const blink::mojom::FrameOwnerElementType frame_owner_element_type_ =
-      blink::mojom::FrameOwnerElementType::kNone;
+  const blink::FrameOwnerElementType frame_owner_element_type_ =
+      blink::FrameOwnerElementType::kNone;
 
   // The tree scope type of frame owner element, i.e. whether the element is in
   // the document tree (https://dom.spec.whatwg.org/#document-trees) or the
