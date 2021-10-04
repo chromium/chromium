@@ -21,8 +21,10 @@ share_test_java_sources = [
 share_junit_test_java_sources = [
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinatorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsCoordinatorTest.java",
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/EntryManagerTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsCompositorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsEntryTest.java",
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceJUnitTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/ScreenshotBoundsManagerTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/screenshot/ScreenshotCoordinatorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetMediatorUnitTest.java",

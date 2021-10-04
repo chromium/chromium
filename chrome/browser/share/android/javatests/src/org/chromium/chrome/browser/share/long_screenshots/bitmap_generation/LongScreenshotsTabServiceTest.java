@@ -106,6 +106,7 @@ public class LongScreenshotsTabServiceTest {
         Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());
         mLongScreenshotsTabService.releaseNativeCaptureResultPtr(
                 mProcessor.getNativeCaptureResultPtr());
+        mLongScreenshotsTabService.longScreenshotsClosed();
     }
 
     /**
@@ -133,5 +134,6 @@ public class LongScreenshotsTabServiceTest {
         Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());
         mLongScreenshotsTabService.releaseNativeCaptureResultPtr(
                 mProcessor.getNativeCaptureResultPtr());
+        mLongScreenshotsTabService.longScreenshotsClosed();
     }
 }

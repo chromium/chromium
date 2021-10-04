@@ -65,16 +65,30 @@ public class EntryManager {
      * @param inMemory Use memory buffers to store the capture rather than temporary files.
      */
     public EntryManager(Context context, Tab tab, boolean inMemory) {
+        this(new ScreenshotBoundsManager(context, tab), tab, inMemory);
+    }
+
+    /**
+     * @param boundsManager A {@link ScreenshotBoundsManager}.
+     * @param tab Tab to generate the bitmap for.
+     * @param inMemory Use memory buffers to store the capture rather than temporary files.
+     */
+    public EntryManager(ScreenshotBoundsManager boundsManager, Tab tab, boolean inMemory) {
         mEntries = new ArrayList<LongScreenshotsEntry>();
         mQueuedEntries = new ArrayList<LongScreenshotsEntry>();
         mGeneratorObservers = new ObserverList<>();
-        mBoundsManager = new ScreenshotBoundsManager(context, tab);
+        mBoundsManager = boundsManager;
 
         mGenerator = new BitmapGenerator(tab, mBoundsManager, createBitmapGeneratorCallback());
         mGenerator.captureTab(inMemory);
         updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
         // TODO(cb/1153969): Remove, or make this a finch param. Consider increasing default.
         mMaxMemoryUsageInKb = 16 * 1024;
+    }
+
+    @VisibleForTesting
+    public BitmapGenerator getBitmapGeneratorForTesting() {
+        return mGenerator;
     }
 
     /**

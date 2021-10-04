@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -55,7 +56,8 @@ public class LongScreenshotsCompositor {
     /**
      * Called when the compositor cannot be successfully initialized.
      */
-    private void onCompositorError(@CompositorStatus int status) {
+    @VisibleForTesting
+    protected void onCompositorError(@CompositorStatus int status) {
         mCompositorCallback.onResult(status);
     }
 
@@ -127,10 +129,12 @@ public class LongScreenshotsCompositor {
         return sCompositorDelegateFactory;
     }
 
+    @Nullable
     public Size getContentSize() {
         return mContentSize;
     }
 
+    @Nullable
     public Point getScrollOffset() {
         return mScrollOffset;
     }

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.graphics.Rect;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -31,7 +33,8 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
     private long mNativeLongScreenshotsTabService;
 
     @CalledByNative
-    private LongScreenshotsTabService(long nativeLongScreenshotsTabService) {
+    @VisibleForTesting
+    protected LongScreenshotsTabService(long nativeLongScreenshotsTabService) {
         mNativeLongScreenshotsTabService = nativeLongScreenshotsTabService;
     }
 
@@ -41,19 +44,22 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
+    @VisibleForTesting
+    protected void onNativeDestroyed() {
         mNativeLongScreenshotsTabService = 0;
     }
 
     @CalledByNative
-    private void processCaptureTabStatus(@Status int status) {
+    @VisibleForTesting
+    protected void processCaptureTabStatus(@Status int status) {
         if (mCaptureProcessor != null) {
             mCaptureProcessor.processCapturedTab(0, status);
         }
     }
 
     @CalledByNative
-    private void processPaintPreviewResponse(long nativeCaptureResultPtr) {
+    @VisibleForTesting
+    protected void processPaintPreviewResponse(long nativeCaptureResultPtr) {
         if (mCaptureProcessor == null) {
             // TODO(tgupta): return an error here.
             releaseNativeCaptureResultPtr(nativeCaptureResultPtr);
@@ -66,10 +72,12 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
     public void captureTab(Tab tab, Rect clipRect, boolean inMemory) {
         if (mNativeLongScreenshotsTabService == 0) {
             processCaptureTabStatus(Status.NATIVE_SERVICE_NOT_INITIALIZED);
+            return;
         }
 
         if (tab.getWebContents() == null) {
             processCaptureTabStatus(Status.WEB_CONTENTS_GONE);
+            return;
         }
 
         LongScreenshotsTabServiceJni.get().captureTabAndroid(mNativeLongScreenshotsTabService,
