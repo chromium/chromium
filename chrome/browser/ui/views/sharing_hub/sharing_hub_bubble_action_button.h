@@ -33,6 +33,7 @@ class SharingHubBubbleActionButton : public HoverButton {
   // views::Button:
   void UpdateBackgroundColor() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
  private:
   const int action_command_id_;

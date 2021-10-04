@@ -105,6 +105,11 @@ void SharingHubBubbleActionButton::GetAccessibleNodeData(
   }
 }
 
+void SharingHubBubbleActionButton::OnThemeChanged() {
+  HoverButton::OnThemeChanged();
+  UpdateBackgroundColor();
+}
+
 BEGIN_METADATA(SharingHubBubbleActionButton, HoverButton)
 END_METADATA
 
