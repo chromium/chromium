@@ -273,8 +273,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSignOut];
   [model addItem:[self signOutItem]
       toSectionWithIdentifier:SectionIdentifierSignOut];
-  [model setFooter:[self signOutSyncingFooterItem]
-      forSectionWithIdentifier:SectionIdentifierSignOut];
+  AuthenticationService* authService = [self authService];
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    [model setFooter:[self signOutSyncingFooterItem]
+        forSectionWithIdentifier:SectionIdentifierSignOut];
+  }
 }
 
 #pragma mark - Model objects
