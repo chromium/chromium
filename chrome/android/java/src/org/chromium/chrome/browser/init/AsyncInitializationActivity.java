@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -139,10 +140,7 @@ public abstract class AsyncInitializationActivity
         // 2. To ensure mIsTablet only needs to be set once. Since the override lasts for the life
         //    of the activity, it will never change via onConfigurationUpdated().
         // See crbug.com/588838, crbug.com/662338, crbug.com/780593.
-        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(baseContext);
-        int targetSmallestScreenWidthDp =
-                DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
-        overrideConfig.smallestScreenWidthDp = targetSmallestScreenWidthDp;
+        overrideConfig.smallestScreenWidthDp = getCurrentSmallestScreenWidth(baseContext);
         return true;
     }
 
@@ -716,6 +714,30 @@ public abstract class AsyncInitializationActivity
      */
     public boolean isTablet() {
         return mIsTablet;
+    }
+
+    /**
+     * Get current smallest screen width in dp. This method uses {@link WindowManager} on
+     * Android R and above; otherwise, {@link DisplayUtil#getSmallestWidth(DisplayAndroid)}.
+     *
+     * @param context {@link Context} used to get system service and target display.
+     * @return Smallest screen width in dp.
+     */
+    protected int getCurrentSmallestScreenWidth(Context context) {
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Context#getSystemService(Context.WINDOW_SERVICE) is preferred over
+            // Activity#getWindowManager, because during #attachBaseContext, #getWindowManager
+            // is not ready yet and always returns null. See crbug.com/1252150.
+            WindowManager manager =
+                    (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            assert manager != null;
+            Rect bounds = manager.getMaximumWindowMetrics().getBounds();
+            return DisplayUtil.pxToDp(
+                    display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
+        } else {
+            return DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
+        }
     }
 
     /**
