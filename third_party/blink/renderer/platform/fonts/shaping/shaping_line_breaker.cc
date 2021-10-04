@@ -355,6 +355,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     }
   }
 
+  bool reshape_line_end = true;
   // |range_end| may not be a break opportunity, but this function cannot
   // measure beyond it.
   if (break_opportunity.offset >= range_end) {
@@ -362,6 +363,11 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     if (result_out->is_overflow)
       return ShapeToEnd(start, first_safe, range_start, range_end);
     break_opportunity.offset = range_end;
+    // Avoid re-shape if at the end of the range.
+    // eg. <span>abc</span>def ghi
+    // then `range_end` is at the end of the `<span>`, while break opportunity
+    // is at the space.
+    reshape_line_end = false;
     if (break_opportunity.non_hangable_run_end &&
         range_end < break_opportunity.non_hangable_run_end) {
       break_opportunity.non_hangable_run_end = absl::nullopt;
@@ -371,6 +377,22 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
           FindNonHangableEnd(text, range_end - 1);
     }
   }
+
+  // We may have options that imply avoiding re-shape.
+  // Note: we must evaluate the need of re-shaping the end of the line, before
+  // we consider the non-hangable-run-end.
+  if (options & kDontReshapeEndIfAtSpace) {
+    // If the actual offset is in a breakable-space sequence, we may need to run
+    // the re-shape logic and consider the non-hangable-run-end.
+    reshape_line_end &= !IsBreakableSpace(text[break_opportunity.offset - 1]);
+  }
+
+  // Use the non-hanable-run end as breaking offset (unless we break after eny
+  // space)
+  if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
+    break_opportunity.offset =
+        std::max(start + 1, *break_opportunity.non_hangable_run_end);
+  }
   CheckBreakOffset(break_opportunity.offset, start, range_end);
 
   // If the start offset is not at a safe-to-break boundary the content between
@@ -378,10 +400,6 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // available space adjusted to take the reshaping into account.
   scoped_refptr<const ShapeResult> line_start_result;
   if (first_safe != start) {
-    if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
-      break_opportunity.offset =
-          std::max(start + 1, *break_opportunity.non_hangable_run_end);
-    }
     if (first_safe >= break_opportunity.offset) {
       // There is no safe-to-break, reshape the whole range.
       SetBreakOffset(break_opportunity, text, result_out);
@@ -400,20 +418,6 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   DCHECK_LE(first_safe, break_opportunity.offset);
 
   scoped_refptr<const ShapeResult> line_end_result;
-  bool reshape_line_end = true;
-  if (options & kDontReshapeEndIfAtSpace) {
-    if (IsBreakableSpace(text[break_opportunity.offset - 1]))
-      reshape_line_end = false;
-  }
-  // Avoid re-shape if at the end of the range.
-  // TODO (jfernandez): Is this even possible ? Shouldn't we just
-  // early return if offset >= range_end ?
-  if (break_opportunity.offset == range_end)
-    reshape_line_end = false;
-  if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
-    break_opportunity.offset =
-        std::max(start + 1, *break_opportunity.non_hangable_run_end);
-  }
   unsigned last_safe = break_opportunity.offset;
   if (reshape_line_end) {
     // If the previous valid break opportunity is not at a safe-to-break
