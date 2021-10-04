@@ -422,16 +422,14 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
+// Disabled on all due to issue with code under test: http://crbug.com/1255610.
+//
+// Was also disabled on platforms before:
 // Times out sometimes on Linux. http://crbug.com/135115
 // Mac: http://crbug.com/103912
 // Tests mouse lock then fullscreen in same request.
-#if defined(OS_WIN)
-#define MAYBE_MouseLockAndFullscreen MouseLockAndFullscreen
-#else
-#define MAYBE_MouseLockAndFullscreen DISABLED_MouseLockAndFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_MouseLockAndFullscreen) {
+                       DISABLED_MouseLockAndFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
