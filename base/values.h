@@ -723,12 +723,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindString(path)` or `Value::FindStPath(path)`, and
   // `IsAsciiString()` instead.
   bool GetStringASCII(StringPiece path, std::string* out_value) const;
-  // DEPRECATED, use `Value::FindBlobKey(key)` or `Value::FindBlobPath(path)`
-  // instead.
-  bool GetBinary(StringPiece path, const Value** out_value) const;
-  // DEPRECATED, use `Value::FindBlobKey(key)` or `Value::FindBlobPath(path)`
-  // instead.
-  bool GetBinary(StringPiece path, Value** out_value);
   // DEPRECATED, use `Value::FindDictKey(key)` or `Value::FindDictPah(path)`,
   // and Value's Dictionary API instead.
   bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;

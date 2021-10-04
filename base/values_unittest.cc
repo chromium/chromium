@@ -2255,15 +2255,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(
       main_dict.GetString("DNE", static_cast<std::u16string*>(nullptr)));
 
-  EXPECT_FALSE(main_dict.GetBinary("bool", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("int", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("double", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("string", nullptr));
-  EXPECT_TRUE(main_dict.GetBinary("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("list", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("DNE", nullptr));
-
   EXPECT_FALSE(main_dict.GetDictionary("bool", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("int", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("double", nullptr));
