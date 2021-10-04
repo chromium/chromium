@@ -8154,6 +8154,13 @@ be describing additional metrics about the same event.
       True if the page was added by the user tapping on the Messages prompt to
       save to Reading List.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -8170,12 +8177,26 @@ be describing additional metrics about the same event.
       Distilibility score value indicating the &quot;long readability&quot; of
       the page.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="DistilibilityScore">
     <summary>
       Distilibility score value indicating the &quot;readability&quot; of the
       page.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
