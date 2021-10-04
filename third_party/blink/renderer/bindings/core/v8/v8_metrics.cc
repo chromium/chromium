@@ -99,25 +99,25 @@ constexpr int32_t CappedEfficacyInKBPerMs(double efficacy_in_bytes_per_us) {
 
 void CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   // Check that all used values have been initialized.
-  DCHECK_NE(-1, event.total_cpp.mark_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.total_cpp.weak_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.total_cpp.compact_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.total_cpp.sweep_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_cpp.mark_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_cpp.weak_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_cpp.compact_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_cpp.sweep_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us);
-  DCHECK_NE(-1, event.objects_cpp.bytes_before);
-  DCHECK_NE(-1, event.objects_cpp.bytes_after);
-  DCHECK_NE(-1, event.objects_cpp.bytes_freed);
-  DCHECK_NE(-1, event.memory_cpp.bytes_freed);
-  DCHECK_NE(-1, event.efficiency_cpp_in_bytes_per_us);
-  DCHECK_NE(-1, event.main_thread_efficiency_cpp_in_bytes_per_us);
-  DCHECK_NE(-1, event.collection_rate_cpp_in_percent);
+  DCHECK_LE(0, event.total_cpp.mark_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.total_cpp.weak_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.total_cpp.compact_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.total_cpp.sweep_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_cpp.mark_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_cpp.weak_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_cpp.compact_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_cpp.sweep_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.objects_cpp.bytes_before);
+  DCHECK_LE(0, event.objects_cpp.bytes_after);
+  DCHECK_LE(0, event.objects_cpp.bytes_freed);
+  DCHECK_LE(0, event.memory_cpp.bytes_freed);
+  DCHECK_LE(0, event.efficiency_cpp_in_bytes_per_us);
+  DCHECK_LE(0, event.main_thread_efficiency_cpp_in_bytes_per_us);
+  DCHECK_LE(0, event.collection_rate_cpp_in_percent);
 }
 
 }  // namespace
