@@ -3224,7 +3224,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // To keep the coverage from the rest of the test, we disable the failing check
 // on linux for window-maximization.
-#if defined(OS_MAC)
+// TODO(https://crbug.com/1255462): fails under lacros.
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_RestoreAppMinimized DISABLED_RestoreAppMinimized
 #else
 #define MAYBE_RestoreAppMinimized RestoreAppMinimized
@@ -3494,7 +3495,15 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
 // This test ensures AppSessionService is notified of app restorations
 // correctly.
-IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
+// TODO(https://crbug.com/1255462): fails under lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CtrlShiftTRestoresAppsCorrectly \
+  DISABLED_CtrlShiftTRestoresAppsCorrectly
+#else
+#define MAYBE_CtrlShiftTRestoresAppsCorrectly CtrlShiftTRestoresAppsCorrectly
+#endif
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
+                       MAYBE_CtrlShiftTRestoresAppsCorrectly) {
   Profile* profile = browser()->profile();
   auto example_url = GURL("http://www.example.com");
   auto example_url2 = GURL("http://www.example2.com");

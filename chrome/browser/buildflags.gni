@@ -19,6 +19,5 @@ declare_args() {
   # TODO(stahon@microsoft.com) Remove this when app_session_service is enabled
   # across the board. Until then, this buildflag allows some platforms to use
   # app_session_service and some not.
-  enable_app_session_service =
-      !(is_chromeos_lacros || is_chromecast || is_android)
+  enable_app_session_service = !is_android && !is_chromecast
 }
