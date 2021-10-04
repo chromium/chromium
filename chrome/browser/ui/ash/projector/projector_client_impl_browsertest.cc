@@ -18,6 +18,10 @@
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/projector_app/projector_app_constants.h"
@@ -193,6 +197,26 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
   base::FilePath mounted_path;
   ASSERT_TRUE(client_->GetDriveFsMountPointPath(&mounted_path));
   ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
+  auto* profile = browser()->profile();
+  web_app::WebAppProvider::GetForTest(profile)
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+
+  client_->OpenProjectorApp();
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Verify that Projector App is opened.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
 }
 
 }  // namespace ash

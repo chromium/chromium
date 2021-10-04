@@ -227,6 +227,7 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
   EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
+  EXPECT_CALL(mock_client_, OpenProjectorApp());
 
   // Advance clock to 20:02:10 Jan 2nd, 2021.
   base::Time start_time;

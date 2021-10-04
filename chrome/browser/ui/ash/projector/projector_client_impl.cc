@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/download_manager.h"
@@ -135,7 +137,7 @@ bool ProjectorClientImpl::GetDriveFsMountPointPath(
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          ProfileManager::GetActiveUserProfile());
+          ProfileManager::GetPrimaryUserProfile());
   *result = integration_service->GetMountPointPath();
   return true;
 }
@@ -150,8 +152,13 @@ bool ProjectorClientImpl::IsDriveFsMounted() const {
     return true;
   }
 
-  auto* profile = ProfileManager::GetActiveUserProfile();
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return integration_service && integration_service->IsMounted();
+}
+
+void ProjectorClientImpl::OpenProjectorApp() const {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PROJECTOR);
 }

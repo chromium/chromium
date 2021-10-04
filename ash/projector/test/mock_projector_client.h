@@ -31,6 +31,7 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient {
   MOCK_CONST_METHOD0(IsDriveFsMounted, bool());
   MOCK_METHOD0(ShowSelfieCam, void());
   MOCK_METHOD0(CloseSelfieCam, void());
+  MOCK_CONST_METHOD0(OpenProjectorApp, void());
 
   bool IsSelfieCamVisible() const override;
   void SetSelfieCamVisible(bool visible);

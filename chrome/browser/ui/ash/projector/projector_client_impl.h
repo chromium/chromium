@@ -40,6 +40,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   bool IsSelfieCamVisible() const override;
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   bool IsDriveFsMounted() const override;
+  void OpenProjectorApp() const override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(

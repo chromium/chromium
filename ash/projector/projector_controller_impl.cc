@@ -185,6 +185,10 @@ void ProjectorControllerImpl::OnRecordingEnded() {
   }
 
   projector_session_->Stop();
+
+  // At this point, the screencast might not synced to Drive yet.  Open
+  // Projector App which showing the Gallery view by default.
+  client_->OpenProjectorApp();
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {
