@@ -815,6 +815,7 @@ UIColor* BackgroundColor() {
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
   UrlLoadParams params =
       UrlLoadParams::InNewTab(newTabURL, base::checked_cast<int>(index));
+  params.in_incognito = _browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
 }
 
