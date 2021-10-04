@@ -197,6 +197,10 @@ Polymer({
    */
   onNavigationPageChanged({isActive}) {
     this.isActive = isActive;
+    if (isActive) {
+      // Focus the topmost system page element.
+      this.$$('#overviewCard').$$('#overviewCardContainer').focus();
+    }
   },
 
   /**
