@@ -29,6 +29,8 @@ static_library("power_sampler_lib") {
     "power_sampler/sampler.h",
     "power_sampler/sampling_controller.cc",
     "power_sampler/sampling_controller.h",
+    "power_sampler/user_idle_level_sampler.cc",
+    "power_sampler/user_idle_level_sampler.h",
   ]
   deps = [ "//base" ]
 }
@@ -43,7 +45,11 @@ executable("power_sampler") {
 
 test("power_sampler_unittests") {
   testonly = true
-  sources = [ "power_sampler/sampling_controller_unittest.cc" ]
+  sources = [
+    "power_sampler/sampling_controller_unittest.cc",
+    "power_sampler/user_idle_level_sampler_unittest.cc",
+  ]
+
   deps = [
     ":power_sampler_lib",
     "//base",
