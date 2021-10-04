@@ -722,7 +722,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, DISABLED_ManagedStorage) {
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, PRE_ManagedStorageEvents) {
+// TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
+// and ChromeOS bots.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
+                       DISABLED_PRE_ManagedStorageEvents) {
   ResultCatcher catcher;
 
   // This test starts without any test extensions installed.
@@ -756,7 +759,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, PRE_ManagedStorageEvents) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ManagedStorageEvents) {
+// TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
+// and ChromeOS bots.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
+                       DISABLED_ManagedStorageEvents) {
   // This test runs after PRE_ManagedStorageEvents without having deleted the
   // profile, so the extension is still around. While the browser restarted the
   // policy went back to the empty default, and so the extension should receive
