@@ -66,7 +66,8 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
           features::IsDynamicSchedulerEnabledForClients()),
       dynamic_scheduler_deadlines_percentile_(
           features::IsDynamicSchedulerEnabledForDraw()) {
-  begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
+  if (dynamic_cc_deadlines_percentile_.has_value())
+    begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
 }
