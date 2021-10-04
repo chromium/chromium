@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -1804,9 +1805,26 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * Add the specified tab to bookmarks or allows to edit the bookmark if the specified tab is
      * already bookmarked. If a new bookmark is added, a snackbar will be shown.
+     *
      * @param tabToBookmark The tab that needs to be bookmarked.
      */
     public void addOrEditBookmark(final Tab tabToBookmark) {
+        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
+        addOrEditBookmark(tabToBookmark, BookmarkType.NORMAL);
+    }
+
+    /**
+     * Adds the specified tab to the Reading List. Opens a new item if an item was added. Opens UI
+     * for editing the Reading List item if it was already present on the list.
+     *
+     * @param tabToAdd The tab that to add to the Reading List.
+     */
+    public void addToReadingList(final Tab tabToAdd) {
+        addOrEditBookmark(tabToAdd, BookmarkType.READING_LIST);
+    }
+
+    private void addOrEditBookmark(final Tab tabToBookmark, @BookmarkType int bookmarkType) {
         if (tabToBookmark == null || tabToBookmark.isFrozen()) {
             return;
         }
@@ -1817,9 +1835,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             assert false;
             return;
         }
-
-        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
 
         final BookmarkModel bookmarkModel = new BookmarkModel();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
@@ -1833,7 +1848,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // currently it's a sync call that doesn't check loading states, and only checks the
             // bookmark backend and managed bookmarks.
             BookmarkItem currentBookmarkItem = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
+            if (ReadingListFeatures.isReadingListEnabled()) {
                 currentBookmarkItem =
                         bookmarkModel.getReadingListItem(tabToBookmark.getOriginalUrl());
             }
@@ -1845,22 +1860,23 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 // TODO(bauerb): This does not take partner bookmarks into account.
                 final long bookmarkId = bridge.getUserBookmarkIdForTab(tabToBookmark);
                 if (bookmarkId != BookmarkId.INVALID_ID) {
-                    currentBookmarkItem = bookmarkModel.getBookmarkById(
-                            new BookmarkId(bookmarkId, BookmarkType.NORMAL));
+                    currentBookmarkItem =
+                            bookmarkModel.getBookmarkById(new BookmarkId(bookmarkId, bookmarkType));
                 }
             }
 
-            onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel);
+            onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel, bookmarkType);
         });
     }
 
     private void onBookmarkModelLoaded(final Tab tabToBookmark,
-            @Nullable final BookmarkItem currentBookmarkItem, final BookmarkModel bookmarkModel) {
+            @Nullable final BookmarkItem currentBookmarkItem, final BookmarkModel bookmarkModel,
+            @BookmarkType int bookmarkType) {
         // The BookmarkModel will be destroyed by BookmarkUtils#addOrEditBookmark() when
         // done.
         BookmarkUtils.addOrEditBookmark(currentBookmarkItem, bookmarkModel, tabToBookmark,
                 getSnackbarManager(), mRootUiCoordinator.getBottomSheetController(),
-                ChromeActivity.this, isCustomTab(), (newBookmarkId) -> {
+                ChromeActivity.this, isCustomTab(), bookmarkType, (newBookmarkId) -> {
                     BookmarkId currentBookmarkId =
                             (currentBookmarkItem == null) ? null : currentBookmarkItem.getId();
                     // Add offline page for a new bookmark.
@@ -2413,6 +2429,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.bookmark_this_page_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
+            return true;
+        }
+
+        if (id == R.id.add_to_reading_list_menu_id) {
+            addToReadingList(currentTab);
+            RecordUserAction.record("MobileMenuAddToReadingList");
             return true;
         }
 

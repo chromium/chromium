@@ -77,12 +77,13 @@ public class BookmarkUtils {
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      * @param activity Current activity.
      * @param fromCustomTab boolean indicates whether it is called by Custom Tab.
+     * @param bookmarkType Type of the added bookmark.
      * @param callback Invoked with the resulting bookmark ID, which could be null if unsuccessful.
      */
     public static void addOrEditBookmark(@Nullable BookmarkItem existingBookmarkItem,
             BookmarkModel bookmarkModel, Tab tab, SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController, Activity activity, boolean fromCustomTab,
-            Callback<BookmarkId> callback) {
+            @BookmarkType int bookmarkType, Callback<BookmarkId> callback) {
         assert bookmarkModel.isBookmarkModelLoaded();
         if (existingBookmarkItem != null) {
             startEditActivity(activity, existingBookmarkItem.getId());
@@ -90,16 +91,18 @@ public class BookmarkUtils {
             return;
         }
 
+        // TODO(crbug.com/1252228): Reading list support needs some tests.
         if (isImprovedSaveFlowEnabled()) {
-            BookmarkId newBookmarkId =
-                    addBookmarkAndShowSaveFlow(activity, bookmarkModel, tab, bottomSheetController);
+            BookmarkId newBookmarkId = addBookmarkAndShowSaveFlow(
+                    activity, bookmarkModel, tab, bottomSheetController, bookmarkType);
             callback.onResult(newBookmarkId);
             return;
         }
 
         // TODO(crbug.com/1249283): Add separate entrypoint to save reading list items that uses
         // the improved save flow.
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET)) {
+        if (bookmarkType != BookmarkType.READING_LIST
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET)) {
             // Show a bottom sheet to let the user select target bookmark folder.
             showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
                     activity, fromCustomTab, callback);
@@ -107,7 +110,7 @@ public class BookmarkUtils {
         }
 
         BookmarkId newBookmarkId = addBookmarkAndShowSnackbar(
-                bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
+                bookmarkModel, tab, snackbarManager, activity, fromCustomTab, bookmarkType);
         callback.onResult(newBookmarkId);
     }
 
@@ -124,14 +127,10 @@ public class BookmarkUtils {
             }
 
             // Add to the selected bookmark folder.
-            BookmarkId newBookmarkId;
-            if (selectedBookmarkItem.getId().getType() == BookmarkType.READING_LIST) {
-                newBookmarkId = BookmarkUtils.addToReadingList(tab.getOriginalUrl(), tab.getTitle(),
-                        snackbarManager, bookmarkModel, activity);
-            } else {
-                newBookmarkId = addBookmarkAndShowSnackbar(
-                        bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
-            }
+            BookmarkId newBookmarkId =
+                    addBookmarkAndShowSnackbar(bookmarkModel, tab, snackbarManager, activity,
+                            fromCustomTab, selectedBookmarkItem.getId().getType());
+
             RecordHistogram.recordEnumeratedHistogram("Bookmarks.BottomSheet.DestinationFolder",
                     selectedBookmarkItem.getId().getType(), BookmarkType.LAST + 1);
             callback.onResult(newBookmarkId);
@@ -139,8 +138,11 @@ public class BookmarkUtils {
     }
 
     private static BookmarkId addBookmarkAndShowSaveFlow(Activity activity,
-            BookmarkModel bookmarkModel, Tab tab, BottomSheetController bottomSheetController) {
-        BookmarkId bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab);
+            BookmarkModel bookmarkModel, Tab tab, BottomSheetController bottomSheetController,
+            @BookmarkType int bookmarkType) {
+        BookmarkId bookmarkId;
+        // TODO(crbug.com/1252228): Reading list support needs some tests.
+        bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab, bookmarkType);
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(activity, bottomSheetController);
         bookmarkSaveFlowCoordinator.show(bookmarkId);
@@ -150,8 +152,15 @@ public class BookmarkUtils {
 
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
     private static BookmarkId addBookmarkAndShowSnackbar(BookmarkModel bookmarkModel, Tab tab,
-            SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab) {
-        BookmarkId bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab);
+            SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab,
+            @BookmarkType int bookmarkType) {
+        if (ReadingListFeatures.isReadingListEnabled()
+                && bookmarkType == BookmarkType.READING_LIST) {
+            return addToReadingList(
+                    tab.getOriginalUrl(), tab.getTitle(), snackbarManager, bookmarkModel, activity);
+        }
+        BookmarkId bookmarkId =
+                addBookmarkInternal(activity, bookmarkModel, tab, BookmarkType.NORMAL);
 
         if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
             @BrowserProfileType
@@ -236,9 +245,14 @@ public class BookmarkUtils {
      * @param context The current Android {@link Context}.
      * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
      * @param tab The current {@link Tab} which bookmark properties are pulled.
+     * @param bookmarkType The {@link BookmarkType} of the bookmark.
      */
     private static BookmarkId addBookmarkInternal(
-            Context context, BookmarkModel bookmarkModel, Tab tab) {
+            Context context, BookmarkModel bookmarkModel, Tab tab, @BookmarkType int bookmarkType) {
+        if (ReadingListFeatures.isReadingListEnabled()
+                && bookmarkType == BookmarkType.READING_LIST) {
+            return bookmarkModel.addToReadingList(tab.getTitle(), tab.getOriginalUrl());
+        }
         BookmarkId parent = getLastUsedParent(context);
         BookmarkItem parentItem = null;
         if (parent != null) {

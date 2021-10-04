@@ -3206,6 +3206,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_MENU_DOWNLOADS" desc="Menu item for opening the downloads page. [CHAR_LIMIT=27]">
         Downloads
       </message>
+      <message name="IDS_MENU_ADD_TO_READING_LIST" desc="Menu item for adding the current page to the 'Reading List' to read later. [CHAR_LIMIT=27]">
+        Add to Reading List
+      </message>
       <message name="IDS_MENU_FIND_IN_PAGE" desc="Menu item allowing users to find text within the current page. [CHAR_LIMIT=27]">
         Find in page
       </message>

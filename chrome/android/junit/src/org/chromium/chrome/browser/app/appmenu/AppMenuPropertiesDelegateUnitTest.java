@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -75,6 +76,7 @@ import java.util.List;
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.READ_LATER})
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

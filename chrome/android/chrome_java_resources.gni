@@ -502,6 +502,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_offline_pin_white.xml",
   "java/res/drawable/ic_open_in_browser.xml",
   "java/res/drawable/ic_person_add_40dp.xml",
+  "java/res/drawable/ic_reading_list_add_24dp.xml",
   "java/res/drawable/ic_reading_list_folder_24dp.xml",
   "java/res/drawable/ic_select_window.xml",
   "java/res/drawable/ic_signout_40dp.xml",

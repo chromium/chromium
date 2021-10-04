@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
@@ -70,6 +71,7 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
@@ -344,10 +346,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private void preparePageMenu(
             Menu menu, Tab currentTab, AppMenuHandler handler, boolean isIncognito) {
         GURL url = currentTab.getUrl();
-        boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+        final boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                 || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-        boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
-        boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
+        final boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
+        final boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
+        final boolean isHttpOrHttpsScheme = UrlUtilities.isHttpOrHttps(url);
 
         // Update the icon row items (shown in narrow form factors).
         boolean shouldShowIconRow = shouldShowIconRow();
@@ -392,6 +395,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     mContext.getString(R.string.menu_manage_all_windows, getInstanceCount()));
         }
 
+        menu.findItem(R.id.add_to_reading_list_menu_id)
+                .setVisible(isHttpOrHttpsScheme
+                        && ReadingListFeatures.enableAddToReadingListAppMenuItem());
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
 

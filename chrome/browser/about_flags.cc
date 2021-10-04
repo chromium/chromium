@@ -2616,10 +2616,15 @@ const FeatureEntry::FeatureVariation kContinuousSearchFeatureVariations[] = {
 
 const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
     {"use_root_bookmark_as_default", "true"}};
+const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
+    {"use_root_bookmark_as_default", "true"},
+    {"add_to_reading_list_in_app_menu", "true"}};
 
 const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
-     base::size(kReadLaterUseRootBookmarkAsDefault), nullptr}};
+     base::size(kReadLaterUseRootBookmarkAsDefault), nullptr},
+    {"(with app menu item)", kReadLaterInAppMenu,
+     base::size(kReadLaterInAppMenu), nullptr}};
 
 const FeatureEntry::FeatureParam kScrollCaptureInMemory[] = {
     {"in_memory_capture", "true"}};
@@ -4708,7 +4713,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadLaterDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(reading_list::switches::kReadLater,
                                     kReadLaterVariations,
-                                    flag_descriptions::kReadLaterName)},
+                                    "ReadLater")},
 #else
     {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
      flag_descriptions::kReadLaterDescription, kOsDesktop,

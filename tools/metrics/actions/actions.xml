@@ -14774,7 +14774,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuAddToReadingList">
-  <owner>xingliu@chromium.org</owner>
+  <owner>bttk@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <description>User pressed 'Add to reading list' in the app menu.</description>
 </action>
 

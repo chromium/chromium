@@ -99,7 +99,6 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
@@ -127,9 +126,6 @@ public class BookmarkTest {
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
@@ -181,8 +177,8 @@ public class BookmarkTest {
             SyncService.overrideForTests(mSyncService);
         });
         // Use a custom port so the links are consistent for render tests.
-        mEmbeddedTestServerRule.setServerPort(TEST_PORT);
-        mTestServer = mEmbeddedTestServerRule.getServer();
+        mActivityTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
+        mTestServer = mActivityTestRule.getTestServer();
         mTestUrlA = new GURL("http://a.com");
         mTestPage = new GURL(mTestServer.getURL(TEST_PAGE_URL_GOOGLE));
         mTestPageFoo = new GURL(mTestServer.getURL(TEST_PAGE_URL_FOO));
@@ -1888,6 +1884,33 @@ public class BookmarkTest {
         }
 
         onView(withText("Reading list")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:add_to_reading_list_in_app_menu/true"})
+    public void
+    testAddToReadingListFromAppMenu() throws Exception {
+        mActivityTestRule.loadUrl(mTestPage);
+
+        // Click "Add to Reading List" to add the current tab.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(), R.id.add_to_reading_list_menu_id);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestPage) != null);
+
+        // All actions with BookmarkModel needs to run on UI thread.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BookmarkItem item = mBookmarkBridge.getReadingListItem(mTestPage);
+            Assert.assertEquals(BookmarkType.READING_LIST, item.getId().getType());
+            Assert.assertEquals(mTestPage, item.getUrl());
+            Assert.assertEquals(TEST_PAGE_TITLE_GOOGLE, item.getTitle());
+        });
+
+        waitForOfflinePageSaved(mTestPage);
     }
 
     @Test

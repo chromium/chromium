@@ -14,10 +14,12 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>{@link ChromeFeatureList#READ_LATER}
  * <ul>
+ * <li>{@code add_to_reading_list_in_app_menu}: boolean; show "Add to Reading List" in the app menu.
+ * Default: {@code false}</li>
  * <li>{@code session_length}: int (seconds); duration Chrome needs to spend in background before it
  * discards the "last bookmark location". Default: {@link #DEFAULT_SESSION_LENGTH_SECONDS}</li>
  * <li>{@code use_root_bookmark_as_default}: boolean; use the root folder rather than "Mobile
- * bookmarks" as the default bookmark folder. Default: false</li>
+ * bookmarks" as the default bookmark folder. Default: {@code false}</li>
  * </ul>
  */
 public class ReadingListFeatures {
@@ -44,5 +46,12 @@ public class ReadingListFeatures {
     public static int getSessionLengthMs() {
         return (int) TimeUnit.SECONDS.toMillis(ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.READ_LATER, "session_length", DEFAULT_SESSION_LENGTH_SECONDS));
+    }
+
+    /** Returns whether the "Add to Reading List" app menu item should be enabled. */
+    public static boolean enableAddToReadingListAppMenuItem() {
+        return isReadingListEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.READ_LATER, "add_to_reading_list_in_app_menu", false);
     }
 }
