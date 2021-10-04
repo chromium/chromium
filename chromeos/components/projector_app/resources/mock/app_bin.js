@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug/1206720): Launch Projector toolbar.
-function onLaunchClick() {
-  console.log('Launch Projector tools');
-}
-
-document.body.querySelector('button').onclick = onLaunchClick;
+let div = document.createElement('div');
+div.append(`Please build branded Chrome (set is_chrome_branded = true)
+for the official Projector app.`);
+document.body.appendChild(div);
