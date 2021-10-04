@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -84,6 +85,10 @@ void SharingHubIconView::OnExecuting(
 const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return omnibox::kShareIcon;
+#elif defined(OS_MAC)
+  return omnibox::kShareMacIcon;
+#elif defined(OS_WIN)
+  return omnibox::kShareWinIcon;
 #else
   return omnibox::kSendIcon;
 #endif
