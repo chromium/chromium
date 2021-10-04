@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
@@ -123,7 +124,7 @@ class IncomingStreamTest : public ::testing::Test {
     return ret;
   }
 
-  base::MockOnceClosure mock_on_abort_;
+  base::MockOnceCallback<void(absl::optional<uint8_t>)> mock_on_abort_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer_;
 };
@@ -153,6 +154,9 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -181,6 +185,9 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -220,6 +227,9 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -239,6 +249,9 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -283,6 +296,74 @@ TEST_F(IncomingStreamTest, WriteToPipeWithPendingRead) {
   Iterator result = IteratorFromReadResult(scope, tester.Value().V8Value());
   EXPECT_FALSE(result.done);
   EXPECT_THAT(result.value, ElementsAre('A'));
+}
+
+TEST_F(IncomingStreamTest, Cancel) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(0)));
+
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise promise = reader->cancel(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, promise);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST_F(IncomingStreamTest, CancelWithWebTransportError) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(0)));
+
+  v8::Local<v8::Value> error =
+      WebTransportError::Create(isolate,
+                                /*stream_error_code=*/absl::nullopt, "foobar",
+                                WebTransportError::Source::kStream);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise promise = reader->cancel(
+      script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, promise);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST_F(IncomingStreamTest, CancelWithWebTransportErrorWithCode) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(19)));
+
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      isolate,
+      /*stream_error_code=*/19, "foobar", WebTransportError::Source::kStream);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise promise = reader->cancel(
+      script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, promise);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
 }
 
 }  // namespace

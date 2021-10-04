@@ -41,7 +41,7 @@ class MODULES_EXPORT IncomingStream final
   };
 
   IncomingStream(ScriptState*,
-                 base::OnceClosure on_abort,
+                 base::OnceCallback<void(absl::optional<uint8_t>)> on_abort,
                  mojo::ScopedDataPipeConsumerHandle);
   ~IncomingStream();
 
@@ -107,7 +107,7 @@ class MODULES_EXPORT IncomingStream final
   void ErrorStreamAbortAndReset(ScriptValue exception);
 
   // Resets the |data_pipe_|.
-  void AbortAndReset();
+  void AbortAndReset(absl::optional<uint8_t> code);
 
   // Resets |data_pipe_| and clears the watchers.
   // If the pipe is open it will be closed as a side-effect.
@@ -118,7 +118,7 @@ class MODULES_EXPORT IncomingStream final
 
   const Member<ScriptState> script_state_;
 
-  base::OnceClosure on_abort_;
+  base::OnceCallback<void(absl::optional<uint8_t>)> on_abort_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
 

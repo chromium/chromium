@@ -102,7 +102,10 @@ class MODULES_EXPORT WebTransport final
   void SendFin(uint32_t stream_id);
 
   // Forwards a AbortStream() message to the mojo interface.
-  void AbortStream(uint32_t stream_id);
+  void ResetStream(uint32_t stream_id, uint8_t code);
+
+  // Forwards a StopSending() message to the mojo interface.
+  void StopSending(uint32_t stream_id, uint8_t code);
 
   // Removes the reference to a stream.
   void ForgetIncomingStream(uint32_t stream_id);

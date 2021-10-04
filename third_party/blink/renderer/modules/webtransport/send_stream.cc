@@ -26,8 +26,10 @@ class OutgoingStreamClient final
     transport_->SendFin(stream_id_);
   }
 
-  void OnOutgoingStreamAbort() override {
-    transport_->ForgetOutgoingStream(stream_id_);
+  void ForgetStream() override { transport_->ForgetOutgoingStream(stream_id_); }
+
+  void Reset(uint8_t code) override {
+    transport_->ResetStream(stream_id_, code);
   }
 
   void Trace(Visitor* visitor) const override {

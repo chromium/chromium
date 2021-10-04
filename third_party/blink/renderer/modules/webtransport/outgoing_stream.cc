@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -95,7 +96,15 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
                       ExceptionState& exception_state) override {
     DVLOG(1) << "OutgoingStream::UnderlyingSink::abort() outgoing_stream_="
              << outgoing_stream_;
+    DCHECK(!reason.IsEmpty());
 
+    uint8_t code = 0;
+    WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
+        script_state->GetIsolate(), reason.V8Value());
+    if (exception) {
+      code = exception->streamErrorCode().value_or(0);
+    }
+    outgoing_stream_->client_->Reset(code);
     outgoing_stream_->AbortAndReset();
 
     return ScriptPromise::CastUndefined(script_state);
@@ -380,12 +389,9 @@ void OutgoingStream::ErrorStreamAbortAndReset(ScriptValue reason) {
 void OutgoingStream::AbortAndReset() {
   DVLOG(1) << "OutgoingStream::AbortAndReset() this=" << this;
 
-  if (client_) {
-    DCHECK_EQ(state_, State::kOpen);
-    state_ = State::kAborted;
-    client_->OnOutgoingStreamAbort();
-    client_ = nullptr;
-  }
+  DCHECK_EQ(state_, State::kOpen);
+  state_ = State::kAborted;
+  client_->ForgetStream();
 
   ResetPipe();
 }

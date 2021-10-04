@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -50,7 +51,13 @@ class IncomingStream::UnderlyingSource final : public UnderlyingSourceBase {
   }
 
   ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
-    incoming_stream_->AbortAndReset();
+    uint8_t code = 0;
+    WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
+        script_state->GetIsolate(), reason.V8Value());
+    if (exception) {
+      code = exception->streamErrorCode().value_or(0);
+    }
+    incoming_stream_->AbortAndReset(code);
     return ScriptPromise::CastUndefined(script_state);
   }
 
@@ -63,9 +70,10 @@ class IncomingStream::UnderlyingSource final : public UnderlyingSourceBase {
   const Member<IncomingStream> incoming_stream_;
 };
 
-IncomingStream::IncomingStream(ScriptState* script_state,
-                               base::OnceClosure on_abort,
-                               mojo::ScopedDataPipeConsumerHandle handle)
+IncomingStream::IncomingStream(
+    ScriptState* script_state,
+    base::OnceCallback<void(absl::optional<uint8_t>)> on_abort,
+    mojo::ScopedDataPipeConsumerHandle handle)
     : script_state_(script_state),
       on_abort_(std::move(on_abort)),
       data_pipe_(std::move(handle)),
@@ -278,7 +286,7 @@ void IncomingStream::CloseAbortAndReset() {
     controller_ = nullptr;
   }
 
-  AbortAndReset();
+  AbortAndReset(absl::nullopt);
 }
 
 void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
@@ -289,17 +297,17 @@ void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
     controller_ = nullptr;
   }
 
-  AbortAndReset();
+  AbortAndReset(absl::nullopt);
 }
 
-void IncomingStream::AbortAndReset() {
+void IncomingStream::AbortAndReset(absl::optional<uint8_t> code) {
   DVLOG(1) << "IncomingStream::AbortAndReset() this=" << this;
 
   state_ = State::kAborted;
 
   if (on_abort_) {
     // Cause WebTransport to drop its reference to us.
-    std::move(on_abort_).Run();
+    std::move(on_abort_).Run(code);
   }
 
   ResetPipe();

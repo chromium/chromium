@@ -1013,9 +1013,16 @@ void WebTransport::SendFin(uint32_t stream_id) {
   transport_remote_->SendFin(stream_id);
 }
 
-void WebTransport::AbortStream(uint32_t stream_id) {
-  DVLOG(1) << "WebTransport::AbortStream(" << stream_id << ") this = " << this;
-  transport_remote_->AbortStream(stream_id, /*code=*/0);
+void WebTransport::ResetStream(uint32_t stream_id, uint8_t code) {
+  VLOG(0) << "WebTransport::ResetStream(" << stream_id << ", "
+          << static_cast<uint32_t>(code) << ") this = " << this;
+  transport_remote_->AbortStream(stream_id, code);
+}
+
+void WebTransport::StopSending(uint32_t stream_id, uint8_t code) {
+  DVLOG(1) << "WebTransport::StopSending(" << stream_id << ", "
+           << static_cast<uint32_t>(code) << ") this = " << this;
+  transport_remote_->StopSending(stream_id, code);
 }
 
 void WebTransport::ForgetIncomingStream(uint32_t stream_id) {

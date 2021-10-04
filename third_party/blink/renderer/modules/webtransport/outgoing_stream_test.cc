@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -36,7 +37,8 @@ class MockClient : public GarbageCollected<MockClient>,
                    public OutgoingStream::Client {
  public:
   MOCK_METHOD0(SendFin, void());
-  MOCK_METHOD0(OnOutgoingStreamAbort, void());
+  MOCK_METHOD0(ForgetStream, void());
+  MOCK_METHOD1(Reset, void(uint8_t));
 };
 
 // The purpose of this class is to ensure that the data pipe is reset before the
@@ -122,7 +124,7 @@ TEST(OutgoingStreamTest, Create) {
   auto* outgoing_stream = stream_creator.Create(scope);
   EXPECT_TRUE(outgoing_stream->Writable());
 
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 }
 
 TEST(OutgoingStreamTest, WriteArrayBuffer) {
@@ -141,7 +143,7 @@ TEST(OutgoingStreamTest, WriteArrayBuffer) {
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_THAT(stream_creator.ReadAllPendingData(), ElementsAre('A'));
 
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 }
 
 TEST(OutgoingStreamTest, WriteArrayBufferView) {
@@ -162,7 +164,7 @@ TEST(OutgoingStreamTest, WriteArrayBufferView) {
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_THAT(stream_creator.ReadAllPendingData(), ElementsAre('B'));
 
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 }
 
 bool IsAllNulls(base::span<const uint8_t> data) {
@@ -224,7 +226,7 @@ TEST(OutgoingStreamTest, AsyncWrite) {
   // Nothing should be left to read.
   EXPECT_THAT(stream_creator.ReadAllPendingData(), ElementsAre());
 
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 }
 
 // Writing immediately followed by closing should not lose data.
@@ -278,7 +280,7 @@ TEST(OutgoingStreamTest, DataPipeClosed) {
   ScriptPromise closed = writer->closed(script_state);
   ScriptPromiseTester closed_tester(script_state, closed);
 
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 
   // Close the other end of the pipe.
   stream_creator.Reset();
@@ -332,7 +334,7 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
   ScriptPromise closed = writer->closed(script_state);
   ScriptPromiseTester closed_tester(script_state, closed);
 
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 
   // Close the other end of the pipe.
   stream_creator.Reset();
@@ -358,6 +360,67 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
   EXPECT_EQ(closed_exception->name(), "NetworkError");
   EXPECT_EQ(closed_exception->message(),
             "The stream was aborted by the remote server");
+}
+
+TEST(OutgoingStreamTest, Abort) {
+  V8TestingScope scope;
+  StreamCreator stream_creator;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* outgoing_stream = stream_creator.Create(scope);
+
+  testing::InSequence s;
+  EXPECT_CALL(stream_creator.GetMockClient(), Reset(0u));
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
+
+  auto* writer =
+      outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
+  writer->abort(script_state, ScriptValue(isolate, v8::Undefined(isolate)),
+                ASSERT_NO_EXCEPTION);
+}
+
+TEST(OutgoingStreamTest, AbortWithWebTransportError) {
+  V8TestingScope scope;
+  StreamCreator stream_creator;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* outgoing_stream = stream_creator.Create(scope);
+
+  testing::InSequence s;
+  EXPECT_CALL(stream_creator.GetMockClient(), Reset(0));
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
+
+  v8::Local<v8::Value> error =
+      WebTransportError::Create(isolate,
+                                /*stream_error_code=*/absl::nullopt, "foobar",
+                                WebTransportError::Source::kStream);
+
+  auto* writer =
+      outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
+  writer->abort(script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+}
+
+TEST(OutgoingStreamTest, AbortWithWebTransportErrorWithCode) {
+  V8TestingScope scope;
+  StreamCreator stream_creator;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* outgoing_stream = stream_creator.Create(scope);
+
+  testing::InSequence s;
+  EXPECT_CALL(stream_creator.GetMockClient(), Reset(8));
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
+
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      isolate,
+      /*stream_error_code=*/8, "foobar", WebTransportError::Source::kStream);
+
+  auto* writer =
+      outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
+  writer->abort(script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
 }
 
 }  // namespace

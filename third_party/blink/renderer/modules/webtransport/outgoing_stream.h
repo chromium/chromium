@@ -42,10 +42,12 @@ class MODULES_EXPORT OutgoingStream final
     // Request that a Fin message for this stream be sent to the server.
     virtual void SendFin() = 0;
 
-    // Indicates that this stream is aborted. WebTransport should drop its
-    // reference to the stream, and in a bidirectional stream the incoming side
-    // should be reset.
-    virtual void OnOutgoingStreamAbort() = 0;
+    // Notify that the stream is either closed or errored and WebTransport
+    // should drop its reference to the stream.
+    virtual void ForgetStream() = 0;
+
+    // Send RESET_STREAM with `code`. This does not imply ForgetStream().
+    virtual void Reset(uint8_t code) = 0;
   };
 
   enum class State {
