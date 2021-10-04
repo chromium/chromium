@@ -30,7 +30,7 @@ const ARGBColor kGreen50Color = 0xFFE6F4EA;
 const ARGBColor kGreen900Color = 0xFF0D652D;
 const ARGBColor kGrey300Color = 0xFFDADCE0;
 const ARGBColor kGrey900Color = 0xFF202124;
-const ARGBColor kRed500Color = 0xFFEA4335;
+const ARGBColor kDarkRedColor = 0xFFCC4A2D;
 const ARGBColor kYellow400Color = 0xFFFCC934;
 
 const ARGBColor kLightYellowColor = 0xFFFCEF94;
@@ -44,8 +44,8 @@ const ARGBColor kSlightlyTransparentWhiteColor = 0xB3FFFFFF;
 // White color with 0.2 opacity.
 const ARGBColor kTransparentWhiteColor = 0x33FFFFFF;
 
-// Black color with 0.5 opacity.
-const ARGBColor kSlightlyTransparentBlackColor = 0x80000000;
+// Black color with 0.8 opacity.
+const ARGBColor kSlightlyTransparentBlackColor = 0xCC000000;
 
 // Black color with 0.1 opacity.
 const ARGBColor kTransparentBlackColor = 0x1A000000;
@@ -59,6 +59,12 @@ FooterStyle CreateLightBackgroundFooterStyle() {
 FooterStyle CreateDarkBackgroundFooterStyle() {
   return FooterStyle(
       /*text_color=*/kSlightlyTransparentWhiteColor,
+      /*logo_color=*/kTransparentWhiteColor);
+}
+
+FooterStyle CreateGroovyDreamyTemplateFooterStyle() {
+  return FooterStyle(
+      /*text_color=*/kWhiteColor,
       /*logo_color=*/kTransparentWhiteColor);
 }
 
@@ -148,13 +154,13 @@ NoteTemplate GetGroovyTemplate() {
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kGroovy,
       l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_GROOVY),
-      Background(/*color=*/kRed500Color),
+      Background(/*color=*/kDarkRedColor),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kYellow400Color, k400Weight,
                 /*all_caps=*/true, TextAlignment::kStart, kDefaultMinTextSizeSP,
                 kBiggerMaxTextSizeSP,
                 /*highlight_color=*/kBlue900Color, HighlightStyle::kFull),
-      /*footer_style=*/CreateDarkBackgroundFooterStyle());
+      /*footer_style=*/CreateGroovyDreamyTemplateFooterStyle());
 }
 
 NoteTemplate GetMonochromeTemplate() {
@@ -187,13 +193,13 @@ NoteTemplate GetDreamyTemplate() {
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kDreamy,
       l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_DREAMY),
-      Background(/*colors=*/{0xFFDB80B8, 0xFFF39FD3, 0xFFA89CED},
+      Background(/*colors=*/{0xFFDB80B8, 0xFF7462B8},
                  LinearGradientDirection::kTopToBottom),
       TextStyle(kMansalvaFontName,
                 /*font_color=*/kWhiteColor, k400Weight,
                 /*all_caps=*/false, TextAlignment::kStart,
                 kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
-      /*footer_style=*/CreateDarkBackgroundFooterStyle());
+      /*footer_style=*/CreateGroovyDreamyTemplateFooterStyle());
 }
 
 }  // namespace content_creation
