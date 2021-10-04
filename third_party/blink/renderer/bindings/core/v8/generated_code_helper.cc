@@ -134,6 +134,19 @@ void SetupIDLCallbackInterfaceTemplate(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
 }
 
+void SetupIDLObservableArrayBackingListTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::FunctionTemplate> interface_template) {
+  // TODO(crbug.com/1201744): Make the backing list object has
+  // %Array.prototype%.
+  interface_template->SetClassName(
+      V8AtomicString(isolate, wrapper_type_info->interface_name));
+
+  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+}
+
 absl::optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,

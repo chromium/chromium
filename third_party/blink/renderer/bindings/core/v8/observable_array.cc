@@ -49,7 +49,11 @@ v8::MaybeLocal<v8::Value> ObservableArrayExoticObjectImpl::Wrap(
   }
   CHECK(target->IsObject());
   v8::Local<v8::Object> handler;
-  // TODO(yukishiino): Set `handler` to an appropriate object.
+  if (!GetBackingListObject()
+           ->GetProxyHandlerObject(script_state)
+           .ToLocal(&handler)) {
+    return {};
+  }
   v8::Local<v8::Proxy> proxy;
   if (!v8::Proxy::New(script_state->GetContext(), target.As<v8::Object>(),
                       handler)

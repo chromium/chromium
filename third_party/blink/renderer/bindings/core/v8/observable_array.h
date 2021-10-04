@@ -11,9 +11,6 @@
 
 namespace blink {
 
-class ExceptionState;
-class ScriptState;
-
 namespace bindings {
 
 // The implementation class of ObservableArrayExoticObject.
@@ -48,26 +45,12 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   using reverse_iterator = typename BackingListType::reverse_iterator;
   using const_reverse_iterator =
       typename BackingListType::const_reverse_iterator;
-  using SetAlgorithmCallback =
-      void (ScriptWrappable::*)(ScriptState* script_state,
-                                size_type index,
-                                value_type& value,
-                                ExceptionState& exception_state);
-  using DeleteAlgorithmCallback =
-      void (ScriptWrappable::*)(ScriptState* script_state,
-                                size_type index,
-                                ExceptionState& exception_state);
 
-  explicit ObservableArrayImplHelper(
-      ScriptWrappable* platform_object,
-      SetAlgorithmCallback set_algorithm_callback,
-      DeleteAlgorithmCallback delete_algorithm_callback)
+  explicit ObservableArrayImplHelper(ScriptWrappable* platform_object)
       : bindings::ObservableArrayBase(
             platform_object,
             MakeGarbageCollected<bindings::ObservableArrayExoticObjectImpl>(
-                this)),
-        set_algorithm_callback_(set_algorithm_callback),
-        delete_algorithm_callback_(delete_algorithm_callback) {}
+                this)) {}
   ~ObservableArrayImplHelper() override = default;
 
   // Returns the observable array exotic object, which is the value to be
@@ -75,7 +58,7 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   // observable array backing list object) as the IDL attribute value.
   using bindings::ObservableArrayBase::GetExoticObject;
 
-  // Vector-compatible APIs
+  // Vector-compatible APIs (accessors)
   wtf_size_t size() const { return backing_list_.size(); }
   wtf_size_t capacity() const { return backing_list_.capacity(); }
   bool IsEmpty() const { return backing_list_.IsEmpty(); }
@@ -107,6 +90,26 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   value_type& back() { return backing_list_.back(); }
   const value_type& front() const { return backing_list_.front(); }
   const value_type& back() const { return backing_list_.back(); }
+  // Vector-compatible APIs (modifiers)
+  void resize(size_type size) { backing_list_.resize(size); }
+  void clear() { backing_list_.clear(); }
+  template <typename T>
+  void push_back(T&& value) {
+    backing_list_.push_back(std::forward<T>(value));
+  }
+  void pop_back() { backing_list_.pop_back(); }
+  template <typename... Args>
+  value_type& emplace_back(Args&&... args) {
+    return backing_list_.emplace_back(std::forward<Args>(args)...);
+  }
+  template <typename T>
+  void insert(iterator position, T&& value) {
+    backing_list_.InsertAt(position, std::forward<T>(value));
+  }
+  iterator erase(iterator position) { return backing_list_.erase(position); }
+  iterator erase(iterator first, iterator last) {
+    return backing_list_.erase(first, last);
+  }
 
   void Trace(Visitor* visitor) const override {
     ObservableArrayBase::Trace(visitor);
@@ -115,10 +118,6 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
 
  private:
   BackingListType backing_list_;
-  // [[SetAlgorithm]]
-  SetAlgorithmCallback set_algorithm_callback_ = nullptr;
-  // [[DeleteAlgorithm]]
-  DeleteAlgorithmCallback delete_algorithm_callback_ = nullptr;
 };
 
 }  // namespace bindings

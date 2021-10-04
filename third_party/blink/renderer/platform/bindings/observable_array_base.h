@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_OBSERVABLE_ARRAY_BASE_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "v8/include/v8-forward.h"
 
 // Overview of Blink implementation of Web IDL observable arrays
 //
@@ -81,7 +82,15 @@ class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
     return observable_array_exotic_object_.Get();
   }
 
+  v8::MaybeLocal<v8::Object> GetProxyHandlerObject(ScriptState* script_state);
+
   void Trace(Visitor* visitor) const override;
+
+ protected:
+  ScriptWrappable* GetPlatformObject() { return platform_object_.Get(); }
+
+  virtual v8::Local<v8::FunctionTemplate> GetProxyHandlerFunctionTemplate(
+      ScriptState* script_state) = 0;
 
  private:
   Member<ScriptWrappable> platform_object_;  // IDL attribute owner
