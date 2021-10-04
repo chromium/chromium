@@ -8,7 +8,7 @@ var SubtleCrypto = require('platformKeys.SubtleCrypto').SubtleCrypto;
 var publicKeyUtil = require('platformKeys.getPublicKeyUtil');
 var getPublicKey = publicKeyUtil.getPublicKey;
 var getPublicKeyBySpki = publicKeyUtil.getPublicKeyBySpki;
-var internalAPI = require('platformKeys.internalAPI');
+var internalAPI = getInternalApi('platformKeysInternal');
 
 var keyModule = require('platformKeys.Key');
 var Key = keyModule.Key;

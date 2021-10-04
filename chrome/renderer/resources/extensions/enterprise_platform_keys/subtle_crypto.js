@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 var utils = require('utils');
-var internalAPI = require('enterprise.platformKeys.internalAPI');
+var internalAPI = getInternalApi('enterprise.platformKeysInternal');
 var intersect = require('platformKeys.utils').intersect;
 var subtleCryptoModule = require('platformKeys.SubtleCrypto');
 var SubtleCryptoImpl = subtleCryptoModule.SubtleCryptoImpl;

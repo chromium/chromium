@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 var utils = require('utils');
-var internalAPI = require('platformKeys.internalAPI');
+var internalAPI = getInternalApi('platformKeysInternal');
 var keyModule = require('platformKeys.Key');
 var getSpki = keyModule.getSpki;
 var KeyUsage = keyModule.KeyUsage;

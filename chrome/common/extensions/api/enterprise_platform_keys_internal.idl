@@ -39,10 +39,6 @@ namespace enterprise.platformKeysInternal {
   //     in DER encoding.
   callback GenerateKeyCallback = void(ArrayBuffer publicKey);
 
-  // Invoked by <code>sign</code>.
-  // |signature| The signature, a octet string.
-  callback SignCallback = void(ArrayBuffer signature);
-
   interface Functions {
     // Internal version of entrprise.platformKeys.getTokens. Returns a list of
     // token IDs instead of token objects.
