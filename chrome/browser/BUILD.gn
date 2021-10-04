@@ -3069,6 +3069,8 @@ static_library("browser") {
       "download/android/intercept_oma_download_navigation_throttle.cc",
       "download/android/intercept_oma_download_navigation_throttle.h",
       "download/android/items/offline_content_aggregator_factory_android.cc",
+      "download/android/mixed_content_download_dialog_bridge.cc",
+      "download/android/mixed_content_download_dialog_bridge.h",
       "download/android/mixed_content_download_infobar_delegate.cc",
       "download/android/mixed_content_download_infobar_delegate.h",
       "download/android/service/download_background_task.cc",

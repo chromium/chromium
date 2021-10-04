@@ -594,6 +594,9 @@ const base::Feature kEnableDangerousDownloadDialog{
 const base::Feature kEnableDuplicateDownloadDialog{
     "EnableDuplicateDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableMixedContentDownloadDialog{
+    "EnableMixedContentDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnhancedProtectionPromoCard{
     "EnhancedProtectionPromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 

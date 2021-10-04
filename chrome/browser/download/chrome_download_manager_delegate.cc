@@ -103,6 +103,7 @@
 #include "chrome/browser/download/android/download_open_source.h"
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/download/android/duplicate_download_dialog_bridge_delegate.h"
+#include "chrome/browser/download/android/mixed_content_download_dialog_bridge.h"
 #include "chrome/browser/download/android/mixed_content_download_infobar_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -1548,18 +1549,31 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
       (mcs == download::DownloadItem::MixedContentStatus::BLOCK ||
        mcs == download::DownloadItem::MixedContentStatus::WARN)) {
     auto* web_contents = content::DownloadItemUtils::GetWebContents(item);
-    auto* infobar_manager =
-        web_contents
-            ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
-            : nullptr;
-    if (infobar_manager) {
-      // There is always an infobar manager except when running in a unit test,
-      // and those tests assume no infobar is shown.
-      MixedContentDownloadInfoBarDelegate::Create(
-          infobar_manager, target_path.BaseName(), mcs,
-          base::BindOnce(HandleMixedDownloadInfoBarResult, item,
-                         std::move(target_info), std::move(callback)));
-      return;
+    if (base::FeatureList::IsEnabled(
+            chrome::android::kEnableMixedContentDownloadDialog)) {
+      gfx::NativeWindow native_window =
+          web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+      if (native_window && item) {
+        MixedContentDownloadDialogBridge::GetInstance()->CreateDialog(
+            item, target_path.BaseName(), mcs, native_window,
+            base::BindOnce(HandleMixedDownloadInfoBarResult, item,
+                           std::move(target_info), std::move(callback)));
+        return;
+      }
+    } else {
+      auto* infobar_manager =
+          web_contents
+              ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
+              : nullptr;
+      if (infobar_manager) {
+        // There is always an infobar manager except when running in a unit
+        // test, and those tests assume no infobar is shown.
+        MixedContentDownloadInfoBarDelegate::Create(
+            infobar_manager, target_path.BaseName(), mcs,
+            base::BindOnce(HandleMixedDownloadInfoBarResult, item,
+                           std::move(target_info), std::move(callback)));
+        return;
+      }
     }
   }
 #endif  // OS_ANDROID

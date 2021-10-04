@@ -47646,6 +47646,7 @@ from previous Chrome versions.
   <int value="-2090484194" label="ContextualSearchUrlActions:disabled"/>
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
+  <int value="-2088263177" label="EnableMixedContentDownloadDialog:enabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
@@ -50292,6 +50293,7 @@ from previous Chrome versions.
   <int value="-55890693" label="MessagesForAndroidSaveCard:disabled"/>
   <int value="-55592344" label="SyncPseudoUSSDictionary:disabled"/>
   <int value="-54796636" label="kids-management-url-classification:disabled"/>
+  <int value="-52737423" label="EnableMixedContentDownloadDialog:disabled"/>
   <int value="-52483823" label="disable-new-video-renderer"/>
   <int value="-52241456" label="enable-single-click-autofill"/>
   <int value="-51567065" label="EnableFeedbackPanel:disabled"/>
@@ -56486,6 +56488,13 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Started"/>
   <int value="1" label="Failed"/>
   <int value="2" label="ResponseReceived"/>
+</enum>
+
+<enum name="MixedContentDownloadDialogEvent">
+  <int value="0" label="dialog shown"/>
+  <int value="1" label="Dialog confirmed"/>
+  <int value="2" label="Dialog canceled"/>
+  <int value="3" label="Dialog dismissed"/>
 </enum>
 
 <enum name="MixedContentType">

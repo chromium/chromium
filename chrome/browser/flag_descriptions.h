@@ -1784,6 +1784,9 @@ extern const char kEnableDangerousDownloadDialogDescription[];
 extern const char kEnableDuplicateDownloadDialogName[];
 extern const char kEnableDuplicateDownloadDialogDescription[];
 
+extern const char kEnableMixedContentDownloadDialogName[];
+extern const char kEnableMixedContentDownloadDialogDescription[];
+
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 

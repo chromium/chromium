@@ -562,6 +562,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Download.MixedContentDialog.Events"
+    enum="MixedContentDownloadDialogEvent" expires_after="2022-03-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records user interactions with the mixed content download dialog on Android.
+    Records when the dialog is shown, or when user clicks on a button or
+    dismisses the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Download.Mobile.DangerousDownloadInfobarEvent"
     enum="DangerousDownloadInfobarEvent" expires_after="2022-03-31">
   <owner>qinmin@chromium.org</owner>

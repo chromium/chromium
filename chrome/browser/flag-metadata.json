@@ -2168,6 +2168,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-mixed-content-download-dialog",
+    "owners": [ "qinmin", "chrome-downloads@google.com" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "enable-nacl",
     "owners": [ "dschuff", "native-client-dev@googlegroups.com" ],
     "expiry_milestone": 100

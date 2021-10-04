@@ -4933,6 +4933,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDuplicateDownloadDialogDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnableDuplicateDownloadDialog)},
 
+    {"enable-mixed-content-download-dialog",
+     flag_descriptions::kEnableMixedContentDownloadDialogName,
+     flag_descriptions::kEnableMixedContentDownloadDialogDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnableMixedContentDownloadDialog)},
 #endif
 
     {"enable-new-download-backend",

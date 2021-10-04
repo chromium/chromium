@@ -3143,6 +3143,11 @@ const char kEnableDuplicateDownloadDialogName[] =
 const char kEnableDuplicateDownloadDialogDescription[] =
     "Use dialog instead of infobar for user to confirm duplicate download";
 
+const char kEnableMixedContentDownloadDialogName[] =
+    "Enable mixed content download dialog";
+const char kEnableMixedContentDownloadDialogDescription[] =
+    "Use dialog instead of infobar for user to confirm mixed content download";
+
 const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";

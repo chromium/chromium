@@ -1456,6 +1456,17 @@ Your Google account may have other forms of browsing history like searches and a
         File might be harmful
       </message>
 
+        <!-- Mixed content download -->
+        <message name="IDS_MIXED_CONTENT_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm a mixed content download">
+          File can’t be downloaded securely
+        </message>
+        <message name="IDS_MIXED_CONTENT_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the mixed content download dialog for user to confirm the download.">
+          Keep
+        </message>
+        <message name="IDS_MIXED_CONTENT_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the mixed content download dialog for user to confirm the download.">
+          Discard
+        </message>
+
       <!-- Download later -->
       <message name="IDS_DOWNLOAD_LATER_DIALOG_TITLE" desc="Title of the download later dialog that let the user to choose the time to download.">
         Download later instead?
