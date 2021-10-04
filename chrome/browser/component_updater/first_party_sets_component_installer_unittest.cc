@@ -53,7 +53,11 @@ TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
+
+  // We still install the component and subscribe to updates even when the
+  // feature is disabled, so that if the feature eventually gets enabled, we
+  // will already have the requisite data.
+  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
   RegisterFirstPartySetsComponent(service.get());
 
   env_.RunUntilIdle();

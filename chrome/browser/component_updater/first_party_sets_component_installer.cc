@@ -182,8 +182,6 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
 }
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets))
-    return;
   VLOG(1) << "Registering First-Party Sets component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FirstPartySetsComponentInstallerPolicy>(
