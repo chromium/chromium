@@ -5550,12 +5550,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="EventLatency.GestureDoubleTap"/>
   <affected-histogram name="EventLatency.GestureLongPress"/>
   <affected-histogram name="EventLatency.GestureLongTap"/>
+  <affected-histogram name="EventLatency.GesturePinchBegin.Touchpad"/>
   <affected-histogram name="EventLatency.GesturePinchBegin.Touchscreen"/>
-  <affected-histogram name="EventLatency.GesturePinchBegin.Wheel"/>
+  <affected-histogram name="EventLatency.GesturePinchEnd.Touchpad"/>
   <affected-histogram name="EventLatency.GesturePinchEnd.Touchscreen"/>
-  <affected-histogram name="EventLatency.GesturePinchEnd.Wheel"/>
+  <affected-histogram name="EventLatency.GesturePinchUpdate.Touchpad"/>
   <affected-histogram name="EventLatency.GesturePinchUpdate.Touchscreen"/>
-  <affected-histogram name="EventLatency.GesturePinchUpdate.Wheel"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Autoscroll"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Scrollbar"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Touchscreen"/>
@@ -5621,10 +5621,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyPinchTypes" separator=".">
+  <suffix base="true" name="Touchpad"
+      label="Event latency for touchpad pinch events."/>
   <suffix base="true" name="Touchscreen"
       label="Event latency for touchscreen pinch events."/>
-  <suffix base="true" name="Wheel"
-      label="Event latency for touchpad pinch events."/>
   <affected-histogram name="EventLatency.GesturePinchBegin"/>
   <affected-histogram name="EventLatency.GesturePinchEnd"/>
   <affected-histogram name="EventLatency.GesturePinchUpdate"/>

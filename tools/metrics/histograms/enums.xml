@@ -26946,6 +26946,11 @@ Called by update_document_policy_enum.py.-->
   <int value="25" label="InertialGesturePinchUpdate"/>
 </enum>
 
+<enum name="EventLatencyPinchInputType">
+  <int value="0" label="Touchpad"/>
+  <int value="1" label="Touchscreen"/>
+</enum>
+
 <enum name="EventLatencyScrollInputType">
   <int value="0" label="Autoscroll"/>
   <int value="1" label="Scrollbar"/>

@@ -628,8 +628,9 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
-    cc::EventMetrics::ScrollParams scroll_params(
-        ui::ScrollInputType::kScrollbar, /*is_inertial=*/false);
+    cc::EventMetrics::GestureParams gesture_params(
+        ui::ScrollInputType::kScrollbar,
+        /*scroll_is_inertial=*/false);
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
       if (input_event.GetType() != WebInputEvent::Type::kGestureScrollUpdate) {
         scrollbar_latency_info.AddLatencyNumberWithTimestamp(
@@ -650,7 +651,8 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
                 ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
                 nullptr));
       }
-      scroll_params.update_type =
+      DCHECK(gesture_params.scroll_params.has_value());
+      gesture_params.scroll_params->update_type =
           last_injected_gesture_was_begin_
               ? cc::EventMetrics::ScrollUpdateType::kStarted
               : cc::EventMetrics::ScrollUpdateType::kContinued;
@@ -674,7 +676,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
           widget_->LayerTreeHost()->GetSwapPromiseManager());
       std::unique_ptr<cc::EventMetrics> metrics =
           cc::EventMetrics::CreateFromExisting(
-              gesture_event->GetTypeAsUiEventType(), scroll_params,
+              gesture_event->GetTypeAsUiEventType(), gesture_params,
               cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
               original_metrics);
       cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;

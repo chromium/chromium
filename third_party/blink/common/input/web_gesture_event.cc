@@ -97,15 +97,27 @@ void WebGestureEvent::Coalesce(const WebInputEvent& event) {
 }
 
 ui::ScrollInputType WebGestureEvent::GetScrollInputType() const {
-  DCHECK(IsGestureScroll());
   switch (SourceDevice()) {
     case WebGestureDevice::kTouchpad:
+      DCHECK(IsGestureScroll() || IsPinchGestureEventType(GetType()));
+      // TODO(crbug.com/1060268): Use of Wheel for Touchpad, especially for
+      // pinch events, is confusing and not ideal. There are currently a few
+      // different enum types in use across chromium code base for specifying
+      // gesture input device. Since we don't want to add yet another one, the
+      // most appropriate enum type to use here seems to be
+      // `ui::ScrollInputType` which does not have a separate value for
+      // touchpad. There is an intention to unify all these enum types. We
+      // should consider having a separate touchpad device type in the unified
+      // enum type.
       return ui::ScrollInputType::kWheel;
     case WebGestureDevice::kTouchscreen:
+      DCHECK(IsGestureScroll() || IsPinchGestureEventType(GetType()));
       return ui::ScrollInputType::kTouchscreen;
     case WebGestureDevice::kSyntheticAutoscroll:
+      DCHECK(IsGestureScroll());
       return ui::ScrollInputType::kAutoscroll;
     case WebGestureDevice::kScrollbar:
+      DCHECK(IsGestureScroll());
       return ui::ScrollInputType::kScrollbar;
     case WebGestureDevice::kUninitialized:
       break;
@@ -147,7 +159,7 @@ ui::ScrollGranularity WebGestureEvent::DeltaUnits() const {
     return data.scroll_begin.delta_hint_units;
   if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
     return data.scroll_update.delta_units;
-  DCHECK(type_ == WebInputEvent::Type::kGestureScrollEnd);
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureScrollEnd);
   return data.scroll_end.delta_units;
 }
 
@@ -156,28 +168,28 @@ WebGestureEvent::InertialPhaseState WebGestureEvent::InertialPhase() const {
     return data.scroll_begin.inertial_phase;
   if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
     return data.scroll_update.inertial_phase;
-  DCHECK(type_ == WebInputEvent::Type::kGestureScrollEnd);
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureScrollEnd);
   return data.scroll_end.inertial_phase;
 }
 
 bool WebGestureEvent::Synthetic() const {
   if (type_ == WebInputEvent::Type::kGestureScrollBegin)
     return data.scroll_begin.synthetic;
-  DCHECK(type_ == WebInputEvent::Type::kGestureScrollEnd);
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureScrollEnd);
   return data.scroll_end.synthetic;
 }
 
 float WebGestureEvent::VelocityX() const {
   if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
     return data.scroll_update.velocity_x;
-  DCHECK(type_ == WebInputEvent::Type::kGestureFlingStart);
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureFlingStart);
   return data.fling_start.velocity_x;
 }
 
 float WebGestureEvent::VelocityY() const {
   if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
     return data.scroll_update.velocity_y;
-  DCHECK(type_ == WebInputEvent::Type::kGestureFlingStart);
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureFlingStart);
   return data.fling_start.velocity_y;
 }
 
@@ -212,7 +224,7 @@ gfx::PointF WebGestureEvent::PositionInRootFrame() const {
 }
 
 int WebGestureEvent::TapCount() const {
-  DCHECK(type_ == WebInputEvent::Type::kGestureTap);
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureTap);
   return data.tap.tap_count;
 }
 

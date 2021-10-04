@@ -316,12 +316,14 @@ void UkmManager::RecordEventLatencyUKM(
       builder.SetScrollInputType(
           static_cast<int64_t>(*event_metrics->scroll_type()));
 
-      if (event_metrics->ShouldReportScrollingTotalLatency() &&
-          !processed_viz_breakdown.swap_start().is_null()) {
+      if (!processed_viz_breakdown.swap_start().is_null()) {
         builder.SetTotalLatencyToSwapBegin(
             (processed_viz_breakdown.swap_start() - generated_timestamp)
                 .InMicroseconds());
       }
+    } else if (event_metrics->pinch_type()) {
+      builder.SetPinchInputType(
+          static_cast<int64_t>(*event_metrics->pinch_type()));
     }
 
     // Record event dispatch metrics.

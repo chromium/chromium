@@ -590,8 +590,9 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
   DCHECK(!scrollbar_latency_info.FindLatency(
       ui::INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT, nullptr));
 
-  cc::EventMetrics::ScrollParams scroll_params(
-      synthetic_gesture_event->GetScrollInputType(), /*is_inertial=*/false);
+  cc::EventMetrics::GestureParams gesture_params(
+      synthetic_gesture_event->GetScrollInputType(),
+      /*scroll_is_inertial=*/false);
 
   if (type == WebInputEvent::Type::kGestureScrollBegin) {
     last_injected_gesture_was_begin_ = true;
@@ -606,7 +607,8 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
               ? ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT
               : ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
           original_timestamp);
-      scroll_params.update_type =
+      DCHECK(gesture_params.scroll_params.has_value());
+      gesture_params.scroll_params->update_type =
           last_injected_gesture_was_begin_
               ? cc::EventMetrics::ScrollUpdateType::kStarted
               : cc::EventMetrics::ScrollUpdateType::kContinued;
@@ -617,7 +619,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
 
   std::unique_ptr<cc::EventMetrics> metrics =
       cc::EventMetrics::CreateFromExisting(
-          synthetic_gesture_event->GetTypeAsUiEventType(), scroll_params,
+          synthetic_gesture_event->GetTypeAsUiEventType(), gesture_params,
           cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor,
           original_metrics);
   auto gesture_event_with_callback_update = std::make_unique<EventWithCallback>(

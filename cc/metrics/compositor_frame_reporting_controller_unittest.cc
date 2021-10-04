@@ -239,12 +239,12 @@ class CompositorFrameReportingControllerTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateEventMetrics(
       ui::EventType type,
-      absl::optional<EventMetrics::ScrollParams> scroll_params =
+      absl::optional<EventMetrics::GestureParams> gesture_params =
           absl::nullopt) {
     const base::TimeTicks event_time = AdvanceNowByMs(10);
     AdvanceNowByMs(10);
     std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
-        type, scroll_params, event_time, &test_tick_clock_);
+        type, gesture_params, event_time, &test_tick_clock_);
     if (metrics) {
       AdvanceNowByMs(10);
       metrics->SetDispatchStageTimestamp(
@@ -1217,23 +1217,24 @@ TEST_F(CompositorFrameReportingControllerTest,
        EventLatencyScrollTotalForPresentedFrameReported) {
   base::HistogramTester histogram_tester;
 
-  const bool kIsInertial = true;
-  const bool kIsNotInertial = false;
+  const bool kScrollIsInertial = true;
+  const bool kScrollIsNotInertial = false;
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN,
-                         EventMetrics::ScrollParams(ui::ScrollInputType::kWheel,
-                                                    kIsNotInertial)),
+      CreateEventMetrics(
+          ui::ET_GESTURE_SCROLL_BEGIN,
+          EventMetrics::GestureParams(ui::ScrollInputType::kWheel,
+                                      kScrollIsNotInertial)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsNotInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
                              EventMetrics::ScrollUpdateType::kStarted)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsNotInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
                              EventMetrics::ScrollUpdateType::kContinued)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsInertial,
                              EventMetrics::ScrollUpdateType::kContinued)),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
@@ -1308,6 +1309,86 @@ TEST_F(CompositorFrameReportingControllerTest,
       {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
        static_cast<base::HistogramBase::Sample>(
            (swap_begin_time - event_times[3]).InMicroseconds())},
+  };
+  for (const auto& expected_latency : expected_latencies) {
+    histogram_tester.ExpectBucketCount(expected_latency.name,
+                                       expected_latency.latency_ms, 1);
+  }
+}
+
+// Tests that EventLatency total latency histograms are reported properly for
+// pinch events when a frame is presented to the user.
+TEST_F(CompositorFrameReportingControllerTest,
+       EventLatencyPinchTotalForPresentedFrameReported) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
+      CreateEventMetrics(
+          ui::ET_GESTURE_PINCH_BEGIN,
+          EventMetrics::GestureParams(ui::ScrollInputType::kWheel)),
+      CreateEventMetrics(
+          ui::ET_GESTURE_PINCH_UPDATE,
+          EventMetrics::GestureParams(ui::ScrollInputType::kWheel)),
+      CreateEventMetrics(
+          ui::ET_GESTURE_PINCH_BEGIN,
+          EventMetrics::GestureParams(ui::ScrollInputType::kTouchscreen)),
+      CreateEventMetrics(
+          ui::ET_GESTURE_PINCH_UPDATE,
+          EventMetrics::GestureParams(ui::ScrollInputType::kTouchscreen)),
+  };
+  EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
+  std::vector<base::TimeTicks> event_times = GetEventTimestamps(events_metrics);
+
+  // Submit a compositor frame and notify CompositorFrameReporter of the events
+  // affecting the frame.
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
+
+  // Present the submitted compositor frame to the user.
+  viz::FrameTimingDetails details;
+  details.received_compositor_frame_timestamp = AdvanceNowByMs(10);
+  details.draw_start_timestamp = AdvanceNowByMs(10);
+  details.swap_timings.swap_start = AdvanceNowByMs(10);
+  details.swap_timings.swap_end = AdvanceNowByMs(10);
+  details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
+
+  // Verify that EventLatency histograms are recorded.
+  struct {
+    const char* name;
+    const base::HistogramBase::Count count;
+  } expected_counts[] = {
+      {"EventLatency.GesturePinchBegin.Touchpad.TotalLatency", 1},
+      {"EventLatency.GesturePinchUpdate.Touchpad.TotalLatency", 1},
+      {"EventLatency.GesturePinchBegin.Touchscreen.TotalLatency", 1},
+      {"EventLatency.GesturePinchUpdate.Touchscreen.TotalLatency", 1},
+      {"EventLatency.TotalLatency", 4},
+  };
+  for (const auto& expected_count : expected_counts) {
+    histogram_tester.ExpectTotalCount(expected_count.name,
+                                      expected_count.count);
+  }
+
+  const base::TimeTicks presentation_time =
+      details.presentation_feedback.timestamp;
+  struct {
+    const char* name;
+    const base::HistogramBase::Sample latency_ms;
+  } expected_latencies[] = {
+      {"EventLatency.GesturePinchBegin.Touchpad.TotalLatency",
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[0]).InMicroseconds())},
+      {"EventLatency.GesturePinchUpdate.Touchpad.TotalLatency",
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[1]).InMicroseconds())},
+      {"EventLatency.GesturePinchBegin.Touchscreen.TotalLatency",
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[2]).InMicroseconds())},
+      {"EventLatency.GesturePinchUpdate.Touchscreen.TotalLatency",
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[3]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
     histogram_tester.ExpectBucketCount(expected_latency.name,

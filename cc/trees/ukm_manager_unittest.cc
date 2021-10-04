@@ -142,11 +142,11 @@ class UkmManagerTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateEventMetrics(
       ui::EventType type,
-      absl::optional<EventMetrics::ScrollParams> scroll_params) {
+      absl::optional<EventMetrics::GestureParams> gesture_params) {
     base::TimeTicks event_time = AdvanceNowByMs(10);
     AdvanceNowByMs(10);
     std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
-        type, scroll_params, event_time, &test_tick_clock_);
+        type, gesture_params, event_time, &test_tick_clock_);
     if (metrics) {
       AdvanceNowByMs(10);
       metrics->SetDispatchStageTimestamp(
@@ -521,23 +521,24 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
 }
 
 TEST_F(UkmManagerTest, EventLatency) {
-  const bool kIsInertial = true;
-  const bool kIsNotInertial = false;
+  const bool kScrollIsInertial = true;
+  const bool kScrollIsNotInertial = false;
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN,
-                         EventMetrics::ScrollParams(ui::ScrollInputType::kWheel,
-                                                    kIsNotInertial)),
+      CreateEventMetrics(
+          ui::ET_GESTURE_SCROLL_BEGIN,
+          EventMetrics::GestureParams(ui::ScrollInputType::kWheel,
+                                      kScrollIsNotInertial)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsNotInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
                              EventMetrics::ScrollUpdateType::kStarted)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsNotInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
                              EventMetrics::ScrollUpdateType::kContinued)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsInertial,
                              EventMetrics::ScrollUpdateType::kContinued)),
   };
   EXPECT_THAT(event_metrics_ptrs, ::testing::Each(::testing::NotNull()));
