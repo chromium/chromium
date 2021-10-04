@@ -315,7 +315,7 @@
           location: `http://${wwwHost}:${port}/cookies/attributes/resources/path.html`,
         },
         {
-          cookie: `test=43 domain=${www1Host}; domain=`,
+          cookie: `test=43; domain=${www1Host}; domain=`,
           expected: "",
           name: "No cookie returned for domain mismatch (first attribute is a different subdomain and second is bare)",
           location: `http://${www2wwwHost}:${port}/cookies/attributes/resources/path.html`,
