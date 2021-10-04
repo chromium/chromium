@@ -43,7 +43,6 @@ class DevtoolsClient : public MessageDispatcher,
   input::Domain* GetInput();
   dom::Domain* GetDOM();
   runtime::Domain* GetRuntime();
-  network::Domain* GetNetwork();
   target::ExperimentalDomain* GetTarget();
 
   // MessageDispatcher implementation:
@@ -159,7 +158,6 @@ class DevtoolsClient : public MessageDispatcher,
   input::ExperimentalDomain input_domain_;
   dom::ExperimentalDomain dom_domain_;
   runtime::ExperimentalDomain runtime_domain_;
-  network::ExperimentalDomain network_domain_;
   target::ExperimentalDomain target_domain_;
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
