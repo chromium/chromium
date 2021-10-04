@@ -49,6 +49,7 @@ class ImageFetcher {
 
   // Called when fetch request completes.
   void OnFetchComplete(ImageFetchId id,
+                       const GURL& url,
                        std::unique_ptr<std::string> response_data);
 
   absl::optional<PendingRequest> RemovePending(ImageFetchId id);

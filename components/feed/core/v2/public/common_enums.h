@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_
 
+#include <iosfwd>
+
 // Unlike most code from feed/core, these enums are used by both iOS and
 // Android.
 namespace feed {
@@ -116,6 +118,9 @@ enum class FeedUserActionType {
 
   kMaxValue = kTappedDiscoverFeedPreview,
 };
+
+// For testing and debugging only.
+std::ostream& operator<<(std::ostream& out, FeedUserActionType value);
 
 // Values for the UMA
 // ContentSuggestions.Feed.WebFeed.RefreshContentOrder histogram.

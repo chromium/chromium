@@ -14,11 +14,21 @@
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
+
+// Define a VVLOG macro for verbose logging. We want logging on release builds
+// so that instrumentation tests can enable logs here. For official builds, use
+// DVLOG instead to avoid any logging overhead.
+#ifndef OFFICIAL_BUILD
+#define VVLOG VLOG(2)
+#else
+#define VVLOG DVLOG(2)
+#endif
 
 namespace feed {
 namespace {
@@ -337,8 +347,8 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
     // Log latencies for debugging.
     if (VLOG_IS_ON(2)) {
       for (const LoadLatencyTimes::Step& step : load_latencies_->steps()) {
-        DVLOG(2) << "LoadStepLatency." << LoadLatencyStepName(step.kind)
-                 << " = " << step.latency;
+        VVLOG << "LoadStepLatency." << LoadLatencyStepName(step.kind) << " = "
+              << step.latency;
       }
     }
 
@@ -386,6 +396,8 @@ void MetricsReporter::PageLoaded() {
 
 void MetricsReporter::OtherUserAction(const StreamType& stream_type,
                                       FeedUserActionType action_type) {
+  VVLOG << "Feed OtherUserAction " << stream_type << " id=" << action_type;
+
   ReportUserActionHistogram(action_type);
   switch (action_type) {
     case FeedUserActionType::kTappedOnCard:
@@ -493,6 +505,7 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
 
 void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
                                     SurfaceId surface_id) {
+  VVLOG << "Feed SurfaceOpened " << stream_type << " id=" << surface_id;
   ReportPersistentDataIfDayIsDone();
   surfaces_waiting_for_content_.emplace(
       surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
@@ -505,6 +518,7 @@ void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
 }
 
 void MetricsReporter::SurfaceClosed(SurfaceId surface_id) {
+  VVLOG << "Feed SurfaceClosed " << surface_id;
   ReportOpenFeedIfNeeded(surface_id, false);
   ReportGetMoreIfNeeded(surface_id, false);
 }
@@ -601,6 +615,13 @@ void MetricsReporter::NetworkRefreshRequestStarted(
 void MetricsReporter::NetworkRequestComplete(
     NetworkRequestType type,
     const NetworkResponseInfo& response_info) {
+  VVLOG << "Network Request Complete type=" << NetworkRequestTypeUmaName(type)
+        << " status=" << response_info.status_code
+        << " url=" << response_info.base_request_url
+        << " signed_in=" << response_info.was_signed_in
+        << " response_size=" << response_info.encoded_size_bytes
+        << " duration=" << response_info.fetch_duration;
+
   base::StringPiece request_name = NetworkRequestTypeUmaName(type);
   base::UmaHistogramSparse(
       base::StrCat(
@@ -625,8 +646,8 @@ void MetricsReporter::OnLoadStream(
     const ContentStats& content_stats,
     const RequestMetadata& request_metadata,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
-  DVLOG(1) << "OnLoadStream load_from_store_status=" << load_from_store_status
-           << " final_status=" << final_status;
+  VVLOG << "OnLoadStream load_from_store_status=" << load_from_store_status
+        << " final_status=" << final_status;
   load_latencies_ = std::move(load_latencies);
 
   std::string load_type_name = is_initial_load ? "Initial" : "ManualRefresh";
@@ -706,25 +727,27 @@ void MetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
 void MetricsReporter::OnLoadMore(const StreamType& stream_type,
                                  LoadStreamStatus status,
                                  const ContentStats& content_stats) {
-  DVLOG(1) << "OnLoadMore status=" << status;
+  VVLOG << "OnLoadMore status=" << status;
   base::UmaHistogramEnumeration(
       "ContentSuggestions.Feed.LoadStreamStatus.LoadMore", status);
   LogContentStats(stream_type, content_stats);
 }
 
-void MetricsReporter::OnImageFetched(int net_error_or_http_status) {
+void MetricsReporter::OnImageFetched(const GURL& url,
+                                     int net_error_or_http_status) {
+  VVLOG << "OnImageFetched status=" << net_error_or_http_status << " " << url;
   base::UmaHistogramSparse("ContentSuggestions.Feed.ImageFetchStatus",
                            net_error_or_http_status);
 }
 
 void MetricsReporter::OnUploadActionsBatch(UploadActionsBatchStatus status) {
-  DVLOG(1) << "UploadActionsBatchStatus: " << status;
+  VVLOG << "UploadActionsBatchStatus: " << status;
   base::UmaHistogramEnumeration(
       "ContentSuggestions.Feed.UploadActionsBatchStatus", status);
 }
 
 void MetricsReporter::OnUploadActions(UploadActionsStatus status) {
-  DVLOG(1) << "UploadActionsTask finished with status " << status;
+  VVLOG << "UploadActionsTask finished with status " << status;
   base::UmaHistogramEnumeration("ContentSuggestions.Feed.UploadActionsStatus",
                                 status);
 }
@@ -798,9 +821,9 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
 void MetricsReporter::OnFollowAttempt(
     bool followed_with_id,
     const WebFeedSubscriptions::FollowWebFeedResult& result) {
-  DVLOG(1) << "OnFollowAttempt web_feed_id="
-           << result.web_feed_metadata.web_feed_id
-           << " status=" << result.request_status;
+  VVLOG << "OnFollowAttempt web_feed_id="
+        << result.web_feed_metadata.web_feed_id
+        << " status=" << result.request_status;
 
   if (followed_with_id) {
     base::UmaHistogramEnumeration(
@@ -823,7 +846,7 @@ void MetricsReporter::OnFollowAttempt(
 
 void MetricsReporter::OnUnfollowAttempt(
     const WebFeedSubscriptions::UnfollowWebFeedResult& result) {
-  DVLOG(1) << "OnUnfollowAttempt status=" << result.request_status;
+  VVLOG << "OnUnfollowAttempt status=" << result.request_status;
   base::UmaHistogramEnumeration(
       "ContentSuggestions.Feed.WebFeed.UnfollowResult", result.request_status);
 
@@ -837,8 +860,8 @@ void MetricsReporter::OnUnfollowAttempt(
 void MetricsReporter::RefreshRecommendedWebFeedsAttempted(
     WebFeedRefreshStatus status,
     int recommended_web_feed_count) {
-  DVLOG(1) << "RefreshRecommendedWebFeedsAttempted status=" << status
-           << " count=" << recommended_web_feed_count;
+  VVLOG << "RefreshRecommendedWebFeedsAttempted status=" << status
+        << " count=" << recommended_web_feed_count;
   base::UmaHistogramEnumeration(
       "ContentSuggestions.Feed.WebFeed.RefreshRecommendedFeeds", status);
 }
@@ -847,8 +870,8 @@ void MetricsReporter::RefreshSubscribedWebFeedsAttempted(
     bool subscriptions_were_stale,
     WebFeedRefreshStatus status,
     int subscribed_web_feed_count) {
-  DVLOG(1) << "RefreshSubscribedWebFeedsAttempted status=" << status
-           << " count=" << subscribed_web_feed_count;
+  VVLOG << "RefreshSubscribedWebFeedsAttempted status=" << status
+        << " count=" << subscribed_web_feed_count;
   if (subscriptions_were_stale) {
     base::UmaHistogramEnumeration(
         "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Stale", status);
