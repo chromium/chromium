@@ -277,3 +277,17 @@ interface TrustedTypePolicyFactory {
 }
 
 declare const trustedTypes: TrustedTypePolicyFactory;
+
+// Web Share API. TypeScript only includes types for share() without the files
+// field.
+// https://w3c.github.io/web-share/
+interface ShareData {
+  files?: File[];
+  text?: string;
+  title?: string;
+  url?: string;
+}
+
+interface Navigator {
+  canShare: (data: ShareData) => boolean;
+}
