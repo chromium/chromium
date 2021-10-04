@@ -140,18 +140,15 @@ def GenerateBundleApks(bundle_path,
         build_utils.DoZip(files, f, base_dir=temp_dir)
 
   if check_for_noop:
-    # NOTE: BUNDLETOOL_JAR_PATH is added to input_strings, rather than
-    # input_paths, to speed up MD5 computations by about 400ms (the .jar file
-    # contains thousands of class files which are checked independently,
-    # resulting in an .md5.stamp of more than 60000 lines!).
-    input_paths = [bundle_path, aapt2_path, keystore_path]
+    input_paths = [
+        bundle_path,
+        bundletool.BUNDLETOOL_JAR_PATH,
+        aapt2_path,
+        keystore_path,
+    ]
     input_strings = [
         keystore_password,
         keystore_alias,
-        bundletool.BUNDLETOOL_JAR_PATH,
-        # NOTE: BUNDLETOOL_VERSION is already part of BUNDLETOOL_JAR_PATH, but
-        # it's simpler to assume that this may not be the case in the future.
-        bundletool.BUNDLETOOL_VERSION,
         device_spec,
     ]
     if mode is not None:
