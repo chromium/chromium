@@ -126,6 +126,65 @@ template("cipd_archive") {
   }
 }
 
+# Prepares a CIPD test archive, which is a regular CIPD archive that generates
+# test manifests for a given list of test_sets.
+#
+# Parameters:
+#   test_sets: A list of scopes that contain a "manifest_path" and list of
+#                   "far_sources". Will be used to create a test manifest for
+#                   each set.
+#
+# Required parameters used by the cipd_archive template:
+#   "package_basename",
+#   "package_relative_path",
+#
+# Optional parameters used by the cipd_archive template:
+#   "description"
+#   "install_mode",
+#   "data",
+#   "data_deps"
+#   "deps",
+#   "testonly",
+
+template("cipd_test_archive") {
+  forward_variables_from(invoker,
+                         [
+                           "package_basename",
+                           "package_relative_path",
+                           "description",
+                           "install_mode",
+                           "data",
+                           "data_deps",
+                           "deps",
+                           "testonly",
+                           "test_sets",
+                         ])
+
+  assert(defined(test_sets) && defined(testonly) && testonly == true)
+
+  cipd_archive(target_name) {
+    # Build JSON manifests for each suite of tests and include them in the
+    # archive.
+    sources = []
+    foreach(test_set, test_sets) {
+      _manifest_contents = []
+      foreach(source, test_set.far_sources) {
+        package_name = get_path_info(source, "name")
+
+        _manifest_contents += [
+          {
+            package = package_name
+            component_name = package_name
+          },
+        ]
+      }
+      write_file(test_set.manifest_path, _manifest_contents, "json")
+      sources += [ test_set.manifest_path ]
+      sources += test_set.far_sources
+    }
+  }
+}
+
 cipd_archive("webrunner") {
   package_basename = "webrunner"
   description = "Prebuilt Chrome and Web Runner binaries for Fuchsia."
@@ -206,9 +265,12 @@ cipd_archive("chromedriver") {
   sources = [ _stripped_chromedriver_file ]
 }
 
-group("test_packages_for_deps") {
+cipd_test_archive("tests") {
+  package_basename = "tests"
+  description = "Prebuilt Chromium tests for Fuchsia."
   testonly = true
-  public_deps = [
+
+  deps = [
     "//base:base_unittests_pkg",
     "//fuchsia/engine:web_engine_integration_tests_pkg",
     "//fuchsia/runners:cast_runner_integration_tests_pkg",
@@ -219,43 +281,31 @@ group("test_packages_for_deps") {
     "//skia:skia_unittests_pkg",
     "//third_party/blink/common:blink_common_unittests_pkg",
   ]
-}
 
-cipd_archive("tests") {
-  _manifest_path = "${target_gen_dir}/test_manifest.json"
-  package_basename = "tests"
-  description = "Prebuilt Chromium tests for Fuchsia."
-  testonly = true
-
-  deps = [ ":test_packages_for_deps" ]
-
-  far_sources = [
-    "${root_gen_dir}/base/base_unittests/base_unittests.far",
-    "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
-    "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
-    "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
-    "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
-    "${root_gen_dir}/media/media_unittests/media_unittests.far",
-    "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
-    "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
-    "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
+  test_sets = [
+    {
+      manifest_path = "${target_gen_dir}/common_tests_manifest.json"
+      far_sources = [
+        "${root_gen_dir}/base/base_unittests/base_unittests.far",
+        "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
+        "${root_gen_dir}/media/media_unittests/media_unittests.far",
+        "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
+        "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
+        "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
+      ]
+    },
+    {
+      manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
+      far_sources = [
+        "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
+        "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
+      ]
+    },
+    {
+      manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
+      far_sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
+    },
   ]
-
-  # Build a JSON manifest of the tests and include it in the archive.
-  _manifest_contents = []
-  foreach(source, far_sources) {
-    package_name = get_path_info(source, "name")
-
-    _manifest_contents += [
-      {
-        package = package_name
-        component_name = package_name
-      },
-    ]
-  }
-  write_file(_manifest_path, _manifest_contents, "json")
-
-  sources = far_sources + [ _manifest_path ]
 }
 
 # Construct a consolidated directory of debugging symbols using the GNU
