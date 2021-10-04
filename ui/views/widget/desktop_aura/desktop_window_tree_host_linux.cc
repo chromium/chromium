@@ -14,7 +14,6 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
@@ -209,15 +208,6 @@ void DesktopWindowTreeHostLinux::OnNativeWidgetCreated(
     const Widget::InitParams& params) {
   CreateNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(params);
-}
-
-base::flat_map<std::string, std::string>
-DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
-  if (features::IsUsingOzonePlatform())
-    return DesktopWindowTreeHostPlatform::GetKeyboardLayoutMap();
-  if (views::LinuxUI::instance())
-    return views::LinuxUI::instance()->GetKeyboardLayoutMap();
-  return {};
 }
 
 void DesktopWindowTreeHostLinux::InitModalType(ui::ModalType modal_type) {

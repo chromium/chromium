@@ -174,9 +174,6 @@ source_set("views_examples_proc") {
       "//ui/wm",
     ]
   }
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
   if (is_chromeos_ash) {
     sources += [
       "examples_views_delegate_chromeos.cc",

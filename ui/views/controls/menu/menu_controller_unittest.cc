@@ -59,7 +59,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #if BUILDFLAG(OZONE_PLATFORM_X11)
@@ -79,15 +78,14 @@ using ::ui::mojom::DragOperation;
 
 bool ShouldIgnoreScreenBoundsForMenus() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    // Wayland requires placing menus is screen coordinates. See comment in
-    // ozone_platform_wayland.cc.
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .ignore_screen_bounds_for_menus;
-  }
-#endif
+  // Wayland requires placing menus is screen coordinates. See comment in
+  // ozone_platform_wayland.cc.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .ignore_screen_bounds_for_menus;
+#else
   return false;
+#endif
 }
 
 // Test implementation of MenuControllerDelegate that only reports the values
@@ -949,11 +947,9 @@ TEST_F(MenuControllerTest, EventTargeter) {
 // Tests that touch event ids are released correctly. See crbug.com/439051 for
 // details. When the ids aren't managed correctly, we get stuck down touches.
 TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
-  // Run this test only for X11 (either Ozone or non-Ozone).
-  if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
+  // Run this test only for X11.
+  if (ui::OzonePlatform::GetPlatformNameForTest() != "x11")
     GTEST_SKIP();
-  }
 
   TestEventHandler test_event_handler;
   GetRootWindow(owner())->AddPreTargetHandler(&test_event_handler);

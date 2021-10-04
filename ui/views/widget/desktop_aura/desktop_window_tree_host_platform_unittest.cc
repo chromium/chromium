@@ -310,8 +310,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithUnchangedSize) {
 TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   bool context_is_also_parent = false;
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetInstance()
+  if (ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .set_parent_for_non_top_level_windows) {
     context_is_also_parent = true;

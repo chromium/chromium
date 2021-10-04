@@ -542,10 +542,6 @@ component("views") {
     "//ui/views/window/vector_icons",
   ]
 
-  if (use_x11) {
-    deps += [ "//ui/display/util" ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "//ui/base/ime/ash" ]
   }
@@ -685,15 +681,6 @@ component("views") {
     ]
   }
 
-  if (use_x11) {
-    deps += [
-      "//ui/events/devices",
-      "//ui/events/devices/x11",
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
-  }
-
   if (use_aura) {
     public += [
       "accessibility/accessibility_alert_window.h",
@@ -800,12 +787,7 @@ component("views") {
         "//ui/base/cursor",
         "//ui/base/cursor/mojom:cursor_type",
       ]
-      if (use_x11) {
-        public_deps += [
-          "//ui/base/x",
-          "//ui/platform_window/x11",
-        ]
-      } else if (is_win) {
+      if (is_win) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_win.h" ]
         sources += [
           "widget/desktop_aura/desktop_drag_drop_client_win.cc",
@@ -1051,20 +1033,6 @@ source_set("test_support") {
       "//ui/aura:test_support",
       "//ui/wm",
       "//ui/wm/public",
-    ]
-    if (use_x11) {
-      sources += [
-        "test/ui_controls_factory_desktop_aurax11.cc",
-        "test/ui_controls_factory_desktop_aurax11.h",
-      ]
-      deps += [ "//ui/base/x:test_support" ]
-    }
-  }
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/events/x",
-      "//ui/gfx/x",
     ]
   }
   if (use_ozone) {
@@ -1350,14 +1318,6 @@ test("views_unittests") {
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
     }
 
-    if (use_x11) {
-      deps += [
-        "//ui/events/devices",
-        "//ui/events/platform/x11",
-        "//ui/gfx/x",
-      ]
-    }
-
     if (enable_desktop_aura) {
       sources += [
         "widget/desktop_aura/desktop_focus_rules_unittest.cc",
@@ -1374,7 +1334,7 @@ test("views_unittests") {
           ]
         }
       }
-      if (use_ozone || use_x11) {
+      if (use_ozone) {
         sources +=
             [ "widget/desktop_aura/desktop_drag_drop_client_ozone_unittest.cc" ]
         deps += [ "//ui/platform_window" ]
@@ -1468,19 +1428,18 @@ source_set("views_interactive_ui_tests") {
     ]
   }
 
-  if (use_x11) {
+  # TODO(1239521): x11 interactive ui tests should probably have own target.
+  # At the moment, it's impossible to move this test file under X11 directory
+  # as it will result in a gn dependency problem.
+  if (ozone_platform_x11 && !is_chromeos_ash && !is_chromecast) {
     sources += [
       "widget/desktop_aura/x11_topmost_window_finder_interactive_uitest.cc",
     ]
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-  }
-
-  if (use_x11 || ozone_platform_x11) {
     deps += [
+      "//ui/base/x",
       "//ui/base/x:test_support",
-      "//ui/events/platform/x11:x11",
+      "//ui/gfx/x",
+      "//ui/ozone",
       "//ui/platform_window/x11",
     ]
   }
