@@ -262,10 +262,19 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 void CreditCardAccessManager::FetchCreditCard(
     const CreditCard* card,
     base::WeakPtr<Accessor> accessor) {
-  // Return error if authentication is already in progress or card is nullptr.
-  if (is_authentication_in_progress_ || !card) {
+  // Return error if authentication is already in progress, but don't reset
+  // status.
+  if (is_authentication_in_progress_) {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
                                   nullptr);
+    return;
+  }
+
+  // If card is nullptr we reset all states and return error.
+  if (!card) {
+    accessor->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                  nullptr);
+    Reset();
     return;
   }
 
@@ -280,6 +289,7 @@ void CreditCardAccessManager::FetchCreditCard(
                                    ? "Autofill.UsedCachedVirtualCard"
                                    : "Autofill.UsedCachedServerCard";
     base::UmaHistogramCounts1000(metrics_name, ++it->second.cache_uses);
+    Reset();
     return;
   }
 
@@ -295,6 +305,7 @@ void CreditCardAccessManager::FetchCreditCard(
           GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
     }
 #endif
+    Reset();
     return;
   }
 
@@ -660,6 +671,12 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
   // Reset |opt_in_intention_| after cvc auth completes.
   opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif
+
+  // TODO(crbug.com/1249665): Add Reset() to this function after cleaning up the
+  // FIDO opt-in status change. This should not have any negative impact now
+  // except for readability and cleanness. |should_offer_fido_auth| and
+  // |opt_in_intention_| are to some extent duplicate. We should be able to
+  // remove the two variables and use a function.
 }
 
 #if defined(OS_ANDROID)
@@ -686,16 +703,13 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
 #endif
 
   if (response.did_succeed) {
-    is_authentication_in_progress_ = false;
     accessor_->OnCreditCardFetched(response.did_succeed
                                        ? CreditCardFetchResult::kSuccess
                                        : CreditCardFetchResult::kTransientError,
                                    response.card, response.cvc);
-    can_fetch_unmask_details_ = true;
-
     form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
-    unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
+    Reset();
   } else if (
       response.failure_type ==
           payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE ||
@@ -709,13 +723,11 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     // If it is an virtual card retrieval error, we don't want to invoke the CVC
     // authentication afterwards. Instead reset all states, notify accessor and
     // invoke the error dialog.
-    is_authentication_in_progress_ = false;
-    unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
-    can_fetch_unmask_details_ = true;
     client_->ShowVirtualCardErrorDialog(
         response.failure_type ==
         payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
     accessor_->OnCreditCardFetched(result);
+    Reset();
   } else {
     // If it is an authentication error, start the CVC authentication process.
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;
@@ -733,8 +745,7 @@ void CreditCardAccessManager::OnFidoAuthorizationComplete(bool did_succeed) {
     form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
   }
-  unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
-  cvc_ = std::u16string();
+  Reset();
 }
 #endif
 
@@ -900,8 +911,9 @@ void CreditCardAccessManager::FetchVirtualCard() {
   absl::optional<GURL> last_committed_url_origin =
       client_->GetLastCommittedURL().GetOrigin();
   if (!last_committed_url_origin.has_value()) {
-    can_fetch_unmask_details_ = true;
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+    Reset();
+    return;
   }
 
   virtual_card_unmask_request_details_.last_committed_url_origin =
@@ -947,9 +959,9 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
           /*app_locale=*/std::string());
       card.SetExpirationYearFromString(
           base::UTF8ToUTF16(response_details.expiration_year));
-      can_fetch_unmask_details_ = true;
       accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card,
                                      base::UTF8ToUTF16(response_details.dcvv));
+      Reset();
       return;
     }
 
@@ -962,10 +974,10 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
 
   // If RPC response contains any error, end the session and show the error
   // dialog.
-  can_fetch_unmask_details_ = true;
   accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
   // TODO(crbug.com/1243475): Add error handling: Show VCN error dialog given
   // the error type.
+  Reset();
 }
 
 void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
