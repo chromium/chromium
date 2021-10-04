@@ -128,20 +128,6 @@ namespace blink {
 
 namespace {
 
-// In order for an image to be rendered from the content property, there can be
-// at most one piece of image content data, followed by some optional
-// alternative text.
-bool ShouldUseContentData(const ContentData* content_data) {
-  if (!content_data)
-    return false;
-  if (!content_data->IsImage())
-    return false;
-  if (content_data->Next() && !content_data->Next()->IsAltText())
-    return false;
-
-  return true;
-}
-
 template <typename Predicate>
 LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
                                       LayoutObject::AncestorSkipInfo* skip_info,
@@ -262,7 +248,8 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   // some optional alternative text. Otherwise acts as if we didn't support this
   // feature.
   const ContentData* content_data = style.GetContentData();
-  if (!element->IsPseudoElement() && ShouldUseContentData(content_data)) {
+  if (!element->IsPseudoElement() &&
+      ShouldUseContentDataForElement(content_data)) {
     LayoutImage* image = MakeGarbageCollected<LayoutImage>(element);
     // LayoutImageResourceStyleImage requires a style being present on the
     // image but we don't want to trigger a style change now as the node is

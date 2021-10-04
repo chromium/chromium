@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -1530,6 +1531,22 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
 
   // The layered declaraion should win the cascading.
   EXPECT_EQ(100, description.margin_top);
+}
+
+TEST_F(StyleResolverTest, BodyPropagationLayoutImageContain) {
+  ScopedCSSContainedBodyPropagationForTest enable_scope(true);
+  GetDocument().documentElement()->setAttribute(
+      html_names::kStyleAttr,
+      "contain:size; display:inline-table; content:url(img);");
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
+                                               "red");
+
+  // Should not trigger DCHECK
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(Color::kTransparent,
+            GetDocument().GetLayoutView()->StyleRef().VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
 }
 
 }  // namespace blink

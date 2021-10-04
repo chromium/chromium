@@ -2595,7 +2595,8 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
   if (Display() == EDisplay::kInline)
     return false;
   if ((ContainsInlineSize() || ContainsBlockSize()) &&
-      (!IsDisplayTableType() || Display() == EDisplay::kTableCaption)) {
+      (!IsDisplayTableType() || Display() == EDisplay::kTableCaption ||
+       ShouldUseContentDataForElement(GetContentData()))) {
     return true;
   }
   return (ContainsLayout() || ContainsPaint()) &&
