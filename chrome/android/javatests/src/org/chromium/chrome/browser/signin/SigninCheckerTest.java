@@ -48,7 +48,6 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.LOLLIPOP_MR1)
 public class SigninCheckerTest {
     private static final String CHILD_ACCOUNT_EMAIL = "child.account@gmail.com";

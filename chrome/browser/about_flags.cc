@@ -5522,9 +5522,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_ANDROID)
-    {"deprecate-menagerie-api", flag_descriptions::kDeprecateMenagerieAPIName,
-     flag_descriptions::kDeprecateMenagerieAPIDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kDeprecateMenagerieAPI)},
     {"wipe-data-on-child-account-signin",
      flag_descriptions::kWipeDataOnChildAccountSigninName,
      flag_descriptions::kWipeDataOnChildAccountSigninDescription, kOsAndroid,

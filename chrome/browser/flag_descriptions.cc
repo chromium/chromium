@@ -120,11 +120,6 @@ const char kConversionMeasurementDebugModeDescription[] =
     "reporting delays and noise. Only works if the Conversion Measurement API "
     "is already enabled.";
 
-const char kDeprecateMenagerieAPIName[] = "Deprecate Menagerie API on Android";
-const char kDeprecateMenagerieAPIDescription[] =
-    "If enabled, the legacy Menagerie API for profile data will be replaced by "
-    "the new profile data source";
-
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "

@@ -1022,11 +1022,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "deprecate-menagerie-api",
-    "owners": [ "aliceywang", "msarda", "triploblastic" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "desktop-detailed-language-settings",
     "owners": [ "chrome-language@google.com" ],
     "expiry_milestone": 97

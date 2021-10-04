@@ -343,7 +343,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfManageDevicesLink,
     &send_tab_to_self::kSendTabToSelfWhenSignedIn,
     &signin::kMobileIdentityConsistencyPromos,
-    &switches::kDeprecateMenagerieAPI,
     &switches::kForceStartupSigninPromo,
     &switches::kWipeDataOnChildAccountSignin,
     &switches::kDecoupleSyncFromAndroidMasterSync,

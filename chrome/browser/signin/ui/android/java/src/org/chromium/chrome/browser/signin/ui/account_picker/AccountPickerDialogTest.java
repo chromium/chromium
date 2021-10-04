@@ -30,13 +30,11 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
@@ -51,12 +49,8 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
 @Batch(Batch.PER_CLASS)
 public class AccountPickerDialogTest extends DummyUiChromeActivityTestCase {
-    @Rule
-    public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
-
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
