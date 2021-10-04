@@ -58,12 +58,12 @@ class TestSuggestionChipResult : public TestSearchResult {
   ~TestSuggestionChipResult() override = default;
 };
 
-class SpokenFeedbackAppListTest
+class SpokenFeedbackAppListTestBase
     : public LoggedInSpokenFeedbackTest,
       public ::testing::WithParamInterface<SpokenFeedbackAppListTestVariant> {
  protected:
-  SpokenFeedbackAppListTest() = default;
-  ~SpokenFeedbackAppListTest() override = default;
+  SpokenFeedbackAppListTestBase() = default;
+  ~SpokenFeedbackAppListTestBase() override = default;
 
   void SetUp() override {
     // Do not run expand arrow hinting animation to avoid msan test crash.
@@ -77,16 +77,6 @@ class SpokenFeedbackAppListTest
     AppListView::SetShortAnimationForTesting(false);
   }
 
-  void SetUpOnMainThread() override {
-    LoggedInSpokenFeedbackTest::SetUpOnMainThread();
-    auto* controller = Shell::Get()->app_list_controller();
-    controller->SetAppListModelForTest(
-        std::make_unique<test::AppListTestModel>());
-    app_list_test_model_ =
-        static_cast<test::AppListTestModel*>(controller->GetModel());
-    search_model = controller->GetSearchModel();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam() == kTestAsGuestUser) {
       command_line->AppendSwitch(switches::kGuestSession);
@@ -96,9 +86,26 @@ class SpokenFeedbackAppListTest
           switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
     }
   }
+};
+
+class SpokenFeedbackAppListTest : public SpokenFeedbackAppListTestBase {
+ public:
+  SpokenFeedbackAppListTest() = default;
+  ~SpokenFeedbackAppListTest() override = default;
+
+  // SpokenFeedbackAppListTestBase:
+  void SetUpOnMainThread() override {
+    LoggedInSpokenFeedbackTest::SetUpOnMainThread();
+    auto* controller = Shell::Get()->app_list_controller();
+    controller->SetAppListModelForTest(
+        std::make_unique<test::AppListTestModel>());
+    app_list_test_model_ =
+        static_cast<test::AppListTestModel*>(controller->GetModel());
+    search_model_ = controller->GetSearchModel();
+  }
 
   // Populate apps grid with |num| items.
-  virtual void PopulateApps(size_t num) {
+  void PopulateApps(size_t num) {
     // TODO(https://crbug.com/1251617): use `ChromeAppListModelUpdater` instead
     // of `app_list_test_model_` to populate apps.
     app_list_test_model_->PopulateApps(num);
@@ -107,7 +114,7 @@ class SpokenFeedbackAppListTest
   // Populate |num| suggestion chips.
   void PopulateChips(size_t num) {
     for (size_t i = 0; i < num; i++) {
-      search_model->results()->Add(std::make_unique<TestSuggestionChipResult>(
+      search_model_->results()->Add(std::make_unique<TestSuggestionChipResult>(
           base::UTF8ToUTF16("Chip " + base::NumberToString(i))));
     }
   }
@@ -120,7 +127,7 @@ class SpokenFeedbackAppListTest
 
  private:
   test::AppListTestModel* app_list_test_model_ = nullptr;
-  SearchModel* search_model = nullptr;
+  SearchModel* search_model_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -609,16 +616,16 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
 // The test with `ChromeAppListModelUpdater` set.
 class SpokenFeedbackWithChromeAppListModelUpdaterTest
-    : public SpokenFeedbackAppListTest {
+    : public SpokenFeedbackAppListTestBase {
  public:
   SpokenFeedbackWithChromeAppListModelUpdaterTest() = default;
   ~SpokenFeedbackWithChromeAppListModelUpdaterTest() override = default;
 
   void SetUpOnMainThread() override {
-    SpokenFeedbackAppListTest::SetUpOnMainThread();
+    SpokenFeedbackAppListTestBase::SetUpOnMainThread();
     AppListClientImpl::GetInstance()->UpdateProfile();
   }
-  void PopulateApps(size_t num) override {
+  void PopulateApps(size_t num) {
     // Only folders or page breaks are allowed to be added from the Ash side.
     // Therefore new apps should be added through `ChromeAppListModelUpdater`.
     ::test::PopulateDummyAppListItems(num);
