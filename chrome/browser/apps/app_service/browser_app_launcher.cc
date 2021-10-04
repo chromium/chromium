@@ -123,6 +123,7 @@ void BrowserAppLauncher::LaunchAppWithCallback(
     const base::FilePath& current_directory,
     const absl::optional<GURL>& url_handler_launch_url,
     const absl::optional<GURL>& protocol_handler_launch_url,
+    const std::vector<base::FilePath>& launch_files,
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
   // old-style app shortcuts
@@ -138,7 +139,7 @@ void BrowserAppLauncher::LaunchAppWithCallback(
   if (!extension || extension->from_bookmark()) {
     web_app_launch_manager_.LaunchApplication(
         app_id, command_line, current_directory, url_handler_launch_url,
-        protocol_handler_launch_url, std::move(callback));
+        protocol_handler_launch_url, launch_files, std::move(callback));
     return;
   }
 

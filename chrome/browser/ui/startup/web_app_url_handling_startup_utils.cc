@@ -43,7 +43,7 @@ void LaunchApp(const base::FilePath& profile_path,
       ->BrowserAppLauncher()
       ->LaunchAppWithCallback(app_id, command_line, cur_dir, url,
                               /*protocol_handler_launch_url=*/absl::nullopt,
-                              std::move(callback));
+                              /*launch_files=*/{}, std::move(callback));
 }
 
 void OnUrlHandlerIntentPickerDialogCompleted(
