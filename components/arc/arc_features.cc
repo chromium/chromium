@@ -130,7 +130,7 @@ const base::Feature kVideoDecoder{"ArcVideoDecoder",
 // If disabled, memory is sized by concierge which, at the time of writing, uses
 // RAM - 1024 MiB.
 const base::Feature kVmMemorySize{"ArcVmMemorySize",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls the amount to "shift" system RAM when sizing ARCVM. The default
 // value of 0 means that ARCVM's memory will be thr same as the system.
