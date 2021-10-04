@@ -6,6 +6,7 @@
 #define BASE_TRACING_PERFETTO_TASK_RUNNER_H_
 
 #include "base/base_export.h"
+#include "base/cancelable_callback.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
@@ -61,8 +62,21 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 #if defined(OS_POSIX) && !defined(OS_NACL)
-  std::map<int, std::unique_ptr<base::FileDescriptorWatcher::Controller>>
-      fd_controllers_;
+  // FDControllerAndCallback keeps track of the state of FD watching:
+  // * |controller| has value: FD watching is added. |callback| is nullopt.
+  // * |controller| is nullptr: FD watching is pending for add. |callback| has
+  //   a value.
+  // It's safe to call RemoveFileDescriptorWatch in either of the above states.
+  // |controller| and |callback| can't be both non-null after returning from
+  // AddFileDescriptorWatch or RemoveFileDescriptorWatch.
+  struct FDControllerAndCallback {
+    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
+    base::CancelableOnceClosure callback;
+
+    FDControllerAndCallback();
+    ~FDControllerAndCallback();
+  };
+  std::map<int, FDControllerAndCallback> fd_controllers_;
 #endif  // defined(OS_POSIX) && !defined(OS_NACL)
 };
 
