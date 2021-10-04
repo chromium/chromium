@@ -45,16 +45,17 @@ class BASE_EXPORT CPU final {
   static const CPU& GetInstanceNoAllocation();
 
   enum IntelMicroArchitecture {
-    PENTIUM,
-    SSE,
-    SSE2,
-    SSE3,
-    SSSE3,
-    SSE41,
-    SSE42,
-    AVX,
-    AVX2,
-    MAX_INTEL_MICRO_ARCHITECTURE
+    PENTIUM = 0,
+    SSE = 1,
+    SSE2 = 2,
+    SSE3 = 3,
+    SSSE3 = 4,
+    SSE41 = 5,
+    SSE42 = 6,
+    AVX = 7,
+    AVX2 = 8,
+    FMA3 = 9,
+    MAX_INTEL_MICRO_ARCHITECTURE = 10
   };
 
   // Accessors for CPU information.
@@ -75,6 +76,7 @@ class BASE_EXPORT CPU final {
   bool has_sse42() const { return has_sse42_; }
   bool has_popcnt() const { return has_popcnt_; }
   bool has_avx() const { return has_avx_; }
+  bool has_fma3() const { return has_fma3_; }
   bool has_avx2() const { return has_avx2_; }
   bool has_aesni() const { return has_aesni_; }
   bool has_non_stop_time_stamp_counter() const {
@@ -178,6 +180,7 @@ class BASE_EXPORT CPU final {
   bool has_sse42_ = false;
   bool has_popcnt_ = false;
   bool has_avx_ = false;
+  bool has_fma3_ = false;
   bool has_avx2_ = false;
   bool has_aesni_ = false;
 #if defined(ARCH_CPU_ARM_FAMILY)

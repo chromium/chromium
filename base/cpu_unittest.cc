@@ -63,6 +63,11 @@ TEST(CPU, RunExtendedInstructions) {
     __asm__ __volatile__("vzeroupper\n" : : : "xmm0");
   }
 
+  if (cpu.has_fma3()) {
+    // Execute a FMA3 instruction.
+    __asm__ __volatile__("vfmadd132ps %%xmm0, %%xmm0, %%xmm0\n" : : : "xmm0");
+  }
+
   if (cpu.has_avx2()) {
     // Execute an AVX 2 instruction.
     __asm__ __volatile__("vpunpcklbw %%ymm0, %%ymm0, %%ymm0\n" : : : "xmm0");
@@ -106,6 +111,11 @@ TEST(CPU, RunExtendedInstructions) {
   if (cpu.has_avx()) {
     // Execute an AVX instruction.
     __asm vzeroupper;
+  }
+
+  if (cpu.has_fma3()) {
+    // Execute an AVX instruction.
+    __asm vfmadd132ps xmm0, xmm0, xmm0;
   }
 
   if (cpu.has_avx2()) {

@@ -43862,6 +43862,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="SSE4.2"/>
   <int value="7" label="AVX"/>
   <int value="8" label="AVX2"/>
+  <int value="9" label="FMA3"/>
 </enum>
 
 <enum name="IntentHeadersResult">

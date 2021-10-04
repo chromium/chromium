@@ -294,6 +294,7 @@ void CPU::Initialize(bool require_branding) {
         (cpu_info[2] & 0x08000000) != 0 /* OSXSAVE */ &&
         (xgetbv(0) & 6) == 6 /* XSAVE enabled by kernel */;
     has_aesni_ = (cpu_info[2] & 0x02000000) != 0;
+    has_fma3_ = (cpu_info[2] & 0x00001000) != 0;
     has_avx2_ = has_avx_ && (cpu_info7[1] & 0x00000020) != 0;
   }
 
@@ -367,6 +368,7 @@ void CPU::Initialize(bool require_branding) {
 
 CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
   if (has_avx2()) return AVX2;
+  if (has_fma3()) return FMA3;
   if (has_avx()) return AVX;
   if (has_sse42()) return SSE42;
   if (has_sse41()) return SSE41;
