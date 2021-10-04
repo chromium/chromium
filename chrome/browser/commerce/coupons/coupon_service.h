@@ -31,7 +31,10 @@ class CouponService : public KeyedService {
 
   // Delete the FreeListing coupon for the given URL in the cache layer and
   // storage.
-  void DeleteFreeListingCouponsForUrl(const GURL& url);
+  virtual void DeleteFreeListingCouponsForUrl(const GURL& url);
+
+  // Delete all the Freelisting coupons in the cache layer and storage.
+  virtual void DeleteAllFreeListingCoupons();
 
   // Get FreeListing coupons for the given URL. Will return an empty
   // list if there is no coupon data associated with this URL.
@@ -40,7 +43,9 @@ class CouponService : public KeyedService {
  private:
   friend class CouponServiceFactory;
   friend class CouponServiceTest;
+  friend class CartServiceCouponTest;
 
+  CouponService();
   // Use |CouponServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
   explicit CouponService(std::unique_ptr<CouponDB> coupon_db);

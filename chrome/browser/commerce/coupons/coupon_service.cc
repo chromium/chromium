@@ -28,6 +28,7 @@ CouponService::CouponService(std::unique_ptr<CouponDB> coupon_db)
   InitializeCouponsMap();
 }
 CouponService::~CouponService() = default;
+CouponService::CouponService() = default;
 
 void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
   coupon_db_->DeleteAllCoupons();
@@ -48,6 +49,11 @@ void CouponService::DeleteFreeListingCouponsForUrl(const GURL& url) {
   const GURL& origin(url.GetOrigin());
   coupon_map_.erase(origin);
   coupon_db_->DeleteCoupon(origin);
+}
+
+void CouponService::DeleteAllFreeListingCoupons() {
+  coupon_map_.clear();
+  coupon_db_->DeleteAllCoupons();
 }
 
 CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(

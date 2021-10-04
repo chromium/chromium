@@ -250,3 +250,21 @@ TEST_F(CouponServiceTest, TestInitialization) {
   EXPECT_EQ(result.size(), 1u);
   CompareAutofillOfferData(result[0], &couponDataA);
 }
+
+TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
+  base::RunLoop run_loop[1];
+  GURL orgin_a(kMockMerchantA);
+  GURL orgin_b(kMockMerchantB);
+  SetupCouponMap({{orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+                  {orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+
+  service_->DeleteAllFreeListingCoupons();
+
+  Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
+  EXPECT_EQ(result.size(), 0u);
+  result = service_->GetFreeListingCouponsForUrl(orgin_b);
+  EXPECT_EQ(result.size(), 0u);
+  coupon_db_->LoadAllCoupons(base::BindOnce(
+      &CouponServiceTest::GetEvaluationCoupons, base::Unretained(this),
+      run_loop[0].QuitClosure(), kEmptyExpected));
+}

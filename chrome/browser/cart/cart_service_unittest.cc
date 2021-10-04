@@ -8,6 +8,7 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
+#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
@@ -104,8 +105,11 @@ const ShoppingCarts kExpectedAB = {
 const ShoppingCarts kExpectedC = {{kMockMerchantC, kMockProtoC}};
 const ShoppingCarts kExpectedCWithProduct = {
     {kMockMerchantC, kMockProtoCWithProduct}};
-
 const ShoppingCarts kEmptyExpected = {};
+const cart_db::ChromeCartProductProto kMockProductA =
+    BuildProductProto("id_foo");
+const cart_db::ChromeCartProductProto kMockProductB =
+    BuildProductProto("id_bar");
 
 // Value used for discount.
 const char kMockMerchantADiscountRuleId[] = "1";
@@ -527,9 +531,8 @@ TEST_F(CartServiceTest, TestAddCartWithProductInfo) {
   // Adding a new proto with new product infos should reflect in storage.
   cart_db::ChromeCartContentProto new_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
-  const auto& product_info = BuildProductProto("id_foo");
   auto* added_product = new_proto.add_product_infos();
-  *added_product = product_info;
+  *added_product = kMockProductA;
   new_proto.set_timestamp(1);
   service_->AddCart(kMockMerchantA, absl::nullopt, new_proto);
   task_environment_.RunUntilIdle();
@@ -545,7 +548,7 @@ TEST_F(CartServiceTest, TestAddCartWithProductInfo) {
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), expected_carts));
   run_loop[2].Run();
-  const ProductInfos& expected_products = {product_info};
+  const ProductInfos& expected_products = {kMockProductA};
   cart_db_->LoadCart(
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationProductInfo,
@@ -590,14 +593,14 @@ TEST_F(CartServiceTest, TestDeleteCart) {
                                         run_loop[1].QuitClosure(), kExpectedA));
   run_loop[1].Run();
 
-  service_->DeleteCart(kMockMerchantA, false);
+  service_->DeleteCart(GURL(kMockMerchantURLA), false);
 
   cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
                                         base::Unretained(this),
                                         run_loop[2].QuitClosure(), kExpectedA));
   run_loop[2].Run();
 
-  service_->DeleteCart(kMockMerchantA, true);
+  service_->DeleteCart(GURL(kMockMerchantURLA), true);
 
   cart_db_->LoadAllCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
@@ -941,7 +944,7 @@ TEST_F(CartServiceTest, TestLookupCartInfo) {
   run_loop[1].Run();
 
   // Use default value when no info can be found in the lookup table.
-  service_->DeleteCart(amazon_domain, true);
+  service_->DeleteCart(GURL(getDomainCartURL(amazon_domain)), true);
   const char* fake_domain = "fake.com";
   const char* fake_cart_url = "fake.com/cart";
   cart_db::ChromeCartContentProto fake_proto =
@@ -982,7 +985,7 @@ TEST_F(CartServiceTest, CartURLPriority) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(GetCartURL(amazon_domain),
             "https://www.amazon.com/gp/cart/view.html");
-  service_->DeleteCart(amazon_domain, true);
+  service_->DeleteCart(amazon_cart, true);
 
   // * Higher priority: from existing entry.
   service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
@@ -992,7 +995,7 @@ TEST_F(CartServiceTest, CartURLPriority) {
   task_environment_.RunUntilIdle();
   // Lookup table cannot override existing entry.
   EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
-  service_->DeleteCart(amazon_domain, true);
+  service_->DeleteCart(amazon_cart, true);
 
   // * Highest priority: overriding existing entry.
   service_->AddCart(amazon_domain, absl::nullopt, merchant_A_proto);
@@ -1003,7 +1006,7 @@ TEST_F(CartServiceTest, CartURLPriority) {
   task_environment_.RunUntilIdle();
   // Visiting carts can override existing entry.
   EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
-  service_->DeleteCart(amazon_domain, true);
+  service_->DeleteCart(amazon_cart, true);
   // New visiting carts can override existing entry from earlier visiting carts.
   service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
   task_environment_.RunUntilIdle();
@@ -1399,7 +1402,7 @@ TEST_F(CartServiceDiscountTest, TestNoConsentWithoutPartnerCart) {
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  service_->DeleteCart(kMockMerchantA, true);
+  service_->DeleteCart(GURL(kMockMerchantURLA), true);
   task_environment_.RunUntilIdle();
 
   service_->ShouldShowDiscountConsent(
@@ -1771,4 +1774,108 @@ TEST_F(CartServiceDiscountFetchTest, TestNoFetchWithinEnforcedDelay) {
   task_environment_.RunUntilIdle();
   EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             last_fetch_time);
+}
+
+class CartServiceCouponTest : public CartServiceTest {
+ public:
+  void SetUp() override {
+    CartServiceTest::SetUp();
+    SetCouponServiceForTesting(&coupon_service_);
+  }
+
+ protected:
+  class MockCouponService : public CouponService {
+   public:
+    MOCK_METHOD0(DeleteAllFreeListingCoupons, void(void));
+    MOCK_METHOD1(DeleteFreeListingCouponsForUrl, void(const GURL& url));
+  };
+
+  void SetCouponServiceForTesting(CouponService* coupon_service) {
+    service_->SetCouponServiceForTesting(coupon_service);
+  }
+
+  MockCouponService coupon_service_;
+};
+
+TEST_F(CartServiceCouponTest, TestDeleteCartWithCoupon) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(2);
+
+  service_->DeleteCart(url, true);
+  service_->DeleteCart(url, false);
+}
+
+TEST_F(CartServiceCouponTest, TestClearCoupons) {
+  EXPECT_CALL(coupon_service_, DeleteAllFreeListingCoupons()).Times(1);
+
+  service_->OnURLsDeleted(
+      HistoryServiceFactory::GetForProfile(&profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,
+                            history::URLRows(), std::set<GURL>(),
+                            absl::nullopt));
+}
+TEST_F(CartServiceCouponTest, TestUpdateCartDeleteCoupon_AddProduct) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(0);
+  // Construct a proto with one product.
+  cart_db::ChromeCartContentProto proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  proto.add_product_image_urls("https://image1.com");
+  auto* added_product = proto.add_product_infos();
+  *added_product = kMockProductA;
+  service_->AddCart(kMockMerchantA, absl::nullopt, proto);
+  task_environment_.RunUntilIdle();
+
+  // A new cart added with new products will not delete coupons.
+  added_product = proto.add_product_infos();
+  *added_product = kMockProductB;
+  service_->AddCart(kMockMerchantA, absl::nullopt, proto);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(CartServiceCouponTest, TestUpdateCartDeleteCoupon_DeleteProduct) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(1);
+  // Construct a proto with two products.
+  cart_db::ChromeCartContentProto proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  proto.add_product_image_urls("https://image1.com");
+  auto* added_product = proto.add_product_infos();
+  *added_product = kMockProductA;
+  added_product = proto.add_product_infos();
+  *added_product = kMockProductB;
+  service_->AddCart(kMockMerchantA, absl::nullopt, proto);
+  task_environment_.RunUntilIdle();
+
+  // A new cart added with one product removed will trigger coupon deletion.
+  proto.clear_product_infos();
+  added_product = proto.add_product_infos();
+  *added_product = kMockProductA;
+  service_->AddCart(kMockMerchantA, absl::nullopt, proto);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(CartServiceCouponTest, TestUpdateCartDeleteCoupon_ReplaceProduct) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(1);
+  // Construct a proto with two products.
+  cart_db::ChromeCartContentProto proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  proto.add_product_image_urls("https://image1.com");
+  auto* added_product = proto.add_product_infos();
+  *added_product = kMockProductA;
+  added_product = proto.add_product_infos();
+  *added_product = kMockProductB;
+  service_->AddCart(kMockMerchantA, absl::nullopt, proto);
+  task_environment_.RunUntilIdle();
+
+  // A new cart added with one product replaced will trigger coupon deletion.
+  proto.clear_product_infos();
+  added_product = proto.add_product_infos();
+  *added_product = kMockProductA;
+  added_product = proto.add_product_infos();
+  *added_product = BuildProductProto("id_qux");
+  service_->AddCart(kMockMerchantA, absl::nullopt, proto);
+  task_environment_.RunUntilIdle();
 }

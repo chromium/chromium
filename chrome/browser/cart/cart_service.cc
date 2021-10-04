@@ -12,6 +12,7 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/cart_features.h"
+#include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -89,6 +90,27 @@ const re2::RE2& GetSkipCartExtractionPattern() {
                                                options);
   return *instance;
 }
+
+// Check if any product in existing_proto is no longer in new_proto.
+bool ProductsRemoved(cart_db::ChromeCartContentProto existing_proto,
+                     cart_db::ChromeCartContentProto new_proto) {
+  if (existing_proto.product_infos_size() == 0)
+    return false;
+  if (existing_proto.product_infos_size() > new_proto.product_infos_size())
+    return true;
+  std::set<std::string> new_proto_product_ids;
+  for (auto new_product : new_proto.product_infos()) {
+    new_proto_product_ids.insert(new_product.product_id());
+  }
+  for (auto existing_product : existing_proto.product_infos()) {
+    bool product_remains =
+        new_proto_product_ids.find(existing_product.product_id()) !=
+        new_proto_product_ids.end();
+    if (!product_remains)
+      return true;
+  }
+  return false;
+}
 }  // namespace
 
 CartService::CartService(Profile* profile)
@@ -102,7 +124,8 @@ CartService::CartService(Profile* profile)
           JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)),
       discount_link_fetcher_(std::make_unique<CartDiscountLinkFetcher>()),
       metrics_tracker_(std::make_unique<CartMetricsTracker>(
-          chrome::FindTabbedBrowser(profile, false))) {
+          chrome::FindTabbedBrowser(profile, false))),
+      coupon_service_(CouponServiceFactory::GetForProfile(profile)) {
   if (history_service_) {
     history_service_observation_.Observe(history_service_);
   }
@@ -181,16 +204,17 @@ void CartService::AddCart(const std::string& domain,
                                             domain, cart_url, proto));
 }
 
-void CartService::DeleteCart(const std::string& domain,
-                             bool ignore_remove_status) {
+void CartService::DeleteCart(const GURL& url, bool ignore_remove_status) {
+  coupon_service_->DeleteFreeListingCouponsForUrl(url);
   if (ignore_remove_status) {
-    cart_db_->DeleteCart(domain,
+    cart_db_->DeleteCart(eTLDPlusOne(url),
                          base::BindOnce(&CartService::OnOperationFinished,
                                         weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  cart_db_->LoadCart(domain, base::BindOnce(&CartService::OnDeleteCart,
-                                            weak_ptr_factory_.GetWeakPtr()));
+  cart_db_->LoadCart(eTLDPlusOne(url),
+                     base::BindOnce(&CartService::OnDeleteCart,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CartService::HideCart(const GURL& cart_url,
@@ -447,6 +471,7 @@ void CartService::OnURLsDeleted(history::HistoryService* history_service,
   // history deletion happens.
   cart_db_->DeleteAllCarts(base::BindOnce(&CartService::OnOperationFinished,
                                           weak_ptr_factory_.GetWeakPtr()));
+  coupon_service_->DeleteAllFreeListingCoupons();
 }
 
 CartDB* CartService::GetDB() {
@@ -644,11 +669,11 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
   }
   std::set<std::string> merchants_to_erase;
   for (CartDB::KeyAndValue kv : proto_pairs) {
-    if (IsExpired(kv.second) ||
-        ShouldSkip(GURL(kv.second.merchant_cart_url()))) {
+    const GURL& cart_url(GURL(kv.second.merchant_cart_url()));
+    if (IsExpired(kv.second) || ShouldSkip(cart_url)) {
       // Removed carts should remain removed.
       if (!kv.second.is_removed()) {
-        DeleteCart(kv.second.key(), true);
+        DeleteCart(cart_url, true);
       }
       merchants_to_erase.emplace(kv.second.key());
     }
@@ -770,6 +795,12 @@ void CartService::OnAddCart(const std::string& domain,
   existing_proto.set_timestamp(proto.timestamp());
   if (cart_url) {
     existing_proto.set_merchant_cart_url(cart_url->spec());
+  }
+  // If some products in the existing cart are no longer in the new cart, remove
+  // the corresponding coupons.
+  if (has_product_image && ProductsRemoved(existing_proto, proto)) {
+    coupon_service_->DeleteFreeListingCouponsForUrl(
+        GURL(existing_proto.merchant_cart_url()));
   }
 
   if (proto.product_infos().size()) {
@@ -928,4 +959,8 @@ void CartService::SetCartDiscountLinkFetcherForTesting(
 void CartService::SetFetchDiscountWorkerForTesting(
     std::unique_ptr<FetchDiscountWorker> fetch_discount_worker) {
   fetch_discount_worker_for_testing_ = std::move(fetch_discount_worker);
+}
+
+void CartService::SetCouponServiceForTesting(CouponService* coupon_service) {
+  coupon_service_ = coupon_service;
 }

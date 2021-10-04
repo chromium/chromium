@@ -16,6 +16,7 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/discount_url_loader.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
+#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -62,10 +63,10 @@ class CartService : public history::HistoryServiceObserver,
   void AddCart(const std::string& domain,
                const absl::optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
-  // Delete the cart from certain domain in the cart service. When not
+  // Delete the cart from the same domain as |url| in the cart service. When not
   // |ignore_remove_status|, we keep the cart if it has been permanently
   // removed.
-  void DeleteCart(const std::string& domain, bool ignore_remove_status);
+  void DeleteCart(const GURL& url, bool ignore_remove_status);
   // Only load carts with fake data in the database.
   void LoadCartsWithFakeData(CartDB::LoadCallback callback);
   // Gets called when discounts are available for the given cart_url.
@@ -128,6 +129,7 @@ class CartService : public history::HistoryServiceObserver,
   friend class CartServiceDiscountTest;
   friend class CartServiceBrowserDiscountTest;
   friend class CartServiceDiscountFetchTest;
+  friend class CartServiceCouponTest;
   FRIEND_TEST_ALL_PREFIXES(CartHandlerNtpModuleFakeDataTest,
                            TestEnableFakeData);
 
@@ -191,6 +193,8 @@ class CartService : public history::HistoryServiceObserver,
   // Set fetch_discount_worker_ for testing purpose.
   void SetFetchDiscountWorkerForTesting(
       std::unique_ptr<FetchDiscountWorker> fetch_discount_worker);
+  // Set coupon_service_ for testing purpose.
+  void SetCouponServiceForTesting(CouponService* coupon_service);
   // Returns whether a URL should be skipped based on server-side bloom filter.
   bool ShouldSkip(const GURL& url);
   void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
@@ -211,6 +215,7 @@ class CartService : public history::HistoryServiceObserver,
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
   std::unique_ptr<CartMetricsTracker> metrics_tracker_;
   std::unique_ptr<DiscountURLLoader> discount_url_loader_;
+  CouponService* coupon_service_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 
