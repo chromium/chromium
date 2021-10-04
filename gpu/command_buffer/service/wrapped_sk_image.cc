@@ -243,12 +243,10 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   class RepresentationMemory;
 
   bool Initialize() {
-    if (context_state_->context_lost())
-      return false;
-
     // MakeCurrent to avoid destroying another client's state because Skia may
     // change GL state to create and upload textures (crbug.com/1095679).
-    context_state_->MakeCurrent(nullptr);
+    if (!context_state_->MakeCurrent(nullptr))
+      return false;
     context_state_->set_need_context_state_reset(true);
 
     DCHECK_NE(format(), viz::ResourceFormat::ETC1);
@@ -287,13 +285,10 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   // updating compressed textures is not supported.
   bool InitializeWithData(base::span<const uint8_t> pixels, size_t stride) {
     DCHECK(pixels.data());
-
-    if (context_state_->context_lost())
-      return false;
-
     // MakeCurrent to avoid destroying another client's state because Skia may
     // change GL state to create and upload textures (crbug.com/1095679).
-    context_state_->MakeCurrent(nullptr);
+    if (!context_state_->MakeCurrent(nullptr))
+      return false;
     context_state_->set_need_context_state_reset(true);
 
       if (format() == viz::ResourceFormat::ETC1) {
