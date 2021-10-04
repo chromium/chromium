@@ -66,9 +66,8 @@ TEST_F(CachedTextInputInfoTest, PlaceholderBROnlyInTextArea) {
   SetBodyContent("<textarea id=target></textarea>");
   auto& target = *To<TextControlElement>(GetElementById("target"));
   target.focus();
-  GetDocument().execCommandForTesting("insertparagraph", false, "",
-                                      ASSERT_NO_EXCEPTION);
-  GetDocument().execCommandForTesting("delete", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("insertparagraph", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("delete", false, "", ASSERT_NO_EXCEPTION);
 
   // Inner editor is <div><br></div>.
   GetFrame().Selection().SetSelectionAndEndTyping(

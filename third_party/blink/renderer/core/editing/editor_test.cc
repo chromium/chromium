@@ -129,8 +129,8 @@ TEST_F(EditorTest, RedoWithDisconnectedEditable) {
   SetBodyContent("<p contenteditable id=target></p>");
   auto& target = *GetElementById("target");
   target.focus();
-  GetDocument().execCommandForTesting("insertHtml", false, "<b>xyz</b>",
-                                      ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
+                            ASSERT_NO_EXCEPTION);
   ASSERT_EQ("<b>xyz</b>", target.innerHTML());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
@@ -150,8 +150,7 @@ TEST_F(EditorTest, RedoWithDisconnectedInput) {
   SetBodyContent("<input id=target>");
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
   input.focus();
-  GetDocument().execCommandForTesting("insertText", false, "xyz",
-                                      ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
   ASSERT_EQ("xyz", input.value());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
@@ -171,8 +170,8 @@ TEST_F(EditorTest, UndoWithDisconnectedEditable) {
   SetBodyContent("<p contenteditable id=target></p>");
   auto& target = *GetElementById("target");
   target.focus();
-  GetDocument().execCommandForTesting("insertHtml", false, "<b>xyz</b>",
-                                      ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
+                            ASSERT_NO_EXCEPTION);
   ASSERT_EQ("<b>xyz</b>", target.innerHTML());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
@@ -188,8 +187,7 @@ TEST_F(EditorTest, UndoWithDisconnectedInput) {
   SetBodyContent("<input id=target>");
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
   input.focus();
-  GetDocument().execCommandForTesting("insertText", false, "xyz",
-                                      ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
   ASSERT_EQ("xyz", input.value());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
@@ -208,7 +206,7 @@ TEST_F(EditorTest, UndoWithInvalidSelection) {
   Selection().SetSelection(selection, SetSelectionOptions());
   auto& abc = To<Text>(*selection.Base().ComputeContainerNode());
   // Push Text node "abc" into undo stack
-  GetDocument().execCommandForTesting("italic", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("italic", false, "", ASSERT_NO_EXCEPTION);
   // Change Text node "abc" in undo stack
   abc.setData("");
   GetDocument().GetFrame()->GetEditor().Undo();

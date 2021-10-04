@@ -1162,10 +1162,11 @@ class CORE_EXPORT Document : public ContainerNode,
                    bool show_ui,
                    const V8UnionStringOrTrustedHTML* value,
                    ExceptionState&);
-  bool execCommandForTesting(const String& command,
-                             bool show_ui,
-                             const String& value,
-                             ExceptionState&);
+
+  bool execCommand(const String& command,
+                   bool show_ui,
+                   const String& value,
+                   ExceptionState&);
 
   bool IsRunningExecCommand() const { return is_running_exec_command_; }
   bool queryCommandEnabled(const String& command, ExceptionState&);

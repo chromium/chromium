@@ -354,7 +354,7 @@ TEST_F(FrameSelectionTest, BoldCommandPreservesHandle) {
       SelectionInDOMTree::Builder().Collapse(end_of_text).Build());
   EXPECT_FALSE(Selection().IsHandleVisible());
   Selection().SelectAll();
-  GetDocument().execCommandForTesting("bold", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("bold", false, "", ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(Selection().IsHandleVisible())
       << "If handles weren't present before "
          "bold command. Then they shouldn't "
@@ -369,7 +369,7 @@ TEST_F(FrameSelectionTest, BoldCommandPreservesHandle) {
           .Build());
   EXPECT_TRUE(Selection().IsHandleVisible());
   Selection().SelectAll();
-  GetDocument().execCommandForTesting("bold", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("bold", false, "", ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(Selection().IsHandleVisible())
       << "If handles were present before "
          "bold command. Then they should "

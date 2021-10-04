@@ -1602,8 +1602,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
 
   // Insert 'test'.
   NonThrowableExceptionState exception_state;
-  GetDocument().execCommandForTesting("insertText", false, "test",
-                                      exception_state);
+  GetDocument().execCommand("insertText", false, "test", exception_state);
 
   EXPECT_TRUE(Controller().HasComposition());
   EXPECT_EQ(7, GetFrame()
@@ -3340,7 +3339,7 @@ TEST_F(InputMethodControllerTest, ExecCommandDuringComposition) {
   Controller().SetComposition(String::FromUTF8("hello"), Vector<ImeTextSpan>(),
                               5, 5);
   // Turn on bold formatting.
-  GetDocument().execCommandForTesting("bold", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("bold", false, "", ASSERT_NO_EXCEPTION);
 
   // Extend the composition with some more text.
   Controller().SetComposition(String::FromUTF8("helloworld"),
