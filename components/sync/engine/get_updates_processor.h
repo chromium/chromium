@@ -60,17 +60,10 @@ class GetUpdatesProcessor {
                                      SyncCycle* cycle,
                                      sync_pb::ClientToServerMessage* msg);
 
-  // Helper function for processing responses from the server.  Defined here for
-  // testing.
+  // Processes a GetUpdates response for each type.
   SyncerError ProcessResponse(const sync_pb::GetUpdatesResponse& gu_response,
-                              const ModelTypeSet& proto_request_types,
-                              StatusController* status);
-
-  // Processes a GetUpdates responses for each type.
-  SyncerError ProcessGetUpdatesResponse(
-      const ModelTypeSet& gu_types,
-      const sync_pb::GetUpdatesResponse& gu_response,
-      StatusController* status_controller);
+                              const ModelTypeSet& gu_types,
+                              StatusController* status_controller);
 
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, BookmarkNudge);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NotifyMany);

@@ -294,9 +294,10 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
 
 SyncerError GetUpdatesProcessor::ProcessResponse(
     const sync_pb::GetUpdatesResponse& gu_response,
-    const ModelTypeSet& request_types,
-    StatusController* status) {
-  status->increment_num_updates_downloaded_by(gu_response.entries_size());
+    const ModelTypeSet& gu_types,
+    StatusController* status_controller) {
+  status_controller->increment_num_updates_downloaded_by(
+      gu_response.entries_size());
 
   // The changes remaining field is used to prevent the client from looping.  If
   // that field is being set incorrectly, we're in big trouble.
@@ -304,22 +305,6 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
     return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
   }
 
-  SyncerError result =
-      ProcessGetUpdatesResponse(request_types, gu_response, status);
-  if (result.value() != SyncerError::SYNCER_OK)
-    return result;
-
-  if (gu_response.changes_remaining() == 0) {
-    return SyncerError(SyncerError::SYNCER_OK);
-  } else {
-    return SyncerError(SyncerError::SERVER_MORE_TO_DOWNLOAD);
-  }
-}
-
-SyncerError GetUpdatesProcessor::ProcessGetUpdatesResponse(
-    const ModelTypeSet& gu_types,
-    const sync_pb::GetUpdatesResponse& gu_response,
-    StatusController* status_controller) {
   TypeSyncEntityMap updates_by_type;
   PartitionUpdatesByType(gu_response, gu_types, &updates_by_type);
   DCHECK_EQ(gu_types.Size(), updates_by_type.size());
@@ -364,7 +349,9 @@ SyncerError GetUpdatesProcessor::ProcessGetUpdatesResponse(
   DCHECK(progress_marker_iter == progress_index_by_type.end() &&
          updates_iter == updates_by_type.end());
 
-  return SyncerError(SyncerError::SYNCER_OK);
+  return gu_response.changes_remaining() == 0
+             ? SyncerError(SyncerError::SYNCER_OK)
+             : SyncerError(SyncerError::SERVER_MORE_TO_DOWNLOAD);
 }
 
 void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
