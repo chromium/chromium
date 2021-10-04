@@ -15,6 +15,8 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,7 +37,7 @@ constexpr CGFloat kNativeCheckmarkWidth = 18;
 constexpr CGFloat kNativeMenuItemHeight = 18;
 constexpr CGFloat kIPHDotSize = 6;
 
-NSImage* NewTagImage() {
+NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
   // 1. Make the attributed string.
 
   NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
@@ -50,9 +52,9 @@ NSImage* NewTagImage() {
   badge_font = badge_font.Derive(views::NewBadge::kNewBadgeFontSizeAdjustment,
                                  gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
 
+  DCHECK(color_provider);
   NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
-      ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-          ui::NativeTheme::kColorId_TextOnProminentButtonColor));
+      color_provider->GetColor(ui::kColorButtonBackgroundProminent));
 
   NSDictionary* badge_attrs = @{
     NSFontAttributeName : badge_font.GetNativeFont(),
@@ -85,9 +87,9 @@ NSImage* NewTagImage() {
             bezierPathWithRoundedRect:badge_frame
                               xRadius:views::NewBadge::kNewBadgeCornerRadius
                               yRadius:views::NewBadge::kNewBadgeCornerRadius];
+        DCHECK(color_provider);
         NSColor* badge_color = skia::SkColorToSRGBNSColor(
-            ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor));
+            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
         [badge_color set];
         [rounded_badge_rect fill];
 
@@ -101,7 +103,7 @@ NSImage* NewTagImage() {
       }];
 }
 
-NSImage* IPHDotImage() {
+NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
   // Embed horizontal centering space as NSMenuItem will otherwise left-align
   // it.
   return [NSImage
@@ -112,8 +114,7 @@ NSImage* IPHDotImage() {
             bezierPathWithOvalInRect:NSMakeRect(kIPHDotSize / 2, 0, kIPHDotSize,
                                                 kIPHDotSize)];
         NSColor* dot_color = skia::SkColorToSRGBNSColor(
-            ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor));
+            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
         [dot_color set];
         [dot_path fill];
 
@@ -169,9 +170,9 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 @implementation NewTagAttachmentCell
 
-- (instancetype)init {
+- (instancetype)initWithColorProvider:(const ui::ColorProvider*)colorProvider {
   if (self = [super init]) {
-    self.image = NewTagImage();
+    self.image = NewTagImage(colorProvider);
   }
   return self;
 }
@@ -228,15 +229,16 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
-                      atIndex:(NSInteger)index {
+                      atIndex:(NSInteger)index
+            withColorProvider:(const ui::ColorProvider*)colorProvider {
   if (model->IsNewFeatureAt(index)) {
     // /!\ WARNING /!\ Do not update this to use NSTextAttachment.image until
     // macOS 10.15 is the minimum required OS. See the details on the class
     // comment above.
     NSTextAttachment* attachment =
         [[[NSTextAttachment alloc] init] autorelease];
-    attachment.attachmentCell =
-        [[[NewTagAttachmentCell alloc] init] autorelease];
+    attachment.attachmentCell = [[[NewTagAttachmentCell alloc]
+        initWithColorProvider:colorProvider] autorelease];
 
     NSMutableAttributedString* attrTitle =
         MutableAttributedStringForMenuItemTitleString(menuItem.title);
@@ -248,7 +250,7 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
   }
 
   if (model->IsAlertedAt(index)) {
-    NSImage* iphDotImage = IPHDotImage();
+    NSImage* iphDotImage = IPHDotImage(colorProvider);
     menuItem.onStateImage = iphDotImage;
     menuItem.offStateImage = iphDotImage;
     menuItem.mixedStateImage = iphDotImage;
@@ -543,6 +545,7 @@ void MenuRunnerImplCocoa::RunMenuAt(Widget* parent,
 
   NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
   NSView* view = parent->GetNativeView().GetNativeNSView();
+  [menu_controller_ maybeBuildWithColorProvider:parent->GetColorProvider()];
   NSMenu* const menu = [menu_controller_ menu];
   if (run_types & MenuRunner::CONTEXT_MENU) {
     ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(

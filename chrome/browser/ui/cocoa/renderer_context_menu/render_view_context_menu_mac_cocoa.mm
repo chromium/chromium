@@ -17,6 +17,8 @@
 #include "base/task/current_thread.h"
 #import "chrome/browser/mac/nsprocessinfo_additions.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/color/color_provider.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -200,9 +202,16 @@ RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {
 }
 
 void RenderViewContextMenuMacCocoa::Show() {
-  menu_controller_.reset([[MenuControllerCocoa alloc] initWithModel:&menu_model_
-                                                           delegate:nil
-                                             useWithPopUpButtonCell:NO]);
+  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      source_web_contents_->GetNativeView());
+  const ui::ColorProvider* color_provider =
+      widget ? widget->GetColorProvider() : nullptr;
+
+  menu_controller_.reset([[MenuControllerCocoa alloc]
+               initWithModel:&menu_model_
+                    delegate:nil
+               colorProvider:color_provider
+      useWithPopUpButtonCell:NO]);
 
   gfx::Point params_position(params_.x, params_.y);
 

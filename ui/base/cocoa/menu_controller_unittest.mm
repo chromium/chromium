@@ -16,6 +16,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #import "ui/base/test/cocoa_helper.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -693,6 +694,55 @@ TEST_F(MenuControllerTest, OwningDelegate) {
   }
   EXPECT_TRUE(did_dealloc);
   EXPECT_TRUE(did_delete);
+}
+
+// Tests to make sure that when |-initWithModel:| is called with a ColorProvider
+// the menu is constructed.
+TEST_F(MenuControllerTest, InitBuildsMenuWithColorProvider) {
+  Delegate delegate;
+  SimpleMenuModel model(&delegate);
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
+
+  ui::ColorProvider colorProvider;
+  base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
+               initWithModel:&model
+                    delegate:nil
+               colorProvider:&colorProvider
+      useWithPopUpButtonCell:YES]);
+  EXPECT_TRUE([menu isMenuBuiltForTesting]);
+}
+
+// Tests to make sure that when |-initWithModel:| is called without a
+// ColorProvider the menu is not constructed but is constructed in a later call
+// to |-maybeBuildWithColorProvider:|.
+TEST_F(MenuControllerTest, InitDoesNotBuildMenuWithoutColorProvider) {
+  Delegate delegate;
+  SimpleMenuModel model(&delegate);
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
+
+  // Calling |-initWithModel:| without the ColorProvider should not build the
+  // menu.
+  base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
+               initWithModel:&model
+                    delegate:nil
+      useWithPopUpButtonCell:YES]);
+  EXPECT_FALSE([menu isMenuBuiltForTesting]);
+
+  // A follow up call to |-maybeBuildWithColorProvider:| should result in the
+  // controller building the menu.
+  ui::ColorProvider colorProvider;
+  [menu maybeBuildWithColorProvider:&colorProvider];
+  EXPECT_TRUE([menu isMenuBuiltForTesting]);
+
+  // Ensure that the menu is not built a second time on a subsequent call to
+  // |-maybeBuildWithColorProvider:|.
+  const NSMenu* originalMenu = [menu menu];
+  [menu maybeBuildWithColorProvider:&colorProvider];
+  EXPECT_EQ(originalMenu, [menu menu]);
 }
 
 }  // namespace
