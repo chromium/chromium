@@ -70,38 +70,15 @@ struct MEDIA_EXPORT StatusData {
 
 }  // namespace internal
 
-// TypedStatusTraits is used to define aspects of the enum like it's name
-// and if it has a "default" value that can be optimized. This allows
-// users of TypedStatus to not have to specialize many fields of the
-// TypedStatus template manually, and can at some point be made simpler
-// with the use of macros or code generation.
-// By asserting false in the unspecialized case, we can require any type
-// that is used to specialize TypedStatus<> to also specialize this struct.
-template <typename T>
-struct TypedStatusTraits {
-  static_assert(false && sizeof(T),
-                "Missing TypedStatusTraits for TypedStatus enum type.");
-  // Specializations of TypedStatusTraits must also specialize these functions.
-
-  // Group is the unique name of the enum. It shouldn't collide
-  // with any other Group.
-  static constexpr StatusGroupType Group();
-
-  // DefaultEnumValue may return an actual enum value, or it could return a
-  // nullptr, representing that there is no default value.
-  static constexpr absl::optional<T> DefaultEnumValue();
-};
-
-// |T| must be an enum class with an underlying type of |StatusCodeType|. See
-// media/base/status.md for details and instructions for using TypedStatus<T>.
+// See media/base/status.md for details and instructions for using TypedStatus.
 template <typename T>
 class MEDIA_EXPORT TypedStatus {
-  static_assert(std::is_enum<T>::value,
+  static_assert(std::is_enum<typename T::Codes>::value,
                 "TypedStatus must only be specialized with enum types.");
 
  public:
-  using Traits = TypedStatusTraits<T>;
-  using Codes = T;
+  using Traits = T;
+  using Codes = typename T::Codes;
 
   // default constructor to please the Mojo Gods.
   TypedStatus() = default;
@@ -111,7 +88,7 @@ class MEDIA_EXPORT TypedStatus {
   // create a new TypedStatus.
   // NOTE: This should never be given a location parameter when called - It is
   // defaulted in order to grab the caller location.
-  TypedStatus(T code,
+  TypedStatus(Codes code,
               base::StringPiece message = "",
               const base::Location& location = base::Location::Current()) {
     // Note that |message| would be dropped when code is the default value,
@@ -140,10 +117,10 @@ class MEDIA_EXPORT TypedStatus {
   // DEPRECATED: check code() == ok value.
   bool is_ok() const { return !data_; }
 
-  T code() const {
+  Codes code() const {
     if (!data_)
       return *Traits::DefaultEnumValue();
-    return static_cast<T>(data_->code);
+    return static_cast<Codes>(data_->code);
   }
 
   const std::string group() const {
@@ -188,16 +165,16 @@ class MEDIA_EXPORT TypedStatus {
   }
 
   // Add |cause| as the error that triggered this one.
-  template <typename AnyEnumType>
-  TypedStatus<T>&& AddCause(TypedStatus<AnyEnumType>&& cause) && {
+  template <typename AnyTraitsType>
+  TypedStatus<T>&& AddCause(TypedStatus<AnyTraitsType>&& cause) && {
     DCHECK(data_ && cause.data_);
     data_->causes.push_back(*cause.data_);
     return std::move(*this);
   }
 
   // Add |cause| as the error that triggered this one.
-  template <typename AnyEnumType>
-  void AddCause(TypedStatus<AnyEnumType>&& cause) & {
+  template <typename AnyTraitsType>
+  void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
     data_->causes.push_back(*cause.data_);
   }
@@ -233,7 +210,8 @@ class MEDIA_EXPORT TypedStatus {
 
     Or(OtherType&& value) : value_(std::move(value)) {}
     Or(const OtherType& value) : value_(value) {}
-    Or(T code, const base::Location& location = base::Location::Current())
+    Or(typename T::Codes code,
+       const base::Location& location = base::Location::Current())
         : error_(TypedStatus<T>(code, "", location)) {
       DCHECK(!Traits::DefaultEnumValue() ||
              *Traits::DefaultEnumValue() != code);
@@ -266,7 +244,7 @@ class MEDIA_EXPORT TypedStatus {
       return value;
     }
 
-    T code() {
+    typename T::Codes code() {
       DCHECK(error_ || value_);
       // It is invalid to call |code()| on an |Or| with a value that
       // is specialized in a TypedStatus with no DefaultEnumValue.
@@ -298,26 +276,26 @@ class MEDIA_EXPORT TypedStatus {
 };
 
 template <typename T>
-inline bool operator==(T code, const TypedStatus<T>& status) {
+inline bool operator==(typename T::Codes code, const TypedStatus<T>& status) {
   return status == code;
 }
 
 template <typename T>
-inline bool operator!=(T code, const TypedStatus<T>& status) {
+inline bool operator!=(typename T::Codes code, const TypedStatus<T>& status) {
   return status != code;
 }
 
 // Define TypedStatus<StatusCode> as Status in the media namespace for
 // backwards compatibility. Also define StatusOr as Status::Or for the
 // same reason.
-template <>
-struct TypedStatusTraits<StatusCode> {
+struct GeneralStatusTraits {
+  using Codes = StatusCode;
   static constexpr StatusGroupType Group() { return "GeneralStatusCode"; }
   static constexpr absl::optional<StatusCode> DefaultEnumValue() {
     return StatusCode::kOk;
   }
 };
-using Status = TypedStatus<StatusCode>;
+using Status = TypedStatus<GeneralStatusTraits>;
 template <typename T>
 using StatusOr = Status::Or<T>;
 

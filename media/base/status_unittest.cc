@@ -251,8 +251,9 @@ TEST_F(StatusTest, StatusOrCodeIsOkWithValue) {
 }
 
 enum class NoDefaultType : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
-template <>
-struct TypedStatusTraits<NoDefaultType> {
+
+struct NoDefaultTypeTraits {
+  using Codes = NoDefaultType;
   static constexpr StatusGroupType Group() {
     return "GroupWithNoDefaultTypeForTests";
   }
@@ -262,7 +263,7 @@ struct TypedStatusTraits<NoDefaultType> {
 };
 
 TEST_F(StatusTest, TypedStatusWithNoDefault) {
-  using NDStatus = TypedStatus<NoDefaultType>;
+  using NDStatus = TypedStatus<NoDefaultTypeTraits>;
 
   NDStatus foo = NoDefaultType::kFoo;
   EXPECT_EQ(foo.code(), NoDefaultType::kFoo);

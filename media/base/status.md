@@ -5,9 +5,20 @@ enums that support causality tracking, data attachment, and general assistance
 with debugging, without adding slowdowns due to returning large structs,
 pointers, or more complicated types.
 
-TypedStatus<T> should be specialized with an enum that otherwise would be
-the return type of a function. Due to TypedStatus' lightweight design,
-returning one should be equally as cost efficient as returning an enum.
+TypedStatus<T> should be specialized with a traits struct that defines:
+
+  Codes - enum (usually enum class) that would be the return type, if we weren't
+          using TypedStatus.
+  static constexpr StatusGroupType Group() { return "NameOfStatus"; }
+  static constexpr absl::optional<Codes> DefaultEnumValue() {
+    return Codes::kCodeThatShouldBeSuperOptimizedEGSuccess;
+    // Can return nullopt to optimize none of them.  No idea why you'd do that.
+  }
+
+Typically one would:
+
+  struct MyStatusTraits { ... };
+  using MyStatus = TypedStatus<MyStatusTraits>;
 
 ## Using an existing `TypedStatus<T>`
 
@@ -18,7 +29,7 @@ All TypedStatus specializations have the following common API:
 
 ```c++
 // The underlying code value.
-T code() const;
+T::Codes code() const;
 
 // The underlying message.
 std::string& message() const;
@@ -49,37 +60,32 @@ void AddCause(TypedStatus<R>&& cause) &;
 
 ## Quick usage guide
 
-If you want to wrap your enum:
-enum class MyCustomEnum : StatusCodeType {
+If you have an existing enum, and would like to wrap it:
+```c++
+enum class MyExampleEnum : StatusCodeType {
   kDefaultValue = 1,
   kThisIsAnExample = 2,
   kDontArgueInTheCommentSection = 3,
 };
+```
 
 Define an |TypedStatusTraits|, picking a name for the group of codes:
 (copying the desciptive comments is not suggested)
 
 ```c++
-template <>
-struct TypedStatusTraits<MyCustomEnum> {
-  // Use a meaningful name (but usually just the specialized enum's name)
-  // since this will only end up being logged to devtools.
-  static constexpr StatusGroupType GroupId() {
-    return "MyCustomEnum";
-  }
-
-  // TypedStatus uses an optimization for enums that have a "default"
-  // or commonly used type, such as an "Ok" value that indicates no
-  // error. If the enum being specialized has a value like this, returning
-  // it here allows the optimization. Otherwise, just return nullopt.
-  static constexpr absl::optional<MyCustomEnum> DefaultEnumValue() {
-    return MyCustomEnum::kDefaultValue;
-  }
-};
+struct MyExampleStatusTraits {
+  // If you do not have an existing enum, you can `enum class Codes { ... };`
+  // here, instead of `using`.
+  using Codes = MyExampleEnum;
+  static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
+  static constexpr absl::optional<Codes> { return Codes::kDefaultValue; }
+}
 ```
 
 Bind your typename:
-using MyExampleStatus = media::TypedStatus<MyCustomEnum>;
+```c++
+using MyExampleStatus = media::TypedStatus<MyExampleStatusTraits>;
+```
 
 Use your new type:
 ```c++
@@ -118,7 +124,7 @@ OtherType value() &&;
 
 // It is invalid to call `code()` on an `Or<D>` type when
 // has_value() is true and TypedStatusTraits<T>::DefaultEnumValue is nullopt.
-T code();
+T::Codes code();
 ```
 
 Example usage:
@@ -128,9 +134,9 @@ MyExampleStatus::Or<std::unique_ptr<VideoDecoder>> CreateAndInitializeDecoder() 
   auto init_status = decoder->Initialize(init_args_);
   // If the decoder initialized successfully, then just return it.
   if (init_status == InitStatusCodes::kOk)
-    return decoder;
+    return std::move(decoder);
   // Otherwise, return a MediaExampleStatus caused by the init status.
-  return MyExampleStatus(MyCustomEnum::kDontArgueInTheCommentSection).AddCause(
+  return MyExampleStatus(MyExampleEnum::kDontArgueInTheCommentSection).AddCause(
     std::move(init_status));
 }
 
@@ -151,7 +157,7 @@ If you want to send a specialization of TypedStatus over mojo,
 add the following to media_types.mojom:
 
 ```
-struct MyCustomEnum {
+struct MyExampleEnum {
   StatusBase? internal;
 };
 ```
@@ -161,8 +167,8 @@ binding.
 
 ```
 {
-  mojom = "media.mojom.MyCustomEnum",
-  cpp = "::media::MyCustomEnum"
+  mojom = "media.mojom.MyExampleEnum",
+  cpp = "::media::MyExampleEnum"
 },
 ```
 
