@@ -159,6 +159,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
   def setUp(self):
     super(EgtestsAppTest, self).setUp()
     self.mock(test_apps, 'get_bundle_id', lambda _: 'bundle-id')
+    self.mock(test_apps, 'is_running_rosetta', lambda: True)
     self.mock(os.path, 'exists', lambda _: True)
 
   @mock.patch('xcode_util.using_xcode_13_or_higher', return_value=True)
@@ -170,9 +171,9 @@ class EgtestsAppTest(test_runner_test.TestCase):
         'app_path', host_app_path='host_app_path', repeat_count=2)
     cmd = egtests_app.command('outdir', 'id=UUID', 1)
     expected_cmd = [
-        'xcodebuild', 'test-without-building', '-xctestrun', 'xctestrun',
-        '-destination', 'id=UUID', '-resultBundlePath', 'outdir',
-        '-test-iterations', '2'
+        'arch', '-arch', 'arm64', 'xcodebuild', 'test-without-building',
+        '-xctestrun', 'xctestrun', '-destination', 'id=UUID',
+        '-resultBundlePath', 'outdir', '-test-iterations', '2'
     ]
     self.assertEqual(cmd, expected_cmd)
 

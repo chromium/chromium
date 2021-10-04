@@ -48,6 +48,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
               'fill_xctest_run', lambda _1, _2: 'xctestrun')
     self.mock(iossim_util, 'get_simulator', lambda _1, _2: 'sim-UUID')
     self.mock(test_apps, 'get_bundle_id', lambda _: "fake-bundle-id")
+    self.mock(test_apps, 'is_running_rosetta', lambda: False)
     self.mock(test_apps.plistlib, 'writePlist', lambda _1, _2: '')
     self.mock(test_runner.SimulatorTestRunner, 'tear_down', lambda _: None)
     self.mock(test_runner.DeviceTestRunner, 'tear_down', lambda _: None)

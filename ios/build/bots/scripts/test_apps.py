@@ -5,6 +5,7 @@
 
 import os
 import plistlib
+import struct
 import subprocess
 import time
 
@@ -49,6 +50,25 @@ def get_bundle_id(app_path):
       'Print:CFBundleIdentifier',
       os.path.join(app_path, 'Info.plist'),
   ]).rstrip().decode("utf-8")
+
+
+def is_running_rosetta():
+  """Returns whether Python is being translated by Rosetta.
+
+  Returns:
+    True if the Python interpreter is being run as an x86_64 binary on an arm64
+    macOS machine. False if it is running as an arm64 binary, or if it is
+    running on an Intel machine.
+  """
+  translated = subprocess.check_output(
+      ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
+  # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
+  # current process is running under Rosetta, 0 means it is not. On x86_64
+  # machines, this variable does not exist at all, so "-i" is used to return a
+  # 0-byte response instead of throwing an error.
+  if len(translated) != 4:
+    return False
+  return struct.unpack('i', translated)[0] > 0
 
 
 class GTestsApp(object):
@@ -210,15 +230,19 @@ class GTestsApp(object):
     Returns:
       A list of strings forming the command to launch the test.
     """
-    cmd = [
-        'xcodebuild', 'test-without-building',
-        '-xctestrun', self.fill_xctest_run(out_dir),
-        '-destination', destination,
+    cmd = []
+    if is_running_rosetta():
+      cmd.extend(['arch', '-arch', 'arm64'])
+    cmd.extend([
+        'xcodebuild', 'test-without-building', '-xctestrun',
+        self.fill_xctest_run(out_dir), '-destination', destination,
         '-resultBundlePath', out_dir
-    ]
+    ])
     if shards > 1:
-      cmd += ['-parallel-testing-enabled', 'YES',
-              '-parallel-testing-worker-count', str(shards)]
+      cmd.extend([
+          '-parallel-testing-enabled', 'YES', '-parallel-testing-worker-count',
+          str(shards)
+      ])
     return cmd
 
   def get_all_tests(self):
