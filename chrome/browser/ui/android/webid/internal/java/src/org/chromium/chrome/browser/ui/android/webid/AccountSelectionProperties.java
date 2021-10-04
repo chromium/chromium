@@ -131,8 +131,8 @@ class AccountSelectionProperties {
         private AutoSignInCancelButtonProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.DATA_SHARING_CONSENT,
-            ItemType.CONTINUE_BUTTON, ItemType.AUTO_SIGN_IN_CANCEL_BUTTON})
+    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON,
+            ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, ItemType.DATA_SHARING_CONSENT})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
@@ -146,20 +146,20 @@ class AccountSelectionProperties {
         int ACCOUNT = 2;
 
         /**
-         * The user data sharing consent text when there is only one account and it is a sign-up
-         * moment.
-         */
-        int DATA_SHARING_CONSENT = 3;
-
-        /**
          * The continue button at the end of the sheet when there is only one account.
          */
-        int CONTINUE_BUTTON = 4;
+        int CONTINUE_BUTTON = 3;
 
         /**
          * The cancel button at the end of the sheet with auto sign in.
          */
-        int AUTO_SIGN_IN_CANCEL_BUTTON = 5;
+        int AUTO_SIGN_IN_CANCEL_BUTTON = 4;
+
+        /**
+         * The user data sharing consent text when there is only one account and it is a sign-up
+         * moment.
+         */
+        int DATA_SHARING_CONSENT = 5;
     }
 
     private AccountSelectionProperties() {}

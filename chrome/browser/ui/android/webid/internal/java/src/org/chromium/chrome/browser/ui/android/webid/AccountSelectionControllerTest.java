@@ -405,14 +405,14 @@ public class AccountSelectionControllerTest {
         assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
         assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
         assertEquals(
-                "Incorrect consent type", ItemType.DATA_SHARING_CONSENT, mSheetItems.get(2).type);
+                "Incorrect consent type", ItemType.DATA_SHARING_CONSENT, mSheetItems.get(3).type);
         assertEquals("Incorrect privacy policy URL", TEST_URL_PRIVACY_POLICY.getSpec(),
-                mSheetItems.get(2).model.get(PRIVACY_POLICY_URL));
+                mSheetItems.get(3).model.get(PRIVACY_POLICY_URL));
         assertEquals("Incorrect terms of service URL", TEST_URL_TERMS_OF_SERVICE.getSpec(),
-                mSheetItems.get(2).model.get(TERMS_OF_SERVICE_URL));
-        assertEquals("Incorrect continue type", ItemType.CONTINUE_BUTTON, mSheetItems.get(3).type);
+                mSheetItems.get(3).model.get(TERMS_OF_SERVICE_URL));
+        assertEquals("Incorrect continue type", ItemType.CONTINUE_BUTTON, mSheetItems.get(2).type);
         assertEquals("Incorrect provider url", formatForSecurityDisplay(TEST_URL_3.getSpec()),
-                mSheetItems.get(2).model.get(PROVIDER_URL));
+                mSheetItems.get(3).model.get(PROVIDER_URL));
     }
 
     /**

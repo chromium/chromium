@@ -91,15 +91,15 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         adapter.registerType(AccountSelectionProperties.ItemType.ACCOUNT,
                 AccountSelectionCoordinator::buildAccountView,
                 AccountSelectionViewBinder::bindAccountView);
-        adapter.registerType(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
-                AccountSelectionCoordinator::buildDataSharingConsentView,
-                AccountSelectionViewBinder::bindDataSharingConsentView);
         adapter.registerType(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
                 AccountSelectionCoordinator::buildContinueButtonView,
                 AccountSelectionViewBinder::bindContinueButtonView);
         adapter.registerType(AccountSelectionProperties.ItemType.AUTO_SIGN_IN_CANCEL_BUTTON,
                 AccountSelectionCoordinator::buildAutoSignInCancelButtonView,
                 AccountSelectionViewBinder::bindAutoSignInCancelButtonView);
+        adapter.registerType(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
+                AccountSelectionCoordinator::buildDataSharingConsentView,
+                AccountSelectionViewBinder::bindDataSharingConsentView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;

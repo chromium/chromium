@@ -135,6 +135,10 @@ class AccountSelectionMediator {
             return;
         }
 
+        // Shows the continue button for both sign-up and non auto-sign-in.
+        final PropertyModel continueBtnModel = createContinueBtnItem(account);
+        mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
+
         // Only show the user data sharing consent text for sign up.
         if (!account.isSignIn()) {
             String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
@@ -142,9 +146,6 @@ class AccountSelectionMediator {
             mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
                     createDataSharingConsentItem(provider_url, metadata)));
         }
-        // Shows the continue button for both sign-up and non auto-sign-in.
-        final PropertyModel continueBtnModel = createContinueBtnItem(account);
-        mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
     }
 
     void showAccounts(
