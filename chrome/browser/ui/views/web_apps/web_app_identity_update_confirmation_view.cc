@@ -72,7 +72,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
 
   SetAcceptCallback(
       base::BindOnce(&WebAppIdentityUpdateConfirmationView::OnDialogAccepted,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   set_margins(layout_provider->GetDialogInsetsForContentType(
@@ -212,7 +212,7 @@ bool WebAppIdentityUpdateConfirmationView::Cancel() {
       app_id_, webapps::WebappUninstallSource::kAppMenu,
       base::BindOnce(
           &WebAppIdentityUpdateConfirmationView::OnWebAppUninstallDialogClosed,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
   return false;
 }
 

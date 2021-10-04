@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -58,6 +59,9 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
 
   // The app uninstall dialog, shown to confirm the uninstallation.
   std::unique_ptr<WebAppUninstallDialogViews> uninstall_dialog_;
+
+  base::WeakPtrFactory<WebAppIdentityUpdateConfirmationView> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_IDENTITY_UPDATE_CONFIRMATION_VIEW_H_
