@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/data_equivalency.h"
 
 namespace blink {
 
@@ -26,9 +27,10 @@ StyleHighlightData::StyleHighlightData(const StyleHighlightData& other)
 
 bool StyleHighlightData::operator==(const StyleHighlightData& other) const {
   // TODO(crbug.com/1024156): compare field for ::highlight()
-  return selection_ == other.selection_ && target_text_ == other.target_text_ &&
-         spelling_error_ == other.spelling_error_ &&
-         grammar_error_ == other.grammar_error_;
+  return DataEquivalent(selection_, other.selection_) &&
+         DataEquivalent(target_text_, other.target_text_) &&
+         DataEquivalent(spelling_error_, other.spelling_error_) &&
+         DataEquivalent(grammar_error_, other.grammar_error_);
 }
 
 const scoped_refptr<const ComputedStyle>& StyleHighlightData::Selection()

@@ -3155,30 +3155,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (new_style && !ShouldStoreComputedStyle(*new_style))
     new_style = nullptr;
 
-  ComputedStyle::Difference diff =
-      ComputedStyle::ComputeDifference(old_style.get(), new_style.get());
-
-  if (old_style && old_style->IsEnsuredInDisplayNone()) {
-    // Make sure we traverse children for clearing ensured computed styles
-    // further down the tree.
-    child_change =
-        child_change.EnsureAtLeast(StyleRecalcChange::kRecalcChildren);
-    // If the existing style was ensured in a display:none subtree, set it to
-    // null to make sure we don't mark for re-attachment if the new style is
-    // null.
-    old_style = nullptr;
-  }
-
-  if (!new_style && HasRareData()) {
-    ElementRareData* rare_data = GetElementRareData();
-    if (ElementAnimations* element_animations =
-            rare_data->GetElementAnimations()) {
-      element_animations->CssAnimations().Cancel();
-    }
-    rare_data->SetContainerQueryEvaluator(nullptr);
-    rare_data->ClearPseudoElements();
-  }
-
   if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() && new_style) {
     const StyleHighlightData* parent_highlights =
         parent_style ? parent_style->HighlightData().get() : nullptr;
@@ -3221,6 +3197,30 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
 
     // TODO(crbug.com/1024156): implement ::highlight() case
+  }
+
+  ComputedStyle::Difference diff =
+      ComputedStyle::ComputeDifference(old_style.get(), new_style.get());
+
+  if (old_style && old_style->IsEnsuredInDisplayNone()) {
+    // Make sure we traverse children for clearing ensured computed styles
+    // further down the tree.
+    child_change =
+        child_change.EnsureAtLeast(StyleRecalcChange::kRecalcChildren);
+    // If the existing style was ensured in a display:none subtree, set it to
+    // null to make sure we don't mark for re-attachment if the new style is
+    // null.
+    old_style = nullptr;
+  }
+
+  if (!new_style && HasRareData()) {
+    ElementRareData* rare_data = GetElementRareData();
+    if (ElementAnimations* element_animations =
+            rare_data->GetElementAnimations()) {
+      element_animations->CssAnimations().Cancel();
+    }
+    rare_data->SetContainerQueryEvaluator(nullptr);
+    rare_data->ClearPseudoElements();
   }
   SetComputedStyle(new_style);
 
