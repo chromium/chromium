@@ -68,20 +68,31 @@ class SpeechRecognitionPrivateRecognizerTest
     SpeechRecognitionPrivateBaseTest::TearDownOnMainThread();
   }
 
+  void HandleStart(absl::optional<std::string> locale,
+                   absl::optional<bool> interim_results) {
+    // In some cases, speech recognition will not be started e.g. if
+    // HandleStart() is called when speech recognition is already active. In
+    // these cases, we don't want to wait for speech recognition to start.
+    recognizer_->HandleStart(
+        locale, interim_results,
+        base::BindOnce(&SpeechRecognitionPrivateRecognizerTest::OnStartCallback,
+                       base::Unretained(this)));
+  }
+
   void HandleStartAndWait(absl::optional<std::string> locale,
                           absl::optional<bool> interim_results) {
     recognizer_->HandleStart(
         locale, interim_results,
         base::BindOnce(&SpeechRecognitionPrivateRecognizerTest::OnStartCallback,
                        base::Unretained(this)));
-    SpeechRecognitionPrivateBaseTest::WaitForRecognitionStarted();
+    WaitForRecognitionStarted();
   }
 
   void HandleStopAndWait() {
     recognizer_->HandleStop(base::BindOnce(
         &SpeechRecognitionPrivateRecognizerTest::OnStopOnceCallback,
         base::Unretained(this)));
-    SpeechRecognitionPrivateBaseTest::WaitForRecognitionStopped();
+    WaitForRecognitionStopped();
   }
 
   void MaybeUpdateProperties(absl::optional<std::string> locale,
@@ -100,7 +111,11 @@ class SpeechRecognitionPrivateRecognizerTest
     recognizer_->OnSpeechResult(transcript, false, absl::nullopt);
   }
 
-  void OnStartCallback() { ran_on_start_callback_ = true; }
+  void OnStartCallback(absl::optional<std::string> error) {
+    on_start_callback_error_ = error.has_value() ? error.value() : "";
+    ran_on_start_callback_ = true;
+  }
+
   void OnStopOnceCallback(absl::optional<std::string> error) {
     if (error.has_value())
       on_stop_once_callback_error_ = error.value();
@@ -125,6 +140,8 @@ class SpeechRecognitionPrivateRecognizerTest
     delegate_->handled_stop_ = value;
   }
 
+  std::string on_start_callback_error() { return on_start_callback_error_; }
+
   std::string on_stop_once_callback_error() {
     return on_stop_once_callback_error_;
   }
@@ -135,6 +152,7 @@ class SpeechRecognitionPrivateRecognizerTest
 
   bool ran_on_start_callback_ = false;
   bool ran_on_stop_once_callback_ = false;
+  std::string on_start_callback_error_;
   std::string on_stop_once_callback_error_;
 
   std::unique_ptr<SpeechRecognitionPrivateRecognizer> recognizer_;
@@ -199,27 +217,30 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
   ASSERT_TRUE(delegate_handled_stop());
 }
 
+// Tests how HandleStart() behaves if speech recognition is already active. It
+// should run the OnceCallback with an error.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
-                       RecognitionStartsTwice) {
+                       HandleStartAlreadyStarted) {
   absl::optional<std::string> locale;
   absl::optional<bool> interim_results;
   HandleStartAndWait(locale, interim_results);
   ASSERT_TRUE(ran_on_start_callback());
+  ASSERT_EQ("", on_start_callback_error());
   ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, recognizer()->current_state());
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
   ASSERT_FALSE(recognizer()->interim_results());
 
-  // Update properties and start the recognizer again.
-  // Keep the locale as en-US, otherwise the the on-device variant of this
-  // test will fail because on-device speech recognition is only supported in
-  // en-US.
+  // Try to update properties and start the recognizer again. This should
+  // cause an error because speech recognition is already active. Properties
+  // should not be updated and an error should be returned.
   interim_results = true;
   set_ran_on_start_callback(false);
-  HandleStartAndWait(locale, interim_results);
+  HandleStart(locale, interim_results);
   ASSERT_TRUE(ran_on_start_callback());
-  ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, recognizer()->current_state());
+  ASSERT_EQ("Speech recognition already started", on_start_callback_error());
+  ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
-  ASSERT_TRUE(recognizer()->interim_results());
+  ASSERT_FALSE(recognizer()->interim_results());
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
@@ -292,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 // an error.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
   HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
-  SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait();
+  SendFakeSpeechRecognitionErrorAndWait();
   ASSERT_TRUE(delegate_handled_stop());
   ASSERT_FALSE(ran_on_stop_once_callback());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
@@ -310,8 +331,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
   ASSERT_EQ(u"", last_transcript());
   ASSERT_FALSE(last_is_final());
 
-  SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
-      "Final result");
+  SendFinalFakeSpeechResultAndWait("Final result");
   ASSERT_EQ(u"Final result", last_transcript());
   ASSERT_TRUE(last_is_final());
 
@@ -323,8 +343,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
   ASSERT_EQ(u"Interim result", last_transcript());
   ASSERT_FALSE(last_is_final());
 
-  SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
-      "Final result");
+  SendFinalFakeSpeechResultAndWait("Final result");
   ASSERT_EQ(u"Final result", last_transcript());
   ASSERT_TRUE(last_is_final());
 }

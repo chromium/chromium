@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartResultStop) {
   ASSERT_TRUE(start_listener.WaitUntilSatisfied());
 
   // Send a fake speech result and wait for confirmation from the extension.
-  SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait("Testing");
+  SendFinalFakeSpeechResultAndWait("Testing");
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 
   // Replying will trigger the extension to stop speech recogntition. As done
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartErrorStop) {
   ASSERT_TRUE(extension);
   ASSERT_TRUE(start_listener.WaitUntilSatisfied());
 
-  SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait();
+  SendFakeSpeechRecognitionErrorAndWait();
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 

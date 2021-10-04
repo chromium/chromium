@@ -13,8 +13,10 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace {
-const char kSpeechRecognitionOffError[] = "Speech recognition already stopped";
 const char kSpeechRecognitionError[] = "A speech recognition error occurred";
+const char kSpeechRecognitionStartError[] =
+    "Speech recognition already started";
+const char kSpeechRecognitionStopError[] = "Speech recognition already stopped";
 }  // namespace
 
 namespace extensions {
@@ -60,7 +62,7 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     }
   } else if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
     DCHECK(!on_start_callback_.is_null());
-    std::move(on_start_callback_).Run();
+    std::move(on_start_callback_).Run(/*error=*/absl::optional<std::string>());
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     // When a speech recognition error occurs, ask the delegate to handle both
     // error and stop events.
@@ -75,14 +77,15 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
 void SpeechRecognitionPrivateRecognizer::HandleStart(
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    base::OnceClosure callback) {
-  MaybeUpdateProperties(locale, interim_results, std::move(callback));
-
+    ApiCallback callback) {
   if (speech_recognizer_) {
-    // Create a new speech recognizer, since some properties, e.g. locale, could
-    // have changed.
+    std::move(callback).Run(
+        /*error=*/absl::optional<std::string>(kSpeechRecognitionStartError));
     RecognizerOff();
+    return;
   }
+
+  MaybeUpdateProperties(locale, interim_results, std::move(callback));
 
   // Choose which type of speech recognition, either on-device or network.
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -100,13 +103,12 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   }
 }
 
-void SpeechRecognitionPrivateRecognizer::HandleStop(
-    base::OnceCallback<void(absl::optional<std::string>)> callback) {
+void SpeechRecognitionPrivateRecognizer::HandleStop(ApiCallback callback) {
   if (current_state_ == SPEECH_RECOGNIZER_OFF) {
     // If speech recognition is already off, trigger the callback with an error
     // message.
     std::move(callback).Run(
-        /*error=*/absl::optional<std::string>(kSpeechRecognitionOffError));
+        /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
     return;
   }
 
@@ -127,7 +129,7 @@ void SpeechRecognitionPrivateRecognizer::RecognizerOff() {
 void SpeechRecognitionPrivateRecognizer::MaybeUpdateProperties(
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    base::OnceClosure callback) {
+    ApiCallback callback) {
   if (locale.has_value())
     locale_ = locale.value();
   if (interim_results.has_value())

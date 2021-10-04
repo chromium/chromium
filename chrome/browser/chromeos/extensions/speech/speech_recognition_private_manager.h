@@ -28,6 +28,9 @@ class SpeechRecognitionPrivateRecognizer;
 // recognizer and routing events back to the correct extension.
 class SpeechRecognitionPrivateManager : public KeyedService,
                                         public SpeechRecogntionPrivateDelegate {
+  using ApiCallback =
+      base::OnceCallback<void(absl::optional<std::string> error)>;
+
  public:
   explicit SpeechRecognitionPrivateManager(content::BrowserContext* context);
   ~SpeechRecognitionPrivateManager() override;
@@ -48,11 +51,9 @@ class SpeechRecognitionPrivateManager : public KeyedService,
   void HandleStart(const std::string& key,
                    absl::optional<std::string> locale,
                    absl::optional<bool> interim_results,
-                   base::OnceClosure on_start_callback);
+                   ApiCallback callback);
   // Handles a call to stop speech recognition.
-  void HandleStop(
-      const std::string& key,
-      base::OnceCallback<void(absl::optional<std::string>)> on_stop_callback);
+  void HandleStop(const std::string& key, ApiCallback callback);
 
  private:
   friend class SpeechRecognitionPrivateManagerTest;

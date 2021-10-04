@@ -41,20 +41,20 @@ class SpeechRecognitionPrivateManagerTest
     return manager_->CreateKey(extension_id, client_id);
   }
 
-  void HandleStartAndWait(const std::string& key,
-                          absl::optional<std::string> locale,
-                          absl::optional<bool> interim_results,
-                          base::OnceClosure on_start_callback) {
+  void HandleStart(
+      const std::string& key,
+      absl::optional<std::string> locale,
+      absl::optional<bool> interim_results,
+      base::OnceCallback<void(absl::optional<std::string>)> on_start_callback) {
     manager_->HandleStart(key, locale, interim_results,
                           std::move(on_start_callback));
-    SpeechRecognitionPrivateBaseTest::WaitForRecognitionStarted();
   }
 
   void HandleStopAndWait(
       const std::string& key,
       base::OnceCallback<void(absl::optional<std::string>)> callback) {
     manager_->HandleStop(key, std::move(callback));
-    SpeechRecognitionPrivateBaseTest::WaitForRecognitionStopped();
+    WaitForRecognitionStopped();
   }
 
   SpeechRecognitionPrivateRecognizer* GetSpeechRecognizer(
@@ -114,7 +114,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, HandleStart) {
   absl::optional<std::string> locale;
   absl::optional<bool> interim_results(true);
 
-  HandleStartAndWait(key, locale, interim_results, base::DoNothing());
+  HandleStart(key, locale, interim_results, base::DoNothing());
+  WaitForRecognitionStarted();
   SpeechRecognitionPrivateRecognizer* first_recognizer =
       GetSpeechRecognizer(key);
   ASSERT_NE(nullptr, first_recognizer);
@@ -122,16 +123,20 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, HandleStart) {
   ASSERT_TRUE(first_recognizer->interim_results());
   ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, first_recognizer->current_state());
 
-  // Change some properties and start again.
+  // Try to change some properties and start again. Calling HandleStart() when
+  // speech recognition is active should cause an error. The error message is
+  // verified in SpeechRecognitionPrivateRecognizerTest. For this test, just
+  // verify that properties are not updated and that speech recognition is
+  // canceled.
   interim_results = false;
-  HandleStartAndWait(key, locale, interim_results, base::DoNothing());
+  HandleStart(key, locale, interim_results, base::DoNothing());
   SpeechRecognitionPrivateRecognizer* second_recognizer =
       GetSpeechRecognizer(key);
   ASSERT_NE(nullptr, second_recognizer);
   ASSERT_EQ(first_recognizer, second_recognizer);
   ASSERT_EQ(kEnglishLocale, second_recognizer->locale());
-  ASSERT_FALSE(second_recognizer->interim_results());
-  ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, second_recognizer->current_state());
+  ASSERT_TRUE(second_recognizer->interim_results());
+  ASSERT_EQ(SPEECH_RECOGNIZER_OFF, second_recognizer->current_state());
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
@@ -140,7 +145,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
   absl::optional<std::string> locale;
   absl::optional<bool> interim_results(true);
 
-  HandleStartAndWait(key, locale, interim_results, base::DoNothing());
+  HandleStart(key, locale, interim_results, base::DoNothing());
+  WaitForRecognitionStarted();
   SpeechRecognitionPrivateRecognizer* recognizer = GetSpeechRecognizer(key);
   ASSERT_NE(nullptr, recognizer);
   ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, recognizer->current_state());

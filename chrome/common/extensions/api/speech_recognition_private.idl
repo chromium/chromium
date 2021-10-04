@@ -55,7 +55,8 @@ namespace speechRecognitionPrivate {
 
   interface Functions {
     // Starts listening to audio from the user. The callback is invoked when
-    // speech recognition has started.
+    // speech recognition has started. If speech recognition is already active
+    // when calling start(), the callback is run with an error.
     [supportsPromises] static void start(StartOptions options,
                                          OnStartCallback callback);
 

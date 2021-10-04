@@ -56,7 +56,8 @@ chrome.speechRecognitionPrivate.StopOptions;
 
 /**
  * Starts listening to audio from the user. The callback is invoked when speech
- * recognition has started.
+ * recognition has started. If speech recognition is already active when calling
+ * start(), the callback is run with an error.
  * @param {!chrome.speechRecognitionPrivate.StartOptions} options
  * @param {function(): void} callback Called when speech recognition has begun
  *     listening to the user's audio.

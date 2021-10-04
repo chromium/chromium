@@ -23,6 +23,9 @@ class SpeechRecogntionPrivateDelegate;
 // events. It is also responsible for deciding whether to use the on-device or
 // network speech recognition.
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
+  using ApiCallback =
+      base::OnceCallback<void(absl::optional<std::string> error)>;
+
  public:
   SpeechRecognitionPrivateRecognizer(SpeechRecogntionPrivateDelegate* delegate,
                                      const std::string& id);
@@ -40,11 +43,10 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   // Handles a call to start speech recognition.
   void HandleStart(absl::optional<std::string> locale,
                    absl::optional<bool> interim_results,
-                   base::OnceClosure callback);
+                   ApiCallback callback);
   // Handles a call to stop speech recognition. The callback accepts an
   // optional string specifying an error message, if any.
-  void HandleStop(
-      base::OnceCallback<void(absl::optional<std::string>)> callback);
+  void HandleStop(ApiCallback callback);
 
   std::string locale() { return locale_; }
   bool interim_results() { return interim_results_; }
@@ -57,9 +59,10 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void RecognizerOff();
 
   // Updates properties used for speech recognition.
-  void MaybeUpdateProperties(absl::optional<std::string> locale,
-                             absl::optional<bool> interim_results,
-                             base::OnceClosure callback);
+  void MaybeUpdateProperties(
+      absl::optional<std::string> locale,
+      absl::optional<bool> interim_results,
+      base::OnceCallback<void(absl::optional<std::string>)> callback);
 
   base::WeakPtr<SpeechRecognitionPrivateRecognizer> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -68,9 +71,9 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   SpeechRecognizerStatus current_state_ = SPEECH_RECOGNIZER_OFF;
   std::string locale_ = speech::kUsEnglishLocale;
   bool interim_results_ = false;
-  // A callback that is run when speech recognition starts. Note, this is a
-  // OnceClosure and is updated whenever HandleStart() is called.
-  base::OnceClosure on_start_callback_;
+  // A callback that is run when speech recognition starts. Note, this is
+  // updated whenever HandleStart() is called.
+  ApiCallback on_start_callback_;
   // Delegate that helps handle speech recognition events. `delegate_` is
   // required to outlive this object.
   SpeechRecogntionPrivateDelegate* const delegate_;

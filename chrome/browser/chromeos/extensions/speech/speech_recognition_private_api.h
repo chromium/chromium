@@ -22,7 +22,7 @@ class SpeechRecognitionPrivateStartFunction : public ExtensionFunction {
 
  private:
   // A callback that is run when the speech recognition service starts.
-  void OnStart();
+  void OnStart(absl::optional<std::string> error);
 };
 
 // An API function that stops speech recognition.

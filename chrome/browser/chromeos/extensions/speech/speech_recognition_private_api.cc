@@ -14,10 +14,6 @@
 namespace extensions {
 
 ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
-  // TODO(crbug.com/1246048): Add error handling for multiple calls to start().
-  // If start() is called while speech recognition is already happening, we
-  // should throw an error.
-
   // Extract arguments.
   std::unique_ptr<api::speech_recognition_private::Start::Params> params(
       api::speech_recognition_private::Start::Params::Create(args()));
@@ -46,7 +42,13 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
   return RespondLater();
 }
 
-void SpeechRecognitionPrivateStartFunction::OnStart() {
+void SpeechRecognitionPrivateStartFunction::OnStart(
+    absl::optional<std::string> error) {
+  if (error.has_value()) {
+    Respond(Error(error.value()));
+    return;
+  }
+
   Respond(NoArguments());
 }
 
