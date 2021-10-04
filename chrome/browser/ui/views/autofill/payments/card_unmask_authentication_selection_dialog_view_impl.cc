@@ -67,7 +67,8 @@ std::u16string CardUnmaskAuthenticationSelectionDialogViewImpl::GetWindowTitle()
 
 void CardUnmaskAuthenticationSelectionDialogViewImpl::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
+      std::make_unique<TitleWithIconAndSeparatorView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 void CardUnmaskAuthenticationSelectionDialogViewImpl::InitViews() {

@@ -25,12 +25,21 @@ class Textfield;
 namespace autofill {
 
 // Defines a title view with an icon, a separator, and a label, to be used
-// by dialogs that need to present the Google Pay logo with a separator and
-// custom horizontal padding.
+// by dialogs that need to present the Google or Google Pay logo with a
+// separator and custom horizontal padding.
 class TitleWithIconAndSeparatorView : public views::View {
  public:
   METADATA_HEADER(TitleWithIconAndSeparatorView);
-  explicit TitleWithIconAndSeparatorView(const std::u16string& window_title);
+
+  enum class Icon {
+    // Google Pay icon. The "Pay" portion is recolored for light/dark mode.
+    GOOGLE_PAY,
+    // Google super G.
+    GOOGLE_G,
+  };
+
+  TitleWithIconAndSeparatorView(const std::u16string& window_title,
+                                Icon icon_to_show);
   ~TitleWithIconAndSeparatorView() override;
 
  private:

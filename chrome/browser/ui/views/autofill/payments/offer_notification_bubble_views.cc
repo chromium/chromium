@@ -66,7 +66,8 @@ void OfferNotificationBubbleViews::Init() {
 
 void OfferNotificationBubbleViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
+      std::make_unique<TitleWithIconAndSeparatorView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
 
   // Set the header image for promo code offers.
   if (controller_->GetOffer()->IsPromoCodeOffer()) {

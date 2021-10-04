@@ -37,48 +37,70 @@ namespace autofill {
 
 namespace {
 
-// Dimensions of the Google Pay logo.
+// Width of the Google Pay logo if used, as it is not square.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr int kGooglePayLogoWidth = 40;
 #endif
-constexpr int kGooglePayLogoHeight = 16;
+constexpr int kIconHeight = 16;
 
-constexpr int kGooglePayLogoSeparatorHeight = 12;
+constexpr int kSeparatorHeight = 12;
 
 constexpr SkColor kTitleSeparatorColor = SkColorSetRGB(0x9E, 0x9E, 0x9E);
 
-class PayIconView : public views::ImageView {
+class IconView : public views::ImageView {
  public:
-  METADATA_HEADER(PayIconView);
+  METADATA_HEADER(IconView);
+
+  explicit IconView(TitleWithIconAndSeparatorView::Icon icon_to_show) {
+    icon_to_show_ = icon_to_show;
+  }
 
   // views::ImageView:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // kGooglePayLogoIcon is square, and CreateTiledImage() will clip it whereas
-    // setting the icon size would rescale it incorrectly.
-    gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
-        gfx::CreateVectorIcon(kGooglePayLogoIcon,
-                              GetNativeTheme()->ShouldUseDarkColors()
-                                  ? gfx::kGoogleGrey200
-                                  : gfx::kGoogleGrey700),
-        /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kGooglePayLogoHeight);
+    gfx::ImageSkia image;
+    switch (icon_to_show_) {
+      case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
+        // kGooglePayLogoIcon is square overall, despite the drawn portion being
+        // a rectangular area at the top. CreateTiledImage() will correctly clip
+        // it whereas setting the icon size would rescale it incorrectly and
+        // keep the bottom empty portion.
+        image = gfx::ImageSkiaOperations::CreateTiledImage(
+            gfx::CreateVectorIcon(kGooglePayLogoIcon,
+                                  GetNativeTheme()->ShouldUseDarkColors()
+                                      ? gfx::kGoogleGrey200
+                                      : gfx::kGoogleGrey700),
+            /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
+        break;
+      case TitleWithIconAndSeparatorView::Icon::GOOGLE_G:
+        image = gfx::CreateVectorIcon(
+            kGoogleGLogoIcon, kIconHeight,
+            GetNativeTheme()->GetSystemColor(
+                ui::NativeTheme::kColorId_DefaultIconColor));
+        break;
+    }
+
 #else
     gfx::ImageSkia image =
-        gfx::CreateVectorIcon(kCreditCardIcon, kGooglePayLogoHeight,
+        gfx::CreateVectorIcon(kCreditCardIcon, kIconHeight,
                               GetColorProvider()->GetColor(ui::kColorIcon));
 #endif
     SetImage(image);
   }
+
+ private:
+  TitleWithIconAndSeparatorView::Icon icon_to_show_;
 };
 
-BEGIN_METADATA(PayIconView, views::ImageView)
+BEGIN_METADATA(IconView, views::ImageView)
 END_METADATA
 
 }  // namespace
 
 TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
-    const std::u16string& window_title) {
+    const std::u16string& window_title,
+    Icon icon_to_show) {
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
@@ -96,11 +118,12 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
 
-  auto* icon_view_ptr = layout->AddView(std::make_unique<PayIconView>());
+  auto* icon_view_ptr =
+      layout->AddView(std::make_unique<IconView>(icon_to_show));
 
   auto separator = std::make_unique<views::Separator>();
   separator->SetColor(kTitleSeparatorColor);
-  separator->SetPreferredHeight(kGooglePayLogoSeparatorHeight);
+  separator->SetPreferredHeight(kSeparatorHeight);
   auto* separator_ptr = layout->AddView(std::move(separator));
 
   auto title_label = std::make_unique<views::Label>(
@@ -114,7 +137,7 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   // title label, so that we can use its preferred size.
   const int title_label_height = title_label_ptr->GetPreferredSize().height();
   icon_view_ptr->SetBorder(views::CreateEmptyBorder(
-      /*top=*/(title_label_height - kGooglePayLogoHeight) / 2,
+      /*top=*/(title_label_height - kIconHeight) / 2,
       /*left=*/0, /*bottom=*/0, /*right=*/0));
   // TODO(crbug.com/873140): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the right
   //                         choice here, but INSETS_DIALOG_TITLE gives too much
@@ -123,7 +146,7 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
   separator_ptr->SetBorder(views::CreateEmptyBorder(
-      /*top=*/(title_label_height - kGooglePayLogoSeparatorHeight) / 2,
+      /*top=*/(title_label_height - kSeparatorHeight) / 2,
       /*left=*/separator_horizontal_padding, /*bottom=*/0,
       /*right=*/separator_horizontal_padding));
 }

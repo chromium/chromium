@@ -216,7 +216,8 @@ views::View* CardUnmaskPromptViews::GetContentsView() {
 
 void CardUnmaskPromptViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
+      std::make_unique<TitleWithIconAndSeparatorView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 void CardUnmaskPromptViews::OnThemeChanged() {

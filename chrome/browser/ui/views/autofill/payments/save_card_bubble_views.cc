@@ -92,7 +92,8 @@ void SaveCardBubbleViews::AddedToWidget() {
     return;
 
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
+      std::make_unique<TitleWithIconAndSeparatorView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string SaveCardBubbleViews::GetWindowTitle() const {
