@@ -3725,3 +3725,26 @@ TEST_F('ChromeVoxBackgroundTest', 'GroupNavigation', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'AllowIframeToBeFocused', function(root) {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>hello</p>
+    <iframe id="frame" tabindex=-1
+        srcdoc="<title>test title</title><p>world</p>"></iframe>
+    <button id="click"></button>
+    <script>
+      const button = document.getElementById('click');
+      button.addEventListener('click', () => {
+        document.getElementById('frame').focus();
+      });
+    </script>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const button = root.find({role: RoleType.BUTTON});
+    mockFeedback.expectSpeech('hello')
+        .call(button.doDefault.bind(button))
+        .expectSpeech('test title')
+        .replay();
+  });
+});

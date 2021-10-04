@@ -262,8 +262,11 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onFocus(evt) {
-    if (evt.target.role === RoleType.ROOT_WEB_AREA &&
-        evt.eventFrom !== 'action') {
+    let node = evt.target;
+    const isRootWebArea = node.role === RoleType.ROOT_WEB_AREA;
+    const isFrame = isRootWebArea && node.parent && node.parent.root &&
+        node.parent.root.role === RoleType.ROOT_WEB_AREA;
+    if (isRootWebArea && !isFrame && evt.eventFrom !== 'action') {
       chrome.automation.getFocus(
           this.maybeRecoverFocusAndOutput_.bind(this, evt));
       return;
@@ -273,8 +276,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     if (!this.createTextEditHandlerIfNeeded_(evt.target, true)) {
       this.textEditHandler_ = null;
     }
-
-    let node = evt.target;
 
     // Discard focus events on embeddedObject and webView.
     if (node.role === RoleType.EMBEDDED_OBJECT ||
