@@ -585,6 +585,14 @@ void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
   for (auto& observer : observer_list_) {
     observer.OnRefreshTokenUpdatedForAccount(account_info);
   }
+#if defined(OS_ANDROID)
+  if (java_identity_manager_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_IdentityManager_onRefreshTokenUpdatedForAccount(
+        env, java_identity_manager_,
+        ConvertToJavaCoreAccountInfo(env, account_info));
+  }
+#endif
 }
 
 void IdentityManager::OnRefreshTokenRevoked(const CoreAccountId& account_id) {

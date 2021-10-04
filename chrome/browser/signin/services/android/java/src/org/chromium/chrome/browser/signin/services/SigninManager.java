@@ -10,6 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -198,4 +199,10 @@ public interface SigninManager {
      *                 otherwise.
      */
     void isAccountManaged(String email, Callback<Boolean> callback);
+
+    /**
+     * Reloads all the accounts from the system within the {@link IdentityManager}.
+     * @param primaryAccountId {@link CoreAccountId} of the primary account.
+     */
+    void reloadAllAccountsFromSystem(CoreAccountId primaryAccountId);
 }

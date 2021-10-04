@@ -10,6 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -57,6 +58,7 @@ public class IdentityManager {
     private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private Callback<CoreAccountInfo> mRefreshTokenUpdateObserver;
 
     /**
      * Called by native to create an instance of IdentityManager.
@@ -125,6 +127,16 @@ public class IdentityManager {
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
         for (Observer observer : mObservers) {
             observer.onExtendedAccountInfoUpdated(accountInfo);
+        }
+    }
+
+    /**
+     * Called when the refresh token of the give account gets updated.
+     */
+    @CalledByNative
+    private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
+        if (mRefreshTokenUpdateObserver != null) {
+            mRefreshTokenUpdateObserver.onResult(coreAccountInfo);
         }
     }
 
@@ -199,6 +211,11 @@ public class IdentityManager {
 
         // TODO(crbug.com/934688) The following should call a JNI method instead.
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
+    }
+
+    @VisibleForTesting
+    public void setRefreshTokenUpdateObserverForTests(Callback<CoreAccountInfo> callback) {
+        mRefreshTokenUpdateObserver = callback;
     }
 
     @NativeMethods

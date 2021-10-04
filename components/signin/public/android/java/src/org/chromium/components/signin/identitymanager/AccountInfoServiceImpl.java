@@ -80,7 +80,7 @@ final class AccountInfoServiceImpl
      * Implements {@link AccountTrackerService.Observer}.
      */
     @Override
-    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
+    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos, boolean accountsChanged) {
         mIdentityManager.refreshAccountInfoIfStale(accountInfos);
     }
 }
