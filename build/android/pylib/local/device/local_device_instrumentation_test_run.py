@@ -522,6 +522,12 @@ class LocalDeviceInstrumentationTestRun(
           if 'Features$DisableFeatures' in annotations:
             batch_name += '|disabled:' + ','.join(
                 sorted(annotations['Features$DisableFeatures']['value']))
+          if 'CommandLineFlags$Add' in annotations:
+            batch_name += '|cmd_line_add:' + ','.join(
+                sorted(annotations['CommandLineFlags$Add']['value']))
+          if 'CommandLineFlags$Remove' in annotations:
+            batch_name += '|cmd_line_remove:' + ','.join(
+                sorted(annotations['CommandLineFlags$Remove']['value']))
 
         if not batch_name in batched_tests:
           batched_tests[batch_name] = []

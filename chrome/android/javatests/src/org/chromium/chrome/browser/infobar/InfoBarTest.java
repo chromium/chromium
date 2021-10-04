@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -356,7 +355,6 @@ public class InfoBarTest {
     @MediumTest
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @Feature({"Browser", "Main"})
-    @DisabledTest(message = "crbug.com/1254028")
     public void testDataReductionPromoInfoBarDismissed() {
         GURL gurl = new GURL("http://google.com");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
