@@ -103,6 +103,11 @@ class CHROMECAST_EXPORT RebootShlib {
     // risky to attempt without a full process restart. Very few experiments
     // trigger this path.
     EXPERIMENT_CHANGE = 19,
+
+    // A reboot is triggered when the anomaly detection service detects a
+    // system-level anomaly and needs to recover from it with restarting the
+    // Cast component.
+    ANOMALY = 20,
   };
 
   // Initializes any platform-specific reboot systems.
