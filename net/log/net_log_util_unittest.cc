@@ -82,9 +82,8 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
   ASSERT_NE(nullptr, trials);
   const auto& trial_list = trials->GetList();
   EXPECT_EQ(1u, trial_list.size());
-  std::string result;
-  EXPECT_TRUE(trial_list[0].GetAsString(&result));
-  EXPECT_EQ("NewFieldTrial:Active", result);
+  EXPECT_TRUE(trial_list[0].is_string());
+  EXPECT_EQ("NewFieldTrial:Active", trial_list[0].GetString());
 }
 
 // Make sure CreateNetLogEntriesForActiveObjects works for requests from a
