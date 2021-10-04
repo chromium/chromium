@@ -682,7 +682,7 @@ TEST_F(BrowserUtilTest, StatefulLacrosSelectionUpdateChannel) {
   // relevant channel name associated to that switch value.
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   cmdline->AppendSwitchNative(browser_util::kLacrosStabilitySwitch,
-                              browser_util::kLacrosStabilityMoreStable);
+                              browser_util::kLacrosStabilityChannelBeta);
   ASSERT_EQ(Channel::BETA, browser_util::GetLacrosSelectionUpdateChannel(
                                LacrosSelection::kStateful));
   cmdline->RemoveSwitch(browser_util::kLacrosStabilitySwitch);

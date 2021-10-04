@@ -49,8 +49,10 @@ const ComponentConfig kConfigs[] = {
      "7a85ffb4b316a3b89135a3f43660ef3049950a61a2f8df4237e1ec213852b848"},
     {"lacros-dogfood-dev", ComponentConfig::PolicyType::kLacros, nullptr,
      "b3e1ef1780c0acd2d3fa44b4d73c657a0f1ed3ad83fd8c964a18a3502ccf5f4f"},
-    {"lacros-dogfood-stable", ComponentConfig::PolicyType::kLacros, nullptr,
+    {"lacros-dogfood-beta", ComponentConfig::PolicyType::kLacros, nullptr,
      "7d5c1428f7f67b56f95123851adec1da105980c56b5c126352040f3b65d3e43b"},
+    {"lacros-dogfood-stable", ComponentConfig::PolicyType::kLacros, nullptr,
+     "47f910805afac79e2d4d9117c42d5291a32ac60a4ea1a42e537fd86082c3ba48"},
 };
 
 const char* g_ash_version_for_test = nullptr;

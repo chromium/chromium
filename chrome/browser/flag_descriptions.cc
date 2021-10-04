@@ -4787,11 +4787,7 @@ const char kLacrosPrimaryDescription[] =
     "This flag is ignored if Lacros support is disabled.";
 
 const char kLacrosStabilityName[] = "Lacros stability";
-const char kLacrosStabilityDescription[] = "Frequency of Lacros updates.";
-
-const char kLacrosStabilityLeastStableDescription[] = "Daily updates";
-const char kLacrosStabilityLessStableDescription[] = "Weekly updates";
-const char kLacrosStabilityMoreStableDescription[] = "Monthly updates";
+const char kLacrosStabilityDescription[] = "Lacros update channel.";
 
 const char kLacrosSelectionName[] = "Lacros selection";
 const char kLacrosSelectionDescription[] =

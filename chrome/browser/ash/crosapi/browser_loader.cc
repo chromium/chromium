@@ -66,6 +66,7 @@ bool CheckAnyRegisteredMayBlock(
     scoped_refptr<component_updater::CrOSComponentManager> manager) {
   for (const auto& component_info : {browser_util::kLacrosDogfoodCanaryInfo,
                                      browser_util::kLacrosDogfoodDevInfo,
+                                     browser_util::kLacrosDogfoodBetaInfo,
                                      browser_util::kLacrosDogfoodStableInfo}) {
     if (manager->IsRegisteredMayBlock(component_info.name))
       return true;

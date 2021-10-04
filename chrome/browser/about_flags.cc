@@ -712,15 +712,18 @@ const char kArcVmBalloonPolicyInternalName[] =
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kLacrosStabilityLeastStableDescription,
+    {crosapi::browser_util::kLacrosStabilityChannelCanary,
      crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityLeastStable},
-    {flag_descriptions::kLacrosStabilityLessStableDescription,
+     crosapi::browser_util::kLacrosStabilityChannelCanary},
+    {crosapi::browser_util::kLacrosStabilityChannelDev,
      crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityLessStable},
-    {flag_descriptions::kLacrosStabilityMoreStableDescription,
+     crosapi::browser_util::kLacrosStabilityChannelDev},
+    {crosapi::browser_util::kLacrosStabilityChannelBeta,
      crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityMoreStable},
+     crosapi::browser_util::kLacrosStabilityChannelBeta},
+    {crosapi::browser_util::kLacrosStabilityChannelStable,
+     crosapi::browser_util::kLacrosStabilitySwitch,
+     crosapi::browser_util::kLacrosStabilityChannelStable},
 };
 
 const char kLacrosSelectionInternalName[] = "lacros-selection";

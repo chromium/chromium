@@ -83,6 +83,7 @@ struct ComponentInfo {
 
 extern const ComponentInfo kLacrosDogfoodCanaryInfo;
 extern const ComponentInfo kLacrosDogfoodDevInfo;
+extern const ComponentInfo kLacrosDogfoodBetaInfo;
 extern const ComponentInfo kLacrosDogfoodStableInfo;
 
 extern const base::Feature kLacrosAllowOnStableChannel;
@@ -92,12 +93,13 @@ extern const base::Feature kLacrosGooglePolicyRollout;
 // unknown.
 extern const version_info::Channel kLacrosDefaultChannel;
 
-// A command-line switch that can also be set from chrome://flags that affects
-// the frequency of Lacros updates.
+// A command-line switch that can also be set from chrome://flags for selecting
+// the channel for Lacros updates.
 extern const char kLacrosStabilitySwitch[];
-extern const char kLacrosStabilityLeastStable[];
-extern const char kLacrosStabilityLessStable[];
-extern const char kLacrosStabilityMoreStable[];
+extern const char kLacrosStabilityChannelCanary[];
+extern const char kLacrosStabilityChannelDev[];
+extern const char kLacrosStabilityChannelBeta[];
+extern const char kLacrosStabilityChannelStable[];
 
 // A command-line switch that can also be set from chrome://flags that chooses
 // which selection of Lacros to use.
