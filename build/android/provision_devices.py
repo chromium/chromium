@@ -67,7 +67,7 @@ def ProvisionDevices(args):
               if args.denylist_file else None)
   devices = [
       d for d in device_utils.DeviceUtils.HealthyDevices(denylist)
-      if not args.emulators or d.adb.is_emulator
+      if not args.emulators or d.is_emulator
   ]
   if args.device:
     devices = [d for d in devices if d == args.device]

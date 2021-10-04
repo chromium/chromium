@@ -87,7 +87,7 @@ def RemovePreinstalledWebViews(device):
     UninstallWebViewSystemImages(device)
     CheckWebViewIsUninstalled(device)
   except device_errors.CommandFailedError:
-    if device.adb.is_emulator:
+    if device.is_emulator:
       # Point the user to documentation, since there's a good chance they can
       # workaround this. Use lots of newlines to make sure this message doesn't
       # get lost.
