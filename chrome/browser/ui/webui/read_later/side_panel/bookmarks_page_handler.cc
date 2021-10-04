@@ -61,6 +61,13 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
 
     AddItem(bookmark->is_folder() ? IDC_BOOKMARK_BAR_RENAME_FOLDER
                                   : IDC_BOOKMARK_BAR_EDIT);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AddItem(IDC_CUT);
+    AddItem(IDC_COPY);
+    AddItem(IDC_PASTE);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
     AddItem(IDC_BOOKMARK_BAR_REMOVE);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
