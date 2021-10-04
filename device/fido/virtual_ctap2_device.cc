@@ -1004,6 +1004,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
   CtapMakeCredentialRequest request = std::move(*opt_request);
 
+  mutable_state()->exclude_list_history.push_back(request.exclude_list);
+
   bool user_verified = false;
   const CheckUserVerificationMode check_uv_mode =
       (!request.resident_key_required && !request.pin_auth &&
@@ -1298,7 +1300,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   }
   CtapGetAssertionRequest request = std::move(*opt_request);
 
-  mutable_state()->allow_list_sizes.push_back(request.allow_list.size());
+  mutable_state()->allow_list_history.push_back(request.allow_list);
 
   bool user_verified;
   const absl::optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(

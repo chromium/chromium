@@ -69,6 +69,7 @@
 #include "device/fido/multiple_virtual_fido_device_factory.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
@@ -482,6 +483,9 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
+    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
+        &AuthenticatorTestBase::OnMojoError, base::Unretained(this)));
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::U2FClient::InitializeFake();
@@ -500,6 +504,8 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 
   void TearDown() override {
     RenderViewHostTestHarness::TearDown();
+
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::U2FClient::Shutdown();
@@ -523,10 +529,26 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 #endif
   }
 
+  void SetMojoErrorHandler(
+      base::RepeatingCallback<void(const std::string&)> callback) {
+    mojo_error_handler_ = callback;
+  }
+
   device::test::VirtualFidoDeviceFactory* virtual_device_factory_;
 #if defined(OS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
 #endif
+
+ private:
+  void OnMojoError(const std::string& error) {
+    if (mojo_error_handler_) {
+      mojo_error_handler_.Run(error);
+      return;
+    }
+    FAIL() << "Unhandled mojo error: " << error;
+  }
+
+  base::RepeatingCallback<void(const std::string&)> mojo_error_handler_;
 };
 
 class AuthenticatorImplTest : public AuthenticatorTestBase {
@@ -668,17 +690,16 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     scoped_feature_list_->InitAndDisableFeature(feature);
   }
 
- protected:
+  scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
+      mock_adapter_ = base::MakeRefCounted<
+          ::testing::NiceMock<device::MockBluetoothAdapter>>();
+
+ private:
   absl::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_global_values_ =
           device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
-  scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
-      mock_adapter_ = base::MakeRefCounted<
-          ::testing::NiceMock<device::MockBluetoothAdapter>>();
   data_decoder::test::InProcessDataDecoder data_decoder_service_;
-
- private:
   url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 
@@ -3670,7 +3691,7 @@ TEST_F(AuthenticatorImplTest, AllowListWithOnlyOversizedCredentialIds) {
 
   for (const bool has_app_id : {false, true}) {
     SCOPED_TRACE(has_app_id);
-    virtual_device_factory_->mutable_state()->allow_list_sizes.clear();
+    virtual_device_factory_->mutable_state()->allow_list_history.clear();
 
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
@@ -3682,12 +3703,198 @@ TEST_F(AuthenticatorImplTest, AllowListWithOnlyOversizedCredentialIds) {
 
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
               AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    const auto& allow_list_sizes =
-        virtual_device_factory_->mutable_state()->allow_list_sizes;
+    const auto& allow_list_history =
+        virtual_device_factory_->mutable_state()->allow_list_history;
     // No empty allow-list requests should have been made.
-    EXPECT_TRUE(std::none_of(allow_list_sizes.cbegin(), allow_list_sizes.cend(),
-                             [](size_t size) { return size == 0; }));
+    EXPECT_TRUE(std::none_of(
+        allow_list_history.cbegin(), allow_list_history.cend(),
+        [](const std::vector<device::PublicKeyCredentialDescriptor>&
+               allow_list) { return allow_list.empty(); }));
   }
+}
+
+// Tests that duplicate credential IDs are filtered from an assertion allow_list
+// parameter.
+TEST_F(AuthenticatorImplTest, AllowListWithDuplicateCredentialIds) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.u2f_support = true;
+  config.max_credential_id_length = kTestCredentialIdLength;
+  config.max_credential_count_in_list = 10;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  device::PublicKeyCredentialDescriptor cred_a(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1), {});
+  device::PublicKeyCredentialDescriptor cred_b(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  // Same ID as `cred_a` and `cred_b` but with different transports.
+  device::PublicKeyCredentialDescriptor cred_c(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1),
+      {device::FidoTransportProtocol::kBluetoothLowEnergy});
+  device::PublicKeyCredentialDescriptor cred_d(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kBluetoothLowEnergy});
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      cred_b.id(), kTestRelyingPartyId));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials.clear();
+  options->allow_credentials.insert(options->allow_credentials.end(), 5,
+                                    cred_a);
+  options->allow_credentials.push_back(cred_b);
+  options->allow_credentials.insert(options->allow_credentials.end(), 3,
+                                    cred_c);
+  options->allow_credentials.insert(options->allow_credentials.end(), 2,
+                                    cred_d);
+
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(virtual_device_factory_->mutable_state()->allow_list_history.size(),
+            1u);
+  // Transport hints from descriptors with equal IDs should be merged.
+  device::PublicKeyCredentialDescriptor cred_a_and_c(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1),
+      // The union of the empty transports in `cred_a` plus the non-empty set
+      // from `cred_c` should still be empty, since empty set is interpreted to
+      // mean "any available transport".
+      {});
+  device::PublicKeyCredentialDescriptor cred_b_and_d(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+       device::FidoTransportProtocol::kBluetoothLowEnergy});
+  EXPECT_THAT(
+      virtual_device_factory_->mutable_state()->allow_list_history.at(0),
+      testing::UnorderedElementsAre(cred_a_and_c, cred_b_and_d));
+}
+
+// Tests that duplicate credential IDs are filtered from a registration
+// exclude_list parameter.
+TEST_F(AuthenticatorImplTest, ExcludeListWithDuplicateCredentialIds) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.u2f_support = true;
+  config.max_credential_id_length = kTestCredentialIdLength;
+  config.max_credential_count_in_list = 100;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  device::PublicKeyCredentialDescriptor cred_a(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1), {});
+  device::PublicKeyCredentialDescriptor cred_b(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  // Same ID as `cred_a` and `cred_b` but with different transports.
+  device::PublicKeyCredentialDescriptor cred_c(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1),
+      {device::FidoTransportProtocol::kBluetoothLowEnergy});
+  device::PublicKeyCredentialDescriptor cred_d(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kBluetoothLowEnergy});
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->exclude_credentials.clear();
+  options->exclude_credentials.insert(options->exclude_credentials.end(), 5,
+                                      cred_a);
+  options->exclude_credentials.push_back(cred_b);
+  options->exclude_credentials.insert(options->exclude_credentials.end(), 3,
+                                      cred_c);
+  options->exclude_credentials.insert(options->exclude_credentials.end(), 2,
+                                      cred_d);
+
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(
+      virtual_device_factory_->mutable_state()->exclude_list_history.size(),
+      1u);
+  // Transport hints from descriptors with equal IDs should be merged.
+  device::PublicKeyCredentialDescriptor cred_a_and_c(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1),
+      // The union of the empty transports in `cred_a` plus the non-empty set
+      // from `cred_c` should still be empty, since empty set is interpreted to
+      // mean "any available transport".
+      {});
+  device::PublicKeyCredentialDescriptor cred_b_and_d(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+       device::FidoTransportProtocol::kBluetoothLowEnergy});
+  EXPECT_THAT(
+      virtual_device_factory_->mutable_state()->exclude_list_history.at(0),
+      testing::UnorderedElementsAre(cred_a_and_c, cred_b_and_d));
+}
+
+// Test that allow lists over 64 entries are verboten.
+TEST_F(AuthenticatorImplTest, OversizedAllowList) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.u2f_support = true;
+  config.max_credential_id_length = kTestCredentialIdLength;
+  config.max_credential_count_in_list = 100;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  auto test_credentials = GetTestCredentials(
+      /*num_credentials=*/blink::mojom::
+          kPublicKeyCredentialDescriptorListMaxSize +
+      1);
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      test_credentials.at(0).id(), kTestRelyingPartyId));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials = test_credentials;
+
+  bool has_mojo_error = false;
+  SetMojoErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { has_mojo_error = true; }));
+
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_TRUE(has_mojo_error);
+}
+
+// Test that exclude lists over 64 entries are verboten.
+TEST_F(AuthenticatorImplTest, OversizedExcludeList) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.u2f_support = true;
+  config.max_credential_id_length = kTestCredentialIdLength;
+  config.max_credential_count_in_list = 100;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  auto test_credentials = GetTestCredentials(
+      /*num_credentials=*/blink::mojom::
+          kPublicKeyCredentialDescriptorListMaxSize +
+      1);
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->exclude_credentials = test_credentials;
+
+  bool has_mojo_error = false;
+  SetMojoErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { has_mojo_error = true; }));
+
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_TRUE(has_mojo_error);
 }
 
 TEST_F(AuthenticatorImplTest, NoUnexpectedAuthenticatorExtensions) {

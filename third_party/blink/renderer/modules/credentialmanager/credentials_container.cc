@@ -329,6 +329,11 @@ bool IsArrayBufferOrViewBelowSizeLimit(
   return false;
 }
 
+bool IsCredentialDescriptorListBelowSizeLimit(
+    const HeapVector<Member<PublicKeyCredentialDescriptor>>& list) {
+  return list.size() <= mojom::blink::kPublicKeyCredentialDescriptorListMaxSize;
+}
+
 DOMException* CredentialManagerErrorToDOMException(
     CredentialManagerError reason) {
   switch (reason) {
@@ -664,8 +669,7 @@ void OnGetAssertionComplete(
         MakeGarbageCollected<AuthenticatorAssertionResponse>(
             std::move(credential->info->client_data_json),
             std::move(credential->info->authenticator_data),
-            std::move(credential->signature),
-            credential->user_handle);
+            std::move(credential->signature), credential->user_handle);
 
     AuthenticationExtensionsClientOutputs* extension_outputs =
         AuthenticationExtensionsClientOutputs::Create();
@@ -870,12 +874,23 @@ ScriptPromise CredentialsContainer::get(
                         WebFeature::kCredentialManagerGetWithUVM);
     }
 #endif
+
     if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
       resolver->Reject(DOMException::Create(
           "The `challenge` attribute exceeds the maximum allowed size.",
           "RangeError"));
       return promise;
     }
+
+    if (!IsCredentialDescriptorListBelowSizeLimit(
+            options->publicKey()->allowCredentials())) {
+      resolver->Reject(
+          DOMException::Create("The `allowCredentials` attribute exceeds the "
+                               "maximum allowed size (64).",
+                               "RangeError"));
+      return promise;
+    }
+
     if (options->publicKey()->hasExtensions()) {
       if (options->publicKey()->extensions()->hasAppid()) {
         const auto& appid = options->publicKey()->extensions()->appid();
@@ -1191,15 +1206,25 @@ ScriptPromise CredentialsContainer::create(
     return promise;
   }
 
+  if (!IsCredentialDescriptorListBelowSizeLimit(
+          options->publicKey()->excludeCredentials())) {
+    resolver->Reject(
+        DOMException::Create("The `excludeCredentials` attribute exceeds the "
+                             "maximum allowed size (64).",
+                             "RangeError"));
+    return promise;
+  }
+
   for (const auto& credential : options->publicKey()->excludeCredentials()) {
     if (!IsArrayBufferOrViewBelowSizeLimit(credential->id())) {
       resolver->Reject(DOMException::Create(
-          "The `excludedCredentials.id` attribute exceeds the maximum "
+          "The `excludeCredentials.id` attribute exceeds the maximum "
           "allowed size.",
           "RangeError"));
       return promise;
     }
   }
+
   if (options->publicKey()->hasExtensions()) {
     if (options->publicKey()->extensions()->hasAppid()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(

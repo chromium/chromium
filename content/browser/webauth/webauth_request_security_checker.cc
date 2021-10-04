@@ -10,6 +10,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -198,6 +199,53 @@ WebAuthRequestSecurityChecker::ValidateAPrioriAuthenticatedUrl(
     return blink::mojom::AuthenticatorStatus::INVALID_ICON_URL;
 
   return blink::mojom::AuthenticatorStatus::SUCCESS;
+}
+
+bool WebAuthRequestSecurityChecker::
+    DeduplicateCredentialDescriptorListAndValidateLength(
+        std::vector<device::PublicKeyCredentialDescriptor>* list) {
+  // Credential descriptor lists should not exceed 64 entries, which is enforced
+  // by renderer code. Any duplicate entries they contain should be ignored.
+  // This is to guard against sites trying to amplify small timing differences
+  // in the processing of different types of credentials when sending probing
+  // requests to physical security keys (https://crbug.com/1248862).
+  if (list->size() > blink::mojom::kPublicKeyCredentialDescriptorListMaxSize) {
+    return false;
+  }
+  auto credential_descriptor_compare_without_transport =
+      [](const device::PublicKeyCredentialDescriptor& a,
+         const device::PublicKeyCredentialDescriptor& b) {
+        return a.credential_type() < b.credential_type() ||
+               (a.credential_type() == b.credential_type() && a.id() < b.id());
+      };
+  std::set<device::PublicKeyCredentialDescriptor,
+           decltype(credential_descriptor_compare_without_transport)>
+      unique_credential_descriptors(
+          credential_descriptor_compare_without_transport);
+  for (const auto& credential_descriptor : *list) {
+    auto it = unique_credential_descriptors.find(credential_descriptor);
+    if (it == unique_credential_descriptors.end()) {
+      unique_credential_descriptors.insert(credential_descriptor);
+    } else {
+      // Combine transport hints of descriptors with identical IDs. Empty
+      // transport list means _any_ transport, so the union should still be
+      // empty.
+      base::flat_set<device::FidoTransportProtocol> merged_transports;
+      if (!it->transports().empty() &&
+          !credential_descriptor.transports().empty()) {
+        base::ranges::set_union(
+            it->transports(), credential_descriptor.transports(),
+            std::inserter(merged_transports, merged_transports.begin()));
+      }
+      unique_credential_descriptors.erase(it);
+      unique_credential_descriptors.insert(
+          {credential_descriptor.credential_type(), credential_descriptor.id(),
+           std::move(merged_transports)});
+    }
+  }
+  *list = {unique_credential_descriptors.begin(),
+           unique_credential_descriptors.end()};
+  return true;
 }
 
 }  // namespace content

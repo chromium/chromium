@@ -15,6 +15,12 @@ import "url/mojom/url.mojom";
 // credentials and use already-created credentials to get assertions.
 // See https://w3c.github.io/webauthn/.
 
+// The maximum allowable list size for vectors of
+// `PublicKeyCredentialDescriptor` (i.e.
+// `PublicKeyCredentialCreationOptions.exclude_credentials` and
+// `PublicKeyCredentialRequestOptions.allow_credentials`).
+const uint32 kPublicKeyCredentialDescriptorListMaxSize = 64;
+
 enum AuthenticatorStatus {
   SUCCESS,
   PENDING_REQUEST,
