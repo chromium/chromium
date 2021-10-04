@@ -14,6 +14,19 @@
       "use_thin_lto": true
     }
   },
+  "chromeos-betty-arc-r-chrome": {
+    "args_file": "//build/args/chromeos/betty-arc-r.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true,
+      "use_real_dbus_clients": false
+    }
+  },
   "chromeos-betty-pi-arc-cfi-thin-lto-chrome": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
@@ -40,6 +53,18 @@
       "ozone_platform_headless": true,
       "use_goma": true,
       "use_real_dbus_clients": false
+    }
+  },
+  "chromeos-eve-arc-r-chrome": {
+    "args_file": "//build/args/chromeos/eve-arc-r.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
     }
   },
   "chromeos-eve-chrome": {
