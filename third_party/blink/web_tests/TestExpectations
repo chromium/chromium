@@ -7065,3 +7065,4 @@ crbug.com/1255014 [ Linux ] virtual/scroll-unification-overlay-scrollbar/plugin-
 crbug.com/1254963 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
 crbug.com/1255210 external/wpt/requestidlecallback/callback-exception.html [ Pass Timeout ]
 crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
+crbug.com/1255537 external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Failure Pass ]
