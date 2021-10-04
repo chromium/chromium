@@ -9014,7 +9014,7 @@
           'caption': 'Apply default settings for U2F API deprecation.',
         },
       ],
-      'supported_on': ['chrome.*:95-103'],
+      'supported_on': ['chrome.*:96-103'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
