@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/swift_source_set.gni")
-
 source_set("public") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -29,12 +27,12 @@ source_set("popup_menu_ui") {
     "popup_menu_view_controller_delegate.h",
   ]
   deps = [
-    ":feature_flags",
     ":ui_constants",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/popup_menu/cells",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/public/",
     "//ios/chrome/browser/ui/popup_menu/public/cells",
     "//ios/chrome/browser/ui/presenters",
@@ -59,26 +57,5 @@ source_set("ui_constants") {
   sources = [
     "popup_menu_ui_constants.h",
     "popup_menu_ui_constants.mm",
-  ]
-}
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [ "//base" ]
-}
-
-swift_source_set("swift") {
-  sources = [
-    "overflow_menu_view.swift",
-    "overflow_menu_view_provider.swift",
-  ]
-
-  frameworks = [
-    "Foundation.framework",
-    "SwiftUI.framework",
   ]
 }
