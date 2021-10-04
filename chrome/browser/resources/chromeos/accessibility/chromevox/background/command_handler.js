@@ -1528,28 +1528,6 @@ CommandHandler.skipLabelOrDescriptionFor_ = function(current, dir) {
  */
 CommandHandler.init = function() {
   ChromeVoxKbHandler.commandHandler = CommandHandler.onCommand;
-  const firstRunOrigin = 'chrome-extension://jdgcneonijmofocbhmijhacgchbihela';
-  chrome.runtime.onMessageExternal.addListener(function(
-      request, sender, sendResponse) {
-    if (sender.origin !== firstRunOrigin) {
-      return;
-    }
-
-    if (request.openTutorial) {
-      let launchTutorial = function(desktop, evt) {
-        desktop.removeEventListener(EventType.FOCUS, launchTutorial, true);
-        CommandHandler.onCommand('help');
-      };
-
-      // Since we get this command early on ChromeVox launch, the first run
-      // UI is not yet shown. Monitor for when first run gets focused, and
-      // show our tutorial.
-      chrome.automation.getDesktop(function(desktop) {
-        launchTutorial = launchTutorial.bind(this, desktop);
-        desktop.addEventListener(EventType.FOCUS, launchTutorial, true);
-      });
-    }
-  });
 
   chrome.commandLinePrivate.hasSwitch(
       'enable-experimental-accessibility-language-detection', (enabled) => {
