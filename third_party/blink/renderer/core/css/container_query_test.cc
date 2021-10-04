@@ -927,4 +927,40 @@ TEST_F(ContainerQueryTest, AllAnimationAffectingPropertiesInConditional) {
   }
 }
 
+TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size }
+      @container (min-width: 200px) {
+        .locked { content-visibility: hidden }
+      }
+    </style>
+    <div id="ancestor" style="width: 100px">
+      <div id="container">
+        <div id="locker"></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* ancestor = GetDocument().getElementById("ancestor");
+  ancestor->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
+
+  Element* locker = GetDocument().getElementById("locker");
+  locker->setAttribute(html_names::kClassAttr, "locked");
+  locker->setInnerHTML("<span>Visible?</span>");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(locker->GetDisplayLockContext());
+  EXPECT_TRUE(locker->GetDisplayLockContext()->IsLocked());
+
+  // TODO(crbug.com/1202618):
+  // EXPECT_FALSE(locker->firstChild()->GetComputedStyle()) << "The #locker
+  // element should get content-visibility:hidden as part of the lifecycle
+  // update and its descendants should not have been styled";
+  EXPECT_TRUE(locker->firstChild()->GetComputedStyle());
+}
+
 }  // namespace blink
