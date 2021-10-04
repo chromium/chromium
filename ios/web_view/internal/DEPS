@@ -43,6 +43,7 @@ include_rules = [
   "+components/webdata_services",
   "+components/web_resource",
   "+google_apis",
+  "+ios/components/credential_provider_extension",
   "+ios/components/io_thread",
   "+ios/components/webui",
   "+ios/net",
