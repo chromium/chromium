@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
-<meta name="timeout" content="long">
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
 
 function runTest(test_file, expectation, description) {
   promise_test(async t => {
