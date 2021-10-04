@@ -108,34 +108,6 @@ void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
                                            const gfx::Size& image_original_size,
                                            lens::EntryPoint entry_point,
                                            bool use_side_panel) {
-  SearchByImageInNewTabImpl(
-      image, image_original_size,
-      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel),
-      use_side_panel);
-}
-
-void CoreTabHelper::SearchByImageInNewTab(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& src_url) {
-  SearchByImageInNewTabImpl(
-      render_frame_host, src_url, kImageSearchThumbnailMinSize,
-      kImageSearchThumbnailMaxWidth, kImageSearchThumbnailMaxHeight,
-      std::string(), /*use_side_panel=*/false);
-}
-
-void CoreTabHelper::SearchByImageInNewTab(
-    gfx::Image image,
-    const gfx::Size& image_original_size) {
-  SearchByImageInNewTabImpl(image, image_original_size,
-                            /*additional_query_params=*/std::string(),
-                            /*use_side_panel=*/false);
-}
-
-void CoreTabHelper::SearchByImageInNewTabImpl(
-    gfx::Image image,
-    const gfx::Size& image_original_size,
-    std::string additional_query_params,
-    bool use_side_panel) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
@@ -158,12 +130,22 @@ void CoreTabHelper::SearchByImageInNewTabImpl(
   search_args.image_thumbnail_content.assign(image_bytes_begin,
                                              image_bytes_end);
   search_args.image_original_size = image_original_size;
-  search_args.additional_query_params = additional_query_params;
+  search_args.additional_query_params =
+      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel);
 
   TemplateURLRef::PostContent post_content;
   GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));
   PostContentToURL(post_content, search_url, use_side_panel);
+}
+
+void CoreTabHelper::SearchByImageInNewTab(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& src_url) {
+  SearchByImageInNewTabImpl(
+      render_frame_host, src_url, kImageSearchThumbnailMinSize,
+      kImageSearchThumbnailMaxWidth, kImageSearchThumbnailMaxHeight,
+      std::string(), /*use_side_panel=*/false);
 }
 
 void CoreTabHelper::SearchByImageInNewTabImpl(

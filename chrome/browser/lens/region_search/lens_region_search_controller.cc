@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -171,15 +170,10 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::LensRegionSearchCaptureResult::FAILED_TO_OPEN_TAB);
     return;
   }
-
-  if (search::DefaultSearchProviderIsGoogle(browser_->profile())) {
-    core_tab_helper->SearchWithLensInNewTab(
-        image, captured_image.Size(),
-        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
-        lens::features::kEnableSidePanelForLensRegionSearch.Get());
-  } else {
-    core_tab_helper->SearchByImageInNewTab(image, captured_image.Size());
-  }
+  core_tab_helper->SearchWithLensInNewTab(
+      image, captured_image.Size(),
+      lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
+      lens::features::kEnableSidePanelForLensRegionSearch.Get());
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);
 }
 
