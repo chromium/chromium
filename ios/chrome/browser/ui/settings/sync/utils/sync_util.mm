@@ -6,9 +6,11 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
@@ -172,6 +174,10 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
   if (IsTransientSyncError(errorState))
     return false;
 
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browser_state);
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync))
+    return false;
   // Logs when an infobar is shown to user. See crbug/265352.
   InfobarSyncError loggedErrorState;
   switch (errorState) {
