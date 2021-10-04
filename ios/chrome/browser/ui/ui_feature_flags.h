@@ -26,6 +26,10 @@ extern const base::Feature kEnableFREDefaultBrowserScreen;
 // Feature flag that enables using the FRE UI module to show first run screens.
 extern const base::Feature kEnableFREUIModuleIOS;
 
+// Feature flag that enables using the strings of the previous sync screen in
+// the current FRE.
+extern const base::Feature kOldSyncStringFRE;
+
 // Feature flag that enables taking fullpage screenshots of a webpage.
 extern const base::Feature kEnableFullPageScreenshot;
 

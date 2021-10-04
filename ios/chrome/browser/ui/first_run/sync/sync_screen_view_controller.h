@@ -30,6 +30,12 @@
 // True if any data type is managed by policies.
 @property(nonatomic, assign) BOOL syncTypesRestricted;
 
+// The ID of the string used to open the settings screen.
+@property(nonatomic, assign) int openSettingsStringID;
+
+// The ID of the main button activating sync.
+@property(nonatomic, assign) int activateSyncButtonID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SYNC_SYNC_SCREEN_VIEW_CONTROLLER_H_

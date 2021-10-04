@@ -731,6 +731,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"download-vcard", flag_descriptions::kDownloadVcardName,
      flag_descriptions::kDownloadVcardDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadVcard)},
+    {"old-sync-string-fre", flag_descriptions::kOldSyncStringFREName,
+     flag_descriptions::kOldSyncStringFREDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kOldSyncStringFRE)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
