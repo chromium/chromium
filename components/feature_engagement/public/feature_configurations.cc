@@ -122,6 +122,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("download_home_opened", Comparator(EQUAL, 0), 90, 360);
     config->event_configs.insert(EventConfig(
         "download_completed", Comparator(GREATER_THAN_OR_EQUAL, 1), 90, 360));
+    config->snooze_params.snooze_interval = 7;
+    config->snooze_params.max_limit = 3;
     return config;
   }
   if (kIPHDownloadIndicatorFeature.name == feature->name) {
