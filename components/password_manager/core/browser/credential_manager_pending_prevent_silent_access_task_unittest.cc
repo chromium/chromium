@@ -20,8 +20,8 @@ class CredentialManagerPendingPreventSilentAccessTaskDelegateMock
   ~CredentialManagerPendingPreventSilentAccessTaskDelegateMock() override =
       default;
 
-  MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (override));
-  MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (override));
+  MOCK_METHOD(PasswordStoreInterface*, GetProfilePasswordStore, (), (override));
+  MOCK_METHOD(PasswordStoreInterface*, GetAccountPasswordStore, (), (override));
   MOCK_METHOD(void, DoneRequiringUserMediation, (), (override));
 };
 

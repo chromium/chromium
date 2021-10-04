@@ -79,8 +79,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                     const std::vector<const PasswordForm*>*));
   MOCK_CONST_METHOD0(IsAutofillAssistantUIVisible, bool());
 
-  explicit MockPasswordManagerClient(PasswordStore* profile_store,
-                                     PasswordStore* account_store)
+  explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
+                                     PasswordStoreInterface* account_store)
       : profile_store_(profile_store),
         account_store_(account_store),
         password_manager_(this) {
@@ -116,10 +116,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     NotifyUserCouldBeAutoSignedInPtr(form.get());
   }
 
-  PasswordStore* GetProfilePasswordStore() const override {
+  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
     return profile_store_;
   }
-  PasswordStore* GetAccountPasswordStore() const override {
+  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
     return account_store_;
   }
 
@@ -174,8 +174,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  PasswordStore* profile_store_;
-  PasswordStore* account_store_;
+  PasswordStoreInterface* profile_store_;
+  PasswordStoreInterface* account_store_;
   std::unique_ptr<PasswordFormManagerForUI> manager_;
   PasswordManager password_manager_;
   GURL last_committed_url_{kTestWebOrigin};

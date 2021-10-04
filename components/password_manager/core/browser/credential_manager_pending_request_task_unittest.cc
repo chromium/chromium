@@ -18,13 +18,14 @@ namespace {
 
 class TestPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  TestPasswordManagerClient(PasswordStore* profile_store,
-                            PasswordStore* account_store)
+  TestPasswordManagerClient(PasswordStoreInterface* profile_store,
+                            PasswordStoreInterface* account_store)
       : profile_store_(profile_store), account_store_(account_store) {}
-  PasswordStore* GetProfilePasswordStore() const override {
+
+  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
     return profile_store_;
   }
-  PasswordStore* GetAccountPasswordStore() const override {
+  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
     return account_store_;
   }
 
@@ -43,8 +44,8 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   std::vector<std::unique_ptr<PasswordForm>> forms_passed_to_ui_;
-  PasswordStore* profile_store_;
-  PasswordStore* account_store_;
+  PasswordStoreInterface* profile_store_;
+  PasswordStoreInterface* account_store_;
 };
 
 class CredentialManagerPendingRequestTaskDelegateMock
