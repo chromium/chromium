@@ -325,8 +325,9 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   EXPECT_EQ(400, result_metrics[1].begin()->second);
 }
 
+// TODO(crbug.com/1255496): Flaky under TSan.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
-       TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+       DISABLED_TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
   base::TimeTicks navigation_start =
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
   auto in_foreground_bf_state =
