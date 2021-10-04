@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
+#include "content/browser/attribution_reporting/conversion_storage.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -24,6 +25,9 @@
 namespace content {
 
 namespace {
+
+using CreateReportStatus =
+    ::content::ConversionStorage::CreateReportResult::Status;
 
 const char kConversionInternalsUrl[] = "chrome://conversion-internals/";
 
@@ -297,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       AttributionReport(ImpressionBuilder(now).SetData(100).Build(),
                         /*conversion_data=*/5,
                         /*conversion_time=*/now,
-                        /*report_time=*/now + base::Hours(2),
+                        /*report_time=*/now + base::Hours(3),
                         /*priority=*/0, AttributionReport::Id(2)),
       SentReportInfo::Status::kSent,
       /*http_response_code=*/200));
@@ -310,17 +314,29 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       /*conversion_data=*/7, /*conversion_time=*/now,
       /*report_time=*/now, /*priority=*/13, AttributionReport::Id(1))});
   manager.GetSessionStorage().AddDroppedReport(
-      AttributionReport(ImpressionBuilder(now).Build(),
-                        /*conversion_data=*/8, /*conversion_time=*/now,
-                        /*report_time=*/now + base::Hours(1),
-                        /*priority=*/11, AttributionReport::Id(3)));
+      ConversionStorage::CreateReportResult(
+          CreateReportStatus::kPriorityTooLow,
+          AttributionReport(ImpressionBuilder(now).Build(),
+                            /*conversion_data=*/8,
+                            /*conversion_time=*/now,
+                            /*report_time=*/now + base::Hours(1),
+                            /*priority=*/11, AttributionReport::Id(3))));
+  manager.GetSessionStorage().AddDroppedReport(
+      ConversionStorage::CreateReportResult(
+          CreateReportStatus::kDroppedForNoise,
+          AttributionReport(ImpressionBuilder(now).Build(),
+                            /*conversion_data=*/9,
+                            /*conversion_time=*/now,
+                            /*report_time=*/now + base::Hours(2),
+                            /*priority=*/12,
+                            /*conversion_id=*/absl::nullopt)));
   OverrideWebUIConversionManager(&manager);
 
   {
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 3 &&
+        if (table.children.length === 4 &&
             table.children[0].children[1].innerText === "https://sub.conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
@@ -329,9 +345,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[0].children[7].innerText === "Pending" &&
             table.children[1].children[5].innerText === "11" &&
             table.children[1].children[7].innerText === "Dropped due to low priority" &&
-            table.children[2].children[5].innerText === "0" &&
-            table.children[2].children[6].innerText === "no" &&
-            table.children[2].children[7].innerText === "Sent: HTTP 200") {
+            table.children[2].children[5].innerText === "12" &&
+            table.children[2].children[7].innerText === "Dropped for noise" &&
+            table.children[3].children[5].innerText === "0" &&
+            table.children[3].children[6].innerText === "no" &&
+            table.children[3].children[7].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });
@@ -347,13 +365,15 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 3 &&
-            table.children[2].children[1].innerText === "https://sub.conversion.test" &&
-            table.children[2].children[2].innerText ===
+        if (table.children.length === 4 &&
+            table.children[3].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[3].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[2].children[5].innerText === "13" &&
-            table.children[2].children[6].innerText === "yes" &&
-            table.children[2].children[7].innerText === "Pending" &&
+            table.children[3].children[5].innerText === "13" &&
+            table.children[3].children[6].innerText === "yes" &&
+            table.children[3].children[7].innerText === "Pending" &&
+            table.children[2].children[5].innerText === "12" &&
+            table.children[2].children[7].innerText === "Dropped for noise" &&
             table.children[1].children[5].innerText === "11" &&
             table.children[1].children[7].innerText === "Dropped due to low priority" &&
             table.children[0].children[5].innerText === "0" &&
@@ -376,18 +396,20 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 3 &&
+        if (table.children.length === 4 &&
             table.children[0].children[1].innerText === "https://sub.conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[5].innerText === "13" &&
             table.children[0].children[6].innerText === "yes" &&
             table.children[0].children[7].innerText === "Pending" &&
-            table.children[1].children[5].innerText === "11" &&
-            table.children[1].children[7].innerText === "Dropped due to low priority" &&
-            table.children[2].children[5].innerText === "0" &&
-            table.children[2].children[6].innerText === "no" &&
-            table.children[2].children[7].innerText === "Sent: HTTP 200") {
+            table.children[1].children[5].innerText === "12" &&
+            table.children[1].children[7].innerText === "Dropped for noise" &&
+            table.children[2].children[5].innerText === "11" &&
+            table.children[2].children[7].innerText === "Dropped due to low priority" &&
+            table.children[3].children[5].innerText === "0" &&
+            table.children[3].children[6].innerText === "no" &&
+            table.children[3].children[7].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });

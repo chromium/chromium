@@ -89,7 +89,7 @@ class ConversionStorageSqlTest : public testing::Test {
 
   CreateReportStatus MaybeCreateAndStoreConversionReport(
       const StorableTrigger& conversion) {
-    return storage_->MaybeCreateAndStoreConversionReport(conversion).status;
+    return storage_->MaybeCreateAndStoreConversionReport(conversion).status();
   }
 
  protected:
@@ -461,9 +461,9 @@ TEST_F(ConversionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
 
   // These calls should be no-ops.
   storage->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_EQ(
-      CreateReportStatus::kNoMatchingImpressions,
-      storage->MaybeCreateAndStoreConversionReport(DefaultConversion()).status);
+  EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
+            storage->MaybeCreateAndStoreConversionReport(DefaultConversion())
+                .status());
 }
 
 TEST_F(ConversionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
@@ -476,9 +476,9 @@ TEST_F(ConversionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
 
   // The directory should be created, and the database opened.
   storage->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_EQ(
-      CreateReportStatus::kSuccess,
-      storage->MaybeCreateAndStoreConversionReport(DefaultConversion()).status);
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            storage->MaybeCreateAndStoreConversionReport(DefaultConversion())
+                .status());
 }
 
 TEST_F(ConversionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {

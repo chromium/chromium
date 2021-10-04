@@ -35,6 +35,9 @@ namespace content {
 
 namespace {
 
+using CreateReportStatus =
+    ::content::ConversionStorage::CreateReportResult::Status;
+
 using ::testing::ElementsAre;
 
 constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
@@ -563,7 +566,9 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
     const auto& dropped_reports =
         conversion_manager_->GetSessionStorage().GetDroppedReports();
     EXPECT_EQ(1u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].priority);
+    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
+    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
+              dropped_reports[0].status());
   }
 
   {
@@ -575,8 +580,11 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
     const auto& dropped_reports =
         conversion_manager_->GetSessionStorage().GetDroppedReports();
     EXPECT_EQ(2u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].priority);
-    EXPECT_EQ(-5, dropped_reports[1].priority);
+    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
+    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
+              dropped_reports[0].status());
+    EXPECT_EQ(-5, dropped_reports[1].dropped_report()->priority);
+    EXPECT_EQ(CreateReportStatus::kPriorityTooLow, dropped_reports[1].status());
   }
 
   {
@@ -591,9 +599,14 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
     const auto& dropped_reports =
         conversion_manager_->GetSessionStorage().GetDroppedReports();
     EXPECT_EQ(3u, dropped_reports.size());
-    EXPECT_EQ(-5, dropped_reports[0].priority);
-    EXPECT_EQ(2, dropped_reports[1].priority);
-    EXPECT_EQ(3, dropped_reports[2].priority);
+    EXPECT_EQ(-5, dropped_reports[0].dropped_report()->priority);
+    EXPECT_EQ(CreateReportStatus::kPriorityTooLow, dropped_reports[0].status());
+    EXPECT_EQ(2, dropped_reports[1].dropped_report()->priority);
+    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
+              dropped_reports[1].status());
+    EXPECT_EQ(3, dropped_reports[2].dropped_report()->priority);
+    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
+              dropped_reports[2].status());
   }
 }
 

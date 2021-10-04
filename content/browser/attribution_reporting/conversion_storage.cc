@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/conversion_storage.h"
 
+#include "base/check_op.h"
+
 namespace content {
 
 namespace {
@@ -13,7 +15,12 @@ using CreateReportResult = ::content::ConversionStorage::CreateReportResult;
 CreateReportResult::CreateReportResult(
     Status status,
     absl::optional<AttributionReport> dropped_report)
-    : status(status), dropped_report(std::move(dropped_report)) {}
+    : status_(status), dropped_report_(std::move(dropped_report)) {
+  DCHECK_EQ(status_ == Status::kSuccessDroppedLowerPriority ||
+                status_ == Status::kPriorityTooLow ||
+                status_ == Status::kDroppedForNoise,
+            dropped_report_.has_value());
+}
 
 CreateReportResult::~CreateReportResult() = default;
 
@@ -24,5 +31,14 @@ CreateReportResult& CreateReportResult::operator=(const CreateReportResult&) =
     default;
 CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
     default;
+
+CreateReportResult::Status CreateReportResult::status() const {
+  return status_;
+}
+
+const absl::optional<AttributionReport>& CreateReportResult::dropped_report()
+    const {
+  return dropped_report_;
+}
 
 }  // namespace content

@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -118,7 +119,8 @@ class ConversionStorage {
   // reporting. Unconverted matching impressions are not modified.
   virtual void StoreImpression(const StorableSource& impression) = 0;
 
-  struct CONTENT_EXPORT CreateReportResult {
+  class CONTENT_EXPORT CreateReportResult {
+   public:
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     enum class Status {
@@ -146,10 +148,16 @@ class ConversionStorage {
     CreateReportResult& operator=(const CreateReportResult&);
     CreateReportResult& operator=(CreateReportResult&&);
 
-    Status status;
-    // Null unless `status` is `kSuccessDroppedLowerPriority` or
-    // `kPriorityTooLow`.
-    absl::optional<AttributionReport> dropped_report;
+    Status status() const;
+
+    const absl::optional<AttributionReport>& dropped_report() const;
+
+   private:
+    Status status_;
+
+    // Null unless `status` is `kSuccessDroppedLowerPriority`,
+    // `kPriorityTooLow`, or `kDroppedForNoise`.
+    absl::optional<AttributionReport> dropped_report_;
   };
 
   // Finds all stored impressions matching a given `conversion`, and stores the

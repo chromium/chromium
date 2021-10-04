@@ -81,7 +81,7 @@ class ConversionStorageTest : public testing::Test {
 
   CreateReportStatus MaybeCreateAndStoreConversionReport(
       const StorableTrigger& conversion) {
-    return storage_->MaybeCreateAndStoreConversionReport(conversion).status;
+    return storage_->MaybeCreateAndStoreConversionReport(conversion).status();
   }
 
   void DeleteConversionReports(std::vector<AttributionReport> reports) {
@@ -121,9 +121,9 @@ TEST_F(ConversionStorageTest,
   // Test all public methods on ConversionStorage.
   EXPECT_NO_FATAL_FAILURE(
       storage->StoreImpression(ImpressionBuilder(clock()->Now()).Build()));
-  EXPECT_EQ(
-      CreateReportStatus::kNoMatchingImpressions,
-      storage->MaybeCreateAndStoreConversionReport(DefaultConversion()).status);
+  EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
+            storage->MaybeCreateAndStoreConversionReport(DefaultConversion())
+                .status());
   EXPECT_TRUE(storage->GetConversionsToReport(clock()->Now()).empty());
   EXPECT_TRUE(storage->GetActiveImpressions().empty());
   EXPECT_TRUE(storage->DeleteConversion(AttributionReport::Id(0)));
@@ -1210,16 +1210,16 @@ TEST_F(ConversionStorageTest, TriggerPriority) {
 
   auto result = storage()->MaybeCreateAndStoreConversionReport(
       ConversionBuilder().SetPriority(0).SetConversionData(20).Build());
-  EXPECT_EQ(CreateReportStatus::kSuccess, result.status);
-  EXPECT_FALSE(result.dropped_report.has_value());
+  EXPECT_EQ(CreateReportStatus::kSuccess, result.status());
+  EXPECT_FALSE(result.dropped_report().has_value());
 
   // This conversion should replace the one above because it has a higher
   // priority.
   result = storage()->MaybeCreateAndStoreConversionReport(
       ConversionBuilder().SetPriority(2).SetConversionData(21).Build());
-  EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority, result.status);
-  EXPECT_TRUE(result.dropped_report.has_value());
-  EXPECT_EQ(20u, result.dropped_report->conversion_data);
+  EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority, result.status());
+  EXPECT_TRUE(result.dropped_report().has_value());
+  EXPECT_EQ(20u, result.dropped_report()->conversion_data);
 
   storage()->StoreImpression(
       ImpressionBuilder(clock()->Now()).SetData(7).SetPriority(2).Build());
@@ -1232,9 +1232,9 @@ TEST_F(ConversionStorageTest, TriggerPriority) {
   // one above.
   result = storage()->MaybeCreateAndStoreConversionReport(
       ConversionBuilder().SetPriority(0).SetConversionData(23).Build());
-  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status);
-  EXPECT_TRUE(result.dropped_report.has_value());
-  EXPECT_EQ(23u, result.dropped_report->conversion_data);
+  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status());
+  EXPECT_TRUE(result.dropped_report().has_value());
+  EXPECT_EQ(23u, result.dropped_report()->conversion_data);
 
   clock()->Advance(base::Milliseconds(kReportTime));
 

@@ -222,11 +222,11 @@ void ConversionManagerImpl::HandleConversion(StorableTrigger conversion) {
 
 void ConversionManagerImpl::OnReportStored(
     ConversionStorage::CreateReportResult result) {
-  RecordCreateReportStatus(result.status);
-  if (!result.dropped_report.has_value())
+  RecordCreateReportStatus(result.status());
+  if (!result.dropped_report().has_value())
     return;
 
-  session_storage_.AddDroppedReport(std::move(*result.dropped_report));
+  session_storage_.AddDroppedReport(std::move(result));
 }
 
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(

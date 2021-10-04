@@ -11,11 +11,13 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/conversion_session_storage.h"
+#include "content/browser/attribution_reporting/conversion_storage.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
@@ -29,6 +31,9 @@
 namespace content {
 
 namespace {
+
+using CreateReportStatus =
+    ::content::ConversionStorage::CreateReportResult::Status;
 
 mojom::SourceType SourceTypeToMojoType(StorableSource::SourceType input) {
   switch (input) {
@@ -137,8 +142,7 @@ void ConversionInternalsHandlerImpl::GetReports(
 
     const base::circular_deque<SentReportInfo>& sent_reports =
         session_storage.GetSentReports();
-    const base::circular_deque<AttributionReport>& dropped_reports =
-        session_storage.GetDroppedReports();
+    const auto& dropped_reports = session_storage.GetDroppedReports();
 
     std::vector<mojom::WebUIConversionReportPtr> session_cached_reports;
     session_cached_reports.reserve(sent_reports.size() +
@@ -150,10 +154,25 @@ void ConversionInternalsHandlerImpl::GetReports(
                                 mojom::WebUIConversionReport::Status::kSent));
     }
 
-    for (const AttributionReport& report : dropped_reports) {
+    for (const ConversionStorage::CreateReportResult& result :
+         dropped_reports) {
+      mojom::WebUIConversionReport::Status status;
+      switch (result.status()) {
+        case CreateReportStatus::kSuccessDroppedLowerPriority:
+        case CreateReportStatus::kPriorityTooLow:
+          status =
+              mojom::WebUIConversionReport::Status::kDroppedDueToLowPriority;
+          break;
+        case CreateReportStatus::kDroppedForNoise:
+          status = mojom::WebUIConversionReport::Status::kDroppedForNoise;
+          break;
+        default:
+          NOTREACHED();
+          continue;
+      }
+
       session_cached_reports.push_back(WebUIConversionReport(
-          report, /*http_response_code=*/0,
-          mojom::WebUIConversionReport::Status::kDroppedDueToLowPriority));
+          *result.dropped_report(), /*http_response_code=*/0, status));
     }
 
     manager->GetPendingReportsForWebUI(

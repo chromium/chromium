@@ -31,16 +31,17 @@ void ConversionSessionStorage::AddSentReport(SentReportInfo info) {
   sent_reports_.push_back(std::move(info));
 }
 
-const base::circular_deque<AttributionReport>&
+const base::circular_deque<ConversionStorage::CreateReportResult>&
 ConversionSessionStorage::GetDroppedReports() const {
   return dropped_reports_;
 }
 
 void ConversionSessionStorage::AddDroppedReport(
-    AttributionReport dropped_report) {
+    ConversionStorage::CreateReportResult result) {
+  DCHECK(result.dropped_report().has_value());
   if (dropped_reports_.size() == max_reports_to_store_)
     dropped_reports_.pop_front();
-  dropped_reports_.push_back(std::move(dropped_report));
+  dropped_reports_.push_back(std::move(result));
 }
 
 }  // namespace content

@@ -701,7 +701,7 @@ CreateReportResult ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   if (!create_report) {
     return CreateReportResult(CreateReportStatus::kDroppedForNoise,
-                              absl::nullopt);
+                              std::move(report));
   }
 
   return CreateReportResult(

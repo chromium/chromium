@@ -27,6 +27,7 @@ struct WebUIConversionReport {
   enum Status {
     kPending,
     kDroppedDueToLowPriority,
+    kDroppedForNoise,
     kSent,
   };
 

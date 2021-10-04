@@ -360,6 +360,9 @@ class Report {
       case WebUIConversionReport_Status.kDroppedDueToLowPriority:
         this.status = 'Dropped due to low priority';
         break;
+      case WebUIConversionReport_Status.kDroppedForNoise:
+        this.status = 'Dropped for noise';
+        break;
     }
   }
 }
