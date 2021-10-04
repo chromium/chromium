@@ -13,7 +13,17 @@ def session_established(session):
     if token is None:
         raise Exception('token is missing, path = {}'.format(path))
     session.dict_for_handlers['token'] = token
+    session.create_bidirectional_stream()
 
+def stream_reset(session, stream_id: int, error_code: int) -> None:
+    token = session.dict_for_handlers['token']
+    data = session.stash.take(key=token) or {}
+
+    data['stream-close-info'] = {
+        'source': 'reset',
+        'code': error_code
+    }
+    session.stash.put(key=token, value=data)
 
 def session_closed(
         session, close_info: Optional[Tuple[int, bytes]], abruptly: bool) -> None:
