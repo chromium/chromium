@@ -163,9 +163,10 @@ class PasswordUIViewAndroid : public PasswordUIView {
   PasswordManagerPresenter password_manager_presenter_;
 
   // Handle to the password store, powering `saved_passwords_presenter_`
-  scoped_refptr<password_manager::PasswordStore> password_store_ =
-      PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
-                                          ServiceAccessType::EXPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
+      PasswordStoreFactory::GetInterfaceForProfile(
+          ProfileManager::GetLastUsedProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
 
   // Manages the list of saved passwords, including updates.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
