@@ -208,8 +208,6 @@ extern const base::Feature
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAndroidAutofillQueryServerFieldTypes;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kWalletRequiresFirstSyncSetupComplete;
 #endif
 
 #if defined(OS_ANDROID)

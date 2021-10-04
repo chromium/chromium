@@ -482,12 +482,6 @@ const base::Feature kAutofillEnableNewAddressProfileCreationInSettingsOnIOS{
 // Android autofill service.
 const base::Feature kAndroidAutofillQueryServerFieldTypes{
     "AndroidAutofillQueryServerFieldTypes", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether the Wallet (GPay) integration requires first-sync-setup to
-// be complete.
-// TODO(crbug.com/1134564): Clean up after launch.
-const base::Feature kWalletRequiresFirstSyncSetupComplete{
-    "WalletRequiresFirstSyncSetupComplete", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_ANDROID)
