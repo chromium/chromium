@@ -6862,3 +6862,6 @@ crbug.com/1247850 external/wpt/file-system-access/local_FileSystemBaseHandle-mov
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemBaseHandle-rename-manual.https.html [ Failure ]
 crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-move-manual.https.html [ Failure ]
 crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-rename-manual.https.html [ Failure ]
+
+# Sheriff 2021-10-01
+crbug.com/1254963 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
