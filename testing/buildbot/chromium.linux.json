@@ -13548,7 +13548,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--flag-specific=enable-back-forward-cache-same-site"
+          "--flag-specific=enable-back-forward-cache-same-site",
+          "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
