@@ -10,6 +10,7 @@ import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -132,26 +133,32 @@ public class AuthenticatorImpl implements Authenticator {
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void isUserVerifyingPlatformAuthenticatorAvailable(
-            IsUserVerifyingPlatformAuthenticatorAvailableResponse callback) {
+            final IsUserVerifyingPlatformAuthenticatorAvailableResponse callback) {
+        IsUserVerifyingPlatformAuthenticatorAvailableResponse decoratedCallback = (isUvpaa) -> {
+            RecordHistogram.recordBooleanHistogram(
+                    "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", isUvpaa);
+            callback.call(isUvpaa);
+        };
+
         Context context = ContextUtils.getApplicationContext();
         // ChromeActivity could be null.
         if (context == null) {
-            callback.call(false);
+            decoratedCallback.call(false);
             return;
         }
 
         if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
-            callback.call(false);
+            decoratedCallback.call(false);
             return;
         }
 
         if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
                 < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
-            callback.call(false);
+            decoratedCallback.call(false);
             return;
         }
 
-        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
+        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
         Fido2ApiHandler.getInstance().isUserVerifyingPlatformAuthenticatorAvailable(
                 mRenderFrameHost,
                 isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
