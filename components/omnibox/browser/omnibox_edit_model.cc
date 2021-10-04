@@ -670,7 +670,9 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
     // URL_WHAT_YOU_TYPED AutocompleteMatch.
     AutocompleteInput input(
         text_for_desired_tld_navigation, input_.cursor_position(), "com",
-        input_.current_page_classification(), client_->GetSchemeClassifier());
+        input_.current_page_classification(), client_->GetSchemeClassifier(),
+        client_->ShouldDefaultTypedNavigationsToHttps(),
+        client_->GetHttpsPortForTesting());
     input.set_prevent_inline_autocomplete(input_.prevent_inline_autocomplete());
     input.set_prefer_keyword(input_.prefer_keyword());
     input.set_keyword_mode_entry_method(input_.keyword_mode_entry_method());
