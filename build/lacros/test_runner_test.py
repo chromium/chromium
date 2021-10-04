@@ -78,9 +78,9 @@ class TestRunnerTest(unittest.TestCase):
       self.assertTrue(ash_chrome_args[0].endswith(
           'build/lacros/prebuilt_ash_chrome/793554/test_ash_chrome'))
       expected_ash_chrome_args = [
-          '--user-data-dir=/tmp/ash-data',
-          '--enable-wayland-server',
+          '--user-data-dir=/tmp/ash-data', '--enable-wayland-server',
           '--no-startup-window',
+          '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt'
       ]
       if command == 'lacros_chrome_browsertests':
         expected_ash_chrome_args.append(

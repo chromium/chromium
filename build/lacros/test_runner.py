@@ -235,7 +235,7 @@ def _GetLatestVersionOfAshChrome():
 
 
 def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
-                             enable_mojo_crosapi):
+                             enable_mojo_crosapi, ash_ready_file):
   """Waits for Ash-Chrome to be up and running and returns a boolean indicator.
 
   Determine whether ash-chrome is up and running by checking whether two files
@@ -249,27 +249,32 @@ def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
     lacros_mojo_socket_file (str): Path to the lacros mojo socket file.
     enable_mojo_crosapi (bool): Whether to bootstrap the crosapi mojo interface
         between ash and the lacros test binary.
+    ash_ready_file (str): Path to a non-existing file. After ash is ready for
+        testing, the file will be created.
 
   Returns:
     A boolean indicating whether Ash-chrome is up and running.
   """
 
   def IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                       enable_mojo_crosapi):
-    return (len(os.listdir(tmp_xdg_dir)) >= 2
-            and (not enable_mojo_crosapi
-                 or os.path.exists(lacros_mojo_socket_file)))
+                       enable_mojo_crosapi, ash_ready_file):
+    # There should be 2 wayland files.
+    if len(os.listdir(tmp_xdg_dir)) < 2:
+      return False
+    if enable_mojo_crosapi and not os.path.exists(lacros_mojo_socket_file):
+      return False
+    return os.path.exists(ash_ready_file)
 
   time_counter = 0
   while not IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                             enable_mojo_crosapi):
+                             enable_mojo_crosapi, ash_ready_file):
     time.sleep(0.5)
     time_counter += 0.5
     if time_counter > ASH_CHROME_TIMEOUT_SECONDS:
       break
 
   return IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                          enable_mojo_crosapi)
+                          enable_mojo_crosapi, ash_ready_file)
 
 
 def _ExtractAshMajorVersion(file_path):
@@ -403,6 +408,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     lacros_mojo_socket_file = '%s/lacros.sock' % tmp_ash_data_dir_name
     lacros_mojo_socket_arg = ('--lacros-mojo-socket-for-testing=%s' %
                               lacros_mojo_socket_file)
+    ash_ready_file = '%s/ash_ready.txt' % tmp_ash_data_dir_name
     enable_mojo_crosapi = any(t == os.path.basename(args.command)
                               for t in _TARGETS_REQUIRE_MOJO_CROSAPI)
 
@@ -414,6 +420,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--user-data-dir=%s' % tmp_ash_data_dir_name,
         '--enable-wayland-server',
         '--no-startup-window',
+        '--ash-ready-file-path=%s' % ash_ready_file,
     ]
     if enable_mojo_crosapi:
       ash_cmd.append(lacros_mojo_socket_arg)
@@ -434,12 +441,14 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       num_tries += 1
       ash_process = subprocess.Popen(ash_cmd, env=ash_env)
       ash_process_has_started = _WaitForAshChromeToStart(
-          tmp_xdg_dir_name, lacros_mojo_socket_file, enable_mojo_crosapi)
+          tmp_xdg_dir_name, lacros_mojo_socket_file, enable_mojo_crosapi,
+          ash_ready_file)
       if ash_process_has_started:
         break
 
       logging.warning('Starting ash-chrome timed out after %ds',
                       ASH_CHROME_TIMEOUT_SECONDS)
+      logging.warning('Are you using test_ash_chrome?')
       logging.warning('Printing the output of "ps aux" for debugging:')
       subprocess.call(['ps', 'aux'])
       if ash_process and ash_process.poll() is None:
