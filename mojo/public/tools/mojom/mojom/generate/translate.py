@@ -414,6 +414,11 @@ def _UnionField(module, parsed_field, union):
   """
   field = mojom.UnionField()
   field.mojom_name = parsed_field.mojom_name
+  # Disallow unions from being self-recursive.
+  parsed_typename = parsed_field.typename
+  if parsed_typename.endswith('?'):
+    parsed_typename = parsed_typename[:-1]
+  assert parsed_typename != union.mojom_name
   field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, union.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
