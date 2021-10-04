@@ -1256,8 +1256,14 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
             profile_->GetPrefs(), support_host_.get());
   }
 
-  // Start the mini-container here to save time starting the container if the
-  // user decides to opt-in.
+  // Start the mini-container (or mini-VM) here to save time starting the OS if
+  // the user decides to opt-in. Unlike calling StartMiniArc() for ARCVM on
+  // login screen, doing so on ToS screen is safe and desirable. The user has
+  // already shown the intent to opt-in (or, if this is during OOBE, accepting
+  // the ToS is mandatory), and the user's cryptohome has already been mounted.
+  // vm_concierge is already running too. For those reasons, calling
+  // StartMiniArc() for ARCVM here will actually make its perceived boot time
+  // faster.
   StartMiniArc();
 
   if (!terms_of_service_negotiator_) {
@@ -1743,6 +1749,20 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
   if (!IsArcAvailable())
     return;
 
+  if (IsArcVmEnabled()) {
+    // For ARCVM, don't try to start ARCVM on login screen.
+    // Calling StartMiniArc() on login screen for ARCVM does more harm than
+    // good. First, the ARCVM boot sequence started by StartMiniArc() stops
+    // relatively early in ArcVmClientAdapter which waits for vm_concierge to
+    // start (note that vm_concierge does not run on login screen these days.)
+    // Because of this, crosvm for ARCVM won't start until the user signs into
+    // their user session. Second, after the sign-in, the rest of the mini-ARCVM
+    // startup sequence is executed regardless of whether the user has opted
+    // into ARC. For opt-out users, this is a complete waste of resources and
+    // may also cause page caches evictions making Chrome UI less reponsive.
+    VLOG(1) << "Starting ARCVM on login screen is not supported.";
+    return;
+  }
   StartMiniArc();
 }
 
