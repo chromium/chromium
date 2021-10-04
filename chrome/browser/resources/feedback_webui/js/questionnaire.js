@@ -18,86 +18,95 @@ export const questionnaireNotification = 'Some questions have been added' +
  * @type {string}
  */
 const questionGeneralTimestamp =
-    '[General] What is the timestamp of the issue? ' +
-    '(e.g. "2:45 pm" or "2 minutes ago")';
+    '[General] When did this happen? Please mention the exact time ' +
+    '(for example: 2:45pm). ';
 
 /**
  * @type {string}
  */
 const questionGeneralRegression =
-    '[General] Do you know if the issue is a regression? ' +
-    'If so, in which Chrome OS version did the issue start appearing?';
+    '[General] Do you know if this issue is a regression? ' +
+    'If so, in which Chrome OS version did this issue start appearing? ';
 
 /**
  * @type {string}
  */
 const questionGeneralReproducibility =
-    '[General] What is the reproducibility of the problem? ' +
-    '(e.g. always happens at a particular activity? randomly once a day? ' +
-    'Please describe repro steps if there is any)';
+    '[General] Does this always happen during a particular activity? ' +
+    'Does it happen randomly? If so, how often? ' +
+    'Please describe the steps to reproduce this problem. ';
 
 /**
  * @type {string}
  */
 const questionBluetoothPeripheral =
-    '[Bluetooth] What is the brand/model of the Bluetooth peripheral ' +
-    'you had issue with?';
+    '[Bluetooth] What is the brand and model of your Bluetooth peripheral ' +
+    '(such as headset or mouse) you had an issue with? ';
 
 /**
  * @type {string}
  */
-const questionBluetoothOtherDevices =
-    '[Bluetooth] Do other devices (non-Chrome OS devices, other Chromebooks) ' +
-    'work with no issue with the same Bluetooth peripheral?';
+const questionBluetoothOtherDevices = '[Bluetooth] Do other computer devices ' +
+    '(such as non-Chrome OS devices or other Chromebooks) ' +
+    'work well with this Bluetooth peripheral (such as headset or mouse)? ';
 
 /**
  * @type {string}
  */
-const questionWifiTypeOfIssue = '[WiFi] What is the type of the issue? ' +
-    '(failure to connect WiFi, Internet connectivity, ' +
-    'intermittent disconnects, slow WiFi, intermittent lags)';
+const questionWifiTypeOfIssue = '[WiFi] What type of issue is this? ' +
+    'Please select one or more from the below: \n' +
+    '   * Failure to connect to Wi-Fi \n' +
+    '   * Internet connectivity \n' +
+    '   * Intermittently disconnects \n' +
+    '   * Constantly slow Wi-Fi \n' +
+    '   * Intermittently slow Wi-Fi';
 
 /**
  * @type {string}
  */
 const questionWifiConnectedButNotInternet =
-    '[WiFi] Did WiFi connect but the Internet is not working?';
+    '[WiFi] Does your computer show that Wi-Fi is connected? ' +
+    'If so, is your internet still not working? ';
 
 /**
  * @type {string}
  */
 const questionWifiNetworkWorkingBefore =
-    '[WiFi] Has this device successfully used this network before?';
+    '[WiFi] Has this device been able to connect ' +
+    'to this Wi-Fi network before? ';
 
 /**
  * @type {string}
  */
-const questionWifiOtherDevices =
-    '[WiFi] Do other devices (non-Chrome OS devices, other Chromebooks) ' +
-    'work with the same WiFi network? Please specify the type of device.';
+const questionWifiOtherDevices = '[WiFi] Do other computer devices ' +
+    '(such as non-Chrome OS devices or other Chromebooks) ' +
+    'have the same issue using the same Wi-Fi network? ' +
+    'If so, please specify the device type. ';
 
 /**
  * @type {string}
  */
-const questionCellularSim = '[Cellular] Which carrier SIM do you use?';
+const questionCellularSim = '[Cellular] Who is your SIM card carrier? ' +
+    'For example: Verizon, T-Mobile, AT&T. ';
 
 /**
  * @type {string}
  */
 const questionCellularLastSuccess =
-    '[Cellular] When was the last time you connected to the network ' +
-    'successfully with this SIM card?';
+    '[Cellular] Have you been able to use this SIM card previously ' +
+    'on this Chrome OS device? ';
 
 /**
  * @type {string}
  */
-const questionCellularRoaming = '[Cellular] Are you roaming internationally?';
+const questionCellularRoaming =
+    '[Cellular] Are you currently roaming internationally?';
 
 /**
  * @type {string}
  */
-const questionCellularAPN = '[Cellular] Did you configure the APN manually? ' +
-    'If yes, which configuration did you use?';
+const questionCellularAPN =
+    '[Cellular] Did you manually configure the Access Point Name (APN)?';
 
 
 /**
