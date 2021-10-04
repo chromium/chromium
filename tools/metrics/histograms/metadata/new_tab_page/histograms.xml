@@ -1262,6 +1262,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Photos.DataRequest"
+    enum="PhotosModuleRequestResult" expires_after="2022-06-30">
+  <owner>jerem@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the state of Photos module API requests. Only logged on the 1P NTP.
+    Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Photos.DataResponseCount" units="count"
+    expires_after="2022-06-30">
+  <owner>jerem@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of memories in the photos module response. Only logged on
+    the 1P NTP. Note that even if the user has Google as their default search
+    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Promo.EnhancedProtectionPromo"
     enum="AndroidEnhancedProtectionPromoAction" expires_after="2022-03-13">
   <owner>bdea@chromium.org</owner>

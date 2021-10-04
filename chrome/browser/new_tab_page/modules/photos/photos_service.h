@@ -28,6 +28,14 @@ class PrimaryAccountAccessTokenFetcher;
 // Handles requests for user Google Photos data.
 class PhotosService : public KeyedService {
  public:
+  // Enumeration of various request results we want to log.
+  // This is reported to histogram, please do not change the values.
+  enum class RequestResult {
+    kError = 0,
+    kSuccess = 1,
+    kCached = 2,
+    kMaxValue = kCached,
+  };
   static const char kLastDismissedTimePrefName[];
   static const char kOptInAcknowledgedPrefName[];
   static const base::TimeDelta kDismissDuration;

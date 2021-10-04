@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/hash/hash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -15,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -187,13 +190,14 @@ void PhotosService::OnTokenReceived(GoogleServiceAuthError error,
   resource_request->url = GURL(server_url);
   // Cookies should not be allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  // Ignore cache for fresh results.
-  resource_request->load_flags =
-      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                       "application/json");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      resource_request->url,
+      /* Modules are only shown in non-incognito. */
+      variations::InIncognito::kNo, resource_request.get());
 
   if (url_loader_) {
     return;
@@ -214,14 +218,30 @@ void PhotosService::OnJsonReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();
+  bool loaded_from_cache = url_loader_->LoadedFromCache();
   url_loader_.reset();
 
+  if (!loaded_from_cache) {
+    base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                             base::PersistentHash("photos"));
+  }
+
   if (net_error != net::OK || !response_body) {
+    base::UmaHistogramEnumeration("NewTabPage.Photos.DataRequest",
+                                  RequestResult::kError);
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
     }
     callbacks_.clear();
     return;
+  }
+
+  if (loaded_from_cache) {
+    base::UmaHistogramEnumeration("NewTabPage.Photos.DataRequest",
+                                  RequestResult::kCached);
+  } else {
+    base::UmaHistogramEnumeration("NewTabPage.Photos.DataRequest",
+                                  RequestResult::kSuccess);
   }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -242,6 +262,8 @@ void PhotosService::OnJsonParsed(
 
   auto* memories = result.value->FindListPath("memory");
   if (!memories) {
+    base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount", 0, 0,
+                                   10, 11);
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
     }
@@ -249,6 +271,9 @@ void PhotosService::OnJsonParsed(
     return;
   }
   std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount",
+                                 memories->GetList().size(), 0, 10, 11);
   for (const auto& memory : memories->GetList()) {
     auto* title = memory.FindStringPath("title.header");
     auto* memory_id = memory.FindStringPath("memoryMediaKey");

@@ -4,18 +4,23 @@
 
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
 #include "base/hash/hash.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 
 class PhotosServiceTest : public testing::Test {
  public:
@@ -41,11 +46,14 @@ class PhotosServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<PhotosService> service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   signin::IdentityTestEnvironment identity_test_env;
   TestingPrefServiceSimple prefs_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
@@ -120,6 +128,70 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
       actual_memories.at(1)->item_url);
   EXPECT_EQ("https://photos.google.com/img/coverKey2?access_token=foo",
             actual_memories.at(1)->cover_url);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("photos")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataRequest",
+                   PhotosService::RequestResult::kSuccess));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataResponseCount", 2));
+}
+
+TEST_F(PhotosServiceTest, RequestIsCached) {
+  std::vector<photos::mojom::MemoryPtr> actual_memories;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+
+  network::URLLoaderCompletionStatus status;
+  status.exists_in_cache = true;
+  test_url_loader_factory_.AddResponse(
+      GURL("https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
+           "read_memories"),
+      network::CreateURLResponseHead(net::HTTP_OK),
+      R"(
+        {
+          "memory": [
+            {
+              "memoryMediaKey": "key1",
+              "title": {
+                "header": "Title 1",
+                "subheader": "Something something 1"
+              },
+              "coverMediaKey": "coverKey1",
+              "coverUrl": "https://photos.google.com/img/coverKey1"
+            },
+            {
+              "memoryMediaKey": "key2",
+              "title": {
+                "header": "Title 2",
+                "subheader": "Something something 2"
+              },
+              "coverMediaKey": "coverKey2",
+              "coverUrl": "https://photos.google.com/img/coverKey2"
+            }
+          ]
+        }
+      )",
+      status);
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            actual_memories = std::move(memories);
+          }));
+  service_->GetMemories(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, actual_memories.size());
+  ASSERT_EQ(0,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("photos")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataRequest",
+                   PhotosService::RequestResult::kCached));
 }
 
 TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
@@ -248,6 +320,12 @@ TEST_F(PhotosServiceTest, PassesNoDataOnNetError) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(empty_response);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("photos")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataRequest",
+                   PhotosService::RequestResult::kError));
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataOnEmptyResponse) {
@@ -296,13 +374,21 @@ TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
       "read_memories",
       R"(
         {
-          "memory": [],
+          "memory": []
         }
       )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(actual_memories.empty());
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("photos")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataRequest",
+                   PhotosService::RequestResult::kSuccess));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataResponseCount", 0));
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataIfDismissed) {

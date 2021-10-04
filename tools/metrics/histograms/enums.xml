@@ -66482,6 +66482,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Use Android picker"/>
 </enum>
 
+<enum name="PhotosModuleRequestResult">
+  <int value="0" label="kError"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kCached"/>
+</enum>
+
 <enum name="PhysicalWebActivityReferer">
   <int value="0" label="REFERER_UNDEFINED"/>
   <int value="1" label="REFERER_NOTIFICATION (Obsolete)"/>
