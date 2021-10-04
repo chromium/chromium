@@ -396,14 +396,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
 }
 
 #if defined(USE_AURA)
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "iframenav.html"}))
-      << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
                                {.page_url = "desktop_not_requested.html"}))
@@ -648,6 +640,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
   // Assert that the time spent in automation isn't more than 2x
   // the time spent in the renderer code.
   ASSERT_LT(automation_total_dur, renderer_total_dur * 2);
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
+                               {.page_url = "iframenav.html"}))
+      << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

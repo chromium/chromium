@@ -755,7 +755,15 @@ AutomationNodeImpl.prototype = {
     }
     const info = GetChildIDAtIndex(this.treeID, this.id, 0);
     if (info) {
-      return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+      const child =
+          AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+
+      // A child with an app id should always be in a different tree.
+      if (child.appId && this.treeID === info.treeId) {
+        return;
+      }
+
+      return child;
     }
   },
 
@@ -767,7 +775,15 @@ AutomationNodeImpl.prototype = {
 
     const info = GetChildIDAtIndex(this.treeID, this.id, count - 1);
     if (info) {
-      return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+      const child =
+          AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+
+      // A child with an app id should always be in a different tree.
+      if (child.appId && this.treeID === info.treeId) {
+        return;
+      }
+
+      return child;
     }
   },
 
@@ -782,6 +798,12 @@ AutomationNodeImpl.prototype = {
       const childID = info.nodeIds[i];
       const child =
           AutomationRootNodeImpl.getNodeFromTree(info.treeId, childID);
+
+      // A child with an app id should always be in a different tree.
+      if (child.appId && this.treeID === info.treeId) {
+        continue;
+      }
+
       if (child) {
         $Array.push(children, child);
       }

@@ -168,16 +168,8 @@ void AXWindowObjWrapper::GetChildren(
   if (window_->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren))
     return;
 
-  for (auto* child : window_->children()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Ignore children that are rooting an app. Those nodes are already
-    // connected to Ash via app ids.
-    const std::string& window_id = GetPlatformWindowId(child);
-    if (!window_id.empty())
-      continue;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  for (auto* child : window_->children())
     out_children->push_back(aura_obj_cache_->GetOrCreate(child));
-  }
 
   // Also consider any associated widgets as children.
   Widget* widget = GetWidgetForWindow(window_);
