@@ -3046,7 +3046,7 @@
   {
     "name": "fill-on-account-select",
     "owners": [ "kazinova@google.com", "vasilii" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "filling-across-affiliated-websites",
@@ -5349,7 +5349,7 @@
   {
     "name": "username-first-flow",
     "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "username-first-flow-fallback-crowdsourcing",
@@ -5359,7 +5359,7 @@
   {
     "name": "username-first-flow-filling",
     "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "vertical-snap",
