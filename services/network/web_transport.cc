@@ -514,8 +514,7 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
       quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 
-void WebTransport::Close(
-    const absl::optional<net::WebTransportCloseInfo>& close_info) {
+void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
   if (torn_down_) {
     return;
   }
@@ -525,7 +524,13 @@ void WebTransport::Close(
   handshake_client_.reset();
   client_.reset();
 
-  transport_->Close(close_info);
+  absl::optional<net::WebTransportCloseInfo> close_info_to_pass;
+  if (close_info) {
+    close_info_to_pass = absl::make_optional<net::WebTransportCloseInfo>(
+        close_info->code, close_info->reason);
+  }
+
+  transport_->Close(close_info_to_pass);
 }
 
 void WebTransport::OnConnected(
@@ -569,7 +574,12 @@ void WebTransport::OnClosed(
   if (closing_) {
     closing_ = false;
   } else {
-    // TODO(yhirano): Call client_-> OnClosed().
+    mojom::WebTransportCloseInfoPtr close_info_to_pass;
+    if (close_info) {
+      close_info_to_pass = mojom::WebTransportCloseInfo::New(
+          close_info->code, close_info->reason);
+    }
+    client_->OnClosed(std::move(close_info_to_pass));
   }
 
   TearDown();

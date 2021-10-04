@@ -67,8 +67,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void AbortStream(uint32_t stream_id, uint8_t code) override;
   void StopSending(uint32_t stream_id, uint8_t code) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
-
-  void Close(const absl::optional<net::WebTransportCloseInfo>& close_info);
+  void Close(mojom::WebTransportCloseInfoPtr close_info) override;
 
   // WebTransportClientVisitor implementation:
   void OnConnected(

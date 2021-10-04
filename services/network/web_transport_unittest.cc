@@ -196,6 +196,7 @@ class TestClient final : public mojom::WebTransportClient {
   }
   void OnReceivedResetStream(uint32_t stream_id, uint8_t) override {}
   void OnReceivedStopSending(uint32_t stream_id, uint8_t) override {}
+  void OnClosed(mojom::WebTransportCloseInfoPtr close_info) override {}
 
   void WaitUntilMojoConnectionError() {
     base::RunLoop run_loop;

@@ -89,8 +89,8 @@ class MODULES_EXPORT WebTransport final
   void OnOutgoingStreamClosed(uint32_t stream_id) override;
   void OnReceivedResetStream(uint32_t stream_id, uint8_t code) override;
   void OnReceivedStopSending(uint32_t stream_id, uint8_t code) override;
-
-  void OnClosed(const absl::optional<WebTransportCloseInfo>&);
+  void OnClosed(
+      network::mojom::blink::WebTransportCloseInfoPtr close_info) override;
 
   // Implementation of ExecutionContextLifecycleObserver
   void ContextDestroyed() final;

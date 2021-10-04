@@ -135,6 +135,17 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
                     void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>));
 
   MOCK_METHOD1(SetOutgoingDatagramExpirationDuration, void(base::TimeDelta));
+  MOCK_METHOD0(Close, void());
+  MOCK_METHOD2(Close, void(uint32_t, String));
+
+  void Close(
+      network::mojom::blink::WebTransportCloseInfoPtr close_info) override {
+    if (!close_info) {
+      Close();
+      return;
+    }
+    Close(close_info->code, close_info->reason);
+  }
 
   void SendFin(uint32_t stream_id) override {}
   void AbortStream(uint32_t stream_id, uint8_t code) override {}
@@ -630,6 +641,8 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+  EXPECT_CALL(*mock_web_transport_, Close(42, String("because")));
+
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
@@ -641,9 +654,6 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
   web_transport->close(&close_info);
 
   test::RunPendingTasks();
-
-  // TODO(ricea): Check that the close info is sent through correctly, once we
-  // start sending it.
 
   EXPECT_FALSE(web_transport->HasPendingActivity());
   EXPECT_TRUE(ready_tester.IsFulfilled());
@@ -657,6 +667,9 @@ TEST_F(WebTransportTest, CloseWithNull) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  EXPECT_CALL(*mock_web_transport_, Close());
+
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
@@ -677,6 +690,9 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  EXPECT_CALL(*mock_web_transport_, Close());
+
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
@@ -687,8 +703,6 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
   web_transport->close(&close_info);
 
   test::RunPendingTasks();
-
-  // TODO(yhirano): Make sure Close() is called.
 }
 
 // A live connection will be kept alive even if there is no explicit reference.
@@ -706,6 +720,7 @@ TEST_F(WebTransportTest, GarbageCollection) {
     // not a problem for garbage collection in normal operation.
     v8::HandleScope handle_scope(isolate);
     web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
+    EXPECT_CALL(*mock_web_transport_, Close());
   }
 
   // Pretend the stack is empty. This will avoid accidentally treating any
@@ -884,6 +899,7 @@ TEST_F(WebTransportTest, SendDatagramAfterClose) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+  EXPECT_CALL(*mock_web_transport_, Close());
 
   web_transport->close(nullptr);
   test::RunPendingTasks();
@@ -997,6 +1013,7 @@ TEST_F(WebTransportTest, DatagramsShouldBeErroredAfterClose) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+  EXPECT_CALL(*mock_web_transport_, Close());
 
   const std::array<uint8_t, 1> chunk1 = {'A'};
   client_remote_->OnDatagramReceived(chunk1);
@@ -1019,6 +1036,7 @@ TEST_F(WebTransportTest, ResettingIncomingHighWaterMarkWorksAfterClose) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+  EXPECT_CALL(*mock_web_transport_, Close());
 
   const std::array<uint8_t, 1> chunk1 = {'A'};
   client_remote_->OnDatagramReceived(chunk1);
@@ -1366,6 +1384,7 @@ TEST_F(WebTransportTest, SendStreamGarbageCollection) {
     v8::HandleScope handle_scope(isolate);
 
     web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
+    EXPECT_CALL(*mock_web_transport_, Close());
     send_stream = CreateSendStreamSuccessfully(scope, web_transport);
   }
 
@@ -1616,6 +1635,7 @@ TEST_F(WebTransportTest, CreateSendStreamAbortedByClose) {
                     base::OnceCallback<void(bool, uint32_t)> callback) {
         create_stream_callback = std::move(callback);
       });
+  EXPECT_CALL(*mock_web_transport_, Close());
 
   ScriptPromise send_stream_promise = web_transport->createUnidirectionalStream(
       script_state, ASSERT_NO_EXCEPTION);
@@ -1683,6 +1703,8 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
   auto* script_state = scope.GetScriptState();
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  EXPECT_CALL(*mock_web_transport_, Close());
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
@@ -1833,11 +1855,8 @@ TEST_F(WebTransportTest, OnClosed) {
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
-  absl::optional<WebTransportCloseInfo> input_close_info(absl::in_place);
-  input_close_info->setCloseCode(99);
-  input_close_info->setReason("reason");
-
-  web_transport->OnClosed(input_close_info);
+  web_transport->OnClosed(
+      network::mojom::blink::WebTransportCloseInfo::New(99, "reason"));
 
   tester.WaitUntilSettled();
 
@@ -1863,7 +1882,7 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
-  web_transport->OnClosed(absl::nullopt);
+  web_transport->OnClosed(nullptr);
 
   tester.WaitUntilSettled();
 

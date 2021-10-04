@@ -82,6 +82,8 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
     outgoing_datagram_expiration_duration_value_ = value;
   }
 
+  void Close(network::mojom::blink::WebTransportCloseInfoPtr) override {}
+
  private:
   base::OnceCallback<void(uint32_t,
                           mojo::ScopedDataPipeConsumerHandle,

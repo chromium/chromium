@@ -32,11 +32,11 @@ promise_test(async t => {
   add_completion_callback(() => wt.close());
   await wt.ready;
 
-  wt.close({code: 99, reason: 'reason'});
+  wt.close({closeCode: 99, reason: 'reason X'});
 
   const close_info = await wt.closed;
 
-  assert_equals(close_info.code, 99, 'code');
+  assert_equals(close_info.closeCode, 99, 'code');
   assert_equals(close_info.reason, 'reason X', 'reason');
 
   await wait(10);
@@ -57,11 +57,11 @@ promise_test(async t => {
   await wt.ready;
   const reason = 'あいうえお'.repeat(1000);
 
-  wt.close({code: 11, reason});
+  wt.close({closeCode: 11, reason});
 
   const close_info = await wt.closed;
 
-  assert_equals(close_info.code, 11, 'code');
+  assert_equals(close_info.closeCode, 11, 'code');
   assert_equals(close_info.reason, reason, 'reason');
 
   await wait(10);
