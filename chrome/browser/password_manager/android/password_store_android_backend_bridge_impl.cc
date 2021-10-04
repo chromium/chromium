@@ -63,6 +63,11 @@ void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
                                   CreateFormsVector(passwords));
 }
 
+void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env, jint task_id) {
+  DCHECK(consumer_);
+  consumer_->OnError(TaskId(task_id));
+}
+
 TaskId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
   TaskId task_id = GetNextTaskId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAllLogins(

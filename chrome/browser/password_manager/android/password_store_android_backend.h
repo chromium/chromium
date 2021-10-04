@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -69,12 +70,50 @@ class PasswordStoreAndroidBackend
         this};
   };
 
+  // Wraps the handler for an asynchronous task (if successful). Also provides
+  // means to record metrics about the task (if successful or not). An object of
+  // this type shall be created and stored in |request_for_task_| once an
+  // asynchronous begins, and destroyed once the task is finished.
+  class TaskHandler {
+   public:
+    using ErrorReply = base::OnceClosure;
+    using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
+    using WasSuccess = base::StrongAlias<struct WasSuccessTag, bool>;
+
+    TaskHandler();
+    TaskHandler(LoginsReply callback, MetricInfix metric_name);
+    TaskHandler(PasswordStoreChangeListReply callback,
+                MetricInfix metric_infix);
+    TaskHandler(TaskHandler&&);
+    TaskHandler& operator=(TaskHandler&&);
+    ~TaskHandler();
+
+    template <typename T>
+    bool Holds() const {
+      return absl::holds_alternative<T>(success_callback_);
+    }
+
+    template <typename T>
+    T&& Get() && {
+      return std::move(absl::get<T>(success_callback_));
+    }
+
+    // Records metrics for this task:
+    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Latency"
+    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Success"
+    void RecordMetrics(WasSuccess success) const;
+
+   private:
+    absl::variant<LoginsReply, PasswordStoreChangeListReply> success_callback_;
+    MetricInfix metric_infix_;
+    base::Time start_ = base::Time::Now();
+  };
+
   using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
-  using ReplyVariant = absl::variant<LoginsReply, PasswordStoreChangeListReply>;
   // Using a small_map should ensure that we handle rare cases with many tasks
   // like a bulk deletion just as well as the normal, rather small task load.
   using TaskMap =
-      base::small_map<std::unordered_map<TaskId, ReplyVariant, TaskId::Hasher>>;
+      base::small_map<std::unordered_map<TaskId, TaskHandler, TaskId::Hasher>>;
 
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
@@ -114,11 +153,12 @@ class PasswordStoreAndroidBackend
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::TaskId task_id,
                             std::vector<PasswordForm> passwords) override;
+  void OnError(PasswordStoreAndroidBackendBridge::TaskId task_id) override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
 
-  ReplyVariant GetAndEraseTask(TaskId task_id);
+  TaskHandler GetAndEraseTask(TaskId task_id);
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;

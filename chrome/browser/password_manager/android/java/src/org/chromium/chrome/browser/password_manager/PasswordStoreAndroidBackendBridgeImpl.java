@@ -50,9 +50,10 @@ class PasswordStoreAndroidBackendBridgeImpl {
                     PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
                             mNativeBackendBridge, taskId, passwords);
                 },
-                exception
-                -> {
-                        // TODO(crbug.com/1229654): Clear failed tasks and record failures.
+                exception -> {
+                    if (mNativeBackendBridge == 0) return;
+                    PasswordStoreAndroidBackendBridgeImplJni.get().onError(
+                            mNativeBackendBridge, taskId);
                 });
     }
 
@@ -65,5 +66,6 @@ class PasswordStoreAndroidBackendBridgeImpl {
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendBridgeImpl,
                 @TaskId int taskId, byte[] passwords);
+        void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @TaskId int taskId);
     }
 }

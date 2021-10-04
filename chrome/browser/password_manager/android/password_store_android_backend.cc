@@ -12,6 +12,8 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/login_database.h"
@@ -38,6 +40,38 @@ std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
 }
 
 }  // namespace
+
+PasswordStoreAndroidBackend::TaskHandler::TaskHandler() = default;
+
+PasswordStoreAndroidBackend::TaskHandler::TaskHandler(LoginsReply callback,
+                                                      MetricInfix metric_infix)
+    : success_callback_(std::move(callback)),
+      metric_infix_(std::move(metric_infix)) {}
+
+PasswordStoreAndroidBackend::TaskHandler::TaskHandler(
+    PasswordStoreChangeListReply callback,
+    MetricInfix metric_infix)
+    : success_callback_(std::move(callback)),
+      metric_infix_(std::move(metric_infix)) {}
+
+PasswordStoreAndroidBackend::TaskHandler::TaskHandler(TaskHandler&&) = default;
+PasswordStoreAndroidBackend::TaskHandler&
+
+PasswordStoreAndroidBackend::TaskHandler::TaskHandler::operator=(
+    TaskHandler&&) = default;
+
+PasswordStoreAndroidBackend::TaskHandler::~TaskHandler() = default;
+
+void PasswordStoreAndroidBackend::TaskHandler::RecordMetrics(
+    WasSuccess success) const {
+  auto BuildMetricName = [this](base::StringPiece suffix) {
+    return base::StrCat({"PasswordManager.PasswordStoreAndroidBackend.",
+                         *metric_infix_, ".", suffix});
+  };
+  base::TimeDelta duration = base::Time::Now() - start_;
+  base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
+  base::UmaHistogramBoolean(BuildMetricName("Success"), *success);
+}
 
 PasswordStoreAndroidBackend::SyncModelTypeControllerDelegate::
     SyncModelTypeControllerDelegate() = default;
@@ -74,7 +108,9 @@ void PasswordStoreAndroidBackend::Shutdown(
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(LoginsReply callback) {
   TaskId task_id = bridge_->GetAllLogins();
-  request_for_task_.emplace(task_id, std::move(callback));
+  request_for_task_.emplace(
+      task_id, TaskHandler(std::move(callback),
+                           TaskHandler::MetricInfix("GetAllLoginsAsync")));
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
@@ -149,12 +185,18 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegateFactory() {
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     TaskId task_id,
     std::vector<PasswordForm> passwords) {
-  ReplyVariant reply = GetAndEraseTask(task_id);
-  DCHECK(absl::holds_alternative<LoginsReply>(reply));
+  TaskHandler reply = GetAndEraseTask(task_id);
+  reply.RecordMetrics(TaskHandler::WasSuccess(true));
+  DCHECK(reply.Holds<LoginsReply>());
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(absl::get<LoginsReply>(reply)),
+      base::BindOnce(std::move(reply).Get<LoginsReply>(),
                      WrapPasswordsIntoPointers(std::move(passwords))));
+}
+
+void PasswordStoreAndroidBackend::OnError(TaskId task_id) {
+  TaskHandler reply = GetAndEraseTask(task_id);
+  reply.RecordMetrics(TaskHandler::WasSuccess(false));
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -162,11 +204,11 @@ PasswordStoreAndroidBackend::GetSyncControllerDelegate() {
   return sync_controller_delegate_.GetWeakPtr();
 }
 
-PasswordStoreAndroidBackend::ReplyVariant
+PasswordStoreAndroidBackend::TaskHandler
 PasswordStoreAndroidBackend::GetAndEraseTask(TaskId task_id) {
   auto iter = request_for_task_.find(task_id);
   DCHECK(iter != request_for_task_.end());
-  ReplyVariant reply = std::move(iter->second);
+  TaskHandler reply = std::move(iter->second);
   request_for_task_.erase(iter);
   return reply;
 }

@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
@@ -19,10 +20,12 @@
 namespace password_manager {
 namespace {
 
+using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Return;
 using testing::StrictMock;
+using testing::WithArg;
 using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
 
 std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
@@ -73,6 +76,10 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   MockPasswordStoreAndroidBackendBridge* bridge() { return bridge_; }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
   std::unique_ptr<PasswordStoreAndroidBackendBridge> CreateMockBridge() {
     auto unique_bridge =
@@ -81,7 +88,6 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     EXPECT_CALL(*bridge_, SetConsumer);
     return unique_bridge;
   }
-  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
   StrictMock<MockPasswordStoreAndroidBackendBridge>* bridge_;
@@ -109,5 +115,46 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   consumer().OnCompleteWithLogins(kTaskId, UnwrapForms(CreateTestLogins()));
   RunUntilIdle();
 }
+
+class PasswordStoreAndroidBackendTestForMetrics
+    : public PasswordStoreAndroidBackendTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool ShouldSucceed() const { return GetParam(); }
+};
+
+// Tests the PasswordManager.PasswordStore.GetAllLoginsAsync metric.
+TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
+  backend().InitBackend(
+      PasswordStoreAndroidBackend::RemoteChangesReceived(),
+      /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
+      /*completion=*/base::DoNothing());
+  constexpr auto kLatencyDelta = base::TimeDelta::FromMilliseconds(123u);
+  constexpr TaskId kTaskId{1337};
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success";
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kTaskId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run(_)).Times(ShouldSucceed() ? 1 : 0);
+  task_environment_.FastForwardBy(kLatencyDelta);
+  if (ShouldSucceed())
+    consumer().OnCompleteWithLogins(kTaskId, {});
+  else
+    consumer().OnError(kTaskId);
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PasswordStoreAndroidBackendTestForMetrics,
+                         testing::Bool());
 
 }  // namespace password_manager

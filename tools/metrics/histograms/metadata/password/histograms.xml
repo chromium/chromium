@@ -2107,12 +2107,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore.GetAllLoginsAsync" units="ms"
-    expires_after="2022-06-30">
+    expires_after="2021-09-29">
+  <obsolete>
+    Renamed to PasswordManager.PasswordStore.GetAllLoginsAsync.Latency on
+    2021-09-29.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous call to get all logins from the
     PasswordStore backend.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to retrieve all logins from the
+    PasswordStore Android backend. Recorded when the asynchronous task has
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether GetAllLoginsAsync() succeeded in retrieving all logins from
+    the PasswordStore Android backend. Recorded when the asynchronous task has
+    returned. False is emitted if an error occurs; otherwise true is emitted.
   </summary>
 </histogram>
 

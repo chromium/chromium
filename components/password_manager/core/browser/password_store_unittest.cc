@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1504,33 +1503,6 @@ TEST_F(PasswordStoreOriginTest,
   run_loop.Run();
 
   store()->RemoveObserver(&observer);
-}
-
-// Tests the PasswordManager.PasswordStore.GetAllLoginsAsync metric.
-TEST_F(PasswordStoreTest, GetAllLoginsAsyncMetrics) {
-  scoped_refptr<PasswordStore> store =
-      new PasswordStore(std::make_unique<MockPasswordStoreBackend>());
-  auto* mock_backend =
-      static_cast<MockPasswordStoreBackend*>(store->GetBackendForTesting());
-  store->Init(nullptr);
-  constexpr auto delta = base::Milliseconds(123u);
-
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
-      .WillOnce(WithArg<0>([&](LoginsReply cb) {
-        task_environment_.FastForwardBy(delta);
-        std::move(cb).Run({});
-      }));
-  MockPasswordStoreConsumer mock_consumer;
-  store->GetAllLogins(&mock_consumer);
-  WaitForPasswordStore();
-  store->ShutdownOnUIThread();
-  WaitForPasswordStore();
-
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordStore.GetAllLoginsAsync", 1);
-  histogram_tester.ExpectTimeBucketCount(
-      "PasswordManager.PasswordStore.GetAllLoginsAsync", delta, 1);
 }
 
 }  // namespace password_manager

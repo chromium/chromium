@@ -37,6 +37,10 @@ class PasswordStoreAndroidBackendBridge {
     // Used in response to `GetAllLogins`.
     virtual void OnCompleteWithLogins(TaskId task_id,
                                       std::vector<PasswordForm> passwords) = 0;
+
+    // Asynchronous response called with the `task_id` which was passed to the
+    // corresponding call to `PasswordStoreAndroidBackendBridge`.
+    virtual void OnError(TaskId task_id) = 0;
   };
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;

@@ -35,6 +35,11 @@ class PasswordStoreAndroidBackendBridgeImpl
       jint task_id,
       const base::android::JavaParamRef<jbyteArray>& passwords);
 
+  // Called via JNI. Called when the api call with `task_id` finished with
+  // an exception.
+  // TODO(crbug.com/1229654): Include error codes.
+  void OnError(JNIEnv* env, jint task_id);
+
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(Consumer* consumer) override;
