@@ -14,6 +14,10 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/controls/button/button.h"
 
+namespace gfx {
+class FontList;
+}
+
 namespace views {
 class ImageView;
 class Label;
@@ -30,6 +34,11 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   NotificationHeaderView(const NotificationHeaderView&) = delete;
   NotificationHeaderView& operator=(const NotificationHeaderView&) = delete;
   ~NotificationHeaderView() override;
+
+  // Configure the style of all the labels used in this view.
+  void ConfigureLabelsStyle(const gfx::FontList& font_list,
+                            const gfx::Insets& text_view_padding,
+                            bool auto_color_readability);
 
   void SetAppIcon(const gfx::ImageSkia& img);
   void SetAppName(const std::u16string& name);
@@ -51,7 +60,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   // Calls UpdateColors() to set the unified theme color used among the app
   // icon, app name, and expand button. If set to absl::nullopt it will use the
   // NotificationDefaultAccentColor from the native theme.
-  void SetAccentColor(absl::optional<SkColor> color);
+  void SetColor(absl::optional<SkColor> color);
 
   // Sets the background color of the notification. This is used to ensure that
   // the accent color has enough contrast against the background.
@@ -69,7 +78,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   views::ImageView* expand_button() { return expand_button_; }
 
-  absl::optional<SkColor> accent_color_for_testing() { return accent_color_; }
+  absl::optional<SkColor> color_for_testing() const { return color_; }
 
   const views::Label* summary_text_for_testing() const {
     return summary_text_view_;
@@ -95,7 +104,8 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   void UpdateColors();
 
-  absl::optional<SkColor> accent_color_;
+  // Color used for labels and buttons in this view.
+  absl::optional<SkColor> color_;
 
   // Timer that updates the timestamp over time.
   base::OneShotTimer timestamp_update_timer_;
@@ -113,6 +123,9 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   bool has_progress_ = false;
   bool is_expanded_ = false;
   bool using_default_app_icon_ = false;
+
+  // Whether this view is used for an ash notification view.
+  const bool is_in_ash_notification_;
 };
 
 }  // namespace message_center

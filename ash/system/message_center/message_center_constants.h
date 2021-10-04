@@ -34,6 +34,8 @@ constexpr gfx::Size kNotificationExpandButtonWithLabelSize(40, 24);
 constexpr gfx::Insets kAppIconViewExpandedPadding(2, 0, 0, 0);
 constexpr gfx::Insets kAppIconViewCollapsedPadding(6, 0, 0, 0);
 
+constexpr int kHeaderViewLabelSize = 12;
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_CONSTANTS_H_

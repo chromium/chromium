@@ -4,6 +4,7 @@
 
 #include "ui/message_center/views/notification_view.h"
 
+#include "build/build_config.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -44,6 +45,43 @@ constexpr int kMessageViewWidth =
 constexpr int kTitleCharacterLimit =
     kNotificationWidth * kMaxTitleLines / kMinPixelsPerTitleCharacter;
 
+// "Roboto-Regular, 12sp" is specified in the mock.
+constexpr int kHeaderTextFontSize = 12;
+
+// Default paddings of the views of texts. Adjusted on Windows.
+// Top: 9px = 11px (from the mock) - 2px (outer padding).
+// Bottom: 6px from the mock.
+constexpr gfx::Insets kTextViewPaddingDefault(9, 0, 6, 0);
+
+gfx::FontList GetHeaderTextFontList() {
+  gfx::Font default_font;
+  int font_size_delta = kHeaderTextFontSize - default_font.GetFontSize();
+  const gfx::Font& font = default_font.Derive(
+      font_size_delta, gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
+  DCHECK_EQ(kHeaderTextFontSize, font.GetFontSize());
+  return gfx::FontList(font);
+}
+
+gfx::Insets CalculateTopPadding(int font_list_height) {
+#if defined(OS_WIN)
+  // On Windows, the fonts can have slightly different metrics reported,
+  // depending on where the code runs. In Chrome, DirectWrite is on, which means
+  // font metrics are reported from Skia, which rounds from float using ceil.
+  // In unit tests, however, GDI is used to report metrics, and the height
+  // reported there is consistent with other platforms. This means there is a
+  // difference of 1px in height between Chrome on Windows and everything else
+  // (where everything else includes unit tests on Windows). This 1px causes the
+  // text and everything else to stop aligning correctly, so we account for it
+  // by shrinking the top padding by 1.
+  if (font_list_height != 15) {
+    DCHECK_EQ(16, font_list_height);
+    return kTextViewPaddingDefault - gfx::Insets(1 /* top */, 0, 0, 0);
+  }
+#endif
+
+  return kTextViewPaddingDefault;
+}
+
 }  // namespace
 
 NotificationView::NotificationView(
@@ -54,6 +92,13 @@ NotificationView::NotificationView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
   auto header_row = CreateHeaderRow();
+
+  // Font list for text views.
+  const gfx::FontList& font_list = GetHeaderTextFontList();
+  const int font_list_height = font_list.GetHeight();
+  const gfx::Insets& text_view_padding(CalculateTopPadding(font_list_height));
+  header_row->ConfigureLabelsStyle(font_list, text_view_padding, false);
+
   header_row->AddChildView(CreateControlButtonsView());
 
   auto content_row = CreateContentRow();

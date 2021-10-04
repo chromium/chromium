@@ -732,7 +732,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, ActionButtonsToggleVisibility) {
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateArtworkFromItem) {
   int title_artist_width = title_artist_row()->width();
-  const SkColor accent = header_row()->accent_color_for_testing().value();
+  const SkColor accent = header_row()->color_for_testing().value();
   gfx::Size size = view()->size();
   EXPECT_CALL(container(), OnMediaArtworkChanged(_)).Times(2);
   EXPECT_CALL(container(), OnColorsChanged(_, _)).Times(2);
@@ -759,7 +759,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateArtworkFromItem) {
   EXPECT_FALSE(GetArtworkImage().isNull());
   EXPECT_EQ(gfx::Size(10, 10), GetArtworkImage().size());
   EXPECT_EQ(size, view()->size());
-  auto accent_color = header_row()->accent_color_for_testing();
+  auto accent_color = header_row()->color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
   EXPECT_NE(accent, accent_color.value());
 
@@ -776,7 +776,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateArtworkFromItem) {
   // affected.
   EXPECT_TRUE(GetArtworkImage().isNull());
   EXPECT_EQ(size, view()->size());
-  accent_color = header_row()->accent_color_for_testing();
+  accent_color = header_row()->color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
   EXPECT_EQ(accent, accent_color.value());
 }

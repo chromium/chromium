@@ -432,7 +432,7 @@ TEST_F(NotificationViewTest, TestAccentColor) {
   const SkColor kActionButtonTextColor =
       DeriveMinContrastColor(gfx::kGoogleBlue600, kActionButtonBackgroundColor);
   EXPECT_FALSE(
-      notification_view()->header_row_->accent_color_for_testing().has_value());
+      notification_view()->header_row_->color_for_testing().has_value());
   EXPECT_EQ(
       kActionButtonTextColor,
       notification_view()->action_buttons_[0]->enabled_color_for_testing());
@@ -447,8 +447,7 @@ TEST_F(NotificationViewTest, TestAccentColor) {
   // same accent color.
   notification->set_accent_color(kDarkCustomAccentColor);
   UpdateNotificationViews(*notification);
-  auto accent_color =
-      notification_view()->header_row_->accent_color_for_testing();
+  auto accent_color = notification_view()->header_row_->color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
   EXPECT_EQ(kDarkCustomAccentColor, accent_color.value());
   EXPECT_EQ(
@@ -469,7 +468,7 @@ TEST_F(NotificationViewTest, TestAccentColor) {
 
   notification->set_accent_color(kBrightCustomAccentColor);
   UpdateNotificationViews(*notification);
-  accent_color = notification_view()->header_row_->accent_color_for_testing();
+  accent_color = notification_view()->header_row_->color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
   EXPECT_EQ(kBrightCustomAccentColor, accent_color.value());
   EXPECT_EQ(

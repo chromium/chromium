@@ -285,7 +285,14 @@ AshNotificationView::AshNotificationView(
   header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       Orientation::kVertical, gfx::Insets(), 0));
 
-  header_left_content->AddChildView(CreateHeaderRow());
+  auto header_row = CreateHeaderRow();
+  header_row->ConfigureLabelsStyle(
+      gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, kHeaderViewLabelSize,
+                    gfx::Font::Weight::MEDIUM),
+      gfx::Insets(), true);
+  header_row->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  header_left_content->AddChildView(std::move(header_row));
 
   auto left_content = CreateLeftContentView();
   auto* left_content_layout =
@@ -580,6 +587,10 @@ void AshNotificationView::SetDrawBackgroundAsActive(bool active) {}
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);
+
+  header_row()->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kFocusRingColor));

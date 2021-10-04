@@ -738,7 +738,9 @@ NotificationViewBase::GenerateNotificationInputContainer() {
 
 void NotificationViewBase::CreateOrUpdateContextTitleView(
     const Notification& notification) {
-  header_row_->SetAccentColor(notification.accent_color());
+  if (!header_view_in_ash_notification_)
+    header_row_->SetColor(notification.accent_color());
+
   header_row_->SetTimestamp(notification.timestamp());
   header_row_->SetAppNameElideBehavior(gfx::ELIDE_TAIL);
   header_row_->SetSummaryText(std::u16string());

@@ -194,7 +194,7 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 
   // A bright background should enforce dark enough icons.
   notification_header_view_->SetBackgroundColor(SK_ColorWHITE);
-  notification_header_view_->SetAccentColor(SK_ColorWHITE);
+  notification_header_view_->SetColor(SK_ColorWHITE);
   SkColor expected_color =
       color_utils::BlendForMinContrast(SK_ColorWHITE, SK_ColorWHITE).color;
   EXPECT_EQ(expected_color, summary_text->GetEnabledColor());
@@ -203,7 +203,7 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 
   // A dark background should enforce bright enough icons.
   notification_header_view_->SetBackgroundColor(SK_ColorBLACK);
-  notification_header_view_->SetAccentColor(SK_ColorBLACK);
+  notification_header_view_->SetColor(SK_ColorBLACK);
   expected_color =
       color_utils::BlendForMinContrast(SK_ColorBLACK, SK_ColorBLACK).color;
   EXPECT_EQ(expected_color, summary_text->GetEnabledColor());

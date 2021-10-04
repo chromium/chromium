@@ -9,7 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,11 +47,6 @@ constexpr gfx::Insets kHeaderOuterPadding(2, 2, 0, 2);
 
 constexpr int kInnerHeaderHeight = kHeaderHeight - kHeaderOuterPadding.height();
 
-// Default paddings of the views of texts. Adjusted on Windows.
-// Top: 9px = 11px (from the mock) - 2px (outer padding).
-// Bottom: 6px from the mock.
-constexpr gfx::Insets kTextViewPaddingDefault(9, 0, 6, 0);
-
 // Paddings of the app icon (small image).
 // Top: 8px = 10px (from the mock) - 2px (outer padding).
 // Bottom: 4px from the mock.
@@ -69,11 +63,21 @@ constexpr gfx::Insets kExpandIconViewPadding(13, 2, 9, 0);
 // Bullet character. The divider symbol between different parts of the header.
 constexpr char16_t kNotificationHeaderDivider[] = u" \u2022 ";
 
-// "Roboto-Regular, 12sp" is specified in the mock.
-constexpr int kHeaderTextFontSize = 12;
-
 // Minimum spacing before the control buttons.
 constexpr int kControlButtonSpacing = 16;
+
+void ConfigureLabel(views::Label* label,
+                    const gfx::FontList& font_list,
+                    const gfx::Insets& text_view_padding,
+                    bool auto_color_readability) {
+  if (auto_color_readability)
+    label->SetAutoColorReadabilityEnabled(false);
+  const int font_list_height = font_list.GetHeight();
+  label->SetFontList(font_list);
+  label->SetLineHeight(font_list_height);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetBorder(views::CreateEmptyBorder(text_view_padding));
+}
 
 // ExpandButton forwards all mouse and key events to NotificationHeaderView, but
 // takes tab focus for accessibility purpose.
@@ -132,40 +136,12 @@ void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 BEGIN_METADATA(ExpandButton, views::ImageView)
 END_METADATA
 
-gfx::FontList GetHeaderTextFontList() {
-  gfx::Font default_font;
-  int font_size_delta = kHeaderTextFontSize - default_font.GetFontSize();
-  gfx::Font font = default_font.Derive(font_size_delta, gfx::Font::NORMAL,
-                                       gfx::Font::Weight::NORMAL);
-  DCHECK_EQ(kHeaderTextFontSize, font.GetFontSize());
-  return gfx::FontList(font);
-}
-
-gfx::Insets CalculateTopPadding(int font_list_height) {
-#if defined(OS_WIN)
-  // On Windows, the fonts can have slightly different metrics reported,
-  // depending on where the code runs. In Chrome, DirectWrite is on, which means
-  // font metrics are reported from Skia, which rounds from float using ceil.
-  // In unit tests, however, GDI is used to report metrics, and the height
-  // reported there is consistent with other platforms. This means there is a
-  // difference of 1px in height between Chrome on Windows and everything else
-  // (where everything else includes unit tests on Windows). This 1px causes the
-  // text and everything else to stop aligning correctly, so we account for it
-  // by shrinking the top padding by 1.
-  if (font_list_height != 15) {
-    DCHECK_EQ(16, font_list_height);
-    return kTextViewPaddingDefault - gfx::Insets(1 /* top */, 0, 0, 0);
-  }
-#endif
-
-  return kTextViewPaddingDefault;
-}
-
 }  // namespace
 
 NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
                                                bool is_in_ash_notification)
-    : views::Button(std::move(callback)) {
+    : views::Button(std::move(callback)),
+      is_in_ash_notification_(is_in_ash_notification) {
   const views::FlexSpecification kAppNameFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred)
@@ -184,7 +160,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
   // Also, consider using views::Builder<T>.
 
-  if (!is_in_ash_notification) {
+  if (!is_in_ash_notification_) {
     // App icon view
     app_icon_view_ = new views::ImageView();
     app_icon_view_->SetImageSize(
@@ -197,27 +173,13 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
     AddChildView(app_icon_view_);
   }
 
-  // Font list for text views.
-  gfx::FontList font_list = GetHeaderTextFontList();
-  const int font_list_height = font_list.GetHeight();
-  gfx::Insets text_view_padding(CalculateTopPadding(font_list_height));
-
-  auto create_label = [&font_list, font_list_height, text_view_padding]() {
-    auto* label = new views::Label();
-    label->SetFontList(font_list);
-    label->SetLineHeight(font_list_height);
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SetBorder(views::CreateEmptyBorder(text_view_padding));
-    return label;
-  };
-
   // App name view
-  app_name_view_ = create_label();
+  auto app_name_view = std::make_unique<views::Label>();
   // Explicitly disable multiline to support proper text elision for URLs.
-  app_name_view_->SetMultiLine(false);
-  app_name_view_->SetProperty(views::kFlexBehaviorKey, kAppNameFlex);
-  app_name_view_->SetID(NotificationView::kAppNameView);
-  AddChildView(app_name_view_);
+  app_name_view->SetMultiLine(false);
+  app_name_view->SetProperty(views::kFlexBehaviorKey, kAppNameFlex);
+  app_name_view->SetID(NotificationView::kAppNameView);
+  app_name_view_ = AddChildView(std::move(app_name_view));
 
   // Detail views which will be hidden in settings mode.
   detail_views_ = new views::View();
@@ -229,29 +191,32 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   AddChildView(detail_views_);
 
   // Summary text divider
-  summary_text_divider_ = create_label();
-  summary_text_divider_->SetText(kNotificationHeaderDivider);
-  summary_text_divider_->SetVisible(false);
-  detail_views_->AddChildView(summary_text_divider_);
+  auto summary_text_divider = std::make_unique<views::Label>();
+  summary_text_divider->SetText(kNotificationHeaderDivider);
+  summary_text_divider->SetVisible(false);
+  summary_text_divider_ =
+      detail_views_->AddChildView(std::move(summary_text_divider));
 
   // Summary text view
-  summary_text_view_ = create_label();
-  summary_text_view_->SetVisible(false);
-  summary_text_view_->SetID(NotificationView::kSummaryTextView);
-  detail_views_->AddChildView(summary_text_view_);
+  auto summary_text_view = std::make_unique<views::Label>();
+  summary_text_view->SetVisible(false);
+  summary_text_view->SetID(NotificationView::kSummaryTextView);
+  summary_text_view_ =
+      detail_views_->AddChildView(std::move(summary_text_view));
 
   // Timestamp divider
-  timestamp_divider_ = create_label();
-  timestamp_divider_->SetText(kNotificationHeaderDivider);
-  timestamp_divider_->SetVisible(false);
-  detail_views_->AddChildView(timestamp_divider_);
+  auto timestamp_divider = std::make_unique<views::Label>();
+  timestamp_divider->SetText(kNotificationHeaderDivider);
+  timestamp_divider->SetVisible(false);
+  timestamp_divider_ =
+      detail_views_->AddChildView(std::move(timestamp_divider));
 
   // Timestamp view
-  timestamp_view_ = create_label();
-  timestamp_view_->SetVisible(false);
-  detail_views_->AddChildView(timestamp_view_);
+  auto timestamp_view = std::make_unique<views::Label>();
+  timestamp_view->SetVisible(false);
+  timestamp_view_ = detail_views_->AddChildView(std::move(timestamp_view));
 
-  if (!is_in_ash_notification) {
+  if (!is_in_ash_notification_) {
     expand_button_ = new ExpandButton();
     expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
     expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -276,6 +241,22 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
+
+void NotificationHeaderView::ConfigureLabelsStyle(
+    const gfx::FontList& font_list,
+    const gfx::Insets& text_view_padding,
+    bool auto_color_readability) {
+  ConfigureLabel(app_name_view_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(summary_text_view_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(summary_text_divider_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(timestamp_divider_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(timestamp_view_, font_list, text_view_padding,
+                 auto_color_readability);
+}
 
 void NotificationHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
   app_icon_view_->SetImage(img);
@@ -378,8 +359,8 @@ void NotificationHeaderView::SetExpanded(bool expanded) {
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 }
 
-void NotificationHeaderView::SetAccentColor(absl::optional<SkColor> color) {
-  accent_color_ = std::move(color);
+void NotificationHeaderView::SetColor(absl::optional<SkColor> color) {
+  color_ = std::move(color);
   UpdateColors();
 }
 
@@ -426,13 +407,25 @@ void NotificationHeaderView::UpdateSummaryTextVisibility() {
 }
 
 void NotificationHeaderView::UpdateColors() {
-  if (!GetWidget())
+  SkColor color;
+  if (is_in_ash_notification_) {
+    DCHECK(color_.has_value());
+    color = color_.value();
+  } else if (!GetWidget()) {
+    // Return early here since GetColorProvider() depends on the widget.
     return;
-  SkColor color = accent_color_.value_or(
-      GetColorProvider()->GetColor(ui::kColorNotificationHeaderForeground));
+  } else {
+    color = color_.value_or(
+        GetColorProvider()->GetColor(ui::kColorNotificationHeaderForeground));
+  }
+
   app_name_view_->SetEnabledColor(color);
   summary_text_view_->SetEnabledColor(color);
   summary_text_divider_->SetEnabledColor(color);
+  if (is_in_ash_notification_) {
+    timestamp_divider_->SetEnabledColor(color);
+    timestamp_view_->SetEnabledColor(color);
+  }
 
   // Get actual color based on readablility requirements.
   SkColor actual_color = app_name_view_->GetEnabledColor();
