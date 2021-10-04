@@ -4,5 +4,6 @@
 
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 
-CouponService::CouponService() {}
+CouponService::CouponService(std::unique_ptr<CouponDB> coupon_db)
+    : coupon_db_(std::move(coupon_db)) {}
 CouponService::~CouponService() = default;

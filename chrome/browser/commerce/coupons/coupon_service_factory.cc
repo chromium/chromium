@@ -4,6 +4,7 @@
 
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 
+#include "chrome/browser/commerce/coupons/coupon_db.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -31,5 +32,5 @@ KeyedService* CouponServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(!context->IsOffTheRecord());
 
-  return new CouponService();
+  return new CouponService(std::make_unique<CouponDB>(context));
 }

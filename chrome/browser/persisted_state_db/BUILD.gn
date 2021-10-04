@@ -34,7 +34,10 @@ source_set("persisted_state_db") {
       "//chrome/browser/tab:jni_headers",
     ]
   } else {
-    deps += [ "//chrome/browser:cart_db_content_proto" ]
+    deps += [
+      "//chrome/browser:cart_db_content_proto",
+      "//chrome/browser:coupon_db_content_proto",
+    ]
   }
 }
 

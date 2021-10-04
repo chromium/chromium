@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMMERCE_COUPONS_COUPON_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/commerce/coupons/coupon_db.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,7 +23,9 @@ class CouponService : public KeyedService {
 
   // Use |CouponServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
-  CouponService();
+  explicit CouponService(std::unique_ptr<CouponDB> coupon_db);
+
+  std::unique_ptr<CouponDB> coupon_db_;
   base::WeakPtrFactory<CouponService> weak_ptr_factory_{this};
 };
 

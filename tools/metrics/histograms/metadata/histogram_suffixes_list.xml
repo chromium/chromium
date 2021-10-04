@@ -7377,6 +7377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="CartDatabase" label="Database for chrome cart."/>
   <suffix name="CommerceSubscriptionDatabase"
       label="Database for Chrome commerce subscriptions."/>
+  <suffix name="CouponDatabase" label="Database for coupons in Chrome."/>
   <suffix name="DomDistillerStore" label="Databases for DomDistillerStore">
     <obsolete>
       Deprecated since 2019-10.

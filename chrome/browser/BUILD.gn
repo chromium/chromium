@@ -3627,6 +3627,8 @@ static_library("browser") {
       "certificate_viewer.h",
       "chrome_process_singleton.cc",
       "chrome_process_singleton.h",
+      "commerce/coupons/coupon_db.cc",
+      "commerce/coupons/coupon_db.h",
       "commerce/coupons/coupon_service.cc",
       "commerce/coupons/coupon_service.h",
       "commerce/coupons/coupon_service_factory.cc",
@@ -4366,6 +4368,7 @@ static_library("browser") {
     ]
     deps += [
       ":cart_db_content_proto",
+      ":coupon_db_content_proto",
       ":theme_properties",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -7668,5 +7671,8 @@ if (is_android) {
 if (!is_android) {
   proto_library("cart_db_content_proto") {
     sources = [ "cart/cart_db_content.proto" ]
+  }
+  proto_library("coupon_db_content_proto") {
+    sources = [ "commerce/coupons/coupon_db_content.proto" ]
   }
 }
