@@ -1272,7 +1272,8 @@ class PrefetchProxyTabHelperWithDecoyTest
   PrefetchProxyTabHelperWithDecoyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"ineligible_decoy_request_probability", "1"}});
+        {{"ineligible_decoy_request_probability", "1"},
+         {"max_srp_prefetches", "2"}});
   }
 };
 
@@ -1358,6 +1359,54 @@ TEST_F(PrefetchProxyTabHelperWithDecoyTest, ServiceWorkerRegistered) {
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
+}
+
+TEST_F(PrefetchProxyTabHelperWithDecoyTest, DecoyFollowedByNonDecoy) {
+  base::HistogramTester histogram_tester;
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url_with_cookies("https://www.cat-food.com/");
+  GURL prediction_url_no_cookies("https://www.no-cookies.com/");
+
+  ASSERT_TRUE(SetCookie(profile(), prediction_url_with_cookies, "testing"));
+
+  MakeNavigationPrediction(
+      web_contents(), doc_url,
+      {prediction_url_with_cookies, prediction_url_no_cookies});
+  base::RunLoop().RunUntilIdle();
+
+  // Expect a request to be put on the network, but not be used.
+  EXPECT_EQ(RequestCount(), 1);
+  VerifyCommonRequestState(prediction_url_with_cookies);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType, {}, kHTMLBody);
+  VerifyCommonRequestState(prediction_url_no_cookies);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType, {}, kHTMLBody);
+
+  EXPECT_EQ(predicted_urls_count(), 2U);
+  EXPECT_EQ(prefetch_eligible_count(), 1U);
+  EXPECT_EQ(prefetch_attempted_count(), 1U);
+  EXPECT_EQ(prefetch_successful_count(), 1U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 1);
+
+  NavigateAndVerifyPrefetchStatus(
+      prediction_url_no_cookies,
+      PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
+  EXPECT_EQ(absl::optional<size_t>(1), after_srp_clicked_link_srp_position());
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 1);
 }
 
 class PrefetchProxyTabHelperBodyLimitTest

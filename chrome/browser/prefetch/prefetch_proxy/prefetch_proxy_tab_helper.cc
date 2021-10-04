@@ -917,6 +917,12 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
     }
 
     // Do nothing with the response, i.e.: don't cache it.
+
+    // Cancels the current request.
+    DCHECK(page_->url_loaders_.find(loader) != page_->url_loaders_.end());
+    page_->url_loaders_.erase(page_->url_loaders_.find(loader));
+
+    Prefetch();
     return;
   }
 
