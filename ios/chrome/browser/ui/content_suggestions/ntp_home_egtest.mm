@@ -681,7 +681,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/1194106): Add tests for overscroll menu.
+// TODO(crbug.com/1255548): Add tests for overscroll menu.
 - (void)testMinimumHeight {
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
@@ -722,7 +722,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
-- (void)testInitialPositionAndOrientationChange {
+// TODO(crbug.com/1255548): Flaky on ios-simulator-noncq.
+- (void)DISABLED_testInitialPositionAndOrientationChange {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
   [self testNTPInitialPositionAndContent:collectionView];
@@ -770,7 +771,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
-- (void)testToggleFeedEnabled {
+// TODO(crbug.com/1194106): Flaky on ios-simulator-noncq.
+- (void)DISABLED_testToggleFeedEnabled {
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
