@@ -10,7 +10,6 @@ Each of the following subdirectories contain code for a specific Fuchsia
 service:
 * `./engine` contains the WebEngine implementation. The WebEngine enables
 Fuchsia applications to embed Chromium frames for rendering web content.
-* `./http` contains an implementation for the Fuchsia HTTP service.
 * `./runners`contains implementations of Fuchsia `sys.runner`.
     * `./runners/cast` Enables the Fuchsia system to launch cast applications.
     * `./runners/web` Enables the Fuchsia system to launch HTTP or HTTPS URLs.
