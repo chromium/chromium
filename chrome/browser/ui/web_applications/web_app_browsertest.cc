@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -63,6 +64,7 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -72,6 +74,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -93,8 +96,10 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
+#include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/web_app_shortcuts_menu_win.h"
 #include "chrome/browser/win/jumplist_updater.h"
+#include "chrome/installer/util/shell_util.h"
 #endif
 
 namespace {
@@ -1710,4 +1715,90 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app->start_url()),
       app_id);
 }
+
+#if defined(OS_MAC) || defined(OS_WIN)
+class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_FileHandler() {
+    feature_list_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
+  os_hooks_suppress_.reset();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override =
+      OverrideShortcutsForTesting(base::GetHomeDir());
+  std::vector<std::string> expected_extensions{"bar", "baz", "foo", "foobar"};
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL app_url(embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_with_file_handlers.json"));
+
+  NavigateToURLAndWait(browser(), app_url);
+
+  // Wait for OS hooks and installation to complete.
+  chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  base::RunLoop run_loop_install;
+  WebAppTestRegistryObserverAdapter observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
+      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  const AppId app_id = InstallPwaForCurrentUrl();
+  run_loop_install.Run();
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+
+#if defined(OS_WIN)
+  std::wstring prog_id =
+      GetProgIdForApp(browser()->profile()->GetPath(), app_id);
+  ShellUtil::FileAssociationsAndAppName file_associations =
+      ShellUtil::GetFileAssociationsAndAppName(prog_id);
+  // Check file association.
+  for (auto& file_extension : file_associations.file_associations) {
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    std::string extension = converter.to_bytes(file_extension);
+    EXPECT_TRUE(std::find(expected_extensions.begin(),
+                          expected_extensions.end(),
+                          extension) != expected_extensions.end())
+        << "Missing file extension: " << extension;
+  }
+#elif defined(OS_MAC)
+  for (auto extension : expected_extensions) {
+    base::FilePath test_file_path =
+        shortcut_override->chrome_apps_folder.GetPath().AppendASCII("test." +
+                                                                    extension);
+    base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                             base::File::FLAG_WRITE);
+    GURL test_file_url = net::FilePathToFileURL(test_file_path);
+    EXPECT_EQ(u"Manifest with file handlers",
+              shell_integration::GetApplicationNameForProtocol(test_file_url))
+        << "The default app to open the file is wrong. "
+        << "File extension: " + extension;
+  }
+  DCHECK(shortcut_override->chrome_apps_folder.Delete());
+#endif
+
+  // Unistall the web app
+  NavigateToURLAndWait(browser(), GURL(chrome::kChromeUIAppsURL));
+  base::RunLoop run_loop_uninstall;
+  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppsPage,
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        DCHECK(uninstalled);
+        run_loop_uninstall.Quit();
+      }));
+  run_loop_uninstall.Run();
+
+#if defined(OS_WIN)
+  // Check file association after the web app is uninstalled.
+  ShellUtil::FileAssociationsAndAppName empty_file_associations =
+      ShellUtil::GetFileAssociationsAndAppName(prog_id);
+  EXPECT_TRUE(empty_file_associations.file_associations.empty());
+#endif
+}
+#endif
 }  // namespace web_app
