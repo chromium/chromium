@@ -2595,6 +2595,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   background->z_order = INT32_MIN;
   background->transform = gfx::OVERLAY_TRANSFORM_NONE;
   background->buffer_id = buffer_id1;
+  background->surface_scale_factor = 1;
   overlays.push_back(std::move(background));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
   mock_surface->SendFrameCallback();
@@ -2625,6 +2626,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   primary->z_order = 0;
   primary->transform = gfx::OVERLAY_TRANSFORM_NONE;
   primary->buffer_id = buffer_id2;
+  primary->surface_scale_factor = 1;
   overlays.push_back(std::move(primary));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
 

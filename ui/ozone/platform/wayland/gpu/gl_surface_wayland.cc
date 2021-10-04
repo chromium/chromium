@@ -46,7 +46,7 @@ bool GLSurfaceWayland::Resize(const gfx::Size& size,
     return true;
   wl_egl_window_resize(egl_window_.get(), size.width(), size.height(), 0, 0);
   size_ = size;
-  scale_factor_ = scale_factor;
+  scale_factor_ = ceil(scale_factor);
   return true;
 }
 

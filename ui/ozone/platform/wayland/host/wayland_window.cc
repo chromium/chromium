@@ -778,7 +778,7 @@ bool WaylandWindow::CommitOverlays(
     if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
       main_overlay = overlays.begin();
     root_surface()->SetSurfaceBufferScale(
-        (*main_overlay)->surface_scale_factor);
+        ceil((*main_overlay)->surface_scale_factor));
   }
 
   {

@@ -272,6 +272,7 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
 }
 
 void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
+  DCHECK_GE(scale, 1);
   wl_surface_set_buffer_scale(surface_.get(), scale);
   buffer_scale_ = scale;
   connection_->ScheduleFlush();
