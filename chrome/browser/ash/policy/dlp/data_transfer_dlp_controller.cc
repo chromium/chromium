@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
@@ -165,7 +164,6 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
   switch (level) {
     case DlpRulesManager::Level::kBlock:
       if (notify_on_paste) {
-        SYSLOG(INFO) << "DLP blocked paste from clipboard";
         NotifyBlockedPaste(data_src, data_dst);
       }
       is_read_allowed = false;
@@ -184,7 +182,6 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
           is_read_allowed = false;
         } else if (!(data_dst && data_dst->IsUrlType()) &&
                    !ShouldPasteOnWarn(data_dst)) {
-          SYSLOG(INFO) << "DLP warned on paste from clipboard";
           WarnOnPaste(data_src, data_dst);
           is_read_allowed = false;
         }
@@ -259,7 +256,6 @@ void DataTransferDlpController::DropIfAllowed(
 
   switch (level) {
     case DlpRulesManager::Level::kBlock:
-      SYSLOG(INFO) << "DLP blocked drop of dragged data";
       NotifyBlockedDrop(data_src, data_dst);
       break;
 

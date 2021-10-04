@@ -237,8 +237,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Reports events if required by the |restriction_info| and
   // `reporting_manager` is configured.
   void MaybeReportEvent(const RestrictionLevelAndUrl& restriction_info,
-                        DlpRulesManager::Restriction restriction,
-                        const std::string& log_message) const;
+                        DlpRulesManager::Restriction restriction) const;
 
   // Called back as part of the warning dialogs "Accept" callback, to save the
   // user's response.
