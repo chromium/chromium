@@ -94,9 +94,10 @@ class PathManager(object):
         components = sorted(idl_definition.components)  # "core" < "modules"
 
         if len(components) == 0:
-            assert isinstance(idl_definition, web_idl.Union)
-            # Unions of built-in types, e.g. (double or DOMString), do not have
-            # a component.
+            assert isinstance(idl_definition,
+                              (web_idl.ObservableArray, web_idl.Union))
+            # Compound types of built-in types, e.g. ObservableArray<long> and
+            # (double or DOMString), do not have a component.
             self._is_cross_components = False
             default_component = web_idl.Component("core")
             self._api_component = default_component
@@ -110,10 +111,12 @@ class PathManager(object):
             assert components[0] == "core"
             assert components[1] == "modules"
             self._is_cross_components = True
-            # Union does not support cross-component code generation because
-            # clients of IDL union must be on an upper or same layer to any of
-            # union members.
-            if isinstance(idl_definition, web_idl.Union):
+            # ObservableArray and union types do not support cross-component
+            # code generation because clients of IDL observable array and IDL
+            # union types must be on an upper or same layer to any of element
+            # type and union members.
+            if isinstance(idl_definition,
+                          (web_idl.ObservableArray, web_idl.Union)):
                 self._api_component = components[1]
             else:
                 self._api_component = components[0]
@@ -123,7 +126,14 @@ class PathManager(object):
 
         self._api_dir = self._component_reldirs[self._api_component]
         self._impl_dir = self._component_reldirs[self._impl_component]
-        if isinstance(idl_definition, web_idl.Union):
+        if isinstance(idl_definition, web_idl.ObservableArray):
+            self._api_basename = name_style.file("v8",
+                                                 idl_definition.identifier)
+            self._impl_basename = name_style.file("v8",
+                                                  idl_definition.identifier)
+            self._blink_dir = None
+            self._blink_basename = None
+        elif isinstance(idl_definition, web_idl.Union):
             # In case of IDL unions, underscore is used as a separator of union
             # members, so we don't want any underscore inside a union member.
             # For example, (Foo or Bar or Baz) and (FooBar or Baz) are defined

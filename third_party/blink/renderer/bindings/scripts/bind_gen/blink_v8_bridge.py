@@ -32,6 +32,10 @@ def blink_class_name(idl_definition):
                   (web_idl.CallbackFunction, web_idl.CallbackInterface,
                    web_idl.Enumeration, web_idl.Typedef)):
         return "V8{}".format(idl_definition.identifier)
+    elif isinstance(idl_definition, web_idl.ObservableArray):
+        return "V8ObservableArray{}".format(
+            idl_definition.idl_type.element_type.
+            type_name_with_extended_attribute_key_values)
     elif isinstance(idl_definition, web_idl.Union):
         # Technically this name is not guaranteed to be unique because
         # (X or sequence<Y or Z>) and (X or Y or sequence<Z>) have the same
@@ -308,6 +312,17 @@ def blink_type_info(idl_type):
                             is_move_effective=True,
                             clear_member_var_fmt="{}.clear()")
 
+    if real_type.is_observable_array:
+        typename = blink_class_name(
+            real_type.observable_array_definition_object)
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
+
     if real_type.is_record:
         assert real_type.key_type.is_string
         key_type = blink_type_info(real_type.key_type)
@@ -430,6 +445,9 @@ def _native_value_tag_impl(idl_type):
     if real_type.is_frozen_array:
         return "IDLArray<{}>".format(
             _native_value_tag_impl(real_type.element_type))
+
+    if real_type.is_observable_array:
+        return blink_class_name(real_type.observable_array_definition_object)
 
     if real_type.is_record:
         return "IDLRecord<{}, {}>".format(

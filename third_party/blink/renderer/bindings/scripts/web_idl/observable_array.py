@@ -62,6 +62,11 @@ class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
         return self._idl_type
 
     @property
+    def element_type(self):
+        """Returns the element type of the observable array."""
+        return self.idl_type.element_type
+
+    @property
     def user_attributes(self):
         """Returns the attributes that use this observable array type."""
         return self._user_attributes
