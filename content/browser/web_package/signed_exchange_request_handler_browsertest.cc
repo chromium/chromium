@@ -585,13 +585,10 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       UsePrefetch() ? 2 : 1);
 }
 
-#if defined(OS_ANDROID)
-// https://crbug.com/966820. Fails pretty often on Android.
-#define MAYBE_BadMICE DISABLED_BadMICE
-#else
-#define MAYBE_BadMICE BadMICE
-#endif
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, MAYBE_BadMICE) {
+// https://crbug.com/966820. Fails pretty often on Android. Fails flakily
+// on all platforms with Synchronous HTML Parsing enabled.
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       DISABLED_BadMICE) {
   InstallMockCertChainInterceptor();
   InstallMockCert();
 

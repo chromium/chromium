@@ -1189,7 +1189,6 @@ crbug.com/591099 external/wpt/css/css-writing-modes/tooltip-display-vertical-001
 crbug.com/591099 external/wpt/html/editing/dnd/platform/close-drag-005-manual.html [ Failure ]
 crbug.com/591099 fast/canvas-api/canvas-formattedtext.html [ Crash ]
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-css-flex-item.js [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]
 
 # Failures accumulated until 2021-5-11
 crbug.com/591099 compositing/transform-3d-scales-different-x-y.html [ Failure ]
@@ -1248,10 +1247,6 @@ crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/patternfill-repeat.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/media/audio-controls-rendering.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/media/media-document-audio-repaint.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/svg/as-background-image/background-image-preserveaspectRatio-support.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/svg/transforms/text-with-pattern-inside-transformed-html.xhtml [ Failure ]
 crbug.com/591099 virtual/transform-interop-disabled/paint/invalidation/svg/tspan-pattern-update.html [ Failure ]
 crbug.com/591099 virtual/transform-interop-disabled/transforms/3d/general/perspective-units.html [ Failure ]
 crbug.com/591099 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure ]
@@ -1358,3 +1353,6 @@ crbug.com/626703 external/wpt/css/CSS2/borders/border-left-width-applies-to-014.
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-color-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-width-applies-to-014.xht [ Failure ]
+
+# Fails with ForceSynchronousHTMLParsing enabled, might be a fluke:
+crbug.com/1254921 svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]

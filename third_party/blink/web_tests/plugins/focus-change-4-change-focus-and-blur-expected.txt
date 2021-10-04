@@ -1,6 +1,6 @@
 CONSOLE MESSAGE: Blink Test Plugin: initializing
 CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(true)
-CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(false)
+CONSOLE MESSAGE: line 40: Blink Test Plugin: DidChangeFocus(false)
 i1focus
 i1blur
 pfocus-change-2

@@ -166,21 +166,6 @@
     "args": ["--use-gpu-in-tests"]
   },
   {
-    "prefix": "synchronous_html_parser",
-    "bases": ["http/tests/devtools/sources/debugger-breakpoints",
-              "http/tests/inspector-protocol",
-              "http/tests/preload",
-              "external/wpt/html/semantics",
-              "external/wpt/html/syntax/parsing",
-              "external/wpt/html/the-xhtml-syntax",
-              "external/wpt/preload",
-              "external/wpt/signed-exchange",
-              "media",
-              "svg"],
-    "args": ["--enable-blink-features=ForceSynchronousHTMLParsing",
-             "--enable-features=SharedArrayBuffer"]
-  },
-  {
     "prefix": "shared_array_buffer_on_desktop",
     "bases": ["crypto",
               "external/wpt/compression",
@@ -955,13 +940,6 @@
     "args": ["--enable-features=ScrollUnification",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"]
-  },
-  {
-    "prefix": "scroll-unification-synchronous_html_parser",
-    "bases": ["external/wpt/dom"],
-    "args": ["--enable-features=ScrollUnification",
-             "--enable-threaded-compositing",
-             "--enable-blink-features=ForceSynchronousHTMLParsing"]
   },
   {
     "prefix": "scroll-unification-unified-autoplay",

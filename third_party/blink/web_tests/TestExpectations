@@ -90,50 +90,99 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 # Tested by paint/background/root-element-background-transparency.html for now.
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
 
-# ====== Synchronous, budgeted HTML parser tests from here ======
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/preload/modulepreload.html [ Failure Pass ]
+# ====== Synchronous, budgeted HTML parser tests from here ========================
+
+# See crbug.com/1254921 for details!
+#
+# These tests either fail outright, or become flaky, when these two flags/parameters are enabled:
+#   --enable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning:allocation_size_bytes/2097152/loader_chunk_size/1048576
+
+# app-history tests - fail:
+crbug.com/1254926 external/wpt/app-history/navigate-event/navigate-history-back-after-fragment.html [ Failure ]
+crbug.com/1254926 external/wpt/app-history/navigate/navigate-same-document-event-order.html [ Failure ]
+crbug.com/1254926 external/wpt/app-history/currentchange-event/currentchange-app-history-back-forward-same-doc.html [ Failure ]
+crbug.com/1254926 external/wpt/app-history/currentchange-event/currentchange-app-history-navigate-same-doc.html [ Failure ]
+crbug.com/1254926 external/wpt/app-history/currentchange-event/currentchange-history-back-same-doc.html [ Failure ]
+
 # Extra line info appears in the output in some cases.
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-csp.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
+crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
-# Unknown media state problem (probably due to layout occuring earlier than expected)
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-audio-constructor.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-not-in-document.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause-networkState.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document-networkState.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src-not-in-document.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-selection-metadata.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
+# Extra box in the output:
+crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Failure ]
-crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
+# Extra \n at the end (maybe ok?):
+crbug.com/1254934 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/051.html [ Failure ]
 
-# Flaky - possible filter paint invalidation bug.
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
+# Table layout changes:
+crbug.com/1254935 fragmentation/nested-repeating-thead-4.html [ Failure ]
+crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot-4.html [ Failure ]
+crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot.html [ Failure ]
 
-# These two were marked as flaky crashes on Win/Mac.
-crbug.com/626703 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Crash Failure Timeout ]
-crbug.com/1167095 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Crash Failure ]
+# More line messages added and removed:
+crbug.com/1254937 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure ]
+crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure ]
+crbug.com/1254937 http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
+crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Timeout Failure ]
 
-# ====== Synchronous, budgeted HTML parser tests to here ======
+# Timeouts
+crbug.com/1254938 http/tests/doc-write-intervention/doc-write-sync-third-party-script-block.html [ Timeout ]
+crbug.com/1254938 http/tests/mixed-autoupgrade/optionally/image-upgrade-console-message.https.html [ Timeout ]
+
+# Added "FAIL" message
+crbug.com/1254939 http/tests/misc/embed-image-load-outlives-gc-without-crashing.html [ Failure ]
+
+# Script preloaded: No
+crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
+
+# Test fails:
+crbug.com/1254942 http/tests/security/subresourceIntegrity/revalidation-failed-script.html [ Failure ]
+crbug.com/1254942 http/tests/security/subresourceIntegrity/empty-after-revalidate-script.html [ Failure ]
+
+# Two paint failures:
+crbug.com/1254943 paint/invalidation/overflow/resize-child-within-overflow.html [ Failure ]
+crbug.com/1254943 fast/events/hit-test-counts.html [ Failure ]
+
+# Image isn't present:
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Failure ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Failure ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Failure ]
+
+# Fails flakily or times out
+crbug.com/1255285 virtual/threaded/transitions/transition-currentcolor.html [ Pass Failure ]
+crbug.com/1255285 virtual/threaded/transitions/transition-ends-before-animation-frame.html [ Timeout ]
+
+# Unknown media state flakiness (likely due to layout occuring earlier than expected):
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-audio-constructor.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-not-in-document.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState.html [ Failure ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document.html [ Failure ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause-networkState.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document-networkState.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-src.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src-not-in-document.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-selection-metadata.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
+crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
+
+# ====== Synchronous, budgeted HTML parser tests to here ========================
+
+# Console log messages have flaky line numbers
+crbug.com/896194 http/tests/security/link-crossorigin-stylesheet-use-credentials.html [ Pass Failure ]
+crbug.com/896194 http/tests/security/referrer-policy-conflicting-policies.html [ Pass Failure ]
+crbug.com/896194 http/tests/security/video-poster-cross-origin-crash2.html [ Pass Failure ]
+crbug.com/896194 plugins/focus-change-2-change-focus.html [ Pass Failure ]
+crbug.com/896194 webaudio/IIRFilter/unstable-filter-warning.html [ Pass Failure ]
+crbug.com/896194 http/tests/security/referrer-policy-conflicting-policies-image-set.html [ Pass Failure ]
 
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
 
@@ -1664,7 +1713,6 @@ crbug.com/1232504 [ Mac11.0 ] external/wpt/html/semantics/embedded-content/media
 crbug.com/1232504 [ Mac11.0 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
 crbug.com/1240701 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
 crbug.com/1240701 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
-crbug.com/1240701 virtual/synchronous_html_parser/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
 
 # XML nodes aren't match by .class selectors:
 crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
@@ -3025,7 +3073,6 @@ crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.html 
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.worker.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.serviceworker.html [ Crash ]
 crbug.com/626703 [ Mac ] external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.serviceworker.html [ Crash ]
 crbug.com/626703 [ Win7 ] external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.serviceworker.html [ Crash ]
@@ -3562,8 +3609,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/idlharness.wi
 # selectmenu timeouts
 crbug.com/1253971 [ Linux ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
-crbug.com/1253971 [ Linux ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
-crbug.com/1253971 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 
 
 ### See crbug.com/891427 comment near the top of this file:
@@ -4899,9 +4944,6 @@ crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transfo
 crbug.com/953591 [ Win ] transforms/matrix-02.html [ Failure Pass ]
 crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Skip Timeout ]
 
-# Sheriff 2019-04-18
-crbug.com/954297 [ Win ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Crash Pass Skip Timeout ]
-
 # Sheriff 2019-04-30
 crbug.com/948785 [ Debug ] fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Failure Pass ]
 
@@ -5355,8 +5397,6 @@ crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrol
 crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/scrollbar-buttons.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/scrollbar-corner-colors.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/scrollbar-orientation.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/webkit-animation-iteration-event.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-wheel-event-regions/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-wheel-event-regions/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Crash Failure Pass Timeout ]
 
@@ -5898,9 +5938,6 @@ crbug.com/1161301 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpac
 # Failing on Webkit Linux Leak only:
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
 
-# Sheriff 2021-01-08
-crbug.com/1164459 [ Mac ] virtual/synchronous_html_parser/external/wpt/preload/download-resources.html [ Pass Timeout ]
-
 # Sheriff 2021-01-12
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Failure Pass ]
 
@@ -6086,7 +6123,6 @@ crbug.com/476553 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-sn
 crbug.com/1167679 accessibility/aom-focus-action.html [ Crash Failure Pass Timeout ]
 # More failing tests because of enabling scroll unification flag
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-should-not-stop-on-keypress.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-scrolled.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-upwards-propagation-overflow-hidden-body.html [ Crash Failure Pass Timeout ]
@@ -6276,7 +6312,6 @@ crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-c
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
-crbug.com/1208173 [ Mac ] virtual/synchronous_html_parser/svg/filters/feDisplacementMap.svg [ Failure ]
 crbug.com/1208173 [ Mac10.14 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 
 # Fix to unblock wpt-importer
@@ -6505,9 +6540,6 @@ crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-se
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-user-verification.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Timeout ]
-crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-clear-credentials.js [ Crash Timeout ]
-crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-get-credentials.js [ Crash ]
-crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-set-aps.js [ Crash ]
 
 # Sheriff 2021-06-14
 crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Pass Timeout ]
@@ -6620,9 +6652,7 @@ crbug.com/1229212 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [
 
 # Sheriff 2021-07-15
 crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
-crbug.com/1229666 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
 crbug.com/1093027 http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html [ Crash Failure Pass Skip Timeout ]
-crbug.com/1229701 virtual/synchronous_html_parser/http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Pass Timeout ]
 # The next test was originally skipped on mac for lack of support (crbug.com/613672). It is now skipped everywhere due to flakiness.
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Failure Pass ]
@@ -6639,7 +6669,6 @@ crbug.com/1231431 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 
 # Sheriff 2021-07-22
 crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
-crbug.com/1222097 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231915 [ Mac10.12 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Pass Timeout ]
 crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Failure Pass ]
 
@@ -6667,7 +6696,6 @@ crbug.com/1233557 [ Mac10.12 ] fast/forms/calendar-picker/date-picker-appearance
 
 # Sheriff 2021-07-28
 crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
-crbug.com/1233792 virtual/synchronous_html_parser/http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Pass ]
 crbug.com/1234057 [ Mac ] external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
 crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-image.https.html [ Crash Failure Pass ]
 
@@ -6833,8 +6861,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/
 crbug.com/1249176 [ Mac11-arm64 ] virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/not-plz-service-worker/external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/offsetparent-old-behavior/external/wpt/shadow-dom/accesskey.tentative.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/interfaces/TextTrackCue/endTime.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/workers/interfaces/WorkerUtils/importScripts/blob-url.worker.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/editing/other/editing-around-select-element.tentative_insertText.html [ Failure ]
@@ -6886,7 +6912,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-shape.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/console/console-time.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/console-timeline.js [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/timeline-layout.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Failure Pass ]
@@ -6948,7 +6973,6 @@ crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/basic_video_encoding.ht
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/temporal_svc.https.any.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/network/request-interception.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/simulcast/h264.https.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ Pass Timeout ]

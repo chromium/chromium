@@ -29,16 +29,12 @@ crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incum
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
 
 # OOPIF tests need site isolation
-virtual/synchronous_html_parser/http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
-virtual/synchronous_html_parser/http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
-virtual/synchronous_html_parser/http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-iframe.js [ Skip ]
 http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-iframe.js [ Skip ]
 
 # Fix to unblock wpt-importer
 crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
-crbug.com/1209223 virtual/synchronous_html_parser/http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
 
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]

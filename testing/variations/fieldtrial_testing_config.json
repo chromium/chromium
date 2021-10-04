@@ -3459,6 +3459,41 @@
             ]
         }
     ],
+    "ForceSynchronousHTMLParsing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Mojo-2MB-Loader-1MB-Synchronous_20211024",
+                    "params": {
+                        "allocation_size_bytes": "2097152",
+                        "loader_chunk_size": "1048576"
+                    },
+                    "enable_features": [
+                        "ForceSynchronousHTMLParsing",
+                        "LoaderDataPipeTuning"
+                    ]
+                },
+                {
+                    "name": "Mojo-2MB-Loader-1MB-BackgroundParser_20211024",
+                    "params": {
+                        "allocation_size_bytes": "2097152",
+                        "loader_chunk_size": "1048576"
+                    },
+                    "enable_features": [
+                        "LoaderDataPipeTuning"
+                    ]
+                }
+            ]
+        }
+    ],
     "FuzzyAppSearch": [
         {
             "platforms": [
