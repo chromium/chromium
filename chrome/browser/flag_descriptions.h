@@ -1891,12 +1891,6 @@ extern const char kPasswordProtectionForSignedInUsersDescription[];
 extern const char kPhotoPickerVideoSupportName[];
 extern const char kPhotoPickerVideoSupportDescription[];
 
-extern const char kProcessSharingWithDefaultSiteInstancesName[];
-extern const char kProcessSharingWithDefaultSiteInstancesDescription[];
-
-extern const char kProcessSharingWithStrictSiteInstancesName[];
-extern const char kProcessSharingWithStrictSiteInstancesDescription[];
-
 extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];
 extern const char kQueryTilesNTPName[];

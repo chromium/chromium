@@ -2369,16 +2369,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "enable-process-sharing-with-default-site-instances",
-    "owners": [ "creis" ],
-    "expiry_milestone": 81
-  },
-  {
-    "name": "enable-process-sharing-with-strict-site-instances",
-    "owners": [ "japhet" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by network administrators to debug

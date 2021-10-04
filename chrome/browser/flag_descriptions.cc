@@ -3307,28 +3307,6 @@ const char kPhotoPickerVideoSupportName[] = "Photo Picker Video Support";
 const char kPhotoPickerVideoSupportDescription[] =
     "Enables video files to be shown in the Photo Picker dialog";
 
-const char kProcessSharingWithDefaultSiteInstancesName[] =
-    "Process sharing with default site instances";
-const char kProcessSharingWithDefaultSiteInstancesDescription[] =
-    "When site isolation is disabled, this mode changes how sites are lumped "
-    "in to shared processes. For sites that do not require isolation, this "
-    "feature groups them into a single 'default' site instance (per browsing "
-    "instance) instead of creating unique site instances for each one. This "
-    "enables resource savings by creating fewer processes for sites that do "
-    "not need isolation.";
-
-const char kProcessSharingWithStrictSiteInstancesName[] =
-    "Process sharing with strict site instances";
-const char kProcessSharingWithStrictSiteInstancesDescription[] =
-    "When site isolation is disabled, this mode changes how sites are lumped "
-    "in to a shared process. Process selection is usually controlled with "
-    "site instances. With strict site isolation, each site on a page gets its "
-    "own site instance and process. With site isolation disabled and without "
-    "this mode, all sites that share a process are put into the same site "
-    "instance. This mode adds a third way: site instances are strictly "
-    "separated like strict site isolation, but process selection puts multiple "
-    "site instances in a single process.";
-
 const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";
