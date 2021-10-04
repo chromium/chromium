@@ -156,6 +156,8 @@ between the function being called and the promise settling.
 To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/#keyboard-actions).
 For example, to send the tab key you would send "\uE004".
 
+_Note: these special-key codepoints are not necessarily what you would expect. For example, <kbd>Esc</kbd> is the invalid Unicode character `\uE00C`, not the `\u001B` Escape character from ASCII._
+
 [activation]: https://html.spec.whatwg.org/multipage/interaction.html#activation
 
 ### set_permission
