@@ -60,6 +60,9 @@ extern const base::Feature kDefaultPromoTailored;
 // Feature flag that swaps the omnibox textfield implementation.
 extern const base::Feature kIOSNewOmniboxImplementation;
 
+// Feature flag that fixes omnibox behavior when using iOS native dictation
+extern const base::Feature kIOSOmniboxAllowEditsDuringDictation;
+
 // Feature flag that enables persisting the Crash Restore Infobar across
 // navigations.
 extern const base::Feature kIOSPersistCrashRestore;
