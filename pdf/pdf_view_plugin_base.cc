@@ -1617,9 +1617,21 @@ void PdfViewPluginBase::HistogramCustomCounts(const char* name,
   base::UmaHistogramCustomCounts(name, sample, min, max, bucket_count);
 }
 
+void PdfViewPluginBase::DidOpen(std::unique_ptr<UrlLoader> loader,
+                                int32_t result) {
+  if (result == kSuccess) {
+    if (!engine()->HandleDocumentLoad(std::move(loader), GetURL())) {
+      document_load_state_ = DocumentLoadState::kLoading;
+      DocumentLoadFailed();
+    }
+  } else if (result != kErrorAborted) {
+    DocumentLoadFailed();
+  }
+}
+
 void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                        int32_t result) {
-  DCHECK_EQ(result, Result::kSuccess);
+  DCHECK_EQ(result, kSuccess);
   preview_client_ = std::make_unique<PreviewModeClient>(this);
   preview_engine_ = std::make_unique<PDFiumEngine>(
       preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
@@ -1666,7 +1678,7 @@ void PdfViewPluginBase::ProcessPreviewPageInfo(const std::string& url,
 
 void PdfViewPluginBase::LoadAvailablePreviewPage() {
   if (preview_pages_info_.empty() ||
-      document_load_state() != DocumentLoadState::kComplete ||
+      document_load_state_ != DocumentLoadState::kComplete ||
       preview_document_load_state_ == DocumentLoadState::kLoading) {
     return;
   }

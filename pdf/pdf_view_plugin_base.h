@@ -156,6 +156,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return notified_browser_about_unsupported_feature_;
   }
 
+  DocumentLoadState document_load_state_for_testing() const {
+    return document_load_state_;
+  }
+
  protected:
   struct BackgroundPart {
     gfx::Rect location;
@@ -192,9 +196,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Creates a URL loader and allows it to access all urls, i.e. not just the
   // frame's origin.
   virtual std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() = 0;
-
-  // Handles `LoadUrl()` result.
-  virtual void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) = 0;
 
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
@@ -389,11 +390,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   bool stop_scrolling() const { return stop_scrolling_; }
 
-  DocumentLoadState document_load_state() const { return document_load_state_; }
-  void set_document_load_state(DocumentLoadState state) {
-    document_load_state_ = state;
-  }
-
   AccessibilityState accessibility_state() const {
     return accessibility_state_;
   }
@@ -488,6 +484,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
                              int32_t min,
                              int32_t max,
                              uint32_t bucket_count);
+
+  // Handles `LoadUrl()` result.
+  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
 
   // Handles `LoadUrl()` result for print preview.
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);

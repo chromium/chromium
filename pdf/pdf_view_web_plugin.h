@@ -271,7 +271,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
   void SendMessage(base::Value message) override;
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;

@@ -776,17 +776,6 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
   return loader;
 }
 
-// Modeled on `OutOfProcessInstance::DidOpen()`.
-void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
-                               int32_t result) {
-  if (result == Result::kSuccess) {
-    if (!engine()->HandleDocumentLoad(std::move(loader), GetURL()))
-      DocumentLoadFailed();
-  } else {
-    NOTIMPLEMENTED();
-  }
-}
-
 void PdfViewWebPlugin::SendMessage(base::Value message) {
   post_message_sender_.Post(std::move(message));
 }

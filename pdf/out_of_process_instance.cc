@@ -680,18 +680,6 @@ void OutOfProcessInstance::StopFind() {
   PdfViewPluginBase::StopFind();
 }
 
-void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
-                                   int32_t result) {
-  if (result == PP_OK) {
-    if (!engine()->HandleDocumentLoad(std::move(loader), GetURL())) {
-      set_document_load_state(DocumentLoadState::kLoading);
-      DocumentLoadFailed();
-    }
-  } else if (result != PP_ERROR_ABORTED) {  // Can happen in tests.
-    DocumentLoadFailed();
-  }
-}
-
 void OutOfProcessInstance::SendMessage(base::Value message) {
   PostMessage(VarFromValue(message));
 }

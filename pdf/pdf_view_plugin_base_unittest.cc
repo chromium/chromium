@@ -135,14 +135,12 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   // Public for testing.
   using PdfViewPluginBase::accessibility_state;
-  using PdfViewPluginBase::document_load_state;
   using PdfViewPluginBase::edit_mode;
   using PdfViewPluginBase::engine;
   using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::InitializeEngine;
   using PdfViewPluginBase::LoadUrl;
-  using PdfViewPluginBase::set_document_load_state;
   using PdfViewPluginBase::set_full_frame;
 
   MOCK_METHOD(bool, Confirm, (const std::string&), (override));
@@ -185,8 +183,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               CreateUrlLoaderInternal,
               (),
               (override));
-
-  MOCK_METHOD(void, DidOpen, (std::unique_ptr<UrlLoader>, int32_t), (override));
 
   void SendMessage(base::Value message) override {
     sent_messages_.push_back(std::move(message));
@@ -516,7 +512,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 
   ASSERT_FALSE(fake_plugin_.IsPrintPreview());
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
 
   // Change the accessibility state to pending so that accessibility can be
   // loaded later.
@@ -534,7 +530,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 
   fake_plugin_.DocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kLoaded,
             fake_plugin_.accessibility_state());
 
@@ -559,7 +555,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 
   ASSERT_FALSE(fake_plugin_.IsPrintPreview());
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   ASSERT_EQ(PdfViewPluginBase::AccessibilityState::kOff,
             fake_plugin_.accessibility_state());
 
@@ -574,7 +570,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 
   fake_plugin_.DocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kOff,
             fake_plugin_.accessibility_state());
 
@@ -597,7 +593,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 
   ASSERT_FALSE(fake_plugin_.IsPrintPreview());
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
@@ -608,7 +604,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 
   fake_plugin_.DocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
 
   // Check all the sent messages.
   ASSERT_EQ(4u, fake_plugin_.sent_messages().size());
@@ -627,13 +623,13 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
 
   ASSERT_FALSE(fake_plugin_.IsPrintPreview());
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
 
   fake_plugin_.DocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
 
   // Check the sent messages when the document doesn't have any metadata,
   // attachments or bookmarks.
@@ -651,7 +647,7 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithNotifiedRenderFrame) {
   fake_plugin_.CreateUrlLoader();
 
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_TRUE(fake_plugin_.GetDidCallStartLoadingForTesting());
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadFailure"));
@@ -659,7 +655,7 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithNotifiedRenderFrame) {
 
   fake_plugin_.DocumentLoadFailed();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
 }
 
@@ -669,13 +665,13 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithoutNotifiedRenderFrame) {
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
 
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadFailure"));
   EXPECT_CALL(fake_plugin_, PluginDidStopLoading()).Times(0);
 
   fake_plugin_.DocumentLoadFailed();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
-            fake_plugin_.document_load_state());
+            fake_plugin_.document_load_state_for_testing());
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
 }
 
