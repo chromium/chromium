@@ -87,8 +87,8 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/preferences.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

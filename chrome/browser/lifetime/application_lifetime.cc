@@ -50,8 +50,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/aura/env.h"

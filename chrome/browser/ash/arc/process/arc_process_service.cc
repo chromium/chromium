@@ -31,7 +31,7 @@
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/chromeos/process_snapshot_server.h"
+#include "chrome/browser/ash/process_snapshot_server.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/mojom/process.mojom.h"

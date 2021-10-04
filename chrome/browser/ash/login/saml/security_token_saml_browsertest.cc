@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"

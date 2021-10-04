@@ -150,8 +150,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"

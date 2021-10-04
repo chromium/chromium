@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/chromeos/throttle_observer.h"
+#include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 
 namespace content {

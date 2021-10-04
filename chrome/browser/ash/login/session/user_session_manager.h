@@ -34,9 +34,10 @@
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/eol_notification.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/u2f_notification.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
-#include "chrome/browser/chromeos/eol_notification.h"
-#include "chrome/browser/chromeos/u2f_notification.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

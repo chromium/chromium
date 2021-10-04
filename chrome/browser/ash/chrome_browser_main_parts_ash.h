@@ -48,10 +48,10 @@
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
-#include "chrome/browser/chromeos/external_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
 class AssistantBrowserDelegateImpl;

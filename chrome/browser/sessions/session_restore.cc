@@ -80,7 +80,7 @@
 #include "extensions/common/extension_set.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder.h"
 #include "components/app_restore/features.h"
 #endif
 

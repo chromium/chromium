@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
-#include "chrome/browser/chromeos/external_protocol_dialog.h"
+#include "chrome/browser/ash/external_protocol_dialog.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"

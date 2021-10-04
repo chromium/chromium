@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class Profile;

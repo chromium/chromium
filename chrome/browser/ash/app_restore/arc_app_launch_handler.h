@@ -12,7 +12,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/scheduler_configuration_manager.h"
+#include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"

@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"

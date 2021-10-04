@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/chromeos/throttle_observer.h"
-#include "chrome/browser/chromeos/throttle_service.h"
+#include "chrome/browser/ash/throttle_observer.h"
+#include "chrome/browser/ash/throttle_service.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

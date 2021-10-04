@@ -22,7 +22,7 @@ specific_include_rules = {
   "input_method_manager_impl\.cc": [
     # TODO(erikwright): Much/all of language_preferences can/should be decoupled
     # from chrome/browser.
-    "!chrome/browser/chromeos/language_preferences.h",
+    "!chrome/browser/ash/language_preferences.h",
   ],
 
   # For testing.

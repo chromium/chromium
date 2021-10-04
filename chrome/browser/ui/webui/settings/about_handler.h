@@ -21,7 +21,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {

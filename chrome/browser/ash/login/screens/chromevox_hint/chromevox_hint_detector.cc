@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "chrome/browser/chromeos/idle_detector.h"
+#include "chrome/browser/ash/idle_detector.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 
 namespace ash {

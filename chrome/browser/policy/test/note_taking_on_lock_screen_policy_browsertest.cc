@@ -7,7 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

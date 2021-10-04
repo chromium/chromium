@@ -30,7 +30,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::TimeDelta;

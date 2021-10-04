@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_ACTIVE_WINDOW_THROTTLE_OBSERVER_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/window_throttle_observer_base.h"
+#include "chrome/browser/ash/window_throttle_observer_base.h"
 
 namespace arc {
 

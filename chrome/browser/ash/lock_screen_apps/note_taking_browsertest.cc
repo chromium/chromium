@@ -11,7 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

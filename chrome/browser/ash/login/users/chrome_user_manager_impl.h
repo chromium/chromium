@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when fixed.
-#include "chrome/browser/chromeos/session_length_limiter.h"
+#include "chrome/browser/ash/session_length_limiter.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"

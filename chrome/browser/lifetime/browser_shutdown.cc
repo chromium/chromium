@@ -57,7 +57,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #endif
 

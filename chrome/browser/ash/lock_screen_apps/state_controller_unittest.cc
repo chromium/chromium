@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"

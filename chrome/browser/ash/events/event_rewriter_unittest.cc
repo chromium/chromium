@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
-#include "chrome/browser/chromeos/preferences.h"
+#include "chrome/browser/ash/preferences.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/prefs/pref_member.h"

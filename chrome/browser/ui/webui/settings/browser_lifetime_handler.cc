@@ -11,8 +11,8 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

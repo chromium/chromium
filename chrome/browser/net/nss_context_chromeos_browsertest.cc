@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
