@@ -12,6 +12,9 @@
 
 #include <windows.h>
 
+// Must be after windows.h.
+#include <versionhelpers.h>
+
 #include <sddl.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -219,15 +222,7 @@ bool IsC1FSent() {
 }
 
 bool IsWindowsVersionSupported() {
-  OSVERSIONINFOEX version_info = {sizeof version_info};
-  GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&version_info));
-
-  // Windows 7 is version 6.1.
-  if (version_info.dwMajorVersion > 6 ||
-      (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion > 0))
-    return true;
-
-  return false;
+  return IsWindows7OrGreater();
 }
 
 // Note this function should not be called on old Windows versions where these

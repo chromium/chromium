@@ -8,6 +8,9 @@
 
 #include <windows.h>
 
+// Must be after windows.h.
+#include <versionhelpers.h>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/unguessable_token.h"
@@ -354,10 +357,7 @@ TEST(IntegrationTestsTest, RunChildFromInsideJobNoEscape) {
   int expect_result = 4;  // Means the runner has failed to execute the child.
   // Check if we are on Win8 or newer and expect a success as newer windows
   // versions support nested jobs.
-  OSVERSIONINFOEX version_info = { sizeof version_info };
-  ::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&version_info));
-  if (version_info.dwMajorVersion > 6 ||
-      (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion >= 2)) {
+  if (IsWindows8OrGreater()) {
     expect_result = SBOX_TEST_SUCCEEDED;
   }
 
