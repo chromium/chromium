@@ -306,6 +306,8 @@ void ProxyMain::BeginMainFrame(
   if (updated)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
+  int source_frame_number = layer_tree_host_->SourceFrameNumber();
+
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(),
@@ -361,7 +363,7 @@ void ProxyMain::BeginMainFrame(
                        base::Unretained(proxy_impl_.get()), &completion,
                        layer_tree_host_, begin_main_frame_start_time,
                        begin_main_frame_state->begin_frame_args,
-                       hold_commit_for_activation));
+                       source_frame_number, hold_commit_for_activation));
     completion.Wait();
   }
   layer_tree_host_->CommitComplete();

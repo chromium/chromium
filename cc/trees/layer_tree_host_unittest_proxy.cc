@@ -276,7 +276,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void BeginCommitOnThread(LayerTreeHostImpl* impl) override {
-    if (impl->sync_tree()->source_frame_number() < 0)
+    if (impl->sync_tree()->source_frame_number() == 0)
       return;  // The initial commit, don't do anything here.
 
     // The main thread will request a commit, and may request that it does
@@ -288,7 +288,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
       activate_blocked_ = true;
     }
     switch (impl->sync_tree()->source_frame_number()) {
-      case 0: {
+      case 1: {
         // This is for case 1 in DidCommit.
         auto unblock = base::BindOnce(
             &LayerTreeHostProxyTestCommitWaitsForActivation::UnblockActivation,
@@ -301,7 +301,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
             base::Milliseconds(16 * 4));
         break;
       }
-      case 1:
+      case 2:
         // This is for case 2 in DidCommit.
         // Here we don't ever unblock activation. Since the commit hasn't
         // requested to wait, we can verify that activation is blocked when the

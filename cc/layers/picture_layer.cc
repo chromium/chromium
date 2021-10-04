@@ -59,7 +59,8 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
   Layer::PushPropertiesTo(base_layer);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "PictureLayer::PushPropertiesTo");
-  DropRecordingSourceContentIfInvalid();
+  DropRecordingSourceContentIfInvalid(
+      base_layer->layer_tree_impl()->source_frame_number());
 
   layer_impl->SetNearestNeighbor(picture_layer_inputs_.nearest_neighbor);
   layer_impl->set_gpu_raster_max_texture_size(
@@ -267,8 +268,8 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
   }
 }
 
-void PictureLayer::DropRecordingSourceContentIfInvalid() {
-  int source_frame_number = layer_tree_host()->SourceFrameNumber();
+void PictureLayer::DropRecordingSourceContentIfInvalid(
+    int source_frame_number) {
   gfx::Size recording_source_bounds = recording_source_->GetSize();
 
   gfx::Size layer_bounds = bounds();

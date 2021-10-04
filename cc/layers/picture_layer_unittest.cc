@@ -147,6 +147,7 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
   host_impl.SetVisible(true);
   host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
   host_impl.CreatePendingTree();
+  host_impl.pending_tree()->set_source_frame_number(host->SourceFrameNumber());
   host_impl.pending_tree()->SetRootLayerForTesting(
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(

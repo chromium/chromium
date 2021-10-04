@@ -344,7 +344,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   virtual void ReadyToCommit(
       const viz::BeginFrameArgs& commit_args,
       const BeginMainFrameMetrics* begin_main_frame_metrics);
-  virtual void BeginCommit();
+  virtual void BeginCommit(int source_frame_number);
   virtual void CommitComplete();
   virtual void UpdateAnimationState(bool start_ready_animations);
   bool Mutate(base::TimeTicks monotonic_time);

@@ -67,6 +67,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                  LayerTreeHost* layer_tree_host,
                                  base::TimeTicks main_thread_start_time,
                                  const viz::BeginFrameArgs& commit_args,
+                                 int source_frame_number,
                                  bool hold_commit_for_activation);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
@@ -166,6 +167,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   const int layer_tree_host_id_;
 
   std::unique_ptr<Scheduler> scheduler_;
+
+  int source_frame_number_ = -1;
 
   // Set when the main thread is waiting on a pending tree activation.
   bool commit_completion_waits_for_activation_;

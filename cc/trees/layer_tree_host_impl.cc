@@ -570,11 +570,12 @@ void LayerTreeHostImpl::ReadyToCommit(
   }
 }
 
-void LayerTreeHostImpl::BeginCommit() {
+void LayerTreeHostImpl::BeginCommit(int source_frame_number) {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::BeginCommit");
 
   if (!CommitToActiveTree())
     CreatePendingTree();
+  sync_tree()->set_source_frame_number(source_frame_number);
 }
 
 void LayerTreeHostImpl::CommitComplete() {

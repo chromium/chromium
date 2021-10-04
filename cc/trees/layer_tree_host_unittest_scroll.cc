@@ -194,7 +194,7 @@ class LayerTreeHostScrollTestScrollMultipleRedraw
   }
 
   void BeginCommitOnThread(LayerTreeHostImpl* impl) override {
-    switch (layer_tree_host()->SourceFrameNumber()) {
+    switch (impl->sync_tree()->source_frame_number()) {
       case 0:
         EXPECT_VECTOR_EQ(initial_scroll_,
                          CurrentScrollOffset(scroll_layer_.get()));

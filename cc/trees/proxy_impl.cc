@@ -272,6 +272,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     LayerTreeHost* layer_tree_host,
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
+    int source_frame_number,
     bool hold_commit_for_activation) {
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
   DCHECK(!commit_completion_event_);
@@ -285,6 +286,8 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     completion->Signal();
     return;
   }
+
+  source_frame_number_ = source_frame_number;
 
   // Ideally, we should inform to impl thread when BeginMainFrame is started.
   // But, we can avoid a PostTask in here.
@@ -678,7 +681,7 @@ void ProxyImpl::ScheduledActionCommit() {
   base::ScopedAllowCrossThreadRefCountAccess
       allow_cross_thread_ref_count_access;
 
-  host_impl_->BeginCommit();
+  host_impl_->BeginCommit(source_frame_number_);
   blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
       host_impl_.get());
 

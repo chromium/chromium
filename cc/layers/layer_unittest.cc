@@ -309,6 +309,9 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   std::unique_ptr<LayerImpl> mask_layer1_impl =
       mask_layer1->CreateLayerImpl(host_impl_.active_tree());
 
+  host_impl_.active_tree()->set_source_frame_number(
+      host_impl_.active_tree()->source_frame_number() + 1);
+
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get());
       child->PushPropertiesTo(child_impl.get());

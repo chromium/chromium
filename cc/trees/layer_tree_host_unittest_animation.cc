@@ -933,7 +933,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
   void BeginCommitOnThread(LayerTreeHostImpl* host_impl) override {
     // Note that the frame number gets incremented after BeginCommitOnThread but
     // before WillCommitCompleteOnThread and CommitCompleteOnThread.
-    if (host_impl->sync_tree()->source_frame_number() == 0) {
+    if (host_impl->sync_tree()->source_frame_number() == 1) {
       GetImplTimelineAndAnimationByID(*host_impl);
       // This happens after the impl-only animation is added in
       // WillCommitCompleteOnThread.

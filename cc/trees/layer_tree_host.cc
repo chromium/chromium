@@ -271,6 +271,7 @@ int LayerTreeHost::GetId() const {
 }
 
 int LayerTreeHost::SourceFrameNumber() const {
+  DCHECK(task_runner_provider_->IsMainThread());
   return source_frame_number_;
 }
 
@@ -364,7 +365,6 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
     next_commit_forces_recalculate_raster_scales_ = false;
   }
 
-  sync_tree->set_source_frame_number(SourceFrameNumber());
   if (!pending_presentation_time_callbacks_.empty()) {
     sync_tree->AddPresentationCallbacks(
         std::move(pending_presentation_time_callbacks_));

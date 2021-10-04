@@ -192,6 +192,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   TRACE_EVENT0("cc", "SingleThreadProxy::DoCommit");
   DCHECK(task_runner_provider_->IsMainThread());
 
+  int source_frame_number = layer_tree_host_->SourceFrameNumber();
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
@@ -202,7 +203,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     DebugScopedSetImplThread impl(task_runner_provider_);
 
     host_impl_->ReadyToCommit(commit_args, nullptr);
-    host_impl_->BeginCommit();
+    host_impl_->BeginCommit(source_frame_number);
 
     if (host_impl_->EvictedUIResourcesExist())
       layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
