@@ -3314,4 +3314,72 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingThreatDetailsPrerenderBrowserTest,
   }
 }
 
+class SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest
+    : public SafeBrowsingBlockingPageDelayedWarningBrowserTest {
+ public:
+  SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest() = default;
+  ~SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SafeBrowsingBlockingPageDelayedWarningBrowserTest::SetUpCommandLine(
+        command_line);
+    // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
+    // creation until now because
+    // SafeBrowsingBlockingPageDelayedWarningBrowserTest also uses a
+    // ScopedFeatureList and initialization order matters.
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest::
+                GetWebContents,
+            base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_->SetUp(embedded_test_server());
+    SafeBrowsingBlockingPageDelayedWarningBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return *prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest,
+    testing::Combine(testing::Bool(), /* IsolateAllSitesForTesting */
+                     testing::Bool() /* Show warning on mouse click */));
+
+// This test loads a page in the prerender to ensure that the prerendering
+// navigation is skipped at DidFinishNavigation() from
+// SafeBrowsingUserInteractionObserver.
+IN_PROC_BROWSER_TEST_P(
+    SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest,
+    DoNotRecordMetricsInPrerendering) {
+  base::HistogramTester histograms;
+  NavigateAndAssertNoInterstitial();
+
+  // Load a page in the prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper().AddPrerender(prerender_url);
+
+  histograms.ExpectTotalCount(kDelayedWarningsHistogram, 1);
+  histograms.ExpectBucketCount(kDelayedWarningsHistogram,
+                               DelayedWarningEvent::kPageLoaded, 1);
+
+  // Activating the prerendered page causes "flush" metrics.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  histograms.ExpectTotalCount(kDelayedWarningsHistogram, 2);
+  histograms.ExpectBucketCount(kDelayedWarningsHistogram,
+                               DelayedWarningEvent::kWarningNotShown, 1);
+}
 }  // namespace safe_browsing

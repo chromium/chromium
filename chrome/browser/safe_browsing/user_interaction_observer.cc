@@ -175,9 +175,6 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
     content::NavigationHandle* handle) {
   // Remove the observer on a top frame navigation to another page. The user is
   // now on another page so we don't need to wait for an interaction.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
     return;
   }
