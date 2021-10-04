@@ -6464,6 +6464,7 @@ test("unit_tests") {
       "../browser/ui/ash/shelf/chrome_shelf_prefs_unittest.cc",
       "../browser/ui/ash/shelf/shelf_context_menu_unittest.cc",
       "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
+      "../browser/ui/ash/window_pin_util_unittest.cc",
       "../browser/ui/webui/chromeos/login/fake_update_required_screen_handler.cc",
       "../browser/ui/webui/chromeos/login/fake_update_required_screen_handler.h",
       "../browser/ui/webui/chromeos/sync/os_sync_handler_unittest.cc",

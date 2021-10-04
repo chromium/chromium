@@ -30,3 +30,9 @@ chromeos::WindowPinType GetWindowPinType(const aura::Window* window) {
   DCHECK(window);
   return window->GetProperty(chromeos::kWindowPinTypeKey);
 }
+
+bool IsWindowPinned(const aura::Window* window) {
+  DCHECK(window);
+  const ash::WindowState* state = ash::WindowState::Get(window);
+  return state->IsPinned();
+}

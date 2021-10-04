@@ -21,4 +21,7 @@ void UnpinWindow(aura::Window* window);
 // Returns the pinned state for a window.
 chromeos::WindowPinType GetWindowPinType(const aura::Window* window);
 
+// Returns true if the window is Pinned or TrustedPinned.
+bool IsWindowPinned(const aura::Window* window);
+
 #endif  // CHROME_BROWSER_UI_ASH_WINDOW_PIN_UTIL_H_
