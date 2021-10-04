@@ -28,6 +28,7 @@ bool AreContentRequirementsMet(const GURL& gurl, Profile* profile);
 
 // Returns true if the feature should be offered in menus.
 bool ShouldOfferFeature(content::WebContents* web_contents);
+bool ShouldOfferFeatureForPage(Profile* profile, const GURL& page_url);
 
 // Returns true if the feature should be offered in link context menus.
 bool ShouldOfferFeatureForLink(content::WebContents* web_contents,
