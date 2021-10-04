@@ -74,16 +74,20 @@ class WebTransport::Stream final {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&Stream::Send, stream_));
     }
-    void OnResetStreamReceived(
-        quic::WebTransportStreamError /*error*/) override {
-      // TODO(yhirano): Implement this.
+    void OnResetStreamReceived(quic::WebTransportStreamError error) override {
+      if (auto* stream = stream_.get()) {
+        stream->OnResetStreamReceived(error);
+      }
     }
-    void OnStopSendingReceived(
-        quic::WebTransportStreamError /*error*/) override {
-      // TODO(yhirano): Implement this.
+    void OnStopSendingReceived(quic::WebTransportStreamError error) override {
+      if (auto* stream = stream_.get()) {
+        stream->OnStopSendingReceived(error);
+      }
     }
     void OnWriteSideInDataRecvdState() override {
-      // TODO(yhirano): Implement this.
+      if (auto* stream = stream_.get()) {
+        stream->OnWriteSideInDataRecvdState();
+      }
     }
 
    private:
@@ -255,14 +259,9 @@ class WebTransport::Stream final {
       return;
     }
     if (outgoing_->SendFin()) {
-      // TODO(ricea): Wait until DataRecvd state is reached before calling
-      // OnOutgoingStreamClosed, once WebTransportStreamVisitor supports it.
-      transport_->client_->OnOutgoingStreamClosed(id_);
-
-      outgoing_ = nullptr;
+      // We don't reset `outgoing_` as we want to wait for the ACK signal.
       readable_watcher_.Cancel();
       readable_.reset();
-      MayDisposeLater();
     }
     // Otherwise, retry in Send().
   }
@@ -311,10 +310,42 @@ class WebTransport::Stream final {
     }
   }
 
+  void OnResetStreamReceived(quic::WebTransportStreamError error) {
+    if (transport_->client_) {
+      transport_->client_->OnReceivedResetStream(id_, error);
+    }
+    incoming_ = nullptr;
+    writable_watcher_.Cancel();
+    writable_.reset();
+    MayDisposeLater();
+  }
+
+  void OnStopSendingReceived(quic::WebTransportStreamError error) {
+    if (transport_->client_) {
+      transport_->client_->OnReceivedStopSending(id_, error);
+    }
+    outgoing_ = nullptr;
+    readable_watcher_.Cancel();
+    readable_.reset();
+    MayDisposeLater();
+  }
+
+  void OnWriteSideInDataRecvdState() {
+    if (transport_->client_) {
+      transport_->client_->OnOutgoingStreamClosed(id_);
+    }
+
+    outgoing_ = nullptr;
+    readable_watcher_.Cancel();
+    readable_.reset();
+    MayDisposeLater();
+  }
+
   void Dispose() {
     transport_->streams_.erase(id_);
     // Deletes |this|.
   }
+
   void MayDisposeLater() {
     if (outgoing_ || incoming_) {
       return;
@@ -344,7 +375,7 @@ class WebTransport::Stream final {
 
   // This must be the last member.
   base::WeakPtrFactory<Stream> weak_factory_{this};
-};  // namespace network
+};
 
 WebTransport::WebTransport(
     const GURL& url,

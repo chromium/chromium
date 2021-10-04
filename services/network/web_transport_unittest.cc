@@ -188,7 +188,14 @@ class TestClient final : public mojom::WebTransportClient {
       std::move(quit_closure_for_incoming_stream_closure_).Run();
     }
   }
-  void OnOutgoingStreamClosed(uint32_t stream_id) override {}
+  void OnOutgoingStreamClosed(uint32_t stream_id) override {
+    closed_outgoing_streams_.insert(stream_id);
+    if (quit_closure_for_outgoing_stream_closure_) {
+      std::move(quit_closure_for_outgoing_stream_closure_).Run();
+    }
+  }
+  void OnReceivedResetStream(uint32_t stream_id, uint8_t) override {}
+  void OnReceivedStopSending(uint32_t stream_id, uint8_t) override {}
 
   void WaitUntilMojoConnectionError() {
     base::RunLoop run_loop;
@@ -206,6 +213,15 @@ class TestClient final : public mojom::WebTransportClient {
     }
   }
 
+  void WaitUntilOutgoingStreamIsClosed(uint32_t stream_id) {
+    while (!stream_is_closed_as_outgoing_stream(stream_id)) {
+      base::RunLoop run_loop;
+
+      quit_closure_for_outgoing_stream_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+  }
+
   const std::vector<std::vector<uint8_t>>& received_datagrams() const {
     return received_datagrams_;
   }
@@ -216,6 +232,10 @@ class TestClient final : public mojom::WebTransportClient {
   bool stream_is_closed_as_incoming_stream(uint32_t stream_id) {
     return closed_incoming_streams_.find(stream_id) !=
            closed_incoming_streams_.end();
+  }
+  bool stream_is_closed_as_outgoing_stream(uint32_t stream_id) {
+    return closed_outgoing_streams_.find(stream_id) !=
+           closed_outgoing_streams_.end();
   }
   bool has_seen_mojo_connection_error() const {
     return has_seen_mojo_connection_error_;
@@ -233,9 +253,11 @@ class TestClient final : public mojom::WebTransportClient {
 
   base::OnceClosure quit_closure_for_mojo_connection_error_;
   base::OnceClosure quit_closure_for_incoming_stream_closure_;
+  base::OnceClosure quit_closure_for_outgoing_stream_closure_;
 
   std::vector<std::vector<uint8_t>> received_datagrams_;
   std::map<uint32_t, bool> closed_incoming_streams_;
+  std::set<uint32_t> closed_outgoing_streams_;
   bool has_seen_mojo_connection_error_ = false;
 };
 
@@ -523,9 +545,10 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
   run_loop_for_stream_creation.Run();
   ASSERT_TRUE(stream_created);
 
-  // Signal the end-of-data.
-  writable_for_outgoing.reset();
   transport_remote->SendFin(stream_id);
+  writable_for_outgoing.reset();
+
+  client.WaitUntilOutgoingStreamIsClosed(stream_id);
 
   mojo::ScopedDataPipeConsumerHandle readable_for_incoming;
   uint32_t incoming_stream_id = stream_id;

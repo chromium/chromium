@@ -912,6 +912,41 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
   stream->OnIncomingStreamClosed(fin_received);
 }
 
+void WebTransport::OnReceivedResetStream(uint32_t stream_id, uint8_t code) {
+  DVLOG(1) << "WebTransport::OnReceivedResetStream(" << stream_id << ", "
+           << static_cast<uint32_t>(code) << ") this=" << this;
+  auto it = incoming_stream_map_.find(stream_id);
+  if (it == incoming_stream_map_.end()) {
+    return;
+  }
+  IncomingStream* stream = it->value;
+
+  ScriptState::Scope scope(script_state_);
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      script_state_->GetIsolate(),
+      /*stream_error_code=*/code, "Received RESET_STREAM.",
+      WebTransportError::Source::kStream);
+  stream->Error(ScriptValue(script_state_->GetIsolate(), error));
+}
+
+void WebTransport::OnReceivedStopSending(uint32_t stream_id, uint8_t code) {
+  DVLOG(1) << "WebTransport::OnReceivedResetStream(" << stream_id << ", "
+           << static_cast<uint32_t>(code) << ") this=" << this;
+
+  auto it = outgoing_stream_map_.find(stream_id);
+  if (it == outgoing_stream_map_.end()) {
+    return;
+  }
+  OutgoingStream* stream = it->value;
+
+  ScriptState::Scope scope(script_state_);
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      script_state_->GetIsolate(),
+      /*stream_error_code=*/code, "Received STOP_SENDING.",
+      WebTransportError::Source::kStream);
+  stream->Error(ScriptValue(script_state_->GetIsolate(), error));
+}
+
 void WebTransport::OnClosed(
     const absl::optional<WebTransportCloseInfo>& close_info) {
   ScriptState::Scope scope(script_state_);
@@ -979,8 +1014,7 @@ void WebTransport::SendFin(uint32_t stream_id) {
 }
 
 void WebTransport::AbortStream(uint32_t stream_id) {
-  DVLOG(1) << "WebTransport::AbortStream() this=" << this
-           << ", stream_id=" << stream_id;
+  DVLOG(1) << "WebTransport::AbortStream(" << stream_id << ") this = " << this;
   transport_remote_->AbortStream(stream_id, /*code=*/0);
 }
 

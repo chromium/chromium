@@ -13,6 +13,13 @@ function webtransport_url(handler) {
   return `${BASE}/webtransport/handlers/${handler}`;
 }
 
+// Converts WebTransport stream error code to HTTP/3 error code.
+// https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#section-4.3
+function webtransport_code_to_http_code(n) {
+  const first = 0x52e4a40fa8db;
+  return first + n + Math.floor(n / 0x1e);
+}
+
 // Read all chunks from |readable_stream|, decode chunks to a utf-8 string, then
 // return the string.
 async function read_stream_as_string(readable_stream) {

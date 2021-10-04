@@ -37,6 +37,7 @@ class OutgoingStreamClient final
 
  private:
   const Member<WebTransport> transport_;
+  base::OnceClosure fin_callback_;
   const uint32_t stream_id_;
 };
 

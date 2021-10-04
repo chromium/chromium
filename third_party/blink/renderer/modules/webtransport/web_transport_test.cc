@@ -1877,6 +1877,106 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
   EXPECT_FALSE(close_info->hasReason());
 }
 
+TEST_F(WebTransportTest, ReceivedResetStream) {
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  constexpr uint32_t kStreamId = 99;
+  constexpr uint8_t kCode = 24;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  mojo::ScopedDataPipeConsumerHandle readable;
+  mojo::ScopedDataPipeProducerHandle writable;
+  EXPECT_CALL(*mock_web_transport_, CreateStream(Truly(ValidConsumerHandle),
+                                                 Truly(ValidProducerHandle), _))
+      .WillOnce([&](mojo::ScopedDataPipeConsumerHandle readable_handle,
+                    mojo::ScopedDataPipeProducerHandle writable_handle,
+                    base::OnceCallback<void(bool, uint32_t)> callback) {
+        readable = std::move(readable_handle);
+        writable = std::move(writable_handle);
+        std::move(callback).Run(true, kStreamId);
+      });
+
+  auto* script_state = scope.GetScriptState();
+  ScriptPromise bidirectional_stream_promise =
+      web_transport->createBidirectionalStream(script_state,
+                                               ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
+
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  auto* bidirectional_stream =
+      V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
+          scope.GetIsolate(), tester.Value().V8Value());
+  EXPECT_TRUE(bidirectional_stream);
+
+  web_transport->OnReceivedResetStream(kStreamId, kCode);
+
+  ASSERT_TRUE(bidirectional_stream->readable()->IsErrored());
+  v8::Local<v8::Value> error_value =
+      bidirectional_stream->readable()->GetStoredError(isolate);
+  WebTransportError* error =
+      V8WebTransportError::ToImplWithTypeCheck(scope.GetIsolate(), error_value);
+  ASSERT_TRUE(error);
+
+  EXPECT_EQ(error->streamErrorCode(), kCode);
+  EXPECT_EQ(error->source(), "stream");
+
+  EXPECT_TRUE(bidirectional_stream->writable()->IsWritable());
+}
+
+TEST_F(WebTransportTest, ReceivedStopSending) {
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  constexpr uint32_t kStreamId = 51;
+  constexpr uint8_t kCode = 255;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  mojo::ScopedDataPipeConsumerHandle readable;
+  mojo::ScopedDataPipeProducerHandle writable;
+  EXPECT_CALL(*mock_web_transport_, CreateStream(Truly(ValidConsumerHandle),
+                                                 Truly(ValidProducerHandle), _))
+      .WillOnce([&](mojo::ScopedDataPipeConsumerHandle readable_handle,
+                    mojo::ScopedDataPipeProducerHandle writable_handle,
+                    base::OnceCallback<void(bool, uint32_t)> callback) {
+        readable = std::move(readable_handle);
+        writable = std::move(writable_handle);
+        std::move(callback).Run(true, kStreamId);
+      });
+
+  auto* script_state = scope.GetScriptState();
+  ScriptPromise bidirectional_stream_promise =
+      web_transport->createBidirectionalStream(script_state,
+                                               ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
+
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  auto* bidirectional_stream =
+      V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
+          scope.GetIsolate(), tester.Value().V8Value());
+  EXPECT_TRUE(bidirectional_stream);
+
+  web_transport->OnReceivedStopSending(kStreamId, kCode);
+
+  ASSERT_TRUE(bidirectional_stream->writable()->IsErrored());
+  v8::Local<v8::Value> error_value =
+      bidirectional_stream->writable()->GetStoredError(isolate);
+  WebTransportError* error =
+      V8WebTransportError::ToImplWithTypeCheck(scope.GetIsolate(), error_value);
+  ASSERT_TRUE(error);
+
+  EXPECT_EQ(error->streamErrorCode(), kCode);
+  EXPECT_EQ(error->source(), "stream");
+
+  EXPECT_TRUE(bidirectional_stream->readable()->IsReadable());
+}
+
 }  // namespace
 
 }  // namespace blink
