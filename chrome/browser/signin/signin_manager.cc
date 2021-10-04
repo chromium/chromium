@@ -4,12 +4,20 @@
 
 #include "chrome/browser/signin/signin_manager.h"
 
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
-SigninManager::SigninManager(signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {
+SigninManager::SigninManager(PrefService* prefs,
+                             signin::IdentityManager* identity_manager)
+    : prefs_(prefs), identity_manager_(identity_manager) {
+  signin_allowed_.Init(
+      prefs::kSigninAllowed, prefs_,
+      base::BindRepeating(&SigninManager::OnSigninAllowedPrefChanged,
+                          base::Unretained(this)));
+
   UpdateUnconsentedPrimaryAccount();
   identity_manager_->AddObserver(this);
 }
@@ -54,6 +62,16 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     return identity_manager_->GetPrimaryAccountInfo(
         signin::ConsentLevel::kSync);
   }
+
+  // Clearing the primary sync account when sign-in is not allowed is handled
+  // by PrimaryAccountPolicyManager. That flow is extremely hard to follow
+  // especially for the case when the user is syncing with a managed account
+  // as in that case the whole profile needs to be deleted.
+  //
+  // It was considered simpler to keep the logic to update the unconsented
+  // primary account in a single place.
+  if (!signin_allowed_.GetValue())
+    return absl::nullopt;
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();
@@ -175,4 +193,8 @@ void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
   if (should_update)
     UpdateUnconsentedPrimaryAccount();
+}
+
+void SigninManager::OnSigninAllowedPrefChanged() {
+  UpdateUnconsentedPrimaryAccount();
 }

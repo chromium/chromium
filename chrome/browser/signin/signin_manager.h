@@ -8,12 +8,15 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+class PrefService;
 
 class SigninManager : public KeyedService,
                       public signin::IdentityManager::Observer {
  public:
-  explicit SigninManager(signin::IdentityManager* identity_manger);
+  SigninManager(PrefService* prefs, signin::IdentityManager* identity_manger);
   ~SigninManager() override;
 
  private:
@@ -51,7 +54,13 @@ class SigninManager : public KeyedService,
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
 
+  void OnSigninAllowedPrefChanged();
+
+  PrefService* prefs_;
   signin::IdentityManager* identity_manager_;
+
+  // Helper object to listen for changes to the signin allowed preference.
+  BooleanPrefMember signin_allowed_;
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 
