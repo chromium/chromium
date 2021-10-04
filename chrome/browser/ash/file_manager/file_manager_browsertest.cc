@@ -339,7 +339,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("audioOpenDownloads").InGuestMode(),
                       TestCase("audioOpenDownloads"),
                       TestCase("audioOpenDrive"),
-                      TestCase("audioRepeatAllModeSingleFileDrive"),
                       TestCase("audioNoRepeatModeSingleFileDrive"),
                       TestCase("audioRepeatOneModeSingleFileDrive"),
                       TestCase("audioNoRepeatModeMultipleFileDrive")
@@ -349,6 +348,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       // TestCase("audioRepeatOneModeMultipleFileDrive"),
                       // TestCase("audioAutoAdvanceDrive"),
                       // TestCase("audioRepeatAllModeMultipleFileDrive"),
+                      // TestCase("audioRepeatAllModeSingleFileDrive"),
                       ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
