@@ -28,29 +28,29 @@ class PasswordStoreAndroidBackendBridgeImpl
       const PasswordStoreAndroidBackendBridgeImpl&) = delete;
   ~PasswordStoreAndroidBackendBridgeImpl() override;
 
-  // Called via JNI. Called when the api call with `task_id` finished and
+  // Called via JNI. Called when the api call with `job_id` finished and
   // provides the resulting `passwords`.
   void OnCompleteWithLogins(
       JNIEnv* env,
-      jint task_id,
+      jint job_id,
       const base::android::JavaParamRef<jbyteArray>& passwords);
 
-  // Called via JNI. Called when the api call with `task_id` finished with
+  // Called via JNI. Called when the api call with `job_id` finished with
   // an exception.
   // TODO(crbug.com/1229654): Include error codes.
-  void OnError(JNIEnv* env, jint task_id);
+  void OnError(JNIEnv* env, jint job_id);
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(Consumer* consumer) override;
-  TaskId GetAllLogins() override WARN_UNUSED_RESULT;
+  JobId GetAllLogins() override WARN_UNUSED_RESULT;
 
-  TaskId GetNextTaskId() WARN_UNUSED_RESULT;
+  JobId GetNextJobId() WARN_UNUSED_RESULT;
 
   // This member stores the unique ID last used for an API request.
-  TaskId last_task_id_{0};
+  JobId last_job_id_{0};
 
-  // Weak reference to the `Consumer` that is notified when a task completes. It
+  // Weak reference to the `Consumer` that is notified when a job completes. It
   // is required to outlive this bridge.
   Consumer* consumer_ = nullptr;
 

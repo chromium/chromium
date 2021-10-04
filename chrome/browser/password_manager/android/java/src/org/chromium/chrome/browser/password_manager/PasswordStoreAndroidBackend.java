@@ -8,7 +8,7 @@ import org.chromium.base.Callback;
 
 /**
  * Interface to send backend requests to a downstream implementation to fulfill password store
- * tasks. All methods are expected to respond asynchronously to callbacks.
+ * jobs. All methods are expected to respond asynchronously to callbacks.
  */
 public interface PasswordStoreAndroidBackend {
     /**

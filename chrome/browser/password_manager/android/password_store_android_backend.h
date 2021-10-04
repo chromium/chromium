@@ -25,9 +25,9 @@ namespace password_manager {
 // Google Mobile Service.
 // It uses a `PasswordStoreAndroidBackendBridge` to send API requests for each
 // method it implements from `PasswordStoreBackend`. The response will invoke a
-// consumer method with an originally provided `TaskId`. Based on that `TaskId`,
-// this class maps ongoing tasks to the callbacks of the methods that originally
-// required the task since JNI itself can't preserve the callbacks.
+// consumer method with an originally provided `JobId`. Based on that `JobId`,
+// this class maps ongoing jobs to the callbacks of the methods that originally
+// required the job since JNI itself can't preserve the callbacks.
 class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendBridge::Consumer {
@@ -70,23 +70,23 @@ class PasswordStoreAndroidBackend
         this};
   };
 
-  // Wraps the handler for an asynchronous task (if successful). Also provides
-  // means to record metrics about the task (if successful or not). An object of
-  // this type shall be created and stored in |request_for_task_| once an
-  // asynchronous begins, and destroyed once the task is finished.
-  class TaskHandler {
+  // Wraps the handler for an asynchronous job (if successful). Also provides
+  // means to record metrics about the job (if successful or not). An object of
+  // this type shall be created and stored in |request_for_job_| once an
+  // asynchronous begins, and destroyed once the job is finished.
+  class JobReturnHandler {
    public:
     using ErrorReply = base::OnceClosure;
     using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
     using WasSuccess = base::StrongAlias<struct WasSuccessTag, bool>;
 
-    TaskHandler();
-    TaskHandler(LoginsReply callback, MetricInfix metric_name);
-    TaskHandler(PasswordStoreChangeListReply callback,
-                MetricInfix metric_infix);
-    TaskHandler(TaskHandler&&);
-    TaskHandler& operator=(TaskHandler&&);
-    ~TaskHandler();
+    JobReturnHandler();
+    JobReturnHandler(LoginsReply callback, MetricInfix metric_name);
+    JobReturnHandler(PasswordStoreChangeListReply callback,
+                     MetricInfix metric_infix);
+    JobReturnHandler(JobReturnHandler&&);
+    JobReturnHandler& operator=(JobReturnHandler&&);
+    ~JobReturnHandler();
 
     template <typename T>
     bool Holds() const {
@@ -98,7 +98,7 @@ class PasswordStoreAndroidBackend
       return std::move(absl::get<T>(success_callback_));
     }
 
-    // Records metrics for this task:
+    // Records metrics for this job:
     // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Latency"
     // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Success"
     void RecordMetrics(WasSuccess success) const;
@@ -109,11 +109,11 @@ class PasswordStoreAndroidBackend
     base::Time start_ = base::Time::Now();
   };
 
-  using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
-  // Using a small_map should ensure that we handle rare cases with many tasks
-  // like a bulk deletion just as well as the normal, rather small task load.
-  using TaskMap =
-      base::small_map<std::unordered_map<TaskId, TaskHandler, TaskId::Hasher>>;
+  using JobId = PasswordStoreAndroidBackendBridge::JobId;
+  // Using a small_map should ensure that we handle rare cases with many jobs
+  // like a bulk deletion just as well as the normal, rather small job load.
+  using JobMap = base::small_map<
+      std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
 
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
@@ -151,14 +151,14 @@ class PasswordStoreAndroidBackend
   CreateSyncControllerDelegateFactory() override;
 
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
-  void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::TaskId task_id,
+  void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
                             std::vector<PasswordForm> passwords) override;
-  void OnError(PasswordStoreAndroidBackendBridge::TaskId task_id) override;
+  void OnError(PasswordStoreAndroidBackendBridge::JobId job_id) override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
 
-  TaskHandler GetAndEraseTask(TaskId task_id);
+  JobReturnHandler GetAndEraseJob(JobId job_id);
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;
@@ -169,9 +169,9 @@ class PasswordStoreAndroidBackend
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  // Used to store callbacks for each invoked tasks since callbacks can't be
+  // Used to store callbacks for each invoked jobs since callbacks can't be
   // called via JNI directly.
-  TaskMap request_for_task_;
+  JobMap request_for_job_;
 
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;

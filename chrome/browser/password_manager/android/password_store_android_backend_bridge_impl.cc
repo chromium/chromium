@@ -14,7 +14,7 @@
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/sync/protocol/list_passwords_result.pb.h"
 
-using TaskId = PasswordStoreAndroidBackendBridgeImpl::TaskId;
+using JobId = PasswordStoreAndroidBackendBridgeImpl::JobId;
 
 namespace {
 
@@ -56,26 +56,25 @@ void PasswordStoreAndroidBackendBridgeImpl::SetConsumer(Consumer* consumer) {
 
 void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
-    jint task_id,
+    jint job_id,
     const base::android::JavaParamRef<jbyteArray>& passwords) {
   DCHECK(consumer_);
-  consumer_->OnCompleteWithLogins(TaskId(task_id),
-                                  CreateFormsVector(passwords));
+  consumer_->OnCompleteWithLogins(JobId(job_id), CreateFormsVector(passwords));
 }
 
-void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env, jint task_id) {
+void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env, jint job_id) {
   DCHECK(consumer_);
-  consumer_->OnError(TaskId(task_id));
+  consumer_->OnError(JobId(job_id));
 }
 
-TaskId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
-  TaskId task_id = GetNextTaskId();
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
+  JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAllLogins(
-      base::android::AttachCurrentThread(), java_object_, task_id.value());
-  return task_id;
+      base::android::AttachCurrentThread(), java_object_, job_id.value());
+  return job_id;
 }
 
-TaskId PasswordStoreAndroidBackendBridgeImpl::GetNextTaskId() {
-  last_task_id_ = TaskId(last_task_id_.value() + 1);
-  return last_task_id_;
+JobId PasswordStoreAndroidBackendBridgeImpl::GetNextJobId() {
+  last_job_id_ = JobId(last_job_id_.value() + 1);
+  return last_job_id_;
 }

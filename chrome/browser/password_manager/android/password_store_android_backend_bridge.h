@@ -21,37 +21,37 @@ namespace password_manager {
 // this bridge.
 class PasswordStoreAndroidBackendBridge {
  public:
-  using TaskId = base::StrongAlias<struct TaskIdTag, int>;
+  using JobId = base::StrongAlias<struct JobIdTag, int>;
 
-  // Each bridge is created with a consumer that will be called when a task is
+  // Each bridge is created with a consumer that will be called when a job is
   // completed. In order to identify which request the response belongs to, the
-  // bridge needs to pass a `TaskId` back that was returned by the initial
+  // bridge needs to pass a `JobId` back that was returned by the initial
   // request and is unique per bridge.
   class Consumer {
    public:
     virtual ~Consumer() = default;
 
-    // Asynchronous response called with the `task_id` which was passed to the
+    // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
     // requested `passwords`.
     // Used in response to `GetAllLogins`.
-    virtual void OnCompleteWithLogins(TaskId task_id,
+    virtual void OnCompleteWithLogins(JobId job_id,
                                       std::vector<PasswordForm> passwords) = 0;
 
-    // Asynchronous response called with the `task_id` which was passed to the
+    // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnError(TaskId task_id) = 0;
+    virtual void OnError(JobId job_id) = 0;
   };
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;
 
-  // Sets the `consumer` that is notified on task completion.
+  // Sets the `consumer` that is notified on job completion.
   virtual void SetConsumer(Consumer* consumer) = 0;
 
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
-  // task with the returned TaskId succeeds.
-  virtual TaskId GetAllLogins() WARN_UNUSED_RESULT = 0;
+  // job with the returned JobId succeeds.
+  virtual JobId GetAllLogins() WARN_UNUSED_RESULT = 0;
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.

@@ -18,12 +18,12 @@ import java.lang.annotation.Target;
  */
 class PasswordStoreAndroidBackendBridgeImpl {
     /**
-     * Each operation sent to the passwords API will be assigned a TaskId. The native side uses
-     * this ID to map an API response to the task that invoked it.
+     * Each operation sent to the passwords API will be assigned a JobId. The native side uses
+     * this ID to map an API response to the job that invoked it.
      */
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
-    @interface TaskId {}
+    @interface JobId {}
 
     private final PasswordStoreAndroidBackend mBackend;
     private long mNativeBackendBridge;
@@ -42,18 +42,18 @@ class PasswordStoreAndroidBackendBridgeImpl {
     }
 
     @CalledByNative
-    void getAllLogins(@TaskId int taskId) {
+    void getAllLogins(@JobId int jobId) {
         mBackend.getAllLogins(
                 passwords
                 -> {
                     if (mNativeBackendBridge == 0) return;
                     PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
-                            mNativeBackendBridge, taskId, passwords);
+                            mNativeBackendBridge, jobId, passwords);
                 },
                 exception -> {
                     if (mNativeBackendBridge == 0) return;
                     PasswordStoreAndroidBackendBridgeImplJni.get().onError(
-                            mNativeBackendBridge, taskId);
+                            mNativeBackendBridge, jobId);
                 });
     }
 
@@ -65,7 +65,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     @NativeMethods
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendBridgeImpl,
-                @TaskId int taskId, byte[] passwords);
-        void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @TaskId int taskId);
+                @JobId int jobId, byte[] passwords);
+        void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId);
     }
 }

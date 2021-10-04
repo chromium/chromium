@@ -2127,7 +2127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>vasilii@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous call to retrieve all logins from the
-    PasswordStore Android backend. Recorded when the asynchronous task has
+    PasswordStore Android backend. Recorded when the asynchronous job has
     returned.
   </summary>
 </histogram>
@@ -2139,7 +2139,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>vasilii@chromium.org</owner>
   <summary>
     Records whether GetAllLoginsAsync() succeeded in retrieving all logins from
-    the PasswordStore Android backend. Recorded when the asynchronous task has
+    the PasswordStore Android backend. Recorded when the asynchronous job has
     returned. False is emitted if an error occurs; otherwise true is emitted.
   </summary>
 </histogram>

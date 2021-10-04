@@ -26,7 +26,7 @@ namespace password_manager {
 
 namespace {
 
-using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
+using JobId = PasswordStoreAndroidBackendBridge::JobId;
 
 std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
     std::vector<PasswordForm> passwords) {
@@ -41,28 +41,30 @@ std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
 
 }  // namespace
 
-PasswordStoreAndroidBackend::TaskHandler::TaskHandler() = default;
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
 
-PasswordStoreAndroidBackend::TaskHandler::TaskHandler(LoginsReply callback,
-                                                      MetricInfix metric_infix)
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
+    LoginsReply callback,
+    MetricInfix metric_infix)
     : success_callback_(std::move(callback)),
       metric_infix_(std::move(metric_infix)) {}
 
-PasswordStoreAndroidBackend::TaskHandler::TaskHandler(
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     PasswordStoreChangeListReply callback,
     MetricInfix metric_infix)
     : success_callback_(std::move(callback)),
       metric_infix_(std::move(metric_infix)) {}
 
-PasswordStoreAndroidBackend::TaskHandler::TaskHandler(TaskHandler&&) = default;
-PasswordStoreAndroidBackend::TaskHandler&
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
+    JobReturnHandler&&) = default;
+PasswordStoreAndroidBackend::JobReturnHandler&
 
-PasswordStoreAndroidBackend::TaskHandler::TaskHandler::operator=(
-    TaskHandler&&) = default;
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler::operator=(
+    JobReturnHandler&&) = default;
 
-PasswordStoreAndroidBackend::TaskHandler::~TaskHandler() = default;
+PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
 
-void PasswordStoreAndroidBackend::TaskHandler::RecordMetrics(
+void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
     WasSuccess success) const {
   auto BuildMetricName = [this](base::StringPiece suffix) {
     return base::StrCat({"PasswordManager.PasswordStoreAndroidBackend.",
@@ -107,10 +109,11 @@ void PasswordStoreAndroidBackend::Shutdown(
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(LoginsReply callback) {
-  TaskId task_id = bridge_->GetAllLogins();
-  request_for_task_.emplace(
-      task_id, TaskHandler(std::move(callback),
-                           TaskHandler::MetricInfix("GetAllLoginsAsync")));
+  JobId job_id = bridge_->GetAllLogins();
+  request_for_job_.emplace(
+      job_id,
+      JobReturnHandler(std::move(callback),
+                       JobReturnHandler::MetricInfix("GetAllLoginsAsync")));
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
@@ -183,10 +186,10 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegateFactory() {
 }
 
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
-    TaskId task_id,
+    JobId job_id,
     std::vector<PasswordForm> passwords) {
-  TaskHandler reply = GetAndEraseTask(task_id);
-  reply.RecordMetrics(TaskHandler::WasSuccess(true));
+  JobReturnHandler reply = GetAndEraseJob(job_id);
+  reply.RecordMetrics(JobReturnHandler::WasSuccess(true));
   DCHECK(reply.Holds<LoginsReply>());
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -194,9 +197,9 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
                      WrapPasswordsIntoPointers(std::move(passwords))));
 }
 
-void PasswordStoreAndroidBackend::OnError(TaskId task_id) {
-  TaskHandler reply = GetAndEraseTask(task_id);
-  reply.RecordMetrics(TaskHandler::WasSuccess(false));
+void PasswordStoreAndroidBackend::OnError(JobId job_id) {
+  JobReturnHandler reply = GetAndEraseJob(job_id);
+  reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -204,12 +207,12 @@ PasswordStoreAndroidBackend::GetSyncControllerDelegate() {
   return sync_controller_delegate_.GetWeakPtr();
 }
 
-PasswordStoreAndroidBackend::TaskHandler
-PasswordStoreAndroidBackend::GetAndEraseTask(TaskId task_id) {
-  auto iter = request_for_task_.find(task_id);
-  DCHECK(iter != request_for_task_.end());
-  TaskHandler reply = std::move(iter->second);
-  request_for_task_.erase(iter);
+PasswordStoreAndroidBackend::JobReturnHandler
+PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
+  auto iter = request_for_job_.find(job_id);
+  DCHECK(iter != request_for_job_.end());
+  JobReturnHandler reply = std::move(iter->second);
+  request_for_job_.erase(iter);
   return reply;
 }
 
