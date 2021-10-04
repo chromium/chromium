@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
-#include "third_party/blink/renderer/core/inspector/inspector_application_cache_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
@@ -254,9 +253,6 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
       inspected_frames, css_agent, session->V8Session()));
 
   session->Append(MakeGarbageCollected<InspectorMemoryAgent>(inspected_frames));
-
-  session->Append(
-      MakeGarbageCollected<InspectorApplicationCacheAgent>(inspected_frames));
 
   auto* page_agent = MakeGarbageCollected<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),

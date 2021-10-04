@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/inspector/inspector_application_cache_agent.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_worker.h"

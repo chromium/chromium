@@ -187,7 +187,6 @@ class LocalDOMWindow::NetworkStateObserver final
         on_line ? event_type_names::kOnline : event_type_names::kOffline;
     auto* window = To<LocalDOMWindow>(GetExecutionContext());
     window->DispatchEvent(*Event::Create(event_name));
-    probe::NetworkStateChanged(window->GetFrame(), on_line);
   }
 
   void ContextDestroyed() override { online_observer_handle_ = nullptr; }
