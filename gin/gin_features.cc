@@ -93,6 +93,14 @@ const base::FeatureParam<double> kV8ScriptDelayFraction{
 // runtime overheads.
 const base::Feature kV8SlowHistograms{"V8SlowHistograms",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+// Multiple finch experiments might use slow-histograms. We introduce
+// separate feature flags to circumvent finch limitations.
+const base::Feature kV8SlowHistogramsSparkplug{
+    "V8SlowHistogramsSparkplug", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kV8SlowHistogramsSparkplugAndroid{
+    "V8SlowHistogramsSparkplugAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kV8SlowHistogramsScriptAblation{
+    "V8SlowHistogramsScriptAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the V8 virtual memory cage.
 const base::Feature kV8VirtualMemoryCage {
