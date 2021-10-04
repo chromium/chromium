@@ -384,19 +384,12 @@ void NGSvgTextLayoutAttributesBuilder::Build(
   attr_stack.Pop();
 }
 
-Vector<std::pair<unsigned, NGSvgCharacterData>>
-NGSvgTextLayoutAttributesBuilder::CharacterDataList() {
-  return std::move(resolved_);
-}
-
-HeapVector<SvgTextContentRange>
-NGSvgTextLayoutAttributesBuilder::TextLengthRangeList() {
-  return std::move(text_length_range_list_);
-}
-
-HeapVector<SvgTextContentRange>
-NGSvgTextLayoutAttributesBuilder::TextPathRangeList() {
-  return std::move(text_path_range_list_);
+SvgInlineNodeData* NGSvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
+  auto* svg_node_data = MakeGarbageCollected<SvgInlineNodeData>();
+  svg_node_data->character_data_list = std::move(resolved_);
+  svg_node_data->text_length_range_list = std::move(text_length_range_list_);
+  svg_node_data->text_path_range_list = std::move(text_path_range_list_);
+  return svg_node_data;
 }
 
 }  // namespace blink

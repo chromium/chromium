@@ -37,11 +37,7 @@ class NGSvgTextLayoutAttributesBuilder final {
              const HeapVector<NGInlineItem>& items);
 
   // This function can be called just once after Build().
-  Vector<std::pair<unsigned, NGSvgCharacterData>> CharacterDataList();
-  // This function can be called just once after Build().
-  HeapVector<SvgTextContentRange> TextLengthRangeList();
-  // This function can be called just once after Build().
-  HeapVector<SvgTextContentRange> TextPathRangeList();
+  SvgInlineNodeData* CreateSvgInlineNodeData();
 
  private:
   LayoutBlockFlow* block_flow_;
