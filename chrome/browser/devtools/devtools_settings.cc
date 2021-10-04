@@ -29,12 +29,10 @@ void DevToolsSettings::Register(const std::string& name,
   // Setting might have had a different sync status in the past. Move the
   // setting to the correct dictionary.
   PrefService* prefs = profile_->GetPrefs();
-  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
-  // settings sync is enabled.
   const char* dictionary_to_remove_from =
       options.sync_mode == RegisterOptions::SyncMode::kSync
           ? prefs::kDevToolsPreferences
-          : prefs::kDevToolsSyncedPreferencesSyncDisabled;
+          : GetDictionaryNameForSyncedPrefs();
   const std::string* settings_value =
       prefs->GetDictionary(dictionary_to_remove_from)->FindStringKey(name);
   if (!settings_value) {
@@ -47,10 +45,7 @@ void DevToolsSettings::Register(const std::string& name,
   // precedence.
   const std::string* already_synced_value =
       prefs->GetDictionary(dictionary_to_insert_into)->FindStringKey(name);
-  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
-  // settings sync is enabled.
-  if (dictionary_to_insert_into !=
-          prefs::kDevToolsSyncedPreferencesSyncDisabled ||
+  if (dictionary_to_insert_into == prefs::kDevToolsPreferences ||
       !already_synced_value) {
     DictionaryPrefUpdate insert_update(profile_->GetPrefs(),
                                        dictionary_to_insert_into);
@@ -69,10 +64,8 @@ base::Value DevToolsSettings::Get() {
   settings.SetBoolKey(kSyncDevToolsPreferencesFrontendName,
                       prefs->GetBoolean(prefs::kDevToolsSyncPreferences));
   settings.MergeDictionary(prefs->GetDictionary(prefs::kDevToolsPreferences));
-  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
-  // settings sync is enabled.
   settings.MergeDictionary(
-      prefs->GetDictionary(prefs::kDevToolsSyncedPreferencesSyncDisabled));
+      prefs->GetDictionary(GetDictionaryNameForSyncedPrefs()));
 
   return settings;
 }
@@ -117,9 +110,14 @@ void DevToolsSettings::Clear() {
 
 const char* DevToolsSettings::GetDictionaryNameForSettingsName(
     const std::string& name) const {
-  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
-  // settings sync is enabled.
   return synced_setting_names_.contains(name)
-             ? prefs::kDevToolsSyncedPreferencesSyncDisabled
+             ? GetDictionaryNameForSyncedPrefs()
              : prefs::kDevToolsPreferences;
+}
+
+const char* DevToolsSettings::GetDictionaryNameForSyncedPrefs() const {
+  const bool isDevToolsSyncEnabled =
+      profile_->GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences);
+  return isDevToolsSyncEnabled ? prefs::kDevToolsSyncedPreferencesSyncEnabled
+                               : prefs::kDevToolsSyncedPreferencesSyncDisabled;
 }

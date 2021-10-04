@@ -40,6 +40,7 @@ class DevToolsSettings {
 
  private:
   const char* GetDictionaryNameForSettingsName(const std::string& name) const;
+  const char* GetDictionaryNameForSyncedPrefs() const;
 
   Profile* const profile_;
 

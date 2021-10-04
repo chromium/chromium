@@ -90,20 +90,20 @@ TEST_F(DevToolsSettingsTest, CanMoveSyncedSettingToBeingUnsynced) {
 }
 
 TEST_F(DevToolsSettingsTest, MovingUnsycnedToSyncedDoesNotOverwrite) {
-  // 1) Register an unsynced setting
+  // 1) Enable sync and register an unsynced setting.
   {
     DevToolsSettings settings(&profile_);
     settings.Register("setting", {RegisterOptions::SyncMode::kDontSync});
     settings.Set("setting", "unsynced value");
+    settings.Set(DevToolsSettings::kSyncDevToolsPreferencesFrontendName,
+                 "true");
   }
 
   // 2) Simulate the update to synced plus setting of a new value on a
   //    different device.
-  // TODO(crbug.com/1245541): This test must only work with the sync enabled
-  // dictionary once the toggle setting is implemented.
   {
     DictionaryPrefUpdate update(profile_.GetPrefs(),
-                                prefs::kDevToolsSyncedPreferencesSyncDisabled);
+                                prefs::kDevToolsSyncedPreferencesSyncEnabled);
     update.Get()->SetKey("setting", base::Value("overwritten synced value"));
   }
 
