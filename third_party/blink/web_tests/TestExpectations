@@ -4724,7 +4724,7 @@ crbug.com/911782 [ Mac ] paint/invalidation/forms/submit-focus-by-mouse-then-key
 crbug.com/912793 crbug.com/899087 virtual/android/fullscreen/full-screen-iframe-allowed-video.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2018-12-07
-crbug.com/912821 [ Mac ] http/tests/devtools/tracing/user-timing.js [ Failure Pass ]
+crbug.com/912821 [ Mac ] http/tests/devtools/tracing/user-timing.js [ Skip ]
 
 # Sheriff 2018-12-13
 crbug.com/910452 media/controls/buttons-after-reset.html [ Failure Pass ]
@@ -7088,3 +7088,12 @@ crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure P
 
 # Sheriff 2021-10-04
 crbug.com/1226112 [ Win ] http/tests/text-autosizing/wide-iframe.html [ Pass Timeout ]
+
+# DevTools roll
+crbug.com/1222126 http/tests/devtools/domdebugger/domdebugger-getEventListeners.js [ Skip ]
+crbug.com/1222126 http/tests/devtools/cache-storage/cache-live-update-list.js [ Skip ]
+crbug.com/1222126 http/tests/devtools/runtime/evaluate-timeout.js [ Skip ]
+crbug.com/1222126 http/tests/devtools/resource-har-headers.js [ Skip ]
+crbug.com/1222126 http/tests/devtools/resource-har-conversion.js [ Skip ]
+crbug.com/1222126 http/tests/devtools/network/network-choose-preview-view.js [ Skip ]
+crbug.com/1222126 http/tests/devtools/network/json-preview.js [ Skip ]
