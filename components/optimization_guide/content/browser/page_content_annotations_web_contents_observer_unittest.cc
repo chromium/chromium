@@ -13,12 +13,21 @@
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
+
+const TemplateURLService::Initializer kTemplateURLData[] = {
+    {"default-engine.com", "http://default-engine.com/search?q={searchTerms}",
+     "Default"},
+    {"non-default-engine.com", "http://non-default-engine.com?q={searchTerms}",
+     "Not Default"},
+};
+const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
 
 class TestPageTextObserver : public PageTextObserver {
  public:
@@ -91,18 +100,31 @@ class PageContentAnnotationsWebContentsObserverTest
         std::make_unique<FakePageContentAnnotationsService>(
             optimization_guide_model_provider_.get(), history_service_.get());
 
+    // Set up a simple template URL service with a default search engine.
+    template_url_service_ = std::make_unique<TemplateURLService>(
+        kTemplateURLData, base::size(kTemplateURLData));
+    template_url_ = template_url_service_->GetTemplateURLForKeyword(
+        kDefaultTemplateURLKeyword);
+    template_url_service_->SetUserSelectedDefaultSearchProvider(template_url_);
+
     page_text_observer_ = new TestPageTextObserver(web_contents());
     web_contents()->SetUserData(TestPageTextObserver::UserDataKey(),
                                 base::WrapUnique(page_text_observer_));
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
-        web_contents(), page_content_annotations_service_.get());
+        web_contents(), page_content_annotations_service_.get(),
+        template_url_service_.get());
+
+    // Overwrite Google base URL.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kGoogleBaseURL, "http://default-engine.com/");
   }
 
   void TearDown() override {
     page_text_observer_ = nullptr;
     page_content_annotations_service_.reset();
     optimization_guide_model_provider_.reset();
+    template_url_service_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -136,6 +158,8 @@ class PageContentAnnotationsWebContentsObserverTest
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
+  std::unique_ptr<TemplateURLService> template_url_service_;
+  TemplateURL* template_url_;
   TestPageTextObserver* page_text_observer_;
 };
 
@@ -154,6 +178,12 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_EQ(
       RequestTextDumpForUrl(GURL("http://test.com"), /*is_same_document=*/true),
       nullptr);
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest,
+       DoesNotRequestForGoogleSRP) {
+  EXPECT_EQ(RequestTextDumpForUrl(GURL("http://default-engine.com/search?q=a")),
+            nullptr);
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -217,6 +247,21 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
+       SRPURLsAnnotateSearchTerms) {
+  // Navigate and commit so there is an entry.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://default-engine.com/search?q=a"));
+
+  // The search query should be what is requested to be annotated.
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+      service()->last_annotation_request();
+  ASSERT_TRUE(last_annotation_request.has_value());
+  EXPECT_EQ(last_annotation_request->first.url,
+            GURL("http://default-engine.com/search?q=a"));
+  EXPECT_EQ(last_annotation_request->second, "a");
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest,
        RequestsRelatedSearchesForMainFrameSRPUrl) {
   // Navigate to non-Google SRP and commit.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -226,14 +271,10 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
       service()->last_related_searches_extraction_request();
   EXPECT_FALSE(last_request.has_value());
 
-  // Overwrite Google base URL.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kGoogleBaseURL, "http://www.foo.com/");
-
   // Navigate to Google SRP and commit.
   // No request should be sent since extracting related searches is disabled.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.foo.com/search?q=a"));
+      web_contents(), GURL("http://default-engine.com/search?q=a"));
   last_request = service()->last_related_searches_extraction_request();
   EXPECT_FALSE(last_request.has_value());
 }
@@ -261,17 +302,14 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesTest,
       service()->last_related_searches_extraction_request();
   EXPECT_FALSE(last_request.has_value());
 
-  // Overwrite Google base URL.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kGoogleBaseURL, "http://www.foo.com/");
-
   // Navigate to Google SRP and commit.
   // Expect a request to be sent since extracting related searches is enabled.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.foo.com/search?q=a"));
+      web_contents(), GURL("http://default-engine.com/search?q=a"));
   last_request = service()->last_related_searches_extraction_request();
   EXPECT_TRUE(last_request.has_value());
-  EXPECT_EQ(last_request->first.url, GURL("http://www.foo.com/search?q=a"));
+  EXPECT_EQ(last_request->first.url,
+            GURL("http://default-engine.com/search?q=a"));
   EXPECT_EQ(last_request->second, web_contents());
 }
 

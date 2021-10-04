@@ -64,6 +64,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -302,7 +303,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           PageContentAnnotationsServiceFactory::GetForProfile(profile);
   if (page_content_annotations_service) {
     optimization_guide::PageContentAnnotationsWebContentsObserver::
-        CreateForWebContents(web_contents, page_content_annotations_service);
+        CreateForWebContents(web_contents, page_content_annotations_service,
+                             TemplateURLServiceFactory::GetForProfile(profile));
   }
   OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);

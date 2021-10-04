@@ -5,20 +5,48 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace optimization_guide {
 
+namespace {
+
+// Returns the search query if |url| is a valid Search URL according to
+// |template_url_service|.
+absl::optional<std::u16string> ExtractSearchTerms(
+    const TemplateURLService* template_url_service,
+    const GURL& url) {
+  const TemplateURL* default_search_provider =
+      template_url_service->GetDefaultSearchProvider();
+  const SearchTermsData& search_terms_data =
+      template_url_service->search_terms_data();
+
+  std::u16string search_terms;
+  if (default_search_provider &&
+      default_search_provider->ExtractSearchTermsFromURL(url, search_terms_data,
+                                                         &search_terms) &&
+      !search_terms.empty()) {
+    return search_terms;
+  }
+  return absl::nullopt;
+}
+
+}  // namespace
+
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
-        PageContentAnnotationsService* page_content_annotations_service)
+        PageContentAnnotationsService* page_content_annotations_service,
+        TemplateURLService* template_url_service)
     : content::WebContentsObserver(web_contents),
       page_content_annotations_service_(page_content_annotations_service),
+      template_url_service_(template_url_service),
       max_size_for_text_dump_(features::MaxSizeForPageContentTextDump()) {
   DCHECK(page_content_annotations_service_);
 
@@ -52,6 +80,24 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
           web_contents(), navigation_handle->GetNavigationId());
 
+  if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
+    // Extract related searches.
+    if (optimization_guide::features::ShouldExtractRelatedSearches()) {
+      page_content_annotations_service_->ExtractRelatedSearches(history_visit,
+                                                                web_contents());
+    }
+
+    absl::optional<std::u16string> search_terms =
+        ExtractSearchTerms(template_url_service_, navigation_handle->GetURL());
+    if (search_terms) {
+      const std::u16string& normalized_search_query =
+          base::i18n::ToLower(base::CollapseWhitespace(*search_terms, false));
+      page_content_annotations_service_->Annotate(
+          history_visit, base::UTF16ToUTF8(normalized_search_query));
+      return;
+    }
+  }
+
   // TODO(crbug/1177102): Remove this title hack once the PageTextObserver works
   // for same-document navigations.
   if (navigation_handle->IsSameDocument()) {
@@ -59,17 +105,6 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     page_content_annotations_service_->Annotate(
         history_visit, base::UTF16ToUTF8(web_contents()->GetTitle()));
   }
-
-  if (!optimization_guide::features::ShouldExtractRelatedSearches()) {
-    return;
-  }
-
-  if (!google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
-    return;
-  }
-
-  page_content_annotations_service_->ExtractRelatedSearches(history_visit,
-                                                            web_contents());
 }
 
 std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -85,6 +120,9 @@ PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
     return nullptr;
 
   if (navigation_handle->IsSameDocument())
+    return nullptr;
+
+  if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL()))
     return nullptr;
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request =

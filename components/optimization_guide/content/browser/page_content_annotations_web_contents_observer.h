@@ -10,6 +10,8 @@
 #include "components/optimization_guide/content/browser/page_text_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class TemplateURLService;
+
 namespace content {
 class NavigationHandle;
 }  // namespace content
@@ -37,7 +39,8 @@ class PageContentAnnotationsWebContentsObserver
  protected:
   PageContentAnnotationsWebContentsObserver(
       content::WebContents* web_contents,
-      PageContentAnnotationsService* page_content_annotations_service);
+      PageContentAnnotationsService* page_content_annotations_service,
+      TemplateURLService* template_url_service);
 
  private:
   friend class content::WebContentsUserData<
@@ -58,6 +61,9 @@ class PageContentAnnotationsWebContentsObserver
 
   // Not owned. Guaranteed to outlive |this|.
   PageContentAnnotationsService* page_content_annotations_service_;
+
+  // Not owned. Guaranteed to outlive |this|.
+  const TemplateURLService* template_url_service_;
 
   // The max size to request for text dump.
   const uint64_t max_size_for_text_dump_;

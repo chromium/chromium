@@ -6,6 +6,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/search_engines",
   "+content/public/browser",
   "+content/public/test",
   "+mojo/public",
