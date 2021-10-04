@@ -44,11 +44,7 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       // Allows loading javascript files from the current origin
-      "script-src 'self' "
-      // Allows Mock index.html's inlined script to be executed.
-      "'sha256-vunvdG/aGKMFmosUfnXnaOfAKJ1vqzY/TjBlJ8/SEqY=' "
-      // Allows Prod index.html's inlined script to be executed.
-      "'sha256-yTOCd/3yFekoT/PpJwcLz8Hkw89nnlVBtq7cgEag574=';");
+      "script-src 'self';");
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
