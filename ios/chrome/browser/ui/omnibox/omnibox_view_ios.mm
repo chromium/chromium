@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"

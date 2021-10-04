@@ -17,7 +17,7 @@
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/system_flags.h"

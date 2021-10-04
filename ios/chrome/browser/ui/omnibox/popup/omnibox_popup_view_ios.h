@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"

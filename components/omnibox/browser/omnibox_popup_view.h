@@ -14,6 +14,7 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxPopupView {
  public:

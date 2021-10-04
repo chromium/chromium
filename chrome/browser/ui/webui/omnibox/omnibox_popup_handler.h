@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_POPUP_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_POPUP_HANDLER_H_
 
+#include <stddef.h>
+
 #include "base/macros.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
 
 // The WebUI handler for the experimental WebUI omnibox popup.
 class OmniboxPopupHandler {

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_MODEL_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_MODEL_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_
+#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_
 
 #include <stddef.h>
+
+#include "components/omnibox/browser/autocomplete_result.h"
+#include "components/prefs/pref_service.h"
 
 struct OmniboxPopupSelection {
   // Directions for stepping through selections. These may apply for going
@@ -27,7 +30,7 @@ struct OmniboxPopupSelection {
     kAllLines
   };
 
-  // See |Selection::state| below for details. The numeric values are to aid
+  // See `Selection::state` below for details. The numeric values are to aid
   // comparison only. They are not persisted anywhere and can be freely changed.
   enum LineState {
     // This means the Header above this row is highlighted, and the
@@ -56,7 +59,7 @@ struct OmniboxPopupSelection {
 
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
-    // (OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection).
+    // (OmniboxEditModel::GetAccessibilityLabelForCurrentSelection).
     LINE_STATE_MAX_VALUE
   };
 
@@ -81,12 +84,31 @@ struct OmniboxPopupSelection {
   bool operator!=(const OmniboxPopupSelection&) const;
   bool operator<(const OmniboxPopupSelection&) const;
 
-  // Returns true if going to this selection from given |from| selection
+  // Returns true if going to this selection from given `from` selection
   // results in activation of keyword state when it wasn't active before.
   bool IsChangeToKeyword(OmniboxPopupSelection from) const;
 
   // Returns true if this selection represents a button being focused.
   bool IsButtonFocused() const;
+
+  // Returns true if the control represented by this selection's `state` is
+  // present on the match for `line` in given `result`.
+  bool IsControlPresentOnMatch(const AutocompleteResult& result,
+                               PrefService* pref_service) const;
+
+  // Returns the next selection after this one in given `result`.
+  OmniboxPopupSelection GetNextSelection(const AutocompleteResult& result,
+                                         PrefService* pref_service,
+                                         Direction direction,
+                                         Step step) const;
+
+ private:
+  // This is a utility function to support `GetNextSelection`.
+  static std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
+      const AutocompleteResult& result,
+      PrefService* pref_service,
+      Direction direction,
+      Step step);
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_MODEL_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_

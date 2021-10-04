@@ -42,7 +42,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -1298,10 +1297,12 @@ void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
     // Reverting, however, does not make sense for on-focus suggestions
     // (user_input_in_progress_ is false) unless the first result is a
     // verbatim match of the omnibox input (on-focus query refinements on SERP).
-    const auto next_selection =
-        GetNextPopupSelection(count > 0 ? OmniboxPopupSelection::kForward
-                                        : OmniboxPopupSelection::kBackward,
-                              OmniboxPopupSelection::kWholeLine);
+    const OmniboxPopupSelection next_selection =
+        popup_selection_.GetNextSelection(
+            result(), GetPrefService(),
+            count > 0 ? OmniboxPopupSelection::kForward
+                      : OmniboxPopupSelection::kBackward,
+            OmniboxPopupSelection::kWholeLine);
     if (result().default_match() && has_temporary_text_ &&
         next_selection.line == 0 &&
         (user_input_in_progress_ ||
@@ -1616,130 +1617,6 @@ void OmniboxEditModel::SetAccessibilityLabel(const AutocompleteMatch& match) {
   view_->SetAccessibilityLabel(view_->GetText(), match, true);
 }
 
-std::vector<OmniboxPopupSelection>
-OmniboxEditModel::GetAllAvailablePopupSelectionsSorted(
-    OmniboxPopupSelection::Direction direction,
-    OmniboxPopupSelection::Step step) const {
-  // First enumerate all the accessible states based on |direction| and |step|,
-  // as well as enabled feature flags. This doesn't mean each match will have
-  // all of these states - just that it's possible to get there, if available.
-  std::vector<OmniboxPopupSelection::LineState> all_states;
-  if (step == OmniboxPopupSelection::kWholeLine ||
-      step == OmniboxPopupSelection::kAllLines) {
-    // In the case of whole-line stepping, only the NORMAL state is accessible.
-    all_states.push_back(OmniboxPopupSelection::NORMAL);
-  } else {
-    // Arrow keys should never reach the header controls.
-    if (step == OmniboxPopupSelection::kStateOrLine)
-      all_states.push_back(OmniboxPopupSelection::FOCUSED_BUTTON_HEADER);
-
-    all_states.push_back(OmniboxPopupSelection::NORMAL);
-
-    // Keyword mode is accessible if the keyword search button is enabled. If
-    // not, then keyword mode is only accessible by tabbing forward.
-    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled() ||
-        (direction == OmniboxPopupSelection::kForward &&
-         step == OmniboxPopupSelection::kStateOrLine)) {
-      all_states.push_back(OmniboxPopupSelection::KEYWORD_MODE);
-    }
-
-    all_states.push_back(OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
-    all_states.push_back(OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
-#endif
-    all_states.push_back(
-        OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
-  }
-  DCHECK(std::is_sorted(all_states.begin(), all_states.end()))
-      << "This algorithm depends on a sorted list of line states.";
-
-  // Now, for each accessible line, add all the available line states to a list.
-  std::vector<OmniboxPopupSelection> available_selections;
-  {
-    auto add_available_line_states_for_line = [&](size_t line) {
-      for (OmniboxPopupSelection::LineState state : all_states) {
-        OmniboxPopupSelection selection(line, state);
-        if (IsPopupControlPresentOnMatch(selection))
-          available_selections.push_back(selection);
-      }
-    };
-
-    for (size_t line = 0; line < result().size(); ++line) {
-      add_available_line_states_for_line(line);
-    }
-  }
-  DCHECK(
-      std::is_sorted(available_selections.begin(), available_selections.end()))
-      << "This algorithm depends on a sorted list of available selections.";
-  return available_selections;
-}
-
-OmniboxPopupSelection OmniboxEditModel::GetNextPopupSelection(
-    OmniboxPopupSelection::Direction direction,
-    OmniboxPopupSelection::Step step) const {
-  if (result().empty()) {
-    return popup_selection_;
-  }
-
-  // Implementing this was like a Google Interview Problem. It was always a
-  // tough problem to handle all the cases, but has gotten much harder since
-  // we can now hide whole rows from view by collapsing sections.
-  //
-  // The only sane thing to do is to first enumerate all available selections.
-  // Other approaches I've tried all end up being a jungle of branching code.
-  // It's not necessarily optimal to generate this list for each keypress, but
-  // in practice it's only something like ~10 elements long, and makes the code
-  // easy to reason about.
-  std::vector<OmniboxPopupSelection> all_available_selections =
-      GetAllAvailablePopupSelectionsSorted(direction, step);
-
-  if (all_available_selections.empty()) {
-    return popup_selection_;
-  }
-
-  // Handle the simple case of just getting the first or last element.
-  if (step == OmniboxPopupSelection::kAllLines) {
-    return direction == OmniboxPopupSelection::kForward
-               ? all_available_selections.back()
-               : all_available_selections.front();
-  }
-
-  if (direction == OmniboxPopupSelection::kForward) {
-    // To go forward, we want to change to the first selection that's larger
-    // than the current `popup_selection_`, and std::upper_bound() does just
-    // that.
-    const auto next =
-        std::upper_bound(all_available_selections.begin(),
-                         all_available_selections.end(), popup_selection_);
-
-    // If we can't find any selections larger than the current
-    // `popup_selection_` wrap.
-    if (next == all_available_selections.end())
-      return all_available_selections.front();
-
-    // Normal case where we found the next selection.
-    return *next;
-  } else if (direction == OmniboxPopupSelection::kBackward) {
-    // To go backwards, decrement one from std::lower_bound(), which finds the
-    // current selection. I didn't use std::find() here, because
-    // std::lower_bound() can gracefully handle the case where
-    // `popup_selection_` is no longer within the list of available selections.
-    const auto current =
-        std::lower_bound(all_available_selections.begin(),
-                         all_available_selections.end(), popup_selection_);
-
-    // If the current selection is the first one, wrap.
-    if (current == all_available_selections.begin())
-      return all_available_selections.back();
-
-    // Decrement one from the current selection.
-    return *(current - 1);
-  }
-
-  NOTREACHED();
-  return popup_selection_;
-}
-
 void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
   user_text_ = text;
   original_user_text_with_keyword_.clear();
@@ -1979,7 +1856,8 @@ OmniboxPopupSelection OmniboxEditModel::StepPopupSelection(
   // AcceptKeyword should be called after changing the selected line so we don't
   // accept keyword on the wrong suggestion when stepping backwards.
   const auto old_selection = GetPopupSelection();
-  const auto new_selection = GetNextPopupSelection(direction, step);
+  const auto new_selection = old_selection.GetNextSelection(
+      result(), GetPrefService(), direction, step);
   if (old_selection.IsChangeToKeyword(new_selection)) {
     ClearKeyword();
   }
@@ -2000,58 +1878,7 @@ bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
 bool OmniboxEditModel::IsPopupControlPresentOnMatch(
     OmniboxPopupSelection selection) const {
   DCHECK(popup_view_);
-
-  if (selection.line >= result().size()) {
-    return false;
-  }
-  const auto& match = result().match_at(selection.line);
-  // Skip rows that are hidden because their header is collapsed, unless the
-  // user is trying to focus the header itself (which is still shown).
-  if (selection.state != OmniboxPopupSelection::FOCUSED_BUTTON_HEADER &&
-      match.suggestion_group_id.has_value() && GetPrefService() &&
-      result().IsSuggestionGroupIdHidden(GetPrefService(),
-                                         match.suggestion_group_id.value())) {
-    return false;
-  }
-
-  switch (selection.state) {
-    case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
-      // For the first match, if it a suggestion_group_id, then it has a header.
-      if (selection.line == 0)
-        return match.suggestion_group_id.has_value();
-
-      // Otherwise, we only show headers that are distinct from the previous
-      // match's header.
-      const auto& previous_match = result().match_at(selection.line - 1);
-      return match.suggestion_group_id.has_value() &&
-             match.suggestion_group_id != previous_match.suggestion_group_id;
-    }
-    case OmniboxPopupSelection::NORMAL:
-      return true;
-    case OmniboxPopupSelection::KEYWORD_MODE:
-      return match.associated_keyword != nullptr;
-    case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:
-      // Buttons are suppressed for matches with an associated keyword, unless
-      // dedicated button row is enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
-        return match.has_tab_match;
-      else
-        return match.has_tab_match && !match.associated_keyword;
-    case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
-      return match.action != nullptr;
-    case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
-      // Remove suggestion buttons are suppressed for matches with an associated
-      // keyword, unless the feature that moves it to the button row is enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-        return match.SupportsDeletion();
-      } else {
-        return !match.associated_keyword && match.SupportsDeletion();
-      }
-    default:
-      break;
-  }
-  NOTREACHED();
-  return false;
+  return selection.IsControlPresentOnMatch(result(), GetPrefService());
 }
 
 bool OmniboxEditModel::TriggerPopupSelectionAction(
@@ -2170,24 +1997,27 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     }
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;
-      if (IsPopupControlPresentOnMatch(OmniboxPopupSelection(
-              line, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH))) {
+      if (OmniboxPopupSelection(
+              line, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH)
+              .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message_id = IDS_ACC_TAB_SWITCH_SUFFIX;
         available_actions_count++;
       }
-      if (IsPopupControlPresentOnMatch(OmniboxPopupSelection(
-              line, OmniboxPopupSelection::KEYWORD_MODE))) {
+      if (OmniboxPopupSelection(line, OmniboxPopupSelection::KEYWORD_MODE)
+              .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
         available_actions_count++;
       }
-      if (IsPopupControlPresentOnMatch(OmniboxPopupSelection(
-              line, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION))) {
+      if (OmniboxPopupSelection(line,
+                                OmniboxPopupSelection::FOCUSED_BUTTON_ACTION)
+              .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message =
             match.action->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
-      if (IsPopupControlPresentOnMatch(OmniboxPopupSelection(
-              line, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION))) {
+      if (OmniboxPopupSelection(
+              line, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)
+              .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
         available_actions_count++;
       }

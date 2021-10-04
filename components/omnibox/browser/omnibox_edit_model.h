@@ -20,7 +20,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -533,14 +533,6 @@ class OmniboxEditModel {
                        // for another action such as focusing the location bar
                        // with ctrl-l or copying the selected text with ctrl-c.
   };
-
-  std::vector<OmniboxPopupSelection> GetAllAvailablePopupSelectionsSorted(
-      OmniboxPopupSelection::Direction direction,
-      OmniboxPopupSelection::Step step) const;
-
-  OmniboxPopupSelection GetNextPopupSelection(
-      OmniboxPopupSelection::Direction direction,
-      OmniboxPopupSelection::Step step) const;
 
   // Returns true if a query to an autocomplete provider is currently
   // in progress.  This logic should in the future live in

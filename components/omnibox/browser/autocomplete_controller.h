@@ -199,15 +199,15 @@ class AutocompleteController : public AutocompleteProviderListener,
 #if defined(OS_WIN)
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsUIATest, AccessibleOmnibox);
 #endif  // OS_WIN
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, SetSelectedLine);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, SetSelectedLine);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            SetSelectedLineWithNoDefaultMatches);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, TestFocusFixing);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, PopupPositionChanging);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, PopupStepSelection);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, TestFocusFixing);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupPositionChanging);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupStepSelection);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            PopupStepSelectionWithHiddenGroupIds);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            PopupInlineAutocompleteAndTemporaryText);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
