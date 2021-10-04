@@ -76820,6 +76820,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Dismiss"/>
 </enum>
 
+<enum name="SideSearchAvailabilityChangeType">
+  <int value="0" label="Become available"/>
+  <int value="1" label="Become unavailable"/>
+</enum>
+
+<enum name="SideSearchCloseActionType">
+  <int value="0" label="Tap on side search toolbar button"/>
+  <int value="1" label="Tap on side search close button"/>
+</enum>
+
+<enum name="SideSearchNavigationType">
+  <int value="0" label="Navigation committed within side search"/>
+  <int value="1" label="Redirection to tab"/>
+</enum>
+
+<enum name="SideSearchOpenActionType">
+  <int value="0" label="Tap on side search toolbar button"/>
+</enum>
+
 <enum name="SignedExchangeLoadResult">
   <int value="0" label="Loaded successfully"/>
   <int value="1" label="Served from non-secure origin"/>

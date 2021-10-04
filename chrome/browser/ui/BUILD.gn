@@ -5164,6 +5164,8 @@ static_library("ui") {
 
   if (enable_side_search) {
     sources += [
+      "side_search/side_search_metrics.cc",
+      "side_search/side_search_metrics.h",
       "side_search/side_search_prefs.cc",
       "side_search/side_search_prefs.h",
       "side_search/side_search_side_contents_helper.cc",

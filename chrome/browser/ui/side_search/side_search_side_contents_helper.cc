@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 
+#include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -46,8 +47,9 @@ class SideSearchContentsThrottle : public content::NavigationThrottle {
     const auto& url = navigation_handle()->GetURL();
 
     // Allow Google search navigations to proceed in the side panel.
-    if (google_util::IsGoogleSearchUrl(url))
+    if (google_util::IsGoogleSearchUrl(url)) {
       return NavigationThrottle::PROCEED;
+    }
 
     // Route all non-Google search URLs to the tab contents associated with this
     // side contents. This throttle will only be applied to WebContents objects
@@ -79,6 +81,7 @@ content::WebContents* SideSearchSideContentsHelper::Delegate::OpenURLFromTab(
 SideSearchSideContentsHelper::~SideSearchSideContentsHelper() {
   if (web_contents())
     web_contents()->SetDelegate(nullptr);
+  MaybeRecordMetricsPerJourney();
 }
 
 std::unique_ptr<content::NavigationThrottle>
@@ -106,6 +109,10 @@ void SideSearchSideContentsHelper::DidFinishNavigation(
   DCHECK(google_util::IsGoogleSearchUrl(url));
   DCHECK(delegate_);
   delegate_->LastSearchURLUpdated(url);
+
+  RecordSideSearchNavigation(
+      SideSearchNavigationType::kNavigationCommittedWithinSideSearch);
+  ++navigation_within_side_search_count_;
 }
 
 bool SideSearchSideContentsHelper::CanDragEnter(
@@ -133,6 +140,8 @@ void SideSearchSideContentsHelper::NavigateInTabContents(
     const content::OpenURLParams& params) {
   DCHECK(delegate_);
   delegate_->NavigateInTabContents(params);
+  RecordSideSearchNavigation(SideSearchNavigationType::kRedirectionToTab);
+  ++redirection_to_tab_count_;
 }
 
 void SideSearchSideContentsHelper::LoadURL(const GURL& url) {
@@ -156,6 +165,9 @@ void SideSearchSideContentsHelper::LoadURL(const GURL& url) {
 #endif  // defined(OS_CHROMEOS)
 
   web_contents()->GetController().LoadURLWithParams(load_url_params);
+
+  MaybeRecordMetricsPerJourney();
+  has_loaded_url_ = true;
 }
 
 void SideSearchSideContentsHelper::SetDelegate(Delegate* delegate) {
@@ -164,7 +176,10 @@ void SideSearchSideContentsHelper::SetDelegate(Delegate* delegate) {
 }
 
 SideSearchSideContentsHelper::SideSearchSideContentsHelper(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents)
+    : webui_load_timer_(web_contents,
+                        "SideSearch.LoadDocumentTime",
+                        "SideSearch.LoadCompletedTime") {
   Observe(web_contents);
 
 #if !defined(OS_CHROMEOS)
@@ -175,6 +190,18 @@ SideSearchSideContentsHelper::SideSearchSideContentsHelper(
 #endif  // !defined(OS_CHROMEOS)
 
   web_contents->SetDelegate(this);
+}
+
+void SideSearchSideContentsHelper::MaybeRecordMetricsPerJourney() {
+  // Do not record metrics if url has not loaded.
+  if (!has_loaded_url_)
+    return;
+
+  RecordNavigationCommittedWithinSideSearchCountPerJourney(
+      navigation_within_side_search_count_);
+  RecordRedirectionToTabCountPerJourney(redirection_to_tab_count_);
+  navigation_within_side_search_count_ = 0;
+  redirection_to_tab_count_ = 0;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchSideContentsHelper);

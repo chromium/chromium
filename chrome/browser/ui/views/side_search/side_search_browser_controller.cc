@@ -172,7 +172,7 @@ SideSearchBrowserController::SideSearchBrowserController(
           side_panel,
           browser_view_->GetProfile(),
           base::BindRepeating(
-              &SideSearchBrowserController::SidePanelButtonPressed,
+              &SideSearchBrowserController::SidePanelCloseButtonPressed,
               base::Unretained(this)))) {
   UpdateSidePanelForContents(browser_view_->GetActiveWebContents(), nullptr);
 }
@@ -250,7 +250,7 @@ SideSearchBrowserController::CreateToolbarButton() {
   toolbar_button->SetCallback(
       base::BindRepeating(&SideSearchBrowserController::SidePanelButtonPressed,
                           base::Unretained(this)));
-  toolbar_button->SetVisible(true);
+  toolbar_button->SetVisible(false);
   toolbar_button->SetEnabled(true);
 
   toolbar_button_ = toolbar_button.get();
@@ -269,11 +269,27 @@ bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
 }
 
 void SideSearchBrowserController::SidePanelButtonPressed() {
-  // Toggle the side panel visibility.
-  const bool new_toggled_state = !GetSidePanelToggledOpen();
-  SetSidePanelToggledOpen(new_toggled_state);
-  if (!new_toggled_state &&
-      base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed)) {
+  if (GetSidePanelToggledOpen())
+    CloseSidePanel(SideSearchCloseActionType::kTapOnSideSearchToolbarButton);
+  else
+    OpenSidePanel();
+}
+
+void SideSearchBrowserController::SidePanelCloseButtonPressed() {
+  CloseSidePanel(SideSearchCloseActionType::kTapOnSideSearchCloseButton);
+}
+
+void SideSearchBrowserController::OpenSidePanel() {
+  RecordSideSearchOpenAction(
+      SideSearchOpenActionType::kTapOnSideSearchToolbarButton);
+  SetSidePanelToggledOpen(true);
+}
+
+void SideSearchBrowserController::CloseSidePanel(
+    SideSearchCloseActionType action) {
+  RecordSideSearchCloseAction(action);
+  SetSidePanelToggledOpen(false);
+  if (base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed)) {
     // If per tab state is enabled only clear the side contents for the
     // currently active tab.
     base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)
@@ -354,5 +370,11 @@ void SideSearchBrowserController::UpdateSidePanel() {
 
   // The toolbar button should remain visible in the toolbar as a side panel can
   // be shown for the active tab.
-  toolbar_button_->SetVisible(can_show_side_panel_for_page);
+  if (toolbar_button_->GetVisible() != can_show_side_panel_for_page) {
+    toolbar_button_->SetVisible(can_show_side_panel_for_page);
+    RecordSideSearchAvailabilityChanged(
+        can_show_side_panel_for_page
+            ? SideSearchAvailabilityChangeType::kBecomeAvailable
+            : SideSearchAvailabilityChangeType::kBecomeUnavailable);
+  }
 }

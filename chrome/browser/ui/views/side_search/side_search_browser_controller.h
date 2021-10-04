@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -62,8 +63,15 @@ class SideSearchBrowserController
   bool GetSidePanelToggledOpen() const;
   void SetSidePanelToggledOpen(bool toggled_open);
 
-  // Toggles panel visibility on button press.
+  // Toggles panel visibility on side panel toolbar button press.
   void SidePanelButtonPressed();
+
+  // Closes side panel on close button press.
+  void SidePanelCloseButtonPressed();
+
+  void OpenSidePanel();
+
+  void CloseSidePanel(SideSearchCloseActionType action);
 
   // Called when the side panel is toggled into the closed state. Clears the
   // side panel contents for all tabs belonging to the side panel's browser

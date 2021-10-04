@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -126,6 +127,9 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     EXPECT_TRUE(GetSidePanelFor(browser)->GetVisible());
   }
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -149,16 +153,25 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   // current tab has previously encountered a Google search page.
   NavigateActiveTab(browser(), kNonGoogleURL);
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.AvailabilityChanged",
+      SideSearchAvailabilityChangeType::kBecomeAvailable, 1);
 
   // The side panel button should never be visible on the Google home page even
   // if it has already been navigated to a Google search page.
   NavigateActiveTab(browser(), kGoogleSearchHomePageURL);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.AvailabilityChanged",
+      SideSearchAvailabilityChangeType::kBecomeUnavailable, 1);
 
   // The side panel button should be visible if on a non-Google page and the
   // current tab has previously encountered a Google search page.
   NavigateActiveTab(browser(), kNonGoogleURL);
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.AvailabilityChanged",
+      SideSearchAvailabilityChangeType::kBecomeAvailable, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
@@ -203,11 +216,17 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.OpenAction",
+      SideSearchOpenActionType::kTapOnSideSearchToolbarButton, 1);
 
   // Toggling the button again should close the side panel.
   NotifyButtonClick(browser());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.CloseAction",
+      SideSearchCloseActionType::kTapOnSideSearchToolbarButton, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
@@ -259,6 +278,9 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   NavigateToSRPAndOpenSidePanel(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
   NotifyCloseButtonClick(browser());
+  histogram_tester_.ExpectBucketCount(
+      "SideSearch.CloseAction",
+      SideSearchCloseActionType::kTapOnSideSearchCloseButton, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

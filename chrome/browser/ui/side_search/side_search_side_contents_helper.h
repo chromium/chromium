@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_SIDE_CONTENTS_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_SIDE_CONTENTS_HELPER_H_
 
+#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -45,6 +46,7 @@ class SideSearchSideContentsHelper
         const content::OpenURLParams& params);
   };
 
+  // Will call MaybeRecordMetricsPerJourney().
   ~SideSearchSideContentsHelper() override;
 
   // Maybe installs a throttle for the given navigation.
@@ -70,7 +72,7 @@ class SideSearchSideContentsHelper
   void NavigateInTabContents(const content::OpenURLParams& params);
 
   // Loads the `url` in the side contents, applying any additional headers as
-  // necessary.
+  // necessary. Also calls MaybeRecordMetricsPerJourney().
   void LoadURL(const GURL& url);
 
   // Called to set the tab contents associated with this side panel contents.
@@ -82,8 +84,18 @@ class SideSearchSideContentsHelper
   friend class content::WebContentsUserData<SideSearchSideContentsHelper>;
   explicit SideSearchSideContentsHelper(content::WebContents* web_contents);
 
+  // Emits metrics data for the previous user journey if present.
+  void MaybeRecordMetricsPerJourney();
+
   // `delegate_` will outlive the SideContentsWrapper.
   Delegate* delegate_ = nullptr;
+
+  WebuiLoadTimer webui_load_timer_;
+
+  // Only used for metrics.
+  int navigation_within_side_search_count_ = 0;
+  int redirection_to_tab_count_ = 0;
+  bool has_loaded_url_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
@@ -100,6 +102,8 @@ class SideSearchSideContentsHelperTest : public ::testing::Test {
     return SideSearchSideContentsHelper::FromWebContents(side_contents());
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
@@ -115,6 +119,9 @@ TEST_F(SideSearchSideContentsHelperTest, GoogleSearchURLsNavigateSideContents) {
             GetLastCommittedSideContentsEntry()->GetURL());
   EXPECT_EQ(GURL(kGoogleSearchURL), delegate().last_search_url());
   EXPECT_TRUE(delegate().tab_contents_url().is_empty());
+  histogram_tester_.ExpectUniqueSample(
+      "SideSearch.Navigation",
+      SideSearchNavigationType::kNavigationCommittedWithinSideSearch, 1);
 }
 
 TEST_F(SideSearchSideContentsHelperTest,
@@ -123,6 +130,8 @@ TEST_F(SideSearchSideContentsHelperTest,
   EXPECT_EQ(nullptr, GetLastCommittedSideContentsEntry());
   EXPECT_TRUE(delegate().last_search_url().is_empty());
   EXPECT_EQ(GURL(kNonGoogleURL), delegate().tab_contents_url());
+  histogram_tester_.ExpectUniqueSample(
+      "SideSearch.Navigation", SideSearchNavigationType::kRedirectionToTab, 1);
 }
 
 TEST_F(SideSearchSideContentsHelperTest,
@@ -131,6 +140,8 @@ TEST_F(SideSearchSideContentsHelperTest,
   EXPECT_EQ(nullptr, GetLastCommittedSideContentsEntry());
   EXPECT_TRUE(delegate().last_search_url().is_empty());
   EXPECT_EQ(GURL(kGoogleSearchHomePageURL), delegate().tab_contents_url());
+  histogram_tester_.ExpectUniqueSample(
+      "SideSearch.Navigation", SideSearchNavigationType::kRedirectionToTab, 1);
 }
 
 }  // namespace test
