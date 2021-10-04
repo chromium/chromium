@@ -207,6 +207,8 @@ export function diagnosticsNetworkIconTestSuite() {
         .then(() => {
           assertFalse(isVisible(getNetworkIcon()));
           assertTrue(isVisible(getConnectingIcon()));
+          assertTextContains(
+              'Ethernet network, connecting', getConnectingIcon().alt);
         });
   });
 }

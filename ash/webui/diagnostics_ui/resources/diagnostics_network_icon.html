@@ -13,7 +13,8 @@
       hidden$="[[computeShouldDisplaySpinner_(network.state)]]"
       network-state="[[computeNetworkState_(network.*)]]">
   </network-icon>
-  <paper-spinner-lite id="connectingIcon" active
+  <paper-spinner-lite id="connectingIcon" active tabindex="0"
+      alt$="[[computeSpinnerAriaLabel_(locale, network.state)]]"
       hidden$="[[!computeShouldDisplaySpinner_(network.state)]]">
   </paper-spinner-lite>
 </div>

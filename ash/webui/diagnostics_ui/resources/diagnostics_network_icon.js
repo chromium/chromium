@@ -2,14 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * 'diagnostics-network-icon' is a wrapper for 'network-icon' to ensure the
+ * correct icon displayed based on network type, state, and technology.
+ * @see //ui/webui/resources/cr_components/chromeos/network/network_icon.js
+ */
+
 import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
 import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './diagnostics_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {Network, NetworkState, NetworkType, SecurityType} from './diagnostics_types.js';
+import {getNetworkType} from './diagnostics_utils.js';
 
 /**
  * Type alias for network_config NetworkStateProperties struct.
@@ -230,12 +240,15 @@ export function networkToNetworkStateAdapter(network) {
 }
 
 /**
- * @fileoverview
- * 'diagnostics-network-icon' is a wrapper for 'network-icon' to ensure the
- * correct icon displayed based on network type, state, and technology.
- * @see //ui/webui/resources/cr_components/chromeos/network/network_icon.js
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  */
-export class DiagnosticsNetworkIconElement extends PolymerElement {
+const DiagnosticsNetworkIconBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
   static get is() {
     return 'diagnostics-network-icon';
   }
@@ -276,6 +289,20 @@ export class DiagnosticsNetworkIconElement extends PolymerElement {
     }
 
     return this.network.state === NetworkState.kConnecting;
+  }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeSpinnerAriaLabel_() {
+    if (!this.network) {
+      return '';
+    }
+    const networkType = getNetworkType(this.network.type);
+
+    return this.i18nDynamic(
+        this.locale, 'networkIconLabelConnecting', networkType);
   }
 }
 
