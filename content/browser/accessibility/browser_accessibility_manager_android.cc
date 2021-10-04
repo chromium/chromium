@@ -146,6 +146,16 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
+
+  // When focusing a node on Android, we want to ensure that we clear the
+  // Java-side cache for the previously focused node as well.
+  if (BrowserAccessibility* last_focused_node =
+          BrowserAccessibilityManager::GetLastFocusedNode()) {
+    BrowserAccessibilityAndroid* android_last_focused_node =
+        static_cast<BrowserAccessibilityAndroid*>(last_focused_node);
+    wcax->ClearNodeInfoCacheForGivenId(android_last_focused_node->unique_id());
+  }
+
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
   wcax->HandleFocusChanged(android_node->unique_id());

@@ -1842,6 +1842,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
     }
 
+    /**
+     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_setProgress() throws Throwable {
@@ -1856,7 +1859,6 @@ public class WebContentsAccessibilityTest {
         // Verify that bad requests have no effect.
         Assert.assertFalse(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, null));
         Bundle bundle = new Bundle();
-        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, -1);
         Assert.assertFalse(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle));
 
         // Send a proper action and poll for update.
@@ -1905,6 +1907,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
     }
 
+    /**
+     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_nextHtmlElement() throws Throwable {
@@ -1945,6 +1950,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
     }
 
+    /**
+     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_previousHtmlElement() throws Throwable {
@@ -1983,6 +1991,140 @@ public class WebContentsAccessibilityTest {
         // Verify results.
         Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+    }
+
+    /**
+     * Test that the performAction for ACTION_ACCESSIBILITY_FOCUS works properly with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_accessibilityFocus() throws Throwable {
+        // Build a simple web page with elements that can be traversed.
+        setupTestWithHTML("<p id='id1'>Example1</p><p id='id2'>Example2</p>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Send an action and poll for update.
+        Assert.assertTrue(
+                performActionOnUiThread(vvid1, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
+                        null, () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+
+        // Update nodes and verify results.
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+    }
+
+    /**
+     * Test that the performAction for ACTION_CLEAR_ACCESSIBILITY_FOCUS works properly
+     * with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_accessibilityClearFocus() throws Throwable {
+        // Build a simple web page with elements that can be traversed.
+        setupTestWithHTML("<p id='id1'>Example1</p><p id='id2'>Example2</p>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Send an action and poll for update.
+        Assert.assertTrue(
+                performActionOnUiThread(vvid1, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
+                        null, () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+
+        // Update nodes and verify results.
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+
+        // Clear accessibility focus from the node and verify.
+        Assert.assertTrue(performActionOnUiThread(vvid1,
+                AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS, null,
+                () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+    }
+
+    /**
+     * Test that the performAction for ACTION_FOCUS works properly with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_Focus() throws Throwable {
+        // Build a simple web page with elements that can be focused.
+        setupTestWithHTML("<input type='text' id='id1'><input type='text' id='id2'>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Send an action and poll for update.
+        Assert.assertTrue(performActionOnUiThread(vvid1, AccessibilityNodeInfo.ACTION_FOCUS, null,
+                () -> createAccessibilityNodeInfo(vvid1).isFocused()));
+
+        // Update nodes and verify results.
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
+    }
+
+    /**
+     * Test that the performAction for ACTION_CLEAR_FOCUS works properly with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_clearFocus() throws Throwable {
+        // Build a simple web page with elements that can be focused.
+        setupTestWithHTML("<input type='text' id='id1'><input type='text' id='id2'>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Send an action and poll for update.
+        Assert.assertTrue(performActionOnUiThread(vvid1, AccessibilityNodeInfo.ACTION_FOCUS, null,
+                () -> createAccessibilityNodeInfo(vvid1).isFocused()));
+
+        // Update nodes and verify results.
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
+
+        // Clear focus from the node and verify.
+        Assert.assertTrue(performActionOnUiThread(vvid1, AccessibilityNodeInfo.ACTION_CLEAR_FOCUS,
+                null, () -> !createAccessibilityNodeInfo(vvid1).isFocused()));
+
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
