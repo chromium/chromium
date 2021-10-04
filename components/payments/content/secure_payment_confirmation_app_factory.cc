@@ -90,39 +90,63 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
 
 }  // namespace
 
+struct SecurePaymentConfirmationAppFactory::Request
+    : public content::WebContentsObserver {
+  Request(
+      base::WeakPtr<PaymentAppFactory::Delegate> delegate,
+      scoped_refptr<payments::PaymentManifestWebDataService> web_data_service,
+      mojom::SecurePaymentConfirmationRequestPtr mojo_request,
+      std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
+      : content::WebContentsObserver(delegate->GetWebContents()),
+        delegate(delegate),
+        web_data_service(web_data_service),
+        mojo_request(std::move(mojo_request)),
+        authenticator(std::move(authenticator)) {}
+
+  ~Request() override = default;
+
+  Request(const Request& other) = delete;
+  Request& operator=(const Request& other) = delete;
+
+  // WebContentsObserver:
+  void RenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override {
+    if (authenticator &&
+        authenticator->GetRenderFrameHost() == render_frame_host) {
+      authenticator.reset();
+    }
+  }
+
+  base::WeakPtr<PaymentAppFactory::Delegate> delegate;
+  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service;
+  mojom::SecurePaymentConfirmationRequestPtr mojo_request;
+  std::unique_ptr<webauthn::InternalAuthenticator> authenticator;
+  absl::optional<int> pending_icon_download_request_id;
+};
+
 void SecurePaymentConfirmationAppFactory::
     OnIsUserVerifyingPlatformAuthenticatorAvailable(
-        base::WeakPtr<PaymentAppFactory::Delegate> delegate,
-        mojom::SecurePaymentConfirmationRequestPtr request,
+        std::unique_ptr<Request> request,
         bool is_available) {
-  if (!delegate || !delegate->GetWebContents())
+  if (!request->delegate || !request->delegate->GetWebContents())
     return;
 
-  if (!authenticator_ ||
+  if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
                             features::kSecurePaymentConfirmationDebug))) {
-    delegate->OnDoneCreatingPaymentApps();
+    request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
 
   // Regardless of whether `web_data_service` has any apps, canMakePayment() and
   // hasEnrolledInstrument() should return true when a user-verifying platform
   // authenticator device is available.
-  delegate->SetCanMakePaymentEvenWithoutApps();
-
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      delegate->GetPaymentManifestWebDataService();
-  if (!web_data_service) {
-    delegate->OnDoneCreatingPaymentApps();
-    return;
-  }
+  request->delegate->SetCanMakePaymentEvenWithoutApps();
 
   WebDataServiceBase::Handle handle =
-      web_data_service->GetSecurePaymentConfirmationInstruments(
-          std::move(request->credential_ids), this);
-  requests_[handle] =
-      std::make_unique<Request>(delegate, web_data_service, std::move(request),
-                                std::move(authenticator_));
+      request->web_data_service->GetSecurePaymentConfirmationInstruments(
+          std::move(request->mojo_request->credential_ids), this);
+  requests_[handle] = std::move(request);
 }
 
 SecurePaymentConfirmationAppFactory::SecurePaymentConfirmationAppFactory()
@@ -159,13 +183,27 @@ void SecurePaymentConfirmationAppFactory::Create(
       // Observe the web contents to ensure the authenticator outlives it.
       Observe(delegate->GetWebContents());
 
-      authenticator_ = delegate->CreateInternalAuthenticator();
-
-      authenticator_->IsUserVerifyingPlatformAuthenticatorAvailable(
+      std::unique_ptr<webauthn::InternalAuthenticator> authenticator =
+          delegate->CreateInternalAuthenticator();
+      if (!authenticator) {
+        delegate->OnDoneCreatingPaymentApps();
+        return;
+      }
+      scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
+          delegate->GetPaymentManifestWebDataService();
+      if (!web_data_service) {
+        delegate->OnDoneCreatingPaymentApps();
+        return;
+      }
+      auto* authenticator_pointer = authenticator.get();
+      authenticator_pointer->IsUserVerifyingPlatformAuthenticatorAvailable(
           base::BindOnce(&SecurePaymentConfirmationAppFactory::
                              OnIsUserVerifyingPlatformAuthenticatorAvailable,
-                         weak_ptr_factory_.GetWeakPtr(), delegate,
-                         method_data->secure_payment_confirmation.Clone()));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::make_unique<Request>(
+                             delegate, web_data_service,
+                             method_data->secure_payment_confirmation.Clone(),
+                             std::move(authenticator))));
       return;
     }
   }
@@ -175,45 +213,7 @@ void SecurePaymentConfirmationAppFactory::Create(
 
 void SecurePaymentConfirmationAppFactory::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (authenticator_ &&
-      authenticator_->GetRenderFrameHost() == render_frame_host) {
-    authenticator_.reset();
-  }
 }
-
-struct SecurePaymentConfirmationAppFactory::Request
-    : public content::WebContentsObserver {
-  Request(
-      base::WeakPtr<PaymentAppFactory::Delegate> delegate,
-      scoped_refptr<payments::PaymentManifestWebDataService> web_data_service,
-      mojom::SecurePaymentConfirmationRequestPtr mojo_request,
-      std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
-      : content::WebContentsObserver(delegate->GetWebContents()),
-        delegate(delegate),
-        web_data_service(web_data_service),
-        mojo_request(std::move(mojo_request)),
-        authenticator(std::move(authenticator)) {}
-
-  ~Request() override = default;
-
-  Request(const Request& other) = delete;
-  Request& operator=(const Request& other) = delete;
-
-  // WebContentsObserver:
-  void RenderFrameDeleted(
-      content::RenderFrameHost* render_frame_host) override {
-    if (authenticator &&
-        authenticator->GetRenderFrameHost() == render_frame_host) {
-      authenticator.reset();
-    }
-  }
-
-  base::WeakPtr<PaymentAppFactory::Delegate> delegate;
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service;
-  mojom::SecurePaymentConfirmationRequestPtr mojo_request;
-  std::unique_ptr<webauthn::InternalAuthenticator> authenticator;
-  absl::optional<int> pending_icon_download_request_id;
-};
 
 void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
