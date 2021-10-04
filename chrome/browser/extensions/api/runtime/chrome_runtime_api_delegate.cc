@@ -334,7 +334,8 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 
 bool ChromeRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp()) {
+  if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
+      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
         power_manager::REQUEST_RESTART_OTHER, "chrome.runtime API");
     return true;
