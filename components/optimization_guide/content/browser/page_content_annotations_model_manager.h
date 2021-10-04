@@ -99,6 +99,7 @@ class PageContentAnnotationsModelManager {
       const std::string& text,
       std::unique_ptr<history::VisitContentModelAnnotations>
           current_annotations,
+      base::TimeTicks execution_start,
       PageContentAnnotatedCallback callback,
       size_t current_model_index,
       const absl::optional<std::vector<tflite::task::core::Category>>& output);

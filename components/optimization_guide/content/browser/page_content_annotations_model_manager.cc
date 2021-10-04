@@ -141,22 +141,24 @@ void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
       true);
   if (page_entities_model_executor_) {
     page_entities_model_executor_->ExecuteModelWithInput(
-        text, base::BindOnce(&PageContentAnnotationsModelManager::
-                                 OnPageEntitiesModelExecutionCompleted,
-                             weak_ptr_factory_.GetWeakPtr(), text,
-                             std::move(current_annotations),
-                             std::move(callback), current_model_index));
+        text,
+        base::BindOnce(&PageContentAnnotationsModelManager::
+                           OnPageEntitiesModelExecutionCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), text,
+                       std::move(current_annotations), base::TimeTicks::Now(),
+                       std::move(callback), current_model_index));
     return;
   }
-  OnPageEntitiesModelExecutionCompleted(text, std::move(current_annotations),
-                                        std::move(callback),
-                                        current_model_index,
-                                        /*output=*/absl::nullopt);
+  OnPageEntitiesModelExecutionCompleted(
+      text, std::move(current_annotations), base::TimeTicks::Now(),
+      std::move(callback), current_model_index,
+      /*output=*/absl::nullopt);
 }
 
 void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
     const std::string& text,
     std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    base::TimeTicks execution_start,
     PageContentAnnotatedCallback callback,
     size_t current_model_index,
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
@@ -186,6 +188,10 @@ void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
           history::VisitContentModelAnnotations::Category(
               entity.class_name, static_cast<int>(100 * entity.score)));
     }
+    base::UmaHistogramTimes(
+        "OptimizationGuide.PageContentAnnotationsService."
+        "PageEntitiesExecutionLatency",
+        execution_start - base::TimeTicks::Now());
   }
   ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
                                    std::move(callback), current_model_index);

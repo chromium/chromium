@@ -498,6 +498,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.PageEntitiesExecutionLatency"
+    units="ms" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the execution latency for the PageEntities model from when the model
+    manager requests the execution to completion and only if a result is
+    returned. Recorded once per model execution attempt.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesExtracted"
     enum="BooleanAnnotated" expires_after="M106">
   <owner>mahmadi@chromium.org</owner>
