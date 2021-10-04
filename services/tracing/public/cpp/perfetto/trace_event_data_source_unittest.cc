@@ -2451,6 +2451,9 @@ TEST_F(TraceEventDataSourceTest, EmptyPacket) {
 
   TRACE_EVENT_INSTANT("browser", "Event");
   PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+  // Second empty packet should not be emitted because the prior packet was
+  // already an empty packet.
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 
   size_t packet_index = ExpectStandardPreamble();
   auto* instant_packet = GetFinalizedPacket(packet_index++);

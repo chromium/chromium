@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
  private:
   static constexpr size_t kMaxCompleteEventDepth = 30;
 
+  enum class PacketType { kDefault, kEmpty };
+  perfetto::TraceWriter::TracePacketHandle NewTracePacket(
+      PacketType = PacketType::kDefault);
+
   // Emit any necessary descriptors that we haven't emitted yet and, if
   // required, perform an incremental state reset.
   void UpdateIncrementalStateIfNeeded(
@@ -152,6 +156,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
   uint32_t session_id_;
   bool disable_interning_;
   uint32_t sink_id_;
+  bool last_packet_was_empty_ = true;
 
   // Stores the trace packet handle for a typed TrackEvent until the TrackEvent
   // was finalized after the code in //base filled its typed argument fields.
