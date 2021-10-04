@@ -653,6 +653,8 @@ _BANNED_CPP_FUNCTIONS = (
        # Needed for interop with third-party library.
        '^third_party/blink/renderer/core/typed_arrays/array_buffer/' +
          'array_buffer_contents\.(cc|h)',
+       '^third_party/blink/renderer/bindings/core/v8/' +
+         'v8_wasm_response_extensions.cc',
        '^gin/array_buffer\.(cc|h)',
        '^chrome/services/sharing/nearby/',
        # gRPC provides some C++ libraries that use std::shared_ptr<>.

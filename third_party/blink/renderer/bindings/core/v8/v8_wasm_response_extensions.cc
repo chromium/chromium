@@ -39,15 +39,116 @@ namespace {
 // Wasm only has a single metadata type, but we need to tag it.
 static const int kWasmModuleTag = 1;
 
+void SendCachedData(String response_url,
+                    base::Time response_time,
+                    String cache_storage_cache_name,
+                    ExecutionContext* execution_context,
+                    Vector<uint8_t> serialized_module) {
+  if (!execution_context)
+    return;
+  scoped_refptr<CachedMetadata> cached_metadata =
+      CachedMetadata::CreateFromSerializedData(std::move(serialized_module));
+
+  blink::mojom::CodeCacheHost* code_cache_host =
+      ExecutionContext::GetCodeCacheHostFromContext(execution_context);
+  base::span<const uint8_t> serialized_data = cached_metadata->SerializedData();
+  CachedMetadataSender::SendToCodeCacheHost(
+      code_cache_host, mojom::blink::CodeCacheType::kWebAssembly, response_url,
+      response_time, execution_context->GetSecurityOrigin(),
+      cache_storage_cache_name, serialized_data.data(), serialized_data.size());
+}
+
+class WasmStreamingClient : public v8::WasmStreaming::Client {
+ public:
+  WasmStreamingClient(const String& response_url,
+                      const base::Time& response_time,
+                      const String& cache_storage_cache_name,
+                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                      ExecutionContext* execution_context)
+      : response_url_(response_url.IsolatedCopy()),
+        response_time_(response_time),
+        cache_storage_cache_name_(cache_storage_cache_name.IsolatedCopy()),
+        main_thread_task_runner_(std::move(task_runner)),
+        execution_context_(execution_context) {}
+
+  WasmStreamingClient(const WasmStreamingClient&) = delete;
+  WasmStreamingClient operator=(const WasmStreamingClient&) = delete;
+
+  void OnModuleCompiled(v8::CompiledWasmModule compiled_module) override {
+    // Called off the main thread.
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                         "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
+                         "url", response_url_.Utf8());
+    v8::MemorySpan<const uint8_t> wire_bytes =
+        compiled_module.GetWireBytesRef();
+    // Our heuristic for whether it's worthwhile to cache is that the module
+    // was fully compiled and the size is such that loading from the cache will
+    // improve startup time. Use wire bytes size since it should be correlated
+    // with module size.
+    // TODO(bbudge) This is set very low to compare performance of caching with
+    // baseline compilation. Adjust this test once we know which sizes benefit.
+    const size_t kWireBytesSizeThresholdBytes = 1UL << 10;  // 1 KB.
+    if (wire_bytes.size() < kWireBytesSizeThresholdBytes)
+      return;
+
+    v8::OwnedBuffer serialized_module = compiled_module.Serialize();
+    // V8 might not be able to serialize the module.
+    if (serialized_module.size == 0)
+      return;
+
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                         "v8.wasm.cachedModule", TRACE_EVENT_SCOPE_THREAD,
+                         "producedCacheSize", serialized_module.size);
+
+    // The resources needed for caching may have been GC'ed, but we should still
+    // save the compiled module. Use the platform API directly.
+    Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedData(
+        kWasmModuleTag,
+        reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
+        serialized_module.size);
+
+    // Make sure the data could be copied.
+    if (serialized_data.size() < serialized_module.size)
+      return;
+
+    DCHECK(main_thread_task_runner_.get());
+    main_thread_task_runner_->PostTask(
+        FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+                       &SendCachedData, response_url_.IsolatedCopy(),
+                       response_time_, cache_storage_cache_name_.IsolatedCopy(),
+                       execution_context_, std::move(serialized_data))));
+  }
+
+  void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
+    cached_module_ = cached_module;
+  }
+
+ private:
+  const String response_url_;
+  const base::Time response_time_;
+  const String cache_storage_cache_name_;
+  scoped_refptr<CachedMetadata> cached_module_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  CrossThreadWeakPersistent<ExecutionContext> execution_context_;
+};
+
 // The |FetchDataLoader| for streaming compilation of WebAssembly code. The
 // received bytes get forwarded to the V8 API class |WasmStreaming|.
 class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                                               public BytesConsumer::Client {
 
  public:
-  FetchDataLoaderForWasmStreaming(std::shared_ptr<v8::WasmStreaming> streaming,
-                                  ScriptState* script_state)
-      : streaming_(std::move(streaming)), script_state_(script_state) {}
+  FetchDataLoaderForWasmStreaming(
+      const String& url,
+      std::shared_ptr<v8::WasmStreaming> streaming,
+      ScriptState* script_state,
+      ScriptCachedMetadataHandler* cache_handler,
+      std::shared_ptr<WasmStreamingClient> streaming_client)
+      : url_(url),
+        streaming_(std::move(streaming)),
+        script_state_(script_state),
+        cache_handler_(cache_handler),
+        streaming_client_(streaming_client) {}
 
   v8::WasmStreaming* streaming() const { return streaming_.get(); }
 
@@ -72,6 +173,10 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (available > 0) {
+          if (!seen_first_byte) {
+            seen_first_byte = true;
+            MaybeConsumeCodeCache();
+          }
           DCHECK_NE(buffer, nullptr);
           streaming_->OnBytesReceived(reinterpret_cast<const uint8_t*>(buffer),
                                       available);
@@ -111,6 +216,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     visitor->Trace(consumer_);
     visitor->Trace(client_);
     visitor->Trace(script_state_);
+    visitor->Trace(cache_handler_);
     FetchDataLoader::Trace(visitor);
     BytesConsumer::Client::Trace(visitor);
   }
@@ -152,10 +258,55 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     }
   }
 
+  void MaybeConsumeCodeCache() {
+    if (!cache_handler_)
+      return;
+
+    // We must wait until we see the first byte of the response body before
+    // checking for GetCachedMetadata().  The serialized cache metadata is
+    // guaranteed to be set on the handler before the body stream is provided,
+    // but this can happen some time after the Response head is received.
+    scoped_refptr<CachedMetadata> cached_module =
+        cache_handler_->GetCachedMetadata(kWasmModuleTag);
+    if (cached_module) {
+      TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                           "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
+                           "url", url_.Utf8(), "consumedCacheSize",
+                           cached_module->size());
+      bool is_valid = streaming_->SetCompiledModuleBytes(
+          reinterpret_cast<const uint8_t*>(cached_module->Data()),
+          cached_module->size());
+      if (is_valid) {
+        // Keep the buffer alive until V8 is ready to deserialize it.
+        // TODO(bbudge) V8 should notify us if deserialization fails, so we
+        // can release the data and reset the cache.
+        streaming_client_->SetBuffer(cached_module);
+      } else {
+        TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                             "v8.wasm.moduleCacheInvalid",
+                             TRACE_EVENT_SCOPE_THREAD);
+        // TODO(mythria): Also support using context specific code cache host
+        // here. When we pass nullptr for CodeCacheHost we use per-process
+        // interface. Currently this code is run on a thread started via a
+        // Platform::PostJob. So it isn't safe to use CodeCacheHost interface
+        // that was bound on the frame / worker threads. We should instead post
+        // a task back to the frame / worker threads with the required data
+        // which can then write to generated code caches.
+        cache_handler_->ClearCachedMetadata(
+            /*code_cache_host*/ nullptr,
+            CachedMetadataHandler::kClearPersistentStorage);
+      }
+    }
+  }
+
+  const String url_;
   Member<BytesConsumer> consumer_;
   Member<FetchDataLoader::Client> client_;
   std::shared_ptr<v8::WasmStreaming> streaming_;
   const Member<ScriptState> script_state_;
+  Member<ScriptCachedMetadataHandler> cache_handler_;
+  std::shared_ptr<WasmStreamingClient> streaming_client_;
+  bool seen_first_byte = false;
 };
 
 // TODO(mtrofin): WasmDataLoaderClient is necessary so we may provide an
@@ -212,91 +363,6 @@ class ExceptionToAbortStreamingScope {
  private:
   std::shared_ptr<v8::WasmStreaming> streaming_;
   ExceptionState& exception_state_;
-};
-
-void SendCachedData(String response_url,
-                    base::Time response_time,
-                    ExecutionContext* execution_context,
-                    Vector<uint8_t> serialized_module) {
-  if (!execution_context)
-    return;
-  scoped_refptr<CachedMetadata> cached_metadata =
-      CachedMetadata::CreateFromSerializedData(std::move(serialized_module));
-
-  blink::mojom::CodeCacheHost* code_cache_host =
-      ExecutionContext::GetCodeCacheHostFromContext(execution_context);
-  base::span<const uint8_t> serialized_data = cached_metadata->SerializedData();
-  CachedMetadataSender::SendToCodeCacheHost(
-      code_cache_host, mojom::blink::CodeCacheType::kWebAssembly, response_url,
-      response_time, serialized_data.data(), serialized_data.size());
-}
-
-class WasmStreamingClient : public v8::WasmStreaming::Client {
- public:
-  WasmStreamingClient(const String& response_url,
-                      const base::Time& response_time,
-                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                      ExecutionContext* execution_context)
-      : response_url_(response_url.IsolatedCopy()),
-        response_time_(response_time),
-        main_thread_task_runner_(std::move(task_runner)),
-        execution_context_(execution_context) {}
-
-  void OnModuleCompiled(v8::CompiledWasmModule compiled_module) override {
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
-                         "url", response_url_.Utf8());
-    v8::MemorySpan<const uint8_t> wire_bytes =
-        compiled_module.GetWireBytesRef();
-    // Our heuristic for whether it's worthwhile to cache is that the module
-    // was fully compiled and the size is such that loading from the cache will
-    // improve startup time. Use wire bytes size since it should be correlated
-    // with module size.
-    // TODO(bbudge) This is set very low to compare performance of caching with
-    // baseline compilation. Adjust this test once we know which sizes benefit.
-    const size_t kWireBytesSizeThresholdBytes = 1UL << 10;  // 1 KB.
-    if (wire_bytes.size() < kWireBytesSizeThresholdBytes)
-      return;
-
-    v8::OwnedBuffer serialized_module = compiled_module.Serialize();
-    // V8 might not be able to serialize the module.
-    if (serialized_module.size == 0)
-      return;
-
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "v8.wasm.cachedModule", TRACE_EVENT_SCOPE_THREAD,
-                         "producedCacheSize", serialized_module.size);
-
-    // The resources needed for caching may have been GC'ed, but we should still
-    // save the compiled module. Use the platform API directly.
-    Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedData(
-        kWasmModuleTag,
-        reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
-        serialized_module.size);
-
-    // Make sure the data could be copied.
-    if (serialized_data.size() < serialized_module.size)
-      return;
-
-    DCHECK(main_thread_task_runner_.get());
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
-                       &SendCachedData, response_url_, response_time_,
-                       execution_context_, std::move(serialized_data))));
-  }
-
-  void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
-    cached_module_ = cached_module;
-  }
-
- private:
-  String response_url_;
-  base::Time response_time_;
-  scoped_refptr<CachedMetadata> cached_module_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  CrossThreadWeakPersistent<ExecutionContext> execution_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WasmStreamingClient);
 };
 
 scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
@@ -386,51 +452,22 @@ void StreamFromResponseCallback(
   String url = response->url();
   const std::string& url_utf8 = url.Utf8();
   streaming->SetUrl(url_utf8.c_str(), url_utf8.size());
-  if (auto* cache_handler =
-          response->BodyBuffer()->GetCachedMetadataHandler()) {
+  auto* cache_handler = response->BodyBuffer()->GetCachedMetadataHandler();
+  std::shared_ptr<WasmStreamingClient> client;
+  if (cache_handler) {
     auto* execution_context = ExecutionContext::From(script_state);
     DCHECK_NE(execution_context, nullptr);
 
-    auto client = std::make_shared<WasmStreamingClient>(
+    client = std::make_shared<WasmStreamingClient>(
         url, response->GetResponse()->InternalResponse()->ResponseTime(),
+        response->GetResponse()->InternalResponse()->CacheStorageCacheName(),
         GetContextTaskRunner(*execution_context), execution_context);
     streaming->SetClient(client);
-    scoped_refptr<CachedMetadata> cached_module =
-        cache_handler->GetCachedMetadata(kWasmModuleTag);
-    if (cached_module) {
-      TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                           "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
-                           "url", url.Utf8(), "consumedCacheSize",
-                           cached_module->size());
-      bool is_valid = streaming->SetCompiledModuleBytes(
-          reinterpret_cast<const uint8_t*>(cached_module->Data()),
-          cached_module->size());
-      if (is_valid) {
-        // Keep the buffer alive until V8 is ready to deserialize it.
-        // TODO(bbudge) V8 should notify us if deserialization fails, so we
-        // can release the data and reset the cache.
-        client->SetBuffer(cached_module);
-      } else {
-        TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                             "v8.wasm.moduleCacheInvalid",
-                             TRACE_EVENT_SCOPE_THREAD);
-        // TODO(mythria): Also support using context specific code cache host
-        // here. When we pass nullptr for CodeCacheHost we use per-process
-        // interface. Currently this code is run on a thread started via a
-        // Platform::PostJob. So it isn't safe to use CodeCacheHost interface
-        // that was bound on the frame / worker threads. We should instead post
-        // a task back to the frame / worker threads with the required data
-        // which can then write to generated code caches.
-        cache_handler->ClearCachedMetadata(
-            /*code_cache_host*/ nullptr,
-            CachedMetadataHandler::kClearPersistentStorage);
-      }
-    }
   }
 
   FetchDataLoaderForWasmStreaming* loader =
-      MakeGarbageCollected<FetchDataLoaderForWasmStreaming>(streaming,
-                                                            script_state);
+      MakeGarbageCollected<FetchDataLoaderForWasmStreaming>(
+          url, streaming, script_state, cache_handler, client);
   response->BodyBuffer()->StartLoading(
       loader, MakeGarbageCollected<WasmDataLoaderClient>(loader),
       exception_state);
