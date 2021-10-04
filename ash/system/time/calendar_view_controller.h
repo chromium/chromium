@@ -52,6 +52,10 @@ class ASH_EXPORT CalendarViewController {
   // Gets the month name of the previous month based `current_date_`'s month.
   std::u16string GetPreviousMonthName();
 
+  // Get the current date, which can be today or the first day of the current
+  // month if current month is not today's month.
+  base::Time current_date() { return current_date_; }
+
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight();
   int GetTodayRowBottomHeight();

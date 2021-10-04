@@ -12,6 +12,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/check.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
@@ -268,7 +269,7 @@ void CalendarView::CreateExtraTitleRowButtons() {
 
   reset_to_today_button_ = CreateInfoButton(
       base::BindRepeating(&CalendarView::ResetToToday, base::Unretained(this)),
-      IDS_ASH_CALENDA_INFO_BUTTON);
+      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
   tri_view()->AddView(TriView::Container::END, reset_to_today_button_);
 
   DCHECK(!settings_button_);
@@ -283,9 +284,13 @@ void CalendarView::CreateExtraTitleRowButtons() {
 views::Button* CalendarView::CreateInfoButton(
     views::Button::PressedCallback callback,
     int info_accessible_name_id) {
-  return new RoundedLabelButton(
+  auto* button = new RoundedLabelButton(
       std::move(callback),
       l10n_util::GetStringUTF16(IDS_ASH_CALENDA_INFO_BUTTON));
+  button->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatWithPattern(base::Time::Now(), "MMMMdyyyy")));
+  return button;
 }
 
 void CalendarView::SetMonthViews() {

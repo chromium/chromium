@@ -2970,6 +2970,7 @@ This file contains the strings for ash.
 
       <!-- Calendar  -->
       <message name="IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar bubble and the information in it.">
+      Calendar, <ph name="current_month_year">$1<ex>August 2021</ex></ph>
       </message>
 
       <message name="IDS_ASH_CALENDAR_TITLE" desc="The label used as the title of the unified system tray calendar view.">
@@ -2977,17 +2978,23 @@ This file contains the strings for ash.
       </message>
 
       <message name="IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar up button.">
+      Show previous month
       </message>
 
       <message name="IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar down button.">
+      Show next month
       </message>
 
-      <message name="IDS_ASH_CALENDA_INFO_BUTTON" desc="The 'Today' button which takes you to today's date.">
+      <message name="IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar today's button.">
+        Today <ph name="today_date">$1<ex>August 31, 2021</ex></ph>
+      </message>
+
+      <message name="IDS_ASH_CALENDA_INFO_BUTTON" desc="The text for the calendar info button.">
         Today
       </message>
 
       <message name="IDS_ASH_CALENDAR_SETTINGS" desc="The label used in the settings entry in the calendar view system settings.">
-        Date settings
+        Open settings
       </message>
 
       <message name="IDS_ASH_CALENDAR_MON" desc="The single character designator for Monday, which is used in the calendar weekday label.">

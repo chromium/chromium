@@ -7,6 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "base/i18n/time_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -28,8 +29,10 @@ views::View* UnifiedCalendarViewController::CreateView() {
 }
 
 std::u16string UnifiedCalendarViewController::GetAccessibleName() const {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
+                                  "MMMM yyyy"));
 }
 
 }  // namespace ash
