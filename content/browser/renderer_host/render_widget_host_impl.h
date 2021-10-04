@@ -252,6 +252,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void AddObserver(RenderWidgetHostObserver* observer) override;
   void RemoveObserver(RenderWidgetHostObserver* observer) override;
   void GetScreenInfo(display::ScreenInfo* result) override;
+  display::ScreenInfos GetScreenInfos() override;
   float GetDeviceScaleFactor() override;
   absl::optional<cc::TouchAction> GetAllowedTouchAction() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
@@ -344,10 +345,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();
-
-  // Get info regarding all screens, including which screen is currently showing
-  // this RenderWidgetHost.
-  display::ScreenInfos GetScreenInfos();
 
   // Forces redraw in the renderer and when the update reaches the browser.
   // grabs snapshot from the compositor.

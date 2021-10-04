@@ -20,6 +20,7 @@ struct DISPLAY_EXPORT ScreenInfos {
   ScreenInfos(const ScreenInfos& other);
   ~ScreenInfos();
   ScreenInfos& operator=(const ScreenInfos& other);
+
   bool operator==(const ScreenInfos& other) const;
   bool operator!=(const ScreenInfos& other) const;
 
@@ -29,7 +30,7 @@ struct DISPLAY_EXPORT ScreenInfos {
 
   std::vector<ScreenInfo> screen_infos;
   // The display_id of the current ScreenInfo in `screen_infos`.
-  int64_t current_display_id = ScreenInfo::kInvalidDisplayId;
+  int64_t current_display_id = kInvalidDisplayId;
 };
 
 }  // namespace display

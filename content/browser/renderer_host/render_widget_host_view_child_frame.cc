@@ -47,22 +47,22 @@ namespace content {
 // static
 RenderWidgetHostViewChildFrame* RenderWidgetHostViewChildFrame::Create(
     RenderWidgetHost* widget,
-    const display::ScreenInfo& parent_screen_info) {
+    const display::ScreenInfos& parent_screen_infos) {
   RenderWidgetHostViewChildFrame* view =
-      new RenderWidgetHostViewChildFrame(widget, parent_screen_info);
+      new RenderWidgetHostViewChildFrame(widget, parent_screen_infos);
   view->Init();
   return view;
 }
 
 RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
     RenderWidgetHost* widget_host,
-    const display::ScreenInfo& parent_screen_info)
+    const display::ScreenInfos& parent_screen_infos)
     : RenderWidgetHostViewBase(widget_host),
       frame_sink_id_(
           base::checked_cast<uint32_t>(widget_host->GetProcess()->GetID()),
           base::checked_cast<uint32_t>(widget_host->GetRoutingID())),
-      frame_connector_(nullptr),
-      parent_screen_info_(parent_screen_info) {
+      frame_connector_(nullptr) {
+  screen_infos_ = parent_screen_infos;
   GetHostFrameSinkManager()->RegisterFrameSinkId(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
   GetHostFrameSinkManager()->SetFrameSinkDebugLabel(
@@ -131,8 +131,7 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     SetParentFrameSinkId(parent_view->GetFrameSinkId());
   }
 
-  // TODO(crbug.com/1182855): Use the parent_view's entire display::ScreenInfos.
-  screen_infos_ = display::ScreenInfos(frame_connector_->screen_info());
+  UpdateScreenInfo();
 
   auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
   if (root_view) {
@@ -348,6 +347,11 @@ void RenderWidgetHostViewChildFrame::InitAsPopup(
 void RenderWidgetHostViewChildFrame::UpdateCursor(const WebCursor& cursor) {
   if (frame_connector_)
     frame_connector_->UpdateCursor(cursor);
+}
+
+void RenderWidgetHostViewChildFrame::UpdateScreenInfo() {
+  if (frame_connector_)
+    screen_infos_ = frame_connector_->screen_infos();
 }
 
 void RenderWidgetHostViewChildFrame::SendInitialPropertiesIfNeeded() {
@@ -941,8 +945,16 @@ void RenderWidgetHostViewChildFrame::GetScreenInfo(
   // TODO(crbug.com/1182855): Propagate screen infos from the parent on changes
   // and on connection init; avoid lazily updating the local cache like this.
   if (frame_connector_)
-    parent_screen_info_ = frame_connector_->screen_info();
-  *screen_info = parent_screen_info_;
+    UpdateScreenInfo();
+  *screen_info = screen_infos_.current();
+}
+
+display::ScreenInfos RenderWidgetHostViewChildFrame::GetScreenInfos() {
+  // TODO(crbug.com/1182855): Propagate screen infos from the parent on changes
+  // and on connection init; avoid lazily updating the local cache like this.
+  if (frame_connector_)
+    UpdateScreenInfo();
+  return screen_infos_;
 }
 
 void RenderWidgetHostViewChildFrame::EnableAutoResize(

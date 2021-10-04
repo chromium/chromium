@@ -87,7 +87,7 @@ class TestRenderWidgetHostViewChildFrame
     : public RenderWidgetHostViewChildFrame {
  public:
   explicit TestRenderWidgetHostViewChildFrame(RenderWidgetHost* widget)
-      : RenderWidgetHostViewChildFrame(widget, display::ScreenInfo()) {
+      : RenderWidgetHostViewChildFrame(widget, display::ScreenInfos()) {
     Init();
   }
   ~TestRenderWidgetHostViewChildFrame() override = default;

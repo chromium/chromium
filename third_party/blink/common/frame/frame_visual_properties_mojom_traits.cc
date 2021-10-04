@@ -5,7 +5,7 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties_mojom_traits.h"
 
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom.h"
-#include "ui/display/mojom/screen_info.mojom.h"
+#include "ui/display/mojom/screen_infos.mojom.h"
 #include "ui/gfx/mojom/display_color_spaces.mojom.h"
 
 namespace mojo {
@@ -14,7 +14,7 @@ bool StructTraits<blink::mojom::FrameVisualPropertiesDataView,
                   blink::FrameVisualProperties>::
     Read(blink::mojom::FrameVisualPropertiesDataView data,
          blink::FrameVisualProperties* out) {
-  if (!data.ReadScreenInfo(&out->screen_info) ||
+  if (!data.ReadScreenInfos(&out->screen_infos) ||
       !data.ReadMinSizeForAutoResize(&out->min_size_for_auto_resize) ||
       !data.ReadMaxSizeForAutoResize(&out->max_size_for_auto_resize) ||
       !data.ReadVisibleViewportSize(&out->visible_viewport_size) ||

@@ -3642,13 +3642,13 @@ void SynchronizeVisualPropertiesInterceptor::SynchronizeVisualProperties(
 
   gfx::Rect screen_space_rect_in_dip = visual_properties.screen_space_rect;
   if (IsUseZoomForDSFEnabled()) {
+    const float dsf =
+        visual_properties.screen_infos.current().device_scale_factor;
     screen_space_rect_in_dip =
         gfx::Rect(gfx::ScaleToFlooredPoint(
-                      visual_properties.screen_space_rect.origin(),
-                      1.f / visual_properties.screen_info.device_scale_factor),
+                      visual_properties.screen_space_rect.origin(), 1.f / dsf),
                   gfx::ScaleToCeiledSize(
-                      visual_properties.screen_space_rect.size(),
-                      1.f / visual_properties.screen_info.device_scale_factor));
+                      visual_properties.screen_space_rect.size(), 1.f / dsf));
   }
   // Track each rect updates.
   GetUIThreadTaskRunner({})->PostTask(
@@ -3761,7 +3761,8 @@ void ProxyDSFObserver::OnCreation(RenderFrameProxyHost* rfph) {
   // Not all RenderFrameProxyHosts will be created with a
   // CrossProcessFrameConnector. We're only interested in the ones that do.
   if (auto* cpfc = rfph->cross_process_frame_connector()) {
-    proxy_host_created_dsf_.push_back(cpfc->screen_info().device_scale_factor);
+    proxy_host_created_dsf_.push_back(
+        cpfc->screen_infos().current().device_scale_factor);
   }
   if (runner_)
     runner_->Quit();

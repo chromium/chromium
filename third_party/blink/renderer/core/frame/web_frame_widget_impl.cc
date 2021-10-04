@@ -3878,7 +3878,7 @@ void WebFrameWidgetImpl::OrientationChanged() {
 }
 
 void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
-    const display::ScreenInfo& previous_original_screen_info) {
+    const display::ScreenInfos& previous_original_screen_infos) {
   display::ScreenInfo screen_info = widget_base_->GetScreenInfo();
   if (Platform::Current()->IsUseZoomForDSFEnabled()) {
     View()->SetZoomFactorForDeviceScaleFactor(screen_info.device_scale_factor);
@@ -3900,9 +3900,9 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // When the device scale changes, the size and position of the popup would
   // need to be adjusted, which we can't do. Just close the popup, which is
   // also consistent with page zoom and resize behavior.
-  display::ScreenInfo original_screen_info = GetOriginalScreenInfo();
-  if (previous_original_screen_info.device_scale_factor !=
-      original_screen_info.device_scale_factor) {
+  display::ScreenInfos original_screen_infos = GetOriginalScreenInfos();
+  if (previous_original_screen_infos.current().device_scale_factor !=
+      original_screen_infos.current().device_scale_factor) {
     View()->CancelPagePopup();
   }
 
@@ -3911,25 +3911,33 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // information when a change event is fired.  It is not required but it
   // is convenient to have all ScreenAdvanced objects be up to date when any
   // window.screen events are fired as well.
-  LocalFrame* frame = LocalRootImpl()->GetFrame();
-  CoreInitializer::GetInstance().DidUpdateScreens(*frame,
-                                                  widget_base_->screen_infos());
-  // TODO(crbug.com/1182855): Propagate info and events to remote frames.
+  ForEachLocalFrameControlledByWidget(
+      LocalRootImpl()->GetFrame(),
+      WTF::BindRepeating(
+          [](const display::ScreenInfos& original_screen_infos,
+             WebLocalFrameImpl* local_frame) {
+            CoreInitializer::GetInstance().DidUpdateScreens(
+                *local_frame->GetFrame(), original_screen_infos);
+          },
+          original_screen_infos));
 
-  if (previous_original_screen_info != original_screen_info) {
+  if (previous_original_screen_infos != original_screen_infos) {
     // TODO(enne): http://crbug.com/1202981 only send this event when properties
     // on Screen (vs anything in ScreenInfo) change.
-    local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
-        *Event::Create(event_type_names::kChange));
+    if (previous_original_screen_infos.current() !=
+        original_screen_infos.current()) {
+      local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
+          *Event::Create(event_type_names::kChange));
+    }
 
     // Propagate changes down to child local root RenderWidgets and
     // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
-        [](const display::ScreenInfo& original_screen_info,
+        [](const display::ScreenInfos& original_screen_infos,
            RemoteFrame* remote_frame) {
-          remote_frame->DidChangeScreenInfo(original_screen_info);
+          remote_frame->DidChangeScreenInfos(original_screen_infos);
         },
-        original_screen_info));
+        original_screen_infos));
   }
 }
 

@@ -1003,8 +1003,8 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
           pending_visual_properties_.local_frame_size ||
       sent_visual_properties_->screen_space_rect.size() !=
           pending_visual_properties_.screen_space_rect.size() ||
-      sent_visual_properties_->screen_info !=
-          pending_visual_properties_.screen_info ||
+      sent_visual_properties_->screen_infos !=
+          pending_visual_properties_.screen_infos ||
       sent_visual_properties_->zoom_level !=
           pending_visual_properties_.zoom_level ||
       sent_visual_properties_->page_scale_factor !=
@@ -1096,8 +1096,9 @@ void RemoteFrame::SetViewportIntersection(
       intersection_state.Clone(), visual_properties);
 }
 
-void RemoteFrame::DidChangeScreenInfo(const display::ScreenInfo& screen_info) {
-  pending_visual_properties_.screen_info = screen_info;
+void RemoteFrame::DidChangeScreenInfos(
+    const display::ScreenInfos& screen_infos) {
+  pending_visual_properties_.screen_infos = screen_infos;
   SynchronizeVisualProperties();
 }
 

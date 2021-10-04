@@ -7,7 +7,7 @@
 
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -27,7 +27,7 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   // renderer process up to the RenderWidgetHost for a child RenderWidget in
   // another renderer process. That RenderWidgetHost would then be responsible
   // for passing it along to the child RenderWidget.
-  display::ScreenInfo screen_info;
+  display::ScreenInfos screen_infos;
   bool auto_resize_enabled = false;
   bool is_pinch_gesture_active = false;
   uint32_t capture_sequence_number = 0u;

@@ -1372,6 +1372,10 @@ void WidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
   client_->ScheduleAnimation();
 }
 
+float WidgetBase::GetOriginalDeviceScaleFactor() const {
+  return client_->GetOriginalScreenInfos().current().device_scale_factor;
+}
+
 void WidgetBase::UpdateSurfaceAndScreenInfo(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
@@ -1393,18 +1397,17 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
       previous_screen_info.orientation_angle !=
           new_screen_info.orientation_angle ||
       previous_screen_info.orientation_type != new_screen_info.orientation_type;
-  display::ScreenInfo previous_original_screen_info =
-      client_->GetOriginalScreenInfo();
+  display::ScreenInfos previous_original_screen_infos =
+      client_->GetOriginalScreenInfos();
 
   local_surface_id_from_parent_ = new_local_surface_id;
   screen_infos_ = new_screen_infos;
 
   // Note carefully that the DSF specified in |new_screen_info| is not the
   // DSF used by the compositor during device emulation!
-  LayerTreeHost()->SetViewportRectAndScale(
-      compositor_viewport_pixel_rect,
-      client_->GetOriginalScreenInfo().device_scale_factor,
-      local_surface_id_from_parent_);
+  LayerTreeHost()->SetViewportRectAndScale(compositor_viewport_pixel_rect,
+                                           GetOriginalDeviceScaleFactor(),
+                                           local_surface_id_from_parent_);
   // The VisualDeviceViewportIntersectionRect derives from the LayerTreeView's
   // viewport size, which is set above.
   LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
@@ -1420,7 +1423,7 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
   if (orientation_changed)
     client_->OrientationChanged();
 
-  client_->DidUpdateSurfaceAndScreen(previous_original_screen_info);
+  client_->DidUpdateSurfaceAndScreen(previous_original_screen_infos);
 }
 
 void WidgetBase::UpdateScreenInfo(
@@ -1536,76 +1539,76 @@ void WidgetBase::CountDroppedPointerDownForEventTiming(unsigned count) {
 gfx::PointF WidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScalePoint(point,
-                         client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScalePoint(point, GetOriginalDeviceScaleFactor());
 }
 
 gfx::Point WidgetBase::DIPsToRoundedBlinkSpace(const gfx::Point& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScaleToRoundedPoint(
-      point, client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScaleToRoundedPoint(point, GetOriginalDeviceScaleFactor());
 }
 
 gfx::PointF WidgetBase::BlinkSpaceToDIPs(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScalePoint(
-      point, 1.f / client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScalePoint(point, 1.f / GetOriginalDeviceScaleFactor());
 }
 
 gfx::Point WidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Point& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  // TODO(dtapuska): Determine if this should be a floor vs rounded.
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleToFlooredPoint(point, reverse);
 }
 
 gfx::Size WidgetBase::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
   if (!use_zoom_for_dsf_)
     return size;
-  return gfx::ScaleToCeiledSize(
-      size, client_->GetOriginalScreenInfo().device_scale_factor);
+  return gfx::ScaleToCeiledSize(size, GetOriginalDeviceScaleFactor());
 }
 
 gfx::RectF WidgetBase::DIPsToBlinkSpace(const gfx::RectF& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScaleRect(rect,
-                        client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScaleRect(rect, GetOriginalDeviceScaleFactor());
 }
 
 float WidgetBase::DIPsToBlinkSpace(float scalar) {
   if (!use_zoom_for_dsf_)
     return scalar;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return client_->GetOriginalScreenInfo().device_scale_factor * scalar;
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return GetOriginalDeviceScaleFactor() * scalar;
 }
 
 gfx::Size WidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Size& size) {
   if (!use_zoom_for_dsf_)
     return size;
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleToFlooredSize(size, reverse);
 }
 
 gfx::Rect WidgetBase::BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleToEnclosedRect(rect, reverse);
 }
 
 gfx::RectF WidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleRect(rect, reverse);
 }
 

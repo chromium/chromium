@@ -79,13 +79,16 @@ void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForWidget(
     RenderWidgetHost* render_widget_host) {
-  display::ScreenInfo screen_info;
-  if (auto* view = web_contents_->GetRenderWidgetHostView())
-    view->GetScreenInfo(&screen_info);
-  else
+  display::ScreenInfos screen_infos;
+  if (auto* view = web_contents_->GetRenderWidgetHostView()) {
+    screen_infos = view->GetScreenInfos();
+  } else {
+    display::ScreenInfo screen_info;
     display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
+    screen_infos = display::ScreenInfos(screen_info);
+  }
   return RenderWidgetHostViewChildFrame::Create(render_widget_host,
-                                                screen_info);
+                                                screen_infos);
 }
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForChildWidget(

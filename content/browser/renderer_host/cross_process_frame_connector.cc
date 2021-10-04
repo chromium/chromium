@@ -33,20 +33,22 @@ CrossProcessFrameConnector::CrossProcessFrameConnector(
     : use_zoom_for_device_scale_factor_(IsUseZoomForDSFEnabled()),
       frame_proxy_in_parent_renderer_(frame_proxy_in_parent_renderer) {
   // Skip for tests.
-  if (!frame_proxy_in_parent_renderer_)
+  if (!frame_proxy_in_parent_renderer_) {
+    screen_infos_ = display::ScreenInfos(display::ScreenInfo());
     return;
+  }
 
   // At this point, SetView() has not been called and so the associated
   // RenderWidgetHost doesn't have a view yet. That means calling
-  // GetScreenInfo() on the associated RenderWidgetHost will just default to the
-  // primary display, which may not be appropriate. So instead we call
-  // GetScreenInfo() on the root RenderWidgetHost, which will be guaranteed to
-  // be on the correct display. All subsequent updates to |screen_info_|
+  // GetScreenInfos() on the associated RenderWidgetHost will just default to
+  // the primary display, which may not be appropriate. So instead we call
+  // GetScreenInfos() on the root RenderWidgetHost, which will be guaranteed to
+  // be on the correct display. All subsequent updates to |screen_infos_|
   // ultimately come from the root, so it makes sense to do it here as well.
-  current_child_frame_host()
-      ->GetOutermostMainFrame()
-      ->GetRenderWidgetHost()
-      ->GetScreenInfo(&screen_info_);
+  screen_infos_ = current_child_frame_host()
+                      ->GetOutermostMainFrame()
+                      ->GetRenderWidgetHost()
+                      ->GetScreenInfos();
 }
 
 CrossProcessFrameConnector::~CrossProcessFrameConnector() {
@@ -184,7 +186,7 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
     bool propagate) {
   last_received_zoom_level_ = visual_properties.zoom_level;
   last_received_local_frame_size_ = visual_properties.local_frame_size;
-  screen_info_ = visual_properties.screen_info;
+  screen_infos_ = visual_properties.screen_infos;
   local_surface_id_ = visual_properties.local_surface_id;
 
   capture_sequence_number_ = visual_properties.capture_sequence_number;
@@ -340,10 +342,10 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
       TRACE_EVENT_FLAG_FLOW_IN, "message",
       "FrameHostMsg_SynchronizeVisualProperties", "new_local_surface_id",
       visual_properties.local_surface_id.ToString());
-  // If the |screen_space_rect| or |screen_info| of the frame has changed, then
-  // the viz::LocalSurfaceId must also change.
+  // If the |screen_space_rect| or current ScreenInfo of the frame has
+  // changed, then the viz::LocalSurfaceId must also change.
   if ((last_received_local_frame_size_ != visual_properties.local_frame_size ||
-       screen_info_ != visual_properties.screen_info ||
+       screen_infos_.current() != visual_properties.screen_infos.current() ||
        capture_sequence_number() != visual_properties.capture_sequence_number ||
        last_received_zoom_level_ != visual_properties.zoom_level) &&
       local_surface_id_ == visual_properties.local_surface_id) {
@@ -511,32 +513,31 @@ void CrossProcessFrameConnector::SetVisibilityForChildViews(
 void CrossProcessFrameConnector::SetLocalFrameSize(
     const gfx::Size& local_frame_size) {
   has_size_ = true;
+  const float dsf = screen_infos_.current().device_scale_factor;
   if (use_zoom_for_device_scale_factor_) {
     local_frame_size_in_pixels_ = local_frame_size;
-    local_frame_size_in_dip_ = gfx::ScaleToRoundedSize(
-        local_frame_size, 1.f / screen_info_.device_scale_factor);
+    local_frame_size_in_dip_ =
+        gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
   } else {
     local_frame_size_in_dip_ = local_frame_size;
-    local_frame_size_in_pixels_ = gfx::ScaleToCeiledSize(
-        local_frame_size, screen_info_.device_scale_factor);
+    local_frame_size_in_pixels_ = gfx::ScaleToCeiledSize(local_frame_size, dsf);
   }
 }
 
 void CrossProcessFrameConnector::SetScreenSpaceRect(
     const gfx::Rect& screen_space_rect) {
   gfx::Rect old_rect = screen_space_rect_in_pixels_;
+  const float dsf = screen_infos_.current().device_scale_factor;
 
   if (use_zoom_for_device_scale_factor_) {
     screen_space_rect_in_pixels_ = screen_space_rect;
     screen_space_rect_in_dip_ = gfx::Rect(
-        gfx::ScaleToFlooredPoint(screen_space_rect.origin(),
-                                 1.f / screen_info_.device_scale_factor),
-        gfx::ScaleToCeiledSize(screen_space_rect.size(),
-                               1.f / screen_info_.device_scale_factor));
+        gfx::ScaleToFlooredPoint(screen_space_rect.origin(), 1.f / dsf),
+        gfx::ScaleToCeiledSize(screen_space_rect.size(), 1.f / dsf));
   } else {
     screen_space_rect_in_dip_ = screen_space_rect;
-    screen_space_rect_in_pixels_ = gfx::ScaleToEnclosingRect(
-        screen_space_rect, screen_info_.device_scale_factor);
+    screen_space_rect_in_pixels_ =
+        gfx::ScaleToEnclosingRect(screen_space_rect, dsf);
   }
 
   if (view_ && frame_proxy_in_parent_renderer_) {

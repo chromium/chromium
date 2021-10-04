@@ -176,12 +176,12 @@ class WidgetBaseClient {
   // Signal the orientation has changed.
   virtual void OrientationChanged() {}
 
-  // Return the original (non-emulated) screen info.
-  virtual const display::ScreenInfo& GetOriginalScreenInfo() = 0;
+  // Return the original (non-emulated) screen infos.
+  virtual const display::ScreenInfos& GetOriginalScreenInfos() = 0;
 
   // Indication that the surface and screen were updated.
   virtual void DidUpdateSurfaceAndScreen(
-      const display::ScreenInfo& previous_original_screen_info) {}
+      const display::ScreenInfos& previous_original_screen_infos) {}
 
   // Return the viewport visible rect.
   virtual gfx::Rect ViewportVisibleRect() = 0;

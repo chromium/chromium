@@ -17,7 +17,7 @@
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
@@ -245,6 +245,11 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // information is not knowable (e.g, because the view is not attached to a
   // screen yet), then a default best-guess will be used.
   virtual void GetScreenInfo(display::ScreenInfo* screen_info) = 0;
+
+  // This method returns the ScreenInfos used by the view to render. If the
+  // information is not knowable (e.g, because the view is not attached to a
+  // screen yet), then a default best-guess will be used.
+  virtual display::ScreenInfos GetScreenInfos() = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;

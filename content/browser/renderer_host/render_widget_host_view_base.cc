@@ -46,13 +46,6 @@ base::LazyInstance<RenderWidgetHostViewBaseAllocMap>::DestructorAtExit
     g_alloc_dealloc_tracker_map = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
-const display::ScreenInfo MakeDefaultScreenInfo() {
-  // Construct a fake ScreenInfo with a valid display id.
-  display::ScreenInfo screen_info;
-  screen_info.display_id = display::kDefaultDisplayId;
-  return screen_info;
-}
-
 namespace content {
 
 // static
@@ -70,7 +63,7 @@ RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
       // `screen_infos_` must be initialized, to permit unconditional access to
       // its current display. A placeholder ScreenInfo is used here, so the
       // first call to UpdateScreenInfo will trigger the expected updates.
-      screen_infos_({MakeDefaultScreenInfo()}) {
+      screen_infos_(display::ScreenInfos(display::ScreenInfo())) {
   g_alloc_dealloc_tracker_map.Get()[this]++;
 }
 

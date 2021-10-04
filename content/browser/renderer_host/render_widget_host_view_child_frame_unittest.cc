@@ -143,12 +143,14 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
     display::ScreenInfo screen_info;
     screen_info.rect = gfx::Rect(1, 2, 3, 4);
-    view_ =
-        RenderWidgetHostViewChildFrame::Create(widget_host_.get(), screen_info);
+    display::ScreenInfos screen_infos(screen_info);
+    view_ = RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                                   screen_infos);
     // Test we get the expected ScreenInfo before the FrameDelegate is set.
     display::ScreenInfo actual_screen_info;
     view_->GetScreenInfo(&actual_screen_info);
     EXPECT_EQ(screen_info, actual_screen_info);
+    EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
     test_frame_connector_ =
         new MockFrameConnector(use_zoom_for_device_scale_factor);
@@ -279,7 +281,10 @@ TEST_F(RenderWidgetHostViewChildFrameZoomForDSFTest,
        CompositorViewportPixelSize) {
   display::ScreenInfo screen_info;
   screen_info.device_scale_factor = 2.0f;
-  test_frame_connector_->SetScreenInfoForTesting(screen_info);
+
+  blink::FrameVisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  test_frame_connector_->SynchronizeVisualProperties(visual_properties, false);
 
   gfx::Size local_frame_size(1276, 410);
   test_frame_connector_->SetLocalFrameSize(local_frame_size);
@@ -311,6 +316,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   viz::LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
 
   blink::FrameVisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
   visual_properties.screen_space_rect = screen_space_rect;
   visual_properties.compositor_viewport = compositor_viewport_pixel_rect;
   visual_properties.local_frame_size = compositor_viewport_pixel_rect.size();

@@ -26,6 +26,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/screen_infos.h"
 #include "ui/surface/transport_dib.h"
 
 namespace blink {
@@ -259,6 +260,10 @@ class CONTENT_EXPORT RenderWidgetHost {
 
   // Get info regarding the screen showing this RenderWidgetHost.
   virtual void GetScreenInfo(display::ScreenInfo* screen_info) = 0;
+
+  // Get info regarding all screens, including which screen is currently showing
+  // this RenderWidgetHost.
+  virtual display::ScreenInfos GetScreenInfos() = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;

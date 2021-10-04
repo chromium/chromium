@@ -126,6 +126,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> CreateVideoCapturer()
       override;
   void GetScreenInfo(display::ScreenInfo* screen_info) override;
+  display::ScreenInfos GetScreenInfos() override;
+
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize(const gfx::Size& new_size) override;
@@ -168,9 +170,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   WidgetType GetWidgetType();
 
   virtual void SendInitialPropertiesIfNeeded() {}
-
-  // Get ScreenInfos known to this view.
-  virtual display::ScreenInfos GetScreenInfos();
 
   // Called when screen information or native widget bounds change.
   virtual void UpdateScreenInfo();

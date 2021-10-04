@@ -2103,24 +2103,14 @@ void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
 display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfos");
 
-  // Use GetScreenInfo here to retain legacy behavior for the current screen.
-  display::ScreenInfo current_screen_info;
-  GetScreenInfo(&current_screen_info);
-
   // If this widget has not been connected to a view yet (or has been
   // disconnected), the display code may be using a fake primary display.
   // In these cases, temporarily return the legacy screen info until
   // it is connected and visual properties updates this correctly.
   if (!view_) {
-    return display::ScreenInfos(current_screen_info);
-  }
-
-  // TODO(enne): add ScreenInfos to FrameVisualProperties and store these
-  // on CrossProcessFrameConnector.  For now, only return the legacy
-  // screen info for any child widgets to avoid races between visual
-  // property propagation of legacy screen info vs GetAllDisplays.
-  // In the future, child frames should use screen_infos from the connector.
-  if (view_->IsRenderWidgetHostViewChildFrame()) {
+    // Use GetScreenInfo here to retain legacy behavior for the current screen.
+    display::ScreenInfo current_screen_info;
+    GetScreenInfo(&current_screen_info);
     return display::ScreenInfos(current_screen_info);
   }
 

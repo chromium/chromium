@@ -62,7 +62,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
   static RenderWidgetHostViewChildFrame* Create(
       RenderWidgetHost* widget,
-      const display::ScreenInfo& parent_screen_info);
+      const display::ScreenInfos& parent_screen_infos);
 
   void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
 
@@ -103,6 +103,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
                    const gfx::Rect& bounds,
                    const gfx::Rect& anchor_rect) override;
   void UpdateCursor(const WebCursor& cursor) override;
+  void UpdateScreenInfo() override;
   void SendInitialPropertiesIfNeeded() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
@@ -167,6 +168,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
   void GetScreenInfo(display::ScreenInfo* screen_info) override;
+  display::ScreenInfos GetScreenInfos() override;
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize(const gfx::Size& new_size) override;
@@ -219,9 +221,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewChildFrameTest,
                            ForwardsBeginFrameAcks);
 
-  // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
-  RenderWidgetHostViewChildFrame(RenderWidgetHost* widget,
-                                 const display::ScreenInfo& parent_screen_info);
+  RenderWidgetHostViewChildFrame(
+      RenderWidgetHost* widget,
+      const display::ScreenInfos& parent_screen_infos);
   void Init();
 
   // Sets |parent_frame_sink_id_| and registers frame sink hierarchy. If the
@@ -312,11 +314,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // properties.
   bool initial_properties_sent_ = false;
 
-  // The ScreenInfo information from the parent at the time this class is
+  // The ScreenInfos information from the parent at the time this class is
   // created, to be used before this view is connected to its FrameDelegate.
-  // This is kept up to date anytime GetScreenInfo() is called and we have
+  // This is kept up to date anytime GetScreenInfos() is called and we have
   // a FrameDelegate.
-  display::ScreenInfo parent_screen_info_;
+  display::ScreenInfos parent_screen_infos_;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);

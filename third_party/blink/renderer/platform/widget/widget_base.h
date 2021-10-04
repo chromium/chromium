@@ -378,6 +378,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Called after the delay given in `RequestAnimationAfterDelay()`.
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
 
+  // Helper to get the non-emulated device scale factor.
+  float GetOriginalDeviceScaleFactor() const;
+
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
   // Indicates this is for a child local root.
