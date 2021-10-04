@@ -16,32 +16,30 @@ function getAppElement() {
       document.querySelector('projector-app'));
 }
 
-// A client that sends notification to the chrome://projector embedder.
-export class TrustedAppClient extends PostMessageAPIClient {
-  /**
-   * @param {!Window} parentWindow The embedder window from which requests
-   *     come.
-   */
-  constructor(parentWindow) {
-    super(TARGET_URL, parentWindow);
-  }
-
+/**
+ * Implements and supports the methods defined by the
+ * projectorApp.ClientDelegate interface defined in
+ * //chromoes/components/projector_app/resources/communication/projector_app.externs.js.
+ */
+const CLIENT_DELEGATE = {
   /**
    * Gets the list of primary and secondary accounts currently available on the
    * device.
    * @return {Promise<Array<!projectorApp.Account>>}
    */
   getAccounts() {
-    return this.callApiFn('getAccounts', []);
-  }
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'getAccounts', []);
+  },
 
   /**
    * Checks whether the SWA can trigger a new Projector session.
    * @return {Promise<boolean>}
    */
   canStartProjectorSession() {
-    return this.callApiFn('canStartProjectorSession', []);
-  }
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'canStartProjectorSession', []);
+  },
 
   /**
    * Starts the Projector session if it is possible. Provides the storage dir
@@ -50,8 +48,9 @@ export class TrustedAppClient extends PostMessageAPIClient {
    * @return {Promise<boolean>}
    */
   startProjectorSession(storageDir) {
-    return this.callApiFn('startProjectorSession', [storageDir]);
-  }
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'startProjectorSession', [storageDir]);
+  },
 
   /**
    * Gets the oauth token with the required scopes for the specified account.
@@ -59,8 +58,9 @@ export class TrustedAppClient extends PostMessageAPIClient {
    * @return {!Promise<!projectorApp.OAuthToken>}
    */
   getOAuthTokenForAccount(account) {
-    return this.callApiFn('getOAuthTokenForAccount', [account]);
-  }
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'getOAuthTokenForAccount', [account]);
+  },
 
   /**
    * Sends 'error' message to handler.
@@ -69,8 +69,9 @@ export class TrustedAppClient extends PostMessageAPIClient {
    * @param {!Array<ProjectorError>} msg Error messages.
    */
   onError(msg) {
-    this.callApiFn('onError', [msg]);
-  }
+    AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'onError', [msg]);
+  },
 
   /**
    * Gets the list of pending screencasts that are uploading to drive on current
@@ -78,11 +79,10 @@ export class TrustedAppClient extends PostMessageAPIClient {
    * @return {Promise<Array<!projectorApp.PendingScreencast>>}
    */
   // TODO(b/197015567) Wired this up with ProjectorMessageHandler.
-  getPendingScreencasts(){
+  getPendingScreencasts() {
     return Promise.resolve([]);
-  }
-};
-
+  },
+}
 
 /**
  * Class that implements the RequestHandler inside the Projector untrusted
@@ -129,12 +129,13 @@ export class AppUntrustedCommFactory {
       return;
     }
 
-    AppUntrustedCommFactory.client_ = new TrustedAppClient(window.parent);
+    AppUntrustedCommFactory.client_ =
+        new PostMessageAPIClient(TARGET_URL, window.parent);
 
     AppUntrustedCommFactory.requestHandler_ =
         new UntrustedAppRequestHandler(window.parent);
 
-    getAppElement().setClientDelegate(AppUntrustedCommFactory.client_);
+   getAppElement().setClientDelegate(CLIENT_DELEGATE);
 }
 
   /**
@@ -142,7 +143,7 @@ export class AppUntrustedCommFactory {
    * possible to start a new ProjectorSession):
    * const canStart = await AppUntrustedCommFactory. getPostMessageAPIClient().
    *     canStartProjectorSession();
-   * @return {!TrustedAppClient}
+   * @return {!PostMessageAPIClient}
    */
   static getPostMessageAPIClient() {
     // .AppUntrustedCommFactory.client_ should be available. However to be on
