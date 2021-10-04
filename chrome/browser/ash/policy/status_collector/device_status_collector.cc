@@ -738,12 +738,14 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           cros_healthd_data_fetcher,
       bool report_system_info,
       bool report_vpd_info,
-      bool report_storage_status) {
+      bool report_storage_status,
+      bool report_version_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cros_healthd_data_fetcher.Run(
         CrosHealthdCollectionMode::kFull,
         base::BindOnce(&DeviceStatusCollectorState::OnCrosHealthdDataReceived,
-                       this, report_system_info, report_vpd_info, report_storage_status));
+                       this, report_system_info, report_vpd_info,
+                       report_storage_status, report_version_info));
   }
 
   void FetchEMMCLifeTime(
@@ -838,6 +840,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       bool report_system_info,
       bool report_vpd_info,
       bool report_storage_status,
+      bool report_version_info,
       chromeos::cros_healthd::mojom::TelemetryInfoPtr probe_result,
       const base::circular_deque<std::unique_ptr<SampledData>>& samples) {
     namespace cros_healthd = chromeos::cros_healthd::mojom;
@@ -1375,6 +1378,31 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           partition_info_out->set_total_space(partition_info->total_space);
           partition_info_out->set_filesystem(partition_info->filesystem);
           partition_info_out->set_mount_source(partition_info->mount_source);
+          break;
+        }
+      }
+    }
+
+    // Process Tpm Result.
+    const auto& tpm_result = probe_result->tpm_result;
+    if (!tpm_result.is_null() && report_version_info) {
+      switch (tpm_result->which()) {
+        case cros_healthd::TpmResult::Tag::ERROR: {
+          LOG(ERROR) << "cros_healthd: Error getting Tpm info: "
+                     << tpm_result->get_error()->msg;
+          break;
+        }
+
+        case cros_healthd::TpmResult::Tag::TPM_INFO: {
+          const auto& tpm_info = tpm_result->get_tpm_info();
+          if (tpm_info.is_null()) {
+            LOG(ERROR) << "Null TpmInfo from cros_healthd";
+            break;
+          }
+
+          em::TpmVersionInfo* tpm_version_info_out =
+              response_params_.device_status->mutable_tpm_version_info();
+          tpm_version_info_out->set_did_vid(tpm_info->did_vid.value());
           break;
         }
       }
@@ -2063,6 +2091,8 @@ void DeviceStatusCollector::FetchCrosHealthdData(
         categories_to_probe.push_back(ProbeCategoryEnum::kFan);
       if (report_bluetooth_info_)
         categories_to_probe.push_back(ProbeCategoryEnum::kBluetooth);
+      if (report_version_info_)
+        categories_to_probe.push_back(ProbeCategoryEnum::kTpm);
 
       completion_callback =
           base::BindOnce(&DeviceStatusCollector::OnProbeDataFetched,
@@ -2662,7 +2692,8 @@ void DeviceStatusCollector::GetDeviceStatus(
 
   if (ShouldFetchCrosHealthdData())
     state->FetchCrosHealthdData(cros_healthd_data_fetcher_, report_system_info_,
-                                report_vpd_info_, report_storage_status_);
+                                report_vpd_info_, report_storage_status_,
+                                report_version_info_);
 
   if (report_storage_status_) {
     state->FetchStatefulPartitionInfo(stateful_partition_info_fetcher_);
@@ -2851,7 +2882,7 @@ bool DeviceStatusCollector::IsReportingHardwareData() const {
   return report_power_status_ || report_storage_status_ ||
          report_board_status_ || report_memory_info_ || report_cpu_info_ ||
          report_backlight_info_ || report_bluetooth_info_ || report_fan_info_ ||
-         report_vpd_info_ || report_system_info_;
+         report_vpd_info_ || report_system_info_ || report_version_info_;
 }
 bool DeviceStatusCollector::IsReportingUsers() const {
   // For more details, see comment in

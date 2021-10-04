@@ -254,6 +254,8 @@ constexpr char kFakeBluetoothAdapterName[] = "Marty Byrde's BT Adapter";
 constexpr char kFakeBluetoothAdapterAddress[] = "aa:bb:cc:dd:ee:ff";
 constexpr bool kFakeBluetoothAdapterIsPowered = true;
 constexpr uint32_t kFakeNumConnectedBluetoothDevices = 7;
+// Tpm test values:
+constexpr char kFakeTpmDidVid[] = "fake_tpm_did_vid";
 
 // Time delta representing 1 hour time interval.
 constexpr TimeDelta kHour = TimeDelta::FromHours(1);
@@ -675,6 +677,11 @@ cros_healthd::BluetoothResultPtr CreateBluetoothResult() {
       std::move(adapter_info));
 }
 
+cros_healthd::TpmResultPtr CreateTpmResult() {
+  return cros_healthd::TpmResult::NewTpmInfo(cros_healthd::TpmInfo::New(
+      nullptr, nullptr, nullptr, nullptr, nullptr, kFakeTpmDidVid));
+}
+
 base::circular_deque<std::unique_ptr<policy::SampledData>>
 CreateFakeSampleData() {
   em::CPUTempInfo fake_cpu_temp_sample;
@@ -732,6 +739,7 @@ void FetchFakeFullCrosHealthdData(
       fake_info.fan_result = CreateFanResult();
       fake_info.stateful_partition_result = CreateStatefulPartitionResult();
       fake_info.bluetooth_result = CreateBluetoothResult();
+      fake_info.tpm_result = CreateTpmResult();
       std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
       return;
     }
@@ -3356,6 +3364,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
       chromeos::kReportDeviceSystemInfo, false);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceVpdInfo, false);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceVersionInfo, false);
   GetStatus();
   ASSERT_EQ(device_status_.cpu_info_size(), 0);
   EXPECT_FALSE(device_status_.has_power_status());
@@ -3367,6 +3377,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_FALSE(device_status_.has_memory_info());
   EXPECT_EQ(device_status_.fan_info_size(), 0);
   EXPECT_EQ(device_status_.bluetooth_adapter_info_size(), 0);
+  EXPECT_FALSE(device_status_.has_tpm_version_info());
 
   // When all of the relevant policies are set to true, expect the protobuf to
   // have the corresponding data from cros_healthd.
@@ -3390,6 +3401,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
       chromeos::kReportDeviceSystemInfo, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceVpdInfo, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceVersionInfo, true);
   GetStatus();
 
   // Verify the battery data.
@@ -3529,6 +3542,11 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_EQ(adapter.address(), kFakeBluetoothAdapterAddress);
   EXPECT_EQ(adapter.powered(), kFakeBluetoothAdapterIsPowered);
   EXPECT_EQ(adapter.num_connected_devices(), kFakeNumConnectedBluetoothDevices);
+
+  // Verify the Tpm info.
+  ASSERT_TRUE(device_status_.has_tpm_version_info());
+  const auto& tpm = device_status_.tpm_version_info();
+  EXPECT_EQ(tpm.did_vid(), kFakeTpmDidVid);
 }
 
 TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {

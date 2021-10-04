@@ -3010,6 +3010,9 @@ message TpmVersionInfo {
   optional uint64 firmware_version = 5;
   optional string vendor_specific = 6;
   optional GscVersion gsc_version = 7;
+  // This field represents the tpm device id and vendor id
+  // which is a combined value as declared in the TPM spec.
+  optional string did_vid = 8;
 }
 
 // Contains status of the TPM unit.
