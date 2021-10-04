@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -215,6 +216,11 @@ public class NativePageFactory {
                 return null;
             }
         }
+
+        protected NativePage buildManagementPage(Tab tab) {
+            return new ManagementPage(new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    Profile.fromWebContents(tab.getWebContents()));
+        }
     }
 
     /**
@@ -262,6 +268,9 @@ public class NativePageFactory {
                 break;
             case NativePageType.LAUNCHPAD:
                 page = getBuilder().buildLaunchpadPage(tab);
+                break;
+            case NativePageType.MANAGEMENT:
+                page = getBuilder().buildManagementPage(tab);
                 break;
             default:
                 assert false;

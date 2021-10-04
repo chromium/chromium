@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.management;
+
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/**
+ * Associated properties for ManagementPage's view.
+ */
+class ManagementProperties {
+    public static final PropertyModel.WritableBooleanPropertyKey ACCOUNT_IS_MANAGED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableObjectPropertyKey<String> ACCOUNT_MANAGER_NAME =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS = {ACCOUNT_IS_MANAGED, ACCOUNT_MANAGER_NAME};
+}

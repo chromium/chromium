@@ -18,6 +18,16 @@ public class ManagedBrowserUtils {
         return ManagedBrowserUtilsJni.get().hasBrowserPoliciesApplied(profile);
     }
 
+    public static boolean isAccountManaged(Profile profile) {
+        // TODO(https://crbug.com/1121153): return true if the account is managed
+        return false;
+    }
+
+    public static String getAccountManagerName(Profile profile) {
+        // TODO(https://crbug.com/1121153): if known, return the account name
+        return "";
+    }
+
     @NativeMethods
     public interface Natives {
         boolean hasBrowserPoliciesApplied(Profile profile);

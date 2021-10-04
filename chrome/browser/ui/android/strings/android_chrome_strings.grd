@@ -5133,6 +5133,26 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_AUTO_DARK_MESSAGE_BUTTON" translateable="false" desc="The label for the button to enter theme settings.">
         Open theme settings
       </message>
+
+      <!-- Profile Management strings -->
+      <message name="IDS_MANAGEMENT" desc="Title of the chrome://management page, which shows whether the account is managed.">
+        Management
+      </message>
+      <message name="IDS_MANAGEMENT_SUBTITLE" desc="The title of the chrome://management page when the browser runs in an environment managed by an unknown organization. (e.g. Employer owned device that has a managed Profile)">
+        Your browser is managed by your administrator
+      </message>
+      <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="The title of the chrome://management page when the browser runs in an environment managed by a known organization. (e.g. Employer owned device enrolled to CBCM)">
+        Your browser is managed by <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="The title of the chrome://management page when the browser runs in an environment which is not not managed by any organization. (e.g. A personal device bought at a store)">
+        Your browser is not managed
+      </message>
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="The descriptive text on chrome://management page that explains to the user the implications of browsing under a managed environment.">
+        Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.
+      </message>
+      <message name="IDS_MANAGEMENT_LEARN_MORE" desc="The learn more link on chrome://management page that provides more information about managed devices.">
+        <ph name="BEGIN_LINK">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
     </messages>
   </release>
 </grit>
