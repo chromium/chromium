@@ -524,6 +524,12 @@
   <message name="IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED" desc="An error message when user tried editing the username to a value which is already used for the same site.">
     You already saved this username for this site
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_ADD_TITLE" desc="The title for a dialog, which allows a user to add a new password. This dialog includes other details, such as username and website.">
+    Add password
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_ADD_FOOTNOTE" desc="A footnote for the dialog which allows the user to add a new password.">
+    Make sure you're saving your current password for this site
+  </message>
   <message name="IDS_SETTINGS_PASSWORD_COPY" desc="Label for a context menu item that allows to copy the selected password into clipboard.">
     Copy password
   </message>
