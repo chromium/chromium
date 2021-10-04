@@ -89,6 +89,13 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
   }
 
+  void LockScreen() {
+    scoped_bluetooth_config_test_helper_.session_manager()->SessionStarted();
+    scoped_bluetooth_config_test_helper_.session_manager()->SetSessionState(
+        session_manager::SessionState::LOCKED);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void PressIcon() {
     bluetooth_pod_controller_->OnIconPressed();
     base::RunLoop().RunUntilIdle();
@@ -347,6 +354,18 @@ TEST_F(BluetoothFeaturePodControllerTest,
   EXPECT_TRUE(feature_pod_button_->IsToggled());
   PressLabel();
   ExpectBluetoothDetailedViewFocused();
+}
+
+TEST_F(BluetoothFeaturePodControllerTest,
+       FeaturePodIsDisabledWhenBluetoothCannotBeModified) {
+  EXPECT_TRUE(feature_pod_button_->GetEnabled());
+
+  // The lock screen is one of multiple session states where Bluetooth cannot be
+  // modified. For more information see
+  // chromeos::bluetooth_config::SystemPropertiesProvider.
+  LockScreen();
+
+  EXPECT_FALSE(feature_pod_button_->GetEnabled());
 }
 
 }  // namespace ash

@@ -39,8 +39,8 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
     return fake_discovery_session_manager_;
   }
 
-  const session_manager::SessionManager& session_manager() {
-    return session_manager_;
+  session_manager::SessionManager* session_manager() {
+    return &session_manager_;
   }
 
  private:

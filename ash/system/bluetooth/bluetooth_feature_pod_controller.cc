@@ -20,6 +20,7 @@
 namespace ash {
 namespace {
 using chromeos::bluetooth_config::GetPairedDeviceName;
+using chromeos::bluetooth_config::mojom::BluetoothModificationState;
 using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
 using chromeos::bluetooth_config::mojom::DeviceConnectionState;
@@ -28,8 +29,7 @@ using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 
 BluetoothFeaturePodController::BluetoothFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
-    : system_state_(BluetoothSystemState::kUnavailable),
-      tray_controller_(tray_controller) {
+    : tray_controller_(tray_controller) {
   DCHECK(ash::features::IsBluetoothRevampEnabled());
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
@@ -163,10 +163,8 @@ void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
     return;
   }
 
-  // TODO(crbug.com/1010321): Once we are able to determine whether we are able
-  // to turn Bluetooth on or off using the API we should update this to actually
-  // enable or disable the toggle.
-  button_->SetEnabled(true);
+  button_->SetEnabled(modification_state_ ==
+                      BluetoothModificationState::kCanModifyBluetooth);
   button_->SetToggled(
       ::chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling(
           system_state_));
@@ -208,6 +206,7 @@ void BluetoothFeaturePodController::OnPropertiesUpdated(
         GetPairedDeviceName(paired_device.get()),
         mojo::Clone(paired_device->device_properties->battery_info));
   }
+  modification_state_ = properties->modification_state;
   system_state_ = properties->system_state;
   UpdateButtonStateIfExists();
 }

@@ -176,10 +176,6 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
 }
 
 void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
-  // TODO(crbug.com/1010321): Once we are able to determine whether we are
-  // authorized to turn Bluetooth on or off using the API we should update this
-  // to return early if not.
-
   DCHECK(!settings_button_);
   DCHECK(!toggle_button_);
 
