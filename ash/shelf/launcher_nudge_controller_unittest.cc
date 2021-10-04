@@ -100,7 +100,9 @@ TEST_F(LauncherNudgeControllerTest, BasicTest) {
   EXPECT_FALSE(nudge_controller_->IsRecheckTimerRunningForTesting());
 }
 
-TEST_F(LauncherNudgeControllerTest, StopShowingNudgeAfterLauncherIsOpened) {
+// TODO(crbug.com/1226093) Test is flaky under MSan.
+TEST_F(LauncherNudgeControllerTest,
+       DISABLED_StopShowingNudgeAfterLauncherIsOpened) {
   SimulateNewUserFirstLogin("user@gmail.com");
   EXPECT_EQ(0, GetNudgeShownCount());
 
