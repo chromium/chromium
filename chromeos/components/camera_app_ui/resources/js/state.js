@@ -130,6 +130,7 @@ export function addObserver(state, observer) {
  *     newly changed value.
  */
 export function addOneTimeObserver(state, observer) {
+  /** @type {StateObserver} */
   const wrappedObserver = (...args) => {
     observer(...args);
     removeObserver(state, wrappedObserver);
