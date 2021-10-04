@@ -2920,7 +2920,7 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   if (!base::FeatureList::IsEnabled(features::kWebUIDarkMode)) {
     // Update based on last committed url.
     force_light = force_light || url.SchemeIs(content::kChromeUIScheme);
-    force_light = force_light || IsPdfExtensionUrl(url);
+    force_light = force_light || IsPdfExtensionOrigin(url::Origin::Create(url));
   }
 
   // Reauth WebUI doesn't support dark mode yet because it shares the dialog

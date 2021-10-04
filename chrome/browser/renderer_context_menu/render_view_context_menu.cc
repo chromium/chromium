@@ -2269,7 +2269,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       // Rotate commands should be disabled when in PDF Viewer's Presentation
       // mode.
       is_pdf_viewer_fullscreen =
-          IsPdfExtensionUrl(GetDocumentURL(params_)) && IsHTML5Fullscreen();
+          IsPdfExtensionOrigin(url::Origin::Create(GetDocumentURL(params_))) &&
+          IsHTML5Fullscreen();
 #endif
       return !is_pdf_viewer_fullscreen &&
              (params_.media_flags & ContextMenuData::kMediaCanRotate) != 0;
@@ -3064,11 +3065,7 @@ bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
       browser && (browser->is_type_app() || browser->is_type_app_popup());
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
          search::DefaultSearchProviderIsGoogle(GetProfile()) &&
-// Build flag for enable_pdf is needed here because the function used does not
-// build without this flag.
-#if BUILDFLAG(ENABLE_PDF)
-         !IsPdfExtensionUrl(GetDocumentURL(params_)) &&
-#endif
+         !IsPdfExtensionOrigin(url::Origin::Create(GetDocumentURL(params_))) &&
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
          !in_app &&
          GetPrefs(browser_context_)
