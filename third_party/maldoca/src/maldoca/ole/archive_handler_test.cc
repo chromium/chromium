@@ -19,19 +19,20 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/testing/test_utils.h"
 
 namespace maldoca {
 namespace utils {
 namespace {
+
 std::string TestFilename(absl::string_view filename) {
-  return file::JoinPath(GetRunfilesDir(),
-                        absl::StrCat("maldoca/ole/testdata/", filename));
+  return maldoca::testing::OleTestFilename(filename);
 }
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   EXPECT_TRUE(status.ok()) << status;
   return content;
 }
@@ -43,16 +44,21 @@ std::string DataToString(const std::string& filename, int64_t size, bool isdir,
 
 TEST(ArchiveHandler, ExtractZipStringTest) {
   std::string content = GetTestContent("archive_zip.zip");
-  ArchiveHandler handler(content, "zip");
-  CHECK(handler.Initialized());
+  auto status_or =
+      ::maldoca::utils::GetArchiveHandler(content, "zip", "", false, false);
+  CHECK(status_or.ok() && status_or.value()->Initialized())
+      << "Can't initialize, error: " << status_or.status();
+  auto handler = status_or.value().get();
+
+  CHECK(handler->Initialized());
   std::string filename;
   int64_t size = 0;
   bool isdir = false;
   std::vector<std::string> output;
-  while (handler.GetNextEntry(&filename, &size, &isdir)) {
+  while (handler->GetNextEntry(&filename, &size, &isdir)) {
     std::string extracted_content;
     if (!isdir) {
-      CHECK(handler.GetEntryContent(&extracted_content));
+      CHECK(handler->GetEntryContent(&extracted_content));
     }
     output.push_back(DataToString(filename, size, isdir, extracted_content));
   }
@@ -66,20 +72,26 @@ TEST(ArchiveHandler, ExtractZipStringTest) {
 
 TEST(ArchiveHandler, ExtractZipStringGetNextGoodContentTest) {
   std::string content = GetTestContent("archive_zip.zip");
-  ArchiveHandler handler(content, "zip");
-  CHECK(handler.Initialized());
+  auto status_or =
+      ::maldoca::utils::GetArchiveHandler(content, "zip", "", false, false);
+  CHECK(status_or.ok() && status_or.value()->Initialized())
+      << "Can't initialize, error: " << status_or.status();
+  auto handler = status_or.value().get();
+  CHECK(handler->Initialized());
   std::string filename;
   int64_t size = 0;
   bool isdir = false;
   std::vector<std::string> output;
   std::string extracted_content;
-  while (handler.GetNextGoodContent(&filename, &size, &extracted_content)) {
+  while (handler->GetNextGoodContent(&filename, &size, &extracted_content)) {
     output.push_back(DataToString(filename, size, isdir, extracted_content));
     extracted_content.clear();
   }
-  EXPECT_THAT(output, ::testing::UnorderedElementsAre(
-                          "archive_zip/test.txt:5:0:blah\n",
-                          "archive_zip/dir1/test1.txt:5:0:blah\n"));
+  EXPECT_THAT(
+      output,
+      ::testing::UnorderedElementsAre(
+          "archive_zip/test.txt:5:0:blah\n",
+          "archive_zip/dir1/test1.txt:5:0:blah\n"));
 }
 
 }  // namespace

@@ -103,7 +103,7 @@ std::string TestFilename(absl::string_view filename) {
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status = maldoca::testing::GetTestContents(TestFilename(filename), &content);
   EXPECT_TRUE(status.ok()) << status;
   return content;
 }
@@ -161,12 +161,12 @@ void ExtractAndPrintCode(const std::string& filename) {
 
 TEST(VBAPresenceDetection, VBAPresenceDetectionTest) {
   // These are certified OLE2/Docfiles.
-  std::string content =  GetTestContent("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431");
+  std::string content = GetTestContent("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded");
   EXPECT_TRUE(LikelyOLE2WithVBAContent(content));
 
   // OOXML, Office 2003 XML and straight MSO file content (not straight
   // OLE2/Docfile content.)
-  content = GetTestContent("c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d");
+  content = GetTestContent("c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded");
   EXPECT_FALSE(LikelyOLE2WithVBAContent(content));
 }
 
@@ -182,8 +182,8 @@ TEST(BogusExtraction, BogusExtractionTest) {
   // error is reset prior to being set again. Test this assumption by
   // trying a successful extraction.
   ExtractVBAFromFile(TestFilename(
-    "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431"),
-                     &code_chunks, &error);
+    "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded"),
+                     &code_chunks, &error, true);
   EXPECT_TRUE(error.empty());
   EXPECT_NE(code_chunks.chunk_size(), 0);
   code_chunks.Clear();
@@ -227,13 +227,13 @@ TEST(MultipleExtraction, MultipleExtractionTest) {
   // truth data was obtained independently.
   std::map<std::string, std::vector<std::string>> input_to_results_map = {
     // These are plain Docfiles.
-    {"ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+    {"ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded",
                                          {"c598c45b0d9d3090599ff1df77c5d612",
                                           "46d8fa3e4d042579f074a60553029ff5"}},
     // Word97 file with very large VBA
     {"0d21ac394df6857ff203e456ed2385ee", {"794334f8dbc7d478108d32b7c2fa520d"}},
     // These are OOXML (.docx) files
-    {"c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+    {"c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded",
                                         {"f2677ec038ddbb21b2dd64bce3f9bf62",
                                         "e68c04ceca0173bf179ab351e8878936",
                                         "c068cedb2dc37e55f6f3dc5b5add4ccf",
@@ -257,7 +257,8 @@ TEST(MultipleExtraction, MultipleExtractionTest) {
     content = GetTestContent(item.first);
     // Both extraction methods, when successful, should return the
     // exact same thing.
-    ExtractVBAFromFile(filename, &chunks, &error);
+    bool xor_decode_file = absl::StrContains(item.first, kFileNameXorEncodingIndicator) && !absl::StrContains(item.first, kFileNameTextprotoIndicator);
+    ExtractVBAFromFile(filename, &chunks, &error, xor_decode_file);
     ExtractVBAFromString(content, &chunks_string, &error_string);
     EXPECT_THAT(error, testing::StrEq(""));
     EXPECT_THAT(error_string, testing::StrEq(""));
@@ -294,7 +295,7 @@ TEST(BugFixesVerificationTest, NoMemoryLeak) {
 // from OOXML input but don't use the regular API.
 TEST(LightweightAPI, LightweightAPITest) {
   std::string content = GetTestContent(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d");
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded");
 
   std::string error;
   VBACodeChunks code_chunks;
@@ -313,7 +314,7 @@ TEST(LightweightAPI, LightweightAPITest) {
 // from OOXML input using the default extraction type.
 TEST(ExtractVBAWithSettings, ExtractVBAWithSettingsDefaultTest) {
   std::string content = GetTestContent(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d");
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded");
   maldoca::vba::ExtractVBASettings settings;
   settings.set_extraction_method(maldoca::vba::EXTRACTION_TYPE_DEFAULT);
 
@@ -326,7 +327,7 @@ TEST(ExtractVBAWithSettings, ExtractVBAWithSettingsDefaultTest) {
 // from OOXML input but don't use the regular API.
 TEST(ExtractVBAWithSettings, ExtractVBAWithSettingsLightweightTest) {
   std::string content = GetTestContent(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d");
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded");
   maldoca::vba::ExtractVBASettings settings;
   settings.set_extraction_method(maldoca::vba::EXTRACTION_TYPE_LIGHTWEIGHT);
   auto status_or_vba  = ExtractVBAFromStringWithSettings(content, settings);
@@ -339,7 +340,7 @@ TEST(ExtractVBAWithSettings, ExtractVBAWithSettingsLightweightTest) {
 // Test that we can properly extract the directory from OLE content.
 TEST(DirectoryExtraction, DirectoryExtractionTest) {
   std::string content = GetTestContent(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431");
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded");
   OLEDirectoryMessage directory;
   VBACodeChunks chunks;
   std::string error;
@@ -440,7 +441,7 @@ int main(int argc, char** argv) {
 
     if (!absl::GetFlag(FLAGS_input_files_list).empty()) {
       std::string content;
-      CHECK(maldoca::file::GetContents(absl::GetFlag(FLAGS_input_files_list),
+      CHECK(maldoca::testing::GetTestContents(absl::GetFlag(FLAGS_input_files_list),
                                  &content).ok());
       files = absl::StrSplit(content, '\n');
     }

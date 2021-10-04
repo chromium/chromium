@@ -83,7 +83,7 @@ class ProcesDocTest : public Test {
     std::string input_file_name = absl::StrCat(file_base, ".", ext);
     std::string input;
     MALDOCA_ASSERT_OK(
-        file::GetContents(ServiceTestFilename(input_file_name), &input));
+        testing::GetTestContents(ServiceTestFilename(input_file_name), &input));
 
 #ifndef MALDOCA_CHROME
     pdf_pipeline_.ResetPipelineData();
@@ -198,10 +198,12 @@ TEST_F(ProcesDocTest, CorrectlyParse) {
   HandlerConfig config;
   SetupPipeline(config);
   ValidateProcessedProto(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded",
       "doc");
   ValidateProcessedProto(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_"
+      "0x42_encoded",
       "docx");
 #ifndef MALDOCA_CHROME
   ValidateProcessedProto("image_and_text", "pdf");
@@ -216,10 +218,12 @@ TEST_F(ProcesDocTest, CorrectlyParse_Sandbox) {
   config.mutable_parser_config()->set_use_sandbox(true);
   SetupPipeline(config);
   ValidateProcessedProto(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded",
       "doc");
   ValidateProcessedProto(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_"
+      "0x42_encoded",
       "docx");
   ValidateProcessedProto("image_and_text", "pdf");
 }

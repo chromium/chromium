@@ -34,7 +34,8 @@ std::string TestFilename(absl::string_view filename) {
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   EXPECT_TRUE(status.ok()) << status;
   return content;
 }
@@ -60,7 +61,7 @@ TEST(OLEReaderTest, BogusInput) {
   // to have a fixed value. Here, we're changing MiniSectorCutoff, 4
   // bytes at offset 56 (4096 is expected.)
   std::string content;
-  content = GetTestContent("vba1.bin");
+  content = GetTestContent("vba1_xor_0x42_encoded.bin");
   content.replace(56, 4, "LOL!");
   EXPECT_FALSE(OLEHeader::ParseHeader(bogus, &header));
   EXPECT_FALSE(header.IsInitialized());
@@ -74,7 +75,7 @@ TEST(OLEReaderTest, GoodInput) {
   EXPECT_FALSE(header.IsInitialized());
 
   std::string content;
-  content = GetTestContent("vba1.bin");
+  content = GetTestContent("vba1_xor_0x42_encoded.bin");
   EXPECT_TRUE(OLEHeader::ParseHeader(content, &header));
   EXPECT_EQ(header.TotalNumSector(), 45);
   EXPECT_EQ(header.SectorSize(), 512);

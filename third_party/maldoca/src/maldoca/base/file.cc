@@ -37,12 +37,18 @@
 #include "absl/strings/strip.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
+#include "base/logging.h"
+
 #ifndef MALDOCA_CHROME
 #include "google/protobuf/text_format.h"  // nogncheck
 #include "maldoca/base/ret_check.h"
 #include "maldoca/base/status_macros.h"
 #include "re2/re2.h"
 #endif  // MALDOCA_CHROME
+
+// Key to xor-decode testdata files as a safety measure and to e.g. avoid being
+// deleted by AVs.
+constexpr uint8_t kXorKey = 0x42;
 
 using absl::Status;
 
@@ -207,7 +213,8 @@ absl::Status Match(absl::string_view pattern,
 #endif  // MALDOCA_CHROME
 
 // TODO(someone): Make this work with general file systems.
-absl::Status GetContents(const std::string& path, std::string* contents) {
+absl::Status GetContents(const std::string& path, std::string* contents,
+                         bool xor_decode_file) {
   auto fc = FileCloser(path, "rb");
   auto fp = fc.get();
   if (fp == nullptr) {
@@ -225,6 +232,13 @@ absl::Status GetContents(const std::string& path, std::string* contents) {
     }
     absl::StrAppend(contents, absl::string_view(buf, ret));
   }
+  // xor decode the file's content if requested.
+  if (xor_decode_file) {
+    DLOG(INFO) << "xor decoding file: " << path;
+    for (int i = 0; i < contents->size(); i++) {
+      (*contents)[i] = (*contents)[i] ^ kXorKey;
+    }
+  }
   return absl::OkStatus();
 }
 
@@ -239,9 +253,10 @@ std::pair<absl::string_view, absl::string_view> SplitFilename(
   return base_ext;
 }
 
-StatusOr<std::string> GetContents(absl::string_view path) {
+StatusOr<std::string> GetContents(absl::string_view path,
+                                  bool xor_decode_file) {
   std::string output;
-  auto status = GetContents(std::string(path), &output);
+  auto status = GetContents(std::string(path), &output, xor_decode_file);
   if (status.ok()) {
     return output;
   } else {

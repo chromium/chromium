@@ -38,7 +38,8 @@ std::string TestFilename(absl::string_view filename) {
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   MALDOCA_EXPECT_OK(status) << status;
   return content;
 }
@@ -49,7 +50,7 @@ static constexpr uint8_t clsid[] = {0, 1, 2,  3,  4,  5,  6,  7,
 class OLEDirectoryEntryTestFull : public testing::Test {
  protected:
   void SetUp() override {
-    content = GetTestContent("vba1.bin");
+    content = GetTestContent("vba1_xor_0x42_encoded.bin");
     EXPECT_TRUE(OLEHeader::ParseHeader(content, &header));
     EXPECT_TRUE(header.IsInitialized());
     EXPECT_TRUE(FAT::Read(content, header, &fat));

@@ -36,7 +36,8 @@ std::string TestFilename(absl::string_view file_name) {
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   EXPECT_TRUE(status.ok()) << status;
   return content;
 }
@@ -44,7 +45,7 @@ std::string GetTestContent(absl::string_view filename) {
 class FATTest : public testing::Test {
  protected:
   void SetUp() override {
-    content_ = GetTestContent("vba1.bin");
+    content_ = GetTestContent("vba1_xor_0x42_encoded.bin");
     EXPECT_TRUE(OLEHeader::ParseHeader(content_, &header));
   }
 

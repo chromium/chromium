@@ -1014,8 +1014,8 @@ int Log2Ceiling(uint32_t n) {
 // TODO(somebody): Fix me! Currently uses a minimum implementation but could
 // be better.
 bool ReadFileToString(absl::string_view filename, std::string* content,
-                      bool log_error) {
-  auto status_or = file::GetContents(filename);
+                      bool log_error, bool xor_decode_file) {
+  auto status_or = file::GetContents(filename, xor_decode_file);
   if (!status_or.ok()) {
     if (log_error) {
       LOG(ERROR) << "Can not read " << filename

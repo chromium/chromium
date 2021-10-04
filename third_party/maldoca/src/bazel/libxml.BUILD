@@ -72,21 +72,13 @@ cc_library(
     ],
     # Otherwise Windows builds a DLL.
     defines = [
-        "LIBXML_STATIC",
+       "LIBXML_STATIC",
     ],
     # Required to make angled includes work, e.g.: "#include <libxml/SAX2.h>".
     includes = [
         ".",
         "include",
     ],
-    linkopts = select({
-        "@platforms//os:windows": [],
-        "//conditions:default": [
-            "-lm",
-            "-pthread",
-            "-ldl",
-        ],
-    }),
     deps = [
         "@libxml_config//:xmlversion",
     ] + select({
@@ -94,5 +86,13 @@ cc_library(
             "@libxml_config//:linux_config",
         ],
         "//conditions:default": [],
+    }),
+    linkopts = select({
+        "@platforms//os:windows": [],
+        "//conditions:default": [
+            "-lm",
+            "-pthread",
+            "-ldl",
+        ],
     }),
 )

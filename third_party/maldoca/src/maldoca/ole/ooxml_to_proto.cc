@@ -115,19 +115,22 @@ StatusOr<ooxml::OOXMLFile> OOXMLToProto::ParseOOXMLBuffer(
   ooxml_proto_.Clear();
 
   // Initiate archive handler.
-  utils::ArchiveHandler archive(in_buf, "zip");
+  auto archive_or = ::maldoca::utils::GetArchiveHandler(
+      in_buf, "zip", "" /*dummy location since zip uses in-memory libarchive*/,
+      false, false);
 
   // Verify the archive is not corrupted.
-  if (!archive.Initialized()) {
+  if (!archive_or.ok() || !archive_or.value()->Initialized()) {
     return ::maldoca::InternalError("Unable to open archive!",
                                     MaldocaErrorCode::ARCHIVE_CORRUPTED);
   }
 
+  auto archive = archive_or.value().get();
   std::string filename, content;
   int64_t size;
 
   // Read archive and store files in the `archive_content_` map.
-  while (archive.GetNextGoodContent(&filename, &size, &content)) {
+  while (archive->GetNextGoodContent(&filename, &size, &content)) {
     // Size is wrong. Zip file may be corrupt but we still try to parse it.
     if (size != static_cast<int64_t>(content.size())) {
       DLOG(INFO) << "File " + filename + " has size of " << content.size()

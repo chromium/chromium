@@ -92,17 +92,21 @@ bool OLEPropertySetStream::CodePageStringReader(absl::string_view *stream,
 
   std::string utf8_string;
   int bytes_consumed, bytes_filled, error_char_count;
-  utils::ConvertEncodingBufferToUTF8String(str, encoding_name_.c_str(),
-                                           &utf8_string, &bytes_consumed,
-                                           &bytes_filled, &error_char_count);
-  if (error_char_count != 0) {
-    LOG(WARNING) << "error_char_count is not 0, possible invalid "
-                    "encoding/characters. Input string was: "
-                 << str;
+  if (utils::ConvertEncodingBufferToUTF8String(
+          str, encoding_name_.c_str(), &utf8_string, &bytes_consumed,
+          &bytes_filled, &error_char_count)) {
+    if (error_char_count != 0) {
+      LOG(WARNING) << "error_char_count is not 0, possible invalid "
+                      "encoding/characters. Input string was: "
+                   << str;
+    }
+    absl::StripAsciiWhitespace(&utf8_string);
+    *output = std::move(utf8_string);
+    return true;
+  } else {
+    LOG(WARNING) << "ConvertEncodingBufferToUTF8String failed";
+    return false;
   }
-  absl::StripAsciiWhitespace(&utf8_string);
-  *output = std::move(utf8_string);
-  return true;
 }
 
 void OLEPropertySetStream::ConsumePaddingBytes(uint32_t size, uint32_t padd_to,
@@ -129,17 +133,21 @@ bool OLEPropertySetStream::UnicodeStringReader(absl::string_view *stream,
 
   int bytes_consumed, bytes_filled, error_char_count;
   std::string utf8_string;
-  utils::ConvertEncodingBufferToUTF8String(str, "utf-16le", &utf8_string,
-                                           &bytes_consumed, &bytes_filled,
-                                           &error_char_count);
-  if (error_char_count != 0) {
-    LOG(WARNING) << "error_char_count is not 0, possible invalid "
-                    "encoding/characters. Input string was: "
-                 << str;
+  if (utils::ConvertEncodingBufferToUTF8String(str, "utf-16le", &utf8_string,
+                                               &bytes_consumed, &bytes_filled,
+                                               &error_char_count)) {
+    if (error_char_count != 0) {
+      LOG(WARNING) << "error_char_count is not 0, possible invalid "
+                      "encoding/characters. Input string was: "
+                   << str;
+    }
+    absl::StripAsciiWhitespace(&utf8_string);
+    *output = std::move(utf8_string);
+    return true;
+  } else {
+    LOG(WARNING) << "ConvertEncodingBufferToUTF8String failed";
+    return false;
   }
-  absl::StripAsciiWhitespace(&utf8_string);
-  *output = std::move(utf8_string);
-  return true;
 }
 
 bool OLEPropertySetStream::VtInt4Reader(absl::string_view *stream,

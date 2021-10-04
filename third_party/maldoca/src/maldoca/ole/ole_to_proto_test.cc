@@ -41,7 +41,8 @@ std::string TestFilename(absl::string_view filename) {
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   MALDOCA_EXPECT_OK(status) << status;
   return content;
 }
@@ -135,28 +136,30 @@ TEST_P(OleToProtoTest, Samples) {
 INSTANTIATE_TEST_SUITE_P(
     OleToProtoTestSamples, OleToProtoTest,
     ::testing::Values(
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "all", true, true, true, true, true, true, false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "with_strings", true, true, true, true, true, true, true, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "nodirs", true, true, /*include_dirs*/ false, true, true, true,
-            false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "novba",
-            /*include_vba*/ false, true, true, true, true, true, false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "nosummary", true, true, true, /*include_summary*/ false, true,
-            true, false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "nohashes", true, /*include_hashes*/ false, true, true, true, true,
-            false, true)
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "all", true, true, true, true, true, true, false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "with_strings", true, true, true, true, true, true,
+                        true, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "nodirs", true, true, /*include_dirs*/ false, true,
+                        true, true, false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "novba",
+                        /*include_vba*/ false, true, true, true, true, true,
+                        false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "nosummary", true, true, true,
+                        /*include_summary*/ false, true, true, false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "nohashes", true, /*include_hashes*/ false, true, true,
+                        true, true, false, true)
 #ifndef MALDOCA_CHROME
             ,
         std::make_tuple("name.xls", "excel4", false, false,
@@ -225,8 +228,9 @@ TEST(OleToProtoTest, OlePidHlinks) {
 
 TEST(OleToProtoTest, OleHwpSummaryInfo) {
   OleFile ole_file = GetOleProto(
-      "7050af905f1696b2b8cdb4c6e6805a618addf5acfbd4edc3fc807a663016ab26", true,
-      true, true, true, false, false, false, false);
+      "7050af905f1696b2b8cdb4c6e6805a618addf5acfbd4edc3fc807a663016ab26_xor_"
+      "0x42_encoded",
+      true, true, true, true, false, false, false, false);
 
   static constexpr int kNumberOfProperties = 13;
 
@@ -249,8 +253,9 @@ TEST(OleToProtoTest, OleHwpSummaryInfo) {
 
 TEST(OleToProtoTest, OleNativeEmbedded) {
   OleFile ole_file = GetOleProto(
-      "f674740dfdf4fd4ded529c339160c8255cdd971c4a00180c9e3fc3f3e7b53799", false,
-      false, false, false, true, true, false, false);
+      "f674740dfdf4fd4ded529c339160c8255cdd971c4a00180c9e3fc3f3e7b53799_xor_"
+      "0x42_encoded",
+      false, false, false, false, true, true, false, false);
 
   EXPECT_THAT(ole_file.has_olenative_embedded(), IsTrue());
 

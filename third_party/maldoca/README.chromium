@@ -2,7 +2,7 @@ Name: MalDocA source for extracting and analyzing features from Office documents
 Short Name: maldoca
 URL: https://github.com/google/maldoca.git
 Version: 0
-Revision: 5b86c10511d3b58dadf8b9f58676fe654d546f8f
+Revision: d4ff0da335533ca2a662225aa5ef38c818f69c1b
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: yes
@@ -17,3 +17,4 @@ Local Modifications:
 - Path changes were made to utilize the versions of libraries in Chromium's
   third_party
 - Utilizing features available via protobuf lite
+- Using static variables over ABSL_FLAG

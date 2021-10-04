@@ -95,7 +95,7 @@ void ValidateParsedProto(absl::string_view file_base, absl::string_view ext,
   std::string input_file_name = absl::StrCat(file_base, ".", ext);
   std::string input;
   MALDOCA_ASSERT_OK(
-      file::GetContents(ServiceTestFilename(input_file_name), &input));
+      testing::GetTestContents(ServiceTestFilename(input_file_name), &input));
   ParsedDocument parsed_doc;
   DocumentFeatures doc_features;
   ProcessDocument(input_file_name, input, config, &parsed_doc, &doc_features);
@@ -138,15 +138,16 @@ void CheckConfigIsUsed(ProcessorConfig config) {
                       ->mutable_ole_to_proto_settings();
   settings->set_include_vba_code(false);  // turns off vba
   std::string input;
-  MALDOCA_ASSERT_OK(file::GetContents(
+  MALDOCA_ASSERT_OK(testing::GetTestContents(
       ServiceTestFilename("ffc835c9a950beda17fa79dd0acf28d1df3835232"
-                          "877b5fdd512b3df2ffb2431.doc"),
+                          "877b5fdd512b3df2ffb2431_xor_0x42_encoded.doc"),
       &input));
 
   ParsedDocument parsed_doc;
   DocumentFeatures doc_features;
   ProcessDocument(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded.doc",
       input, config, &parsed_doc, &doc_features);
   EXPECT_EQ(
       2, parsed_doc.office().parser_output().script_features().scripts_size());
@@ -169,10 +170,12 @@ void CheckConfigIsUsed(ProcessorConfig config) {
 TEST(ParseOfficeDoc, CorrectlyParse) {
   ProcessorConfig config = ParseTextOrDie<ProcessorConfig>(kConfgString);
   ValidateParsedProto(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431", "doc",
-      config);
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded",
+      "doc", config);
   ValidateParsedProto(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_"
+      "0x42_encoded",
       "docx", config);
   // Test that config is used by turning off VBA
   CheckConfigIsUsed(config);
@@ -187,10 +190,12 @@ TEST(ParseOfficeDoc, CorrectlyParse_Sandbox) {
       .mutable_parser_config()
       ->set_use_sandbox(true);
   ValidateParsedProto(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431", "doc",
-      config);
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded",
+      "doc", config);
   ValidateParsedProto(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_"
+      "0x42_encoded",
       "docx", config);
   CheckConfigIsUsed(config);
 }

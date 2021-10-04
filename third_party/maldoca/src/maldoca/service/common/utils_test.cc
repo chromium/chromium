@@ -37,8 +37,8 @@ namespace {
 #ifndef MALDOCA_CHROME
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status =
-      maldoca::file::GetContents(ServiceTestFilename(filename), &content);
+  auto status = maldoca::testing::GetTestContents(ServiceTestFilename(filename),
+                                                  &content);
   MALDOCA_CHECK_OK(status) << status;
   return content;
 }
@@ -49,7 +49,8 @@ TEST(InferDocType, CorrectInferredType) {
   MALDOCA_ASSERT_OK(fid);
   ::maldoca::FileTypeIdentifier *identifier = fid->get();
   auto doc = GetTestContent(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc");
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded.doc");
   EXPECT_EQ(DocType::DOC, InferDocType("ffc835c9a950beda17fa79dd0acf28d1df38352"
                                        "32877b5fdd512b3df2ffb2431.doc",
                                        doc, identifier));
@@ -68,7 +69,8 @@ TEST(InferDocType, CorrectInferredType) {
   EXPECT_EQ(DocType::XLA, InferDocType("test.xla", doc, identifier));
 
   doc = GetTestContent(
-      "ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021.ppt");
+      "ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021_xor_"
+      "0x42_encoded.ppt");
   EXPECT_EQ(DocType::PPT, InferDocType("test.anyname", doc, identifier));
   doc = GetTestContent("image_and_text.pdf");
   EXPECT_EQ(DocType::PDF, InferDocType("test.anyname", doc, identifier));

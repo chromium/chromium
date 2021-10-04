@@ -66,12 +66,12 @@ cc_test(
     srcs = ["common/utils_test.cc"],
     copts = DEFAULT_MALDOCA_COPTS,
     data = [
-        "testdata/ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021.ppt",
+        "testdata/ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021_xor_0x42_encoded.ppt",
         "testdata/image_and_text.pdf",
         # A malicious docx file with vba.
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
-        "testdata/f66b8ee9bea7ec406c6a88ccfb54c447afc3e4c44ae08c071b97beb74b66e2eb.xls",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.docx",
+        "testdata/f66b8ee9bea7ec406c6a88ccfb54c447afc3e4c44ae08c071b97beb74b66e2eb_xor_0x42_encoded.xls",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.doc",
     ],
     deps = [
         ":common_utils",
@@ -250,12 +250,12 @@ cc_test(
     copts = DEFAULT_MALDOCA_COPTS,
     data = [
         # A malicious docx file with VBA.
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.features.textproto",
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.parsed.textproto",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.features.textproto",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.parsed.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.docx",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.features.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.parsed.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.doc",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.features.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.parsed.textproto",
     ],
     deps = [
         ":common_utils",
@@ -296,12 +296,12 @@ cc_test(
     srcs = ["common/processing_pipeline_test.cc"],
     copts = DEFAULT_MALDOCA_COPTS,
     data = [
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.features.textproto",
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.parsed.textproto",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.features.textproto",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.parsed.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.docx",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.features.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.parsed.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.doc",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.features.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.parsed.textproto",
         "testdata/image_and_text.features.textproto",
         "testdata/image_and_text.parsed.textproto",
         "testdata/image_and_text.pdf",
@@ -363,10 +363,10 @@ cc_library(
 filegroup(
     name = "process_doc_testdata",
     srcs = [
-        "testdata/vba1.bin",
-        "testdata/vba1.bin.response.textproto",
-        "testdata/vba1.features.textproto",
-        "testdata/vba1.parsed.textproto",
+        "testdata/vba1_xor_0x42_encoded.bin",
+        "testdata/vba1_xor_0x42_encoded.bin.response.textproto",
+        "testdata/vba1_xor_0x42_encoded.features.textproto",
+        "testdata/vba1_xor_0x42_encoded.parsed.textproto",
         "testdata/embedded_file.pdf",
         "testdata/embedded_file.pdf.response.textproto",
         "testdata/image_and_link.pdf",
@@ -374,10 +374,10 @@ filegroup(
         "testdata/image_and_text.pdf",
         "testdata/image_and_text.pdf.response.textproto",
         # A malicious docx file with VBA.
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
-        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.response.textproto",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
-        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.response.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.docx",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_0x42_encoded.response.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.doc",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_0x42_encoded.response.textproto",
     ],
 )
 

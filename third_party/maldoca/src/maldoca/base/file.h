@@ -46,8 +46,10 @@ absl::Status Match(absl::string_view pattern,
                    std::vector<std::string>* filenames);
 #endif  // MALDOCA_CHROME
 
-absl::Status GetContents(const std::string& path, std::string* content);
-StatusOr<std::string> GetContents(absl::string_view path);
+absl::Status GetContents(const std::string& path, std::string* content,
+                         bool xor_decode_file = false);
+StatusOr<std::string> GetContents(absl::string_view path,
+                                  bool xor_decode_file = false);
 
 #ifndef MALDOCA_CHROME
 absl::Status SetContents(const std::string& path, absl::string_view contents);
