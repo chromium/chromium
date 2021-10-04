@@ -77,6 +77,9 @@ class ASH_EXPORT PrivacyScreenController
       const std::vector<display::DisplaySnapshot*>& displays) override;
 
  private:
+  // Calculates PrivacyScreen's logical status.
+  bool CalculateCurrentStatus() const;
+
   // Called when the user pref or DLP enforcement for the state of PrivacyScreen
   // is changed.
   void OnStateChanged(bool notify_observers);
@@ -85,9 +88,15 @@ class ASH_EXPORT PrivacyScreenController
   // OnActiveUserPrefServiceChanged() is called.
   void InitFromUserPrefs();
 
+  // Retrieves the current user's PrivacyScreen preference.
+  bool GetStateFromActiveUserPreference() const;
+
   // Get the ID of the internal display that supports privacy screen. Return
   // display::kInvalidDisplayId if none is found.
   int64_t GetSupportedDisplayId() const;
+
+  // Whether or not to alert observers about PrivacyScreen state change.
+  bool ShouldNotifyObservers(bool from_user_pref_init) const;
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
@@ -96,6 +105,9 @@ class ASH_EXPORT PrivacyScreenController
   // Set to true when entering the login screen. This should happen once per
   // Chrome restart.
   bool applying_login_screen_prefs_ = false;
+
+  // Indicates if the PrivacyScreen is currently on or off.
+  bool current_status_ = false;
 
   // Indicates whether PrivacyScreen is enforced by Data Leak Protection
   // feature.

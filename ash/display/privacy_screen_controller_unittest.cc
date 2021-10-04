@@ -201,6 +201,14 @@ TEST_F(PrivacyScreenControllerTest, TestDlpEnforced) {
                            PrivacyScreenController::kToggleUISurfaceCount);
   EXPECT_TRUE(controller()->GetEnabled());
 
+  // Privacy screen enforced again by DLP, no notification should be shown.
+  ::testing::Mock::VerifyAndClear(observer());
+  EXPECT_CALL(*observer(),
+              OnPrivacyScreenSettingChanged(::testing::_, ::testing::_))
+      .Times(0);
+  controller()->SetEnforced(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+
   // Remove enforcement, turned off as pref was not changed.
   ::testing::Mock::VerifyAndClear(observer());
   EXPECT_CALL(*observer(), OnPrivacyScreenSettingChanged(false, true));
@@ -212,6 +220,24 @@ TEST_F(PrivacyScreenControllerTest, TestDlpEnforced) {
   EXPECT_CALL(*observer(), OnPrivacyScreenSettingChanged(true, true));
   controller()->SetEnabled(true,
                            PrivacyScreenController::kToggleUISurfaceCount);
+  EXPECT_TRUE(controller()->GetEnabled());
+
+  // Privacy screen enforced again by DLP, no notification should be shown as
+  // privacy screen already turned on by the user.
+  ::testing::Mock::VerifyAndClear(observer());
+  EXPECT_CALL(*observer(),
+              OnPrivacyScreenSettingChanged(::testing::_, ::testing::_))
+      .Times(0);
+  controller()->SetEnforced(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+
+  // Remove enforcement, privacy screen should still be on due to pref and no
+  // notification.
+  ::testing::Mock::VerifyAndClear(observer());
+  EXPECT_CALL(*observer(),
+              OnPrivacyScreenSettingChanged(::testing::_, ::testing::_))
+      .Times(0);
+  controller()->SetEnforced(false);
   EXPECT_TRUE(controller()->GetEnabled());
 
   // Disable via pref, privacy screen is turned off with a notification.
