@@ -42,13 +42,13 @@ constexpr char kTmpDir[] = "browser_data_migrator";
 // The base names of files and directories directly under the original profile
 // data directory that does not need to be copied nor need to remain in ash e.g.
 // cache data.
-const char* const kNoCopyPaths[] = {kTmpDir, "Cache"};
+constexpr const char* const kNoCopyPaths[] = {kTmpDir, "Cache"};
 // The base names of files and directories that should remain in ash data
 // directory.
-const char* const kAshDataPaths[]{"Downloads", "MyFiles"};
+constexpr const char* const kAshDataPaths[]{"Downloads", "MyFiles"};
 // The base names of files/dirs that are needed only by the browser part of
 // chrome i.e. data that should be moved to lacros.
-const char* const kLacrosDataPaths[]{"Bookmarks"};
+constexpr const char* const kLacrosDataPaths[]{"Bookmarks"};
 // `First Run` is the only file that should be copied to lacros from user data
 // directory (parent directory of profile directory).
 const char* const kFirstRun = "First Run";
@@ -72,6 +72,39 @@ const base::Feature kLacrosProfileMigrationForAnyUser{
 // Emergency switch to turn off profile migration via Finch.
 const base::Feature kLacrosProfileMigrationForceOff{
     "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Ensures that each path in UDD appears in one of `kNoCopyPaths`,
+// `kAshDataPaths` or `kLacrosDataPaths`.
+constexpr bool HasNoOverlapBetweenPathsSets() {
+  for (const char* no_copy_path : kNoCopyPaths) {
+    for (const char* ash_data_path : kAshDataPaths) {
+      if (base::StringPiece(no_copy_path) == base::StringPiece(ash_data_path))
+        return false;
+    }
+  }
+
+  for (const char* ash_data_path : kAshDataPaths) {
+    for (const char* lacros_data_path : kLacrosDataPaths) {
+      if (base::StringPiece(ash_data_path) ==
+          base::StringPiece(lacros_data_path))
+        return false;
+    }
+  }
+
+  for (const char* lacros_data_path : kLacrosDataPaths) {
+    for (const char* no_copy_path : kNoCopyPaths) {
+      if (base::StringPiece(lacros_data_path) ==
+          base::StringPiece(no_copy_path))
+        return false;
+    }
+  }
+
+  return true;
+}
+
+static_assert(HasNoOverlapBetweenPathsSets(),
+              "There must be no overlap between kNoCopyPaths, kAshDataPaths "
+              "and kLacrosDataPaths");
 
 void OnRestartRequestResponse(bool result) {
   if (!result) {
