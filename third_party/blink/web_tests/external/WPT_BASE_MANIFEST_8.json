@@ -219105,7 +219105,7 @@
     "attributes": {
      "resources": {
       "domain-child.sub.html": [
-       "72ec083b7867b1ef8daa6266deeb59ccd12dde4c",
+       "9eab6d012acdbdf3d6bf318a29502ec78fc27a6e",
        []
       ],
       "path": {
@@ -234480,7 +234480,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "75abe96d15bc8bdde35f9cec7686d280a251a580",
+      "2885179da4a9d847125c223b7957c70cabee9c03",
       []
      ],
      "inheritance-expected.txt": [
@@ -286058,6 +286058,10 @@
      "d7236bf2a7f53927e54296fcdb9f983e8876c084",
      []
     ],
+    "compute-pressure.idl": [
+     "8ea37bfbb9c47511d6aa8d34484f97527ec9ea29",
+     []
+    ],
     "console.idl": [
      "7cd73a61764fc178294a9aecec5f4781256deec5",
      []
@@ -286123,7 +286127,7 @@
      []
     ],
     "css-fonts.idl": [
-     "7282bffee8b3e01f29cfabb49f1eadc31801feed",
+     "eddfc025215cbf73eed9bdeb8eb26238cb298de1",
      []
     ],
     "css-highlight-api.idl": [
@@ -286239,7 +286243,7 @@
      []
     ],
     "eyedropper-api.idl": [
-     "69d56667a5a35b6fdc46ef892cb75e73993c3eeb",
+     "62c8c4aea6adcb0979edcdbc0f054403341d2653",
      []
     ],
     "fetch.idl": [
@@ -286719,11 +286723,11 @@
      []
     ],
     "web-animations-2.idl": [
-     "3d85720514af76eecb9a8f7a968de670c6366e98",
+     "5ee0efc482b5af035fbb2753fa17d0ccd44d89a6",
      []
     ],
     "web-animations.idl": [
-     "3f750de929a041626955cb99f270dd5e8f8d2465",
+     "2b5f672b95246de23827c5f390a2af437214d046",
      []
     ],
     "web-bluetooth.idl": [
@@ -286783,7 +286787,7 @@
      []
     ],
     "webnn.idl": [
-     "dbd64c1b45d9b431444d3911754c0052ded3ac99",
+     "c4247662679e0389c4746557369794abf9545c7f",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -286815,7 +286819,7 @@
      []
     ],
     "webtransport.idl": [
-     "ce9abde041f10f8a5f41062afd10bdcee15fdcc6",
+     "f098e47d179b4e02ed3f6c0bde20832c29183acd",
      []
     ],
     "webusb.idl": [
@@ -293510,7 +293514,7 @@
       []
      ],
      "resource-loaders.js": [
-      "c076ccc51004b580815366d2ffda53c06d5734ff",
+      "99a2c28d2b3b27dce7e6b0ed1b4ee9e4e93f0517",
       []
      ],
      "resource-timing-content-length.py": [
@@ -300595,7 +300599,7 @@
      }
     },
     "idlharness.window-expected.txt": [
-     "066e138db82f644c6029bd9d25e142d64b7b830c",
+     "411b4dcb144fe29a3bbd3206421ea900d305f6f4",
      []
     ],
     "interfaces": {
@@ -303835,8 +303839,12 @@
      []
     ],
     "handlers": {
+     "abort-stream-from-server.py": [
+      "1d92b705e6de05e2cf56476698560511410df3c7",
+      []
+     ],
      "client-close.py": [
-      "68ae7e2621c969514ecf10ed2d0b047697dc66c8",
+      "b10eb4bca4c8b04a01b7be77c7355a799a1f52c4",
       []
      ],
      "custom-response.py": [
@@ -303896,7 +303904,7 @@
     },
     "resources": {
      "webtransport-test-helpers.sub.js": [
-      "42c0b9be5deb9d10c647043454d493e9dfe8a575",
+      "61ea1e4f80411aa4233548403ac61fb7a418363e",
       []
      ]
     }
@@ -361335,6 +361343,13 @@
      ],
      "clamp-length-serialize.html": [
       "4719e4c0254902bb1c2234c4cfc1c4003a8df0d4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dynamic-viewport-units-rule-cache.html": [
+      "8afb3c51ed32ffd11656c17d6a7334475f6405f7",
       [
        null,
        {}
@@ -472201,6 +472216,13 @@
       null,
       {}
      ]
+    ],
+    "xhr-resource-timing.html": [
+     "6f8f3331861062aa96b533cd94d9add21ea7e382",
+     [
+      null,
+      {}
+     ]
     ]
    },
    "sanitizer-api": {
@@ -518171,7 +518193,7 @@
    },
    "webtransport": {
     "close.https.any.js": [
-     "b89636d58a8eb306657176b8870fbcd55174907d",
+     "4ccf244b18f7894d77ef27787d526d4653b0f440",
      [
       "webtransport/close.https.any.html",
       {
@@ -518620,6 +518642,101 @@
         [
          "script",
          "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "streams-close.https.any.js": [
+     "abad9ffa342eb8fc2af6c7d3cdcb61feaa6a902e",
+     [
+      "webtransport/streams-close.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/streams-close.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/streams-close.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/streams-close.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
         ]
        ]
       }

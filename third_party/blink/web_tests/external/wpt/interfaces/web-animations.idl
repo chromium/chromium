@@ -63,7 +63,6 @@ dictionary EffectTiming {
     FillMode                           fill = "auto";
     double                             iterationStart = 0.0;
     unrestricted double                iterations = 1.0;
-    (unrestricted double or DOMString) duration = "auto";
     PlaybackDirection                  direction = "normal";
     DOMString                          easing = "linear";
 };
@@ -152,14 +151,3 @@ partial interface mixin DocumentOrShadowRoot {
 };
 
 Element includes Animatable;
-
-[Exposed=Window]
-interface AnimationPlaybackEvent : Event {
-    constructor(DOMString type, optional AnimationPlaybackEventInit eventInitDict = {});
-    readonly attribute double? currentTime;
-    readonly attribute double? timelineTime;
-};
-dictionary AnimationPlaybackEventInit : EventInit {
-    double? currentTime = null;
-    double? timelineTime = null;
-};

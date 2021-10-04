@@ -317,6 +317,11 @@ partial interface MLGraphBuilder {
   MLOperand pad(MLOperand input, MLOperand padding, optional MLPadOptions options = {});
 };
 
+enum MLRoundingType {
+  "floor",
+  "ceil"
+};
+
 dictionary MLPool2dOptions {
   sequence<long> windowDimensions;
   sequence<long> padding;
@@ -324,6 +329,8 @@ dictionary MLPool2dOptions {
   sequence<long> dilations;
   MLAutoPad autoPad = "explicit";
   MLInputOperandLayout layout = "nchw";
+  MLRoundingType roundingType = "floor";
+  sequence<long> outputSizes;
 };
 
 partial interface MLGraphBuilder {
@@ -360,14 +367,15 @@ enum MLInterpolationMode {
   "linear"
 };
 
-dictionary MLResampleOptions {
+dictionary MLResample2dOptions {
   MLInterpolationMode mode = "nearest-neighbor";
   sequence<float> scales;
   sequence<long> sizes;
+  sequence<long> axes;
 };
 
 partial interface MLGraphBuilder {
-  MLOperand resample(MLOperand input, optional MLResampleOptions options = {});
+  MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 };
 
 partial interface MLGraphBuilder {

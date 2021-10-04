@@ -35,13 +35,18 @@ interface WebTransport {
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 };
 
+dictionary WebTransportHash {
+  DOMString algorithm;
+  BufferSource value;
+};
+
 dictionary WebTransportOptions {
   boolean allowPooling;
-  sequence<RTCDtlsFingerprint> serverCertificateFingerprints;
+  sequence<WebTransportHash> serverCertificateHashes;
 };
 
 dictionary WebTransportCloseInfo {
-  unsigned long errorCode;
+  unsigned long closeCode;
   DOMString reason;
 };
 

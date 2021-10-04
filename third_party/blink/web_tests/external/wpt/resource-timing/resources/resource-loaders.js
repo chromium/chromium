@@ -120,5 +120,14 @@ const load = {
       }
     }
     xhr.send();
+  },
+
+  xhr_async: path => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", path)
+    xhr.send();
+    return new Promise(resolve => {
+      xhr.onload = xhr.onerror = resolve;
+    });
   }
 };
