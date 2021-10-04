@@ -203,6 +203,34 @@ export class AcceleratorLookupManager {
   }
 
   /**
+   * @param {!AcceleratorSource} source
+   * @param {number} action
+   * @param {AcceleratorKeys} accelerator
+   */
+  removeAccelerator(source, action, accelerator) {
+    const foundIdx = this.getAcceleratorInfoIndex_(source, action, accelerator);
+
+    if (foundIdx === -1) {
+      // Can only attempt to remove an existing accelerator.
+      assertNotReached();
+    }
+
+    const accelInfos = this.getAccelerators(source, action);
+    const foundAccel = accelInfos[foundIdx];
+
+    if (foundAccel.locked) {
+      // Not possible to remove a locked accelerator manually.
+      assertNotReached();
+    }
+
+    // Remove accelerator from main map.
+    accelInfos.splice(foundIdx, 1);
+
+    // Remove from reverse lookup.
+    this.reverseAcceleratorLookup_.delete(JSON.stringify(accelerator));
+  }
+
+  /**
    * Called to either remove or disable (if locked) an accelerator.
    * @param {!AcceleratorKeys} accelKeys
    * @private

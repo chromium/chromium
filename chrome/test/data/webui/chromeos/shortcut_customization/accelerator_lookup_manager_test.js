@@ -8,6 +8,7 @@ import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcu
 import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.js';
 
 export function acceleratorLookupManagerTest() {
   /** @type {?FakeShortcutProvider} */
@@ -273,6 +274,36 @@ export function acceleratorLookupManagerTest() {
       const snapWindowRightLookup = manager.getAccelerators(
           AcceleratorSource.kAsh, snapWindowRightAction);
       assertEquals(0, snapWindowRightLookup.length);
+    });
+  });
+
+  test('RemoveAccelerator', () => {
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
+
+      manager.setAcceleratorLookup(result);
+
+      // Get Snap Window Right accelerator from kAsh[1].
+      const expectedAction = 1;
+
+      // Initially there is only one accelerator for Snap Window Right.
+      const lookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      assertEquals(1, lookup.length);
+
+      // Remove the accelerator.
+      const removedAccelerator = lookup[0].accelerator;
+      manager.removeAccelerator(
+          AcceleratorSource.kAsh, expectedAction, removedAccelerator);
+
+      // Verify that the accelerator has been removed.
+      assertEquals(0, lookup.length);
+
+      // Removed accelerator should not appear in the reverse lookup.
+      assertEquals(
+          undefined,
+          manager.getAcceleratorFromKeys(JSON.stringify(removedAccelerator)));
     });
   });
 }
